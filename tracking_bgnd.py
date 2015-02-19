@@ -14,9 +14,11 @@ import cv2
 import numpy as np
 import h5py
 
+
 fileName = '/Volumes/ajaver$/DinoLite/Videos/Exp5-20150116/A002 - 20150116_140923.wmv';
-saveDir = '/Volumes/ajaver$/DinoLite/Results/Exp5-20150116/';
-saveFile = "A002 - 20150116_140923H.hdf5"
+#fileName = '/Users/ajaver/Documents/A002 - 20150116_140923.wmv'
+saveDir = '/Volumes/ajaver$/DinoLite/Results/Exp5-20150116-2/';
+saveFile = "A002 - 20150116_140923.hdf5"
 
 
 BUFF_SIZE = 30;
@@ -24,8 +26,8 @@ BUFF_DELTA = 1200;
 BGND_ORD = 0.7 #percentage in the ordered buffer that correspond to the background (set 0.5 for the median)
 BGND_IND = round(BGND_ORD*BUFF_SIZE)-1;
 
-INITIAL_FRAME =  25e6;
-TOT_CHUNKS = 50;
+INITIAL_FRAME = 0;
+#TOT_CHUNKS = 1000;
 #make the save directory if it didn't exist before
 if not os.path.exists(saveDir):
     try:
@@ -61,6 +63,8 @@ tot_frames = vid.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT)#this normally does not work
 
 #Initialize the opening of the hdf5 file, and delete the dataset bgnd there was some data previously
 fidh5 = h5py.File(saveDir + saveFile, "w")
+if "bgnd" in fidh5:
+    del fidh5["bgnd"]
 bgnd_set = fidh5.create_dataset("/bgnd", (0, im_height, im_width), 
                                 dtype = "u1", 
                                 chunks = (1, im_height, im_width), 
@@ -74,7 +78,7 @@ bgnd_set.attrs['video_source_file'] = fileName
 
 tot_bgnd = 0;
 N_chunks = 0;
-while N_chunks < TOT_CHUNKS:
+while 1:#N_chunks < TOT_CHUNKS:
     vid.set(cv2.cv.CV_CAP_PROP_POS_FRAMES, INITIAL_FRAME + N_chunks*BUFF_DELTA);
     
     retval, image = vid.read()
@@ -91,8 +95,8 @@ while N_chunks < TOT_CHUNKS:
         sorted_buff = np.sort(im_buffer.buffer,0);
         bgnd_set.resize(tot_bgnd+1, axis=0); 
         bgnd_set[tot_bgnd,:,:] = sorted_buff[BGND_IND,:,:];
-        tot_bgnd += 1
-    
+        tot_bgnd += 1    
+        
     N_chunks += 1;
     print N_chunks;
 #%%
@@ -100,7 +104,6 @@ while N_chunks < TOT_CHUNKS:
 
 vid.release()
 fidh5.close()
-
 
 #for bgnd in allBgnd:
 #    plt.figure();

@@ -134,24 +134,24 @@ if __name__ == '__main__':
     tic_first = time.time()
     tic = tic_first
     
-    while 1:#frame_number < 25:
+    while frame_number < 1000:
         ret, image = vid.read()
-        #image = image[:,:,1]
         if ret == 0:
             break
         
         frame_number += 1;
         
-        if frame_number%25 == 0:
+        if frame_number%1 == 0:
             toc = time.time()
             print frame_number, toc-tic
             tic = toc
         
         if (frame_number+1)%1000 == 1:
             mask_dataset.resize(frame_number + 1000, axis=0); 
+#        getImageROI(image)
         
-        #mask_dataset[frame_number-1,:,:] = image_dum
-        mask_dataset[frame_number-1,:,:] = getImageROI(image)
+#        mask_dataset[frame_number-1,:,:] = image_dum
+#s        mask_dataset[frame_number-1,:,:] = getImageROI(image)
         
 #        parent_conn, child_conn = mp.Pipe();
 #        p = mp.Process(target = proccess_worker, args=(parent_conn, frame_number, image));

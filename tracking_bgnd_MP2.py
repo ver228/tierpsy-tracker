@@ -231,46 +231,4 @@ if __name__ == "__main__":
     conn.commit();
     conn.close();
 
-##        processes = [mp.Process(target=test_code, args=(filename, x), name = 'P%i' % x) for x in range(N)]    
-#        for p in processes:
-#            p.start()
-#        
-#        for p in processes:
-#            p.join()
-#        
-#        results = [output.get()[0] for p in processes]
-#        print time.clock() - tic 
-#    
-    
-#    tic = time.clock()   
-#    for x in range(N):
-#        aa =  test_code(filename, x);
-#    results = [output.get()[0] for x in range(N)]
-#    #print results
-#    print time.clock() - tic
-    
-    
-    
-    #print results
-
-# L = np.loadtxt('/Users/ajaver/python/label')
-#    property_list = ['centroid', 'perimeter', 'area', 'major_axis_length', 'minor_axis_length', 'eccentricity', 'orientation', 'solidity']
-#    L = np.load('/Users/ajaver/python/label.npy')
-#    props = regionprops(L);
-#    
-#    
-#    p = Pool(processes=10)
-#    tic = time.clock()   
-#    
-#    
-#    for kk in range(1): 
-#    #    A = p.map(get_im_properties, property_list)
-#        A = [p.apply(get_im_properties, (props, x)) for x in property_list]
-#    
-#    print time.clock() - tic
-#        
-#    
-#    tic = time.clock()    
-#    for kk in range(1):
-#        B = get_all_properties(props)
-#    print time.clock() - tic
+#THIS IS MY CHANGE

@@ -5,39 +5,38 @@ Created on Wed Feb 11 13:33:18 2015
 @author: ajaver
 """
 import multiprocessing as mp
+import Queue
 import cv2
 #from functools import partial
 
 import numpy as np
 from skimage.measure import regionprops, label
 from skimage import morphology
-import sqlite3
-import Queue
 import h5py
+import tables
+import time
 
-from sklearn.utils.linear_assignment_ import linear_assignment #hungarian algorithm
-from scipy.spatial.distance import cdist
-from collections import defaultdict
-#import matplotlib.pylab as plt
+N_processes = 24;
 
+class plate_worms(tables.IsDescription):
+#class for the pytables 
+    worm_index = tables.Int32Col(pos=0)
+    frame_number = tables.Int32Col(pos=1)
+    label_image = tables.Int32Col(pos=2)
+    coord_x = tables.Float32Col(pos=3)
+    coord_y = tables.Float32Col(pos=4) 
+    area = tables.Float32Col(pos=5) 
+    perimenter = tables.Float32Col(pos=6) 
+    major_axis = tables.Float32Col(pos=7) 
+    minor_axis = tables.Float32Col(pos=8) 
+    eccentricity = tables.Float32Col(pos=9) 
+    compactness = tables.Float32Col(pos=10) 
+    orientation = tables.Float32Col(pos=11) 
+    solidity = tables.Float32Col(pos=12) 
+    speed = tables.Float32Col(pos=13)
 
-N_processes = 10;
-
-
-def list_duplicates(seq):
-    # get index of replicated elements. It only returns replicates not the first occurence.
-    tally = defaultdict(list)
-    for i,item in enumerate(seq):
-        tally[item].append(i)
-    
-    badIndex = []
-    for locs in [locs for key, locs in tally.items() 
-                            if len(locs)>1]:
-        badIndex += locs[1:]
-    return badIndex
-
- 
 def analyze_image(parent_conn, frame, image, bgnd_im, bgnd_mask):
+    #segmentation procedure
     image = cv2.cvtColor(image, cv2.cv.CV_RGB2GRAY);
     im_diff = np.abs(bgnd_im-image.astype(np.double));
     #mask = im_diff >20;
@@ -47,8 +46,8 @@ def analyze_image(parent_conn, frame, image, bgnd_im, bgnd_mask):
     L = morphology.remove_small_objects(L, min_size=10, connectivity=2)
     image[L==0] = 0
     
+    #extract images for each object
     props = regionprops(L);
-    
     coord_x = [x.centroid[0] for x in props];
     coord_y = [x.centroid[1] for x in props];
     area = [x.area for x in props];
@@ -60,66 +59,23 @@ def analyze_image(parent_conn, frame, image, bgnd_im, bgnd_mask):
     orientation = [x.orientation for x in props];
     solidity = [x.solidity for x in props];
     
-    props_list = [coord_x, coord_y, area, perimeter, 
-               major_axis, minor_axis, eccentricity, compactness, 
-               orientation, solidity]
-
+    N = len(props); 
+    worm_index = [-1]*N #unkown
+    frame_number = [frame]*N 
+    label_image = range(N)
+    speed = [-1]*N;
     
+    props_list = [worm_index, frame_number, label_image,
+                  coord_x, coord_y, area, perimeter, 
+               major_axis, minor_axis, eccentricity, compactness, 
+               orientation, solidity, speed] #speed
+    #rearrage of the data to insert into pytables
+    props_list = [tuple(x) for x in props_list]
+    props_list = zip(*props_list)
+     
     parent_conn.send({'frame': frame, 'image': image, 'props_list' :props_list})
     parent_conn.close()
 
-
-def get_indexList(coord, coord_prev, indexListPrev, totWorms, max_allow_dist = 10.0):
-    #get the indexes of the next worms from their nearest neightbors using the hungarian algorithm
-    
-    if coord_prev.size!=0:
-        costMatrix = cdist(coord_prev, coord);
-        assigment = linear_assignment(costMatrix)
-        
-        indexList = np.zeros(coord.shape[0]);
-        speed = np.zeros(coord.shape[0])
-
-        for row, column in assigment: #ll = 1:numel(indexList)
-            if costMatrix[row,column] < max_allow_dist:
-                indexList[column] = indexListPrev[row];
-                speed[column] = costMatrix[row][column];
-            elif column < coord.shape[0]:
-                totWorms = totWorms +1;
-                indexList[column] = totWorms;
-        
-        for rep_ind in list_duplicates(indexList):
-            totWorms = totWorms +1; #assign new worm_index to joined trajectories
-            indexList[rep_ind] = totWorms;
-        
-    else:
-        indexList = totWorms + np.arange(1,coord.shape[0]+1);
-        totWorms = indexList[-1]
-        speed = totWorms*[None]
-        #print costMatrix[-1,-1]
-    return (totWorms, indexList, speed)
-    
-    
-def analyze_frames(processes, mask_dataset, results_list, coord_prev, indexListPrev, totWorms):
-    #get the data from the next proccess in the queue
-    dd = processes.get();
-    data = dd[0].recv()
-    dd[1].join()
-    
-    #get the indexes of the next worms from their nearest neightbors using the hungarian algorithm
-    coord = np.array(data['props_list'][0:2]).T;
-    totWorms, indexList, speed = get_indexList(coord, coord_prev, indexListPrev, totWorms)
-    
-    #put the results of the worm features in the database 
-    frames = np.empty(indexList.size);
-    frames.fill(data['frame']+1);
-    results_list += zip(*[indexList, frames] +  data['props_list'] + [speed])
-    
-    #save the results of the proccessed image (mask) into the hdf5
-    mask_dataset.resize(data['frame']+1, axis=0); 
-    mask_dataset[data['frame'],:,:] = data['image'];
-    
-    return [coord, indexList, totWorms]
-    
 
 if __name__ == "__main__":   
 #    fileName = '/Volumes/ajaver$/DinoLite/Videos/Exp5-20150116/A002 - 20150116_140923.wmv';    
@@ -127,40 +83,24 @@ if __name__ == "__main__":
 #    maskDB = '/Volumes/ajaver$/DinoLite/Results/Exp5-20150116-2/A002 - 20150116_140923_mask.db';
 #    maskFile = '/Volumes/ajaver$/DinoLite/Results/Exp5-20150116-2/A002 - 20150116_140923_mask.hdf5';
 
-    
     fileName = '/Volumes/ajaver$/DinoLite/Videos/Exp5-20150116/A002 - 20150116_140923.wmv';
-    bgndFile = '/Volumes/ajaver$/DinoLite/Results/Exp5-20150116/A002 - 20150116_140923F.hdf5';
-    maskDB = '/Volumes/ajaver$/DinoLite/Results/Exp5-20150116/A002 - 20150116_140923D_mask-2e.db';
-    maskFile = '/Volumes/ajaver$/DinoLite/Results/Exp5-20150116/A002 - 20150116_140923D_mask-2e.hdf5';
+    bgndFile = '/Volumes/ajaver$/DinoLite/Results/Exp5-20150116/A002 - 20150116_140923H.hdf5';
+    featuresFile = '/Volumes/ajaver$/DinoLite/Results/Exp5-20150116/A002 - 20150116_140923H_features.hdf5';
+    maskFile = '/Volumes/ajaver$/DinoLite/Results/Exp5-20150116/A002 - 20150116_140923H_mask.hdf5';
 
-    
+    #fileName = '/Volumes/ajaver$/DinoLite/Videos/Exp5-20150116/A002 - 20150116_140923.wmv';
+    #bgndFile = '/Volumes/ajaver$/DinoLite/Results/Exp5-20150116/A002 - 20150116_140923F.hdf5';
+    #featuresFile = '/Volumes/ajaver$/DinoLite/Results/Exp5-20150116/A002 - 20150116_140923D_features-2n.hdf5';
+    #maskFile = '/Volumes/ajaver$/DinoLite/Results/Exp5-20150116/A002 - 20150116_140923D_mask-2fn.hdf5';
+
+
 #'''START TO READ THE HDF5 FROM THE PREVIOUSLY PROCESSED BGND '''    
     bgnd_fid = h5py.File(bgndFile, "r");
     bgnd = bgnd_fid["/bgnd"];
     BUFF_SIZE = bgnd.attrs['buffer_size'];
     BUFF_DELTA = bgnd.attrs['delta_btw_bgnd'];
-    INITIAL_FRAME = bgnd.attrs['initial_frame'];
+    INITIAL_FRAME = bgnd.attrs['initial_position'];
 
-#'''START THE DATA SQL BASE TO SAVE WORM PARAMETERS'''    
-    conn = sqlite3.connect(maskDB)
-    cur = conn.cursor()
-    cur.execute('''DROP TABLE IF EXISTS plate_worms''')
-    cur.execute('''CREATE TABLE plate_worms  
-                 (worm_index INT NOT NULL,
-                 frame_number INT NOT NULL,
-                 coord_x REAL,
-                 coord_y REAL,
-                 area REAL,
-                 perimenter REAL,
-                 major_axis REAL, 
-                 minor_axis REAL,
-                 eccentricity REAL, 
-                 compactness REAL, 
-                 orientation REAL, 
-                 solidity REAL, 
-                 speed REAL,
-                 PRIMARY KEY (worm_index, frame_number)
-                 )''') 
 
 #'''OPEN THE VIDEO FILE AND EXTRACT SOME PARAMETERS'''        
     vid = cv2.VideoCapture(fileName)
@@ -176,16 +116,25 @@ if __name__ == "__main__":
                                     dtype = "u1", 
                                 chunks = (1, im_height, im_width), 
                                 maxshape = (None, im_height, im_width), 
-                                compression="gzip");
+                                compression="gzip", shuffle=True);
+
+#'''CREATE PYTABLES TO STORE THE FEATURES'''
+    feature_fid = tables.open_file(featuresFile, mode = 'w', title = '')
+    #features_group = H5features.create_group("/", "features", "Worm feature List")
+    feature_table = feature_fid.create_table('/', "plate_worms", plate_worms,"Worm feature List")
+    
 #'''INITIALIZE VARIABLES'''   
     processes = Queue.Queue()
     max_frame = int(BUFF_DELTA*(bgnd.shape[0] + np.ceil(BUFF_SIZE/2)));
-    max_frame = 5000;    
+    #max_frame = 10000;    
     nChunk_prev = -1;
     coord_prev = np.empty([0]);
     totWorms = 0;
     indexListPrev = np.empty([0]);
     results_list = [];
+    
+    tic_first = time.time();
+    tic = time.time()
 #'''MAIN LOOP STARTS'''   
     for ind_frame in range(max_frame):
         nChunk = np.floor(ind_frame / BUFF_DELTA)
@@ -197,10 +146,22 @@ if __name__ == "__main__":
                 bgndInd = bgnd.shape-1;
             
             bgnd_im = bgnd[bgndInd,:,:];
-            bgnd_mask = cv2.adaptiveThreshold(bgnd_im,1,cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV,61,35)    
+            bgnd_mask = cv2.adaptiveThreshold(bgnd_im,1,cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV,61,35)
+            
+            #resize the buffer everytime a new chunk is called
+            N = BUFF_DELTA*(nChunk+1); 
+            if N>max_frame: N = max_frame+1;
+            mask_dataset.resize(N, axis=0); 
+            
+            feature_table.flush()
+            
         nChunk_prev = nChunk;
         
-        print ind_frame
+        if ind_frame % 100 == 0:
+            toc = time.time()
+            print ind_frame, toc-tic
+            tic = toc
+            
         retval, image = vid.read()
         if not retval:
             break;
@@ -211,26 +172,40 @@ if __name__ == "__main__":
         processes.put((child_conn, p))
         
         if processes.qsize() >= N_processes:
-            coord_prev, indexListPrev, totWorms = analyze_frames(processes, mask_dataset, results_list, coord_prev, indexListPrev, totWorms);
-            if ind_frame % BUFF_DELTA == 1:
-                cur.executemany('INSERT INTO plate_worms VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)', results_list);
-                results_list = [];                
-                conn.commit();
-
+            dd = processes.get();
+            data = dd[0].recv() #read pipe
+            dd[1].join() #wait for the proccess to be completed
+            
+            mask_dataset[data['frame'],:,:] = data['image'];
+            feature_table.append(data['props_list'])
+            #coord_prev, indexListPrev, totWorms = analyze_frames(processes, mask_dataset, results_list, coord_prev, indexListPrev, totWorms);
+            
     #proccess the last data in the queue
     for x in range(processes.qsize()):
-        coord_prev, indexListPrev, totWorms = analyze_frames(processes, mask_dataset, results_list, coord_prev, indexListPrev, totWorms);
+        dd = processes.get();
+        data = dd[0].recv()
+        dd[1].join()
+        
+        if mask_dataset != max_frame:
+            mask_dataset.resize(max_frame, axis=0); 
+        
+        mask_dataset[data['frame'],:,:] = data['image'];
+        feature_table.append(data['props_list'])
+            
+        
+            
+        #coord_prev, indexListPrev, totWorms = analyze_frames(processes, mask_dataset, results_list, coord_prev, indexListPrev, totWorms);
+    feature_table.flush()
+    feature_table.cols.frame_number.create_csindex()
+    print feature_table
+    feature_fid.close()
     
     bgnd_fid.close()
-    mask_fid.close();
-    vid.release();
-    #cur.execute('BEGIN TRANSACTION')
-    cur.executemany('INSERT INTO plate_worms VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)', results_list);
-    #cur.execute('END TRANSACTION')
-    results_list = [];
-    conn.commit();
-    conn.close();
-
+    mask_fid.close()
+    vid.release()
+    
+    print 'Total time %f' % (time.time() -tic_first)
+    
 ##        processes = [mp.Process(target=test_code, args=(filename, x), name = 'P%i' % x) for x in range(N)]    
 #        for p in processes:
 #            p.start()
