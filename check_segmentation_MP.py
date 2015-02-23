@@ -17,8 +17,11 @@ Created on Tue Feb 17 15:06:13 2015
 #fileName = '/Volumes/H/GeckoVideo/20150218/CaptureTest_90pc_Ch3_18022015_230213.mjpg'
 #maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch3_18022015_230213.hdf5';
 
-fileName = '/Volumes/H/GeckoVideo/20150218/CaptureTest_90pc_Ch2_18022015_230108.mjpg'
-maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch2_18022015_230108.hdf5';
+#fileName = '/Volumes/H/GeckoVideo/20150218/CaptureTest_90pc_Ch2_18022015_230108.mjpg'
+#maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch2_18022015_230108.hdf5';
+
+fileName = '/Volumes/behavgenom$/GeckoVideo/20150220/CaptureTest_90pc_Ch3_20022015_183607.mjpg';
+maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch3_20022015_183607.hdf5';
 
 #fileName = '/Volumes/Mrc-pc/GeckoVideo/CaptureTest_90pc_Ch4_16022015_174636.mjpg';
 #maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch4_16022015_174636.hdf5';
@@ -41,7 +44,7 @@ import Queue
 
 MAX_N_PROCESSES = 1#mp.cpu_count()
 STRUCT_ELEMENT = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9,9)) 
-SAVE_FULL_INTERVAL = 15000 #~15min
+SAVE_FULL_INTERVAL = 5000 #~5min
 
 #import skimage.m
 class ReadVideoffmpeg:
@@ -57,7 +60,6 @@ class ReadVideoffmpeg:
                 command = [ffmpeg_cmd, '-i', fileName, '-']
                 pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.PIPE)
                 buff = pipe.stderr.read()
-                
                 pipe.terminate()
                 dd = buff.partition('Video: ')[2].split(',')[2]
                 dd = re.findall(r'\d*x\d*', dd)[0].split('x')
@@ -115,6 +117,7 @@ def getImageROI(image):
         cv2.drawContours(mask, contours, ii, 0, cv2.cv.CV_FILLED)
     mask[0,:] = 0; mask[:,0] = 0; mask[-1,:] = 0; mask[:,-1]=0;
     mask = cv2.dilate(mask, STRUCT_ELEMENT, iterations = 3)
+    mask[0:15, 0:480] = 255 # save the timestamp
     image[mask==0] = 0
 #    
 #
