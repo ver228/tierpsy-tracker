@@ -31,20 +31,15 @@ maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch3_20022015
 
 
 import numpy as np
-import matplotlib.pylab as plt
 import cv2
 import subprocess as sp
 import time
 import os
 import re
-import scipy.ndimage as nd
 import h5py
 import multiprocessing as mp
 import Queue
 
-MAX_N_PROCESSES = mp.cpu_count()
-STRUCT_ELEMENT = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9,9)) 
-SAVE_FULL_INTERVAL = 5000 #~5min
 
 #import skimage.m
 class ReadVideoffmpeg:
@@ -68,6 +63,7 @@ class ReadVideoffmpeg:
                 
             except:
                 print 'I could not determine the frame size from ffmpeg, introduce the values manually'
+                print buff
                 raise
         else:
             self.width = width
@@ -96,7 +92,7 @@ class ReadVideoffmpeg:
 
 def getImageROI(image):
     #if it is needed to keep the original image then use "image=getImageROI(np.copy(image))"
-    
+    STRUCT_ELEMENT = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9,9)) 
     IM_LIMX = image.shape[0]-2
     IM_LIMY = image.shape[1]-2
     MAX_AREA = 5000
@@ -119,39 +115,46 @@ def getImageROI(image):
     mask = cv2.dilate(mask, STRUCT_ELEMENT, iterations = 3)
     mask[0:15, 0:480] = 255 # save the timestamp
     image[mask==0] = 0
-#    
-#
-#    label_im, nb_labels = nd.label(mask);
-#    label_area = nd.sum(mask, label_im, range(nb_labels + 1))
-#    print 'NL %i' % nb_labels
-#    mask = (np.bitwise_or(label_area<100,label_area>5000))[label_im].astype(np.uint8)
-#    mask = nd.binary_erosion(mask, nd.generate_binary_structure(2,2), iterations= 1,border_value=1);
-#    image[mask!=0] = 0
-    
+
     return image
     
-def proccess_worker(conn, frame_number, image):
+def proccessWorker(conn, frame_number, image):
     conn.send({'frame':frame_number, 'image':getImageROI(image)})
     conn.close()
 
-if __name__ == '__main__':
+
+
+def compressVideo(video_file, masked_image_file, SAVE_FULL_INTERVAL = 5000, \
+MAX_N_PROCESSES = -1, MAX_FRAMES = 1e32):
+    #Compressed video in "video_file" by selecting ROI and making the rest of 
+    #the image zero (creating a large amount of redundant data)
+    #the final images are saving in the file given by "masked_image_file" 
+    #as hdf5 with gzip compression
+
+    # MAX_N_PROCESSES : number of processes using during image processing, if -1, this value is set to the number of cpu is using
+    # SAVE_FULL_INTERVAL :  Full frame is saved every 'SAVE_FULL_INTERVAL' in '/full_data'
+    # MAX_FRAMES : maximum number of frames to be analyzed. Set this value to a large value to compress all the video
     
-    vid = ReadVideoffmpeg(fileName);
+    if MAX_N_PROCESSES == -1:
+        MAX_N_PROCESSES = mp.cpu_count()
+    
+    
+
+    
+    
+    vid = ReadVideoffmpeg(video_file);
     im_height = vid.height;
     im_width = vid.width;
     
-#    vid = cv2.VideoCapture(fileName)
-#    im_width = vid.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)
-#    im_height = vid.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT)
-
-    
-    mask_fid = h5py.File(maskFile, "w");
+    mask_fid = h5py.File(masked_image_file, "w");
+    #maked images are save in the dataset /mask
     mask_dataset = mask_fid.create_dataset("/mask", (0, im_height, im_width), 
                                     dtype = "u1", maxshape = (None, im_height, im_width), 
                                     chunks = (1, im_height, im_height),#chunks = (1, im_height, im_width), 
                                     compression="gzip", 
                                     compression_opts=4,
                                     shuffle=True);
+    #full frames are saved in "/full_data" every SAVE_FULL_INTERVAL frames
     full_dataset = mask_fid.create_dataset("/full_data", (0, im_height, im_width), 
                                     dtype = "u1", maxshape = (None, im_height, im_width), 
                                     chunks = (1, im_height, im_height),#chunks = (1, im_height, im_width), 
@@ -159,20 +162,16 @@ if __name__ == '__main__':
                                     compression_opts=9,
                                     shuffle=True);
     full_dataset.attrs['save_interval'] = SAVE_FULL_INTERVAL
-# 
-                                
 
     proc_queue = Queue.Queue()
     frame_number = 0;
     tic_first = time.time()
     tic = tic_first
     
-    while 1:#frame_number < 2:
+    while frame_number < MAX_FRAMES:
         ret, image = vid.read()
-        #image = image[:,:,1]
         if ret == 0:
             break
-        image_dum = image.copy()
         frame_number += 1;
         
         if frame_number%25 == 0:
@@ -191,7 +190,8 @@ if __name__ == '__main__':
         #mask_dataset[frame_number-1,:,:] = getImageROI(image)
         
         parent_conn, child_conn = mp.Pipe();
-        p = mp.Process(target = proccess_worker, args=(parent_conn, frame_number, image));
+        p = mp.Process(target = proccessWorker, args=(parent_conn, frame_number, image));
+        
         p.start();
         proc_queue.put((child_conn, p))
         
@@ -216,6 +216,31 @@ if __name__ == '__main__':
     vid.release() 
     mask_fid.close()
     
-##    print 'TOTAL TIME: ', time.time()-tic_first 
-#    plt.figure()
-#    plt.imshow(dd, interpolation='none', cmap= 'gray')
+    print 'TOTAL TIME: ', time.time()-tic_first 
+
+if __name__ == '__main__':
+    
+    #fileName = '/Volumes/Mrc-pc/GeckoVideo/CaptureTest_90pc_Ch2_16022015_174636.mjpg';
+    #maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch2_16022015_174636.hdf5';
+    
+    #fileName = '/Volumes/H/GeckoVideo/20150218/CaptureTest_90pc_Ch4_18022015_230213.mjpg'
+    #maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch4_18022015_230213.hdf5';
+    
+    #fileName = '/Volumes/H/GeckoVideo/20150218/CaptureTest_90pc_Ch2_18022015_230108.mjpg'
+    #maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch2_18022015_230108.hdf5';
+    
+#    video_file = '/Volumes/behavgenom$/GeckoVideo/20150220/CaptureTest_90pc_Ch3_20022015_183607.mjpg';
+#    masked_image_file = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch3_20022015_183607.hdf5';
+
+    #fileName = '/Volumes/Mrc-pc/GeckoVideo/CaptureTest_90pc_Ch4_16022015_174636.mjpg';
+    #maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch4_16022015_174636.hdf5';
+    
+    #fileName = r'G:\GeckoVideo\CaptureTest_90pc_Ch4_16022015_174636.mjpg';
+    #maskFile = r'Z:\GeckoVideo\Compressed\CaptureTest_90pc_Ch4_16022015_174636.hdf5';
+    
+    video_file = '/Volumes/behavgenom$/GeckoVideo/20150221/CaptureTest_90pc_Ch1_21022015_210020.mjpg';
+    masked_image_file = '/Volumes/ajaver$/GeckoVideo/Compressed/aCaptureTest_90pc_Ch1_21022015_210020.hdf5';
+    
+    
+    compressVideo(video_file, masked_image_file, MAX_N_PROCESSES = 8)
+    
