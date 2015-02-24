@@ -11,17 +11,20 @@ Created on Tue Feb 17 15:06:13 2015
 
 @author: ajaver
 """
-#fileName = '/Volumes/Mrc-pc/GeckoVideo/CaptureTest_90pc_Ch4_16022015_174636.mjpg';
-#maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch4_16022015_174636.hdf5';
+#fileName = '/Volumes/Mrc-pc/GeckoVideo/CaptureTest_90pc_Ch2_16022015_174636.mjpg';
+#maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch2_16022015_174636.hdf5';
 
-#fileName = '/Volumes/H/GeckoVideo/20150218/CaptureTest_90pc_Ch3_18022015_230213.mjpg'
-#maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch3_18022015_230213.hdf5';
+#fileName = '/Volumes/H/GeckoVideo/20150218/CaptureTest_90pc_Ch4_18022015_230213.mjpg'
+#maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch4_18022015_230213.hdf5';
 
 #fileName = '/Volumes/H/GeckoVideo/20150218/CaptureTest_90pc_Ch2_18022015_230108.mjpg'
 #maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch2_18022015_230108.hdf5';
+<<<<<<< HEAD
 
 fileName = '/Volumes/behavgenom$/GeckoVideo/20150220/CaptureTest_90pc_Ch3_20022015_183607.mjpg';
 maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch3_20022015_183607.hdf5';
+=======
+>>>>>>> origin/master
 
 #fileName = '/Volumes/Mrc-pc/GeckoVideo/CaptureTest_90pc_Ch4_16022015_174636.mjpg';
 #maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch4_16022015_174636.hdf5';
@@ -42,7 +45,7 @@ import h5py
 import multiprocessing as mp
 import Queue
 
-MAX_N_PROCESSES = 1#mp.cpu_count()
+MAX_N_PROCESSES = mp.cpu_count()
 STRUCT_ELEMENT = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9,9)) 
 SAVE_FULL_INTERVAL = 5000 #~5min
 
@@ -146,7 +149,7 @@ if __name__ == '__main__':
 
     
     mask_fid = h5py.File(maskFile, "w");
-    mask_dataset = mask_fid.create_dataset("/mask", (1000, im_height, im_width), 
+    mask_dataset = mask_fid.create_dataset("/mask", (0, im_height, im_width), 
                                     dtype = "u1", maxshape = (None, im_height, im_width), 
                                     chunks = (1, im_height, im_height),#chunks = (1, im_height, im_width), 
                                     compression="gzip", 
@@ -180,65 +183,42 @@ if __name__ == '__main__':
             print frame_number, toc-tic
             tic = toc
         
-        if (frame_number+1)%1000 == 1:
+        if (frame_number)%1000 == 1:
             mask_dataset.resize(frame_number + 1000, axis=0); 
         
         if frame_number % SAVE_FULL_INTERVAL== 1:
             full_dataset.resize(frame_number, axis=0); 
-            full_dataset[frame_number-1,:,:] = image
+            full_dataset[np.floor(frame_number/SAVE_FULL_INTERVAL),:,:] = image
         
         #mask_dataset[frame_number-1,:,:] = image_dum
-        mask_dataset[frame_number-1,:,:] = getImageROI(image)
+        #mask_dataset[frame_number-1,:,:] = getImageROI(image)
         
-#        parent_conn, child_conn = mp.Pipe();
-#        p = mp.Process(target = proccess_worker, args=(parent_conn, frame_number, image));
-#        p.start();
-#        proc_queue.put((child_conn, p))
-#        
-#        if proc_queue.qsize() >= MAX_N_PROCESSES:
-#            dd = proc_queue.get();
-#            data = dd[0].recv() #read pipe
-#            dd[1].join() #wait for the proccess to be completed
-#            
-#            mask_dataset[data['frame']-1,:,:] = data['image'];
-#            
-#    if mask_dataset != frame_number:
-#        mask_dataset.resize(frame_number, axis=0); 
-#        
-#    for x in range(proc_queue.qsize()):
-#        dd = proc_queue.get();
-#        data = dd[0].recv()
-#        dd[1].join()
-#        mask_dataset.resize(frame_number, axis=0); 
-#        mask_dataset[data['frame']-1,:,:] = data['image'];
-#    
-    #dd = data['image']
+        parent_conn, child_conn = mp.Pipe();
+        p = mp.Process(target = proccess_worker, args=(parent_conn, frame_number, image));
+        p.start();
+        proc_queue.put((child_conn, p))
+        
+        if proc_queue.qsize() >= MAX_N_PROCESSES:
+            dd = proc_queue.get();
+            data = dd[0].recv() #read pipe
+            dd[1].join() #wait for the proccess to be completed
+            
+            mask_dataset[data['frame']-1,:,:] = data['image'];
+            
+    if mask_dataset != frame_number:
+        mask_dataset.resize(frame_number, axis=0); 
+    
+    for x in range(proc_queue.qsize()):
+        dd = proc_queue.get();
+        data = dd[0].recv()
+        dd[1].join()
+        mask_dataset[data['frame']-1,:,:] = data['image'];
+
+    
     
     vid.release() 
     mask_fid.close()
     
-    print 'TOTAL TIME: ', time.time()-tic_first 
-    plt.figure()
-    plt.imshow(dd, interpolation='none', cmap= 'gray')
-#
-#plt.figure()
-#plt.imshow(image_reduced, interpolation='none', cmap= 'gray')
-
-
-#plt.figure()
-#plt.imshow(label_im, interpolation='none')
-
-
-#vid = cv2.VideoCapture(filename)
-#
-#tic = time.time()
-#tot_images = 0;
-#while 1:#tot_frames < max_frames:
-#    retval, image = vid.read()
-#    if not retval:
-#        break;
-#print tot_images, time.time() - tic;
-
-#image = np.fromstring(raw_image, dtype='uint8')
-#image = image.reshape(2048,2048)
-#plt.imshow(image)
+##    print 'TOTAL TIME: ', time.time()-tic_first 
+#    plt.figure()
+#    plt.imshow(dd, interpolation='none', cmap= 'gray')
