@@ -20,8 +20,8 @@ Created on Tue Feb 17 15:06:13 2015
 #fileName = '/Volumes/H/GeckoVideo/20150218/CaptureTest_90pc_Ch2_18022015_230108.mjpg'
 #maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch2_18022015_230108.hdf5';
 
-fileName = '/Volumes/behavgenom$/GeckoVideo/20150220/CaptureTest_90pc_Ch3_20022015_183607.mjpg';
-maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch3_20022015_183607.hdf5';
+fileName = '/Volumes/behavgenom$/GeckoVideo/20150220/CaptureTest_90pc_Ch4_20022015_183607.mjpg';
+maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch4_20022015_183607.hdf5';
 
 #fileName = '/Volumes/Mrc-pc/GeckoVideo/CaptureTest_90pc_Ch4_16022015_174636.mjpg';
 #maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch4_16022015_174636.hdf5';
@@ -238,8 +238,11 @@ if __name__ == '__main__':
     #fileName = r'G:\GeckoVideo\CaptureTest_90pc_Ch4_16022015_174636.mjpg';
     #maskFile = r'Z:\GeckoVideo\Compressed\CaptureTest_90pc_Ch4_16022015_174636.hdf5';
     
-    video_file = '/Volumes/behavgenom$/GeckoVideo/20150221/CaptureTest_90pc_Ch1_21022015_210020.mjpg';
-    masked_image_file = '/Volumes/ajaver$/GeckoVideo/Compressed/aCaptureTest_90pc_Ch1_21022015_210020.hdf5';
+#    video_file = '/Volumes/behavgenom$/GeckoVideo/20150221/CaptureTest_90pc_Ch4_21022015_210020.mjpg';
+#    masked_image_file = '/Volumes/ajaver$/GeckoVideo/Compressed/aCaptureTest_90pc_Ch4_21022015_210020.hdf5';
+    
+    video_file = '/Volumes/behavgenom$/GeckoVideo/23022015/CaptureTest_90pc_Ch3_23022015_192449.mjpg';
+    masked_image_file = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch3_23022015_192449.hdf5';
     
     
     compressVideo(video_file, masked_image_file, MAX_N_PROCESSES = 8)
