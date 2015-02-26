@@ -11,6 +11,7 @@ import tables
 from math import sqrt
 import time
 import cv2
+import os
 
 from sklearn.utils.linear_assignment_ import linear_assignment #hungarian algorithm
 from scipy.spatial.distance import cdist
@@ -300,16 +301,26 @@ if __name__ == '__main__':
     #masked_image_file = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch2_16022015_174636.hdf5';
     #trajectories_file = '/Volumes/ajaver$/GeckoVideo/Trajectories/Features_CaptureTest_90pc_Ch2_16022015_174636.hdf5';
     
-    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/CaptureTest_90pc_Ch2_18022015_230213.hdf5';
-    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Features_CaptureTest_90pc_Ch2_18022015_230213.hdf5';
-    
+#    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/CaptureTest_90pc_Ch2_18022015_230213.hdf5';
+#    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Features_CaptureTest_90pc_Ch2_18022015_230213.hdf5';
+#    
 #    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/CaptureTest_90pc_Ch4_16022015_174636.hdf5';
 #    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Features_CaptureTest_90pc_Ch4_16022015_174636.hdf5';
+
+    masked_image_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150216/';
+    baseName = 'CaptureTest_90pc_Ch1_16022015_174636';
+    masked_image_file = masked_image_dir + baseName + '.hdf5';
+    
+    trajectories_dir = '/Volumes/behavgenom$/GeckoVideo/Trajectories/20150216/';
+    trajectories_file = trajectories_dir + 'Trajectory_' + baseName + '.hdf5';
+    if not os.path.exists(trajectories_dir):
+        os.mkdir(trajectories_dir)
+    
 
     getTrajectories(masked_image_file, trajectories_file, total_frames = -1)
     joinTrajectories(trajectories_file)
 
-    
+#%%    
     #plot top 20 largest trajectories
     feature_fid = tables.open_file(trajectories_file, mode = 'r')
     feature_table = feature_fid.get_node('/plate_worms')
