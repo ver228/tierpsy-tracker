@@ -225,10 +225,12 @@ if __name__ == '__main__':
 #    video_file = '/Volumes/Mrc-pc/Full_Resolution/Capture_Ch3_26022015_161548.mjpg'
 #    masked_image_file = '/Users/ajaver/Documents/Test_Andre/Capture_Ch3_26022015_161548.hdf5'
     
-    video_file = '/Volumes/behavgenom$/GeckoVideo/20150223/CaptureTest_90pc_Ch4_23022015_192449.mjpg';
-    #masked_image_file = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch4_23022015_192449.hdf5';
-    masked_image_file = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150223/CaptureTest_90pc_Ch4_23022015_192449.hdf5';
-    
+#    video_file = '/Volumes/behavgenom$/GeckoVideo/20150223/CaptureTest_90pc_Ch4_23022015_192449.mjpg';
+#    #masked_image_file = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch4_23022015_192449.hdf5';
+#    masked_image_file = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150223/CaptureTest_90pc_Ch4_23022015_192449.hdf5';
+ 
+    video_file = '/Volumes/behavgenom$/GeckoVideo/20150224/CaptureTest_90pc_Ch2_24022015_222017.mjpg';
+    masked_image_file = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150224/CaptureTest_90pc_Ch2_24022015_222017.hdf5';
     
     compressVideo(video_file, masked_image_file, MAX_N_PROCESSES = 8)
     

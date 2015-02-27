@@ -163,50 +163,55 @@ AREA_RATIO_LIM = (0.67, 1.5)):
                                      CMy + bbox_seg[1], area, perimeter, MA, ma, 
                                  eccentricity, compactness, angle, solidity, 
                                  intensity_mean[0,0], intensity_std[0,0]))
-            
         #link trajectories
-        feature_list = zip(*feature_list)
-        coord = np.array(feature_list[1:3]).T
-        area = np.array(feature_list[3]).T.astype(np.float)
+        if feature_list:
+            feature_list = zip(*feature_list)
+            coord = np.array(feature_list[1:3]).T
+            area = np.array(feature_list[3]).T.astype(np.float)
+            if coord_prev.size!=0:
+                costMatrix = cdist(coord_prev, coord); #calculate the cost matrix
+                costMatrix[costMatrix>MAX_ALLOWED_DIST] = 1e10 #this step is important to avoid wrong allocations
+                assigment = linear_assignment(costMatrix) #use the hungarian algorithm
+                
+                indexList = np.zeros(coord.shape[0]);
+                speed = np.zeros(coord.shape[0])
+                
+                #Final assigment. Only allow assigments within a maximum allowed distance, and an area ratio
+                for row, column in assigment:
+                    if costMatrix[row,column] < MAX_ALLOWED_DIST:
+                        area_ratio = area[column]/area_prev[row];
+                        
+                        if area_ratio>AREA_RATIO_LIM[0] and area_ratio<AREA_RATIO_LIM[1]:
+                            indexList[column] = indexListPrev[row];
+                            speed[column] = costMatrix[row][column];
+                        
+                #add a new index if no assigment was found
+                unmatched = indexList==0
+                vv = np.arange(np.sum(unmatched)) + totWorms + 1
+                if vv.size>0:
+                    totWorms = vv[-1]
+                    indexList[unmatched] = vv
+                
+            else:
+                #initialize worm indexes
+                indexList = totWorms + np.arange(1,coord.shape[0]+1);
+                totWorms = indexList[-1]
+                speed = totWorms*[None]
+            
+            #append the new feature list to the pytable
+            feature_list = zip(*([tuple(indexList)] + feature_list + [ tuple(speed), tuple(len(indexList)*[0]) ] ))
+            feature_table.append(feature_list)
         
-        if coord_prev.size!=0:
-            costMatrix = cdist(coord_prev, coord); #calculate the cost matrix
-            costMatrix[costMatrix>MAX_ALLOWED_DIST] = 1e10 #this step is important to avoid wrong allocations
-            assigment = linear_assignment(costMatrix) #use the hungarian algorithm
-            
-            indexList = np.zeros(coord.shape[0]);
-            speed = np.zeros(coord.shape[0])
-            
-            #Final assigment. Only allow assigments within a maximum allowed distance, and an area ratio
-            for row, column in assigment:
-                if costMatrix[row,column] < MAX_ALLOWED_DIST:
-                    area_ratio = area[column]/area_prev[row];
-                    
-                    if area_ratio>AREA_RATIO_LIM[0] and area_ratio<AREA_RATIO_LIM[1]:
-                        indexList[column] = indexListPrev[row];
-                        speed[column] = costMatrix[row][column];
-                    
-            #add a new index if no assigment was found
-            unmatched = indexList==0
-            vv = np.arange(np.sum(unmatched)) + totWorms + 1
-            if vv.size>0:
-                totWorms = vv[-1]
-                indexList[unmatched] = vv
-            
         else:
-            #initialize worm indexes
-            indexList = totWorms + np.arange(1,coord.shape[0]+1);
-            totWorms = indexList[-1]
-            speed = totWorms*[None]
-        
+            #consider the case where not valid coordinates where found
+            coord = np.empty([0]);
+            area = np.empty([0]); 
+            indexList = []
+            
         #assign variables for the analysis of the next frame
         coord_prev = coord;
         area_prev = area;
-        indexListPrev = indexList;
-        
-        #append the new feature list to the pytable
-        feature_list = zip(*([tuple(indexList)] + feature_list + [ tuple(speed), tuple(len(indexList)*[0]) ] ))
-        feature_table.append(feature_list)
+        indexListPrev = indexList;        
         
         #show timer
         if frame_number%25 == 0:
@@ -307,11 +312,11 @@ if __name__ == '__main__':
 #    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/CaptureTest_90pc_Ch4_16022015_174636.hdf5';
 #    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Features_CaptureTest_90pc_Ch4_16022015_174636.hdf5';
 
-    masked_image_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150216/';
-    baseName = 'CaptureTest_90pc_Ch1_16022015_174636';
+    masked_image_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150221/';
+    baseName = 'CaptureTest_90pc_Ch4_21022015_210020';
     masked_image_file = masked_image_dir + baseName + '.hdf5';
     
-    trajectories_dir = '/Volumes/behavgenom$/GeckoVideo/Trajectories/20150216/';
+    trajectories_dir = '/Volumes/behavgenom$/GeckoVideo/Trajectories/20150221/';
     trajectories_file = trajectories_dir + 'Trajectory_' + baseName + '.hdf5';
     if not os.path.exists(trajectories_dir):
         os.mkdir(trajectories_dir)
