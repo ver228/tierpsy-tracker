@@ -113,56 +113,63 @@ AREA_RATIO_LIM = (0.67, 1.5)):
         
         #select ROI
         image = mask_dataset[frame_number,:,:]
-        [contours, hierarchy]= cv2.findContours(image.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        
-        for contour in contours:
-            bbox_seg = cv2.boundingRect(contour) 
-            if bbox_seg[1] < MIN_LENGHT or bbox_seg[3] < MIN_LENGHT:
-                continue #box too small to be a worm
+#        [contours, hierarchy]= cv2.findContours(image.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+#        
+#        for contour in contours:
+#            
+#            
+#            bbox_seg = cv2.boundingRect(contour) 
+#            if bbox_seg[1] < MIN_LENGHT or bbox_seg[3] < MIN_LENGHT:
+#                continue #box too small to be a worm
+#            
+#            
+#            Icrop = image[bbox_seg[1]:(bbox_seg[1]+bbox_seg[3]),bbox_seg[0]:(bbox_seg[0]+bbox_seg[2])];            
+#            
+#            #threshold and eliminate area outside the ROI
+#            hist = cv2.calcHist([Icrop],[0],None,[256],[0,256]).T[0]
+#            hist[0] = 0;
+#            level = triangle_th(hist)-10 #normally the triangle threshold is over estimated (substracting 10 seems to work well)
+#            mask = cv2.threshold(Icrop, level, 1, cv2.THRESH_BINARY_INV)[1]
+#            mask[Icrop == 0] = 0;
+#            
+#            #tidy up a the mask            
+#            mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, np.ones((2,2), np.uint8))
+#            mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, np.ones((2,2), np.uint8))
+#            
+#            #find individual worms in the ROI 
+#            [worm_contours, hierarchy]= cv2.findContours(mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+#
+        [worm_contours, hierarchy]= cv2.findContours(image.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        for ii_worm, worm_cnt in enumerate(worm_contours):
+            area = float(cv2.contourArea(worm_cnt))
+            if area < MIN_AREA:
+                continue #area too small to be a worm
             
+            #find use the best rotated bounding box, the fitEllipse function produces bad results quite often
+            (CMx,CMy),(MA,ma),angle = cv2.minAreaRect(worm_cnt)
+            if ma > MA: dd = MA; MA = ma; ma = dd;  
             
-            Icrop = image[bbox_seg[1]:(bbox_seg[1]+bbox_seg[3]),bbox_seg[0]:(bbox_seg[0]+bbox_seg[2])];            
+            eccentricity = sqrt(1-ma**2/MA**2)
+            hull = cv2.convexHull(worm_cnt) #for the solidity
+            solidity = area/cv2.contourArea(hull);
+            perimeter = float(cv2.arcLength(worm_cnt,True))
+            compactness = perimeter**2/area
             
-            #threshold and eliminate area outside the ROI
-            hist = cv2.calcHist([Icrop],[0],None,[256],[0,256]).T[0]
-            hist[0] = 0;
-            level = triangle_th(hist)-10 #normally the triangle threshold is over estimated (substracting 10 seems to work well)
-            mask = cv2.threshold(Icrop, level, 1, cv2.THRESH_BINARY_INV)[1]
-            mask[Icrop == 0] = 0;
-            
-            #tidy up a the mask            
-            mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, np.ones((2,2), np.uint8))
-            mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, np.ones((2,2), np.uint8))
-            
-            #find individual worms in the ROI 
-            [worm_contours, hierarchy]= cv2.findContours(mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-            
-            for ii_worm, worm_cnt in enumerate(worm_contours):
-                area = float(cv2.contourArea(worm_cnt))
-                if area < MIN_AREA:
-                    continue #area too small to be a worm
-                
-                #find use the best rotated bounding box, the fitEllipse function produces bad results quite often
-                (CMx,CMy),(MA,ma),angle = cv2.minAreaRect(worm_cnt)
-                if ma > MA: dd = MA; MA = ma; ma = dd;  
-                
-                eccentricity = sqrt(1-ma**2/MA**2)
-                hull = cv2.convexHull(worm_cnt) #for the solidity
-                solidity = area/cv2.contourArea(hull);
-                perimeter = float(cv2.arcLength(worm_cnt,True))
-                compactness = perimeter**2/area
-                
-                #calculate the mean intensity of the worm
-                maskCrop = np.zeros(Icrop.shape, dtype = np.uint8);
-                cv2.drawContours(maskCrop, worm_contours, ii_worm, 255, 0)
-                intensity_mean, intensity_std = cv2.meanStdDev(Icrop, mask = maskCrop)
-
-                #append worm features
-                #use frame_number+1, to avoid 0 index
-                feature_list.append((frame_number+1, CMx + bbox_seg[0], 
-                                     CMy + bbox_seg[1], area, perimeter, MA, ma, 
-                                 eccentricity, compactness, angle, solidity, 
-                                 intensity_mean[0,0], intensity_std[0,0]))
+            #calculate the mean intensity of the worm
+#            maskCrop = np.zeros(image.shape, dtype = np.uint8);
+#            cv2.drawContours(maskCrop, worm_contours, ii_worm, 255, 0)
+#            intensity_mean, intensity_std = cv2.meanStdDev(image, mask = maskCrop)
+#            intensity_mean = intensity_mean[0,0]
+#            intensity_std = intensity_std[0,0]
+            intensity_mean = -1; intensity_std= -1;
+            #append worm features
+            #use frame_number+1, to avoid 0 index
+            feature_list.append((frame_number+1, CMx, 
+                                 CMy, area, perimeter, MA, ma, 
+                             eccentricity, compactness, angle, solidity, 
+                             intensity_mean, intensity_std))
+                                 
+                                 
         #link trajectories
         if feature_list:
             feature_list = zip(*feature_list)
@@ -306,20 +313,20 @@ if __name__ == '__main__':
     #masked_image_file = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch2_16022015_174636.hdf5';
     #trajectories_file = '/Volumes/ajaver$/GeckoVideo/Trajectories/Features_CaptureTest_90pc_Ch2_16022015_174636.hdf5';
     
-#    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/CaptureTest_90pc_Ch2_18022015_230213.hdf5';
-#    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Features_CaptureTest_90pc_Ch2_18022015_230213.hdf5';
+    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/CaptureTest_90pc_Ch2_18022015_230213.hdf5';
+    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Features_Mask_short2_CaptureTest_90pc_Ch2_18022015_230213.hdf5';
 #    
 #    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/CaptureTest_90pc_Ch4_16022015_174636.hdf5';
-#    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Features_CaptureTest_90pc_Ch4_16022015_174636.hdf5';
+#    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Features_Mask_CaptureTest_90pc_Ch4_16022015_174636.hdf5';
 
-    masked_image_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150223/';
-    baseName = 'CaptureTest_90pc_Ch1_23022015_192449';
-    masked_image_file = masked_image_dir + baseName + '.hdf5';
-    
-    trajectories_dir = '/Volumes/behavgenom$/GeckoVideo/Trajectories/20150223/';
-    trajectories_file = trajectories_dir + 'Trajectory_' + baseName + '.hdf5';
-    if not os.path.exists(trajectories_dir):
-        os.mkdir(trajectories_dir)
+#    masked_image_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150223/';
+#    baseName = 'CaptureTest_90pc_Ch1_23022015_192449';
+#    masked_image_file = masked_image_dir + baseName + '.hdf5';
+#    
+#    trajectories_dir = '/Volumes/behavgenom$/GeckoVideo/Trajectories/20150223/';
+#    trajectories_file = trajectories_dir + 'Trajectory_' + baseName + '.hdf5';
+#    if not os.path.exists(trajectories_dir):
+#        os.mkdir(trajectories_dir)
     
 
     getTrajectories(masked_image_file, trajectories_file, total_frames = -1)
@@ -339,7 +346,7 @@ if __name__ == '__main__':
     for ii in indexes[0:20]:
         coord = [(row['coord_x'], row['coord_y'], row['frame_number']) \
         for row in feature_table.where('worm_index_joined == %i'% ii)]
-
+    
         coord = np.array(coord).T
         plt.plot(coord[0,:], coord[1,:], '-')
         
