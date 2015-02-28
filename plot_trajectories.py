@@ -3,32 +3,32 @@ import matplotlib.pylab as plt
 import numpy as np
 import tables
 
-trajectories_list = ['/Users/ajaver/Desktop/Gecko_compressed/Features_CaptureTest_90pc_Ch2_18022015_230213.hdf5', 
+trajectories_list = ['/Users/ajaver/Desktop/Gecko_compressed/Features_Mask_short_CaptureTest_90pc_Ch2_18022015_230213.hdf5', 
                      '/Users/ajaver/Desktop/Gecko_compressed/Features_CaptureTest_90pc_Ch4_16022015_174636.hdf5'];
-#for trajectories_file in trajectories_list[0:1]:
-#
-#    N = 20
-#    #plot top 20 largest trajectories
-#    feature_fid = tables.open_file(trajectories_file, mode = 'r')
-#    feature_table = feature_fid.get_node('/plate_worms')
-#    dum = np.array(feature_table.cols.worm_index_joined);
-#    dum[dum<0]=0
-#    track_size = np.bincount(dum)
-#    track_size[0] = 0
-#    indexes = np.argsort(track_size)[::-1]
-#    print track_size[indexes][0:N]
-#    
-#    fig = plt.figure()
-#      
-#    for ii in indexes[]:
-#        
-#        coord = [(row['coord_x'], row['coord_y'], row['frame_number']) \
-#        for row in feature_table.where('worm_index_joined == %i'% ii)]
-#
-#        coord = np.array(coord).T
-#        plt.plot(coord[2,:], coord[1,:], '-')
-#        
-#    feature_fid.close()
+for trajectories_file in trajectories_list[0:1]:
+
+    N = 20
+    #plot top 20 largest trajectories
+    feature_fid = tables.open_file(trajectories_file, mode = 'r')
+    feature_table = feature_fid.get_node('/plate_worms')
+    dum = np.array(feature_table.cols.worm_index_joined);
+    dum[dum<0]=0
+    track_size = np.bincount(dum)
+    track_size[0] = 0
+    indexes = np.argsort(track_size)[::-1]
+    print track_size[indexes][0:N]
+    
+    fig = plt.figure()
+      
+    for ii in indexes[0:N]:
+        
+        coord = [(row['coord_x'], row['coord_y'], row['frame_number']) \
+        for row in feature_table.where('worm_index_joined == %i'% ii)]
+
+        coord = np.array(coord).T
+        plt.plot(coord[2,:], coord[1,:], '-')
+        
+    feature_fid.close()
     
 #%%
 pix2um = 2e-2/1e-6/2048;

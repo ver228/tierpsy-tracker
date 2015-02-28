@@ -313,23 +313,28 @@ if __name__ == '__main__':
     #masked_image_file = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch2_16022015_174636.hdf5';
     #trajectories_file = '/Volumes/ajaver$/GeckoVideo/Trajectories/Features_CaptureTest_90pc_Ch2_16022015_174636.hdf5';
     
-    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/CaptureTest_90pc_Ch2_18022015_230213.hdf5';
-    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Features_Mask_short2_CaptureTest_90pc_Ch2_18022015_230213.hdf5';
+#    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/CaptureTest_90pc_Ch2_18022015_230213.hdf5';
+#    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Features_Mask_short2_CaptureTest_90pc_Ch2_18022015_230213.hdf5';
 #    
 #    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/CaptureTest_90pc_Ch4_16022015_174636.hdf5';
 #    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Features_Mask_CaptureTest_90pc_Ch4_16022015_174636.hdf5';
 
-#    masked_image_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150223/';
-#    baseName = 'CaptureTest_90pc_Ch1_23022015_192449';
-#    masked_image_file = masked_image_dir + baseName + '.hdf5';
-#    
-#    trajectories_dir = '/Volumes/behavgenom$/GeckoVideo/Trajectories/20150223/';
-#    trajectories_file = trajectories_dir + 'Trajectory_' + baseName + '.hdf5';
-#    if not os.path.exists(trajectories_dir):
-#        os.mkdir(trajectories_dir)
-    
+#    masked_image_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150221/';
+#    baseName = 'CaptureTest_90pc_Ch4_21022015_210020';
+#    trajectories_dir = '/Volumes/behavgenom$/GeckoVideo/Trajectories_mask/20150221/';
 
-    getTrajectories(masked_image_file, trajectories_file, total_frames = -1)
+    masked_image_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150220/';
+    baseName = 'CaptureTest_90pc_Ch4_20022015_183607';
+    trajectories_dir = '/Volumes/behavgenom$/GeckoVideo/Trajectories_mask/20150220/';
+
+    masked_image_file = masked_image_dir + baseName + '.hdf5';
+    
+    
+    trajectories_file = trajectories_dir + 'Trajectory_' + baseName + '_short.hdf5';
+    if not os.path.exists(trajectories_dir):
+        os.system('mkdir -p '  + trajectories_dir)
+        
+    getTrajectories(masked_image_file, trajectories_file, total_frames = 270000)
     joinTrajectories(trajectories_file)
 
 #%%    

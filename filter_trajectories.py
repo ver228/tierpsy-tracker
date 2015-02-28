@@ -5,6 +5,7 @@ import tables
 import pandas as pd
 
 trajectories_file = '/Volumes/behavgenom$/GeckoVideo/Trajectories/20150218/Trajectory_CaptureTest_90pc_Ch2_18022015_230213.hdf5'
+trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Features_Mask_short_CaptureTest_90pc_Ch2_18022015_230213.hdf5'
 feature_fid = tables.open_file(trajectories_file, mode = 'r')
 
 df = pd.DataFrame.from_records(feature_fid.root.plate_worms[:])
@@ -12,13 +13,12 @@ df = pd.DataFrame.from_records(feature_fid.root.plate_worms[:])
 grouped = df.groupby('worm_index_joined')
 
 #%%
-
 mean_values = grouped.aggregate(np.mean)
 std_values = grouped.aggregate(np.std)
 mean_values['track_length'] = grouped.size();
 #%%
 #mean_values.plot(y='area', x='intensity_mean', kind='scatter')
-mean_values.plot(y='intensity_mean', x='track_length', kind='scatter')
+mean_values.plot(y='area', x='track_length', kind='scatter')
 #%%
 #filter_data = mean_values[(mean_values.area>450) & (mean_values.area<1000) \
 #&(mean_values.intensity_mean>135) & (mean_values.intensity_mean<155)]
