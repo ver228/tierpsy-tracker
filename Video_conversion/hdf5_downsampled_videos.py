@@ -9,8 +9,8 @@ import time
 import subprocess as sp
 import matplotlib.pylab as plt
 
-masked_image_file = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150218/CaptureTest_90pc_Ch3_18022015_230213.hdf5'
-save_video_file = '/Users/ajaver/Desktop/CaptureTest_90pc_Ch3_18022015_230213_long_full.avi'
+masked_image_file = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150228/Capture_Ch1_28022015_171254.hdf5'
+save_video_file = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150228/Capture_Ch1_28022015_171254.avi'
 
 #root_dir = '/Users/ajaver/Documents/Test_Andre/'
 #base_name = 'Capture_Ch1_26022015_161813'
