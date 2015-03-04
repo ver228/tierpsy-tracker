@@ -18,9 +18,8 @@ import time
 import os
 import re
 import h5py
-import multiprocessing as mp
-import Queue
 import matplotlib.pylab as plt
+from skimage.io._plugins import freeimage_plugin as fi
 
 #import skimage.m
 class ReadVideoffmpeg:
@@ -55,6 +54,7 @@ class ReadVideoffmpeg:
         command = [ffmpeg_cmd, 
            '-i', fileName,
            '-f', 'image2pipe',
+           '-threads', '0',
            '-vcodec', 'rawvideo', '-']
         self.pipe = sp.Popen(command, stdout = sp.PIPE, bufsize = self.tot_pix) #use a buffer size as small as possible, makes things faster
     
@@ -71,6 +71,56 @@ class ReadVideoffmpeg:
         self.pipe.stdout.flush()
         self.pipe.terminate()
 
+def writeDownsampledVideo(masked_image_file, save_video_file = -1, 
+                          final_frame_size = (512, 512), n_frames_jumped = 25):
+    if save_video_file == -1:
+        save_video_file = os.path.splitext(masked_image_file)[0] +  '_downsampled.avi';
+        
+    mask_fid = h5py.File(masked_image_file, "r");
+    I_worms = mask_fid["/mask"]
+        
+    command = [ 'ffmpeg',
+            '-y', # (optional) overwrite output file if it exists
+            '-f', 'rawvideo',
+            '-vcodec','rawvideo',
+            '-s', '%ix%i' % I_worms.shape[1:3], # size of one frame
+            '-pix_fmt', 'gray',
+            '-r', '25', # frames per second
+            '-i', '-', # The imput comes from a pipe
+            '-an', # Tells FFMPEG not to expect any audio
+            '-vcodec', 'mjpeg',
+            '-vf', 'scale=%i:%i' % final_frame_size,
+            '-threads', '0',
+            '-qscale:v', '0',
+            save_video_file]
+    
+    pipe = sp.Popen(command, stdin=sp.PIPE)
+    
+    for frame_number in range(0,I_worms.shape[0],n_frames_jumped):
+        pipe.stdin.write(I_worms[frame_number,:,:].tostring() )
+    pipe.terminate()
+    mask_fid.close()
+
+def writeFullFramesTiff(masked_image_file, tiff_file = -1, reduce_fractor = 8):
+    if tiff_file == -1:
+        tiff_file = os.path.splitext(masked_image_file)[0] + '_full.tiff';
+    
+    mask_fid = h5py.File(masked_image_file, "r");
+
+    expected_size = int(np.floor(mask_fid["/mask"].shape[0]/float(mask_fid["/full_data"].attrs['save_interval']) + 1));
+    if expected_size > mask_fid["/full_data"].shape[0]: 
+        expected_size = mask_fid["/full_data"].shape[0]
+    
+    im_size = tuple(np.array(mask_fid["/full_data"].shape[1:])/reduce_fractor)
+    
+    I_worms = np.zeros((expected_size, im_size[0],im_size[1]), dtype = np.uint8)
+    
+    for frame in range(expected_size):
+        I_worms[frame, :,:] = cv2.resize(mask_fid["/full_data"][frame,:,:], im_size);
+    
+    fi.write_multipage(I_worms, tiff_file, fi.IO_FLAGS.TIFF_LZW)
+
+
 def getImageROI(image):
     #if it is needed to keep the original image then use "image=getImageROI(np.copy(image))"
     STRUCT_ELEMENT = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9,9)) 
@@ -82,19 +132,7 @@ def getImageROI(image):
     mask = cv2.adaptiveThreshold(image,255,cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV,61,15)
 
     [contours, hierarchy]= cv2.findContours(mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-#    badIndex = []
-#    for ii, contour in enumerate(contours):
-#        if np.any(contour==1) or np.any(contour[:,:,0] ==  IM_LIMX)\
-#        or np.any(contour[:,:,1] == IM_LIMY):
-#            badIndex.append(ii) 
-#        else:
-#            area = cv2.contourArea(contour)
-#            if area<MIN_AREA or area>MAX_AREA:
-#                badIndex.append(ii)
-#    for ii in badIndex:
-#        cv2.drawContours(mask, contours, ii, 0, cv2.cv.CV_FILLED)
-    
-    
+
     goodIndex = []
     for ii, contour in enumerate(contours):
         if np.all(contour!=1) and np.all(contour[:,:,0] !=  IM_LIMX)\
@@ -208,39 +246,14 @@ def compressVideo(video_file, masked_image_file, SAVE_FULL_INTERVAL = 5000, MAX_
             #add buffer to the hdf5 file
             mask_dataset[(frame_number-N_BUFFER):frame_number,:,:] = Ibuff
 
-#        
-#        #mask_dataset[frame_number-1,:,:] = image_dum
-#        #mask_dataset[frame_number-1,:,:] = getImageROI(image)
-#        
-#        parent_conn, child_conn = mp.Pipe();
-#        p = mp.Process(target = proccessWorker, args=(parent_conn, frame_number, image));
-#        
-#        p.start();
-#        proc_queue.put((child_conn, p))
-#        
-#        if proc_queue.qsize() >= MAX_N_PROCESSES:
-#            dd = proc_queue.get();
-#            data = dd[0].recv() #read pipe
-#            dd[1].join() #wait for the proccess to be completed
-#            
-#            mask_dataset[data['frame']-1,:,:] = data['image'];
-            
-#    if mask_dataset != frame_number:
-#        mask_dataset.resize(frame_number, axis=0); 
-#    
-#    for x in range(proc_queue.qsize()):
-#        dd = proc_queue.get();
-#        data = dd[0].recv()
-#        dd[1].join()
-#        mask_dataset[data['frame']-1,:,:] = data['image'];
-
-    
-    
     vid.release() 
     mask_fid.close()
     
     print 'TOTAL TIME: ', time.time()-tic_first 
-    
+
+
+
+
 if __name__ == '__main__':
     
     #fileName = '/Volumes/Mrc-pc/GeckoVideo/CaptureTest_90pc_Ch2_16022015_174636.mjpg';
@@ -274,15 +287,23 @@ if __name__ == '__main__':
 #    video_file = '/Volumes/behavgenom$/GeckoVideo/20150224/CaptureTest_90pc_Ch2_24022015_222017.mjpg';
 #    masked_image_file = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150224/CaptureTest_90pc_Ch2_24022015_222017.hdf5';
 
-#    video_file = '/Volumes/behavgenom$/GeckoVideo/20150224/CaptureTest_90pc_Ch2_24022015_222017.mjpg';
-    video_file = '/Volumes/Mrc-pc/20150228/Capture_Ch1_28022015_171254.mjpg'
-    masked_image_file = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150228/Capture_Ch1_28022015_171254.hdf5';
+    video_file = '/Volumes/Mrc-pc/20150228/Capture_Ch6_28022015_171254.mjpg'
+    masked_image_file = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150228/Capture_Ch6_28022015_171254.hdf5';
     
     compressVideo(video_file, masked_image_file)
 #%%
-    mask_fid = h5py.File(masked_image_file, "r");   
+    writeFullFramesTiff(masked_image_file);
+    writeDownsampledVideo(masked_image_file);
+    
+#%%
+    mask_fid = h5py.File(masked_image_file, "r");  
+    print mask_fid['/full_data']
+    print mask_fid['/mask']
+    
     plt.figure()
     plt.imshow(mask_fid['/mask'][0,:,:], interpolation = 'none', cmap = 'gray')
-    print mask_fid['/full_data'].shape
+    
+    plt.figure()
+    plt.imshow(mask_fid['/full_data'][-1,:,:], interpolation = 'none', cmap = 'gray')
     mask_fid.close()
     
