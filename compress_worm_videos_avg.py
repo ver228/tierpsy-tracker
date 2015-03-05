@@ -158,8 +158,6 @@ def proccessWorker(conn, frame_number, image):
     conn.send({'frame':frame_number, 'image':getImageROI(image)})
     conn.close()
 
-
-
 def compressVideo(video_file, masked_image_file, SAVE_FULL_INTERVAL = 5000, MAX_FRAMES = 1e32):
     #Compressed video in "video_file" by selecting ROI and making the rest of 
     #the image zero (creating a large amount of redundant data)
@@ -287,23 +285,30 @@ if __name__ == '__main__':
 #    video_file = '/Volumes/behavgenom$/GeckoVideo/20150224/CaptureTest_90pc_Ch2_24022015_222017.mjpg';
 #    masked_image_file = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150224/CaptureTest_90pc_Ch2_24022015_222017.hdf5';
 
-    video_file = '/Volumes/Mrc-pc/20150228/Capture_Ch6_28022015_171254.mjpg'
-    masked_image_file = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150228/Capture_Ch6_28022015_171254.hdf5';
+#    video_file = '/Volumes/Mrc-pc/20150228/Capture_Ch6_28022015_171254.mjpg'
+#    masked_image_file = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150228/Capture_Ch6_28022015_171254.hdf5';
+
+    video_dir = '/Volumes/H/20150304/'
+    save_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150304/';
+    base_name = 'Capture_Ch%i_04032015_135640'
     
-    compressVideo(video_file, masked_image_file)
-#%%
-    writeFullFramesTiff(masked_image_file);
-    writeDownsampledVideo(masked_image_file);
+    for ind in [1]:#range(1,7):
+        video_file = video_dir + (base_name % ind) + '.mjpg'
+        masked_image_file = save_dir + (base_name % ind) + '.hdf5'
+        
+        compressVideo(video_file, masked_image_file)
     
-#%%
-    mask_fid = h5py.File(masked_image_file, "r");  
-    print mask_fid['/full_data']
-    print mask_fid['/mask']
-    
-    plt.figure()
-    plt.imshow(mask_fid['/mask'][0,:,:], interpolation = 'none', cmap = 'gray')
-    
-    plt.figure()
-    plt.imshow(mask_fid['/full_data'][-1,:,:], interpolation = 'none', cmap = 'gray')
-    mask_fid.close()
+        writeFullFramesTiff(masked_image_file);
+        writeDownsampledVideo(masked_image_file);
+        
+        mask_fid = h5py.File(masked_image_file, "r");  
+        print mask_fid['/full_data']
+        print mask_fid['/mask']
+        
+        plt.figure()
+        plt.imshow(mask_fid['/mask'][0,:,:], interpolation = 'none', cmap = 'gray')
+        
+        plt.figure()
+        plt.imshow(mask_fid['/full_data'][-1,:,:], interpolation = 'none', cmap = 'gray')
+        mask_fid.close()
     
