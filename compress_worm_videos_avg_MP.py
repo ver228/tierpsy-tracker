@@ -18,8 +18,11 @@ import time
 import os
 import re
 import h5py
+import datetime
 import matplotlib.pylab as plt
 from skimage.io._plugins import freeimage_plugin as fi
+import sys, collections
+import multiprocessing as mp
 
 #import skimage.m
 class ReadVideoffmpeg:
@@ -71,7 +74,7 @@ class ReadVideoffmpeg:
         self.pipe.stdout.flush()
         self.pipe.terminate()
 
-def writeDownsampledVideo(masked_image_file, save_video_file = -1, 
+def writeDownsampledVideo(masked_image_file, base_name = '', save_video_file = -1, 
                           final_frame_size = (512, 512), n_frames_jumped = 25):
     if save_video_file == -1:
         save_video_file = os.path.splitext(masked_image_file)[0] +  '_downsampled.avi';
@@ -94,14 +97,31 @@ def writeDownsampledVideo(masked_image_file, save_video_file = -1,
             '-qscale:v', '0',
             save_video_file]
     
-    pipe = sp.Popen(command, stdin=sp.PIPE)
+    devnull = open(os.devnull, 'w')
+    pipe = sp.Popen(command, stdin=sp.PIPE, stderr=devnull)
     
+    tot_frames = float(I_worms.shape[0])
+    
+    initial_time = fps_time = time.time()
+    last_frame = 0;
     for frame_number in range(0,I_worms.shape[0],n_frames_jumped):
         pipe.stdin.write(I_worms[frame_number,:,:].tostring() )
+        
+        if frame_number%1000 == 0:
+            time_str = str(datetime.timedelta(seconds=round(time.time()-initial_time)))
+            fps = (frame_number-last_frame+1)/(time.time()-fps_time)
+            progress_str = 'Downsampling video. Total time = %s, fps = %2.1f; %3.2f%% '\
+                % (time_str, fps, frame_number/tot_frames*100)
+            status.put([base_name, progress_str]) 
+            
+            fps_time = time.time()
+            last_frame = frame_number;
+
+    status.put([base_name, 'Downsampled video done.']) 
     pipe.terminate()
     mask_fid.close()
 
-def writeFullFramesTiff(masked_image_file, tiff_file = -1, reduce_fractor = 8):
+def writeFullFramesTiff(masked_image_file, tiff_file = -1, reduce_fractor = 8, base_name = ''):
     if tiff_file == -1:
         tiff_file = os.path.splitext(masked_image_file)[0] + '_full.tiff';
     
@@ -115,11 +135,12 @@ def writeFullFramesTiff(masked_image_file, tiff_file = -1, reduce_fractor = 8):
     
     I_worms = np.zeros((expected_size, im_size[0],im_size[1]), dtype = np.uint8)
     
-    for frame in range(expected_size):
-        I_worms[frame, :,:] = cv2.resize(mask_fid["/full_data"][frame,:,:], im_size);
+    status.put([base_name, 'Writing tiff file...']) 
     
-    fi.write_multipage(I_worms, tiff_file, fi.IO_FLAGS.TIFF_LZW)
-
+    for frame_number in range(expected_size):
+        I_worms[frame_number, :,:] = cv2.resize(mask_fid["/full_data"][frame_number,:,:], im_size);
+        fi.write_multipage(I_worms, tiff_file, fi.IO_FLAGS.TIFF_LZW)
+    status.put([base_name, 'Tiff file done.']) 
 
 def getImageROI(image):
     #if it is needed to keep the original image then use "image=getImageROI(np.copy(image))"
@@ -149,14 +170,9 @@ def getImageROI(image):
     mask[0,:] = 0; mask[:,0] = 0; mask[-1,:] = 0; mask[:,-1]=0;
     mask = cv2.dilate(mask, STRUCT_ELEMENT, iterations = 3)
     cv2.rectangle(mask, (0,0), (479,15), 255, thickness=-1) 
-    
-    
-    #image[mask==0] = 0
+
     return mask
-    
-def proccessWorker(conn, frame_number, image):
-    conn.send({'frame':frame_number, 'image':getImageROI(image)})
-    conn.close()
+   
 
 def compressVideo(video_file, masked_image_file, SAVE_FULL_INTERVAL = 5000, MAX_FRAMES = 1e32):
     #Compressed video in "video_file" by selecting ROI and making the rest of 
@@ -250,21 +266,64 @@ def compressVideo(video_file, masked_image_file, SAVE_FULL_INTERVAL = 5000, MAX_
     print 'TOTAL TIME: ', time.time()-tic_first 
 
 
+def print_progress(progress):
+    sys.stdout.write('\033[2J')
+    sys.stdout.write('\033[H')
+    for filename, progress_str in progress.items():
+        print filename, progress_str
+
+    sys.stdout.flush()
 
 
-if __name__ == '__main__':
+def video_process(video_dir, save_dir, base_name):
+    video_file = video_dir + base_name + '.mjpg'
+    masked_image_file = save_dir + base_name + '.hdf5'
     
-    #fileName = '/Volumes/Mrc-pc/GeckoVideo/CaptureTest_90pc_Ch2_16022015_174636.mjpg';
-    #maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch2_16022015_174636.hdf5';
+    #compressVideo(video_file, masked_image_file);
     
-    #fileName = '/Volumes/H/GeckoVideo/20150218/CaptureTest_90pc_Ch4_18022015_230213.mjpg'
-    #maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch4_18022015_230213.hdf5';
+    try:
+        writeFullFramesTiff(masked_image_file, base_name = base_name);
+    except:
+        status.put([base_name, 'Tiff writing failed'])
+
+    try:
+        writeDownsampledVideo(masked_image_file, base_name = base_name);
+    except:
+        status.put([base_name, 'Video Downsampling failed'])
+
+
+if __name__ == '__main__':    
+    video_dir = '/Volumes/Mrc-pc/20150304_noLid/'
+#    save_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150216/';
+    save_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150221/'
     
-    #fileName = '/Volumes/H/GeckoVideo/20150218/CaptureTest_90pc_Ch2_18022015_230108.mjpg'
-    #maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch2_18022015_230108.hdf5';
     
-#    video_file = '/Volumes/behavgenom$/GeckoVideo/20150220/CaptureTest_90pc_Ch3_20022015_183607.mjpg';
-#    masked_image_file = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch3_20022015_183607.hdf5';
+    workers = []
+    status = mp.Queue()
+    progress = collections.OrderedDict()
+
+    file_list = os.listdir(save_dir);
+    base_name_list = [os.path.splitext(x)[0] for x in file_list if 'hdf5' in x]
+    
+    for base_name in base_name_list:
+        child = mp.Process(target=video_process, args=(video_dir, save_dir, base_name))
+        child.start()
+        workers.append(child)
+        progress[base_name] = ''
+    
+    while any(i.is_alive() for i in workers):
+        time.sleep(0.2)
+        while not status.empty():
+            filename, percent = status.get()
+            progress[filename] = percent
+            #print progress
+            print_progress(progress)
+#        
+    #main()
+
+#    writeFullFramesTiff(masked_image_file);
+#    writeDownsampledVideo(masked_image_file);
+
 
     #fileName = '/Volumes/Mrc-pc/GeckoVideo/CaptureTest_90pc_Ch4_16022015_174636.mjpg';
     #maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch4_16022015_174636.hdf5';
@@ -296,28 +355,28 @@ if __name__ == '__main__':
 #    save_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150305_NoLid/';
 #    base_name = 'Capture_Ch%i_05032015_122227'
 
-    video_dir = '/Volumes/Mrc-pc/20150304_noLid/'
-    save_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150304_NoLid/';
-#    base_name = 'Capture_Ch%i_04032015_205424'
-    base_name = 'Capture_Ch%i_04032015_175200'
+#    video_dir = '/Volumes/Mrc-pc/20150304_noLid/'
+#    save_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150304_NoLid/';
+##    base_name = 'Capture_Ch%i_04032015_205424'
+#    base_name = 'Capture_Ch%i_04032015_175200'
 
-    for ind in [6]:#range(1,7):
-        video_file = video_dir + (base_name % ind) + '.mjpg'
-        masked_image_file = save_dir + (base_name % ind) + '.hdf5'
-        
-        compressVideo(video_file, masked_image_file)
-    
-        writeFullFramesTiff(masked_image_file);
-        writeDownsampledVideo(masked_image_file);
-        
-        mask_fid = h5py.File(masked_image_file, "r");  
-        print mask_fid['/full_data']
-        print mask_fid['/mask']
-        
-        plt.figure()
-        plt.imshow(mask_fid['/mask'][0,:,:], interpolation = 'none', cmap = 'gray')
-        
-        plt.figure()
-        plt.imshow(mask_fid['/full_data'][-1,:,:], interpolation = 'none', cmap = 'gray')
-        mask_fid.close()
+#    for ind in [6]:#range(1,7):
+#        video_file = video_dir + (base_name % ind) + '.mjpg'
+#        masked_image_file = save_dir + (base_name % ind) + '.hdf5'
+#        
+#        compressVideo(video_file, masked_image_file)
+#    
+#        writeFullFramesTiff(masked_image_file);
+#        writeDownsampledVideo(masked_image_file);
+#        
+#        mask_fid = h5py.File(masked_image_file, "r");  
+#        print mask_fid['/full_data']
+#        print mask_fid['/mask']
+#        
+#        plt.figure()
+#        plt.imshow(mask_fid['/mask'][0,:,:], interpolation = 'none', cmap = 'gray')
+#        
+#        plt.figure()
+#        plt.imshow(mask_fid['/full_data'][-1,:,:], interpolation = 'none', cmap = 'gray')
+#        mask_fid.close()
     

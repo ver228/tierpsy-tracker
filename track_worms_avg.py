@@ -81,7 +81,7 @@ def triangle_th(hist):
         level = hist.size - level
     return level
 
-def getTrajectories(masked_image_file, trajectories_file, total_frames = -1, \
+def getTrajectories(masked_image_file, trajectories_file, initial_frame = 0, last_frame = -1, \
 MIN_AREA = 20, MIN_LENGHT = 5, MAX_ALLOWED_DIST = 20, \
 AREA_RATIO_LIM = (0.67, 1.5), BUFFER_SIZE = 25):
     pass
@@ -101,8 +101,8 @@ AREA_RATIO_LIM = (0.67, 1.5), BUFFER_SIZE = 25):
     feature_fid = tables.open_file(trajectories_file, mode = 'w', title = '')
     feature_table = feature_fid.create_table('/', "plate_worms", plate_worms,"Worm feature List")
     
-    if total_frames <= 0:
-        total_frames = mask_dataset.shape[0]
+    if last_frame <= 0:
+        last_frame = mask_dataset.shape[0]
 
     #initialized variabes
     tot_worms = 0;
@@ -110,7 +110,7 @@ AREA_RATIO_LIM = (0.67, 1.5), BUFFER_SIZE = 25):
     buff_last_index = np.empty([0]);
     buff_last_area = np.empty([0]);
     
-    for frame_number in range(0, total_frames, BUFFER_SIZE):
+    for frame_number in range(initial_frame, last_frame, BUFFER_SIZE):
         tic = time.time()
         
         #select pixels as connected regions that were selected as worms at least once in the masks
@@ -123,6 +123,7 @@ AREA_RATIO_LIM = (0.67, 1.5), BUFFER_SIZE = 25):
         
         buff_feature_table = []
         buff_last = []
+        
         for contour in contours:
             bbox_seg = cv2.boundingRect(contour) 
             if bbox_seg[1] < MIN_LENGHT or bbox_seg[3] < MIN_LENGHT:
@@ -150,8 +151,9 @@ AREA_RATIO_LIM = (0.67, 1.5), BUFFER_SIZE = 25):
                 coord_prev = np.empty([0]);
                 area_prev = np.empty([0]); 
                 index_list_prev = np.empty([0]);
-                    
-            for buff_ind in range(BUFFER_SIZE):
+            
+            buff_tot = min(BUFFER_SIZE, image_buffer.shape[0])
+            for buff_ind in range(buff_tot):
                 im_worm = Icrop[buff_ind,:,:]
                 
                 worm_mask = ((im_worm<thresh*0.95) & (im_worm != 0)).astype(np.uint8)
@@ -225,7 +227,7 @@ AREA_RATIO_LIM = (0.67, 1.5), BUFFER_SIZE = 25):
                     mask_feature_list = zip(*([tuple(index_list)] + mask_feature_list + \
                     [ tuple(speed), tuple(len(index_list)*[0]) ] ))
                     buff_feature_table += mask_feature_list
-                    if buff_ind == BUFFER_SIZE-1 : buff_last += mask_feature_list
+                    if buff_ind == buff_tot-1 : buff_last += mask_feature_list
                 else:
                     #consider the case where not valid coordinates where found
                     coord = np.empty([0]);
@@ -363,7 +365,7 @@ if __name__ == '__main__':
     
     
 
-    getTrajectories(masked_image_file, trajectories_file, total_frames = 100000)
+    getTrajectories(masked_image_file, trajectories_file, last_frame = -1)
     joinTrajectories(trajectories_file)
 #############
 
