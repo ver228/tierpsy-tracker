@@ -59,7 +59,9 @@ class ReadVideoffmpeg:
            '-f', 'image2pipe',
            '-threads', '0',
            '-vcodec', 'rawvideo', '-']
-        self.pipe = sp.Popen(command, stdout = sp.PIPE, bufsize = self.tot_pix) #use a buffer size as small as possible, makes things faster
+        devnull = open(os.devnull, 'w')
+        self.pipe = sp.Popen(command, stdout = sp.PIPE, \
+        bufsize = self.tot_pix, stderr=devnull) #use a buffer size as small as possible, makes things faster
     
     def read(self):
         raw_image = self.pipe.stdout.read(self.tot_pix)
@@ -135,11 +137,14 @@ def writeFullFramesTiff(masked_image_file, tiff_file = -1, reduce_fractor = 8, b
     
     I_worms = np.zeros((expected_size, im_size[0],im_size[1]), dtype = np.uint8)
     
-    status.put([base_name, 'Writing tiff file...']) 
     
+    status.put([base_name, 'Reading for data the tiff file...']) 
     for frame_number in range(expected_size):
         I_worms[frame_number, :,:] = cv2.resize(mask_fid["/full_data"][frame_number,:,:], im_size);
-        fi.write_multipage(I_worms, tiff_file, fi.IO_FLAGS.TIFF_LZW)
+    
+    status.put([base_name, 'Writing tiff file...']) 
+    fi.write_multipage(I_worms, tiff_file, fi.IO_FLAGS.TIFF_LZW)
+    
     status.put([base_name, 'Tiff file done.']) 
 
 def getImageROI(image):
@@ -184,9 +189,6 @@ def compressVideo(video_file, masked_image_file, SAVE_FULL_INTERVAL = 5000, MAX_
     # SAVE_FULL_INTERVAL :  Full frame is saved every 'SAVE_FULL_INTERVAL' in '/full_data'
     # MAX_FRAMES : maximum number of frames to be analyzed. Set this value to a large value to compress all the video
     
-#    if MAX_N_PROCESSES == -1:
-#        MAX_N_PROCESSES = mp.cpu_count()
-
     vid = ReadVideoffmpeg(video_file);
     im_height = vid.height;
     im_width = vid.width;
@@ -199,6 +201,7 @@ def compressVideo(video_file, masked_image_file, SAVE_FULL_INTERVAL = 5000, MAX_
                                     compression="gzip", 
                                     compression_opts=4,
                                     shuffle=True);
+    
     #full frames are saved in "/full_data" every SAVE_FULL_INTERVAL frames
     full_dataset = mask_fid.create_dataset("/full_data", (0, im_height, im_width), 
                                     dtype = "u1", maxshape = (None, im_height, im_width), 
@@ -211,19 +214,14 @@ def compressVideo(video_file, masked_image_file, SAVE_FULL_INTERVAL = 5000, MAX_
     #proc_queue = Queue.Queue()
     frame_number = 0;
     full_frame_number = 0;
-    tic_first = time.time()
-    tic = tic_first
     
+    initial_time = fps_time = time.time()
+    last_frame = 0;    
     while frame_number < MAX_FRAMES:
         ret, image = vid.read()
         if ret == 0:
             break
         frame_number += 1;
-        
-        if frame_number%25 == 0:
-            toc = time.time()
-            print frame_number, toc-tic
-            tic = toc
         
         #Resize mask array every 1000 frames
         if (frame_number)%1000 == 1:
@@ -259,11 +257,21 @@ def compressVideo(video_file, masked_image_file, SAVE_FULL_INTERVAL = 5000, MAX_
 
             #add buffer to the hdf5 file
             mask_dataset[(frame_number-N_BUFFER):frame_number,:,:] = Ibuff
+        
+    
+        if frame_number%25 == 0:
+            time_str = str(datetime.timedelta(seconds=round(time.time()-initial_time)))
+            fps = (frame_number-last_frame+1)/(time.time()-fps_time)
+            progress_str = 'Compressing video. Total time = %s, fps = %2.1f; %3.3f%% '\
+                % (time_str, fps, frame_number/float(MAX_FRAMES)*100)
+            status.put([base_name, progress_str]) 
+            
+            fps_time = time.time()
+            last_frame = frame_number;
 
     vid.release() 
     mask_fid.close()
-    
-    print 'TOTAL TIME: ', time.time()-tic_first 
+    status.put([base_name, 'Compressed video done.'])
 
 
 def print_progress(progress):
@@ -276,34 +284,46 @@ def print_progress(progress):
 
 
 def video_process(video_dir, save_dir, base_name):
+    initial_time = time.time();
+    
     video_file = video_dir + base_name + '.mjpg'
     masked_image_file = save_dir + base_name + '.hdf5'
     
-    #compressVideo(video_file, masked_image_file);
-    
     try:
-        writeFullFramesTiff(masked_image_file, base_name = base_name);
+        compressVideo(video_file, masked_image_file);
     except:
-        status.put([base_name, 'Tiff writing failed'])
+        status.put([base_name, 'Video Conversion failed'])
+        raise
 
+    
     try:
         writeDownsampledVideo(masked_image_file, base_name = base_name);
     except:
         status.put([base_name, 'Video Downsampling failed'])
+        raise
+        
+    try:
+        writeFullFramesTiff(masked_image_file, base_name = base_name);
+    except:
+        status.put([base_name, 'Tiff writing failed'])
+        raise
+    
+    time_str = str(datetime.timedelta(seconds=round(time.time()-initial_time)))
+    progress_str = 'Processing Done. Total time = %s' % time_str;
+    status.put([base_name, progress_str])
 
 
 if __name__ == '__main__':    
-    video_dir = '/Volumes/Mrc-pc/20150304_noLid/'
-#    save_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150216/';
-    save_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150221/'
+    video_dir = '/Volumes/behavgenom$/GeckoVideo/20150223/'
+    save_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150223/'
     
     
     workers = []
     status = mp.Queue()
     progress = collections.OrderedDict()
 
-    file_list = os.listdir(save_dir);
-    base_name_list = [os.path.splitext(x)[0] for x in file_list if 'hdf5' in x]
+    file_list = os.listdir(video_dir);
+    base_name_list = [os.path.splitext(x)[0] for x in file_list if ('mjpg' in x)]
     
     for base_name in base_name_list:
         child = mp.Process(target=video_process, args=(video_dir, save_dir, base_name))
