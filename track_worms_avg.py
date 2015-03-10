@@ -124,7 +124,7 @@ AREA_RATIO_LIM = (0.67, 1.5), BUFFER_SIZE = 25):
         buff_feature_table = []
         buff_last = []
         
-        for contour in contours:
+        for ii_contour, contour in enumerate(contours):
             bbox_seg = cv2.boundingRect(contour) 
             if bbox_seg[1] < MIN_LENGHT or bbox_seg[3] < MIN_LENGHT:
                 continue #box too small to be a worm
@@ -182,7 +182,10 @@ AREA_RATIO_LIM = (0.67, 1.5), BUFFER_SIZE = 25):
                     single_mask = np.zeros(im_worm.shape, dtype = np.uint8);
                     cv2.drawContours(single_mask, worm_contours, ii_worm, 255, -1)
                     intensity_mean, intensity_std = cv2.meanStdDev(im_worm, mask = single_mask)
-    
+                    
+                    with open('/Users/ajaver/Desktop/Gecko_compressed/image_dums/B%i_C%i_W%i.txt'%(buff_ind, ii_contour, ii_worm), 'w') as f:
+                        np.savetxt(f, single_mask, delimiter = ',')
+                    
                     #append worm features
                     #use frame_number+1, to avoid 0 index
                     mask_feature_list.append((frame_number+ buff_ind + 1, CMx + bbox_seg[0], 
@@ -354,18 +357,20 @@ if __name__ == '__main__':
 #    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/CaptureTest_90pc_Ch4_16022015_174636.hdf5';
 #    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Features_CaptureTest_90pc_Ch4_16022015_174636.hdf5';
 
-    masked_image_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150223/';
-    baseName = 'CaptureTest_90pc_Ch1_23022015_192449';
-    masked_image_file = masked_image_dir + baseName + '.hdf5';
+#    masked_image_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150223/';
+#    baseName = 'CaptureTest_90pc_Ch1_23022015_192449';
+#    masked_image_file = masked_image_dir + baseName + '.hdf5';
+#    
+#    trajectories_dir = '/Volumes/behavgenom$/GeckoVideo/Trajectories_test/20150223/';
+#    trajectories_file = trajectories_dir + 'Trajectory_' + baseName + '.hdf5';
+#    if not os.path.exists(trajectories_dir):
+#        os.mkdir(trajectories_dir)
+#    
     
-    trajectories_dir = '/Volumes/behavgenom$/GeckoVideo/Trajectories_test/20150223/';
-    trajectories_file = trajectories_dir + 'Trajectory_' + baseName + '.hdf5';
-    if not os.path.exists(trajectories_dir):
-        os.mkdir(trajectories_dir)
-    
-    
+    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/CaptureTest_90pc_Ch4_16022015_174636.hdf5'
+    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Trajectory_CaptureTest_90pc_Ch4_16022015_174636.hdf5'
 
-    getTrajectories(masked_image_file, trajectories_file, last_frame = -1)
+    getTrajectories(masked_image_file, trajectories_file, last_frame = 25)
     joinTrajectories(trajectories_file)
 #############
 

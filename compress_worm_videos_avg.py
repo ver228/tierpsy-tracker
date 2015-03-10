@@ -19,7 +19,8 @@ import os
 import re
 import h5py
 import matplotlib.pylab as plt
-from skimage.io._plugins import freeimage_plugin as fi
+#from skimage.io._plugins import freeimage_plugin as fi
+import tifffile
 
 #import skimage.m
 class ReadVideoffmpeg:
@@ -111,6 +112,7 @@ def writeFullFramesTiff(masked_image_file, tiff_file = -1, reduce_fractor = 8):
     if expected_size > mask_fid["/full_data"].shape[0]: 
         expected_size = mask_fid["/full_data"].shape[0]
     
+    
     im_size = tuple(np.array(mask_fid["/full_data"].shape[1:])/reduce_fractor)
     
     I_worms = np.zeros((expected_size, im_size[0],im_size[1]), dtype = np.uint8)
@@ -118,8 +120,8 @@ def writeFullFramesTiff(masked_image_file, tiff_file = -1, reduce_fractor = 8):
     for frame in range(expected_size):
         I_worms[frame, :,:] = cv2.resize(mask_fid["/full_data"][frame,:,:], im_size);
     
-    fi.write_multipage(I_worms, tiff_file, fi.IO_FLAGS.TIFF_LZW)
-
+    #fi.write_multipage(I_worms, tiff_file, fi.IO_FLAGS.TIFF_LZW)
+    tifffile.imsave(tiff_file, I_worms, compress=4)
 
 def getImageROI(image):
     #if it is needed to keep the original image then use "image=getImageROI(np.copy(image))"
@@ -296,16 +298,15 @@ if __name__ == '__main__':
 #    save_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150305_NoLid/';
 #    base_name = 'Capture_Ch%i_05032015_122227'
 
-    video_dir = '/Volumes/Mrc-pc/20150304_noLid/'
-    save_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150304_NoLid/';
-#    base_name = 'Capture_Ch%i_04032015_205424'
-    base_name = 'Capture_Ch%i_04032015_175200'
+    video_dir = '/Volumes/Mrc-pc/20150309/'
+    save_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150309b/';
+    base_name = 'Capture_Ch%i_09032015_201848'
 
     for ind in [6]:#range(1,7):
         video_file = video_dir + (base_name % ind) + '.mjpg'
         masked_image_file = save_dir + (base_name % ind) + '.hdf5'
         
-        compressVideo(video_file, masked_image_file)
+        compressVideo(video_file, masked_image_file, MAX_FRAMES=100)
     
         writeFullFramesTiff(masked_image_file);
         writeDownsampledVideo(masked_image_file);

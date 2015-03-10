@@ -179,7 +179,7 @@ def getImageROI(image):
     return mask
    
 
-def compressVideo(video_file, masked_image_file, SAVE_FULL_INTERVAL = 5000, MAX_FRAMES = 1e32):
+def compressVideo(video_file, masked_image_file, SAVE_FULL_INTERVAL = 5000, MAX_FRAMES = 1e32, base_name = ''):
     #Compressed video in "video_file" by selecting ROI and making the rest of 
     #the image zero (creating a large amount of redundant data)
     #the final images are saving in the file given by "masked_image_file" 
@@ -262,8 +262,9 @@ def compressVideo(video_file, masked_image_file, SAVE_FULL_INTERVAL = 5000, MAX_
         if frame_number%25 == 0:
             time_str = str(datetime.timedelta(seconds=round(time.time()-initial_time)))
             fps = (frame_number-last_frame+1)/(time.time()-fps_time)
-            progress_str = 'Compressing video. Total time = %s, fps = %2.1f; %3.3f%% '\
-                % (time_str, fps, frame_number/float(MAX_FRAMES)*100)
+            progress_str = 'Compressing video. Total time = %s, fps = %2.1f; Frame %i '\
+                % (time_str, fps, frame_number)
+                
             status.put([base_name, progress_str]) 
             
             fps_time = time.time()
@@ -290,7 +291,7 @@ def video_process(video_dir, save_dir, base_name):
     masked_image_file = save_dir + base_name + '.hdf5'
     
     try:
-        compressVideo(video_file, masked_image_file);
+        compressVideo(video_file, masked_image_file, base_name = base_name);
     except:
         status.put([base_name, 'Video Conversion failed'])
         raise
@@ -314,9 +315,11 @@ def video_process(video_dir, save_dir, base_name):
 
 
 if __name__ == '__main__':    
-    video_dir = '/Volumes/behavgenom$/GeckoVideo/20150223/'
-    save_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150223/'
+    video_dir = '/Volumes/Mrc-pc/20150309/'
+    save_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150309/'
     
+    if not os.path.exists(save_dir):
+        os.mkdir(save_dir)
     
     workers = []
     status = mp.Queue()
@@ -338,65 +341,5 @@ if __name__ == '__main__':
             progress[filename] = percent
             #print progress
             print_progress(progress)
-#        
-    #main()
 
-#    writeFullFramesTiff(masked_image_file);
-#    writeDownsampledVideo(masked_image_file);
-
-
-    #fileName = '/Volumes/Mrc-pc/GeckoVideo/CaptureTest_90pc_Ch4_16022015_174636.mjpg';
-    #maskFile = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch4_16022015_174636.hdf5';
-    
-    #fileName = r'G:\GeckoVideo\CaptureTest_90pc_Ch4_16022015_174636.mjpg';
-    #maskFile = r'Z:\GeckoVideo\Compressed\CaptureTest_90pc_Ch4_16022015_174636.hdf5';
-    
-#    video_file = '/Volumes/behavgenom$/GeckoVideo/20150221/CaptureTest_90pc_Ch4_21022015_210020.mjpg';
-#    masked_image_file = '/Volumes/ajaver$/GeckoVideo/Compressed/aCaptureTest_90pc_Ch4_21022015_210020.hdf5';
-
-#    video_file = '/Volumes/Mrc-pc/Full_Resolution/Capture_Ch3_26022015_161548.mjpg'
-#    masked_image_file = '/Users/ajaver/Documents/Test_Andre/Capture_Ch3_26022015_161548.hdf5'
-    
-#    video_file = '/Volumes/behavgenom$/GeckoVideo/20150223/CaptureTest_90pc_Ch4_23022015_192449.mjpg';
-#    #masked_image_file = '/Volumes/ajaver$/GeckoVideo/Compressed/CaptureTest_90pc_Ch4_23022015_192449.hdf5';
-#    masked_image_file = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150223/CaptureTest_90pc_Ch4_23022015_192449.hdf5';
- 
-#    video_file = '/Volumes/behavgenom$/GeckoVideo/20150224/CaptureTest_90pc_Ch2_24022015_222017.mjpg';
-#    masked_image_file = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150224/CaptureTest_90pc_Ch2_24022015_222017.hdf5';
-
-#    video_file = '/Volumes/Mrc-pc/20150228/Capture_Ch6_28022015_171254.mjpg'
-#    masked_image_file = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150228/Capture_Ch6_28022015_171254.hdf5';
-
-#    video_dir = '/Volumes/H/20150304/'
-#    save_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150304/';
-#    base_name = 'Capture_Ch%i_04032015_135640'
-    
-#    video_dir = '/Volumes/H/20150305_NoLid/'
-#    save_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150305_NoLid/';
-#    base_name = 'Capture_Ch%i_05032015_122227'
-
-#    video_dir = '/Volumes/Mrc-pc/20150304_noLid/'
-#    save_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150304_NoLid/';
-##    base_name = 'Capture_Ch%i_04032015_205424'
-#    base_name = 'Capture_Ch%i_04032015_175200'
-
-#    for ind in [6]:#range(1,7):
-#        video_file = video_dir + (base_name % ind) + '.mjpg'
-#        masked_image_file = save_dir + (base_name % ind) + '.hdf5'
-#        
-#        compressVideo(video_file, masked_image_file)
-#    
-#        writeFullFramesTiff(masked_image_file);
-#        writeDownsampledVideo(masked_image_file);
-#        
-#        mask_fid = h5py.File(masked_image_file, "r");  
-#        print mask_fid['/full_data']
-#        print mask_fid['/mask']
-#        
-#        plt.figure()
-#        plt.imshow(mask_fid['/mask'][0,:,:], interpolation = 'none', cmap = 'gray')
-#        
-#        plt.figure()
-#        plt.imshow(mask_fid['/full_data'][-1,:,:], interpolation = 'none', cmap = 'gray')
-#        mask_fid.close()
     
