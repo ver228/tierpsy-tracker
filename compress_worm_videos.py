@@ -23,6 +23,7 @@ import datetime
 import sys, collections
 import multiprocessing as mp
 
+import getopt
 
 class readVideoffmpeg:
     '''
@@ -399,12 +400,34 @@ def printProgress(progress):
 
     sys.stdout.flush()
 
+
+
+
+
 if __name__ == '__main__':    
     '''process in parallel each of the .mjpg files in video_dir and save the output in save_dir'''
     
-    video_dir = '/Users/ajaver/Downloads/wetransfer-2af646/' #'/Volumes/Mrc-pc/20150309/'
-    save_dir = '/Users/ajaver/Downloads/wetransfer-2af646/' #'/Volumes/behavgenom$/GeckoVideo/Compressed/20150309/'
-            
+    video_dir = '/Users/ajaver/Desktop/Gecko_compressed/prueba/' #'/Volumes/Mrc-pc/20150309/'
+    save_dir = '/Users/ajaver/Desktop/Gecko_compressed/prueba/' #'/Volumes/behavgenom$/GeckoVideo/Compressed/20150309/'
+    
+    #obtain input from the command line
+    try:
+        
+        opts, args = getopt.getopt(sys.argv[1:],"hi:o:",["ifile=","ofile="])
+    except getopt.GetoptError:
+        print 'compress_worm_videos.py -i <inputfile> -o <outputfile>'
+        sys.exit(2)
+    
+    
+    for opt, arg in opts:
+        if opt == '-h':
+            print 'compress_worm_videos.py -i <inputfile> -o <outputfile>'
+            sys.exit()
+        elif opt in ("-i", "--ifile"):
+            video_dir = arg
+        elif opt in ("-o", "--ofile"):
+            save_dir = arg
+    
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
     
@@ -425,7 +448,7 @@ if __name__ == '__main__':
     
     #update the progress status as long as there is a worker alive
     while any(i.is_alive() for i in workers):
-        time.sleep(0.2)
+        time.sleep(10.0) # I made this value larger because I can only save the output in a file on a schedule task with "at". Refreshing it too frequently will produce a huge file.
         while not status_queue.empty():
             filename, percent = status_queue.get()
             progress[filename] = percent
