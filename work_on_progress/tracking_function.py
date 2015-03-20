@@ -91,8 +91,8 @@ masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/CaptureTest_90pc_Ch2
 trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Trajectory_CaptureTest_90pc_Ch2_18022015_230213.hdf5'
 
 #masked_image_file, trajectories_file, 
-initial_frame = 0
-last_frame = 10
+initial_frame = 4400
+last_frame = 4500
 min_area = 20
 min_length = 5
 max_allowed_dist = 20
@@ -194,8 +194,25 @@ for frame_number in range(initial_frame, last_frame, buffer_size):
             #calculate figures for each image in the buffer
             ROI_image = ROI_buffer[buff_ind,:,:]
             
+            
+            #get the border of the ROI mask, this will be use to filter for valid worms
+            ROI_valid = (ROI_image != 0)
+            ROI_border_ind, _ =  cv2.findContours(ROI_valid.astype(np.uint8), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)  
+            if len(ROI_border_ind) > 1: #consider the case where there is more than one contour
+                ROI_area = [cv2.contourArea(x) for x in ROI_border_ind]
+                valid_ind = np.argmax(ROI_area);
+            else:
+                valid_ind = 0;
+            
+            if len(ROI_border_ind)==1 and ROI_border_ind[0].shape[0] > 1: 
+                ROI_border_ind = np.squeeze(ROI_border_ind[valid_ind])
+                ROI_border_ind = (ROI_border_ind[:,1],ROI_border_ind[:,0])
+            else:
+                continue
+                #ROI_border_ind =np.array([ROI_border_ind[:,1], ROI_border_ind[:,0]]).T
+        
             #get binary image, and clean it using morphological closing
-            ROI_mask = ((ROI_image<thresh) & (ROI_image != 0)).astype(np.uint8)
+            ROI_mask = ((ROI_image<thresh) & ROI_valid).astype(np.uint8)
             ROI_mask = cv2.morphologyEx(ROI_mask, cv2.MORPH_CLOSE,np.ones((3,3)))
             #ROI_mask = cv2.erode(ROI_mask, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2,2)), iterations=2)
 
@@ -215,7 +232,14 @@ for frame_number in range(initial_frame, last_frame, buffer_size):
                 area = float(cv2.contourArea(worm_cnt))
                 if area < min_area:
                     continue #area too small to be a worm
+                
+                #check if the worm touches the ROI contour, if it does it is likely to be garbage
+                worm_mask = np.zeros(ROI_image.shape, dtype = np.uint8);
+                cv2.drawContours(worm_mask, ROI_worms, worm_ind, 255, -1)
+                if np.any(worm_mask[ROI_border_ind]):
+                    continue
 
+                
                 worm_bbox = cv2.boundingRect(worm_cnt) 
                 
                 #find use the best rotated bounding box, the fitEllipse function produces bad results quite often
@@ -229,8 +253,6 @@ for frame_number in range(initial_frame, last_frame, buffer_size):
                 compactness = perimeter**2/area
                 
                 #calculate the mean intensity of the worm
-                worm_mask = np.zeros(ROI_image.shape, dtype = np.uint8);
-                cv2.drawContours(worm_mask, ROI_worms, worm_ind, 255, -1)
                 intensity_mean, intensity_std = cv2.meanStdDev(ROI_image, mask = worm_mask)
                 
                 if buff_ind == -1:
@@ -312,11 +334,12 @@ for frame_number in range(initial_frame, last_frame, buffer_size):
     #save the features for the linkage to the next buffer
     buff_last = zip(*buff_last)
     buff_last_coord = np.array(buff_last[3:5]).T
-    buff_last_index = np.array(buff_last[0])
-    buff_last_area = np.array(buff_last[5])
+    buff_last_index = np.array(buff_last[0:1]).T
+    buff_last_area = np.array(buff_last[5:6]).T
     
     #append data to pytables
-    feature_table.append(buff_feature_table)
+    if buff_feature_table:
+        feature_table.append(buff_feature_table)
     
     if frame_number % 1000 == 0:
         feature_fid.flush()

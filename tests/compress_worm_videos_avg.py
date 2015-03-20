@@ -301,8 +301,12 @@ if __name__ == '__main__':
     video_dir = '/Volumes/Mrc-pc/20150309/'
     save_dir = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150309b/';
     base_name = 'Capture_Ch%i_09032015_201848'
+    
+    video_dir = '/Users/ajaver/Downloads/wetransfer-2af646/'
+    save_dir = '/Users/ajaver/Downloads/wetransfer-2af646/' #'/Volumes/ajaver$/GeckoVideo/Compressed/'
+    base_name = 'CaptureTest_90pc_Ch%i_21022015_205929'
 
-    for ind in [6]:#range(1,7):
+    for ind in [3]:#range(1,7):
         video_file = video_dir + (base_name % ind) + '.mjpg'
         masked_image_file = save_dir + (base_name % ind) + '.hdf5'
         

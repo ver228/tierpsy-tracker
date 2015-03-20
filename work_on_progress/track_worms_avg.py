@@ -43,6 +43,7 @@ class plate_worms(tables.IsDescription):
     bounding_box_ymin = tables.Int32Col(pos=18)
     bounding_box_ymax = tables.Int32Col(pos=19)
     
+    segworm_id = tables.Int32Col(pos=20);
     
 def triangle_th(hist):
     '''
@@ -103,6 +104,8 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
     mask_dataset = mask_fid["/mask"]
     print mask_dataset.shape[0]
 
+
+    SEGWORM_ID_DEFAULT = -1; #default value for the column segworm_id
     #open pytables to save the coordinates
     feature_fid = tables.open_file(trajectories_file, mode = 'w', title = '')
     feature_table = feature_fid.create_table('/', "plate_worms", plate_worms,"Worm feature List")
@@ -197,8 +200,24 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
                 #calculate figures for each image in the buffer
                 ROI_image = ROI_buffer[buff_ind,:,:]
                 
+                #get the border of the ROI mask, this will be used to filter for valid worms
+                ROI_valid = (ROI_image != 0)
+                ROI_border_ind, _ =  cv2.findContours(ROI_valid.astype(np.uint8), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)  
+                
+                if len(ROI_border_ind) <= 1: #consider the case where there is more than one contour
+                    valid_ind = 0;
+                else:
+                    ROI_area = [cv2.contourArea(x) for x in ROI_border_ind]
+                    valid_ind = np.argmax(ROI_area);
+                
+                if len(ROI_border_ind)==1 and ROI_border_ind[0].shape[0] > 1: 
+                    ROI_border_ind = np.squeeze(ROI_border_ind[valid_ind])
+                    ROI_border_ind = (ROI_border_ind[:,1],ROI_border_ind[:,0])
+                else:
+                    continue
+            
                 #get binary image, and clean it using morphological closing
-                ROI_mask = ((ROI_image<thresh) & (ROI_image != 0)).astype(np.uint8)
+                ROI_mask = ((ROI_image<thresh) & ROI_valid).astype(np.uint8)
                 ROI_mask = cv2.morphologyEx(ROI_mask, cv2.MORPH_CLOSE,np.ones((3,3)))
                 #ROI_mask = cv2.erode(ROI_mask, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2,2)), iterations=2)
     
@@ -219,6 +238,12 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
                     area = float(cv2.contourArea(worm_cnt))
                     if area < min_area:
                         continue #area too small to be a worm
+                    
+                    #check if the worm touches the ROI contour, if it does it is likely to be garbage
+                    worm_mask = np.zeros(ROI_image.shape, dtype = np.uint8);
+                    cv2.drawContours(worm_mask, ROI_worms, worm_ind, 255, -1)
+                    if np.any(worm_mask[ROI_border_ind]):
+                        continue
 
                     worm_bbox = cv2.boundingRect(worm_cnt) 
                     
@@ -233,8 +258,6 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
                     compactness = perimeter**2/area
                     
                     #calculate the mean intensity of the worm
-                    worm_mask = np.zeros(ROI_image.shape, dtype = np.uint8);
-                    cv2.drawContours(worm_mask, ROI_worms, worm_ind, 255, -1)
                     intensity_mean, intensity_std = cv2.meanStdDev(ROI_image, mask = worm_mask)
                     
                     
@@ -249,7 +272,8 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
                                               eccentricity, compactness, angle, solidity, 
                                               intensity_mean[0,0], intensity_std[0,0], thresh,
                                               ROI_bbox[0] + worm_bbox[0], ROI_bbox[0] + worm_bbox[0] + worm_bbox[2],
-                                              ROI_bbox[1] + worm_bbox[1], ROI_bbox[1] + worm_bbox[1] + worm_bbox[3]))
+                                              ROI_bbox[1] + worm_bbox[1], ROI_bbox[1] + worm_bbox[1] + worm_bbox[3],
+                                              SEGWORM_ID_DEFAULT)) 
                 
                 if len(mask_feature_list)>0:
                     mask_feature_list = zip(*mask_feature_list)
@@ -285,7 +309,7 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
                         
                     #append the new feature list to the pytable
                     mask_feature_list = zip(*([tuple(index_list), 
-                                               tuple(len(index_list)*[0])] + 
+                                               tuple(len(index_list)*[-1])] + 
                                                mask_feature_list))
                     buff_feature_table += mask_feature_list
                     
@@ -306,8 +330,8 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
         #save the features for the linkage to the next buffer
         buff_last = zip(*buff_last)
         buff_last_coord = np.array(buff_last[3:5]).T
-        buff_last_index = np.array(buff_last[0])
-        buff_last_area = np.array(buff_last[5])
+        buff_last_index = np.array(buff_last[0:1]).T
+        buff_last_area = np.array(buff_last[5:6]).T
         
         #append data to pytables
         feature_table.append(buff_feature_table)
@@ -427,15 +451,17 @@ if __name__ == '__main__':
 #    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Trajectory_CaptureTest_90pc_Ch2_18022015_230213.hdf5'
 #    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/CaptureTest_90pc_Ch3_21022015_210020.hdf5'
 #    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Trajectory_CaptureTest_90pc_Ch3_21022015_210020.hdf5'
+#    masked_image_file = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150220/CaptureTest_90pc_Ch3_20022015_183607.hdf5'
+#    trajectories_file = '/Volumes/behavgenom$/GeckoVideo/Trajectories/20150220/CaptureTest_90pc_Ch3_20022015_183607.hdf5'
 
 #    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/CaptureTest_90pc_Ch1_02022015_141431.hdf5'
 #    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/CaptureTest_90pc_Ch1_02022015_141431.hdf5'
+   
+    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/CaptureTest_90pc_Ch2_18022015_230213.hdf5'
+    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Trajectory_CaptureTest_90pc_Ch2_18022015_230213.hdf5'
 
-    masked_image_file = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150220/CaptureTest_90pc_Ch3_20022015_183607.hdf5'
-    trajectories_file = '/Volumes/behavgenom$/GeckoVideo/Trajectories/20150220/CaptureTest_90pc_Ch3_20022015_183607.hdf5'
-
-#    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/CaptureTest_90pc_Ch2_18022015_230213.hdf5'
-#    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Trajectory_CaptureTest_90pc_Ch2_18022015_230213.hdf5'
+#    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/CaptureTest_90pc_Ch1_02022015_141431.hdf5'
+#    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/CaptureTest_90pc_Ch1_02022015_141431.hdf5'
 
     getTrajectories(masked_image_file, trajectories_file, last_frame = -1)
     joinTrajectories(trajectories_file)
@@ -457,7 +483,7 @@ if __name__ == '__main__':
     indexes = np.argsort(track_size)[::-1]
     
     fig = plt.figure()
-    for ii in indexes[0:5]:
+    for ii in indexes[0:20]:
         if ii == 0:
             break;
         coord = [(row['coord_x'], row['coord_y'], row['frame_number']) \
