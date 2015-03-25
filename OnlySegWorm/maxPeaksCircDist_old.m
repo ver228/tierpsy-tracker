@@ -1,4 +1,4 @@
-function [peaks indices] = maxPeaksCircDist(x, dist, varargin)
+function [peaks, indices] = maxPeaksCircDist(x, dist, varargin)
 %MAXPEAKSCIRCDIST Find the maximum peaks in a circular vector. The peaks
 %are separated by, at least, the given distance.
 %
@@ -39,7 +39,7 @@ end
 % Is the vector larger than the search window?
 winSize = 2 * dist + 1;
 if chainCodeLengths(end) < winSize
-    [peaks indices] = max(x);
+    [peaks, indices] = max(x);
     return;
 end
 

@@ -8,7 +8,7 @@ origins = [0,0];
 pixel2MicronScale = [1, 1];
 rotation = 1;
 downSamples = 65;
-for frame = 1:100
+for frame = 1:numel(files)
     mask = csvread([main_dir, files(frame).name]);
     imgData = mask(:);
     maskData = mask(:);
@@ -17,9 +17,12 @@ for frame = 1:100
     bodyScale = 0.1;
     verbose = false;
     
-    [worm, errNum, errMsg] = segWormBWimgSimple(imgData, maskData, imgWidth, imgHeight, frame, bodyScale, verbose);
+    resampleNum = 50;
+    [worm_results, worm] = getWormSkeleton(maskData, ... 
+        imgWidth, imgHeight, frame, [], resampleNum);
+    %[worm, errNum, errMsg] = segWormBWimgSimple(imgData, maskData, imgWidth, imgHeight, frame, bodyScale, verbose);
     disp(frame)
-    disp(errMsg)
+    %disp(errMsg)
     
     %{
     figure

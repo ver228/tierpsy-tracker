@@ -102,4 +102,9 @@ for i = 1:numel(lengths)
         indices(i) = j;
     end
 end
+
+%indicesMex = chainCodeLength2IndexMex(lengths, chainCodeLengths);
+%if ~isempty(indicesMex) && ~all(indicesMex==indices)
+%    disp('bad!')
+%end
 end

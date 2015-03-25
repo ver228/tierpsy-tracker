@@ -55,8 +55,24 @@ mAngles = circConv(angles, blurWin);
 % Note 2: We don't use the blurred angles for concavities. Unfortunately,
 % blurring can erase high-frequency minima. Moreover, we don't need
 % any improvements in localizing these concavities.
-[maxP maxI] = maxPeaksCircDist(mAngles, wormSegSize);
-[minP minI] = minPeaksCircDist(angles, wormSegSize);
+%[maxP,maxI] = maxPeaksCircDist(mAngles, wormSegSize);
+[maxP,maxI] = maxPeaksCircDist(mAngles, wormSegSize);
+
+%[minP minI] = minPeaksCircDist(angles, wormSegSize);
+[minP, minI] = minPeaksCircDist(angles, wormSegSize);
+%{
+if numel(minP) ~= numel(minPmex)
+    fprintf('bad! %1.1f, %1.1f\n', numel(minP), numel(minPmex))
+elseif any(minP ~= minPmex)
+    disp('bad!')
+elseif any(minI ~= minImex)
+    disp('bad!O')
+%else
+    %fprintf('good %1.1f, %1.1f\n', numel(maxP), numel(maxPmex))
+end
+%}
+
+
 maxI = maxI(maxP > 60);
 minI = minI(minP < -90);
 

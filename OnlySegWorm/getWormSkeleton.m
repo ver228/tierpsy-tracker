@@ -1,5 +1,6 @@
-function [worm_results, worm] = getWormSkeleton(imgData, maskData, ... 
+function [worm_results, worm] = getWormSkeleton(maskData, ... 
 imgWidth, imgHeight, frame, worm_results_prev, resampleNum)
+
 %prevOrientWorm = [];
 %downSamples = 65;
 %downSamples = double(downSamples); %make sure this quantity is a floating point
@@ -15,9 +16,7 @@ imgWidth, imgHeight, frame, worm_results_prev, resampleNum)
 %worm = segWorm(img, frame, true,false);
 
 worm_results = [];
-worm = segWormBWimg(imgData, maskData, imgWidth, imgHeight, frame, 0.1, false);
-
-%whos worm
+worm = segWormBWimgSimple(maskData, maskData, imgWidth, imgHeight, frame, 0.1, false);
 
 if ~isempty(worm)
     % Orient and downsample the worm.
@@ -28,9 +27,9 @@ if ~isempty(worm)
     ventral = flip(ventral);
     skeleton = worm.skeleton.pixels;
     
-    worm_results.skeleton = curvspace(skeleton, resampleNum);
-    worm_results.ventral = curvspace(ventral, resampleNum);
-    worm_results.dorsal = curvspace(dorsal, resampleNum);
+    worm_results.skeleton = curvspaceMex(skeleton, resampleNum);
+    worm_results.ventral = curvspaceMex(ventral, resampleNum);
+    worm_results.dorsal = curvspaceMex(dorsal, resampleNum);
     worm_results.frame = frame;
     
     if isempty(worm_results_prev)
@@ -57,7 +56,9 @@ if ~isempty(worm)
         worm_results.ventral = dum;
     end
     
+    
 end
+
 %{
     % Determine the worm orientation.
     if isempty(prevOrientWorm)

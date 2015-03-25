@@ -16,7 +16,8 @@ import matplotlib.pylab as plt
 if not 'eng' in globals():
     import matlab.engine
     eng = matlab.engine.start_matlab()
-    eng.addpath(eng.genpath('/Users/ajaver/GitHub_repositories/SegWorm/Only_segWorm'));
+    #eng.addpath(eng.genpath('/Users/ajaver/GitHub_repositories/SegWorm/Only_segWorm'));
+    eng.addpath(eng.genpath('/Users/ajaver/GitHub_repositories/Multiworm_Tracking/OnlySegWorm/'));
     eng.warning('off', 'normWorms:VulvaContourTooShort')
     eng.warning('off', 'normWorms:NonVulvaContourTooShort')
 
@@ -103,7 +104,7 @@ prev_worms = {}
 
 tic = time.time()
 tic_first = tic
-for frame in range(0, 100):#df['frame_number'].max()):
+for frame in range(0, df['frame_number'].max()):
     
     img = mask_dataset[frame,:,:]
     
@@ -131,9 +132,11 @@ for frame in range(0, 100):#df['frame_number'].max()):
             prev_worms[worm_index] = []
         
         #it is much faster to pass the data as a bytearray rather than create a matlab object using matlab.uit8
-        
-        worm_results, worm_struct = eng.getWormSkeleton(bytearray(worm_img), bytearray(worm_mask), \
+        #ticW = time.time();
+        worm_results, worm_struct = eng.getWormSkeleton(bytearray(worm_mask), \
         worm_mask.shape[0], worm_mask.shape[1], frame, prev_worms[worm_index], RESAMPLING_NUM, nargout=2);
+
+        #print time.time() - ticW;
         prev_worms[worm_index] = worm_results
         
         if not eng.isempty(worm_results):
@@ -155,7 +158,7 @@ for frame in range(0, 100):#df['frame_number'].max()):
 mask_fid.close()
 results_fid.close()
 eng.quit()
-
+del eng
 
 #if not worm_index in video_fid.keys():
 #            prev_worms[worm_index] = [];

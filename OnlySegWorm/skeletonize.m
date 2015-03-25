@@ -1,4 +1,4 @@
-function [skeleton cWidths] = skeletonize(s1, e1, i1, s2, e2, i2, c1, c2, ...
+function [skeleton, cWidths] = skeletonize(s1, e1, i1, s2, e2, i2, c1, c2, ...
     isAcross)
 %SKELETONIZE Skeletonize takes the 2 pairs of start and end points on a
 %contour(s), then traces the skeleton between them using the specified
@@ -106,6 +106,7 @@ if ~isAcross
     skeleton(1,:) = round((c1(j1,:) + c2(j2,:)) ./ 2);
     cWidths = zeros(size(skeleton, 1), 1); % pre-allocate memory
     cWidths(1) = sqrt(sum((c1(j1,:) - c2(j2,:)) .^ 2));
+    
     if j1 == we1 % wrap
         j1 = ws1;
     end
@@ -114,6 +115,7 @@ if ~isAcross
     end
     sLength = 2;
     
+    %fprintf('}%i,%i,%i,%i\n', we1,ws1,we2, ws2);
     % Skeletonize the contour segments and measure the width.
     while j1 ~= e1 && j2 ~= e2
         
@@ -132,6 +134,7 @@ if ~isAcross
         d1 = sum((c1(nextJ1,:) - c2(j2,:)) .^ 2);
         d2 = sum((c1(j1,:) - c2(nextJ2,:)) .^ 2);
         
+        %fprintf('|%i, %i, %i, %i, %i|', j1, j2, nextJ1, nextJ2, sLength);
 % % Code for debugging purposes.
 %         disp(['j1=' num2str(j1) ' j2=' num2str(j2) ...
 %             ' *** dnj1=[' num2str(dnj1) '] dnj2=[' num2str(dnj2) ...
@@ -192,6 +195,7 @@ if ~isAcross
     
     % Add the last point.
     if j1 ~= e1 || j2 ~= e2
+        %fprintf('-|%i, %i|', j1, sLength);
         skeleton(sLength,:) = round((c1(e1,:) + c2(e2,:)) ./ 2);
         cWidths(sLength) = sqrt(sum((c1(e1,:) - c2(e2,:)) .^ 2));
         sLength = sLength + 1;
@@ -200,6 +204,8 @@ if ~isAcross
     % Collapse any extra memory.
     skeleton(sLength:end,:) = [];
     cWidths(sLength:end) = [];
+    
+    %fprintf('|%i, %i|\n', j1, sLength);
     
 % The skeleton cuts across, connecting s1 with e2.
 else
@@ -315,4 +321,14 @@ else
     skeleton(i,:) = (w1 .* c1(connect(i,1),:) + ...
         w2 .* c2(connect(i,2),:)) ./ 2;
 end
+%
+[skeletonMex, cWidthsMex] = skeletonizeMex(s1, e1, i1, s2, e2, i2, c1, c2);
+if any(size(skeletonMex)~=size(skeleton))
+    whos ske*
+elseif any(skeletonMex~=skeleton)
+    disp('bad!')
+elseif any(cWidths~=cWidthsMex)
+    disp('badW!')
+    %figure, plot(cWidths), hold on, plot(cWidthsMex)
+    %}
 end

@@ -1,5 +1,6 @@
 function [worm, errNum, errMsg] = ...
     segWormBWimgSimple(imgData, maskData, imgWidth, imgHeight, frame, bodyScale, verbose, varargin)
+
 %SEGWORM Segment the worm in an image and organize the information in a
 %   structure.
 %
@@ -254,15 +255,7 @@ cCCLengths = circComputeChainCodeLengths(contour);
 wormSegLength = (cCCLengths(1) + cCCLengths(end)) / cWormSegs;
 hfAngleEdgeLength = wormSegLength;
 hfCAngles = circCurvatureMex(contour, hfAngleEdgeLength, cCCLengths);
-%{
-hfCAngles1 = circCurvatureMex(contour, hfAngleEdgeLength, cCCLengths);
-if any((hfCAngles - hfCAngles1)>1.e5)
-    figure, hold on
-    plot(hfCAngles, 'b')
-    plot(hfCAngles1, 'r')
-    disp('bad!!!!')
-end
-%}
+
 lfAngleEdgeLength = 2 * hfAngleEdgeLength;
 %lfCAngles = circCurvature(contour, lfAngleEdgeLength, cCCLengths);
 lfCAngles = circCurvatureMex(contour, lfAngleEdgeLength, cCCLengths);
@@ -523,9 +516,18 @@ else
         cCCLengths);
     
     % Compute the worm's skeleton.
-    [skeleton cWidths] = linearSkeleton(headI, tailI, lfCMinP, lfCMinI, ...
+    [skeleton, cWidths] = linearSkeleton(headI, tailI, lfCMinP, lfCMinI, ...
         lfCMaxP, lfCMaxI, contour, wormSegLength, cCCLengths);
-    
+    %{
+    if ~all(skeleton==skeletonMex)
+        disp('bad!')
+        figure, plot(skeleton(:,1), skeleton(:,2)), hold on, plot(skeletonMex(:,1), skeletonMex(:,2))
+    end
+    if ~all(cWidths==cWidthsMex)
+        disp('bad!W')
+        figure, plot(cWidths, 'r'), hold on, plot(cWidthsMex, 'b')
+    end
+    %}
     % Measure the skeleton's chain code length.
     sCCLengths = computeChainCodeLengths(skeleton);
     sLength = sCCLengths(end);
@@ -746,6 +748,18 @@ else
     lfAngleEdgeLength = sCCLengths(end) * 2 / sWormSegs;
     sAngles = curvature(skeleton, lfAngleEdgeLength, sCCLengths);
     
+    worm = worm2struct(frame, contour, [], [], [], lfCAngles, ...
+            headI, tailI, cCCLengths, skeleton, [], [], [], [], ...
+            sAngles, sLength, sCCLengths, cWidths, ...
+            [], [], [], [], [], [],[], ...
+            [], [], [], [], [], [],[], ...
+            [], [], [], [], [], [], ...
+            [], [], [], [], [], [], ...
+            [], [], [], ...
+            [], [], []);
+    
+    %remove color statistics, anyway a binary mask is passed
+    %{
     % Determine the head's MER (minimum enclosing rectangle).
     hMinY = min(head(:,1));
     hMaxY = max(head(:,1));
@@ -755,7 +769,8 @@ else
     % Measure the head statistics.
     merHImg = oImg(hMinY:hMaxY, hMinX:hMaxX);
     merHead = [head(:,1) - hMinY + 1, head(:,2) - hMinX + 1];
-    [merHMask merHeadI] = inPolyMask(merHead, [], size(merHImg));
+    
+    [merHMask,merHeadI] = inPolyMask(merHead, [], size(merHImg));
     hColors = single(merHImg(merHMask));
     hArea = length(hColors);
     hCDF = prctile(hColors,[2.5 25 50 75 97.5]);
@@ -768,6 +783,7 @@ else
     tMaxX = max(tail(:,2));
     
     % Measure the tail statistics.
+    
     merTImg = oImg(tMinY:tMaxY, tMinX:tMaxX);
     merTail = [tail(:,1) - tMinY + 1, tail(:,2) - tMinX + 1];
     [merTMask merTailI] = inPolyMask(merTail, [], size(merTImg));
@@ -810,6 +826,7 @@ else
             return;
         end
     end
+    
     
 %     % Does the skeleton exit the head?
 %     merHMask(merHeadI) = true;
@@ -876,6 +893,7 @@ else
     %lStdev = [];
     merLImg = oImg(lMinY:lMaxY, lMinX:lMaxX);
     merLSide = [lSide(:,1) - lMinY + 1, lSide(:,2) - lMinX + 1];
+    
     [merLMask, ~] = inPolyMask(merLSide, [], size(merLImg));
     lColors = single(merLImg(merLMask));
     lArea = length(lColors);
@@ -895,6 +913,7 @@ else
     %rStdev = [];
     merRImg = oImg(rMinY:rMaxY, rMinX:rMaxX);
     merRSide = [rSide(:,1) - rMinY + 1, rSide(:,2) - rMinX + 1];
+    
     [merRMask, ~] = inPolyMask(merRSide, [], size(merRImg));
     rColors = single(merRImg(merRMask));
     rArea = length(rColors);
@@ -954,17 +973,8 @@ else
             rcBounds, sBounds, rSide, rArea, rCDF, rStdev, ...
             isHeadTailFlipped, hConfidence, tConfidence, ...
             isVulvaClockwiseFromHead, vConfidence, nvConfidence);
-    else
-        vWorm = worm2struct(frame, contour, [], [], [], lfCAngles, ...
-            headI, tailI, cCCLengths, skeleton, [], [], [], [], ...
-            sAngles, sLength, sCCLengths, cWidths, ...
-            hlcBounds, hrcBounds, hsBounds, head, hArea, hCDF, hStdev, ...
-            tlcBounds, trcBounds, tsBounds, tail, tArea, tCDF, tStdev, ...
-            lcBounds, sBounds, lSide, lArea, lCDF, lStdev, ...
-            rcBounds, sBounds, rSide, rArea, rCDF, rStdev, ...
-            isHeadTailFlipped, hConfidence, tConfidence, ...
-            isVulvaClockwiseFromHead, vConfidence, nvConfidence);
     end
+    %}
 end
 
 % Get the inner contour, if it exists.
@@ -973,498 +983,6 @@ if ~verbose && isempty(worm)
     warning('segWorm:CannotSegment', ...
         'Frame %d: The worm cannot be segmented', frame);
     return;
-    
-    % Create a small image of the worm's complement to locate its inner loop.
-    minY = min(contour(:,1));
-    maxY = max(contour(:,1));
-    minX = min(contour(:,2));
-    maxX = max(contour(:,2));
-    cImg = ~img(minY:maxY, minX:maxX);
-    
-    % Order the connected components by size.
-    cc = bwconncomp(cImg);
-    ccSizes = zeros(length(cc.PixelIdxList), 1);
-    for i = 1:length(cc.PixelIdxList)
-        ccSizes(i) = length(cc.PixelIdxList{i});
-    end
-    [~, o] = sort(ccSizes, 1, 'descend');
-
-    % Choose the largest connected component that doesn't touch any image edges.
-    iWormPixels = [];
-    wMinX = 0;
-    wMaxX = 0;
-    wMinY = 0;
-    wMaxY = 0;
-    for i = o'
-        [y x] = ind2sub(size(cImg), cc.PixelIdxList{i});
-        wMinX = min(x);
-        wMaxX = max(x);
-        wMinY = min(y);
-        wMaxY = max(y);
-        if (wMinY > 1 && wMaxY < size(cImg,1) && ...
-                wMinX > 1 && wMaxX < size(cImg,2))
-            iWormPixels = [y x];
-            break;
-        end
-    end
-
-    % Use the inner loop's maxima/minima to find a point on the worm's
-    % inner contour. Try to avoid 1-pixel width sections as they may end up
-    % tracing the outer contour.
-    if ~isempty(iWormPixels)
-        if wMinX > 2
-            i = find(iWormPixels(:,2) == wMinX);
-            x = wMinX + minX - 2;
-            y = iWormPixels(i(1),1) + minY - 1;
-        elseif wMinY > 2
-            i = find(iWormPixels(:,2) == wMinY);
-            x = iWormPixels(i(1),2) + minX - 1;
-            y = wMinY + minY - 2;
-        elseif wMaxX < size(cImg, 2) - 1
-            i = find(iWormPixels(:,2) == wMaxX);
-            x = wMaxX + minX;
-            y = iWormPixels(i(1),1) + minY - 1;
-        else % default to wMaxY < size(cImg, 1) - 1
-            i = find(iWormPixels(:,2) == wMaxY);
-            x = iWormPixels(i(1),2) + minX - 1;
-            y = wMaxY + minY;
-        end
-        
-        % Trace the contour counter clockwise.
-        iContour = bwClockTrace(img, [x y], false);
-        
-        % Correct the worm segment size.
-        % Note: a looped worm can take the shape of an upper-case omega and
-        % omicron or, lower-case alpha and delta. An omega and omicron
-        % hide, approximately, at least 2 segments of the worm's contour. A
-        % delta hides, approximately, at least 3 segments. And, and alpha
-        % hides, approximately, at least 4 segments. Therefore, we
-        % approximate the new contour size as the inner and outer contour
-        % sizes plus 3 additional, hidden segments.
-        wormSegLength = round((size(iContour, 1) + size(contour, 1)) / ...
-            (cWormSegs - 3));
-
-        % Clean up the worm's inner contour.
-        if verbose
-            roughIContour = iContour;
-        end
-        [iContour] = cleanWorm(iContour, wormSegLength);
-        
-        % Are the inner and outer contour identical or switched?
-        % Note: if we begin tracing either contour at a 1-pixel wide worm
-        % section we may end up tracing the wrong contour when we fork.
-        if size(iContour, 1) >= size(contour, 1)
-            iMinX = min(iContour(:,2));
-            iMaxX = max(iContour(:,2));
-            iMinY = min(iContour(:,1));
-            iMaxY = max(iContour(:,1));
-            oMinX = min(contour(:,2));
-            oMaxX = max(contour(:,2));
-            oMinY = min(contour(:,1));
-            oMaxY = max(contour(:,1));
-            
-            % The contours are switched.
-            if iMinX < oMinX || iMaxX > oMaxX || ...
-                    iMinY < oMinY || iMaxY > oMaxY
-                
-                % Switch the contours.
-                tmp = flipud(contour);
-                contour = flipud(iContour);
-                iContour = tmp;
-                
-            % The contours are identical.
-            elseif iMinX == oMinX && iMaxX == oMaxX && ...
-                    iMinY == oMinY && iMaxY == oMaxY
-                warning('segWorm:IdenticalContours', ...
-                    ['Frame ' num2str(frame) ...
-                    ': The inner and outer contour cannot be '...
-                     'distinguished from each other']);
-                return;
-            end
-        end
-        
-        % Compute the worm's contour and skeleton.
-        worm = coiledSkeleton(headI, tailI, contour, iContour, wormSegLength);
-        
-        % Orient the contour and angles at the maximum curvature (the head or tail).
-        % FIXME!!!
-        if 0
-            contour = [contour(headI:end,:); contour(1:(headI - 1),:)];
-            hfCAngles = [hfCAngles(headI:end), hfCAngles(1:(headI - 1))];
-            mhfCAngles = [mhfCAngles(headI:end), mhfCAngles(1:(headI - 1))];
-            if headI <= tailI
-                tailI = tailI - headI + 1;
-            else
-                tailI = tailI + size(contour, 1) - headI + 1;
-            end
-            headI = 1;
-        end
-    end
 end
 
-% Show the results.
-if verbose
-
-    % Open a big figure.
-    figure('OuterPosition', [50 50 1280 960]);
-    %fullscreen = get(0,'ScreenSize');
-    %figure('OuterPosition',[50 50 (fullscreen(3) - 100) (fullscreen(4) - 100)]);
-    
-    % The worm failed to segment.
-    if isempty(worm)
-        set(gcf, 'Color', [1 .75 .75]);
-        worm = vWorm;
-    end
-    
-    % Are the head and tail flipped?
-    hConfidence = worm.orientation.head.confidence;
-    if hConfidence.head < hConfidence.tail
-        worm = flipWormHead(worm);
-        hConfidence = worm.orientation.head.confidence;
-    end
-    
-    % Is the vulva on the correct side?
-    vConfidence = worm.orientation.vulva.confidence;
-    if vConfidence.vulva < vConfidence.nonVulva
-        worm = flipWormVulva(worm);
-        vConfidence = worm.orientation.vulva.confidence;
-    end
-    
-    % Are we downsampling the worm?
-    if length(varargin) > 5
-        samples = varargin{6};
-    else
-        samples = [];
-    end
-    
-    % When downsampling, are we interpolating the missing data or copying
-    % it from the original worm?
-    if length(varargin) > 6
-        isInterp = varargin{7};
-    else
-        isInterp = true;
-    end
-
-    % Downsample the worm.
-    if isempty(vWorm)
-        if ~isempty(samples)
-            origins = [0 0];
-            moves = [0 0];
-            pixel2MicronScale = [1 1];
-            rotation = 1;
-            
-            % Normalize the worm.
-            [vulvaContour nonVulvaContour skeleton skeletonAngles ...
-                inOutTouch skeletonLength widths headArea tailArea ...
-                vulvaArea nonVulvaArea] = normWorms({worm}, samples, ...
-                origins, moves, pixel2MicronScale, rotation, false);
-            if isInterp
-                worm = [];
-            end
-            
-            % Reconstruct the normalized worm.
-            worm = norm2Worm(frame, vulvaContour, nonVulvaContour, ...
-                skeleton, skeletonAngles, inOutTouch, skeletonLength, ...
-                widths, headArea, tailArea, vulvaArea, nonVulvaArea, ...
-                origins, pixel2MicronScale, rotation, worm);
-        end
-    end
-
-    % Setup the contour, skeleton, pixels, angles, head/tail, and
-    % left/right sides.
-    contour = worm.contour;
-    cPixels = contour.pixels;
-    cAngles = contour.angles;
-    wormSegSize = size(cPixels, 1) / cWormSegs;
-    skeleton = worm.skeleton;
-    sPixels = skeleton.pixels;
-    sAngles = worm.skeleton.angles;
-    cWidths = worm.skeleton.widths;
-    head = worm.head;
-    tail = worm.tail;
-    left = worm.left;
-    right = worm.right;
-    
-    % Are the head and tail flipped?
-    if worm.orientation.head.isFlipped
-        sPixels = flipud(sPixels);
-        sAngles = -flipud(sAngles);
-        cWidths = flipud(cWidths);
-        tmp = head;
-        head = tail;
-        tail = tmp;
-        tmp = left;
-        left = right;
-        right = tmp;
-    end
-    
-    % Convert the original image to 8-bit grayscale.
-    if isfloat(oImg)
-        oImg = uint8(round(oImg * 255));
-    end
-    
-    % Show the original image.
-    hold on, subplot(2,3,1);
-    rgbOImg(:,:,1) = oImg;
-    rgbOImg(:,:,2) = oImg;
-    rgbOImg(:,:,3) = oImg;
-    imshow(rgbOImg), title('Original Image');
-    if ~isempty(frame)
-        xlabel(['Frame = ' num2str(frame)]);
-    end
-    
-    % Construct a binary image with the contours and skeleton overlayed.
-    onesImg = ones(size(img));
-    redImg = onesImg;
-    greenImg = onesImg;
-    blueImg = double(~img);
-
-    % Compute the unique rough and smooth contours and their intersection.
-    smoothCI = sub2ind(size(img), cPixels(:,1), cPixels(:,2));
-    roughCI = sub2ind(size(img), roughContour(:,1), roughContour(:,2));
-    [~, uniqueRoughI, uniqueSmoothI] = setxor(roughCI, smoothCI);
-    sameCI = roughCI;
-    sameCI(uniqueRoughI) = [];
-    roughCI = roughCI(uniqueRoughI);
-    smoothCI = smoothCI(uniqueSmoothI);
-    
-    % Overlay the contour intersection.
-    redImg(sameCI) = 0;
-    greenImg(sameCI) = 0;
-    blueImg(sameCI) = 0;
-    
-    % Overlay the rough contours.
-    redImg(roughCI) = 1;
-    greenImg(roughCI) = .7;
-    blueImg(roughCI) = .3;
-    if exist('roughIContour', 'var')
-        % Ignore for now.
-    end
-    
-    % Overlay the smooth contours and skeleton.
-    redImg(smoothCI) = 0;
-    greenImg(smoothCI) = 1;
-    blueImg(smoothCI) = 0;
-    if exist('iContour', 'var')
-        % Ignore for now.
-    end
-    
-    % Overlay the skeleton.
-    if ~isempty(sPixels)
-        sI = sub2ind(size(img), sPixels(:,1), sPixels(:,2));
-        redImg(sI) = 1;
-        greenImg(sI) = 0;
-        blueImg(sI) = 0;
-    end
-    
-    % Show the binary image with the contours and skeleton overlayed.
-    binOImg(:,:,1) = redImg;
-    binOImg(:,:,2) = greenImg;
-    binOImg(:,:,3) = blueImg;
-    hold on, subplot(2,3,2);
-    imshow(binOImg), title(['\color{yellow}Thresholded \color{black}+ ' ...
-        '(\color{orange}Rough\color{black}/\color{darkgreen}Smoothed) ' ...
-        '\color{black}Contour + \color{red}Skeleton']);
-    
-    % Blur the contour's local high-frequency curvature.
-    % Note: on a small scale, noise causes contour imperfections that shift an
-    % angle from its correct location. Therefore, blurring angles by averaging
-    % them with their neighbors can localize them better.
-    lfBlurSize = ceil(wormSegSize);
-    lfBlurWin(1:lfBlurSize) = 1 / lfBlurSize;
-    mcAngles = circConv(cAngles, lfBlurWin);
-
-    % Determine the min/max contour curvatures.
-    [mcMaxP, mcMaxI] = maxPeaksCircDist(mcAngles, lfAngleEdgeLength, ...
-        cCCLengths);
-    [mcMinP, mcMinI] = minPeaksCircDist(mcAngles, lfAngleEdgeLength, ...
-        cCCLengths);
-    
-    % Determine the worm's MER (minimum enclosing rectangle).
-    % Note: the skeleton can exit the contour.
-    if ~isempty(head.bounds.contour) && ...
-            ~isempty(head.bounds.skeleton) && ...
-            ~isempty(tail.bounds.contour) && ...
-            ~isempty(tail.bounds.skeleton) && ...
-            ~isempty(left.bounds.contour) && ...
-            ~isempty(left.bounds.skeleton) && ...
-            ~isempty(right.bounds.contour) && ...
-            ~isempty(right.bounds.skeleton)
-        if isempty(sPixels)
-            wMinX = min(cPixels(:,2));
-            wMaxX = max(cPixels(:,2));
-            wMinY = min(cPixels(:,1));
-            wMaxY = max(cPixels(:,1));
-        else
-            wMinX = min(min(cPixels(:,2)), min(sPixels(:,2)));
-            wMaxX = max(max(cPixels(:,2)), max(sPixels(:,2)));
-            wMinY = min(min(cPixels(:,1)), min(sPixels(:,1)));
-            wMaxY = max(max(cPixels(:,1)), max(sPixels(:,1)));
-        end
-        
-        % Construct an image showing the head/tail, left/right sides, as well
-        % as the touching/inside/outside points of the contour and skeleton.
-        hRGB = [150 150 64];
-        tRGB = [64 64 0];
-        vRGB = [96 96 255];
-        nvRGB = [0 0 224];
-        cTouchRGB = [255 255 255];
-        cInRGB = [255 0 0];
-        cOutRGB = [0 255 0];
-        sTouchRGB = [255 255 255];
-        sInRGB = [0 255 0];
-        sOutRGB = [255 0 0];
-        sInOutRGB = [255 150 255];
-        bodyImg = overlayWormTouch(oImg, worm, hRGB, 1, tRGB, 1, ...
-            vRGB, 1, nvRGB, 1, cTouchRGB, 1, cInRGB, 1, cOutRGB, 1, ...
-            sTouchRGB, 1, sInRGB, 1, sOutRGB, 1, sInOutRGB, 1);
-        hold on, subplot(2,3,3);
-        imshow(bodyImg((wMinY - 1):(wMaxY + 1),(wMinX - 1):(wMaxX + 1),:));
-        if ~isempty(head.cdf) && ~isempty(tail.cdf)
-            title({['Head: area=' num2str(head.area) ...
-                ' cdf=[' num2str(head.cdf(1), '%.1f') ...
-                num2str(head.cdf(2:end), ', %.1f') ...
-                '] stdev=' num2str(head.stdev)], ...
-                ['Tail: area=' num2str(tail.area) ...
-                ' cdf=[' num2str(tail.cdf(1), '%.1f') ...
-                num2str(tail.cdf(2:end), ', %.1f') ...
-                '] stdev=' num2str(tail.stdev)]});
-        end
-        if ~isempty(left.cdf) && ~isempty(right.cdf)
-            xlabel({['Left: area=' num2str(left.area) ...
-                ' cdf=[' num2str(left.cdf(1), '%.1f') ...
-                num2str(left.cdf(2:end), ', %.1f') ...
-                '] stdev=' num2str(left.stdev)], ...
-                ['Right: area=' num2str(right.area) ...
-                ' cdf=[' num2str(right.cdf(1), '%.1f') ...
-                num2str(right.cdf(2:end), ', %.1f') ...
-                '] stdev=' num2str(right.stdev)]});
-        end
-        ylabel('Head/Tail, Left/Right, & Touch/In/Out');
-        
-        % Construct a pattern to identify the head.
-        hImg = [1 1 1 1 1; ...
-            1 1 1 1 1; ...
-            1 1 1 1 1; ...
-            1 1 1 1 1; ...
-            1 1 1 1 1];
-        [hPattern(:,1) hPattern(:,2)] = find(hImg == 1);
-        hPattern(:,1) = hPattern(:,1) - ceil(size(hImg, 1) / 2);
-        hPattern(:,2) = hPattern(:,2) - ceil(size(hImg, 2) / 2);
-        
-        % Construct a pattern to identify the vulva.
-        vImg = [1 1 1 1 1; ...
-            1 1 1 1 1; ...
-            1 1 1 1 1; ...
-            1 1 1 1 1; ...
-            1 1 1 1 1];
-        [vPattern(:,1) vPattern(:,2)] = find(vImg == 1);
-        vPattern(:,1) = vPattern(:,1) - ceil(size(vImg, 1) / 2);
-        vPattern(:,2) = vPattern(:,2) - ceil(size(vImg, 2) / 2);
-        
-        % Construct an image showing the contour/skeleton curvature heat map.
-        blue = zeros(360, 3);
-        blue(:,3) = 255;
-        red = zeros(360, 3);
-        red(:,1) = 255;
-        cRGB = [blue(1:90,:); jet(181) * 255; red(1:90,:)]; % thermal
-        sRGB = [blue(1:90,:); jet(181) * 255; red(1:90,:)]; % thermal
-        sRGBNaN = [255 0 0]; % red
-        hRGB = [0 255 0]; % green
-        vRGB = [255 0 0]; % red
-        angleImg = overlayWormAngles(oImg, worm, cRGB, sRGB, sRGBNaN, ...
-            hPattern, hRGB, 1, vPattern, vRGB, 1);
-        hold on, subplot(2,3,4);
-        imshow(angleImg((wMinY - 1):(wMaxY + 1),(wMinX - 1):(wMaxX + 1),:));
-        title({['\color{darkgreen}Head\color{black} confidence = ' ...
-            num2str(hConfidence.head)], ...
-            ['Tail confidence = ' num2str(hConfidence.tail)], ...
-            ['Head/tail confidence = ' ...
-            num2str(hConfidence.head / hConfidence.tail)]});
-        xlabel({['\color{red}Vulva\color{black} confidence = ' ...
-            num2str(vConfidence.vulva)], ...
-            ['Non-vulva confidence = ' num2str(vConfidence.nonVulva)], ...
-            ['Vulva/non-vulva confidence = ' ...
-            num2str(vConfidence.vulva / vConfidence.nonVulva)]});
-        ylabel('Curvature as Heat');
-        
-        % Show the min/max contour curvatures.
-        contour = worm.contour.pixels;
-        hold on, text(contour(mcMinI,2) - wMinX + 2, ...
-            contour(mcMinI,1) - wMinY + 2, '*', 'Color', 'm', ...
-            'HorizontalAlignment', 'center');
-        hold on, text(contour(mcMinI,2) - wMinX + 2, ...
-            contour(mcMinI,1) - wMinY + 2, num2str(mcMinI), 'Color', 'm');
-        hold on, text(contour(mcMaxI,2) - wMinX + 2, ...
-            contour(mcMaxI,1) - wMinY + 2, '*', 'Color', 'g', ...
-            'HorizontalAlignment', 'center');
-        hold on, text(contour(mcMaxI,2) - wMinX + 2, ...
-            contour(mcMaxI,1) - wMinY + 2, num2str(mcMaxI), 'Color', 'g');
-    end
-    
-    % Biplot the contour's curvature and contour's width.
-    hold on, subplot(2,3,5:6);
-    if isempty(cWidths)
-        cWidths = 0;
-    end
-    [ax h1 h2] = plotyy(1:length(cAngles), cAngles, 1:length(cWidths), ...
-        cWidths);
-    set(h1, 'Color', 'k');
-    set(h2, 'Color', [.6 .6 .3]);
-    title(['Curvature and Width (Length = ' num2str(skeleton.length) ')']);
-    xlabel('Contour/Skeleton Points (Index)');
-    ylabel(ax(1), 'Contour/Skeleton Angle (degrees)');
-    ylabel(ax(2), 'Contour Width (pixels)');
-    %xlim(ax(1), [0 length(cAngles)]);
-    %xlim(ax(2), [0 length(cAngles)]);
-    ylim(ax(1), [-180 180]);
-    %maxCWidths = max(cWidths);
-    %ylim(ax(2), [0 maxCWidths]);
-    %set(ax(1), 'XTick', linspace(0, length(cAngles), 10));
-    set(ax(2), 'XTick', []);
-    set(ax(1), 'YTick', linspace(-180, 180, 13));
-    %set(ax(2), 'YTick', linspace(0, maxCWidths, 13));
-    grid on;
-    
-    % Plot the contour's smoothed (min/max) curvature.
-    hold(ax(1), 'on'), plot(ax(1), mcAngles, 'b');
-    hold(ax(1), 'on'), plot(ax(1), mcMinI, mcMinP, 'm*');
-    hold(ax(1), 'on'), plot(ax(1), mcMaxI, mcMaxP, 'g*');
-
-    % Plot the contour's smoothed width.
-    if isempty(cWidths) || length(cWidths) <= 1
-        mcWidths = 0;
-    else
-        mcWidths = circConv(cWidths, lfBlurWin);
-    end
-    hold(ax(2), 'on'), plot(ax(2), mcWidths, 'c');
-    
-    % Plot the skeleton's (smoothed) curvature.
-    % Note: we flip the skeleton angles so they're visible over the
-    % contour's angles.
-    sAngles = -sAngles;
-    if isempty(sAngles)
-        sAngles = 0;
-    end
-    hold(ax(1), 'on'), plot(ax(1), sAngles, 'r');
-    msAngles = conv(sAngles, lfBlurWin, 'same');
-    hold(ax(1), 'on'), plot(ax(1), msAngles, 'm');
-    
-    % Setup the legend.
-    legends = { ...
-        'Contour Angles', ...
-        'Avg Contour Angles', ...
-        'Min Avg Contour Angles', ...
-        'Max Avg Contour Angles', ...
-        '- Skeleton Angles', ...
-        '- Avg Skeleton Angles', ...
-        'Contour Widths', ...
-        'Avg Contour Widths'};
-    legend(legends, 'Location', 'SouthEast');
-    
-    % The worm failed to segment.
-    if ~isempty(vWorm)
-        worm = [];
-    end
-end
 %end

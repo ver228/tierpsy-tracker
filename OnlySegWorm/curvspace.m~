@@ -42,6 +42,7 @@ intv = totaldist./(N-1);
 
 %% iteration %%
 for k = 1:N-1
+   
    newpt = []; distsum = 0;
    ptnow = currentpt;
    kk = 0;
@@ -54,10 +55,6 @@ for k = 1:N-1
       distsum = distsum + disttmp;
       % if distance is enough, generate newpt. else, accumulate
       % distance
-      
-      %fprintf('%1.1f, %1.1f | %1.1f, %1.1f ] %1.1f\n',...
-      %    ptnow(1), ptnow(2), pttarget(1), pttarget(2), remainder);
-      
       if distsum >= intv
          newpt = interpintv(ptnow,pttarget,remainder);
       else
@@ -77,18 +74,13 @@ for k = 1:N-1
    
    % update currentpt and indfirst
    currentpt = newpt;
-   
    indfirst = indfirst + kk;
    
    
 end
   q_mex = curvspaceMex(p,N);
-  if any(q-q_mex>1e-5), 
-      disp('bad!')
-  figure, hold on
-  plot(q(:,1), 'b')
-  plot(q_mex(:,1), 'r')
-  end
+  if any(=q_mex), disp('bad!'), end
+  %if any(q~=q_mex), disp('bad!'), end
 end
 
 
@@ -138,10 +130,4 @@ if length(pt1) == 3
    n = dirvec(3);
    newpt = [newpt,intv*n+pt1(3)];
 end
-
-%disp(norm(pt2 - pt1));
-%disp(dirvec)
-%fprintf('%1.1f] %1.1f, %1.1f | %1.1f, %1.1f ] %1.1f | %1.1f, %1.1f\n',...
-%          norm(dirvec), pt1(1), pt1(2), pt2(1), pt2(2), intv, newpt(1), newpt(2));
-      
 end

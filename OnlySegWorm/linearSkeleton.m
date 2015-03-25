@@ -1,5 +1,9 @@
-function [skeleton cWidths] = linearSkeleton(headI, tailI, minP, minI, ...
+function [skeleton, cWidths] = linearSkeleton(headI, tailI, minP, minI, ...
     maxP, maxI, contour, wormSegSize, varargin)
+
+%headI, tailI, minP = lfCMinP; minI = lfCMinI;
+%lfCMaxP = maxP; maxI = lfCMaxI; wormSegSize = wormSegLength; cCCLengths = varargin{1};
+
 %LINEARSKELETON Skeletonize a linear (non-looped) worm. The worm is
 %skeletonized by splitting its contour, from head to tail, into short
 %segments. These short segments are bounded by matching pairs of minimal
@@ -43,8 +47,8 @@ function [skeleton cWidths] = linearSkeleton(headI, tailI, minP, minI, ...
 %
 %
 % © Medical Research Council 2012
-% You will not remove any copyright or other notices from the Software; 
-% you must reproduce all copyright notices and other proprietary 
+% You will not remove any copyright or other notices from the Software;
+% you must reproduce all copyright notices and other proprietary
 % notices on any copies of the Software.
 
 % Are there chain-code lengths?
@@ -86,6 +90,7 @@ if sHeadI < chainCodeLengths(1)
     sHeadI = sHeadI + chainCodeLengths(end);
 end
 sHeadI = chainCodeLength2Index(sHeadI, chainCodeLengths);
+
 eHeadI = chainCodeLengths(headI) + htSegSize;
 if eHeadI > chainCodeLengths(end)
     eHeadI = eHeadI - chainCodeLengths(end);
@@ -241,7 +246,7 @@ if headI <= tailI
     b2 = sort([m2; b2; oppB1], 1, 'descend');
     b2 = [b2(b2 <= headI); b2(b2 >= tailI)];
     mI = find(bO == 1);
-
+    
     % Compute the inter-bend indices.
     ib1 = chainCodeLength2Index((chainCodeLengths(b1(1:(end - 1))) + ...
         chainCodeLengths(b1(2:end))) / 2, chainCodeLengths);
@@ -250,8 +255,8 @@ if headI <= tailI
         ib2(i) = circNearestPoints(contour(ib1(i),:), b2(i + 1), b2(i), ...
             contour);
     end
-
-% Side 1 wraps.
+    
+    % Side 1 wraps.
 else % headI > tailI
     
     % Compute the head indices.
@@ -293,7 +298,7 @@ else % headI > tailI
         m1 = m2s1;
         m2 = m2s2;
     end
-        
+    
     % Compute the minimum distance between the midbody indices.
     if m1 > m2
         dM = min(m1 - m2, m2 + size(contour, 1) - m1);
@@ -397,8 +402,12 @@ j = 1;
 while i > 1
     
     % Skeletonize the segment from the bend to the interbend.
-    [segment widths] = skeletonize(b1(i), ib1(i - 1), -1, ...
-        b2(i), ib2(i - 1), 1, contour, contour, false);
+    %[segment widths] = skeletonize(b1(i), ib1(i - 1), -1, ...
+    %    b2(i), ib2(i - 1), 1, contour, contour, false);
+    
+    [segment, widths] = skeletonizeMex(b1(i), ib1(i - 1), -1, ...
+        b2(i), ib2(i - 1), 1, contour, contour);
+    
     nextJ = j + size(segment, 1) - 1;
     mhSkeleton(j:nextJ,:) = segment;
     mhWidths(j:nextJ) = widths;
@@ -406,8 +415,11 @@ while i > 1
     i = i - 1;
     
     % Skeletonize the segment from the next bend back to the interbend.
-    [segment widths] = skeletonize(b1(i), ib1(i), 1, ...
-        b2(i), ib2(i), -1, contour, contour, false);
+    %[segment widths] = skeletonize(b1(i), ib1(i), 1, ...
+    %    b2(i), ib2(i), -1, contour, contour, false);
+    [segment, widths] = skeletonizeMex(b1(i), ib1(i), 1, ...
+        b2(i), ib2(i), -1, contour, contour);
+    
     nextJ = j + size(segment, 1) - 1;
     mhSkeleton(j:nextJ,:) = flipud(segment);
     mhWidths(j:nextJ) = flipud(widths);
@@ -415,8 +427,10 @@ while i > 1
 end
 
 % Skeletonize the segment from the last bend to the head.
-[segment widths] = skeletonize(b1(i), h1, -1, b2(i), h2, 1, ...
-    contour, contour, false);
+%[segment widths] = skeletonize(b1(i), h1, -1, b2(i), h2, 1, ...
+%    contour, contour, false);
+[segment, widths] = skeletonizeMex(b1(i), h1, -1, b2(i), h2, 1, ...
+    contour, contour);
 nextJ = j + size(segment, 1) - 1;
 mhSkeleton(j:nextJ,:) = segment;
 mhWidths(j:nextJ) = widths;
@@ -433,17 +447,21 @@ j = 1;
 while i < length(b1)
     
     % Skeletonize the segment from the bend to the interbend.
-    [segment widths] = skeletonize(b1(i), ib1(i), 1, ...
-        b2(i), ib2(i), -1, contour, contour, false);
+    %[segment widths] = skeletonize(b1(i), ib1(i), 1, ...
+    %    b2(i), ib2(i), -1, contour, contour, false);
+    [segment, widths] = skeletonizeMex(b1(i), ib1(i), 1, ...
+        b2(i), ib2(i), -1, contour, contour);
     nextJ = j + size(segment, 1) - 1;
     mtSkeleton(j:nextJ,:) = segment;
     mtWidths(j:nextJ) = widths;
     j = nextJ + 1;
     i = i + 1;
-
+    
     % Skeletonize the segment from the next bend back to the interbend.
-    [segment widths] = skeletonize(b1(i), ib1(i - 1), -1, ...
-        b2(i), ib2(i - 1), 1, contour, contour, false);
+    %[segment widths] = skeletonize(b1(i), ib1(i - 1), -1, ...
+    %    b2(i), ib2(i - 1), 1, contour, contour, false);
+    [segment,widths] = skeletonizeMex(b1(i), ib1(i - 1), -1, ...
+        b2(i), ib2(i - 1), 1, contour, contour);
     nextJ = j + size(segment, 1) - 1;
     mtSkeleton(j:nextJ,:) = flipud(segment);
     mtWidths(j:nextJ) = flipud(widths);
@@ -451,8 +469,10 @@ while i < length(b1)
 end
 
 % Skeletonize the segment from the last bend to the tail.
-[segment widths] = skeletonize(b1(i), t1, 1, b2(i), t2, -1, ...
-    contour, contour, false);
+%[segment, widths] = skeletonize(b1(i), t1, 1, b2(i), t2, -1, ...
+%    contour, contour, false);
+[segment, widths] = skeletonizeMex(b1(i), t1, 1, b2(i), t2, -1, ...
+    contour, contour);
 nextJ = j + size(segment, 1) - 1;
 mtSkeleton(j:nextJ,:) = segment;
 mtWidths(j:nextJ) = widths;
@@ -473,7 +493,11 @@ cWidths = [0; flipud(mhWidths); mtWidths; 0];
 
 % Clean up the rough skeleton.
 skeleton = round(skeleton);
-[skeleton cWidths] = cleanSkeleton(skeleton, cWidths, wormSegSize);
+%oSkeleton = skeleton; ocWidths = cWidths;
+%[skeleton, cWidths] = cleanSkeletonMex(oSkeleton, ocWidths, wormSegSize);
+[skeleton, cWidths] = cleanSkeletonMex(skeleton, cWidths, wormSegSize);
+
+
 end
 
 % Find pointsI between startI and endI, inclusive.
@@ -499,7 +523,7 @@ for i = 1:length(pointsI)
             points(i) = true;
         end
         
-    % The points exceed the threshold.
+        % The points exceed the threshold.
     elseif maxDistI <= min(oppPointsI(i) - pointsI(i), ...
             pointsI(i) + size(contour, 1) - oppPointsI(i))
         points(i) = true;

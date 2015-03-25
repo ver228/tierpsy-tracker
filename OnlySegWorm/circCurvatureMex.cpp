@@ -1,36 +1,34 @@
 #include <mex.h>
 #include <math.h>
 
-
-
 inline double getSign(double x) { 
     return double((0 < x) - (x < 0)); 
 }
 
-void computeFractionalPixel(double *points, int pointsNumber, double de1, int nextP1I, int p1I, double *p1)
+void computeFractionalPixel(double *points, int numberOfPoints, double de1, int nextP1I, int p1I, double *p1)
 {
     double dp1[2];
     const double SQRT2 = 1.414213562373095;
     for(int j = 0; j<2; j++){
-        //mexPrintf("%f, %f\n", points[nextP1I + j*pointsNumber], points[p1I + j*pointsNumber]);
-        dp1[j] = points[nextP1I + j*pointsNumber] - points[p1I + j*pointsNumber];
+        //mexPrintf("%f, %f\n", points[nextP1I + j*numberOfPoints], points[p1I + j*numberOfPoints]);
+        dp1[j] = points[nextP1I + j*numberOfPoints] - points[p1I + j*numberOfPoints];
     }
     //mexPrintf("%f, %f\n", dp1[0], dp1[1]);
     
     if ((dp1[0] == 0) || (dp1[1] == 0))
     {
         for(int j = 0; j<2; j++)
-            p1[j] = de1*getSign(dp1[j]) + points[p1I + j*pointsNumber];
+            p1[j] = de1*getSign(dp1[j]) + points[p1I + j*numberOfPoints];
         //mexPrintf("1) %f, %f \n", p1[0], p1[1]);
-        //mexPrintf("%f, %f, %f, %f\n", de1, points[p1I + 0*pointsNumber], dp1[0], getSign(dp1[0]));//de1, , );
+        //mexPrintf("%f, %f, %f, %f\n", de1, points[p1I + 0*numberOfPoints], dp1[0], getSign(dp1[0]));//de1, , );
     }
     else
     {
         if ((abs(dp1[0]) == 1) && (abs(dp1[1]) == 1))
         {
             for(int j = 0; j<2; j++)
-                p1[j] = points[p1I + j*pointsNumber] + (dp1[j] * de1 / SQRT2);
-            //mexPrintf("%f, %f, %f, %f\n", de1, points[p1I + 0*pointsNumber], dp1[0], getSign(dp1[0]));//de1, , );
+                p1[j] = points[p1I + j*numberOfPoints] + (dp1[j] * de1 / SQRT2);
+            //mexPrintf("%f, %f, %f, %f\n", de1, points[p1I + 0*numberOfPoints], dp1[0], getSign(dp1[0]));//de1, , );
             //mexPrintf("2) %f, %f\n", p1[0], p1[1]);
         }
         else
@@ -41,7 +39,7 @@ void computeFractionalPixel(double *points, int pointsNumber, double de1, int ne
             r = (dp1[0] / dp1[1]);
             double dx1 = de1 / sqrt(1 +  r*r);
             p1[0] = dy1 * getSign(dp1[0]) + points[p1I]; //points(p1I,0)
-            p1[1] = dx1 * getSign(dp1[1]) + points[p1I + pointsNumber]; //points(p1I,1)
+            p1[1] = dx1 * getSign(dp1[1]) + points[p1I + numberOfPoints]; //points(p1I,1)
             
             //mexPrintf("3) %f, %f\n", p1[0], p1[1]);
         }
@@ -51,7 +49,7 @@ void computeFractionalPixel(double *points, int pointsNumber, double de1, int ne
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
 //   Inputs:
-//    points M_PI          - the vector of clockwise, circularly-connected
+//       points          - the vector of clockwise, circularly-connected
 //                          points ((x,y) pairs).
 //       edgeLength       - the length of edges from the angle vertex.
 //       chainCodeLengths - the chain-code length at each point;
@@ -63,14 +61,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
     // input. note: (double *)mxGetData() and mxGetPr() are equivalent
     double *points = (double *)mxGetData(prhs[0]); 
-    mwSize pointsNumber = mxGetM(prhs[0]);
-    int lastArrayIndex = (pointsNumber-1);
+    mwSize numberOfPoints = mxGetM(prhs[0]);
+    int lastArrayIndex = (numberOfPoints-1);
     double *ptrEdgeLength = (double *)mxGetData(prhs[1]);
     double edgeLength = ptrEdgeLength[0];
     double *chainCodeLengths = (double *)mxGetData(prhs[2]);
     
     //output
-    plhs[0] = mxCreateNumericMatrix(pointsNumber,1,mxDOUBLE_CLASS,mxREAL);
+    plhs[0] = mxCreateNumericMatrix(numberOfPoints,1,mxDOUBLE_CLASS,mxREAL);
     double *angles = mxGetPr(plhs[0]);
     
     // Compute the curvature using the chain-code lengths.
@@ -94,7 +92,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     double a1,a2;
     
     int tot = 0;
-    while (pvI < pointsNumber)
+    while (pvI < numberOfPoints)
     {
         //tot++;
         //if (tot > 2)
@@ -104,7 +102,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             e2 = chainCodeLengths[p2I] - chainCodeLengths[pvI];
         // Compute the wrapped, second edge length.
         else
-            e2 = chainCodeLengths[pointsNumber-1] + chainCodeLengths[p2I] - chainCodeLengths[pvI];
+            e2 = chainCodeLengths[numberOfPoints-1] + chainCodeLengths[p2I] - chainCodeLengths[pvI];
         
         // Find the second edge.
         while (e2 < edgeLength)
@@ -112,14 +110,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             p2I = p2I + 1;
             // Wrap.
             if (p2I > lastArrayIndex)
-                p2I = p2I - pointsNumber;
+                p2I = p2I - numberOfPoints;
             
             // Compute the second edge length.
             if (p2I >= pvI)
                 e2 = chainCodeLengths[p2I] - chainCodeLengths[pvI];   
             // Compute the wrapped, second edge length.
             else
-                e2 = chainCodeLengths[pointsNumber-1] + chainCodeLengths[p2I] - chainCodeLengths[pvI];
+                e2 = chainCodeLengths[numberOfPoints-1] + chainCodeLengths[p2I] - chainCodeLengths[pvI];
         }
         /*
          *% Compute fractional pixels for the first edge.
@@ -143,17 +141,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         
         de1 = e1 - edgeLength;
         nextP1I =  (p1I < lastArrayIndex) ? p1I + 1 : p1I - lastArrayIndex;
-        computeFractionalPixel(points, pointsNumber, de1, nextP1I, p1I, p1);
+        computeFractionalPixel(points, numberOfPoints, de1, nextP1I, p1I, p1);
         
         
         // Compute fractional pixels for the second edge (uses the previous pixel).
         de2 = e2 - edgeLength;
         prevP2I =  (p2I > 0) ? p2I - 1 : p2I + lastArrayIndex;
-        computeFractionalPixel(points, pointsNumber, de2, prevP2I, p2I, p2);
+        computeFractionalPixel(points, numberOfPoints, de2, prevP2I, p2I, p2);
         
         // Use the difference in tangents to measure the angle.
-        a2 = atan2(points[pvI] - p2[0], points[pvI + pointsNumber] - p2[1]);
-        a1 = atan2(p1[0] - points[pvI], p1[1] - points[pvI + pointsNumber]);
+        a2 = atan2(points[pvI] - p2[0], points[pvI + numberOfPoints] - p2[1]);
+        a1 = atan2(p1[0] - points[pvI], p1[1] - points[pvI + numberOfPoints]);
         angles[pvI] = a2-a1;
         
         if (angles[pvI] > M_PI)
@@ -199,7 +197,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                 
                 // Wrap.
                 if (nextP1I > lastArrayIndex)
-                    nextP1I = nextP1I - pointsNumber;
+                    nextP1I = nextP1I - numberOfPoints;
                 
                 // Compute the first edge length.
                 if (nextP1I <= pvI)

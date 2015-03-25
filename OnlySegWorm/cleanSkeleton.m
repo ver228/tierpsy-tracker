@@ -1,4 +1,4 @@
-function [cSkeleton cWidths] = cleanSkeleton(skeleton, widths, wormSegSize)
+function [cSkeleton, cWidths] = cleanSkeleton(skeleton, widths, wormSegSize)
 %CLEANSKELETON Clean an 8-connected skeleton by removing any overlap and
 %interpolating any missing points.
 %
@@ -41,11 +41,20 @@ maxSkeletonOverlap = 2 * wormSegSize;
 
 % Remove small loops.
 keep = 1:size(skeleton, 1); % points to keep
+%fprintf('oI = %i\n', size(skeleton,1));
+
 [~, pSort] = sortrows(skeleton); % the sorted points
 [~, iSort] = sort(pSort); % index -> sorted point index
+
+%for i=1:numel(widths)
+%        fprintf('|%1.1f|', widths(i));
+%end
+%fprintf('\n');
 s1I = 1; % the first index for the skeleton loop
+%fprintf('|%1.1f|\n', widths(10))
 while s1I < length(pSort)
-    
+    %fprintf('|%1.1f|\n', widths(10))
+    %fprintf('%i|', s1I);
     % Find small loops.
     % Note: distal, looped sections are most likely touching;
     % therefore, we don't remove these.
@@ -58,6 +67,7 @@ while s1I < length(pSort)
             pI = iSort(s1I) - 1; % the index for the sorted points
             s2I = pSort(pI); % the second index for the skeleton loop
             dSkeleton = abs(skeleton(s1I,:) - skeleton(s2I,:));
+            %fprintf('|%1.1f,%1.1f|', dSkeleton(1), dSkeleton(2));
             while any(dSkeleton <= 1)
                 if s2I > s1I && ~isnan(keep(s2I)) && ...
                         all(dSkeleton <= 1) && ...
@@ -73,9 +83,11 @@ while s1I < length(pSort)
                 end
                 s2I = pSort(pI);
                 dSkeleton = abs(skeleton(s1I,:) - skeleton(s2I,:));
+                %fprintf('-%i,%i-', pI, s2I);
             end
         end
-        
+        %fprintf('|%1.1f,%1.1f|', dSkeleton(1), dSkeleton(2));
+        %fprintf('|%i,%i|', minI, maxI);
         % Search forwards.
         if  iSort(s1I) < length(pSort)
             pI = iSort(s1I) + 1; % the index for the sorted points
@@ -106,12 +118,14 @@ while s1I < length(pSort)
             if isequal(skeleton(minI,:), skeleton(maxI,:))
                 keep((minI + 1):maxI) = nan;
                 widths(minI) = min(widths(minI:maxI));
-                
+                %fprintf('!%1.1f!', widths(minI))
             % Remove the loop.
             elseif minI < maxI - 1
+                %fprintf('{%i-%1.1f}', minI, widths(minI))
                 keep((minI + 1):(maxI - 1)) = nan;
                 widths(minI) = min(widths(minI:(maxI - 1)));
                 widths(maxI) = min(widths((minI + 1):(maxI)));
+                %fprintf('-%1.1f-', widths(minI))
             end
             
         end
@@ -135,6 +149,12 @@ widths = widths(~isnan(keep));
 widths(1) = 0;
 widths(end) = 0;
 
+%fprintf('oII = %i\n', size(skeleton,1));
+%for i=1:numel(widths)
+%        fprintf('|%1.1f|', widths(i));
+%end
+%fprintf('\n');
+
 % Heal the skeleton by interpolating missing points.
 cSkeleton = zeros(2 * size(skeleton, 1), 2); % pre-allocate memory
 cWidths = zeros(2 * size(skeleton, 1), 1); % pre-allocate memory
@@ -144,7 +164,7 @@ for i = 1:(length(skeleton) - 1)
     % Initialize the point differences.
     y = abs(skeleton(i + 1,1) - skeleton(i,1));
     x = abs(skeleton(i + 1,2) - skeleton(i,2));
-    
+    %fprintf('|x:%1.1f,y:%1.1f|', x,y);
     % Add the point.
     if (y == 0 || y == 1) && (x == 0 || x == 1)
         cSkeleton(j,:) = skeleton(i,:);
@@ -177,6 +197,7 @@ end
 % Collapse any extra memory.
 cSkeleton(j:end,:) = [];
 cWidths(j:end) = [];
+%fprintf('oIII = %i\n', size(cSkeleton,1));
 
 % Anti alias.
 keep = 1:size(cSkeleton, 1); % points to keep
@@ -192,7 +213,7 @@ while i < endI
         
         % Advance.
         i = nextI;
-        
+        %fprintf('|%i|', i);
     % Advance.
     else
         i = i + 1;
@@ -200,4 +221,6 @@ while i < endI
 end
 cSkeleton = cSkeleton(~isnan(keep),:);
 cWidths = cWidths(~isnan(keep));
+
+%fprintf('oIV = %i\n', size(cSkeleton,1));
 end
