@@ -3,6 +3,7 @@
 
 double distance(double *x, double *y, int p_dim);
 void interpintv(double *pt1, double *pt2, int p_dim, double intv, double *newpt);
+
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     
@@ -33,15 +34,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     
 //%% initial settings %%
     //input
-    int p_size = int(mxGetM(prhs[0]));
-    int p_dim = int(mxGetN(prhs[0]));
+    int p_size = int(mxGetM(prhs[0])); //extract number of points
+    int p_dim = int(mxGetN(prhs[0]));//extract the dimension of points (can be more than 2D)
     
-    double *p[p_dim]; //two pointers for each coordinate
-    p[0] = (double *)mxGetData(mxDuplicateArray(prhs[0]));
+    double *p[p_dim]; //a pointers for each coordinate
+    p[0] = (double *)mxGetData(prhs[0]); //get a pointer to the data
     for (int k = 1; k<p_dim; k++)
         p[k] = p[0] + k*p_size;
     
-    double N = mxGetScalar(prhs[1]);
+    double N = mxGetScalar(prhs[1]); //get the number of resampling points
     
     //output
     plhs[0] = mxCreateNumericMatrix(N, double(p_dim),mxDOUBLE_CLASS,mxREAL);
@@ -54,7 +55,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     //helper variables
     double totaldist, intv, remainder, distsum, disttmp;
     double dum, R;
-    bool is_new_point;
     int p_ind_first, kk;
     
     double *ptnow, *newpt, *pttarget;
@@ -85,13 +85,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         
     }
     
-    
     //%% iteration %%
     p_ind_first = 1;
     for (int q_ind = 1; q_ind < N; q_ind++)
     {
-        
-        is_new_point = false;
         distsum = 0;
         remainder = intv; //% remainder of distance that should be accumulated
         kk = 0;
@@ -104,18 +101,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             
             //% calculate the distance from active point to the closest point in p
             disttmp = distance(ptnow, pttarget, p_dim);
-            //mexPrintf("%i / %1.1f, %1.1f, %1.1f\n", p_ind_first+kk, remainder, distsum, disttmp);
             
             //add that distance to the total distance from the resampled point
             distsum += disttmp;
             
-            //mexPrintf("%1.1f, %1.1f | %1.1f, %1.1f | %1.1f, %1.1f ] %1.1f\n", ptnow[0], ptnow[1], pttarget[0], pttarget[1], newpt[0], newpt[1], remainder);
             //% if distance is enough, generate newpt else, accumulate distance
             if (distsum >= intv)
             {
                 interpintv(ptnow, pttarget, p_dim, remainder, newpt);
-                //mexPrintf("%1.1f, %1.1f | %1.1f, %1.1f | %1.1f, %1.1f ] %1.1f\n", ptnow[0], ptnow[1], pttarget[0], pttarget[1], newpt[0], newpt[1], remainder);
-            
                 break;
             }
             else
@@ -180,6 +173,5 @@ void interpintv(double *pt1, double *pt2, int p_dim, double intv, double *newpt)
     {
         newpt[k] = intv*(pt2[k]-pt1[k])/normR + pt1[k];
     }
-    //mexPrintf("%1.1f}, %1.1f, %1.1f | %1.1f, %1.1f | %1.1f | %1.1f, %1.1f\n", normR, pt1[0], pt1[1], pt2[0], pt2[1], intv, newpt[0], newpt[1]);
             
 }
