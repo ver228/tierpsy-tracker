@@ -87,12 +87,15 @@ def triangle_th(hist):
 
 #masked_image_file = '/Volumes/behavgenom$/GeckoVideo/Compressed/20150220/CaptureTest_90pc_Ch3_20022015_183607.hdf5'
 #trajectories_file = '/Volumes/behavgenom$/GeckoVideo/Trajectories/20150220/aCaptureTest_90pc_Ch3_20022015_183607.hdf5'
-masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/CaptureTest_90pc_Ch2_18022015_230213.hdf5'
-trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Trajectory_CaptureTest_90pc_Ch2_18022015_230213.hdf5'
+#masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/CaptureTest_90pc_Ch2_18022015_230213.hdf5'
+#trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Trajectory_CaptureTest_90pc_Ch2_18022015_230213.hdf5'
+
+masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/CaptureTest_90pc_Ch1_02022015_141431.hdf5'
+trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/CaptureTest_90pc_Ch1_02022015_141431.hdf5'
 
 #masked_image_file, trajectories_file, 
-initial_frame = 4400
-last_frame = 4500
+initial_frame = 0
+last_frame = 15200
 min_area = 20
 min_length = 5
 max_allowed_dist = 20

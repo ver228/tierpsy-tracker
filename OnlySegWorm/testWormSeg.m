@@ -18,8 +18,7 @@ for frame = 1:numel(files)
     verbose = false;
     
     resampleNum = 50;
-    [worm_results, worm] = getWormSkeleton(maskData, ... 
-        imgWidth, imgHeight, frame, [], resampleNum);
+    [worm_results, worm] = getWormSkeletonM(mask, frame, [], resampleNum);
     %[worm, errNum, errMsg] = segWormBWimgSimple(imgData, maskData, imgWidth, imgHeight, frame, bodyScale, verbose);
     disp(frame)
     %disp(errMsg)

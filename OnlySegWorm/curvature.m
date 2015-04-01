@@ -102,6 +102,7 @@ else
                 chainCodeLengths(p2I) - chainCodeLengths(pvI) < edgeLength
             p2I = p2I + 1;
         end
+        %fprintf('|%i, %i, %i|\n', pvI, p1I, p2I);
         
         % Compute the angle.
         if p2I <= size(points, 1)
@@ -148,6 +149,8 @@ else
                 dx2 = de2 / sqrt(1 + (dp2(1) / dp2(2)) ^ 2);
                 p2 = [dy2 dx2] .* sign(dp2) + points(p2I,:);
             end
+            %fprintf('%i, %1.1f, %1.1f, %1.1f, %1.1f, %1.1f\n', ...
+            %    p2I, de2, dp2(1), dp2(2), p2(1) , p2(2));
             
             % Use the difference in tangents to measure the angle.
             angles(pvI) = ...
@@ -176,4 +179,15 @@ end
 if isTransposed
     angles = angles';
 end
+anglesMex = curvatureMex(points, edgeLength, chainCodeLengths);
+%
+if any(abs(angles-anglesMex) > 1e-5)
+    for k = 1:numel(angles, anglesMex)
+        disp([angles(k), anglesMex(k)])
+    end
+    disp('bad!')
+%else
+    %disp('good')
+end
+%}
 end

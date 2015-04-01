@@ -50,8 +50,8 @@ class readVideoffmpeg:
                 #the frame size is somewhere printed at the beggining by ffmpeg
                 dd = buff.partition('Video: ')[2].split(',')[2]
                 dd = re.findall(r'\d*x\d*', dd)[0].split('x')
-                self.width = int(dd[0])
-                self.height = int(dd[1])
+                self.height = int(dd[0])
+                self.width = int(dd[1])
             except:
                 print buff
                 raise
@@ -59,7 +59,7 @@ class readVideoffmpeg:
             self.width = width
             self.height = height
                 
-        self.tot_pix = self.width*self.width
+        self.tot_pix = self.height*self.width
         
         command = [ffmpeg_cmd, 
            '-i', fileName,
@@ -79,6 +79,7 @@ class readVideoffmpeg:
             return (0, []);
         
         image = np.fromstring(raw_image, dtype='uint8')
+        #print len(image), self.width, self.height
         image = image.reshape(self.width,self.height)
         return (1, image)
     
@@ -130,7 +131,10 @@ def getROIMask(image,  min_area = 100, max_area = 5000):
 
     return mask
    
-def compressVideo(video_file, masked_image_file, buffer_size = 25, save_full_interval = 5000, max_frame = 1e32, base_name = '', status_queue = ''):
+def compressVideo(video_file, masked_image_file, buffer_size = 25, \
+save_full_interval = 5000, max_frame = 1e32, base_name = '', \
+status_queue = '', check_empty = True,  useVideoCapture = True):
+   
     '''
     Compressed video in "video_file" by selecting ROI and making the rest of 
     the image zero (creating a large amount of redundant data)
@@ -147,26 +151,36 @@ def compressVideo(video_file, masked_image_file, buffer_size = 25, save_full_int
      status_queue -- queue were the status is sended. Only used in multiprocessing case 
      base_name -- processes identifier. Only used in the multiprocessing case.
     '''
+    
+    #max_frame = 1000
     #open video to read
-    vid = readVideoffmpeg(video_file);
-    im_height = vid.height;
-    im_width = vid.width;
+    if not useVideoCapture:
+        vid = readVideoffmpeg(video_file);
+        im_height = vid.height;
+        im_width = vid.width;
+    else:
+        vid = cv2.VideoCapture(video_file);
+        im_width= vid.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)
+        im_height= vid.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT)
+    
+    if check_empty:
+        rand_ind = np.random.randint(0, im_height*im_width-1, (200)); #select 200 random index use to check if the image is empty
     
     
     #open hdf5 to store the processed data
     mask_fid = h5py.File(masked_image_file, "w");
     #open node to store the compressed (masked) data
-    mask_dataset = mask_fid.create_dataset("/mask", (0, im_height, im_width), 
-                                    dtype = "u1", maxshape = (None, im_height, im_width), 
-                                    chunks = (1, im_height, im_height),
+    mask_dataset = mask_fid.create_dataset("/mask", (0, im_width, im_height), 
+                                    dtype = "u1", maxshape = (None, im_width, im_height), 
+                                    chunks = (1, im_width, im_height),
                                     compression="gzip", 
                                     compression_opts=4,
                                     shuffle=True);
     
     #full frames are saved in "/full_data" every save_full_interval frames
-    full_dataset = mask_fid.create_dataset("/full_data", (0, im_height, im_width), 
-                                    dtype = "u1", maxshape = (None, im_height, im_width), 
-                                    chunks = (1, im_height, im_height),
+    full_dataset = mask_fid.create_dataset("/full_data", (0, im_width, im_height), 
+                                    dtype = "u1", maxshape = (None, im_width, im_height), 
+                                    chunks = (1, im_width, im_height),
                                     compression="gzip", 
                                     compression_opts=9,
                                     shuffle=True);
@@ -185,7 +199,22 @@ def compressVideo(video_file, masked_image_file, buffer_size = 25, save_full_int
         ret, image = vid.read() #get video frame, stop program when no frame is retrive (end of file)
         if ret == 0:
             break
+        
+        if useVideoCapture:
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY).T
+            
+        #check if the 200 randomly selected index are equal (much faster that check the whole image)
+        if check_empty and np.all(image.flat[rand_ind]-np.mean(image.flat[rand_ind])==0):
+            continue
+        
         frame_number += 1;
+        
+        #if frame_number%skip_n_frames+1 != 1:
+        #    continue
+        
+        #import matplotlib.pylab as plt
+        #plt.figure()
+        #plt.imshow(image)
         
         #Resize mask array every 1000 frames (doing this every frame does not impact much the performance)
         if (frame_number)%1000 == 1:
@@ -204,7 +233,7 @@ def compressVideo(video_file, masked_image_file, buffer_size = 25, save_full_int
         
         #initialize the buffer when the index correspond to 0
         if ind_buff == 0:
-            Ibuff = np.zeros((buffer_size, vid.width, vid.height), dtype = np.uint8)
+            Ibuff = np.zeros((buffer_size, im_width, im_height), dtype = np.uint8)
 
         #add image to the buffer
         Ibuff[ind_buff, :, :] = image
@@ -244,10 +273,11 @@ def compressVideo(video_file, masked_image_file, buffer_size = 25, save_full_int
     vid.release() 
     mask_fid.close()
     sendQueueOrPrint(status_queue, 'Compressed video done.', base_name);
+
     
     
 def writeDownsampledVideo(masked_image_file, base_name = '', status_queue = '', save_video_file = -1, 
-                          final_frame_size = (512, 512), n_frames_jumped = 25):
+                          final_frame_size = 0, n_frames_jumped = 25):
     '''
     Write a downsampled video for visualization purposes from the processed hdf5 file. 
     The downsampling is both in scale (final_frame_size), and in time (n_frames_jumped)
@@ -261,13 +291,16 @@ def writeDownsampledVideo(masked_image_file, base_name = '', status_queue = '', 
     #open the hdf5 with masked data
     mask_fid = h5py.File(masked_image_file, "r");
     I_worms = mask_fid["/mask"]
-        
+    
+    if final_frame_size == 0:
+        final_frame_size = (I_worms.shape[-1]/4, I_worms.shape[-2]/4)
+    
     #parameters to minimize the video using ffmpeg
     command = [ 'ffmpeg',
             '-y', # (optional) overwrite output file if it exists
             '-f', 'rawvideo',
             '-vcodec','rawvideo',
-            '-s', '%ix%i' % I_worms.shape[1:3], # size of one frame
+            '-s', '%ix%i' % (I_worms.shape[-1], I_worms.shape[-2]), # size of one frame
             '-pix_fmt', 'gray',
             '-r', '25', # frames per second
             '-i', '-', # The imput comes from a pipe
@@ -327,12 +360,16 @@ def writeFullFramesTiff(masked_image_file, tiff_file = -1, reduce_fractor = 8, b
         expected_size = mask_fid["/full_data"].shape[0]
     
     #initialized reduced array  
-    im_size = tuple(np.array(mask_fid["/full_data"].shape[1:])/reduce_fractor)    
+    im_size = tuple(np.array(mask_fid["/full_data"].shape)[1:]/reduce_fractor)
+    reduce_factor = (im_size[-1], im_size[-2])
     I_worms = np.zeros((expected_size, im_size[0],im_size[1]), dtype = np.uint8)
     
     sendQueueOrPrint(status_queue, 'Reading for data the tiff file...', base_name);
+    
     for frame_number in range(expected_size):
-        I_worms[frame_number, :,:] = cv2.resize(mask_fid["/full_data"][frame_number,:,:], im_size);
+        #pass
+        #dum = cv2.resize(mask_fid["/full_data"][frame_number,:,:], reduce_factor);
+        I_worms[frame_number, :,:] = cv2.resize(mask_fid["/full_data"][frame_number,:,:], reduce_factor);
     
     sendQueueOrPrint(status_queue, 'Writing tiff file...', base_name);
     
@@ -352,32 +389,35 @@ def writeFullFramesTiff(masked_image_file, tiff_file = -1, reduce_fractor = 8, b
     sendQueueOrPrint(status_queue, 'Tiff file done.', base_name);
     
 
-def videoProcessingWorker(video_dir, save_dir, base_name='', status_queue=''):
+def videoProcessingWorker(video_dir, save_dir, base_name='', video_ext ='.mjpg', status_queue=''):
     '''
     Worker function used to process several videos in parallel.
     Compress the video into a hdf5, create a downsampled version for visualization, and save the full frames as tiff stacks.
     '''
     initial_time = time.time();
     
-    video_file = video_dir + base_name + '.mjpg'
+    video_file = video_dir + base_name + video_ext
     masked_image_file = save_dir + base_name + '.hdf5'
     
     try:
+        #pass
         compressVideo(video_file, masked_image_file, base_name = base_name, status_queue = status_queue);
     except:
-        status_queue.put([base_name, 'Video Conversion failed'])
+        sendQueueOrPrint(status_queue, 'Video Conversion failed', base_name)
         raise
     
     try:
         writeDownsampledVideo(masked_image_file, base_name = base_name, status_queue = status_queue);
     except:
-        status_queue.put([base_name, 'Video Downsampling failed'])
+        sendQueueOrPrint(status_queue, 'Video Downsampling failed', base_name)
+        #status_queue.put([base_name, 'Video Downsampling failed'])
         raise
         
     try:
         writeFullFramesTiff(masked_image_file, base_name = base_name, status_queue = status_queue);
     except:
-        status_queue.put([base_name, 'Tiff writing failed'])
+        sendQueueOrPrint(status_queue, 'Tiff writing failed', base_name)
+        #status_queue.put([base_name, 'Tiff writing failed'])
         raise
     
     time_str = str(datetime.timedelta(seconds=round(time.time()-initial_time)))
@@ -405,28 +445,38 @@ def printProgress(progress):
 
 
 if __name__ == '__main__':    
+
     '''process in parallel each of the .mjpg files in video_dir and save the output in save_dir'''
     
-    video_dir = '/Users/ajaver/Desktop/Gecko_compressed/prueba/' #'/Volumes/Mrc-pc/20150309/'
-    save_dir = '/Users/ajaver/Desktop/Gecko_compressed/prueba/' #'/Volumes/behavgenom$/GeckoVideo/Compressed/20150309/'
+    video_dir = '/Users/ajaver/Desktop/Gecko_compressed/pruebaa/' #'/Volumes/Mrc-pc/20150309/'
+    save_dir = '/Users/ajaver/Desktop/Gecko_compressed/pruebaa/' #'/Volumes/behavgenom$/GeckoVideo/Compressed/20150309/'
+#    video_dir = '/Volumes/behavgenom$/Camille Recordings/test1/'
+#    save_dir = '/Volumes/behavgenom$/Camille Recordings/test1/'
+#    
+    video_ext = '.mjpg'#'.mjpg'
     
     #obtain input from the command line
     try:
         
-        opts, args = getopt.getopt(sys.argv[1:],"hi:o:",["ifile=","ofile="])
+        opts, args = getopt.getopt(sys.argv[1:],"hi:o:",["ifile=","ofile=", "ext="])
     except getopt.GetoptError:
         print 'compress_worm_videos.py -i <inputfile> -o <outputfile>'
         sys.exit(2)
     
     
     for opt, arg in opts:
+        print opt, arg
         if opt == '-h':
-            print 'compress_worm_videos.py -i <inputfile> -o <outputfile>'
+            print 'compress_worm_videos.py -i <inputfile> -o <outputfile> -e <videoextension>'
             sys.exit()
         elif opt in ("-i", "--ifile"):
             video_dir = arg
         elif opt in ("-o", "--ofile"):
             save_dir = arg
+        elif opt in ('--ext'):
+            video_ext = arg
+            if video_ext[0] != '.':
+                video_ext = '.' + video_ext
     
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
@@ -437,21 +487,27 @@ if __name__ == '__main__':
 
     #get a list 
     file_list = os.listdir(video_dir);
-    base_name_list = [os.path.splitext(x)[0] for x in file_list if ('mjpg' in x)]
+    base_name_list = [os.path.splitext(x)[0] for x in file_list if (video_ext in x)]
     
-    for base_name in base_name_list:
-        #start a process for each .mjpeg file in save_dir
-        child = mp.Process(target = videoProcessingWorker, args=(video_dir, save_dir, base_name, status_queue))
-        child.start()
-        workers.append(child)
-        progress[base_name] = ''
+    max_num_process = 6;
+    for nChunk in range(0, len(base_name_list), max_num_process):  
     
-    #update the progress status as long as there is a worker alive
-    while any(i.is_alive() for i in workers):
-        time.sleep(10.0) # I made this value larger because I can only save the output in a file on a schedule task with "at". Refreshing it too frequently will produce a huge file.
-        while not status_queue.empty():
-            filename, percent = status_queue.get()
-            progress[filename] = percent
-            printProgress(progress)
+        for ii in range(max_num_process):
+            if nChunk + ii < len(base_name_list):
+                base_name = base_name_list[nChunk + ii]
+                #start a process for each .mjpeg file in save_dir
+                child = mp.Process(target = videoProcessingWorker, args=(video_dir, save_dir, base_name, video_ext, status_queue))
+                child.start()
+                workers.append(child)
+                progress[base_name] = 'idle'
+        
+    
+        #update the progress status as long as there is a worker alive
+        while any(i.is_alive() for i in workers):
+            time.sleep(10.0) # I made this value larger because I can only save the output in a file on a schedule task with "at". Refreshing it too frequently will produce a huge file.
+            while not status_queue.empty():
+                filename, percent = status_queue.get()
+                progress[filename] = percent
+                printProgress(progress)
 
     

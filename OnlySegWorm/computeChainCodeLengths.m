@@ -55,7 +55,10 @@ for i = 2:length(lengths)
         lengths(i) = lengths(i - 1) + sqrt(sum(dPoints .^ 2));
     end
 end
-
+lengthsMex = computeChainCodeLengthsMex(points);
+if any(lengths~=lengthsMex)
+    disp('bad')
+end
 % Transpose the lengths.
 if isTransposed
     lengths = lengths';

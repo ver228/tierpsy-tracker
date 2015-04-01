@@ -40,7 +40,7 @@ function contour = cleanWorm(contour, wormSegSize)
 
 % Compute the contour's curvature on a small scale.
 wormSegSize = round(wormSegSize);
-angles = circCurvature(contour, wormSegSize, []);
+angles = circCurvatureMex(contour, wormSegSize, []);
 
 % On a small scale, noise causes contour imperfections that shift an angle
 % from its correct location. Therefore, blurring angles by averaging them
@@ -401,14 +401,17 @@ if ~isempty(maxD) && (any(maxD <= nearSize) || ~isempty(minI))
     end
 end
 
+
 % Remove small overlapping segments and anti alias the contour.
 % Note: we don't remove loops. Removing loops may, for example, incorrectly
 % clean up a collapsed contour and/or remove a tail whip thereby leading to
 % false positives and/or false negatives, respectively.
 if size(contour, 1) > 2
-    
+    contour = cleanWormHelperMex(contour);
+    %{
     % Remove the first point.
     keep = 1:size(contour, 1); % points to keep
+    
     if isequal(contour(1,:), contour(end,:))
         keep(1) = NaN;
     end
@@ -486,5 +489,11 @@ if size(contour, 1) > 2
         end
     end
     contour = contour(~isnan(keep),:);
+    
+    %
+    if(any(contourMex~=contour))
+        disp('bad!')
+    end
+    %}
 end
 end

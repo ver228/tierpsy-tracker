@@ -53,8 +53,8 @@ class segworm_results(tables.IsDescription):
 #masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/CaptureTest_90pc_Ch3_21022015_210020.hdf5'
 #trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Trajectory_CaptureTest_90pc_Ch3_21022015_210020.hdf5'
 
-masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/CaptureTest_90pc_Ch1_02022015_141431.hdf5'
-trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/aCaptureTest_90pc_Ch1_02022015_141431.hdf5'
+#masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/CaptureTest_90pc_Ch1_02022015_141431.hdf5'
+#trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/bCaptureTest_90pc_Ch1_02022015_141431.hdf5'
 
 
 #open the hdf5 with the masked images
@@ -104,7 +104,7 @@ prev_worms = {}
 
 tic = time.time()
 tic_first = tic
-for frame in range(0, df['frame_number'].max()):
+for frame in range(0, 100):#df['frame_number'].max()):
     
     img = mask_dataset[frame,:,:]
     

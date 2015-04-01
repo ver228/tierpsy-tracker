@@ -72,11 +72,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     
     double *c1[2], *c2[2];
     c1[0] = (double *)mxGetData(mxDuplicateArray(prhs[6]));
-    int c1Size = mxGetM(prhs[6]);
+    int c1Size = int(mxGetM(prhs[6]));
     c1[1] = c1[0] + c1Size;
     
     c2[0]  = (double *)mxGetData(mxDuplicateArray(prhs[7]));
-    int c2Size = mxGetM(prhs[7]);
+    int c2Size = int(mxGetM(prhs[7]));
     c2[1] = c2[0] + c2Size;
     
     plhs[0] = mxCreateNumericMatrix(1,2,mxDOUBLE_CLASS,mxREAL);

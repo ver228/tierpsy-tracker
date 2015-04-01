@@ -78,4 +78,9 @@ end
 if isTransposed
     lengths = lengths';
 end
+
+lengthsMex = circComputeChainCodeLengthsMex(points);
+if any(lengths~=lengthsMex)
+    disp('bad')
+end
 end

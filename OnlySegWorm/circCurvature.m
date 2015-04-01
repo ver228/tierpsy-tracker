@@ -80,7 +80,12 @@ if isempty(chainCodeLengths)
         end
         angles(i) = angles(i) * 180 / pi;
     end
-    
+    %{
+    anglesMex = circCurvatureMex(points, edgeLength, []);
+    if any(abs(angles-anglesMex)>1e-5)
+        disp('bad')
+    end
+    %}
 % Compute the curvature using the chain-code lengths.
 else
     
