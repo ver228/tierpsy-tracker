@@ -15,14 +15,22 @@ if exist(save_file, 'file')
     delete(save_file)
 end
 
-%create datasets to be saved in the hdf5, 
-h5create(save_file, '/segworm_results/plate_worms_id', Inf, 'Deflate', 1, 'Shuffle', true, 'Chunksize', 100)
-h5create(save_file, '/segworm_results/worm_index_joined', Inf, 'Deflate', 1, 'Shuffle', true, 'Chunksize', 100)
-h5create(save_file, '/segworm_results/frame_number', Inf, 'Deflate', 1, 'Shuffle', true, 'Chunksize', 100)
-h5create(save_file, '/segworm_results/skeleton', [RESAMPLE_SIZE, 2, Inf], 'Deflate', 1, 'Shuffle', true, 'Chunksize', [RESAMPLE_SIZE,2,1])
-h5create(save_file, '/segworm_results/contour_ventral', [RESAMPLE_SIZE, 2, Inf], 'Deflate', 1, 'Shuffle', true, 'Chunksize', [RESAMPLE_SIZE,2,1])
-h5create(save_file, '/segworm_results/contour_dorsal', [RESAMPLE_SIZE, 2, Inf], 'Deflate', 1, 'Shuffle', true, 'Chunksize', [RESAMPLE_SIZE,2,1])
+strScalarFields = {'plate_worms_id', 'worm_index_joined', 'frame_number', ...
+    'skeleton_length', 'contour_ventral_length', 'contour_dorsal_length'};
+strArrayFields = {'skeleton', 'contour_ventral', 'contour_dorsal'};
 
+%create datasets to be saved in the hdf5,
+
+for ff = strScalarFields
+    h5create(save_file, ['/segworm_results/' ff{1}], Inf, ...
+        'Deflate', 1, 'Shuffle', true, 'Chunksize', 100)
+end
+
+for ff = strArrayFields
+    h5create(save_file, ['/segworm_results/' ff{1}], ...
+        [RESAMPLE_SIZE, 2, Inf], 'Deflate', 1, 'Shuffle', true, ...
+        'Chunksize', [RESAMPLE_SIZE,2,1])
+end
 %%
 %sort data by time, it is easier to open frames like that
 [~,sortbytime] = sort(data.('frame_number'));
@@ -36,7 +44,7 @@ data2write = [];
 for ff = {'plate_worms_id', 'worm_index_joined', 'frame_number'}
     data2write.(ff{1}) = zeros(1,BUFF_SIZE);
 end
-for ff = {'skeleton', 'contour_ventral', 'contour_dorsal'}
+for ff = strArrayFields
     data2write.(ff{1}) = zeros(RESAMPLE_SIZE,2,BUFF_SIZE);
 end
 
@@ -47,6 +55,7 @@ prev_worms = cell(1,max(data.worm_index_joined));
 
 %main loop
 tic
+total_time = 0;
 for plate_worms_row = 1:numel(data.('frame_number'))
     %read a new image if we change current frame
     
@@ -56,8 +65,14 @@ for plate_worms_row = 1:numel(data.('frame_number'))
         I = h5read(masked_image_file, '/mask', [1,1,current_frame], MASK_CHUNK_SIZE)';
         
         if mod(current_frame,25) == 0
-            disp(current_frame)
-            toc
+            %disp(current_frame)
+            time_lapsed = toc;
+            fps = 25/time_lapsed;
+            total_time = total_time + time_lapsed;
+            time_str = datestr(total_time/86400, 'HH:MM:SS.FFF');
+            fprintf('Calculating skeletons (segWorm). Total time = %s, fps = %2.1f; Frame %i\n', ...
+                time_str, fps, current_frame)
+            
             tic
         end
     end
@@ -93,7 +108,7 @@ for plate_worms_row = 1:numel(data.('frame_number'))
     
     prev_worms{worm_index} = worm_results; %save previous result with the ROI coordinate system
     
-    for ff = {'skeleton', 'contour_ventral', 'contour_dorsal'}
+    for ff = strArrayFields
         %get data into image absolute coordinates before saving to the bufer
         %-2 is to come back into python indexing (-1 from range_y and -1 from worm_results)
         worm_results.(ff{1})(:,1) =  worm_results.(ff{1})(:,1) + range_y(1)-2;
@@ -106,17 +121,20 @@ for plate_worms_row = 1:numel(data.('frame_number'))
     for ff = {'plate_worms_id', 'worm_index_joined', 'frame_number'}
         data2write.(ff{1})(buff_ind) = data.(ff{1})(plate_worms_row);
     end
-    for ff = {'skeleton', 'contour_ventral', 'contour_dorsal'}
+    for ff = {'skeleton_length', 'contour_ventral_length', 'contour_dorsal_length'}
+        data2write.(ff{1})(buff_ind) = worm_results.(ff{1});
+    end
+    for ff = strArrayFields
         data2write.(ff{1})(:,:,buff_ind) = worm_results.(ff{1});
     end
     
     %write data when the buffer is full
     if buff_ind == BUFF_SIZE
         offset = tot_segworm_rows-buff_ind+1;
-        for ff = {'plate_worms_id', 'worm_index_joined', 'frame_number'}
+        for ff = strScalarFields
             h5write(save_file, ['/segworm_results/' ff{1}], data2write.(ff{1}), offset, buff_ind);
         end
-        for ff = {'skeleton', 'contour_ventral', 'contour_dorsal'}
+        for ff = strArrayFields
             h5write(save_file, ['/segworm_results/' ff{1}], data2write.(ff{1}), [1,1,offset], [RESAMPLE_SIZE,2,buff_ind]);
         end
     end
@@ -135,11 +153,11 @@ end
 %write any data remaining in the buffer
 if buff_ind ~= BUFF_SIZE
     offset = tot_segworm_rows-buff_ind+1;
-    for ff = {'plate_worms_id', 'worm_index_joined', 'frame_number'}
+    for ff = strScalarFields
         h5write(save_file, ['/segworm_results/' ff{1}], data2write.(ff{1})(1:buff_ind), offset, buff_ind);
     end
-    for ff = {'skeleton', 'contour_ventral', 'contour_dorsal'}
+    for ff = strArrayFields
         h5write(save_file, ['/segworm_results/' ff{1}], data2write.(ff{1})(:,:,1:buff_ind), [1,1,offset], [RESAMPLE_SIZE,2,buff_ind]);
     end
 end
-toc
+%toc

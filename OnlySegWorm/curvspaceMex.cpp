@@ -44,13 +44,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     
     double N = mxGetScalar(prhs[1]); //get the number of resampling points
     
-    //output
+    //outputs
+    //resampled curve
     plhs[0] = mxCreateNumericMatrix(N, double(p_dim),mxDOUBLE_CLASS,mxREAL);
     double **q;
     q = new double* [p_dim];
     q[0] = mxGetPr(plhs[0]);
     for (int k = 1; k<p_dim; k++)
         q[k] = q[0] + k*int(N);
+    
+    //curve length
+    plhs[1] = mxCreateDoubleMatrix(1, 1, mxREAL);
     
     //helper variables
     double totaldist, intv, remainder, distsum, disttmp;
@@ -76,7 +80,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
     //%% interval %%
     intv = totaldist/(N-1);
-    q[0][0] = totaldist;
+    
+    //put total distance as function output
+    *mxGetPr(plhs[1]) = totaldist;
     
     for (int k = 0; k<p_dim; k++)
     {

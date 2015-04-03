@@ -1,18 +1,5 @@
 function [worm_results, worm] = getWormSkeletonM(maskData, frame, worm_results_prev, resampleNum)
-
-%prevOrientWorm = [];
-%downSamples = 65;
-%downSamples = double(downSamples); %make sure this quantity is a floating point
-% Setup the stage movements.
-%moves = [0, 0];
-%origins = [0,0];
-%pixel2MicronScale = [-1, -1];
-%rotation = 1;
-
-% Pre-compute the values for orienting successive worm frames.
-%orientSamples = [1:5 7:11] / 12;
-% Segment the video frame.
-%worm = segWorm(img, frame, true,false);
+%maskData = worm_mask; frame = current_frame; worm_results_prev = prev_worms{worm_index}; resampleNum = RESAMPLE_SIZE;
 
 worm_results = [];
 worm = segWormBWimgSimpleM(maskData, frame, 0.1, false);
@@ -26,9 +13,12 @@ if ~isempty(worm)
     contour_ventral = flip(contour_ventral);
     skeleton = worm.skeleton.pixels;
     
-    worm_results.skeleton = curvspaceMex(skeleton, resampleNum);
-    worm_results.contour_ventral = curvspaceMex(contour_ventral, resampleNum);
-    worm_results.contour_dorsal = curvspaceMex(contour_dorsal, resampleNum);
+    [worm_results.skeleton, worm_results.skeleton_length] = ...
+        curvspaceMex(skeleton, resampleNum);
+    [worm_results.contour_ventral, worm_results.contour_ventral_length] = ...
+        curvspaceMex(contour_ventral, resampleNum);
+    [worm_results.contour_dorsal, worm_results.contour_dorsal_length] = ...
+        curvspaceMex(contour_dorsal, resampleNum);
     worm_results.frame = frame;
     
     if isempty(worm_results_prev)

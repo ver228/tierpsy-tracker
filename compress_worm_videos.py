@@ -367,8 +367,6 @@ def writeFullFramesTiff(masked_image_file, tiff_file = -1, reduce_fractor = 8, b
     sendQueueOrPrint(status_queue, 'Reading for data the tiff file...', base_name);
     
     for frame_number in range(expected_size):
-        #pass
-        #dum = cv2.resize(mask_fid["/full_data"][frame_number,:,:], reduce_factor);
         I_worms[frame_number, :,:] = cv2.resize(mask_fid["/full_data"][frame_number,:,:], reduce_factor);
     
     sendQueueOrPrint(status_queue, 'Writing tiff file...', base_name);
@@ -439,10 +437,6 @@ def printProgress(progress):
         print filename, progress_str
 
     sys.stdout.flush()
-
-
-
-
 
 if __name__ == '__main__':    
 

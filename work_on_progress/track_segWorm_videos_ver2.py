@@ -30,10 +30,10 @@ import matplotlib.pylab as plt
 #segworm_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/CaptureTest_90pc_Ch1_02022015_141431_segworm.hdf5'
 #save_dir = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/worms/'
 
-masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Capture_Ch4_23032015_111907.hdf5'
-trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/trajectories/Capture_Ch4_23032015_111907.hdf5'
-segworm_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/trajectories/Capture_Ch4_23032015_111907_segworm.hdf5'
-save_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150323/trajectories/worms_Ch4_kezhi/'
+masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Capture_Ch1_23032015_111907.hdf5'
+trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/trajectories/Capture_Ch1_23032015_111907.hdf5'
+segworm_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/trajectories/Capture_Ch1_23032015_111907_segworm.hdf5'
+save_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150323/trajectories/worms_Ch1_kezhi/'
 
 
 # These are the "Tableau 20" colors as RGB.  
@@ -70,7 +70,7 @@ class writeVideoffmpeg:
         '-f', 'rawvideo',
         '-vcodec','rawvideo',
         '-s', '%ix%i' % (width,height), # size of one frame
-        '-pix_fmt', 'rgb24',
+        '-pix_fmt', 'gray',
         '-r', '25', # frames per second
         '-i', '-', # The imput comes from a pipe
         '-an', # Tells FFMPEG not to expect any audio
@@ -144,11 +144,11 @@ segworm_fid = h5py.File(segworm_file, 'r')
 
 figure_list = {};
 
-ROI_SIZE = 130;
+ROI_SIZE = 128;
 MOVIE_SCALE = 1#1.5;
 tic = time.time()
 tic_first = tic
-for frame in range(0, df['frame_number'].max()):
+for frame in range(0,1000):#range(0, df['frame_number'].max()):
     
     img = mask_dataset[frame,:,:]
     
@@ -185,10 +185,11 @@ for frame in range(0, df['frame_number'].max()):
         worm = wormsInFrame[wormsInFrame['worm_index_joined'] == worm_index]
         threshold = worm['threshold'].values
         segworm_id = worm['segworm_id'].values
-        worm_rgb= cv2.cvtColor(worm_img, cv2.COLOR_GRAY2RGB);
         
         is_draw_contour = False
         if is_draw_contour:
+            worm_rgb= cv2.cvtColor(worm_img, cv2.COLOR_GRAY2RGB);
+        
             if (len(threshold) == 1) and (segworm_id < 0):
                 worm_mask = ((worm_img<threshold)&(worm_img!=0)).astype(np.uint8)        
                 worm_mask = cv2.morphologyEx(worm_mask, cv2.MORPH_CLOSE,np.ones((3,3)))
@@ -208,10 +209,12 @@ for frame in range(0, df['frame_number'].max()):
                     #plt.plot(xx,yy, color=colorpalette[ii])
                 cv2.circle(worm_rgb, tuple(pts[0]), 2, (225,225,225), thickness=-1, lineType = 8)
                 cv2.circle(worm_rgb, tuple(pts[0]), 3, (0,0,0), thickness=1, lineType = 8)
+                
+                figure_list[worm_index]['writer'].write(worm_rgb)
         else:
-            worm_rgb = cv2.resize(worm_rgb,(0,0),fx=MOVIE_SCALE, fy=MOVIE_SCALE);
+            figure_list[worm_index]['writer'].write(worm_img)
         #WRITE FRAME TO THE VIDEO
-        figure_list[worm_index]['writer'].write(worm_rgb)
+        
         
     if frame == smoothed_CM[worm_index]['last_frame']:
         figure_list[worm_index]['writer'].release()    
@@ -223,8 +226,9 @@ for frame in range(0, df['frame_number'].max()):
 
 mask_fid.close()
 segworm_fid.close()  
-
+#%%
 #plt.close('all')  
 for worm_index in figure_list:
-    figure_list[worm_index]['writer'].release()    
+    figure_list[worm_index]['writer'].release()       
+
 
