@@ -22,7 +22,7 @@ import sys
 sys.path.append('../videoCompression/')
 from parallelProcHelper import sendQueueOrPrint
 
-def getValidTrajectories(masked_image_file, trajectories_file, \
+def getValidTrajectories(trajectories_file, \
     min_displacement = 20, thresh_smooth_window = 1501, save_csv_name = ''):
     #read that frame an select trajectories that were considered valid by join_trajectories
     table_fid = pd.HDFStore(trajectories_file, 'r')
@@ -40,7 +40,7 @@ def getValidTrajectories(masked_image_file, trajectories_file, \
     df = df[df.worm_index_joined.isin(good_index)]
     
     from scipy.ndimage.filters import median_filter
-    for dat_group in df.groupby('worm_index'):
+    for dat_group in df.groupby('worm_index_joined'):
         dat = dat_group[1][['threshold', 'frame_number']].sort('frame_number')
         df.loc[dat.index,'threshold'] = median_filter(dat['threshold'],thresh_smooth_window)
         
@@ -52,9 +52,12 @@ def getValidTrajectories(masked_image_file, trajectories_file, \
     return df;
 
 def getSegWorm(masked_image_file, trajectories_file, segworm_file, \
-status_queue = '', base_name = ''):
+status_queue = '', base_name = '', min_displacement = 20, thresh_smooth_window = 1501):
     sendQueueOrPrint(status_queue, 'Obtaining valid trajectories...', base_name);
-    df = getValidTrajectories(masked_image_file, trajectories_file);
+    df = getValidTrajectories(trajectories_file, min_displacement, thresh_smooth_window);
+    if len(df)==0:
+        print "Segworm: no valid trajectories, nothing to do here"
+        return
 
     sendQueueOrPrint(status_queue, 'Initializing MATLAB...', base_name);
     eng = matlab.engine.start_matlab()
@@ -74,15 +77,17 @@ status_queue = '', base_name = ''):
     fun_output = StringIO()
     #calculate segworm data using the MATLAB engine
     future = eng.movie2segwormfun(data, masked_image_file, segworm_file, \
-    nargout = 0, async = True, stderr = fun_output)
-    sendQueueOrPrint(status_queue, 'MATLAB function started.', base_name);
+    nargout = 0, async = True)#, stdout = fun_output)
+    sendQueueOrPrint(status_queue, 'Segworm started.', base_name);
     
     while not future.done():
         time.sleep(1.0)
-        progress_str = fun_output.getvalue()
-        if progress_str:
-            sendQueueOrPrint(status_queue, progress_str, base_name);
-        
+#        progress_str = fun_output.getvalue()
+#        #print 'a', progress_str
+#        if progress_str:
+#            print 'a'
+#            sendQueueOrPrint(status_queue, progress_str, base_name);
+#        
     #update pytables with the correct index for segworm_file
     results_fid = tables.open_file(trajectories_file, 'r+')
     tracking_table = results_fid.get_node('/plate_worms')
@@ -114,10 +119,13 @@ if __name__ == '__main__':
 #    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/trajectories/Capture_Ch4_23032015_111907.hdf5'
 #    segworm_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/trajectories/Capture_Ch4_23032015_111907_segworm.hdf5'
 
-    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/CaptureTest_90pc_Ch1_02022015_141431.hdf5'
-    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/CaptureTest_90pc_Ch1_02022015_141431.hdf5'
-    segworm_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/CaptureTest_90pc_Ch1_02022015_141431_segworm.hdf5'
-    
-    getSegWorm(masked_image_file, trajectories_file, segworm_file)
+#    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/CaptureTest_90pc_Ch1_02022015_141431.hdf5'
+#    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/CaptureTest_90pc_Ch1_02022015_141431.hdf5'
+#    segworm_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/CaptureTest_90pc_Ch1_02022015_141431_segworm.hdf5'
+#    save_csv_name = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/CaptureTest_90pc_Ch1_02022015_141431.csv';
+    #df = getValidTrajectories(trajectories_file, save_csv_name = save_csv_name)
+    #getSegWorm(masked_image_file, trajectories_file, segworm_file)
 
-    
+    trajectories_file = r'/Users/ajaver/Desktop/sygenta/Trajectories/data_20150114/control_9_fri_12th_dec_2_trajectories.hdf5'
+    save_csv_name = '/Users/ajaver/Desktop/sygenta/Trajectories/control_9_fri_12th_dec_2.csv'
+    df = getValidTrajectories(trajectories_file, save_csv_name = save_csv_name)

@@ -60,7 +60,7 @@ colorpalette = [(27, 158, 119), (217, 95, 2), (231, 41, 138)]):
     #Colormap from colorbrewer Dark2 5 - [0, 1, 3]    
     if not os.path.exists(video_save_dir):
         os.mkdir(video_save_dir)
-
+#%%
     #get id of trajectories with calculated skeletons
     table_fid = pd.HDFStore(trajectories_file, 'r');
     df = table_fid['/plate_worms'];
@@ -69,11 +69,16 @@ colorpalette = [(27, 158, 119), (217, 95, 2), (231, 41, 138)]):
     df = df[df.worm_index_joined.isin(good_index)];
     table_fid.close()
     
+    if len(df) == 0: #no valid trajectories identified
+        return;
+    
     #get the last frame to be included in the video
     last_frame = df['frame_number'].max();
     if max_frame_number <0 or max_frame_number > last_frame:
         max_frame_number = last_frame;
-    
+        
+    #print max_frame_number
+#%%    
     #smooth trajectories (reduce jiggling from the CM to obtain a nicer video)
     smoothed_CM = {};
     for worm_index in good_index:
@@ -155,6 +160,7 @@ colorpalette = [(27, 158, 119), (217, 95, 2), (231, 41, 138)]):
                 video_list[worm_index]['writer'].write(worm_img)
             else:
                 worm = wormsInFrame[wormsInFrame['worm_index_joined'] == worm_index]
+                worm = worm.head(1); #in case duplicated values...                
                 threshold = worm['threshold'].values
                 segworm_id = worm['segworm_id'].values
             
@@ -164,7 +170,12 @@ colorpalette = [(27, 158, 119), (217, 95, 2), (231, 41, 138)]):
                     worm_mask = ((worm_img<threshold)&(worm_img!=0)).astype(np.uint8)        
                     worm_mask = cv2.morphologyEx(worm_mask, cv2.MORPH_CLOSE,np.ones((3,3)))
                     worm_rgb[:,:,1][worm_mask!=0] = 150
-                
+                else:
+                    pass
+#                    worm_rgb[0:2,0:2,0] = 255            
+#                    worm_rgb[0:2,0:2,1] = 0
+#                    worm_rgb[0:2,0:2,2] = 0
+
                 worm_rgb = cv2.resize(worm_rgb, (0,0), fx=movie_scale, fy=movie_scale);
                 
                 if (len(segworm_id)==1) and (segworm_id >= 0):
@@ -178,8 +189,10 @@ colorpalette = [(27, 158, 119), (217, 95, 2), (231, 41, 138)]):
     
                     cv2.circle(worm_rgb, tuple(pts[0]), 2, (225,225,225), thickness=-1, lineType = 8)
                     cv2.circle(worm_rgb, tuple(pts[0]), 3, (0,0,0), thickness=1, lineType = 8)
-                    
-                    video_list[worm_index]['writer'].write(worm_rgb)
+                #write frame to video
+                
+                
+                video_list[worm_index]['writer'].write(worm_rgb)
     
         if frame == smoothed_CM[worm_index]['last_frame']:
             video_list[worm_index]['writer'].release()    
@@ -198,16 +211,21 @@ colorpalette = [(27, 158, 119), (217, 95, 2), (231, 41, 138)]):
 
 
 if __name__ == '__main__':
-    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Capture_Ch1_23032015_111907.hdf5'
-    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/trajectories/Capture_Ch1_23032015_111907.hdf5'
-    segworm_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/trajectories/Capture_Ch1_23032015_111907_segworm.hdf5'
-    video_save_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150323/trajectories/worms_Ch1_kezhia/'
+#    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Capture_Ch1_23032015_111907.hdf5'
+#    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/trajectories/Capture_Ch1_23032015_111907.hdf5'
+#    segworm_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/trajectories/Capture_Ch1_23032015_111907_segworm.hdf5'
+#    video_save_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150323/trajectories/worms_Ch1_kezhia/'
     
+    masked_image_file = r'/Users/ajaver/Desktop/sygenta/Compressed/data_20150114/compound_a_repeat_2_fri_5th_dec.hdf5'
+    trajectories_file = r'/Users/ajaver/Desktop/sygenta/Trajectories/data_20150114/compound_a_repeat_2_fri_5th_dec_trajectories.hdf5'
+    segworm_file = r'/Users/ajaver/Desktop/sygenta/Trajectories/data_20150114/compound_a_repeat_2_fri_5th_dec_segworm.hdf5'
+    video_save_dir = r'/Users/ajaver/Desktop/sygenta/Worm_Movies/data_20150114/compound_a_repeat_2_fri_5th_dec/'
+
     
     getIndividualWormVideos(masked_image_file, trajectories_file, \
-    segworm_file, video_save_dir, is_draw_contour = False, max_frame_number = 1000)
+    segworm_file, video_save_dir, is_draw_contour = True)
     
-    video_save_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150323/trajectories/worms_Ch1a/'
+    #video_save_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150323/trajectories/worms_Ch1a/'
     
-    getIndividualWormVideos(masked_image_file, trajectories_file, \
-    segworm_file, video_save_dir, is_draw_contour = True, max_frame_number = 1000)
+    #getIndividualWormVideos(masked_image_file, trajectories_file, \
+    #segworm_file, video_save_dir, is_draw_contour = True, max_frame_number = 1000)

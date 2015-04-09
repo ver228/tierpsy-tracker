@@ -7,11 +7,9 @@ Created on Thu Apr  2 13:19:58 2015
 import numpy as np
 import cv2
 import h5py
-import time
-import datetime
 
 from readVideoffmpeg import readVideoffmpeg
-from parallelProcHelper import sendQueueOrPrint
+from parallelProcHelper import sendQueueOrPrint, timeCounterStr
 
 def getROIMask(image,  min_area = 100, max_area = 5000):
     '''
@@ -92,17 +90,17 @@ status_queue = '', check_empty = True,  useVideoCapture = True):
     #open hdf5 to store the processed data
     mask_fid = h5py.File(masked_image_file, "w");
     #open node to store the compressed (masked) data
-    mask_dataset = mask_fid.create_dataset("/mask", (0, im_width, im_height), 
-                                    dtype = "u1", maxshape = (None, im_width, im_height), 
-                                    chunks = (1, im_width, im_height),
+    mask_dataset = mask_fid.create_dataset("/mask", (0, im_height,im_width), 
+                                    dtype = "u1", maxshape = (None, im_height,im_width), 
+                                    chunks = (1, im_height,im_width),
                                     compression="gzip", 
                                     compression_opts=4,
                                     shuffle=True);
     
     #full frames are saved in "/full_data" every save_full_interval frames
-    full_dataset = mask_fid.create_dataset("/full_data", (0, im_width, im_height), 
-                                    dtype = "u1", maxshape = (None, im_width, im_height), 
-                                    chunks = (1, im_width, im_height),
+    full_dataset = mask_fid.create_dataset("/full_data", (0, im_height,im_width), 
+                                    dtype = "u1", maxshape = (None, im_height,im_width), 
+                                    chunks = (1, im_height,im_width),
                                     compression="gzip", 
                                     compression_opts=9,
                                     shuffle=True);
@@ -122,7 +120,7 @@ status_queue = '', check_empty = True,  useVideoCapture = True):
             break
         
         if useVideoCapture:
-            image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY).T
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
             
         #check if the 200 randomly selected index are equal (much faster that check the whole image)
         if check_empty and np.all(image.flat[rand_ind]-np.mean(image.flat[rand_ind])==0):
@@ -151,7 +149,7 @@ status_queue = '', check_empty = True,  useVideoCapture = True):
         
         #initialize the buffer when the index correspond to 0
         if ind_buff == 0:
-            Ibuff = np.zeros((buffer_size, im_width, im_height), dtype = np.uint8)
+            Ibuff = np.zeros((buffer_size, im_height, im_width), dtype = np.uint8)
 
         #add image to the buffer
         Ibuff[ind_buff, :, :] = image
@@ -173,14 +171,7 @@ status_queue = '', check_empty = True,  useVideoCapture = True):
         
         if frame_number%25 == 0:
             #calculate the progress and put it in a string
-            time_str = str(datetime.timedelta(seconds=round(time.time()-initial_time)))
-            fps = (frame_number-last_frame+1)/(time.time()-fps_time)
-            progress_str = 'Compressing video. Total time = %s, fps = %2.1f; Frame %i '\
-                % (time_str, fps, frame_number)
-            fps_time = time.time()
-            last_frame = frame_number;
-            
-            
+            progress_str = progressTime.getStr(frame_number)
             sendQueueOrPrint(status_queue, progress_str, base_name);
             
             

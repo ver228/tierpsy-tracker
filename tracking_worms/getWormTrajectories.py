@@ -14,6 +14,7 @@ Created on Thu Feb  5 16:08:07 2015
 import h5py
 import matplotlib.pylab as plt
 import numpy as np
+import pandas as pd
 import tables
 from math import sqrt
 import cv2
@@ -62,13 +63,14 @@ def getWormThreshold(pix_valid):
     
     #the higher limit is the most frequent value in the distribution (background)
     largest_peak = np.argmax(pix_hist)
-    if otsu_thresh < largest_peak:
+    if otsu_thresh < largest_peak and otsu_thresh+2 < len(pix_hist)-1:
         #this method is base on the fact that the cumulative distribution 
         #seems to have two slopes, one for the background and one for the worm
         #The slope correspondign to the worm pixel is calculated, and the threshold
         #set when it deviates too much from the real distribution
         cumhist = np.cumsum(pix_hist);
         xx_t = np.arange((otsu_thresh-2),(otsu_thresh+3));
+        
         yy_t = cumhist[xx_t]
         pp = np.polyfit(xx_t, yy_t, 1)
         xx = np.arange(otsu_thresh, cumhist.size)
@@ -83,8 +85,8 @@ def getWormThreshold(pix_valid):
         
     return thresh
     
-def getTrajectories(masked_image_file, trajectories_file, initial_frame = 0, last_frame = -1, \
-min_area = 20, min_length = 5, max_allowed_dist = 20, \
+def getWormTrajectories(masked_image_file, trajectories_file, initial_frame = 0, last_frame = -1, \
+min_area = 25, min_length = 5, max_allowed_dist = 20, \
 area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue='', base_name =''):
     '''
     #read images from 'masked_image_file', and save the linked trajectories and their features into 'trajectories_file'
@@ -105,7 +107,7 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue='', base_name =''):
     
     if last_frame <= 0:
         last_frame = mask_dataset.shape[0]
-
+    
     #initialized variabes
     tot_worms = 0;
     buff_last_coord = np.empty([0]);
@@ -114,19 +116,25 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue='', base_name =''):
     
     progressTime = timeCounterStr('Calculating trajectories.');
     for frame_number in range(initial_frame, last_frame, buffer_size):
+        
         #load image buffer
         image_buffer = mask_dataset[frame_number:(frame_number+buffer_size),:, :]
         
+          
         #select pixels as connected regions that were selected as worms at least once in the masks
+        #main_mask = np.min(image_buffer, axis=0); 
+        #main_mask[0:15, 0:479] = 0
         main_mask = np.any(image_buffer, axis=0)
         main_mask[0:15, 0:479] = False; #remove the timestamp region in the upper corner
-        main_mask = main_mask.astype(np.uint8) #change from bool to uint since same datatype is required in opencv
-        [ROIs, hierarchy]= cv2.findContours(main_mask.copy(), \
-        cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        main_mask = main_mask.astype(np.int32) #change from bool to uint since same datatype is required in opencv
+        #for some reason multiprocessing fails if I use for the mask np.uint8. It just terminate the function without error msg
+        #findContours must work in CV_RETR_CCOMP to be able to deal with np.int32 
+        [ROIs, hierarchy]= cv2.findContours(main_mask, \
+        cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
         
         buff_feature_table = []
         buff_last = []
-
+       
         #examinate each region of interest        
         for ROI_ind, ROI_cnt in enumerate(ROIs):
             ROI_bbox = cv2.boundingRect(ROI_cnt) 
@@ -136,9 +144,6 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue='', base_name =''):
             
             #select ROI for all buffer slides.
             ROI_buffer = image_buffer[:,ROI_bbox[1]:(ROI_bbox[1]+ROI_bbox[3]),ROI_bbox[0]:(ROI_bbox[0]+ROI_bbox[2])];            
-            for ii in range(buffer_size):
-                ROI_buffer[ii,:,:] = cv2.medianBlur(ROI_buffer[ii,:,:], 3)
-            
             
             #calculate threshold using the nonzero pixels. 
             #Using the buffer instead of a single image, improves the threshold calculation, since better statistics are recoverd
@@ -173,6 +178,7 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue='', base_name =''):
                 
                 #get the border of the ROI mask, this will be used to filter for valid worms
                 ROI_valid = (ROI_image != 0)
+                
                 ROI_border_ind, _ =  cv2.findContours(ROI_valid.astype(np.uint8), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)  
                 
                 if len(ROI_border_ind) <= 1: #consider the case where there is more than one contour
@@ -408,34 +414,28 @@ max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
     feature_fid.close()
 
 def plotLongTrajectories(trajectories_file, plot_file, number_trajectories = 20, plot_limits = (2048,2048)):
-    #plot top 20 largest trajectories
-    feature_fid = tables.open_file(trajectories_file, mode = 'r')
-    feature_table = feature_fid.get_node('/plate_worms')
-    dum = np.array(feature_table.cols.worm_index_joined);
-    dum[dum<0]=0
-    track_size = np.bincount(dum)
-    track_size[0] = 0
-    indexes = np.argsort(track_size)[::-1]
+    index_str = 'worm_index_joined';
     
-    number_trajectories = number_trajectories if len(indexes)>=number_trajectories else len(indexes);
+    table_fid = pd.HDFStore(trajectories_file, 'r')
+    df = table_fid['/plate_worms']
+    df =  df[df[index_str] > 0]
     
-    plt.figure()
-    for ii in indexes[0:number_trajectories]:
-        if ii == 0:
-            break;
-        coord = [(row['coord_x'], row['coord_y'], row['frame_number']) \
-        for row in feature_table.where('worm_index_joined == %i'% ii)]
-
-        coord = np.array(coord).T
+    tracks_size = df[index_str].value_counts()
+    
+    number_trajectories = number_trajectories if len(tracks_size)>=number_trajectories else len(tracks_size);
+    
+    for ii in range(number_trajectories):
+        coord = df[df[index_str] == tracks_size.index[ii]][['coord_x', 'coord_y', 'frame_number']]
         if coord.size!=0:
-            plt.plot(coord[0,:], coord[1,:], '-');
+            plt.plot(coord['coord_x'], coord['coord_y'], '-');
     
     plt.xlim([0,plot_limits[0]])
     plt.ylim([0,plot_limits[1]])
+    plt.axis('equal')
     plt.savefig(plot_file, bbox_inches='tight')
-    plt.close()
     
-    feature_fid.close()
+    plt.close()
+    table_fid.close()
     
 
 if __name__ == '__main__':
@@ -447,7 +447,7 @@ if __name__ == '__main__':
     #trajectories_file = '/Volumes/behavgenom$/Camille Recordings/test1/trajectories/140808_da609_15_trimed.hdf5'
     #plot_file
 
-    getTrajectories(masked_image_file, trajectories_file, last_frame = -1)
+    getWormTrajectories(masked_image_file, trajectories_file, last_frame = -1)
     joinTrajectories(trajectories_file)
     plotLongTrajectories(trajectories_file, plot_file)
 #############

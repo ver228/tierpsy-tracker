@@ -1,10 +1,12 @@
 function movie2segwormfun(data, masked_image_file, save_file)
 
+mask_info = h5info(masked_image_file, '/mask');
 %program constants
 RESAMPLE_SIZE = 50;
-MASK_CHUNK_SIZE = [2048 2048 1]; %it mabye good to extract this info from h5info
+MASK_CHUNK_SIZE = mask_info.ChunkSize; %it mabye good to extract this info from h5info
 BUFF_SIZE = 1000; %buffer size, used to not write too much on the hdf5
 MAX_DT_ALLOWED = 5; 
+MIN_PIX_ALLOWED = 50;
 
 ROI_SIZE = 130; %region to be analyzed
 window_lims = [-ROI_SIZE/2 ROI_SIZE/2];
@@ -77,29 +79,46 @@ for plate_worms_row = 1:numel(data.('frame_number'))
         end
     end
     worm_index = data.('worm_index_joined')(plate_worms_row);
-    
+
     %select region of interest, maybe is better to use a tighter bounding box
     range_x = round(data.('coord_x')(plate_worms_row) + window_lims + 1); %add one for matlab indexing
     range_y = round(data.('coord_y')(plate_worms_row) + window_lims + 1);
     
     %continue if the range is out of the image limit
     %TODO: deal with this in a more clever way
-    if range_y(1) < 1 || (range_y(2) > MASK_CHUNK_SIZE(1)) || ...
-            range_x(1) < 1 || (range_x(2) >= MASK_CHUNK_SIZE(2))
+    if range_y(1) < 1 || (range_y(2) > MASK_CHUNK_SIZE(2)) || ...
+            range_x(1) < 1 || (range_x(2) > MASK_CHUNK_SIZE(1))
         continue
     end
-    
+    %disp(size(I))
+    %fprintf('%f, %f, %f, %f\n', range_y(1), range_y(2), range_x(1), range_x(2))
+    %%
     %obtain binary image
     worm_img = I(range_y(1):range_y(2), range_x(1):range_x(2));
     worm_mask = (worm_img < round(data.('threshold')(plate_worms_row)) &  (worm_img~=0));
     worm_mask = bwmorph(worm_mask, 'close', 2);
     
+    cc = bwconncomp(worm_mask);
     
+    %
+    if cc.NumObjects>1
+        props = regionprops(cc, 'Centroid', 'Area');
+        goodInd = find([props.Area]>=MIN_PIX_ALLOWED);
+        CM = [props(goodInd).Centroid];
+        R = (CM(1:2:end)-abs(window_lims(2))).^2 + (CM(2:2:end)-abs(window_lims(1))).^2;
+        [~, ii] = min(R);
+        worm_mask(:) = 0;
+        worm_mask(cc.PixelIdxList{goodInd(ii)}) = 1;
+        
+        %figure, imshow(worm_mask)
+    end
+    %}
+    %figure, imshow(worm_mask)    
     if ~isempty(prev_worms{worm_index}) && ...
             current_frame - prev_worms{worm_index}.frame > MAX_DT_ALLOWED
         prev_worms{worm_index} = [];
     end
-    
+    %%
     %segworm!
     [worm_results, ~] = getWormSkeletonM(worm_mask, current_frame, prev_worms{worm_index}, RESAMPLE_SIZE);
     if isempty(worm_results)

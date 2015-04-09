@@ -51,6 +51,9 @@ class parallelizeTask:
         self.max_num_process = max_num_process;
         
     def start(self, workers_function, workers_arg):
+        if len(workers_arg) < self.max_num_process:
+            self.max_num_process = len(workers_arg)
+        
         workers = []
         progress = collections.OrderedDict()
         for base_name in workers_arg:
@@ -70,12 +73,11 @@ class parallelizeTask:
             
             #add a new worker if one has already finished
             for ii, worker_id in enumerate(current_workers_id):
-                
                 if not workers[worker_id].is_alive() and remaining_workers_id:
                     new_id = remaining_workers_id.pop()                
                     workers[new_id].start()
                     current_workers_id[ii] = new_id
-                
+            
             time.sleep(1.0) # I made this value larger because I can only save the output in a file on a schedule task with "at". Refreshing it too frequently will produce a huge file.
             while not self.status_queue.empty():
                 filename, percent = self.status_queue.get()

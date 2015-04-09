@@ -30,9 +30,10 @@ def videoProcessingWorker(video_dir, save_dir, base_name='', video_ext ='.mjpg',
     
     video_file = video_dir + base_name + video_ext
     masked_image_file = save_dir + base_name + '.hdf5'
+    masked_image_file = masked_image_file.replace(' ', '_') #spaces are evil get ride of them
     
     try:
-        compressVideo(video_file, masked_image_file, \
+        compressVideo(video_file, masked_image_file, useVideoCapture = True, \
         base_name = base_name, status_queue = status_queue, max_frame = 1e32);
     except:
         sendQueueOrPrint(status_queue, 'Video Conversion failed', base_name)
@@ -61,7 +62,11 @@ if __name__ == '__main__':
     
 #    video_dir = '/Volumes/behavgenom$/syngenta/RawData/data_20150114'
 #    save_dir = '/Volumes/behavgenom$/syngenta/Compressed/data_20150114_dum'
-#    video_ext = 'avi'
+#    video_ext = 'mpjg'
+
+    video_dir = r'/Users/ajaver/Desktop/sygenta/RawData/data_20150114/'
+    save_dir = r'/Users/ajaver/Desktop/sygenta/Compressed/data_20150114/'
+    video_ext = 'avi'
 
     #obtain input from the command line
     print sys.argv[1:]
@@ -94,7 +99,7 @@ if __name__ == '__main__':
         video_dir += os.sep
     
     if not os.path.exists(save_dir):
-        os.mkdir(save_dir)
+        os.makedirs(save_dir)
         
     
     #start the parallizeTask object, obtain the queue where the progress status is stored
