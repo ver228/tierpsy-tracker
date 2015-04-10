@@ -14,10 +14,9 @@ Created on Fri Mar 13 19:39:41 2015
 import pandas as pd
 import h5py
 import tables
-import matlab.engine
 import time
 from StringIO import StringIO
-
+import os
 import sys
 sys.path.append('../videoCompression/')
 from parallelProcHelper import sendQueueOrPrint
@@ -114,6 +113,37 @@ status_queue = '', base_name = '', min_displacement = 20, thresh_smooth_window =
     
     sendQueueOrPrint(status_queue, 'Skeletonization completed.', base_name);
     
+def getSegWorm_noMATLABeng(masked_image_file, trajectories_file, segworm_file, \
+status_queue = '', base_name = '', min_displacement = 20, 
+thresh_smooth_window = 1501, csv_tmp_dir = ''):
+    sendQueueOrPrint(status_queue, 'Obtaining valid trajectories...', base_name);
+    csv_tmp = csv_tmp_dir + 'tmp_' + base_name + '.csv'
+    getValidTrajectories(trajectories_file, min_displacement, thresh_smooth_window, save_csv_name = csv_tmp);
+    #calculate segworm data using the MATLAB engine
+#%%
+    cmd = """matlab -nojvm -nodisplay -nosplash -r "addpath(genpath('/Users/ajaver/GitHub_repositories/Multiworm_Tracking/OnlySegWorm/')); movie2segworm_csv('%s', '%s', '%s'); exit;" """  % (csv_tmp, masked_image_file, segworm_file);
+#%%    
+    os.system(cmd)
+    os.remove(csv_tmp)
+         
+    #update pytables with the correct index for segworm_file
+    results_fid = tables.open_file(trajectories_file, 'r+')
+    tracking_table = results_fid.get_node('/plate_worms')
+    
+    segworm_fid = h5py.File(segworm_file, 'r')
+    
+    plate_worms_id = segworm_fid['/segworm_results/plate_worms_id']
+    
+    for ii in range(plate_worms_id.size):
+        tracking_table.cols.segworm_id[int(plate_worms_id[ii])] = ii;
+    
+    results_fid.flush()
+    results_fid.close()
+    segworm_fid.close()
+    
+    
+    sendQueueOrPrint(status_queue, 'Skeletonization completed.', base_name);    
+    
 if __name__ == '__main__':
 #    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Capture_Ch4_23032015_111907.hdf5'
 #    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/trajectories/Capture_Ch4_23032015_111907.hdf5'
@@ -130,9 +160,9 @@ if __name__ == '__main__':
 #    save_csv_name = '/Users/ajaver/Desktop/sygenta/Trajectories/control_9_fri_12th_dec_2.csv'
 #    df = getValidTrajectories(trajectories_file, save_csv_name = save_csv_name)
 
-    masked_movies_dir = sys.argv[1]
-    trajectories_dir = sys.argv[2]
-    base_name = sys.argv[3]
+#    masked_movies_dir = sys.argv[1]
+#    trajectories_dir = sys.argv[2]
+#    base_name = sys.argv[3]
 
     masked_image_file = masked_movies_dir + base_name + '.hdf5'
     trajectories_file = trajectories_dir + base_name + '_trajectories.hdf5'
@@ -141,10 +171,17 @@ if __name__ == '__main__':
     n_trials = 0;
     while n_trials<5:
         try:
-            #obtain skeletons
-            getSegWorm(masked_image_file, trajectories_file, segworm_file,\
+#            #obtain skeletons
+#            try:
+#                import matlab.engine
+#                getSegWorm(masked_image_file, trajectories_file, segworm_file,\
+#                base_name = base_name, \
+#                min_displacement = 2, thresh_smooth_window = 1501)
+#            except:
+            getSegWorm_noMATLABeng(masked_image_file, trajectories_file, segworm_file,\
             base_name = base_name, \
             min_displacement = 2, thresh_smooth_window = 1501)
+                
             n_trials = 5;
         except:
             print('%s: Segworm failed' % base_name)

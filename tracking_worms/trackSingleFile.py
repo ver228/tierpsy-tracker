@@ -7,7 +7,7 @@ Created on Fri Apr  3 01:56:06 2015
 import os
 
 from getWormTrajectories import getWormTrajectories, joinTrajectories, plotLongTrajectories
-from getSegWorm import getSegWorm
+from getSegWorm import getSegWorm, getSegWorm_noMATLABeng
 from getIndividualWormVideos import getIndividualWormVideos
 
 import sys
@@ -39,14 +39,19 @@ base_name, status_queue= ''):
     except:
         sendQueueOrPrint(status_queue, 'Tracking failed', base_name)
         raise'Tracking failed'
-    
+#    
     n_trials = 0;
     while n_trials<5:
         try:
             #obtain skeletons
-            getSegWorm(masked_image_file, trajectories_file, segworm_file,\
-            base_name = base_name, status_queue=status_queue, \
+#            getSegWorm(masked_image_file, trajectories_file, segworm_file,\
+#            base_name = base_name, status_queue=status_queue, \
+#            min_displacement = 2, thresh_smooth_window = 1501)
+#            n_trials = 5;
+            getSegWorm_noMATLABeng(masked_image_file, trajectories_file, segworm_file,\
+            base_name = base_name, \
             min_displacement = 2, thresh_smooth_window = 1501)
+                
             n_trials = 5;
         except:
             sendQueueOrPrint(status_queue, 'Segworm failed', base_name)

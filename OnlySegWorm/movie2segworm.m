@@ -16,5 +16,5 @@ for ii = 1:numel(AA.colheaders)
     data.(AA.colheaders{ii}) = AA.data(:,ii);
 end
 clear AA
-%%
-movie2segwormfun(data, masked_image_file, save_file)
+
+movie2segwormfun(data, masked_image_file, trajectories_file);
