@@ -148,7 +148,8 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue='', base_name =''):
             #calculate threshold using the nonzero pixels. 
             #Using the buffer instead of a single image, improves the threshold calculation, since better statistics are recoverd
             pix_valid = ROI_buffer[ROI_buffer!=0]
-            
+            if pix_valid.size==0:
+                return
             #caculate threshold
             thresh = getWormThreshold(pix_valid)
             
@@ -439,15 +440,32 @@ def plotLongTrajectories(trajectories_file, plot_file, number_trajectories = 20,
     
 
 if __name__ == '__main__':
-    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/CaptureTest_90pc_Ch1_02022015_141431.hdf5'
-    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/CaptureTest_90pc_Ch1_02022015_141431.hdf5'
-    plot_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/CaptureTest_90pc_Ch1_02022015_141431.pdf'
+#    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/CaptureTest_90pc_Ch1_02022015_141431.hdf5'
+#    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/CaptureTest_90pc_Ch1_02022015_141431.hdf5'
+#    trajectories_plot_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/CaptureTest_90pc_Ch1_02022015_141431.pdf'
 
     #masked_image_file = '/Volumes/behavgenom$/Camille Recordings/test1/140808_da609_15_trimed.hdf5'
     #trajectories_file = '/Volumes/behavgenom$/Camille Recordings/test1/trajectories/140808_da609_15_trimed.hdf5'
     #plot_file
+    masked_movies_dir = sys.argv[1]
+    trajectories_dir = sys.argv[2]
+    base_name = sys.argv[3]
 
-    getWormTrajectories(masked_image_file, trajectories_file, last_frame = -1)
-    joinTrajectories(trajectories_file)
-    plotLongTrajectories(trajectories_file, plot_file)
+    masked_image_file = masked_movies_dir + base_name + '.hdf5'
+    trajectories_file = trajectories_dir + base_name + '_trajectories.hdf5'
+    trajectories_plot_file = trajectories_dir + base_name + '_trajectories.pdf'
+        
+    try:
+        #track individual worms
+        getWormTrajectories(masked_image_file, trajectories_file, last_frame = -1,\
+        base_name=base_name)
+        joinTrajectories(trajectories_file)
+        
+        mask_fid = h5py.File(masked_image_file, "r");
+        plot_limits = mask_fid['/mask'].shape[1:]
+        mask_fid.close()
+        plotLongTrajectories(trajectories_file, trajectories_plot_file, plot_limits=plot_limits)
+    except:
+        print('%s: Tracking failed' % base_name)
+        raise'Tracking failed'
 #############

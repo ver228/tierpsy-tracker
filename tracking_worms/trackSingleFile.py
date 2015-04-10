@@ -19,15 +19,13 @@ from parallelProcHelper import sendQueueOrPrint
 def getTrajectoriesWorker(masked_movies_dir, trajectories_dir, main_video_save_dir, \
 base_name, status_queue= ''):
     #construct file names
+#%%
     masked_image_file = masked_movies_dir + base_name + '.hdf5'
     trajectories_file = trajectories_dir + base_name + '_trajectories.hdf5'
     trajectories_plot_file = trajectories_dir + base_name + '_trajectories.pdf'
     segworm_file = trajectories_dir + base_name + '_segworm.hdf5'
     video_save_dir = main_video_save_dir + base_name + os.sep
-
-    if not os.path.exists(video_save_dir):
-        os.mkdir(video_save_dir)
-    
+#%%
     try:
         #track individual worms
         getWormTrajectories(masked_image_file, trajectories_file, last_frame = -1,\
@@ -62,6 +60,11 @@ base_name, status_queue= ''):
         getIndividualWormVideos(masked_image_file, trajectories_file, \
         segworm_file, video_save_dir, is_draw_contour = True, max_frame_number = -1,\
         base_name = base_name, status_queue=status_queue)
+
+        video_save_dir_gray = main_video_save_dir + base_name + '_gray' + os.sep
+        getIndividualWormVideos(masked_image_file, trajectories_file, \
+        segworm_file, video_save_dir_gray, is_draw_contour = False, max_frame_number = -1,\
+        base_name = base_name, status_queue=status_queue)
     except:
         sendQueueOrPrint(status_queue, 'Create individual worm videos failed.', base_name)
         raise 'Create individual worm videos failed.'
@@ -76,6 +79,7 @@ if __name__ == '__main__':
     trajectories_dir = sys.argv[2]
     main_video_save_dir = sys.argv[3]
     base_name = sys.argv[4]
+    
     getTrajectoriesWorker(masked_movies_dir, trajectories_dir, main_video_save_dir, base_name)
 
     

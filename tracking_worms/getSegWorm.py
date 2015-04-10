@@ -126,6 +126,29 @@ if __name__ == '__main__':
     #df = getValidTrajectories(trajectories_file, save_csv_name = save_csv_name)
     #getSegWorm(masked_image_file, trajectories_file, segworm_file)
 
-    trajectories_file = r'/Users/ajaver/Desktop/sygenta/Trajectories/data_20150114/control_9_fri_12th_dec_2_trajectories.hdf5'
-    save_csv_name = '/Users/ajaver/Desktop/sygenta/Trajectories/control_9_fri_12th_dec_2.csv'
-    df = getValidTrajectories(trajectories_file, save_csv_name = save_csv_name)
+#    trajectories_file = r'/Users/ajaver/Desktop/sygenta/Trajectories/data_20150114/control_9_fri_12th_dec_2_trajectories.hdf5'
+#    save_csv_name = '/Users/ajaver/Desktop/sygenta/Trajectories/control_9_fri_12th_dec_2.csv'
+#    df = getValidTrajectories(trajectories_file, save_csv_name = save_csv_name)
+
+    masked_movies_dir = sys.argv[1]
+    trajectories_dir = sys.argv[2]
+    base_name = sys.argv[3]
+
+    masked_image_file = masked_movies_dir + base_name + '.hdf5'
+    trajectories_file = trajectories_dir + base_name + '_trajectories.hdf5'
+    segworm_file = trajectories_dir + base_name + '_segworm.hdf5'
+    
+    n_trials = 0;
+    while n_trials<5:
+        try:
+            #obtain skeletons
+            getSegWorm(masked_image_file, trajectories_file, segworm_file,\
+            base_name = base_name, \
+            min_displacement = 2, thresh_smooth_window = 1501)
+            n_trials = 5;
+        except:
+            print('%s: Segworm failed' % base_name)
+            n_trials +=1;
+            time.sleep(30)
+            if n_trials == 5:
+                raise 'Segworm failed'

@@ -15,26 +15,26 @@ import os
 import subprocess as sp
 import time
 
+#def get_tracking_cmd(masked_movies_dir, trajectories_dir, base_name, 
+#                     main_video_save_dir = '', 
+#                     is_main_tracking = True, is_segworm = True, is_individual_video = True):
+#    
+#    cmd = ' '.join(["python trackSingleFile.py", masked_movies_dir, \
+#        trajectories_dir, main_video_save_dir, base_name, \
+#        '>' , progress_file])
+
 if __name__ == '__main__':
 #python trackSingleFile.py "/Users/ajaver/Desktop/Gecko_compressed/20150323/" "/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/" "/Users/ajaver/Desktop/Gecko_compressed/20150323/Worm_Movies/" "Capture_Ch4_23032015_111907"
-#    masked_movies_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150323/'
-#    trajectories_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/'
-#    main_video_save_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Worm_Movies/'
-#    progress_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Worm_Movies/'
-
-#    masked_movies_dir = '/Volumes/behavgenom$/syngenta/Compressed/data_20150114/'
-#    trajectories_dir = '/Volumes/behavgenom$/syngenta/Trajectories/data_20150114/'
-#    main_video_save_dir = '/Volumes/behavgenom$/syngenta/Worm_Movies/data_20150114/'
-#    progress_dir = '/Volumes/behavgenom$/syngenta/progress_txt/'
 
 #    masked_movies_dir = r'/Users/ajaver/Desktop/sygenta/Compressed/data_20150114/'
 #    trajectories_dir = r'/Users/ajaver/Desktop/sygenta/Trajectories/data_20150114/'
 #    main_video_save_dir = r'/Users/ajaver/Desktop/sygenta/Worm_Movies/data_20150114/'
 #    progress_dir = r'/Users/ajaver/Desktop/sygenta/progress_txt/'
-    masked_movies_dir =  r'/Volumes/behavgenom$/syngenta/Compressed/data_20150114/'
-    trajectories_dir =  r'/Volumes/behavgenom$/syngenta/Trajectories/data_20150114/'
-    main_video_save_dir = r'/Volumes/behavgenom$/syngenta/Worm_Movies/data_20150114/'
-    progress_dir = r'/Volumes/behavgenom$/syngenta/progress_txt/'
+
+    masked_movies_dir =  r'/Users/ajaver/Desktop/Gecko_compressed/20150323/'
+    trajectories_dir =  r'/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/'
+    main_video_save_dir = r'/Users/ajaver/Desktop/Gecko_compressed/20150323/Worm_Movies/'
+    progress_dir = r'/Users/ajaver/Desktop/Gecko_compressed/20150323/progress_txt/'
 
     max_num_process = 6;
     if not os.path.exists(trajectories_dir):
@@ -47,8 +47,8 @@ if __name__ == '__main__':
     #get a list 
     file_list = os.listdir(masked_movies_dir);
     base_name_list = [os.path.splitext(x)[0] for x in file_list if ('.hdf5' in x)]#    #start the parallizeTask object, obtain the queue where the progress status is stored
-    base_name_list = base_name_list
-    
+    base_name_list = base_name_list[1:2]
+#%%    
     tot_tasks = len(base_name_list)
     if tot_tasks < max_num_process:
         max_num_process = tot_tasks
@@ -65,7 +65,8 @@ if __name__ == '__main__':
 
         current_tasks.append(sp.Popen(cmd, shell='True'))
         num_tasks += 1
-    
+        print('%s : started.' % base_name)
+        
     #when one processs finish start a 
     while num_tasks < tot_tasks:
         for ii in range(len(current_tasks)):
@@ -79,5 +80,6 @@ if __name__ == '__main__':
                 
                 current_tasks[ii] = sp.Popen(cmd, shell='True')
                 num_tasks +=1
+                print('%s : started.' % base_name)
     
     
