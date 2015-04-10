@@ -98,4 +98,5 @@ if __name__ == '__main__':
                     for kk in range(-2,0):            
                         print(lines[kk][:-1])
         time.sleep(5)
+        
     
