@@ -126,9 +126,7 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue='', base_name =''):
         #main_mask[0:15, 0:479] = 0
         main_mask = np.any(image_buffer, axis=0)
         main_mask[0:15, 0:479] = False; #remove the timestamp region in the upper corner
-        main_mask = main_mask.astype(np.int32) #change from bool to uint since same datatype is required in opencv
-        #for some reason multiprocessing fails if I use for the mask np.uint8. It just terminate the function without error msg
-        #findContours must work in CV_RETR_CCOMP to be able to deal with np.int32 
+        main_mask = main_mask.astype(np.uint8) #change from bool to uint since same datatype is required in opencv
         [ROIs, hierarchy]= cv2.findContours(main_mask, \
         cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
         
@@ -148,8 +146,8 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue='', base_name =''):
             #calculate threshold using the nonzero pixels. 
             #Using the buffer instead of a single image, improves the threshold calculation, since better statistics are recoverd
             pix_valid = ROI_buffer[ROI_buffer!=0]
-            if pix_valid.size==0:
-                return
+            if pix_valid.size==0: 
+                continue
             #caculate threshold
             thresh = getWormThreshold(pix_valid)
             
@@ -319,7 +317,7 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue='', base_name =''):
             feature_fid.flush()
             
             
-        if frame_number%buffer_size == 0:
+        if frame_number % 500 == 0:
             #calculate the progress and put it in a string
             progress_str = progressTime.getStr(frame_number)
             sendQueueOrPrint(status_queue, progress_str, base_name);
@@ -415,6 +413,7 @@ max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
     feature_fid.close()
 
 def plotLongTrajectories(trajectories_file, plot_file, number_trajectories = 20, plot_limits = (2048,2048)):
+#%%
     index_str = 'worm_index_joined';
     
     table_fid = pd.HDFStore(trajectories_file, 'r')
@@ -427,7 +426,7 @@ def plotLongTrajectories(trajectories_file, plot_file, number_trajectories = 20,
     
     for ii in range(number_trajectories):
         coord = df[df[index_str] == tracks_size.index[ii]][['coord_x', 'coord_y', 'frame_number']]
-        if coord.size!=0:
+        if len(coord)!=0:
             plt.plot(coord['coord_x'], coord['coord_y'], '-');
     
     plt.xlim([0,plot_limits[0]])
@@ -437,35 +436,35 @@ def plotLongTrajectories(trajectories_file, plot_file, number_trajectories = 20,
     
     plt.close()
     table_fid.close()
-    
+#%%    
 
 if __name__ == '__main__':
 #    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/CaptureTest_90pc_Ch1_02022015_141431.hdf5'
 #    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/CaptureTest_90pc_Ch1_02022015_141431.hdf5'
 #    trajectories_plot_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/CaptureTest_90pc_Ch1_02022015_141431.pdf'
 
-    #masked_image_file = '/Volumes/behavgenom$/Camille Recordings/test1/140808_da609_15_trimed.hdf5'
-    #trajectories_file = '/Volumes/behavgenom$/Camille Recordings/test1/trajectories/140808_da609_15_trimed.hdf5'
-    #plot_file
-    masked_movies_dir = sys.argv[1]
-    trajectories_dir = sys.argv[2]
-    base_name = sys.argv[3]
+#    masked_movies_dir = r'/Volumes/behavgenom$-1/GeckoVideo/Compressed/20150216/'
+#    trajectories_dir = r'/Volumes/behavgenom$-1/GeckoVideo/Trajectories/20150216/'
+#    base_name = 'CaptureTest_90pc_Ch1_16022015_174636'
+#    masked_movies_dir = sys.argv[1]
+#    trajectories_dir = sys.argv[2]
+#    base_name = sys.argv[3]
 
     masked_image_file = masked_movies_dir + base_name + '.hdf5'
     trajectories_file = trajectories_dir + base_name + '_trajectories.hdf5'
     trajectories_plot_file = trajectories_dir + base_name + '_trajectories.pdf'
         
-    try:
+    #try:
         #track individual worms
-        getWormTrajectories(masked_image_file, trajectories_file, last_frame = -1,\
-        base_name=base_name)
-        joinTrajectories(trajectories_file)
-        
-        mask_fid = h5py.File(masked_image_file, "r");
-        plot_limits = mask_fid['/mask'].shape[1:]
-        mask_fid.close()
-        plotLongTrajectories(trajectories_file, trajectories_plot_file, plot_limits=plot_limits)
-    except:
-        print('%s: Tracking failed' % base_name)
-        raise'Tracking failed'
+    getWormTrajectories(masked_image_file, trajectories_file, last_frame = -1,\
+    base_name=base_name, initial_frame = 0)
+    joinTrajectories(trajectories_file)
+    
+    mask_fid = h5py.File(masked_image_file, "r");
+    plot_limits = mask_fid['/mask'].shape[1:]
+    mask_fid.close()
+    plotLongTrajectories(trajectories_file, trajectories_plot_file, plot_limits=plot_limits)
+    #except:
+    #    print('%s: Tracking failed' % base_name)
+    #    raise'Tracking failed'
 #############

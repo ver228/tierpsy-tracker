@@ -1,4 +1,4 @@
-function movie2segwormfun(data, masked_image_file, save_file)
+function movie2segwormfun(data, masked_image_file, save_file, base_name)
 
 mask_info = h5info(masked_image_file, '/mask');
 %program constants
@@ -7,6 +7,7 @@ MASK_CHUNK_SIZE = mask_info.ChunkSize; %it mabye good to extract this info from 
 BUFF_SIZE = 1000; %buffer size, used to not write too much on the hdf5
 MAX_DT_ALLOWED = 5; 
 MIN_PIX_ALLOWED = 50;
+DELT_PROGRESS = 500;
 
 ROI_SIZE = 130; %region to be analyzed
 window_lims = [-ROI_SIZE/2 ROI_SIZE/2];
@@ -66,14 +67,14 @@ for plate_worms_row = 1:numel(data.('frame_number'))
         current_frame = data.('frame_number')(plate_worms_row);
         I = h5read(masked_image_file, '/mask', [1,1,current_frame], MASK_CHUNK_SIZE)';
         
-        if mod(current_frame,25) == 0
+        if mod(current_frame,DELT_PROGRESS) == 0
             %disp(current_frame)
             time_lapsed = toc;
-            fps = 25/time_lapsed;
+            fps = DELT_PROGRESS/time_lapsed;
             total_time = total_time + time_lapsed;
             time_str = datestr(total_time/86400, 'HH:MM:SS.FFF');
-            fprintf('Calculating skeletons (segWorm). Total time = %s, fps = %2.1f; Frame %i\n', ...
-                time_str, fps, current_frame)
+            fprintf('%s:\t Calculating skeletons (segWorm). Total time = %s, fps = %2.1f; Frame %i\n', ...
+                base_name, time_str, fps, current_frame)
             
             tic
         end

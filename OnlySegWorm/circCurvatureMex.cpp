@@ -1,6 +1,6 @@
 #include <mex.h>
-#include <math.h>
-
+#include <cmath>
+using namespace std;
 inline double getSign(double x) {
     return double((0 < x) - (x < 0));
 }

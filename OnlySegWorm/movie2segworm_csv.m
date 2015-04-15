@@ -8,4 +8,5 @@ for ii = 1:numel(AA.colheaders)
 end
 clear AA
 
-movie2segwormfun(data, masked_image_file, trajectories_file);
+[~,base_name,~] = fileparts(save_csv_name);
+movie2segwormfun(data, masked_image_file, trajectories_file, base_name);

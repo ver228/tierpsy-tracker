@@ -26,15 +26,13 @@ class timeCounterStr:
         self.fps_time = time.time()
         self.last_frame = frame_number;
         return progress_str;
-    
         
-
 def sendQueueOrPrint(status_queue, progress_str, base_name):
     '''small code to decide if the progress must be send to a queue or printed in the screen'''
     if type(status_queue).__name__ == 'Queue':
         status_queue.put([base_name, progress_str]) 
     else:
-        print (progress_str) 
+        print ('%s:\t %s' % (base_name, progress_str))
 
 def printProgress(progress):
     '''useful function to write the progress status in multiprocesses mode'''

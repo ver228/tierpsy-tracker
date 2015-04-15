@@ -10,7 +10,7 @@ if ~isempty(worm)
     headI = worm.contour.headI;
     contour_dorsal = worm.contour.pixels(headI:tailI,:);
     contour_ventral = [worm.contour.pixels(tailI:end,:); worm.contour.pixels(1:headI,:)];
-    contour_ventral = flip(contour_ventral);
+    contour_ventral = flipud(contour_ventral);
     skeleton = worm.skeleton.pixels;
     
     [worm_results.skeleton, worm_results.skeleton_length] = ...
@@ -28,9 +28,9 @@ if ~isempty(worm)
     delta_head = sum((worm_results_prev.skeleton(1,:) - worm_results.skeleton(1,:)).^2);
     delta_tail = sum((worm_results_prev.skeleton(1,:) - worm_results.skeleton(end,:)).^2);
     if delta_head > delta_tail
-        worm_results.contour_dorsal = flip(worm_results.contour_dorsal);
-        worm_results.contour_ventral = flip(worm_results.contour_ventral);
-        worm_results.skeleton = flip(worm_results.skeleton);
+        worm_results.contour_dorsal = flipud(worm_results.contour_dorsal);
+        worm_results.contour_ventral = flipud(worm_results.contour_ventral);
+        worm_results.skeleton = flipud(worm_results.skeleton);
     end
     
     midpoint = round(resampleNum/2);
@@ -70,7 +70,7 @@ end
     headI = worm.contour.headI;
     contour_dorsal = worm.contour.pixels(headI:tailI,:);
     contour_ventral = [worm.contour.pixels(tailI:end,:); worm.contour.pixels(1:headI,:)];
-    contour_ventral = flip(contour_ventral);
+    contour_ventral = flipud(contour_ventral);
     skeleton = worm.skeleton.pixels;
     
     worm_results.skeleton = curvspace(skeleton, resampleNum);
@@ -81,9 +81,9 @@ end
     
     %{
     if worm.orientation.head.isFlipped
-        worm_results.contour_dorsal = flip(worm_results.contour_dorsal);
-        worm_results.contour_ventral = flip(worm_results.contour_ventral);
-        worm_results.skeleton = flip(worm_results.skeleton);
+        worm_results.contour_dorsal = flipud(worm_results.contour_dorsal);
+        worm_results.contour_ventral = flipud(worm_results.contour_ventral);
+        worm_results.skeleton = flipud(worm_results.skeleton);
         
         dum = worm_results.contour_dorsal;
         worm_results.contour_dorsal = worm_results.contour_ventral;
@@ -93,8 +93,8 @@ end
     
     if ~worm.orientation.vulva.isClockwiseFromHead && ~worm.orientation.head.isFlipped
         dum = worm_results.contour_dorsal;
-        worm_results.contour_dorsal = flip(worm_results.contour_ventral);
-        worm_results.contour_ventral = flip(dum);
+        worm_results.contour_dorsal = flipud(worm_results.contour_ventral);
+        worm_results.contour_ventral = flipud(dum);
     end
     %}
     

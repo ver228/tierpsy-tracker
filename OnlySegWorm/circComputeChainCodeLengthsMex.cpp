@@ -1,6 +1,6 @@
 #include <mex.h>
-#include <math.h>
-
+#include <cmath>
+using namespace std;
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     /*%CIRCCOMPUTECHAINCODELENGTHS Compute the chain-code length, at each point,

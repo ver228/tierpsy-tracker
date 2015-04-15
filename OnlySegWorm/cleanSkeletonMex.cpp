@@ -1,6 +1,6 @@
 #include <mex.h>
-#include <math.h>
-
+#include <cmath>
+using namespace std;
 inline void getDSkeleton(double skeleton[], int s1I, int s2I, int numberOfPoints, double dSkeleton[]) {
     for (int i = 0; i<2; i++)
         dSkeleton[i] = abs(skeleton[s1I + i*numberOfPoints] - skeleton[s2I + i*numberOfPoints]);

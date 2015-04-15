@@ -1,6 +1,6 @@
 #include <mex.h>
-#include <math.h>
-
+#include <cmath>
+using namespace std;
 const double sqrt2 = sqrt(2);
 
 inline double getSign(double x) {
@@ -18,7 +18,7 @@ void calculateFracPix(int p1I, double de1, double dp1[2], double *points[2], dou
     }
     else
     {
-        if(abs(dp1[0] ==1) && abs(dp1[1] ==1))
+        if(abs(dp1[0]) ==1 && abs(dp1[1]) ==1)
         {
             p1[0] = de1/sqrt2*dp1[0] + points[0][p1I];
             p1[1] = de1/sqrt2*dp1[1] + points[1][p1I];

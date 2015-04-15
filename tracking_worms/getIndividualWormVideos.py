@@ -59,7 +59,7 @@ is_draw_contour = False, status_queue = '', base_name = '', \
 colorpalette = [(27, 158, 119), (217, 95, 2), (231, 41, 138)]):
     #Colormap from colorbrewer Dark2 5 - [0, 1, 3]    
     if not os.path.exists(video_save_dir):
-        os.mkdir(video_save_dir)
+        os.makedirs(video_save_dir)
 #%%
     #get id of trajectories with calculated skeletons
     table_fid = pd.HDFStore(trajectories_file, 'r');
@@ -194,11 +194,11 @@ colorpalette = [(27, 158, 119), (217, 95, 2), (231, 41, 138)]):
                 
                 video_list[worm_index]['writer'].write(worm_rgb)
     
-        if frame == smoothed_CM[worm_index]['last_frame']:
+        if frame >= smoothed_CM[worm_index]['last_frame']:
             video_list[worm_index]['writer'].release()    
      
             
-        if frame%25 == 0:
+        if frame % 500 == 0:
             progress_str = progressTime.getStr(frame)
             sendQueueOrPrint(status_queue, progress_str, base_name);
             
