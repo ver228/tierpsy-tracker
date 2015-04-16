@@ -58,6 +58,12 @@ smooth_window_size = 101, roi_size = 128, movie_scale = 1, \
 is_draw_contour = False, status_queue = '', base_name = '', \
 colorpalette = [(27, 158, 119), (217, 95, 2), (231, 41, 138)]):
     #Colormap from colorbrewer Dark2 5 - [0, 1, 3]    
+    if not os.path.exists(masked_image_file) or \
+    not os.path.exists(segworm_file) or \
+    not os.path.exists(trajectories_file): 
+        print('Individual Worm Videos Failed. Some or the files were not found. Nothing to do here.')
+        return;
+        
     if not os.path.exists(video_save_dir):
         os.makedirs(video_save_dir)
 #%%
@@ -65,6 +71,7 @@ colorpalette = [(27, 158, 119), (217, 95, 2), (231, 41, 138)]):
     table_fid = pd.HDFStore(trajectories_file, 'r');
     df = table_fid['/plate_worms'];
     df =  df[df['worm_index_joined'] > 0]
+     
     good_index = df[df['segworm_id']>=0]['worm_index_joined'].unique();
     df = df[df.worm_index_joined.isin(good_index)];
     table_fid.close()
