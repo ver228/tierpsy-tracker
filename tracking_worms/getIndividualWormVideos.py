@@ -55,8 +55,9 @@ class writeVideoffmpeg:
 def getIndividualWormVideos(masked_image_file, trajectories_file, \
 segworm_file, video_save_dir, max_frame_number = -1, \
 smooth_window_size = 101, roi_size = 128, movie_scale = 1, \
-is_draw_contour = False, status_queue = '', base_name = '', \
-colorpalette = [(27, 158, 119), (217, 95, 2), (231, 41, 138)]):
+is_draw_contour = False, status_queue = '', base_name = ''):
+    #colorpalette = [(27, 158, 119), (217, 95, 2), (231, 41, 138)]
+    colorpalette = [(119, 158,27 ), (2, 95, 217), (138, 41, 231)] # for some reason video capture expects an bgr instead of rgb image
     #Colormap from colorbrewer Dark2 5 - [0, 1, 3]    
     if not os.path.exists(masked_image_file) or \
     not os.path.exists(segworm_file) or \
@@ -144,12 +145,12 @@ colorpalette = [(27, 158, 119), (217, 95, 2), (231, 41, 138)]):
                 movie_save_name = video_save_dir + ('worm_%i.avi' % worm_index)
                 
                 #gray pixels if no contour is drawn
-                pix_fmt = 'rgb24' if is_draw_contour else 'gray';
-                
                 video_list[worm_index]['writer'] = \
-                writeVideoffmpeg(movie_save_name, width = roi_size*movie_scale, \
-                height = roi_size*movie_scale, pix_fmt = pix_fmt)
-        
+                cv2.VideoWriter(movie_save_name, cv2.cv.FOURCC('M','J','P','G'), 25, \
+                (roi_size*movie_scale, roi_size*movie_scale), isColor=is_draw_contour)
+#                writeVideoffmpeg(movie_save_name, width = roi_size*movie_scale, \
+#                height = roi_size*movie_scale, pix_fmt = pix_fmt)
+#        
             #obtain bounding box from the trajectories
             ind = int(frame-smoothed_CM[worm_index]['first_frame'])
             range_x = np.round(smoothed_CM[worm_index]['coord_x'][ind]) + [-roi_size/2, roi_size/2]
@@ -176,12 +177,7 @@ colorpalette = [(27, 158, 119), (217, 95, 2), (231, 41, 138)]):
                 if (len(threshold) == 1) and (segworm_id < 0):
                     worm_mask = ((worm_img<threshold)&(worm_img!=0)).astype(np.uint8)        
                     worm_mask = cv2.morphologyEx(worm_mask, cv2.MORPH_CLOSE,np.ones((3,3)))
-                    worm_rgb[:,:,1][worm_mask!=0] = 150
-                else:
-                    pass
-#                    worm_rgb[0:2,0:2,0] = 255            
-#                    worm_rgb[0:2,0:2,1] = 0
-#                    worm_rgb[0:2,0:2,2] = 0
+                    worm_rgb[:,:,1][worm_mask!=0] = 155
 
                 worm_rgb = cv2.resize(worm_rgb, (0,0), fx=movie_scale, fy=movie_scale);
                 
@@ -218,10 +214,14 @@ colorpalette = [(27, 158, 119), (217, 95, 2), (231, 41, 138)]):
 
 
 if __name__ == '__main__':
-    masked_movies_dir = sys.argv[1]
-    trajectories_dir = sys.argv[2]
-    base_name = sys.argv[3]
-    main_video_save_dir = sys.argv[4]
+#    masked_movies_dir = sys.argv[1]
+#    trajectories_dir = sys.argv[2]
+#    base_name = sys.argv[3]
+#    main_video_save_dir = sys.argv[4]
+    masked_movies_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150323/'
+    trajectories_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/'
+    base_name = 'CaptureTest_90pc_Ch1_02022015_141431'
+    main_video_save_dir = r'/Users/ajaver/Desktop/Gecko_compressed/20150323/Worm_Movies/'
 
     masked_image_file = masked_movies_dir + base_name + '.hdf5'
     trajectories_file = trajectories_dir + base_name + '_trajectories.hdf5'

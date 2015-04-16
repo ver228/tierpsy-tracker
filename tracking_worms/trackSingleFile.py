@@ -8,12 +8,15 @@ import os
 
 from getWormTrajectories import getWormTrajectories, joinTrajectories, plotLongTrajectories
 from getSegWorm import getSegWorm_noMATLABeng
+from getIndividualWormVideos import getIndividualWormVideos
 
+
+import shutil
 import sys
 import h5py
 sys.path.append('../videoCompression/')
 
-def getTrajectoriesWorker(masked_movies_dir, trajectories_dir, base_name, status_queue= ''):
+def getTrajectoriesWorker(masked_movies_dir, trajectories_dir, main_video_save_dir, base_name, status_queue= ''):
     #construct file names
     masked_image_file = masked_movies_dir + base_name + '.hdf5'
     trajectories_file = trajectories_dir + base_name + '_trajectories.hdf5'
@@ -39,6 +42,23 @@ def getTrajectoriesWorker(masked_movies_dir, trajectories_dir, base_name, status
     getSegWorm_noMATLABeng(masked_image_file, trajectories_file, segworm_file,\
     base_name = base_name, \
     min_displacement = 2, thresh_smooth_window = 1501)
+    
+    #create movies of individual worms
+    video_save_dir = main_video_save_dir + base_name + os.sep
+    if os.path.exists(video_save_dir):
+        shutil.rmtree(video_save_dir);
+    getIndividualWormVideos(masked_image_file, trajectories_file, \
+    segworm_file, video_save_dir, is_draw_contour = True, max_frame_number = -1,\
+    base_name = base_name, status_queue=status_queue)
+
+    #create movies of individual worms same but without segmentation lines, should be removed in the future
+    video_save_dir_gray = main_video_save_dir + base_name + '_gray' + os.sep
+    if os.path.exists(video_save_dir_gray):
+        shutil.rmtree(video_save_dir_gray);
+    getIndividualWormVideos(masked_image_file, trajectories_file, \
+    segworm_file, video_save_dir_gray, is_draw_contour = False, max_frame_number = -1,\
+    base_name = base_name, status_queue=status_queue)
+    
     print base_name, 'Finished'
 
 
@@ -53,10 +73,10 @@ if __name__ == '__main__':
 #    base_name = '149_3'
     masked_movies_dir = sys.argv[1]
     trajectories_dir = sys.argv[2]
-    #main_video_save_dir = sys.argv[3]
-    base_name = sys.argv[3]
+    main_video_save_dir = sys.argv[3]
+    base_name = sys.argv[4]
     
-    getTrajectoriesWorker(masked_movies_dir, trajectories_dir, base_name)
+    getTrajectoriesWorker(masked_movies_dir, trajectories_dir, main_video_save_dir, base_name)
     #getTrajectoriesWorker(masked_movies_dir, trajectories_dir, main_video_save_dir, base_name)
     
     

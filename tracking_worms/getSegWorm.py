@@ -115,16 +115,19 @@ status_queue = '', base_name = '', min_displacement = 20, thresh_smooth_window =
     
 def getSegWorm_noMATLABeng(masked_image_file, trajectories_file, segworm_file, \
 status_queue = '', base_name = '', min_displacement = 20, 
-thresh_smooth_window = 1501, csv_tmp_dir = ''):
+thresh_smooth_window = 1501):
 
     sendQueueOrPrint(status_queue, 'Obtaining valid trajectories...', base_name);
+    csv_tmp_dir = os.path.split(trajectories_file)[0] + os.sep
     csv_tmp = os.path.abspath(csv_tmp_dir + 'tmp_' + base_name + '.csv')
     
     df = getValidTrajectories(trajectories_file, min_displacement, thresh_smooth_window, save_csv_name = csv_tmp);
     if len(df)==0:
         print "Segworm: no valid trajectories, nothing to do here"
         return
-
+    else:
+        del(df) #no longer needed
+        
     #calculate segworm data using the MATLAB engine
 #%%
     matlab_path = (os.sep).join([os.path.dirname(os.path.abspath(__file__)), '..', 'OnlySegWorm']) + os.sep;
