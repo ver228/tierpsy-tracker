@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
     video_dir = r'/Users/ajaver/Desktop/sygenta/RawData/data_20150114/'
     save_dir = r'/Users/ajaver/Desktop/sygenta/Compressed/data_20150114/'
-    video_ext = 'avi'
+    video_ext = 'mjpg'
 
     #obtain input from the command line
     print sys.argv[1:]
