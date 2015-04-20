@@ -6,7 +6,7 @@ Created on Tue Apr 14 11:46:02 2015
 """
 
 initial_frame = 0
-last_frame = -1
+last_frame = 200
 min_area = 25
 min_length = 5
 max_allowed_dist = 20
@@ -15,7 +15,7 @@ buffer_size = 25
 status_queue=''
 base_name =''
 
-#feature_fid.close()
+feature_fid.close()
 if __name__ == '__main__':
     #open hdf5 to read the images
     mask_fid = h5py.File(masked_image_file, 'r');
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     buff_last_index = np.empty([0]);
     buff_last_area = np.empty([0]);
     
-    progressTime = timeCounterStr('Calculating trajectories.');
+    #progressTime = timeCounterStr('Calculating trajectories.');
     for frame_number in range(initial_frame, last_frame, buffer_size):
         
         #load image buffer
@@ -47,9 +47,7 @@ if __name__ == '__main__':
         #main_mask[0:15, 0:479] = 0
         main_mask = np.any(image_buffer, axis=0)
         main_mask[0:15, 0:479] = False; #remove the timestamp region in the upper corner
-        main_mask = main_mask.astype(np.int32) #change from bool to uint since same datatype is required in opencv
-        #for some reason multiprocessing fails if I use for the mask np.uint8. It just terminate the function without error msg
-        #findContours must work in CV_RETR_CCOMP to be able to deal with np.int32 
+        main_mask = main_mask.astype(np.uint8) #change from bool to uint since same datatype is required in opencv
         [ROIs, hierarchy]= cv2.findContours(main_mask, \
         cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
         
@@ -58,6 +56,7 @@ if __name__ == '__main__':
        
         #examinate each region of interest        
         for ROI_ind, ROI_cnt in enumerate(ROIs):
+            print ROI_ind
             ROI_bbox = cv2.boundingRect(ROI_cnt) 
             #boudning box too small to be a worm
             if ROI_bbox[1] < min_length or ROI_bbox[3] < min_length:
@@ -165,6 +164,7 @@ if __name__ == '__main__':
                     #    np.savetxt(f, worm_mask, delimiter = ',')
                     
                     #append worm features. Use frame_number+1, to avoid 0 index.
+                    
                     mask_feature_list.append((frame_number+ buff_ind + 1, 
                                               CMx + ROI_bbox[0], CMy + ROI_bbox[1], 
                                               area, perimeter, MA, ma, 
@@ -212,6 +212,7 @@ if __name__ == '__main__':
                                                mask_feature_list))
                     buff_feature_table += mask_feature_list
                     
+                    print zip(*mask_feature_list)[0:3:2]
                     if buff_ind == buff_tot-1 : 
                         #add only features if it is the last frame in the list
                         buff_last += mask_feature_list
@@ -241,9 +242,10 @@ if __name__ == '__main__':
             
             
         if frame_number%buffer_size == 0:
+            print frame_number
             #calculate the progress and put it in a string
-            progress_str = progressTime.getStr(frame_number)
-            sendQueueOrPrint(status_queue, progress_str, base_name);
+            #progress_str = progressTime.getStr(frame_number)
+            #sendQueueOrPrint(status_queue, progress_str, base_name);
             
     
     #close files and create indexes
@@ -253,4 +255,13 @@ if __name__ == '__main__':
     feature_table.flush()
     feature_fid.close()
     
-    sendQueueOrPrint(status_queue, progress_str, base_name);
+    #sendQueueOrPrint(status_queue, progress_str, base_name);
+#%%
+import pandas as pd
+fid = pd.HDFStore(trajectories_file, 'r')
+df = fid['/plate_worms']
+aa = df['worm_index'].value_counts()
+dat = df[df['worm_index']==5]
+plt.figure()
+plt.plot(dat['frame_number'])
+fid.close()

@@ -25,8 +25,11 @@ from scipy.spatial.distance import cdist
 
 import sys
 sys.path.append('../videoCompression/')
-from parallelProcHelper import sendQueueOrPrint, timeCounterStr
 
+sys.path.append('./image_difference/')
+from image_difference import image_difference
+
+from parallelProcHelper import sendQueueOrPrint, timeCounterStr
 class plate_worms(tables.IsDescription):
 #class for the pytables 
     worm_index = tables.Int32Col(pos=0)
@@ -103,7 +106,15 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue='', base_name =''):
     SEGWORM_ID_DEFAULT = -1; #default value for the column segworm_id
     #open pytables to save the coordinates
     feature_fid = tables.open_file(trajectories_file, mode = 'w', title = '')
-    feature_table = feature_fid.create_table('/', "plate_worms", plate_worms,"Worm feature List")
+    feature_table = feature_fid.create_table('/', "plate_worms", 
+                                             plate_worms, "Worm feature List",
+                                             filters = tables.Filters(complevel=5, complib='zlib', shuffle=True))
+    
+    im_diff_table = feature_fid.create_table('/', 'im_diff', {
+    'frame_number':    tables.Int32Col(),
+    'im_diff'         : tables.Float32Col()
+    }, filters = tables.Filters(complevel=5, complib='zlib', shuffle=True))
+    
     
     if last_frame <= 0:
         last_frame = mask_dataset.shape[0]
@@ -113,6 +124,8 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue='', base_name =''):
     buff_last_coord = np.empty([0]);
     buff_last_index = np.empty([0]);
     buff_last_area = np.empty([0]);
+    Iprev = np.zeros([]);
+    
     
     progressTime = timeCounterStr('Calculating trajectories.');
     for frame_number in range(initial_frame, last_frame, buffer_size):
@@ -120,6 +133,15 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue='', base_name =''):
         #load image buffer
         image_buffer = mask_dataset[frame_number:(frame_number+buffer_size),:, :]
         
+        
+        #calculate difference between image (it's usefull to indentified corrupted frames)
+        for m in range(image_buffer.shape[0]):    
+            I = image_buffer[m,:,:].copy();
+            I[0:15,0:479] = 0;
+            if Iprev.shape:
+                im_diff_table.append([(frame_number+m, image_difference(I,Iprev))])
+                #im_diff[frame_number+m] = image_difference(I,Iprev)
+            Iprev = I.copy();    
           
         #select pixels as connected regions that were selected as worms at least once in the masks
         #main_mask = np.min(image_buffer, axis=0); 
@@ -241,8 +263,8 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue='', base_name =''):
                     #with open('/Users/ajaver/Desktop/Gecko_compressed/image_dums/B%i_C%i_W%i.txt'%(buff_ind, ROI_ind, worm_ind), 'w') as f:
                     #    np.savetxt(f, worm_mask, delimiter = ',')
                     
-                    #append worm features. Use frame_number+1, to avoid 0 index.
-                    mask_feature_list.append((frame_number+ buff_ind + 1, 
+                    #append worm features.
+                    mask_feature_list.append((frame_number+ buff_ind, 
                                               CMx + ROI_bbox[0], CMy + ROI_bbox[1], 
                                               area, perimeter, MA, ma, 
                                               eccentricity, compactness, angle, solidity, 
@@ -442,6 +464,11 @@ if __name__ == '__main__':
 #    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/CaptureTest_90pc_Ch1_02022015_141431.hdf5'
 #    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/CaptureTest_90pc_Ch1_02022015_141431.hdf5'
 #    trajectories_plot_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/CaptureTest_90pc_Ch1_02022015_141431.pdf'
+
+    masked_movies_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150323/';
+    trajectories_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/'
+    base_name = 'CaptureTest_90pc_Ch1_02022015_141431'
+
 
 #    masked_movies_dir = r'/Volumes/behavgenom$-1/GeckoVideo/Compressed/20150216/'
 #    trajectories_dir = r'/Volumes/behavgenom$-1/GeckoVideo/Trajectories/20150216/'

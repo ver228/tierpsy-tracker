@@ -131,7 +131,6 @@ thresh_smooth_window = 1501):
     #calculate segworm data using the MATLAB engine
 #%%
     matlab_path = (os.sep).join([os.path.dirname(os.path.abspath(__file__)), '..', 'OnlySegWorm']) + os.sep;
-    matlab_path = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/OnlySegWorm/'
     cmd = """matlab -nojvm -nodisplay -nosplash -r "addpath(genpath('%s')); movie2segworm_csv('%s', '%s', '%s'); exit();" </dev/null """  \
     % (matlab_path, csv_tmp, masked_image_file, segworm_file);
 
