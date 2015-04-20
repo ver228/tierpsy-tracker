@@ -52,7 +52,7 @@ for ff = strArrayFields
 end
 
 %initialize some variables
-current_frame = 0;
+current_frame = -1;
 tot_segworm_rows = 0;
 prev_worms = cell(1,max(data.worm_index_joined));
 
@@ -65,7 +65,8 @@ for plate_worms_row = 1:numel(data.('frame_number'))
     
     if data.('frame_number')(plate_worms_row) ~= current_frame
         current_frame = data.('frame_number')(plate_worms_row);
-        I = h5read(masked_image_file, '/mask', [1,1,current_frame], MASK_CHUNK_SIZE)';
+        %current_frame+1 to pass from python to MATLAB indexing
+        I = h5read(masked_image_file, '/mask', [1,1,current_frame+1], MASK_CHUNK_SIZE)';
         
         if mod(current_frame,DELT_PROGRESS) == 0
             %disp(current_frame)

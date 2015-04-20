@@ -38,18 +38,18 @@ if __name__ == '__main__':
 #%%
 #python trackSingleFile.py "/Users/ajaver/Desktop/Gecko_compressed/20150323/" "/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/" "/Users/ajaver/Desktop/Gecko_compressed/20150323/Worm_Movies/" "Capture_Ch4_23032015_111907"
 
-#    masked_movies_dir = r'/Users/ajaver/Desktop/sygenta/Compressed/data_20150114/'
-#    trajectories_dir = r'/Users/ajaver/Desktop/sygenta/Trajectories/data_20150114/'
-#    main_video_save_dir = r'/Users/ajaver/Desktop/sygenta/Worm_Movies/data_20150114/'
-#    progress_dir = r'/Users/ajaver/Desktop/sygenta/progress_txt/'
+    masked_movies_dir = r'/Users/ajaver/Desktop/Gecko_compressed/20150323/'
+    trajectories_dir = r'/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/'
+    main_video_save_dir =r'/Users/ajaver/Desktop/Gecko_compressed/20150323/Worm_Movies/'
+    progress_dir = r'/Users/ajaver/Desktop/Gecko_compressed/20150323/progress_txt/'
 
 
 #    expDateStr = '20150216'
-    expDateStr = sys.argv[1]
-    masked_movies_dir =  r'/Volumes/behavgenom$/GeckoVideo/Compressed/' + expDateStr + '/'
-    trajectories_dir =  r'/Volumes/behavgenom$/GeckoVideo/Trajectories/' + expDateStr + '/'
-    main_video_save_dir = r'/Volumes/behavgenom$/GeckoVideo/Invidual_videos/'  + expDateStr + '/'
-    progress_dir = r'/Volumes/behavgenom$/GeckoVideo/progress_txt/'
+#    expDateStr = sys.argv[1]
+#    masked_movies_dir =  r'/Volumes/behavgenom$/GeckoVideo/Compressed/' + expDateStr + '/'
+#    trajectories_dir =  r'/Volumes/behavgenom$/GeckoVideo/Trajectories/' + expDateStr + '/'
+#    main_video_save_dir = r'/Volumes/behavgenom$/GeckoVideo/Invidual_videos/'  + expDateStr + '/'
+#    progress_dir = r'/Volumes/behavgenom$/GeckoVideo/progress_txt/'
 # 
 #    masked_movies_dir = r'/Volumes/behavgenom$/Alex_Anderson/Compressed/Locomotion_videos_for_analysis_2015-2/'
 #    trajectories_dir =  r'/Volumes/behavgenom$/Alex_Anderson/Trajectories/Locomotion_videos_for_analysis_2015-2/'

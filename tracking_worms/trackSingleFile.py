@@ -33,11 +33,11 @@ def getTrajectoriesWorker(masked_movies_dir, trajectories_dir, main_video_save_d
     getWormTrajectories(masked_image_file, trajectories_file, last_frame = -1,\
     base_name=base_name, status_queue=status_queue)
     joinTrajectories(trajectories_file)
-    
     mask_fid = h5py.File(masked_image_file, "r");
     plot_limits = mask_fid['/mask'].shape[1:]
     mask_fid.close()
     plotLongTrajectories(trajectories_file, trajectories_plot_file, plot_limits=plot_limits)
+
     #get segworm data
     getSegWorm_noMATLABeng(masked_image_file, trajectories_file, segworm_file,\
     base_name = base_name, \
@@ -67,10 +67,13 @@ if __name__ == '__main__':
 #    masked_movies_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150323/'
 #    trajectories_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/'
 #    main_video_save_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Worm_Movies/'
+
 #    masked_movies_dir = '/Volumes/behavgenom$/Alex_Anderson/Compressed/Locomotion_videos_for_analysis_2015/';
 #    trajectories_dir = '/Volumes/behavgenom$/Alex_Anderson/Trajectories/Locomotion_videos_for_analysis_2015/';
 #    main_video_save_dir = '/Volumes/behavgenom$/Alex_Anderson/Worm_Movies/Locomotion_videos_for_analysis_2015/';
 #    base_name = '149_3'
+
+#    base_name = 'CaptureTest_90pc_Ch1_02022015_141431'
     masked_movies_dir = sys.argv[1]
     trajectories_dir = sys.argv[2]
     main_video_save_dir = sys.argv[3]

@@ -1,6 +1,5 @@
 function [worm, errNum, errMsg] = ...
     segWormBWimgSimpleM(img, frame, bodyScale, verbose, varargin)
-
 %SEGWORM Segment the worm in an image and organize the information in a
 %   structure.
 %
