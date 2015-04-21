@@ -23,22 +23,22 @@ def getTrajectoriesWorker(masked_movies_dir, trajectories_dir, main_video_save_d
     trajectories_plot_file = trajectories_dir + base_name + '_trajectories.pdf'
     segworm_file = trajectories_dir + base_name + '_segworm.hdf5'
     
-    if os.path.exists(trajectories_file):
-        os.remove(trajectories_file);
-    if os.path.exists(trajectories_plot_file):
-        os.remove(trajectories_plot_file);
-    if os.path.exists(segworm_file):
-        os.remove(segworm_file);
-        
-    getWormTrajectories(masked_image_file, trajectories_file, last_frame = -1,\
-    base_name=base_name, status_queue=status_queue)
-    joinTrajectories(trajectories_file)
-    mask_fid = h5py.File(masked_image_file, "r");
-    plot_limits = mask_fid['/mask'].shape[1:]
-    mask_fid.close()
-    plotLongTrajectories(trajectories_file, trajectories_plot_file, plot_limits=plot_limits)
+#    if os.path.exists(trajectories_file):
+#        os.remove(trajectories_file);
+#    if os.path.exists(trajectories_plot_file):
+#        os.remove(trajectories_plot_file);
+#        
+#    getWormTrajectories(masked_image_file, trajectories_file, last_frame = -1,\
+#    base_name=base_name, status_queue=status_queue)
+#    joinTrajectories(trajectories_file)
+#    mask_fid = h5py.File(masked_image_file, "r");
+#    plot_limits = mask_fid['/mask'].shape[1:]
+#    mask_fid.close()
+#    plotLongTrajectories(trajectories_file, trajectories_plot_file, plot_limits=plot_limits)
 
     #get segworm data
+    if os.path.exists(segworm_file):
+        os.remove(segworm_file);
     getSegWorm_noMATLABeng(masked_image_file, trajectories_file, segworm_file,\
     base_name = base_name, \
     min_displacement = 2, thresh_smooth_window = 1501)

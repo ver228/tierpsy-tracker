@@ -60,7 +60,7 @@ prev_worms = cell(1,max(data.worm_index_joined));
 tic
 total_time = 0;
 for plate_worms_row = 1:numel(data.('frame_number'))
-<<<<<<< HEAD
+
 %read a new image if we change current frame
 
 

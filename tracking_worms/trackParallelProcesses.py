@@ -33,11 +33,9 @@ def get_tracking_cmd(masked_movies_dir, trajectories_dir, main_video_save_dir, b
     return cmd
     
 
+#%%
 
 if __name__ == '__main__':
-#%%
-#python trackSingleFile.py "/Users/ajaver/Desktop/Gecko_compressed/20150323/" "/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/" "/Users/ajaver/Desktop/Gecko_compressed/20150323/Worm_Movies/" "Capture_Ch4_23032015_111907"
-
     masked_movies_dir = r'/Users/ajaver/Desktop/Gecko_compressed/20150323/'
     trajectories_dir = r'/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/'
     main_video_save_dir =r'/Users/ajaver/Desktop/Gecko_compressed/20150323/Worm_Movies/'
@@ -67,7 +65,6 @@ if __name__ == '__main__':
 #    progress_dir =  '/Volumes/behavgenom$/syngenta/progress_txt/'
     
 #%%
-
     max_num_process = 6;
     if not os.path.exists(trajectories_dir):
         os.makedirs(trajectories_dir)
@@ -79,7 +76,7 @@ if __name__ == '__main__':
     #get a list 
     file_list = os.listdir(masked_movies_dir);
     base_name_list = [os.path.splitext(x)[0] for x in file_list if ('.hdf5' in x)]#    #start the parallizeTask object, obtain the queue where the progress status is stored
-    #base_name_list = base_name_list[-1:]
+    base_name_list = base_name_list[-1:]
 #%%    
     tot_tasks = len(base_name_list)
     if tot_tasks < max_num_process:

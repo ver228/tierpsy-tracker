@@ -18,7 +18,7 @@ from calContrastMaps import calContrastMaps
 masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/CaptureTest_90pc_Ch1_02022015_141431.hdf5';
 trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/CaptureTest_90pc_Ch1_02022015_141431_trajectories.hdf5';
 segworm_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/CaptureTest_90pc_Ch1_02022015_141431_segworm.hdf5';
-contrastmap_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/CaptureTest_90pc_Ch1_02022015_141431_cmap.hdf5';
+contrastmap_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/CaptureTest_90pc_Ch1_02022015_141431_cmap-2.hdf5';
 
 ROI_SIZE = 128;
 
@@ -64,7 +64,7 @@ for key in ['worm', 'worm_H', 'worm_T', 'worm_V', 'worm_D']:
 
 tic = time.time()
 tic_first = tic
-for frame in range(0, df['frame_number'].max()):
+for frame in range(10):#, df['frame_number'].max()):
     
     img = mask_dataset[frame,:,:]
     
