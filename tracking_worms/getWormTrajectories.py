@@ -42,7 +42,7 @@ class plate_worms(tables.IsDescription):
     perimeter = tables.Float32Col(pos=6) 
     major_axis = tables.Float32Col(pos=7) 
     minor_axis = tables.Float32Col(pos=8) 
-    eccentricity = tables.Float32Col(pos=9) 
+    quirkiness = tables.Float32Col(pos=9) 
     compactness = tables.Float32Col(pos=10) 
     orientation = tables.Float32Col(pos=11) 
     solidity = tables.Float32Col(pos=12) 
@@ -249,11 +249,11 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue='', base_name =''):
                     (CMx,CMy),(MA,ma),angle = cv2.minAreaRect(worm_cnt)
                     if ma > MA: dd = MA; MA = ma; ma = dd;  
                     
-                    eccentricity = sqrt(1-ma**2/MA**2)
+                    quirkiness = sqrt(1-ma**2/MA**2)
                     hull = cv2.convexHull(worm_cnt) #for the solidity
                     solidity = area/cv2.contourArea(hull);
                     perimeter = float(cv2.arcLength(worm_cnt,True))
-                    compactness = perimeter**2/area
+                    compactness = area/(4*np.pi*perimeter**2)
                     
                     #calculate the mean intensity of the worm
                     intensity_mean, intensity_std = cv2.meanStdDev(ROI_image, mask = worm_mask)
@@ -267,7 +267,7 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue='', base_name =''):
                     mask_feature_list.append((frame_number+ buff_ind, 
                                               CMx + ROI_bbox[0], CMy + ROI_bbox[1], 
                                               area, perimeter, MA, ma, 
-                                              eccentricity, compactness, angle, solidity, 
+                                              quirkiness, compactness, angle, solidity, 
                                               intensity_mean[0,0], intensity_std[0,0], thresh,
                                               ROI_bbox[0] + worm_bbox[0], ROI_bbox[0] + worm_bbox[0] + worm_bbox[2],
                                               ROI_bbox[1] + worm_bbox[1], ROI_bbox[1] + worm_bbox[1] + worm_bbox[3],
