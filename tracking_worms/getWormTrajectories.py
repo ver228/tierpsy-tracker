@@ -26,7 +26,7 @@ from scipy.spatial.distance import cdist
 import sys
 sys.path.append('../videoCompression/')
 
-sys.path.append('./image_difference/')
+#sys.path.append('./image_difference/')
 from image_difference import image_difference
 
 from parallelProcHelper import sendQueueOrPrint, timeCounterStr

@@ -12,4 +12,5 @@ with open('/Users/ajaver/list_dir') as f:
 
 for fdir in dir_list:
     fdir = fdir[:-1]
+    print('python trackParallelProcesses.py ' + fdir)
     os.system('python trackParallelProcesses.py ' + fdir)
