@@ -10,6 +10,6 @@ import numpy
 
 
 setup(
-    ext_modules=cythonize("image_difference.pyx"), #"calculate_ratio.pyx"
+    ext_modules=cythonize("image_difference_mask.pyx"), #"calculate_ratio.pyx"
     include_dirs=[numpy.get_include()]
 )    

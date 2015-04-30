@@ -55,7 +55,8 @@ class writeVideoffmpeg:
 def getIndividualWormVideos(masked_image_file, trajectories_file, \
 segworm_file, video_save_dir, max_frame_number = -1, \
 smooth_window_size = 101, roi_size = 128, movie_scale = 1, \
-is_draw_contour = False, status_queue = '', base_name = ''):
+is_draw_contour = False, status_queue = '', base_name = '', str_index = 'worm_index_joined'):
+#%%
     #colorpalette = [(27, 158, 119), (217, 95, 2), (231, 41, 138)]
     colorpalette = [(119, 158,27 ), (2, 95, 217), (138, 41, 231)] # for some reason video capture expects an bgr instead of rgb image
     #Colormap from colorbrewer Dark2 5 - [0, 1, 3]    
@@ -71,10 +72,15 @@ is_draw_contour = False, status_queue = '', base_name = ''):
     #get id of trajectories with calculated skeletons
     table_fid = pd.HDFStore(trajectories_file, 'r');
     df = table_fid['/plate_worms'];
-    df =  df[df['worm_index_joined'] > 0]
+    df =  df[df[str_index] > 0]
      
-    good_index = df[df['segworm_id']>=0]['worm_index_joined'].unique();
-    df = df[df.worm_index_joined.isin(good_index)];
+    if str_index == 'worm_index':
+        counts = df[str_index].value_counts()
+        good_index = counts[counts>25].index;
+    else:
+        good_index = df[df['segworm_id']>=0][str_index].unique();
+
+    df = df[df[str_index].isin(good_index)];
     table_fid.close()
     
     if len(df) == 0: #no valid trajectories identified
@@ -90,7 +96,7 @@ is_draw_contour = False, status_queue = '', base_name = ''):
     #smooth trajectories (reduce jiggling from the CM to obtain a nicer video)
     smoothed_CM = {};
     for worm_index in good_index:
-        dat = df[df['worm_index_joined']==worm_index][['coord_x', 'coord_y', 'frame_number']]
+        dat = df[df[str_index]==worm_index][['coord_x', 'coord_y', 'frame_number']]
         x = np.array(dat['coord_x']);
         y = np.array(dat['coord_y']);
         t = np.array(dat['frame_number']);
@@ -112,7 +118,7 @@ is_draw_contour = False, status_queue = '', base_name = ''):
         smoothed_CM[worm_index]['coord_y'] = ynew
         smoothed_CM[worm_index]['first_frame'] = first_frame
         smoothed_CM[worm_index]['last_frame'] = last_frame
-    
+#%%    
     #open the file with the masked images
     mask_fid = h5py.File(masked_image_file, 'r');
     mask_dataset = mask_fid["/mask"]
@@ -167,7 +173,7 @@ is_draw_contour = False, status_queue = '', base_name = ''):
             if not is_draw_contour:
                 video_list[worm_index]['writer'].write(worm_img)
             else:
-                worm = wormsInFrame[wormsInFrame['worm_index_joined'] == worm_index]
+                worm = wormsInFrame[wormsInFrame[str_index] == worm_index]
                 worm = worm.head(1); #in case duplicated values...                
                 threshold = worm['threshold'].values
                 segworm_id = worm['segworm_id'].values
@@ -183,6 +189,7 @@ is_draw_contour = False, status_queue = '', base_name = ''):
                 
                 if (len(segworm_id)==1) and (segworm_id >= 0):
                     for ii, key in enumerate(['contour_ventral', 'skeleton', 'contour_dorsal']):
+                        #print segworm_id, key
                         dat = np.squeeze(segworm_fid['/segworm_results/' + key][segworm_id,:,:]);
     
                         xx = (dat[1,:]-range_x[0])*movie_scale;
@@ -212,7 +219,6 @@ is_draw_contour = False, status_queue = '', base_name = ''):
     if is_draw_contour:
         segworm_fid.close()
 
-
 if __name__ == '__main__':
 #    masked_movies_dir = sys.argv[1]
 #    trajectories_dir = sys.argv[2]
@@ -221,23 +227,23 @@ if __name__ == '__main__':
     masked_movies_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150323/'
     trajectories_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/'
     base_name = 'CaptureTest_90pc_Ch1_02022015_141431'
-    main_video_save_dir = r'/Users/ajaver/Desktop/Gecko_compressed/20150323/Worm_Movies/'
+    main_video_save_dir = r'/Users/ajaver/Desktop/Gecko_compressed/20150323/Worm_Movies2/'
 
     masked_image_file = masked_movies_dir + base_name + '.hdf5'
     trajectories_file = trajectories_dir + base_name + '_trajectories.hdf5'
-    segworm_file = trajectories_dir + base_name + '_segworm.hdf5'
+    segworm_file = trajectories_dir + base_name + '_segworm_fix.hdf5'
     video_save_dir = main_video_save_dir + base_name + os.sep    
 #    video_save_dir_gray = main_video_save_dir + base_name + '_gray' + os.sep
 
      #create movies of individual worms
-    try:       
-        getIndividualWormVideos(masked_image_file, trajectories_file, \
+#    try:       
+    getIndividualWormVideos(masked_image_file, trajectories_file, \
         segworm_file, video_save_dir, is_draw_contour = True, max_frame_number = -1,\
         base_name = base_name)
 
 #        getIndividualWormVideos(masked_image_file, trajectories_file, \
 #        segworm_file, video_save_dir_gray, is_draw_contour = False, max_frame_number = -1,\
 #        base_name = base_name)
-    except:
-        sendQueueOrPrint('', 'Create individual worm videos failed.', base_name)
-        raise 'Create individual worm videos failed.'
+#    except:
+#        sendQueueOrPrint('', 'Create individual worm videos failed.', base_name)
+#        raise 'Create individual worm videos failed.'

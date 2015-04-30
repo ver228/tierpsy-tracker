@@ -27,7 +27,7 @@ import sys
 sys.path.append('../videoCompression/')
 
 #sys.path.append('./image_difference/')
-from image_difference import image_difference
+from image_difference_mask import image_difference_mask
 
 from parallelProcHelper import sendQueueOrPrint, timeCounterStr
 class plate_worms(tables.IsDescription):
@@ -56,7 +56,7 @@ class plate_worms(tables.IsDescription):
     bounding_box_ymax = tables.Int32Col(pos=19)
     
     segworm_id = tables.Int32Col(pos=20);
-    
+
 def getWormThreshold(pix_valid):
     #calculate otsu_threshold as lower limit. Otsu understimate the threshold.
     otsu_thresh = threshold_otsu(pix_valid)        
@@ -139,7 +139,7 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue='', base_name =''):
             I = image_buffer[m,:,:].copy();
             I[0:15,0:479] = 0;
             if Iprev.shape:
-                im_diff_table.append([(frame_number+m, image_difference(I,Iprev))])
+                im_diff_table.append([(frame_number+m, image_difference_mask(I,Iprev))])
                 #im_diff[frame_number+m] = image_difference(I,Iprev)
             Iprev = I.copy();    
           
