@@ -13,7 +13,6 @@ Created on Fri Apr  3 01:56:06 2015
 """
 import os
 import subprocess as sp
-import time
 import sys
 
 
@@ -62,7 +61,7 @@ if __name__ == '__main__':
     trajectories_dir =  r'/Volumes/behavgenom$/GeckoVideo/Trajectories/' + expDateStr + '/'
     main_video_save_dir = r'/Volumes/behavgenom$/GeckoVideo/Invidual_videos/'  + expDateStr + '/'
     progress_dir = r'/Volumes/behavgenom$/GeckoVideo/progress_txt/'
- 
+
 #    masked_movies_dir = r'/Volumes/behavgenom$/Alex_Anderson/Compressed/Locomotion_videos_for_analysis_2015-2/'
 #    trajectories_dir =  r'/Volumes/behavgenom$/Alex_Anderson/Trajectories/Locomotion_videos_for_analysis_2015-2/'
 #    main_video_save_dir = r'/Volumes/behavgenom$/Alex_Anderson/Invidual_videos/Locomotion_videos_for_analysis_2015-2/'
