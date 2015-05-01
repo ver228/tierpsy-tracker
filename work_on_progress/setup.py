@@ -10,6 +10,6 @@ import numpy
 
 
 setup(
-    ext_modules=cythonize("min_avg_difference.pyx"), include_dirs=[numpy.get_include()]#"calculate_ratio.pyx" "image_difference.pyx" calContrastMaps.pyx
+    ext_modules=cythonize("calContrastMaps.pyx"), include_dirs=[numpy.get_include()]#"calculate_ratio.pyx" "image_difference.pyx" calContrastMaps.pyx
       #ext_modules=cythonize("min_avg_difference.pyx"), include_dirs=[numpy.get_include()]
 )    

@@ -41,7 +41,7 @@ segworm_fid = h5py.File(segworm_file_fix, 'r+');
 #%%
 
 tic_ini = time.time()
-worm_ids = block_index['worm_index_joined'].unique();
+worm_ids = [3]#block_index['worm_index_joined'].unique();
 for ii_worm, worm_id in enumerate(worm_ids):
     tic = time.time()
     dat_ini = block_ini[block_ini['worm_index_joined']==worm_id]
@@ -57,7 +57,7 @@ for ii_worm, worm_id in enumerate(worm_ids):
     cmaps_ids['last'] = dat_last['cmap_id'].values
     
     
-    max_block = np.max([np.max(block_ids['ini']),np.max(block_ids['last'])])
+    max_block = 4#np.max([np.max(block_ids['ini']),np.max(block_ids['last'])])
     is_switch = {'H': np.zeros(max_block-1), 'D':np.zeros(max_block-1)}
     
     
@@ -67,94 +67,103 @@ for ii_worm, worm_id in enumerate(worm_ids):
         assert np.all(np.diff(curr_block_id)==1)
         curr_range  = (curr_block_id[0], curr_block_id[-1]+1)
         
-        
         tot_prev = 0
         ii_add = 0
         prev_rangeS = []
         while tot_prev < 100  and block_id-ii_add >= 0:  
-            good_prev = block_ids['last'] == block_id;
+            good_prev = block_ids['last'] == block_id-ii_add;
             prev_block_id = cmaps_ids['last'][good_prev]
             assert np.all(np.diff(prev_block_id)==1)
             
             prev_rangeS += [(prev_block_id[0], prev_block_id[-1]+1)]
             tot_prev += prev_block_id.size
+            ii_add = ii_add+1
 
-        
-        if len(prev_block_id)<2 or len(curr_block_id)<2:
-            continue
+        print prev_rangeS
+        #if len(prev_block_id)<2 or len(curr_block_id)<2:
+        #    continue
         #%%
         
-        for n1,n2 in [('H', 'T'), ('D', 'V')]:
+        for N in [('H', 'T')]:#, ('D', 'V')]:
             all_min_diff = {}
-            for key_prev in [n1,n2]:
-                for key_curr in [n1, n2]:
-                    for map_type in ['neg', 'pos']:
-                        key_map_curr = '/block_ini/worm_%s_%s' % (key_curr, map_type)
+            for map_type in ['neg', 'pos']:
+                for ii_curr in range(2):
+                    for ii_prev in range(2):
+                        key_map_curr = '/block_ini/worm_%s_%s' % (N[ii_curr], map_type)
+                        key_map_prev = '/block_last/worm_%s_%s' % (N[ii_prev], map_type);
+                        key_map_prev_switch = '/block_last/worm_%s_%s' % (N[not ii_prev], map_type);
+                        
                         buff_curr = contrastmap_fid.get_node(key_map_curr)[curr_range[0]:curr_range[1],:,:]                 
                         
-                        key_map_prev = '/block_last/worm_%s_%s' % (key_prev, map_type);
                         buff_prev = np.zeros((tot_prev, buff_curr.shape[1], buff_curr.shape[2]), dtype = buff_curr.dtype)
                         tot = 0;
+                        ii_add = -1;
                         for prev_range in prev_rangeS:
+                            ii_add = ii_add +1;
+                            
                             vv = range(tot, tot + prev_range[1]-prev_range[0]);
                             tot = vv[-1]
-                            buff_prev[vv,:,:] = contrastmap_fid.get_node(key_map_prev)[prev_range[0]:prev_range[1],:,:]
-                        
-                        all_min_diff[key_prev + key_curr + '_' + map_type] = min_avg_difference(buff_prev, buff_curr);       
+                            if is_switch[N[0]][block_id-1 -ii_add]>=0:
+                                buff_prev[vv,:,:] = contrastmap_fid.get_node(key_map_prev)[prev_range[0]:prev_range[1],:,:]
+                            else:
+                                'hola'
+                                buff_prev[vv,:,:] = contrastmap_fid.get_node(key_map_prev_switch)[prev_range[0]:prev_range[1],:,:]
+                                
+                        all_min_diff[N[ii_prev] + N[ii_curr] + '_' + map_type] = min_avg_difference(buff_prev, buff_curr);       
                         
         
             prob_switch = {}
-            for ind in [(n1+n1, n1+n2), (n2+n2, n2+n1)]:
+            for ind in [(N[0]+N[0], N[0]+N[1]), (N[1]+N[1], N[1]+N[0])]:
                 for map_key in ['_neg', '_pos']:
                     #min_eq = np.min(all_avg_diff[ind[0] + map_key], axis=1);
                     #min_dif = np.min(all_avg_diff[ind[1] + map_key], axis=1)
                     min_eq = all_min_diff[ind[0] + map_key]
                     min_dif = all_min_diff[ind[1] + map_key]
                     prob_switch[ind[0] + map_key] = np.mean(min_dif-min_eq) #this will be negative only if the change is prefered
-            is_switch[n1][block_id-1] = np.sum([prob_switch[key] for key in prob_switch])
+            is_switch[N[0]][block_id-1] = np.sum([prob_switch[key] for key in prob_switch])
             
-#            plt.figure()
-#            
-#            plt.subplot(2,2,1)
-#            plt.plot(all_min_diff[n1+n1+'_pos'])
-#            plt.plot(all_min_diff[n1+n2+'_pos'])
-#            
-#            plt.subplot(2,2,2)
-#            plt.plot(all_min_diff[n2+n2+'_pos'])
-#            plt.plot(all_min_diff[n2+n1+'_pos'])
-#            
-#            plt.subplot(2,2,3)
-#            plt.plot(all_min_diff[n1+n1+'_neg'])
-#            plt.plot(all_min_diff[n1+n2+'_neg'])
-#            
-#            plt.subplot(2,2,4)
-#            plt.plot(all_min_diff[n2+n2+'_neg'])
-#            plt.plot(all_min_diff[n2+n1+'_neg'])
+            plt.figure()
+            
+            plt.subplot(2,2,1)
+            plt.plot(all_min_diff[N[0]+N[0]+'_pos'])
+            plt.plot(all_min_diff[N[0]+N[1]+'_pos'])
+            
+            plt.subplot(2,2,2)
+            plt.plot(all_min_diff[N[1]+N[1]+'_pos'])
+            plt.plot(all_min_diff[N[1]+N[0]+'_pos'])
+            
+            plt.subplot(2,2,3)
+            plt.plot(all_min_diff[N[0]+N[0]+'_neg'])
+            plt.plot(all_min_diff[N[0]+N[1]+'_neg'])
+            
+            plt.subplot(2,2,4)
+            plt.plot(all_min_diff[N[1]+N[1]+'_neg'])
+            plt.plot(all_min_diff[N[1]+N[0]+'_neg'])
     
     block2switch = {}
     for key in is_switch:
         dum = np.cumprod(np.where(is_switch[key]<0, -1, 1));
         block2switch[key] = np.where(dum==-1)[0]+2;
-#%%    
-    
-    
-    for bb in block2switch['H']:
-        kernel = '(worm_index_joined==%d) & (block_id==%d)' % (worm_id, bb)
-        block_segworm_id = block_index.query(kernel)['segworm_id']
-        for cc in ['skeleton', 'contour_dorsal', 'contour_ventral']:
-            for nn in block_segworm_id:
-                aa = segworm_fid['/segworm_results/' + cc][nn,:,:]
-                segworm_fid['/segworm_results/' + cc][nn,:,:] = aa[:,::-1]
-    
-    for bb in block2switch['D']:
-        kernel = '(worm_index_joined==%d) & (block_id==%d)' % (worm_id, bb)
-        block_segworm_id = block_index.query(kernel)['segworm_id']
-        for nn in block_segworm_id:
-            vv = segworm_fid['/segworm_results/contour_ventral'][nn,:,:]
-            dd = segworm_fid['/segworm_results/contour_dorsal'][nn,:,:]
-            
-            segworm_fid['/segworm_results/contour_ventral'][nn,:,:] = dd
-            segworm_fid['/segworm_results/contour_dorsal'][nn,:,:] = vv
+##%%    
+#    
+#    
+#    for bb in block2switch['H']:
+#        kernel = '(worm_index_joined==%d) & (block_id==%d)' % (worm_id, bb)
+#        block_segworm_id = block_index.query(kernel)['segworm_id']
+#        for cc in ['skeleton', 'contour_dorsal', 'contour_ventral']:
+#            for nn in block_segworm_id:
+#                aa = segworm_fid['/segworm_results/' + cc][nn,:,:]
+#                segworm_fid['/segworm_results/' + cc][nn,:,:] = aa[:,::-1]
+#    
+#    for bb in block2switch['D']:
+#        kernel = '(worm_index_joined==%d) & (block_id==%d)' % (worm_id, bb)
+#        block_segworm_id = block_index.query(kernel)['segworm_id']
+#        for nn in block_segworm_id:
+#            vv = segworm_fid['/segworm_results/contour_ventral'][nn,:,:]
+#            dd = segworm_fid['/segworm_results/contour_dorsal'][nn,:,:]
+#            
+#            segworm_fid['/segworm_results/contour_ventral'][nn,:,:] = dd
+#            segworm_fid['/segworm_results/contour_dorsal'][nn,:,:] = vv
             
     
     print ii_worm, len(worm_ids), time.time()-tic, time.time()-tic_ini

@@ -290,7 +290,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     keep = new int [numberOfPoints];
     for(int i = 0; i<numberOfPoints; i++)
         keep[i] = i;
-    
     int nextI, i = 0;
     while (i < numberOfPoints - 2)
     {
@@ -347,3 +346,5 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     delete[] cWidths;
     
 }
+
+    

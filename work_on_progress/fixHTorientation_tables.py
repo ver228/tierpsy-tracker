@@ -30,7 +30,7 @@ segworm_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/Cap
 contrastmap_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/CaptureTest_90pc_Ch1_02022015_141431_cmap-short.hdf5';
 
 MAX_DELT = 5;
-jump_frames = 3; #3
+jump_frames = 5; #3
 del_frames = 100; #100
 ROI_SIZE = 128;
 
@@ -181,8 +181,11 @@ for key_block in ['block_ini', 'block_last']:
 
 tic = time.time()
 tic_first = tic
+
+
 for frame, wormsInFrame in df.groupby('frame_number'):
-    frame
+    #if frame > 300:
+    #    break
     img = mask_dataset[frame,:,:]
     
     for ii, worm in wormsInFrame.iterrows():
@@ -227,6 +230,10 @@ for frame, wormsInFrame in df.groupby('frame_number'):
             for key_block in block_id:
                 ind = block_id[key_block]
                 if ind>=0:
+#                    maps_ID[key_block][key + "_pos"][ind,:,:] = \
+#                        cv2.GaussianBlur(Ipos.astype(np.double), (3,3), 0).astype(np.int)
+#                    maps_ID[key_block][key + "_neg"][ind,:,:] = \
+#                        cv2.GaussianBlur(Ineg.astype(np.double), (3,3), 0).astype(np.int)
                     maps_ID[key_block][key + "_pos"][ind,:,:] = Ipos.copy()
                     maps_ID[key_block][key + "_neg"][ind,:,:] = Ineg.copy()
 ##    

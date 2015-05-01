@@ -854,6 +854,8 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg
 
 static CYTHON_INLINE int __Pyx_TypeTest(PyObject *obj, PyTypeObject *type);
 
+static void __Pyx_RaiseBufferIndexError(int axis);
+
 #define __Pyx_BufPtrStrided2d(type, buf, i0, s0, i1, s1) (type)((char*)buf + i0 * s0 + i1 * s1)
 static CYTHON_INLINE void __Pyx_ErrRestore(PyObject *type, PyObject *value, PyObject *tb);
 static CYTHON_INLINE void __Pyx_ErrFetch(PyObject **type, PyObject **value, PyObject **tb);
@@ -935,8 +937,6 @@ static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *);
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
 
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value);
-
-static CYTHON_INLINE PyObject* __Pyx_PyInt_From_npy_int64(npy_int64 value);
 
 #if CYTHON_CCOMPLEX
   #ifdef __cplusplus
@@ -1087,6 +1087,8 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *, cha
 /* Module declarations from 'libc.math' */
 
 /* Module declarations from 'calContrastMaps' */
+static CYTHON_INLINE int __pyx_f_15calContrastMaps_getAbsDiff(int, int); /*proto*/
+static CYTHON_INLINE int __pyx_f_15calContrastMaps_calcR(int, int); /*proto*/
 static __Pyx_TypeInfo __Pyx_TypeInfo_nn___pyx_t_5numpy_int64_t = { "int64_t", NULL, sizeof(__pyx_t_5numpy_int64_t), { 0 }, 0, IS_UNSIGNED(__pyx_t_5numpy_int64_t) ? 'U' : 'I', IS_UNSIGNED(__pyx_t_5numpy_int64_t), 0 };
 static __Pyx_TypeInfo __Pyx_TypeInfo_nn___pyx_t_5numpy_int_t = { "int_t", NULL, sizeof(__pyx_t_5numpy_int_t), { 0 }, 0, IS_UNSIGNED(__pyx_t_5numpy_int_t) ? 'U' : 'I', IS_UNSIGNED(__pyx_t_5numpy_int_t), 0 };
 #define __Pyx_MODULE_NAME "calContrastMaps"
@@ -1193,7 +1195,106 @@ static PyObject *__pyx_tuple__7;
 static PyObject *__pyx_codeobj__8;
 
 /* "calContrastMaps.pyx":14
+ * 
  * @cython.boundscheck(False)
+ * cdef inline int getAbsDiff(int a, int b):             # <<<<<<<<<<<<<<
+ *     return a-b if a>b else b-a;
+ * 
+ */
+
+static CYTHON_INLINE int __pyx_f_15calContrastMaps_getAbsDiff(int __pyx_v_a, int __pyx_v_b) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  int __pyx_t_1;
+  __Pyx_RefNannySetupContext("getAbsDiff", 0);
+
+  /* "calContrastMaps.pyx":15
+ * @cython.boundscheck(False)
+ * cdef inline int getAbsDiff(int a, int b):
+ *     return a-b if a>b else b-a;             # <<<<<<<<<<<<<<
+ * 
+ * cdef inline int calcR(int a, int b):
+ */
+  if (((__pyx_v_a > __pyx_v_b) != 0)) {
+    __pyx_t_1 = (__pyx_v_a - __pyx_v_b);
+  } else {
+    __pyx_t_1 = (__pyx_v_b - __pyx_v_a);
+  }
+  __pyx_r = __pyx_t_1;
+  goto __pyx_L0;
+
+  /* "calContrastMaps.pyx":14
+ * 
+ * @cython.boundscheck(False)
+ * cdef inline int getAbsDiff(int a, int b):             # <<<<<<<<<<<<<<
+ *     return a-b if a>b else b-a;
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "calContrastMaps.pyx":17
+ *     return a-b if a>b else b-a;
+ * 
+ * cdef inline int calcR(int a, int b):             # <<<<<<<<<<<<<<
+ *     cdef double R;
+ *     R = <double>(a*a + b*b);
+ */
+
+static CYTHON_INLINE int __pyx_f_15calContrastMaps_calcR(int __pyx_v_a, int __pyx_v_b) {
+  double __pyx_v_R;
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("calcR", 0);
+
+  /* "calContrastMaps.pyx":19
+ * cdef inline int calcR(int a, int b):
+ *     cdef double R;
+ *     R = <double>(a*a + b*b);             # <<<<<<<<<<<<<<
+ *     R = c_round(sqrt(R));
+ *     return <int>R
+ */
+  __pyx_v_R = ((double)((__pyx_v_a * __pyx_v_a) + (__pyx_v_b * __pyx_v_b)));
+
+  /* "calContrastMaps.pyx":20
+ *     cdef double R;
+ *     R = <double>(a*a + b*b);
+ *     R = c_round(sqrt(R));             # <<<<<<<<<<<<<<
+ *     return <int>R
+ * 
+ */
+  __pyx_v_R = round(sqrt(__pyx_v_R));
+
+  /* "calContrastMaps.pyx":21
+ *     R = <double>(a*a + b*b);
+ *     R = c_round(sqrt(R));
+ *     return <int>R             # <<<<<<<<<<<<<<
+ * 
+ * def calContrastMaps(np.ndarray[np.int64_t, ndim=2] pix_dat, int map_R_range, int map_pos_range, int map_neg_range):
+ */
+  __pyx_r = ((int)__pyx_v_R);
+  goto __pyx_L0;
+
+  /* "calContrastMaps.pyx":17
+ *     return a-b if a>b else b-a;
+ * 
+ * cdef inline int calcR(int a, int b):             # <<<<<<<<<<<<<<
+ *     cdef double R;
+ *     R = <double>(a*a + b*b);
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "calContrastMaps.pyx":23
+ *     return <int>R
  * 
  * def calContrastMaps(np.ndarray[np.int64_t, ndim=2] pix_dat, int map_R_range, int map_pos_range, int map_neg_range):             # <<<<<<<<<<<<<<
  *     cdef np.ndarray[np.int_t, ndim=2] Ipos = np.zeros([map_R_range, map_pos_range], dtype=np.int)
@@ -1236,21 +1337,21 @@ static PyObject *__pyx_pw_15calContrastMaps_1calContrastMaps(PyObject *__pyx_sel
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_map_R_range)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("calContrastMaps", 1, 4, 4, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("calContrastMaps", 1, 4, 4, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 23; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
         case  2:
         if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_map_pos_range)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("calContrastMaps", 1, 4, 4, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("calContrastMaps", 1, 4, 4, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 23; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
         case  3:
         if (likely((values[3] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_map_neg_range)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("calContrastMaps", 1, 4, 4, 3); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("calContrastMaps", 1, 4, 4, 3); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 23; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "calContrastMaps") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "calContrastMaps") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 23; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 4) {
       goto __pyx_L5_argtuple_error;
@@ -1261,19 +1362,19 @@ static PyObject *__pyx_pw_15calContrastMaps_1calContrastMaps(PyObject *__pyx_sel
       values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
     }
     __pyx_v_pix_dat = ((PyArrayObject *)values[0]);
-    __pyx_v_map_R_range = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_map_R_range == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-    __pyx_v_map_pos_range = __Pyx_PyInt_As_int(values[2]); if (unlikely((__pyx_v_map_pos_range == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-    __pyx_v_map_neg_range = __Pyx_PyInt_As_int(values[3]); if (unlikely((__pyx_v_map_neg_range == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_map_R_range = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_map_R_range == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 23; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_map_pos_range = __Pyx_PyInt_As_int(values[2]); if (unlikely((__pyx_v_map_pos_range == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 23; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_map_neg_range = __Pyx_PyInt_As_int(values[3]); if (unlikely((__pyx_v_map_neg_range == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 23; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("calContrastMaps", 1, 4, 4, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("calContrastMaps", 1, 4, 4, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 23; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("calContrastMaps.calContrastMaps", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_pix_dat), __pyx_ptype_5numpy_ndarray, 1, "pix_dat", 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_pix_dat), __pyx_ptype_5numpy_ndarray, 1, "pix_dat", 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 23; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_pf_15calContrastMaps_calContrastMaps(__pyx_self, __pyx_v_pix_dat, __pyx_v_map_R_range, __pyx_v_map_pos_range, __pyx_v_map_neg_range);
 
   /* function exit code */
@@ -1317,25 +1418,26 @@ static PyObject *__pyx_pf_15calContrastMaps_calContrastMaps(CYTHON_UNUSED PyObje
   int __pyx_t_11;
   long __pyx_t_12;
   int __pyx_t_13;
-  long __pyx_t_14;
-  int __pyx_t_15;
-  long __pyx_t_16;
-  int __pyx_t_17;
-  long __pyx_t_18;
-  int __pyx_t_19;
+  int __pyx_t_14;
+  long __pyx_t_15;
+  int __pyx_t_16;
+  long __pyx_t_17;
+  int __pyx_t_18;
+  long __pyx_t_19;
   int __pyx_t_20;
   long __pyx_t_21;
-  long __pyx_t_22;
-  int __pyx_t_23;
-  long __pyx_t_24;
-  int __pyx_t_25;
-  long __pyx_t_26;
-  int __pyx_t_27;
+  int __pyx_t_22;
+  long __pyx_t_23;
+  int __pyx_t_24;
+  long __pyx_t_25;
+  int __pyx_t_26;
+  long __pyx_t_27;
   int __pyx_t_28;
   int __pyx_t_29;
   int __pyx_t_30;
   int __pyx_t_31;
   int __pyx_t_32;
+  int __pyx_t_33;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -1354,27 +1456,27 @@ static PyObject *__pyx_pf_15calContrastMaps_calContrastMaps(CYTHON_UNUSED PyObje
   __pyx_pybuffernd_pix_dat.rcbuffer = &__pyx_pybuffer_pix_dat;
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_pix_dat.rcbuffer->pybuffer, (PyObject*)__pyx_v_pix_dat, &__Pyx_TypeInfo_nn___pyx_t_5numpy_int64_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_pix_dat.rcbuffer->pybuffer, (PyObject*)__pyx_v_pix_dat, &__Pyx_TypeInfo_nn___pyx_t_5numpy_int64_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 23; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_pybuffernd_pix_dat.diminfo[0].strides = __pyx_pybuffernd_pix_dat.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_pix_dat.diminfo[0].shape = __pyx_pybuffernd_pix_dat.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_pix_dat.diminfo[1].strides = __pyx_pybuffernd_pix_dat.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_pix_dat.diminfo[1].shape = __pyx_pybuffernd_pix_dat.rcbuffer->pybuffer.shape[1];
 
-  /* "calContrastMaps.pyx":15
+  /* "calContrastMaps.pyx":24
  * 
  * def calContrastMaps(np.ndarray[np.int64_t, ndim=2] pix_dat, int map_R_range, int map_pos_range, int map_neg_range):
  *     cdef np.ndarray[np.int_t, ndim=2] Ipos = np.zeros([map_R_range, map_pos_range], dtype=np.int)             # <<<<<<<<<<<<<<
  *     cdef np.ndarray[np.int_t, ndim=2] Ineg = np.zeros([map_R_range, map_neg_range], dtype=np.int)
  * 
  */
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 24; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 24; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_map_R_range); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_map_R_range); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 24; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_map_pos_range); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_map_pos_range); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 24; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = PyList_New(2); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyList_New(2); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 24; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
   PyList_SET_ITEM(__pyx_t_4, 0, __pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
@@ -1382,32 +1484,32 @@ static PyObject *__pyx_pf_15calContrastMaps_calContrastMaps(CYTHON_UNUSED PyObje
   __Pyx_GIVEREF(__pyx_t_3);
   __pyx_t_1 = 0;
   __pyx_t_3 = 0;
-  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 24; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_4);
   __pyx_t_4 = 0;
-  __pyx_t_4 = PyDict_New(); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyDict_New(); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 24; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 24; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_int); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_int); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 24; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_5) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_5) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 24; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 24; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (!(likely(((__pyx_t_5) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_5, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(((__pyx_t_5) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_5, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 24; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_6 = ((PyArrayObject *)__pyx_t_5);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_Ipos.rcbuffer->pybuffer, (PyObject*)__pyx_t_6, &__Pyx_TypeInfo_nn___pyx_t_5numpy_int_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 2, 0, __pyx_stack) == -1)) {
       __pyx_v_Ipos = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_Ipos.rcbuffer->pybuffer.buf = NULL;
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 24; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     } else {__pyx_pybuffernd_Ipos.diminfo[0].strides = __pyx_pybuffernd_Ipos.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_Ipos.diminfo[0].shape = __pyx_pybuffernd_Ipos.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_Ipos.diminfo[1].strides = __pyx_pybuffernd_Ipos.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_Ipos.diminfo[1].shape = __pyx_pybuffernd_Ipos.rcbuffer->pybuffer.shape[1];
     }
   }
@@ -1415,23 +1517,23 @@ static PyObject *__pyx_pf_15calContrastMaps_calContrastMaps(CYTHON_UNUSED PyObje
   __pyx_v_Ipos = ((PyArrayObject *)__pyx_t_5);
   __pyx_t_5 = 0;
 
-  /* "calContrastMaps.pyx":16
+  /* "calContrastMaps.pyx":25
  * def calContrastMaps(np.ndarray[np.int64_t, ndim=2] pix_dat, int map_R_range, int map_pos_range, int map_neg_range):
  *     cdef np.ndarray[np.int_t, ndim=2] Ipos = np.zeros([map_R_range, map_pos_range], dtype=np.int)
  *     cdef np.ndarray[np.int_t, ndim=2] Ineg = np.zeros([map_R_range, map_neg_range], dtype=np.int)             # <<<<<<<<<<<<<<
  * 
  *     cdef int i1, i2, ipos, ineg;
  */
-  __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 25; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_zeros); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_zeros); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 25; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_map_R_range); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_map_R_range); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 25; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_map_neg_range); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_map_neg_range); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 25; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = PyList_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyList_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 25; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   PyList_SET_ITEM(__pyx_t_2, 0, __pyx_t_5);
   __Pyx_GIVEREF(__pyx_t_5);
@@ -1439,32 +1541,32 @@ static PyObject *__pyx_pf_15calContrastMaps_calContrastMaps(CYTHON_UNUSED PyObje
   __Pyx_GIVEREF(__pyx_t_3);
   __pyx_t_5 = 0;
   __pyx_t_3 = 0;
-  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 25; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = PyDict_New(); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyDict_New(); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 25; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 25; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_int); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_int); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 25; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_dtype, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_dtype, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 25; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 25; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 25; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_7 = ((PyArrayObject *)__pyx_t_1);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_Ineg.rcbuffer->pybuffer, (PyObject*)__pyx_t_7, &__Pyx_TypeInfo_nn___pyx_t_5numpy_int_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 2, 0, __pyx_stack) == -1)) {
       __pyx_v_Ineg = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_Ineg.rcbuffer->pybuffer.buf = NULL;
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 25; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     } else {__pyx_pybuffernd_Ineg.diminfo[0].strides = __pyx_pybuffernd_Ineg.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_Ineg.diminfo[0].shape = __pyx_pybuffernd_Ineg.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_Ineg.diminfo[1].strides = __pyx_pybuffernd_Ineg.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_Ineg.diminfo[1].shape = __pyx_pybuffernd_Ineg.rcbuffer->pybuffer.shape[1];
     }
   }
@@ -1472,7 +1574,7 @@ static PyObject *__pyx_pf_15calContrastMaps_calContrastMaps(CYTHON_UNUSED PyObje
   __pyx_v_Ineg = ((PyArrayObject *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "calContrastMaps.pyx":19
+  /* "calContrastMaps.pyx":28
  * 
  *     cdef int i1, i2, ipos, ineg;
  *     cdef int n_pix = pix_dat.shape[1];             # <<<<<<<<<<<<<<
@@ -1481,7 +1583,7 @@ static PyObject *__pyx_pf_15calContrastMaps_calContrastMaps(CYTHON_UNUSED PyObje
  */
   __pyx_v_n_pix = (__pyx_v_pix_dat->dimensions[1]);
 
-  /* "calContrastMaps.pyx":22
+  /* "calContrastMaps.pyx":31
  *     cdef int R, delX, delY;
  * 
  *     for i1 in range(n_pix-1):             # <<<<<<<<<<<<<<
@@ -1492,60 +1594,97 @@ static PyObject *__pyx_pf_15calContrastMaps_calContrastMaps(CYTHON_UNUSED PyObje
   for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
     __pyx_v_i1 = __pyx_t_9;
 
-    /* "calContrastMaps.pyx":23
+    /* "calContrastMaps.pyx":32
  * 
  *     for i1 in range(n_pix-1):
  *         for i2 in range(i1+1, n_pix):             # <<<<<<<<<<<<<<
  *             ipos = pix_dat[2,i1] + pix_dat[2,i2];
- *             ineg = abs(pix_dat[2,i1] - pix_dat[2,i2])
+ *             ineg = getAbsDiff(pix_dat[2,i1] , pix_dat[2,i2])
  */
     __pyx_t_10 = __pyx_v_n_pix;
     for (__pyx_t_11 = (__pyx_v_i1 + 1); __pyx_t_11 < __pyx_t_10; __pyx_t_11+=1) {
       __pyx_v_i2 = __pyx_t_11;
 
-      /* "calContrastMaps.pyx":24
+      /* "calContrastMaps.pyx":33
  *     for i1 in range(n_pix-1):
  *         for i2 in range(i1+1, n_pix):
  *             ipos = pix_dat[2,i1] + pix_dat[2,i2];             # <<<<<<<<<<<<<<
- *             ineg = abs(pix_dat[2,i1] - pix_dat[2,i2])
+ *             ineg = getAbsDiff(pix_dat[2,i1] , pix_dat[2,i2])
  * 
  */
       __pyx_t_12 = 2;
       __pyx_t_13 = __pyx_v_i1;
-      if (__pyx_t_12 < 0) __pyx_t_12 += __pyx_pybuffernd_pix_dat.diminfo[0].shape;
-      if (__pyx_t_13 < 0) __pyx_t_13 += __pyx_pybuffernd_pix_dat.diminfo[1].shape;
-      __pyx_t_14 = 2;
-      __pyx_t_15 = __pyx_v_i2;
-      if (__pyx_t_14 < 0) __pyx_t_14 += __pyx_pybuffernd_pix_dat.diminfo[0].shape;
-      if (__pyx_t_15 < 0) __pyx_t_15 += __pyx_pybuffernd_pix_dat.diminfo[1].shape;
-      __pyx_v_ipos = ((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int64_t *, __pyx_pybuffernd_pix_dat.rcbuffer->pybuffer.buf, __pyx_t_12, __pyx_pybuffernd_pix_dat.diminfo[0].strides, __pyx_t_13, __pyx_pybuffernd_pix_dat.diminfo[1].strides)) + (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int64_t *, __pyx_pybuffernd_pix_dat.rcbuffer->pybuffer.buf, __pyx_t_14, __pyx_pybuffernd_pix_dat.diminfo[0].strides, __pyx_t_15, __pyx_pybuffernd_pix_dat.diminfo[1].strides)));
+      __pyx_t_14 = -1;
+      if (__pyx_t_12 < 0) {
+        __pyx_t_12 += __pyx_pybuffernd_pix_dat.diminfo[0].shape;
+        if (unlikely(__pyx_t_12 < 0)) __pyx_t_14 = 0;
+      } else if (unlikely(__pyx_t_12 >= __pyx_pybuffernd_pix_dat.diminfo[0].shape)) __pyx_t_14 = 0;
+      if (__pyx_t_13 < 0) {
+        __pyx_t_13 += __pyx_pybuffernd_pix_dat.diminfo[1].shape;
+        if (unlikely(__pyx_t_13 < 0)) __pyx_t_14 = 1;
+      } else if (unlikely(__pyx_t_13 >= __pyx_pybuffernd_pix_dat.diminfo[1].shape)) __pyx_t_14 = 1;
+      if (unlikely(__pyx_t_14 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_14);
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 33; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      }
+      __pyx_t_15 = 2;
+      __pyx_t_14 = __pyx_v_i2;
+      __pyx_t_16 = -1;
+      if (__pyx_t_15 < 0) {
+        __pyx_t_15 += __pyx_pybuffernd_pix_dat.diminfo[0].shape;
+        if (unlikely(__pyx_t_15 < 0)) __pyx_t_16 = 0;
+      } else if (unlikely(__pyx_t_15 >= __pyx_pybuffernd_pix_dat.diminfo[0].shape)) __pyx_t_16 = 0;
+      if (__pyx_t_14 < 0) {
+        __pyx_t_14 += __pyx_pybuffernd_pix_dat.diminfo[1].shape;
+        if (unlikely(__pyx_t_14 < 0)) __pyx_t_16 = 1;
+      } else if (unlikely(__pyx_t_14 >= __pyx_pybuffernd_pix_dat.diminfo[1].shape)) __pyx_t_16 = 1;
+      if (unlikely(__pyx_t_16 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_16);
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 33; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      }
+      __pyx_v_ipos = ((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int64_t *, __pyx_pybuffernd_pix_dat.rcbuffer->pybuffer.buf, __pyx_t_12, __pyx_pybuffernd_pix_dat.diminfo[0].strides, __pyx_t_13, __pyx_pybuffernd_pix_dat.diminfo[1].strides)) + (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int64_t *, __pyx_pybuffernd_pix_dat.rcbuffer->pybuffer.buf, __pyx_t_15, __pyx_pybuffernd_pix_dat.diminfo[0].strides, __pyx_t_14, __pyx_pybuffernd_pix_dat.diminfo[1].strides)));
 
-      /* "calContrastMaps.pyx":25
+      /* "calContrastMaps.pyx":34
  *         for i2 in range(i1+1, n_pix):
  *             ipos = pix_dat[2,i1] + pix_dat[2,i2];
- *             ineg = abs(pix_dat[2,i1] - pix_dat[2,i2])             # <<<<<<<<<<<<<<
+ *             ineg = getAbsDiff(pix_dat[2,i1] , pix_dat[2,i2])             # <<<<<<<<<<<<<<
  * 
  *             delX = pix_dat[0,i1]-pix_dat[0,i2];
  */
-      __pyx_t_16 = 2;
-      __pyx_t_17 = __pyx_v_i1;
-      if (__pyx_t_16 < 0) __pyx_t_16 += __pyx_pybuffernd_pix_dat.diminfo[0].shape;
-      if (__pyx_t_17 < 0) __pyx_t_17 += __pyx_pybuffernd_pix_dat.diminfo[1].shape;
-      __pyx_t_18 = 2;
-      __pyx_t_19 = __pyx_v_i2;
-      if (__pyx_t_18 < 0) __pyx_t_18 += __pyx_pybuffernd_pix_dat.diminfo[0].shape;
-      if (__pyx_t_19 < 0) __pyx_t_19 += __pyx_pybuffernd_pix_dat.diminfo[1].shape;
-      __pyx_t_1 = __Pyx_PyInt_From_npy_int64(((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int64_t *, __pyx_pybuffernd_pix_dat.rcbuffer->pybuffer.buf, __pyx_t_16, __pyx_pybuffernd_pix_dat.diminfo[0].strides, __pyx_t_17, __pyx_pybuffernd_pix_dat.diminfo[1].strides)) - (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int64_t *, __pyx_pybuffernd_pix_dat.rcbuffer->pybuffer.buf, __pyx_t_18, __pyx_pybuffernd_pix_dat.diminfo[0].strides, __pyx_t_19, __pyx_pybuffernd_pix_dat.diminfo[1].strides)))); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 25; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = PyNumber_Absolute(__pyx_t_1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 25; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_20 = __Pyx_PyInt_As_int(__pyx_t_2); if (unlikely((__pyx_t_20 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 25; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_v_ineg = __pyx_t_20;
+      __pyx_t_17 = 2;
+      __pyx_t_16 = __pyx_v_i1;
+      __pyx_t_18 = -1;
+      if (__pyx_t_17 < 0) {
+        __pyx_t_17 += __pyx_pybuffernd_pix_dat.diminfo[0].shape;
+        if (unlikely(__pyx_t_17 < 0)) __pyx_t_18 = 0;
+      } else if (unlikely(__pyx_t_17 >= __pyx_pybuffernd_pix_dat.diminfo[0].shape)) __pyx_t_18 = 0;
+      if (__pyx_t_16 < 0) {
+        __pyx_t_16 += __pyx_pybuffernd_pix_dat.diminfo[1].shape;
+        if (unlikely(__pyx_t_16 < 0)) __pyx_t_18 = 1;
+      } else if (unlikely(__pyx_t_16 >= __pyx_pybuffernd_pix_dat.diminfo[1].shape)) __pyx_t_18 = 1;
+      if (unlikely(__pyx_t_18 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_18);
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      }
+      __pyx_t_19 = 2;
+      __pyx_t_18 = __pyx_v_i2;
+      __pyx_t_20 = -1;
+      if (__pyx_t_19 < 0) {
+        __pyx_t_19 += __pyx_pybuffernd_pix_dat.diminfo[0].shape;
+        if (unlikely(__pyx_t_19 < 0)) __pyx_t_20 = 0;
+      } else if (unlikely(__pyx_t_19 >= __pyx_pybuffernd_pix_dat.diminfo[0].shape)) __pyx_t_20 = 0;
+      if (__pyx_t_18 < 0) {
+        __pyx_t_18 += __pyx_pybuffernd_pix_dat.diminfo[1].shape;
+        if (unlikely(__pyx_t_18 < 0)) __pyx_t_20 = 1;
+      } else if (unlikely(__pyx_t_18 >= __pyx_pybuffernd_pix_dat.diminfo[1].shape)) __pyx_t_20 = 1;
+      if (unlikely(__pyx_t_20 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_20);
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      }
+      __pyx_v_ineg = __pyx_f_15calContrastMaps_getAbsDiff((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int64_t *, __pyx_pybuffernd_pix_dat.rcbuffer->pybuffer.buf, __pyx_t_17, __pyx_pybuffernd_pix_dat.diminfo[0].strides, __pyx_t_16, __pyx_pybuffernd_pix_dat.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int64_t *, __pyx_pybuffernd_pix_dat.rcbuffer->pybuffer.buf, __pyx_t_19, __pyx_pybuffernd_pix_dat.diminfo[0].strides, __pyx_t_18, __pyx_pybuffernd_pix_dat.diminfo[1].strides)));
 
-      /* "calContrastMaps.pyx":27
- *             ineg = abs(pix_dat[2,i1] - pix_dat[2,i2])
+      /* "calContrastMaps.pyx":36
+ *             ineg = getAbsDiff(pix_dat[2,i1] , pix_dat[2,i2])
  * 
  *             delX = pix_dat[0,i1]-pix_dat[0,i2];             # <<<<<<<<<<<<<<
  *             delY = pix_dat[1,i1]-pix_dat[1,i2];
@@ -1553,61 +1692,96 @@ static PyObject *__pyx_pf_15calContrastMaps_calContrastMaps(CYTHON_UNUSED PyObje
  */
       __pyx_t_21 = 0;
       __pyx_t_20 = __pyx_v_i1;
-      if (__pyx_t_21 < 0) __pyx_t_21 += __pyx_pybuffernd_pix_dat.diminfo[0].shape;
-      if (__pyx_t_20 < 0) __pyx_t_20 += __pyx_pybuffernd_pix_dat.diminfo[1].shape;
-      __pyx_t_22 = 0;
-      __pyx_t_23 = __pyx_v_i2;
-      if (__pyx_t_22 < 0) __pyx_t_22 += __pyx_pybuffernd_pix_dat.diminfo[0].shape;
-      if (__pyx_t_23 < 0) __pyx_t_23 += __pyx_pybuffernd_pix_dat.diminfo[1].shape;
-      __pyx_v_delX = ((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int64_t *, __pyx_pybuffernd_pix_dat.rcbuffer->pybuffer.buf, __pyx_t_21, __pyx_pybuffernd_pix_dat.diminfo[0].strides, __pyx_t_20, __pyx_pybuffernd_pix_dat.diminfo[1].strides)) - (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int64_t *, __pyx_pybuffernd_pix_dat.rcbuffer->pybuffer.buf, __pyx_t_22, __pyx_pybuffernd_pix_dat.diminfo[0].strides, __pyx_t_23, __pyx_pybuffernd_pix_dat.diminfo[1].strides)));
+      __pyx_t_22 = -1;
+      if (__pyx_t_21 < 0) {
+        __pyx_t_21 += __pyx_pybuffernd_pix_dat.diminfo[0].shape;
+        if (unlikely(__pyx_t_21 < 0)) __pyx_t_22 = 0;
+      } else if (unlikely(__pyx_t_21 >= __pyx_pybuffernd_pix_dat.diminfo[0].shape)) __pyx_t_22 = 0;
+      if (__pyx_t_20 < 0) {
+        __pyx_t_20 += __pyx_pybuffernd_pix_dat.diminfo[1].shape;
+        if (unlikely(__pyx_t_20 < 0)) __pyx_t_22 = 1;
+      } else if (unlikely(__pyx_t_20 >= __pyx_pybuffernd_pix_dat.diminfo[1].shape)) __pyx_t_22 = 1;
+      if (unlikely(__pyx_t_22 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_22);
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 36; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      }
+      __pyx_t_23 = 0;
+      __pyx_t_22 = __pyx_v_i2;
+      __pyx_t_24 = -1;
+      if (__pyx_t_23 < 0) {
+        __pyx_t_23 += __pyx_pybuffernd_pix_dat.diminfo[0].shape;
+        if (unlikely(__pyx_t_23 < 0)) __pyx_t_24 = 0;
+      } else if (unlikely(__pyx_t_23 >= __pyx_pybuffernd_pix_dat.diminfo[0].shape)) __pyx_t_24 = 0;
+      if (__pyx_t_22 < 0) {
+        __pyx_t_22 += __pyx_pybuffernd_pix_dat.diminfo[1].shape;
+        if (unlikely(__pyx_t_22 < 0)) __pyx_t_24 = 1;
+      } else if (unlikely(__pyx_t_22 >= __pyx_pybuffernd_pix_dat.diminfo[1].shape)) __pyx_t_24 = 1;
+      if (unlikely(__pyx_t_24 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_24);
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 36; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      }
+      __pyx_v_delX = ((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int64_t *, __pyx_pybuffernd_pix_dat.rcbuffer->pybuffer.buf, __pyx_t_21, __pyx_pybuffernd_pix_dat.diminfo[0].strides, __pyx_t_20, __pyx_pybuffernd_pix_dat.diminfo[1].strides)) - (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int64_t *, __pyx_pybuffernd_pix_dat.rcbuffer->pybuffer.buf, __pyx_t_23, __pyx_pybuffernd_pix_dat.diminfo[0].strides, __pyx_t_22, __pyx_pybuffernd_pix_dat.diminfo[1].strides)));
 
-      /* "calContrastMaps.pyx":28
+      /* "calContrastMaps.pyx":37
  * 
  *             delX = pix_dat[0,i1]-pix_dat[0,i2];
  *             delY = pix_dat[1,i1]-pix_dat[1,i2];             # <<<<<<<<<<<<<<
  * 
- *             R = delX*delX + delY*delY
+ *             R = calcR(delX, delY);
  */
-      __pyx_t_24 = 1;
-      __pyx_t_25 = __pyx_v_i1;
-      if (__pyx_t_24 < 0) __pyx_t_24 += __pyx_pybuffernd_pix_dat.diminfo[0].shape;
-      if (__pyx_t_25 < 0) __pyx_t_25 += __pyx_pybuffernd_pix_dat.diminfo[1].shape;
-      __pyx_t_26 = 1;
-      __pyx_t_27 = __pyx_v_i2;
-      if (__pyx_t_26 < 0) __pyx_t_26 += __pyx_pybuffernd_pix_dat.diminfo[0].shape;
-      if (__pyx_t_27 < 0) __pyx_t_27 += __pyx_pybuffernd_pix_dat.diminfo[1].shape;
-      __pyx_v_delY = ((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int64_t *, __pyx_pybuffernd_pix_dat.rcbuffer->pybuffer.buf, __pyx_t_24, __pyx_pybuffernd_pix_dat.diminfo[0].strides, __pyx_t_25, __pyx_pybuffernd_pix_dat.diminfo[1].strides)) - (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int64_t *, __pyx_pybuffernd_pix_dat.rcbuffer->pybuffer.buf, __pyx_t_26, __pyx_pybuffernd_pix_dat.diminfo[0].strides, __pyx_t_27, __pyx_pybuffernd_pix_dat.diminfo[1].strides)));
+      __pyx_t_25 = 1;
+      __pyx_t_24 = __pyx_v_i1;
+      __pyx_t_26 = -1;
+      if (__pyx_t_25 < 0) {
+        __pyx_t_25 += __pyx_pybuffernd_pix_dat.diminfo[0].shape;
+        if (unlikely(__pyx_t_25 < 0)) __pyx_t_26 = 0;
+      } else if (unlikely(__pyx_t_25 >= __pyx_pybuffernd_pix_dat.diminfo[0].shape)) __pyx_t_26 = 0;
+      if (__pyx_t_24 < 0) {
+        __pyx_t_24 += __pyx_pybuffernd_pix_dat.diminfo[1].shape;
+        if (unlikely(__pyx_t_24 < 0)) __pyx_t_26 = 1;
+      } else if (unlikely(__pyx_t_24 >= __pyx_pybuffernd_pix_dat.diminfo[1].shape)) __pyx_t_26 = 1;
+      if (unlikely(__pyx_t_26 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_26);
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 37; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      }
+      __pyx_t_27 = 1;
+      __pyx_t_26 = __pyx_v_i2;
+      __pyx_t_28 = -1;
+      if (__pyx_t_27 < 0) {
+        __pyx_t_27 += __pyx_pybuffernd_pix_dat.diminfo[0].shape;
+        if (unlikely(__pyx_t_27 < 0)) __pyx_t_28 = 0;
+      } else if (unlikely(__pyx_t_27 >= __pyx_pybuffernd_pix_dat.diminfo[0].shape)) __pyx_t_28 = 0;
+      if (__pyx_t_26 < 0) {
+        __pyx_t_26 += __pyx_pybuffernd_pix_dat.diminfo[1].shape;
+        if (unlikely(__pyx_t_26 < 0)) __pyx_t_28 = 1;
+      } else if (unlikely(__pyx_t_26 >= __pyx_pybuffernd_pix_dat.diminfo[1].shape)) __pyx_t_28 = 1;
+      if (unlikely(__pyx_t_28 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_28);
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 37; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      }
+      __pyx_v_delY = ((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int64_t *, __pyx_pybuffernd_pix_dat.rcbuffer->pybuffer.buf, __pyx_t_25, __pyx_pybuffernd_pix_dat.diminfo[0].strides, __pyx_t_24, __pyx_pybuffernd_pix_dat.diminfo[1].strides)) - (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int64_t *, __pyx_pybuffernd_pix_dat.rcbuffer->pybuffer.buf, __pyx_t_27, __pyx_pybuffernd_pix_dat.diminfo[0].strides, __pyx_t_26, __pyx_pybuffernd_pix_dat.diminfo[1].strides)));
 
-      /* "calContrastMaps.pyx":30
+      /* "calContrastMaps.pyx":39
  *             delY = pix_dat[1,i1]-pix_dat[1,i2];
  * 
- *             R = delX*delX + delY*delY             # <<<<<<<<<<<<<<
- *             R = <int>round(sqrt(<double>R));
- *             if R>=map_R_range:
- */
-      __pyx_v_R = ((__pyx_v_delX * __pyx_v_delX) + (__pyx_v_delY * __pyx_v_delY));
-
-      /* "calContrastMaps.pyx":31
- * 
- *             R = delX*delX + delY*delY
- *             R = <int>round(sqrt(<double>R));             # <<<<<<<<<<<<<<
+ *             R = calcR(delX, delY);             # <<<<<<<<<<<<<<
  *             if R>=map_R_range:
  *                 R = map_R_range-1;
  */
-      __pyx_v_R = ((int)round(sqrt(((double)__pyx_v_R))));
+      __pyx_v_R = __pyx_f_15calContrastMaps_calcR(__pyx_v_delX, __pyx_v_delY);
 
-      /* "calContrastMaps.pyx":32
- *             R = delX*delX + delY*delY
- *             R = <int>round(sqrt(<double>R));
+      /* "calContrastMaps.pyx":40
+ * 
+ *             R = calcR(delX, delY);
  *             if R>=map_R_range:             # <<<<<<<<<<<<<<
  *                 R = map_R_range-1;
  * 
  */
-      __pyx_t_28 = ((__pyx_v_R >= __pyx_v_map_R_range) != 0);
-      if (__pyx_t_28) {
+      __pyx_t_29 = ((__pyx_v_R >= __pyx_v_map_R_range) != 0);
+      if (__pyx_t_29) {
 
-        /* "calContrastMaps.pyx":33
- *             R = <int>round(sqrt(<double>R));
+        /* "calContrastMaps.pyx":41
+ *             R = calcR(delX, delY);
  *             if R>=map_R_range:
  *                 R = map_R_range-1;             # <<<<<<<<<<<<<<
  * 
@@ -1618,20 +1792,31 @@ static PyObject *__pyx_pf_15calContrastMaps_calContrastMaps(CYTHON_UNUSED PyObje
       }
       __pyx_L7:;
 
-      /* "calContrastMaps.pyx":35
+      /* "calContrastMaps.pyx":43
  *                 R = map_R_range-1;
  * 
  *             Ipos[R, ipos] += 1;             # <<<<<<<<<<<<<<
  *             Ineg[R, ineg] += 1;
  * 
  */
-      __pyx_t_29 = __pyx_v_R;
+      __pyx_t_28 = __pyx_v_R;
       __pyx_t_30 = __pyx_v_ipos;
-      if (__pyx_t_29 < 0) __pyx_t_29 += __pyx_pybuffernd_Ipos.diminfo[0].shape;
-      if (__pyx_t_30 < 0) __pyx_t_30 += __pyx_pybuffernd_Ipos.diminfo[1].shape;
-      *__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_Ipos.rcbuffer->pybuffer.buf, __pyx_t_29, __pyx_pybuffernd_Ipos.diminfo[0].strides, __pyx_t_30, __pyx_pybuffernd_Ipos.diminfo[1].strides) += 1;
+      __pyx_t_31 = -1;
+      if (__pyx_t_28 < 0) {
+        __pyx_t_28 += __pyx_pybuffernd_Ipos.diminfo[0].shape;
+        if (unlikely(__pyx_t_28 < 0)) __pyx_t_31 = 0;
+      } else if (unlikely(__pyx_t_28 >= __pyx_pybuffernd_Ipos.diminfo[0].shape)) __pyx_t_31 = 0;
+      if (__pyx_t_30 < 0) {
+        __pyx_t_30 += __pyx_pybuffernd_Ipos.diminfo[1].shape;
+        if (unlikely(__pyx_t_30 < 0)) __pyx_t_31 = 1;
+      } else if (unlikely(__pyx_t_30 >= __pyx_pybuffernd_Ipos.diminfo[1].shape)) __pyx_t_31 = 1;
+      if (unlikely(__pyx_t_31 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_31);
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 43; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      }
+      *__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_Ipos.rcbuffer->pybuffer.buf, __pyx_t_28, __pyx_pybuffernd_Ipos.diminfo[0].strides, __pyx_t_30, __pyx_pybuffernd_Ipos.diminfo[1].strides) += 1;
 
-      /* "calContrastMaps.pyx":36
+      /* "calContrastMaps.pyx":44
  * 
  *             Ipos[R, ipos] += 1;
  *             Ineg[R, ineg] += 1;             # <<<<<<<<<<<<<<
@@ -1640,32 +1825,43 @@ static PyObject *__pyx_pf_15calContrastMaps_calContrastMaps(CYTHON_UNUSED PyObje
  */
       __pyx_t_31 = __pyx_v_R;
       __pyx_t_32 = __pyx_v_ineg;
-      if (__pyx_t_31 < 0) __pyx_t_31 += __pyx_pybuffernd_Ineg.diminfo[0].shape;
-      if (__pyx_t_32 < 0) __pyx_t_32 += __pyx_pybuffernd_Ineg.diminfo[1].shape;
+      __pyx_t_33 = -1;
+      if (__pyx_t_31 < 0) {
+        __pyx_t_31 += __pyx_pybuffernd_Ineg.diminfo[0].shape;
+        if (unlikely(__pyx_t_31 < 0)) __pyx_t_33 = 0;
+      } else if (unlikely(__pyx_t_31 >= __pyx_pybuffernd_Ineg.diminfo[0].shape)) __pyx_t_33 = 0;
+      if (__pyx_t_32 < 0) {
+        __pyx_t_32 += __pyx_pybuffernd_Ineg.diminfo[1].shape;
+        if (unlikely(__pyx_t_32 < 0)) __pyx_t_33 = 1;
+      } else if (unlikely(__pyx_t_32 >= __pyx_pybuffernd_Ineg.diminfo[1].shape)) __pyx_t_33 = 1;
+      if (unlikely(__pyx_t_33 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_33);
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      }
       *__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_Ineg.rcbuffer->pybuffer.buf, __pyx_t_31, __pyx_pybuffernd_Ineg.diminfo[0].strides, __pyx_t_32, __pyx_pybuffernd_Ineg.diminfo[1].strides) += 1;
     }
   }
 
-  /* "calContrastMaps.pyx":38
+  /* "calContrastMaps.pyx":46
  *             Ineg[R, ineg] += 1;
  * 
  *     return (Ipos, Ineg);             # <<<<<<<<<<<<<<
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 38; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 46; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(((PyObject *)__pyx_v_Ipos));
-  PyTuple_SET_ITEM(__pyx_t_2, 0, ((PyObject *)__pyx_v_Ipos));
+  PyTuple_SET_ITEM(__pyx_t_1, 0, ((PyObject *)__pyx_v_Ipos));
   __Pyx_GIVEREF(((PyObject *)__pyx_v_Ipos));
   __Pyx_INCREF(((PyObject *)__pyx_v_Ineg));
-  PyTuple_SET_ITEM(__pyx_t_2, 1, ((PyObject *)__pyx_v_Ineg));
+  PyTuple_SET_ITEM(__pyx_t_1, 1, ((PyObject *)__pyx_v_Ineg));
   __Pyx_GIVEREF(((PyObject *)__pyx_v_Ineg));
-  __pyx_r = __pyx_t_2;
-  __pyx_t_2 = 0;
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "calContrastMaps.pyx":14
- * @cython.boundscheck(False)
+  /* "calContrastMaps.pyx":23
+ *     return <int>R
  * 
  * def calContrastMaps(np.ndarray[np.int64_t, ndim=2] pix_dat, int map_R_range, int map_pos_range, int map_neg_range):             # <<<<<<<<<<<<<<
  *     cdef np.ndarray[np.int_t, ndim=2] Ipos = np.zeros([map_R_range, map_pos_range], dtype=np.int)
@@ -3761,7 +3957,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 22; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 31; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 218; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_RuntimeError = __Pyx_GetBuiltinName(__pyx_n_s_RuntimeError); if (!__pyx_builtin_RuntimeError) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 802; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   return 0;
@@ -3839,17 +4035,17 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__6);
   __Pyx_GIVEREF(__pyx_tuple__6);
 
-  /* "calContrastMaps.pyx":14
- * @cython.boundscheck(False)
+  /* "calContrastMaps.pyx":23
+ *     return <int>R
  * 
  * def calContrastMaps(np.ndarray[np.int64_t, ndim=2] pix_dat, int map_R_range, int map_pos_range, int map_neg_range):             # <<<<<<<<<<<<<<
  *     cdef np.ndarray[np.int_t, ndim=2] Ipos = np.zeros([map_R_range, map_pos_range], dtype=np.int)
  *     cdef np.ndarray[np.int_t, ndim=2] Ineg = np.zeros([map_R_range, map_neg_range], dtype=np.int)
  */
-  __pyx_tuple__7 = PyTuple_Pack(14, __pyx_n_s_pix_dat, __pyx_n_s_map_R_range, __pyx_n_s_map_pos_range, __pyx_n_s_map_neg_range, __pyx_n_s_Ipos, __pyx_n_s_Ineg, __pyx_n_s_i1, __pyx_n_s_i2, __pyx_n_s_ipos, __pyx_n_s_ineg, __pyx_n_s_n_pix, __pyx_n_s_R, __pyx_n_s_delX, __pyx_n_s_delY); if (unlikely(!__pyx_tuple__7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__7 = PyTuple_Pack(14, __pyx_n_s_pix_dat, __pyx_n_s_map_R_range, __pyx_n_s_map_pos_range, __pyx_n_s_map_neg_range, __pyx_n_s_Ipos, __pyx_n_s_Ineg, __pyx_n_s_i1, __pyx_n_s_i2, __pyx_n_s_ipos, __pyx_n_s_ineg, __pyx_n_s_n_pix, __pyx_n_s_R, __pyx_n_s_delX, __pyx_n_s_delY); if (unlikely(!__pyx_tuple__7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 23; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__7);
   __Pyx_GIVEREF(__pyx_tuple__7);
-  __pyx_codeobj__8 = (PyObject*)__Pyx_PyCode_New(4, 0, 14, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__7, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Users_ajaver_GitHub_repositorie, __pyx_n_s_calContrastMaps, 14, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__8 = (PyObject*)__Pyx_PyCode_New(4, 0, 14, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__7, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Users_ajaver_GitHub_repositorie, __pyx_n_s_calContrastMaps, 23, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 23; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -3973,16 +4169,16 @@ PyMODINIT_FUNC PyInit_calContrastMaps(void)
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_np, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 7; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "calContrastMaps.pyx":14
- * @cython.boundscheck(False)
+  /* "calContrastMaps.pyx":23
+ *     return <int>R
  * 
  * def calContrastMaps(np.ndarray[np.int64_t, ndim=2] pix_dat, int map_R_range, int map_pos_range, int map_neg_range):             # <<<<<<<<<<<<<<
  *     cdef np.ndarray[np.int_t, ndim=2] Ipos = np.zeros([map_R_range, map_pos_range], dtype=np.int)
  *     cdef np.ndarray[np.int_t, ndim=2] Ineg = np.zeros([map_R_range, map_neg_range], dtype=np.int)
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_15calContrastMaps_1calContrastMaps, NULL, __pyx_n_s_calContrastMaps); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_15calContrastMaps_1calContrastMaps, NULL, __pyx_n_s_calContrastMaps); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 23; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_calContrastMaps, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_calContrastMaps, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 23; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "calContrastMaps.pyx":1
@@ -4817,6 +5013,11 @@ static CYTHON_INLINE int __Pyx_TypeTest(PyObject *obj, PyTypeObject *type) {
     return 0;
 }
 
+static void __Pyx_RaiseBufferIndexError(int axis) {
+  PyErr_Format(PyExc_IndexError,
+     "Out of bounds on buffer access (axis %d)", axis);
+}
+
 static CYTHON_INLINE void __Pyx_ErrRestore(PyObject *type, PyObject *value, PyObject *tb) {
 #if CYTHON_COMPILING_IN_CPYTHON
     PyObject *tmp_type, *tmp_value, *tmp_tb;
@@ -5437,32 +5638,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value) {
         int one = 1; int little = (int)*(unsigned char *)&one;
         unsigned char *bytes = (unsigned char *)&value;
         return _PyLong_FromByteArray(bytes, sizeof(long),
-                                     little, !is_unsigned);
-    }
-}
-
-static CYTHON_INLINE PyObject* __Pyx_PyInt_From_npy_int64(npy_int64 value) {
-    const npy_int64 neg_one = (npy_int64) -1, const_zero = 0;
-    const int is_unsigned = neg_one > const_zero;
-    if (is_unsigned) {
-        if (sizeof(npy_int64) < sizeof(long)) {
-            return PyInt_FromLong((long) value);
-        } else if (sizeof(npy_int64) <= sizeof(unsigned long)) {
-            return PyLong_FromUnsignedLong((unsigned long) value);
-        } else if (sizeof(npy_int64) <= sizeof(unsigned long long)) {
-            return PyLong_FromUnsignedLongLong((unsigned long long) value);
-        }
-    } else {
-        if (sizeof(npy_int64) <= sizeof(long)) {
-            return PyInt_FromLong((long) value);
-        } else if (sizeof(npy_int64) <= sizeof(long long)) {
-            return PyLong_FromLongLong((long long) value);
-        }
-    }
-    {
-        int one = 1; int little = (int)*(unsigned char *)&one;
-        unsigned char *bytes = (unsigned char *)&value;
-        return _PyLong_FromByteArray(bytes, sizeof(npy_int64),
                                      little, !is_unsigned);
     }
 }
