@@ -5,7 +5,7 @@ mask_info = h5info(masked_image_file, '/mask');
 RESAMPLE_SIZE = 50;
 MASK_CHUNK_SIZE = mask_info.ChunkSize; %it mabye good to extract this info from h5info
 BUFF_SIZE = 1000; %buffer size, used to not write too much on the hdf5
-MAX_DT_ALLOWED = 5;
+%MAX_DT_ALLOWED = 5;
 MIN_PIX_ALLOWED = 50;
 DELT_PROGRESS = 500;
 
@@ -114,19 +114,27 @@ for plate_worms_row = 1:numel(data.('frame_number'))
         %figure, imshow(worm_mask)
     end
     %}
-    %figure, imshow(worm_mask)
+    %{
+    %eliminate prev_worm if it is larger from the max dist allowed
+    %this part is actually unnecessary since otherwise will be using
+    randomly located worms.
     if ~isempty(prev_worms{worm_index}) && ...
             current_frame - prev_worms{worm_index}.frame > MAX_DT_ALLOWED
         prev_worms{worm_index} = [];
     end
+    %}
     %%
     %segworm!
+    
+    %prev_worms{worm_index}.deltaCM = [range_y(1), range_x(1)] - prev_worms{worm_index}.CM;
     [worm_results, ~] = getWormSkeletonM(worm_mask, current_frame, prev_worms{worm_index}, RESAMPLE_SIZE);
     if isempty(worm_results)
         continue
     end
     
     prev_worms{worm_index} = worm_results; %save previous result with the ROI coordinate system
+    %prev_worms{worm_index}.CM = [range_y(1), range_x(1)]; %useful to check with previous frame
+    
     
     for ff = strArrayFields
         %get data into image absolute coordinates before saving to the bufer

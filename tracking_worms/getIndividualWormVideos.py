@@ -73,7 +73,8 @@ is_draw_contour = False, status_queue = '', base_name = '', str_index = 'worm_in
     table_fid = pd.HDFStore(trajectories_file, 'r');
     df = table_fid['/plate_worms'];
     df =  df[df[str_index] > 0]
-     
+    #df = df[df[str_index]==4423] 
+    
     if str_index == 'worm_index':
         counts = df[str_index].value_counts()
         good_index = counts[counts>25].index;
@@ -169,6 +170,8 @@ is_draw_contour = False, status_queue = '', base_name = '', str_index = 'worm_in
             if range_y[1]>img.shape[0]: range_y += img.shape[0]-range_y[1]-1
             
             worm_img =  img[range_y[0]:range_y[1], range_x[0]:range_x[1]]
+            intensity_rescale = 255./min(1.1*np.max(worm_img),255.);
+            worm_img = (worm_img*intensity_rescale).astype(np.uint8)
             
             if not is_draw_contour:
                 video_list[worm_index]['writer'].write(worm_img)
@@ -181,10 +184,9 @@ is_draw_contour = False, status_queue = '', base_name = '', str_index = 'worm_in
                 worm_rgb= cv2.cvtColor(worm_img, cv2.COLOR_GRAY2RGB);
             
                 if (len(threshold) == 1) and (segworm_id < 0):
-                    worm_mask = ((worm_img<threshold)&(worm_img!=0)).astype(np.uint8)        
+                    worm_mask = ((worm_img<threshold*intensity_rescale)&(worm_img!=0)).astype(np.uint8)        
                     worm_mask = cv2.morphologyEx(worm_mask, cv2.MORPH_CLOSE,np.ones((3,3)))
                     worm_rgb[:,:,1][worm_mask!=0] = 155
-
                 worm_rgb = cv2.resize(worm_rgb, (0,0), fx=movie_scale, fy=movie_scale);
                 
                 if (len(segworm_id)==1) and (segworm_id >= 0):
@@ -224,14 +226,14 @@ if __name__ == '__main__':
 #    trajectories_dir = sys.argv[2]
 #    base_name = sys.argv[3]
 #    main_video_save_dir = sys.argv[4]
-    masked_movies_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150323/'
-    trajectories_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/'
-    base_name = 'CaptureTest_90pc_Ch1_02022015_141431'
-    main_video_save_dir = r'/Users/ajaver/Desktop/Gecko_compressed/20150323/Worm_Movies2/'
+    masked_movies_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150511/'
+    trajectories_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150511/Trajectories/'
+    base_name = 'Capture_Ch1_11052015_195105'
+    main_video_save_dir = r'/Users/ajaver/Desktop/Gecko_compressed/20150511/Worm_Movies3/'
 
     masked_image_file = masked_movies_dir + base_name + '.hdf5'
     trajectories_file = trajectories_dir + base_name + '_trajectories.hdf5'
-    segworm_file = trajectories_dir + base_name + '_segworm_fix.hdf5'
+    segworm_file = trajectories_dir + base_name + '_segworm_fix2.hdf5'
     video_save_dir = main_video_save_dir + base_name + os.sep    
 #    video_save_dir_gray = main_video_save_dir + base_name + '_gray' + os.sep
 

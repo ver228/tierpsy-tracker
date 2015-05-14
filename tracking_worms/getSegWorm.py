@@ -27,6 +27,7 @@ def getValidTrajectories(trajectories_file, \
     table_fid = pd.HDFStore(trajectories_file, 'r')
     df = table_fid['/plate_worms']
     df =  df[df['worm_index_joined'] > 0]
+    #df =  df[df['worm_index_joined'] == 8]
     
     tracks_data = df[['worm_index_joined', 'frame_number', 'coord_x', 'coord_y']].groupby('worm_index_joined').aggregate(['max', 'min', 'count'])
     
@@ -134,11 +135,14 @@ thresh_smooth_window = 1501):
     cmd = """matlab -nojvm -nodisplay -nosplash -r "addpath(genpath('%s')); movie2segworm_csv('%s', '%s', '%s'); exit();" </dev/null """  \
     % (matlab_path, csv_tmp, masked_image_file, segworm_file);
 
-    print(cmd)
-#%%    
-    os.system(cmd)
-    os.remove(csv_tmp)
-         
+    print(cmd)   
+    os.system(cmd) #excecute MATLAB program
+    
+    if os.path.exists(csv_tmp):
+        print("Segworm MATLAB subprocess was not completed succesfully.")
+        raise 
+    
+#%%     
     #update pytables with the correct index for segworm_file
     results_fid = tables.open_file(trajectories_file, 'r+')
     tracking_table = results_fid.get_node('/plate_worms')
@@ -147,6 +151,7 @@ thresh_smooth_window = 1501):
     
     plate_worms_id = segworm_fid['/segworm_results/plate_worms_id']
     
+    tracking_table.cols.segworm_id[:] = [-1]*tracking_table.nrows #make sure all that there were not previous values in the segworm_id
     for ii in range(plate_worms_id.size):
         tracking_table.cols.segworm_id[int(plate_worms_id[ii])] = ii;
     
@@ -155,27 +160,17 @@ thresh_smooth_window = 1501):
     segworm_fid.close()
     
     
-    sendQueueOrPrint(status_queue, 'Skeletonization completed.', base_name);    
-    
+    print(base_name + ' Skeletonization completed.');    
+#%%    
 if __name__ == '__main__':
-#    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Capture_Ch4_23032015_111907.hdf5'
-#    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/trajectories/Capture_Ch4_23032015_111907.hdf5'
-#    segworm_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/trajectories/Capture_Ch4_23032015_111907_segworm.hdf5'
-
-#    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/CaptureTest_90pc_Ch1_02022015_141431.hdf5'
-#    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/CaptureTest_90pc_Ch1_02022015_141431.hdf5'
-#    segworm_file = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/CaptureTest_90pc_Ch1_02022015_141431_segworm.hdf5'
-#    save_csv_name = '/Users/ajaver/Desktop/Gecko_compressed/prueba/trajectories/CaptureTest_90pc_Ch1_02022015_141431.csv';
-    #df = getValidTrajectories(trajectories_file, save_csv_name = save_csv_name)
-    #getSegWorm(masked_image_file, trajectories_file, segworm_file)
-
-#    trajectories_file = r'/Users/ajaver/Desktop/sygenta/Trajectories/data_20150114/control_9_fri_12th_dec_2_trajectories.hdf5'
-#    save_csv_name = '/Users/ajaver/Desktop/sygenta/Trajectories/control_9_fri_12th_dec_2.csv'
-#    df = getValidTrajectories(trajectories_file, save_csv_name = save_csv_name)
-
 #    masked_movies_dir = sys.argv[1]
 #    trajectories_dir = sys.argv[2]
 #    base_name = sys.argv[3]
+
+    masked_movies_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150511/'
+    trajectories_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150511/Trajectories/'
+    base_name = 'Capture_Ch1_11052015_195105'
+
 
     masked_image_file = masked_movies_dir + base_name + '.hdf5'
     trajectories_file = trajectories_dir + base_name + '_trajectories.hdf5'

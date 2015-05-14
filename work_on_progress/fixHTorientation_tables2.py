@@ -20,20 +20,19 @@ import time
 import tables
 import operator
 import matplotlib.pylab as plt
+from scipy.spatial.distance import cdist
 
 from calContrastMaps import calContrastMapsBinned
 #from image_difference import image_difference
 if __name__  == "__main__":
-#def main():
     masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/CaptureTest_90pc_Ch1_02022015_141431.hdf5';
     trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/CaptureTest_90pc_Ch1_02022015_141431_trajectories.hdf5';
-    segworm_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/CaptureTest_90pc_Ch1_02022015_141431_segworm.hdf5';
-    contrastmap_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/CaptureTest_90pc_Ch1_02022015_141431_cmap-short.hdf5';
-    #contrastmap_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/CaptureTest_90pc_Ch1_02022015_141431_cmap.hdf5';
+    segworm_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/CaptureTest_90pc_Ch1_02022015_141431_segworm_short.hdf5';
+    contrastmap_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/CaptureTest_90pc_Ch1_02022015_141431_cmap.hdf5';
     
     MAX_DELT = 1;
-    jump_frames = 3; #3
-    del_frames = 100; #100
+    #jump_frames = 3; #3
+    #del_frames = 100; #100
     ROI_SIZE = 128;
     
     
@@ -44,8 +43,7 @@ if __name__  == "__main__":
     df = df[df['segworm_id']>=0]; #select only rows with a valid segworm skeleton
     table_fid.close()
     
-    #track_counts = df['worm_index_joined'].value_counts()
-    
+    #track_counts = df['worm_index_joined'].value_counts()    
     #tot_ind_ini = 0;
     #tot_ind_last = 0;
     
@@ -68,49 +66,14 @@ if __name__  == "__main__":
         worm_segworm_id = worm['segworm_id'].values  
         plate_worms_id = worm.index.values;
             
-        #identify segments that correspond to the begining or ending of a block
-        
-        block_ind_ini = np.ones_like(block_ind)*-1; 
-        block_ind_last = np.ones_like(block_ind)*-1;
-        for ii in range(1, block_ind[-1]+1):
-            curr_block = np.where(block_ind==ii)[0]
-            
-            if curr_block.size/jump_frames > del_frames:
-                ini_block = curr_block[:del_frames*jump_frames:jump_frames]
-                last_block = curr_block[-del_frames*jump_frames::jump_frames]
-            else:
-                ini_block = curr_block[:del_frames]
-                last_block = curr_block[-del_frames:]
-            
-            #vv_ini = range(tot_ind_ini, tot_ind_ini+ini_block.size)
-            block_ind_ini[ini_block] = 1
-            #tot_ind_ini = vv_ini[-1]
-            
-            #vv_last = range(tot_ind_last, tot_ind_last+ini_block.size)
-            block_ind_last[last_block] = 1
-            #tot_ind_last = vv_last[-1]
-        
-        all_ind_block += zip(*[block_ind.size*[worm_ind], list(block_ind), list(plate_worms_id), list(worm_segworm_id), list(block_ind_ini), list(block_ind_last)])
+        #identify segments that correspond to the begining or ending of a block        
+        all_ind_block += zip(*[block_ind.size*[worm_ind], list(block_ind), list(plate_worms_id), list(worm_segworm_id)])
     
     all_ind_block = sorted(all_ind_block, key = operator.itemgetter(0, 1)); #sort by worm index first, and the by block index
     all_ind_block = zip(*all_ind_block)
-    
-    for kk in range(4,6):
-        all_ind_block[kk] = np.array(all_ind_block[kk])
-        good = (np.array(all_ind_block[kk])>=0)
-        all_ind_block[kk][good] = np.arange(np.sum(good))
-        all_ind_block[kk] = list(all_ind_block[kk])
-    
+    all_ind_block += [range(len(all_ind_block[0]))]
     all_ind_block = zip(*all_ind_block)
     #%%
-    
-    #good = (np.array(all_ind_block[4])>=0)
-    #np.array(all_ind_block[4])>0 = np.arange(np.sum(good))
-    #cmap_id = np.ones_like(all_ind_block[4])*-1;
-    #cmap_id[good] = np.arange(np.sum(good));
-    #all_ind_block = all_ind_block + [cmap_id]; 
-    #all_ind_block = zip(*all_ind_block)
-    
     contrastmap_fid = tables.File(contrastmap_file, 'w');
     
     ind_block_table = contrastmap_fid.create_table('/', 'block_index', {
@@ -118,8 +81,7 @@ if __name__  == "__main__":
         'block_id'         : tables.Int32Col(pos=1),
         'plate_worms_id'   : tables.Int32Col(pos=2),
         'segworm_id'         : tables.Int32Col(pos=3),
-        'block_ini_id'     : tables.Int32Col(pos=4),
-        'block_last_id'     : tables.Int32Col(pos=5)
+        'cmap_id'     : tables.Int32Col(pos=4),
         }, filters = tables.Filters(complevel=5, complib='zlib', shuffle=True))
     
     ind_block_table.append(all_ind_block);
@@ -127,21 +89,17 @@ if __name__  == "__main__":
     contrastmap_fid.flush()
     contrastmap_fid.close()
     #%%
-    
     #read the valid contrastmap data (again)
     contrastmap_fid = pd.HDFStore(contrastmap_file, 'r');
-    df_map_ind = contrastmap_fid['/block_index'].query('block_ini_id>=0 | block_last_id>=0')
+    df_map_ind = contrastmap_fid['/block_index']
     contrastmap_fid.close()
     
     #read the trajectories data and add a column for the cmap index
     trajectories_fid = pd.HDFStore(trajectories_file, 'r');
     df = trajectories_fid['/plate_worms'];
     df = df.irow(df_map_ind['plate_worms_id']);
-    df.loc[:, 'block_ini_id'] = pd.Series(df_map_ind['block_ini_id'].values, df_map_ind['plate_worms_id'].values)
-    df.loc[:, 'block_last_id'] = pd.Series(df_map_ind['block_last_id'].values, df_map_ind['plate_worms_id'].values)
-    #df.loc[:,'cmap_id'] = df_map_ind['cmap_id'].values #copy values otherwise it would try to mach the index
-    
-    
+    df.loc[:, 'cmap_id'] = pd.Series(df_map_ind['cmap_id'].values, df_map_ind['plate_worms_id'].values)
+    assert(len(df) == len(df_map_ind))
     #%%
     #open the hdf5 with the masked images
     mask_fid = h5py.File(masked_image_file, 'r');
@@ -149,40 +107,26 @@ if __name__  == "__main__":
     
     segworm_fid = h5py.File(segworm_file, 'r')
     
-    #map_R_range = 120;
-    #map_range = {'pos':511, 'neg': 256};
-    
     bins_size = {'R':50., 'pos':50., 'neg':50.};  
     max_values = {'R':100., 'pos':511., 'neg':256.};  
     
-    N_pix_HT = 20; #segment size taken for the head and the tail
-    N_pix_DV = 10; #segment size taken for the head and the tail
+    N_pix_HT = 10; #segment size taken for the head and the tail
+    N_pix_DV = 10; #segment taken for the dorsal and ventral segments from the head/tail
     
-    tot_maps = {'block_ini':(df['block_last_id']>=0).sum(), 
-                'block_last':(df['block_last_id']>=0).sum()};
-    assert df['block_ini_id'].max() + 1 == tot_maps['block_ini']
-    assert df['block_last_id'].max() + 1 == tot_maps['block_last']
+    tot_maps = len(df_map_ind)
     
     contrastmap_fid = tables.File(contrastmap_file, 'r+');
     #%%
-    
-    
     maps_ID = {};
     
-    for key_block in ['block_ini', 'block_last']:
-        maps_ID[key_block] = {}
-        contrastmap_fid.create_group("/", key_block)
-        for key_part in ['worm_H', 'worm_T', 'worm_V', 'worm_D']:
-            for key_mapT in ["pos", "neg"]:
-                key_map = key_part + '_'+ key_mapT;
-                maps_ID[key_block][key_map] = contrastmap_fid.create_carray("/" + key_block, key_map , atom = tables.UInt32Atom(), 
-                                                    shape = (tot_maps[key_block], bins_size['R'], bins_size[key_mapT]),
+    contrastmap_fid.create_group("/", "block_cmap")
+    for key_part in ['worm_H', 'worm_T', 'worm_V', 'worm_D', 'worm_all']:
+        for key_mapT in ["pos", "neg"]:
+            key_map = key_part + '_'+ key_mapT;
+            maps_ID[key_map] = contrastmap_fid.create_carray("/block_cmap/", key_map , atom = tables.UInt32Atom(), 
+                                                    shape = (tot_maps, bins_size['R'], bins_size[key_mapT]),
                                                     filters = tables.Filters(complevel=5, complib='blosc', shuffle = True), 
                                                     chunkshape = (1, bins_size['R'], bins_size[key_mapT]));
-    #    maps_ID[key_map] = contrastmap_fid.create_dataset("/"+key_map , (tot_maps, map_R_range, map_pos_range), 
-    #                                        dtype = np.int, maxshape = (tot_maps, map_R_range, map_pos_range), 
-    #                                        chunks = (1, map_R_range, map_pos_range),
-    #                                        compression="lzf", shuffle=True);
     
     tic = time.time()
     tic_first = tic
@@ -196,8 +140,7 @@ if __name__  == "__main__":
         
         for ii, worm in wormsInFrame.iterrows():
             worm_index = int(worm['worm_index_joined']); 
-            block_id = {'block_ini': int(worm['block_ini_id']), 
-                        'block_last': int(worm['block_last_id'])}
+            cmap_id = worm['cmap_id']
             segworm_id = worm['segworm_id']
     
             range_x = np.round(worm['coord_x']) + [-ROI_SIZE/2, ROI_SIZE/2]
@@ -214,13 +157,38 @@ if __name__  == "__main__":
                 dat[key] = segworm_fid['/segworm_results/' + key][segworm_id,:,:];
                 dat[key][1,:] = dat[key][1,:]-range_x[0]
                 dat[key][0,:] = dat[key][0,:]-range_y[0]
-    
+            #%%
             #initialize dictionary
             contours = {};
-            contours['worm_H'] = np.hstack((dat['contour_ventral'][::-1,0:N_pix_HT],dat['contour_dorsal'][::-1,N_pix_HT-1::-1]));
-            contours['worm_T'] = np.hstack((dat['contour_ventral'][::-1,-N_pix_HT:],dat['contour_dorsal'][::-1,:-N_pix_HT-1:-1]));
-            contours['worm_V'] = np.hstack((dat['contour_ventral'][::-1,N_pix_DV:-N_pix_DV],dat['skeleton'][::-1,-N_pix_DV:N_pix_DV:-1]));
-            contours['worm_D'] = np.hstack((dat['contour_dorsal'][::-1,N_pix_DV:-N_pix_DV],dat['skeleton'][::-1,-N_pix_DV:N_pix_DV:-1]));
+            p_ske = dat['skeleton'][:,[N_pix_HT, -N_pix_HT, N_pix_DV, -N_pix_DV]];
+            v_closest = np.argmin(cdist(dat['contour_ventral'].T, p_ske.T), axis=0)
+            d_closest = np.argmin(cdist(dat['contour_dorsal'].T, p_ske.T), axis=0)
+            p_ske = p_ske[::-1,:]
+            
+            contours['worm_all'] = np.hstack((dat['contour_ventral'][::-1,:],dat['contour_dorsal'][::-1,::-1]));
+            contours['worm_H'] = np.hstack((dat['contour_ventral'][::-1,0:v_closest[0]+1], \
+                np.reshape(p_ske[:,0],(2,-1)), \
+                dat['contour_dorsal'][::-1,d_closest[0]::-1]));
+            
+            contours['worm_T'] = np.hstack((dat['contour_ventral'][::-1, :v_closest[1]-1:-1], \
+                np.reshape(p_ske[:,1],(2,-1)), \
+                dat['contour_dorsal'][::-1, d_closest[1]:]));
+            
+            contours['worm_V'] = np.hstack((dat['contour_ventral'][::-1,v_closest[2]:v_closest[3]+1], \
+                dat['skeleton'][::-1,-N_pix_DV:N_pix_DV-1:-1]));
+            
+            contours['worm_D'] = np.hstack((dat['contour_dorsal'][::-1,d_closest[2]:d_closest[3]+1], \
+                dat['skeleton'][::-1,-N_pix_DV:N_pix_DV-1:-1]));
+            
+            
+#            #plt.imshow(worm_img, interpolation = 'none', cmap = 'gray')
+#            plt.plot(contours['worm_all'][0,:],contours['worm_all'][1,:], '.-')
+#            plt.plot(contours['worm_H'][0,:],contours['worm_H'][1,:])
+#            plt.plot(contours['worm_T'][0,:],contours['worm_T'][1,:])
+#            plt.plot(contours['worm_V'][0,:],contours['worm_V'][1,:])
+#            plt.plot(contours['worm_D'][0,:],contours['worm_D'][1,:])
+#            
+            #%%
             
             for key in contours:
                 worm_mask = np.zeros(worm_img.shape)
@@ -233,15 +201,8 @@ if __name__  == "__main__":
                 #print key, pix_dat.shape
                 #Ipos, Ineg = calContrastMaps(pix_dat, map_R_range, map_range['pos'], map_range['neg']);
                 Ipos, Ineg = calContrastMapsBinned(pix_dat, bins_size, max_values)
-                for key_block in block_id:
-                    ind = block_id[key_block]
-                    if ind>=0:
-    #                    maps_ID[key_block][key + "_pos"][ind,:,:] = \
-    #                        cv2.GaussianBlur(Ipos.astype(np.double), (3,3), 0).astype(np.int)
-    #                    maps_ID[key_block][key + "_neg"][ind,:,:] = \
-    #                        cv2.GaussianBlur(Ineg.astype(np.double), (3,3), 0).astype(np.int)
-                        maps_ID[key_block][key + "_pos"][ind,:,:] = Ipos.copy()
-                        maps_ID[key_block][key + "_neg"][ind,:,:] = Ineg.copy()
+                maps_ID[key + "_pos"][cmap_id,:,:] = Ipos.copy()
+                maps_ID[key + "_neg"][cmap_id,:,:] = Ineg.copy()
 #    ##    
         contrastmap_fid.flush()
         if frame%25 == 0:

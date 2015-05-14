@@ -41,38 +41,38 @@ def calWormAngles(x,y):
     return (angles, meanAngle)
 
 
-
-segworm_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/CaptureTest_90pc_Ch1_02022015_141431_segworm.hdf5';
-
-segworm_fid = h5py.File(segworm_file, 'r+')
-skeleton = segworm_fid['/segworm_results/skeleton']
-
-if "/segworm_results/skeleton_angles" in segworm_fid:
-    del segworm_fid["/segworm_results/skeleton_angles"]
-if "/segworm_results/skeleton_mean_angles2" in segworm_fid:
-    del segworm_fid["/segworm_results/skeleton_mean_angles"]
-
-angles_shape = (skeleton.shape[0], skeleton.shape[2]-1); #substract one size substract one point (difference)
-skeleton_angles = segworm_fid.create_dataset("/segworm_results/skeleton_angles" , angles_shape, 
-                           dtype = np.float64, maxshape =angles_shape, 
-                           chunks = (5, angles_shape[1]),
-                        compression="gzip", shuffle=True);
-
-mean_angles_shape = (angles_shape[0],1);
-skeleton_mean_angles = segworm_fid.create_dataset("/segworm_results/skeleton_mean_angles" , (angles_shape[0],),
-                           dtype = np.float64, maxshape = (angles_shape[0],), 
-                           chunks = True, 
-                        compression="gzip", shuffle=True);
-
-
-for kk in range(skeleton.shape[0]):
-    print kk, skeleton.shape[0]
-    angles, mean_angle = calWormAngles(skeleton[kk,0,:], skeleton[kk,1,:]);
-    skeleton_mean_angles[kk] = mean_angle;
-    skeleton_angles[kk,:] = angles;
-
-
-segworm_fid.close()
+#if __name__ == "__main__":
+#    segworm_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/CaptureTest_90pc_Ch1_02022015_141431_segworm.hdf5';
+#    
+#    segworm_fid = h5py.File(segworm_file, 'r+')
+#    skeleton = segworm_fid['/segworm_results/skeleton']
+#    
+#    if "/segworm_results/skeleton_angles" in segworm_fid:
+#        del segworm_fid["/segworm_results/skeleton_angles"]
+#    if "/segworm_results/skeleton_mean_angles2" in segworm_fid:
+#        del segworm_fid["/segworm_results/skeleton_mean_angles"]
+#    
+#    angles_shape = (skeleton.shape[0], skeleton.shape[2]-1); #substract one size substract one point (difference)
+#    skeleton_angles = segworm_fid.create_dataset("/segworm_results/skeleton_angles" , angles_shape, 
+#                               dtype = np.float64, maxshape =angles_shape, 
+#                               chunks = (5, angles_shape[1]),
+#                            compression="gzip", shuffle=True);
+#    
+#    mean_angles_shape = (angles_shape[0],1);
+#    skeleton_mean_angles = segworm_fid.create_dataset("/segworm_results/skeleton_mean_angles" , (angles_shape[0],),
+#                               dtype = np.float64, maxshape = (angles_shape[0],), 
+#                               chunks = True, 
+#                            compression="gzip", shuffle=True);
+#    
+#    
+#    for kk in range(skeleton.shape[0]):
+#        print kk, skeleton.shape[0]
+#        angles, mean_angle = calWormAngles(skeleton[kk,0,:], skeleton[kk,1,:]);
+#        skeleton_mean_angles[kk] = mean_angle;
+#        skeleton_angles[kk,:] = angles;
+#    
+#    
+#    segworm_fid.close()
 #function [angleArray, meanAngles] = makeAngleArray(x, y)
 #
 #%MAKEANGLEARRAY Get tangent angles for each frame of normBlocks and rotate
