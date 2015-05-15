@@ -43,6 +43,8 @@ if __name__ == '__main__':
 
 #    expDateStr = '20150216'
     expDateStr = sys.argv[1]
+    base_name = os.path.split('/Users/ajaver/Desktop/Gecko_compressed/20150511/Compressed/Capture_Ch3_11052015_195105.hdf5')[-1][:-5];
+    
     masked_movies_dir =  r'/Volumes/behavgenom$/GeckoVideo/Compressed/' + expDateStr + '/'
     trajectories_dir =  r'/Volumes/behavgenom$/GeckoVideo/Trajectories/' + expDateStr + '/'
     main_video_save_dir = r'/Volumes/behavgenom$/GeckoVideo/Invidual_videos/'  + expDateStr + '/'
