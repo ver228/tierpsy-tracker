@@ -10,6 +10,7 @@ import h5py
 
 from readVideoffmpeg import readVideoffmpeg
 from parallelProcHelper import sendQueueOrPrint, timeCounterStr
+from image_difference_mask import image_difference_mask
 
 def getROIMask(image,  min_area = 100, max_area = 5000):
     '''
@@ -106,11 +107,17 @@ status_queue = '', check_empty = True,  useVideoCapture = True):
                                     compression_opts=9,
                                     shuffle=True);
     full_dataset.attrs['save_interval'] = save_full_interval
+    
+    im_diff_set = mask_fid.create_dataset('/im_diff', (0,), 
+                                          dtype = 'f4', maxshape = (None,), 
+                                        chunks = True, compression = "gzip", compression_opts=9, shuffle = True)
+    
 
     
     #intialize frame number
     frame_number = 0;
     full_frame_number = 0;
+    image_prev = np.zeros([]);
     
     #initialize timers
     progressTime = timeCounterStr('Compressing video.');
@@ -136,13 +143,13 @@ status_queue = '', check_empty = True,  useVideoCapture = True):
         #Resize mask array every 1000 frames (doing this every frame does not impact much the performance)
         if (frame_number)%1000 == 1:
             mask_dataset.resize(frame_number + 1000, axis=0); 
-
+            im_diff_set.resize(frame_number + 1000, axis=0); 
         #Add a full frame every save_full_interval
         if frame_number % save_full_interval== 1:
             
             full_dataset.resize(full_frame_number+1, axis=0); 
             assert(np.floor(frame_number/save_full_interval) == full_frame_number) #just to be sure that the index we are saving in is what we what we are expecting
-            full_dataset[full_frame_number,:,:] = image
+            full_dataset[full_frame_number,:,:] = image.copy()
             full_frame_number += 1;
 
         
@@ -153,7 +160,7 @@ status_queue = '', check_empty = True,  useVideoCapture = True):
             Ibuff = np.zeros((buffer_size, im_height, im_width), dtype = np.uint8)
 
         #add image to the buffer
-        Ibuff[ind_buff, :, :] = image
+        Ibuff[ind_buff, :, :] = image.copy()
         
         if ind_buff == buffer_size-1:
             #calculate the mask only when the buffer is full
@@ -169,6 +176,11 @@ status_queue = '', check_empty = True,  useVideoCapture = True):
             #add buffer to the hdf5 file
             mask_dataset[(frame_number-buffer_size):frame_number,:,:] = Ibuff
         
+        #calculate difference between image (it's usefull to indentified corrupted frames)
+        image[0:15,0:479] = 0; #remove timestamp before calculation
+        if image_prev.shape:
+            im_diff_set[frame_number] = image_difference_mask(image,image_prev)
+        image_prev = image.copy();  
         
         if frame_number%25 == 0:
             #calculate the progress and put it in a string
@@ -179,9 +191,13 @@ status_queue = '', check_empty = True,  useVideoCapture = True):
     
     if mask_dataset.shape[0] != frame_number:
         mask_dataset.resize(frame_number, axis=0);
+        im_diff_set.resize(frame_number, axis=0);
+        
     if full_dataset.shape[0] != full_frame_number:
         full_dataset.resize(full_frame_number, axis=0);
+        
     #close the video and hdf5 files
     vid.release() 
     mask_fid.close()
     sendQueueOrPrint(status_queue, 'Compressed video done.', base_name);
+

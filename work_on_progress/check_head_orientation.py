@@ -65,12 +65,12 @@ for ii in delta_ind:
     dy = skeletons[:,1,-ii-1] - skeletons[:,1,-1]
 
     angles_tail,_ = getAnglesDelta(dx,dy)
-    plt.figure()
-    plt.plot(angles_head)
-    plt.plot(angles_tail)
-    
-    #ts = pd.DataFrame({'head':angles_head, 'tail':angles_tail}, index = df['frame_number'].values)
-    #pd.rolling_std(ts, 100).plot()
+#    plt.figure()
+#    plt.plot(angles_head)
+#    plt.plot(angles_tail)
+#    
+    ts = pd.DataFrame({'head':angles_head, 'tail':angles_tail}, index = df['frame_number'].values)
+    pd.rolling_std(ts, 100).plot()
     
     
     

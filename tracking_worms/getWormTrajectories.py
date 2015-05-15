@@ -25,11 +25,8 @@ from scipy.spatial.distance import cdist
 
 import sys
 sys.path.append('../videoCompression/')
+from parallelProcHelper import timeCounterStr
 
-#sys.path.append('./image_difference/')
-from image_difference_mask import image_difference_mask
-
-from parallelProcHelper import sendQueueOrPrint, timeCounterStr
 class plate_worms(tables.IsDescription):
 #class for the pytables 
     worm_index = tables.Int32Col(pos=0)
@@ -110,12 +107,6 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue='', base_name =''):
                                              plate_worms, "Worm feature List",
                                              filters = tables.Filters(complevel=5, complib='zlib', shuffle=True))
     
-    im_diff_table = feature_fid.create_table('/', 'im_diff', {
-    'frame_number':    tables.Int32Col(),
-    'im_diff'         : tables.Float32Col()
-    }, filters = tables.Filters(complevel=5, complib='zlib', shuffle=True))
-    
-    
     if last_frame <= 0:
         last_frame = mask_dataset.shape[0]
     
@@ -124,25 +115,12 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue='', base_name =''):
     buff_last_coord = np.empty([0]);
     buff_last_index = np.empty([0]);
     buff_last_area = np.empty([0]);
-    Iprev = np.zeros([]);
-    
     
     progressTime = timeCounterStr('Calculating trajectories.');
     for frame_number in range(initial_frame, last_frame, buffer_size):
         
         #load image buffer
         image_buffer = mask_dataset[frame_number:(frame_number+buffer_size),:, :]
-        
-        
-        #calculate difference between image (it's usefull to indentified corrupted frames)
-        for m in range(image_buffer.shape[0]):    
-            I = image_buffer[m,:,:].copy();
-            I[0:15,0:479] = 0;
-            if Iprev.shape:
-                im_diff_table.append([(frame_number+m, image_difference_mask(I,Iprev))])
-                #im_diff[frame_number+m] = image_difference(I,Iprev)
-            Iprev = I.copy();    
-          
         #select pixels as connected regions that were selected as worms at least once in the masks
         #main_mask = np.min(image_buffer, axis=0); 
         #main_mask[0:15, 0:479] = 0
@@ -342,7 +320,7 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue='', base_name =''):
         if frame_number % 500 == 0:
             #calculate the progress and put it in a string
             progress_str = progressTime.getStr(frame_number)
-            sendQueueOrPrint(status_queue, progress_str, base_name);
+            print(base_name + ' ' + progress_str);
             
     
     #close files and create indexes
@@ -352,7 +330,7 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue='', base_name =''):
     feature_table.flush()
     feature_fid.close()
     
-    sendQueueOrPrint(status_queue, progress_str, base_name);
+    print(base_name + ' ' + progress_str);
 
 
 def joinTrajectories(trajectories_file, min_track_size = 50, \
