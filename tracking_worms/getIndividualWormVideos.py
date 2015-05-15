@@ -23,7 +23,7 @@ import numpy as np
 
 import sys
 sys.path.append('../videoCompression/')
-from parallelProcHelper import sendQueueOrPrint, timeCounterStr
+from parallelProcHelper import timeCounterStr
 
 class writeVideoffmpeg:
     def __init__(self, file_name, width = 100, height = 100, pix_fmt = 'gray'):
@@ -212,7 +212,7 @@ is_draw_contour = False, status_queue = '', base_name = '', str_index = 'worm_in
             
         if frame % 500 == 0:
             progress_str = progressTime.getStr(frame)
-            sendQueueOrPrint(status_queue, progress_str, base_name);
+            print(base_name + ' ' + progress_str);
             
     for worm_index in video_list:
         video_list[worm_index]['writer'].release()  
