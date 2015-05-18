@@ -116,6 +116,7 @@ if __name__ == '__main__':
     #trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/20150511/Trajectories/Capture_Ch1_11052015_195105_trajectories.hdf5'
     #masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/20150511/Compressed/Capture_Ch1_11052015_195105.hdf5'
     #trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/20150511/Trajectories/Capture_Ch1_11052015_195105_trajectories.hdf5'
-    trajectories_file = sys.argv[2]
     masked_image_file = sys.argv[1]
+    trajectories_file = sys.argv[2]
+    print masked_image_file, trajectories_file
     drawTrajectoriesVideo(masked_image_file, trajectories_file)
