@@ -25,31 +25,31 @@ import sys
 sys.path.append('../videoCompression/')
 from parallelProcHelper import timeCounterStr
 
-class writeVideoffmpeg:
-    def __init__(self, file_name, width = 100, height = 100, pix_fmt = 'gray'):
-        command = [ 'ffmpeg',
-        '-y', # (optional) overwrite output file if it exists
-        '-f', 'rawvideo',
-        '-vcodec','rawvideo',
-        '-s', '%ix%i' % (width,height), # size of one frame
-        '-pix_fmt', pix_fmt,
-        '-r', '25', # frames per second
-        '-i', '-', # The imput comes from a pipe
-        '-an', # Tells FFMPEG not to expect any audio
-        '-vcodec', 'mjpeg',
-        '-threads', '0',
-        '-qscale:v', '0',
-        file_name]
-        
-        devnull = open(os.devnull, 'w')  #use devnull to avoid printing the ffmpeg command output in the screen
-        self.pipe = sp.Popen(command, stdin=sp.PIPE, stderr=devnull)
-        
-    def write(self, image):
-        self.pipe.stdin.write(image.tostring())
-        #self.pipe.stdin.write(image)
-    
-    def release(self):
-        self.pipe.terminate()
+#class writeVideoffmpeg:
+#    def __init__(self, file_name, width = 100, height = 100, pix_fmt = 'gray'):
+#        command = [ 'ffmpeg',
+#        '-y', # (optional) overwrite output file if it exists
+#        '-f', 'rawvideo',
+#        '-vcodec','rawvideo',
+#        '-s', '%ix%i' % (width,height), # size of one frame
+#        '-pix_fmt', pix_fmt,
+#        '-r', '25', # frames per second
+#        '-i', '-', # The imput comes from a pipe
+#        '-an', # Tells FFMPEG not to expect any audio
+#        '-vcodec', 'mjpeg',
+#        '-threads', '0',
+#        '-qscale:v', '0',
+#        file_name]
+#        
+#        devnull = open(os.devnull, 'w')  #use devnull to avoid printing the ffmpeg command output in the screen
+#        self.pipe = sp.Popen(command, stdin=sp.PIPE, stderr=devnull)
+#        
+#    def write(self, image):
+#        self.pipe.stdin.write(image.tostring())
+#        #self.pipe.stdin.write(image)
+#    
+#    def release(self):
+#        self.pipe.terminate()
 
 
 def getIndividualWormVideos(masked_image_file, trajectories_file, \
