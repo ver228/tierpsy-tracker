@@ -27,6 +27,7 @@ from parallelProcHelper import timeCounterStr
 
 #class writeVideoffmpeg:
 #    def __init__(self, file_name, width = 100, height = 100, pix_fmt = 'gray'):
+#        #use pix_fmt = rgb24 for color images
 #        command = [ 'ffmpeg',
 #        '-y', # (optional) overwrite output file if it exists
 #        '-f', 'rawvideo',
