@@ -75,7 +75,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     int p1I, p2I;
     double a1, a2;
     //% Compute the curvature using the array indices for length.
-    if (true)//(mxGetM(prhs[2]) == 0 && mxGetN(prhs[2]) == 0)
+    if (mxGetM(prhs[2]) == 0 && mxGetN(prhs[2]) == 0)
     {
         //% Initialize the edges.
         edgeLength = round(edgeLength);

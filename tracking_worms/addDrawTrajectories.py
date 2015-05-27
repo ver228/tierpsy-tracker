@@ -15,7 +15,7 @@ if __name__ == '__main__':
 #%%    
     #get a list 
     
-    base_name_list = glob.glob(root_dir + '*/*_trajectories.hdf5')[:1]#    #start the parallizeTask object, obtain the queue where the progress status is stored
+    base_name_list = glob.glob(root_dir + '*/*_trajectories.hdf5')#    #start the parallizeTask object, obtain the queue where the progress status is stored
 
     
     tot_tasks = len(base_name_list)

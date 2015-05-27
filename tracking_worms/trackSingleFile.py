@@ -9,6 +9,7 @@ import os
 from getWormTrajectories import getWormTrajectories, joinTrajectories, plotLongTrajectories
 from getSegWorm import getSegWorm_noMATLABeng
 from getIndividualWormVideos import getIndividualWormVideos
+from getDrawTrajectories import drawTrajectoriesVideo
 
 
 import shutil
@@ -62,6 +63,7 @@ def getTrajectoriesWorker(masked_movies_dir, trajectories_dir,
         plot_limits = mask_fid['/mask'].shape[1:]
         mask_fid.close()
         plotLongTrajectories(trajectories_file, trajectories_plot_file, plot_limits=plot_limits)
+        drawTrajectoriesVideo(masked_image_file, trajectories_file)
 
     if calculate_segworm:
         #get segworm data

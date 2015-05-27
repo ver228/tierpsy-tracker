@@ -227,26 +227,21 @@ if __name__ == '__main__':
 #    trajectories_dir = sys.argv[2]
 #    base_name = sys.argv[3]
 #    main_video_save_dir = sys.argv[4]
-    masked_movies_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150511/'
+    masked_movies_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150511/Compressed/'
     trajectories_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150511/Trajectories/'
     base_name = 'Capture_Ch1_11052015_195105'
-    main_video_save_dir = r'/Users/ajaver/Desktop/Gecko_compressed/20150511/Worm_Movies3/'
+    main_video_save_dir = r'/Users/ajaver/Desktop/Gecko_compressed/20150511/Worm_Movies/'
 
     masked_image_file = masked_movies_dir + base_name + '.hdf5'
     trajectories_file = trajectories_dir + base_name + '_trajectories.hdf5'
-    segworm_file = trajectories_dir + base_name + '_segworm_fix2.hdf5'
+    segworm_file = trajectories_dir + base_name + '_segworm.hdf5'
     video_save_dir = main_video_save_dir + base_name + os.sep    
-#    video_save_dir_gray = main_video_save_dir + base_name + '_gray' + os.sep
+    video_save_dir_gray = main_video_save_dir + base_name + '_gray' + os.sep
 
-     #create movies of individual worms
-#    try:       
     getIndividualWormVideos(masked_image_file, trajectories_file, \
         segworm_file, video_save_dir, is_draw_contour = True, max_frame_number = -1,\
         base_name = base_name)
 
-#        getIndividualWormVideos(masked_image_file, trajectories_file, \
-#        segworm_file, video_save_dir_gray, is_draw_contour = False, max_frame_number = -1,\
-#        base_name = base_name)
-#    except:
-#        sendQueueOrPrint('', 'Create individual worm videos failed.', base_name)
-#        raise 'Create individual worm videos failed.'
+    getIndividualWormVideos(masked_image_file, trajectories_file, \
+        segworm_file, video_save_dir_gray, is_draw_contour = False, max_frame_number = -1,\
+        base_name = base_name)

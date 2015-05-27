@@ -163,7 +163,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     double d1, d2, d12, prevWidth;
     double dnj1[2], dnj2[2];
     
-    getDistances(c1, c2, j1, j2, nextJ1, nextJ2, dnj1, dnj2, d12, d1, d2);
+    //getDistances(c1, c2, j1, j2, nextJ1, nextJ2, dnj1, dnj2, d12, d1, d2);
     
 //% Initialize the skeleton and contour widths.
     skeleton[0][0] = round((c1[0][j1] + c2[0][j2])/ 2);

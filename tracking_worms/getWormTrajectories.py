@@ -19,10 +19,11 @@ import tables
 from math import sqrt
 import cv2
 from skimage.filter import threshold_otsu
-import os
 
 from sklearn.utils.linear_assignment_ import linear_assignment #hungarian algorithm
 from scipy.spatial.distance import cdist
+
+from getDrawTrajectories import drawTrajectoriesVideo
 
 import sys
 sys.path.append('../videoCompression/')

@@ -87,7 +87,7 @@ end
                 lengths[i] = lengths[i-1] + sqrt2;
             //% We walked fractionally or more than one point.
             else
-                lengths[0] = lengths[i-1] + sqrt(dPoints[0]*dPoints[0] + dPoints[1]*dPoints[1]);
+                lengths[i] = lengths[i-1] + sqrt(dPoints[0]*dPoints[0] + dPoints[1]*dPoints[1]);
         }
     }
 }

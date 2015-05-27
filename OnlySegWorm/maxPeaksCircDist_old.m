@@ -6,7 +6,7 @@ function [peaks, indices] = maxPeaksCircDist(x, dist, varargin)
 %
 %   [PEAKS INDICES] = MAXPEAKSCIRCDIST(X, DIST, CHAINCODELENGTHS)
 %
-%   Inputs:
+%   Inputs:`
 %       x                - the vector of values
 %       dist             - the minimum distance between peaks
 %       chainCodeLengths - the chain-code length at each index;
@@ -116,6 +116,7 @@ end
 % Collapse any extra memory.
 indices(j:end) = [];
 peaks(j:end) = [];
+
 
 % If we have two or more peaks, we have to check the start and end for mistakes.
 if j > 2

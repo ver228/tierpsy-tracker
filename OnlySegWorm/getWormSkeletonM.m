@@ -12,7 +12,10 @@ if ~isempty(worm)
     contour_ventral = [worm.contour.pixels(tailI:end,:); worm.contour.pixels(1:headI,:)];
     contour_ventral = flipud(contour_ventral);
     skeleton = worm.skeleton.pixels;
-    
+    cWidth = worm.skeleton.widths;
+   
+    %interpolate skeleton and contour. Additionally, curvspaceMex returns
+    %the each curve length
     [worm_results.skeleton, worm_results.skeleton_length] = ...
         curvspaceMex(skeleton, resampleNum);
     [worm_results.contour_ventral, worm_results.contour_ventral_length] = ...
@@ -21,6 +24,9 @@ if ~isempty(worm)
         curvspaceMex(contour_dorsal, resampleNum);
     worm_results.frame = frame;
     
+    %interpolate width
+    xx = linspace(1, length(cWidth),resampleNum)';
+    worm_results.width = interp1(cWidth, xx);
     %{
     midpoint = round(resampleNum/2);
     %shift coord point from the middle previous worm to the middle of the current worm
@@ -47,6 +53,7 @@ if ~isempty(worm)
             worm_results.contour_dorsal = flipud(worm_results.contour_dorsal);
             worm_results.contour_ventral = flipud(worm_results.contour_ventral);
             worm_results.skeleton = flipud(worm_results.skeleton);
+            worm_results.width = flipud(worm_results.width);
         end
     end
     

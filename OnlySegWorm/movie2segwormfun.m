@@ -20,7 +20,9 @@ end
 
 strScalarFields = {'plate_worms_id', 'worm_index_joined', 'frame_number', ...
     'skeleton_length', 'contour_ventral_length', 'contour_dorsal_length'};
-strArrayFields = {'skeleton', 'contour_ventral', 'contour_dorsal'};
+
+strArrayFields = {'skeleton', 'contour_ventral', 'contour_dorsal', 'width'};
+arrayDims = struct('skeleton',  2,'contour_ventral', 2, 'contour_dorsal', 2, 'width', 1);
 
 %create datasets to be saved in the hdf5,
 
@@ -31,8 +33,8 @@ end
 
 for ff = strArrayFields
     h5create(save_file, ['/segworm_results/' ff{1}], ...
-        [RESAMPLE_SIZE, 2, Inf], 'Deflate', 1, 'Shuffle', true, ...
-        'Chunksize', [RESAMPLE_SIZE,2,1])
+        [RESAMPLE_SIZE, arrayDims.(ff{1}), Inf], 'Deflate', 1, 'Shuffle', true, ...
+        'Chunksize', [RESAMPLE_SIZE, arrayDims.(ff{1}), 1])
 end
 %%
 %sort data by time, it is easier to open frames like that
@@ -48,7 +50,7 @@ for ff = {'plate_worms_id', 'worm_index_joined', 'frame_number'}
     data2write.(ff{1}) = zeros(1,BUFF_SIZE);
 end
 for ff = strArrayFields
-    data2write.(ff{1}) = zeros(RESAMPLE_SIZE,2,BUFF_SIZE);
+    data2write.(ff{1}) = zeros(RESAMPLE_SIZE,arrayDims.(ff{1}),BUFF_SIZE);
 end
 
 %initialize some variables
@@ -136,7 +138,7 @@ for plate_worms_row = 1:numel(data.('frame_number'))
     %prev_worms{worm_index}.CM = [range_y(1), range_x(1)]; %useful to check with previous frame
     
     
-    for ff = strArrayFields
+    for ff = {'skeleton', 'contour_ventral', 'contour_dorsal'}
         %get data into image absolute coordinates before saving to the bufer
         %-2 is to come back into python indexing (-1 from range_y and -1 from worm_results)
         worm_results.(ff{1})(:,1) =  worm_results.(ff{1})(:,1) + range_y(1)-2;
@@ -163,7 +165,7 @@ for plate_worms_row = 1:numel(data.('frame_number'))
             h5write(save_file, ['/segworm_results/' ff{1}], data2write.(ff{1}), offset, buff_ind);
         end
         for ff = strArrayFields
-            h5write(save_file, ['/segworm_results/' ff{1}], data2write.(ff{1}), [1,1,offset], [RESAMPLE_SIZE,2,buff_ind]);
+            h5write(save_file, ['/segworm_results/' ff{1}], data2write.(ff{1}), [1,1,offset], [RESAMPLE_SIZE, arrayDims.(ff{1}),buff_ind]);
         end
     end
     
@@ -176,7 +178,7 @@ if buff_ind ~= BUFF_SIZE
         h5write(save_file, ['/segworm_results/' ff{1}], data2write.(ff{1})(1:buff_ind), offset, buff_ind);
     end
     for ff = strArrayFields
-        h5write(save_file, ['/segworm_results/' ff{1}], data2write.(ff{1})(:,:,1:buff_ind), [1,1,offset], [RESAMPLE_SIZE,2,buff_ind]);
+        h5write(save_file, ['/segworm_results/' ff{1}], data2write.(ff{1})(:,:,1:buff_ind), [1,1,offset], [RESAMPLE_SIZE,arrayDims.(ff{1}),buff_ind]);
     end
 end
 %toc

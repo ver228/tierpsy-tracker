@@ -120,8 +120,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                 {
                     if ((s2I > s1I) && (keep[s2I]!=FLAG_MAX) && (dSkeleton[0]<=1) && (dSkeleton[1]<=1) && abs(s1I - s2I) < maxSkeletonOverlap)
                     {
-                        minI = fmin(minI, s2I);
-                        maxI = fmax(maxI, s2I);
+                        minI = min(minI, s2I);
+                        maxI = max(maxI, s2I);
                     }
                     
                     
@@ -146,8 +146,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                 {
                     if ((s2I > s1I) && (keep[s2I]!=FLAG_MAX) && (dSkeleton[0]<=1) && (dSkeleton[1]<=1) && abs(s1I - s2I) < maxSkeletonOverlap)
                     {
-                        minI = fmin(minI, s2I);
-                        maxI = fmax(maxI, s2I);
+                        minI = min(minI, s2I);
+                        maxI = max(maxI, s2I);
                     }
                     
                     // Advance the second index for the skeleton loop.

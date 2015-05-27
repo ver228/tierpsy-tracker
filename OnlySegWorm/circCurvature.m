@@ -1,5 +1,5 @@
 function angles = circCurvature(points, edgeLength, varargin)
-%points = contour; edgeLength = hfAngleEdgeLength; varargin{1} = cCCLengths;
+%points = contour; edgeLength = wormSegSize; varargin= [];%varargin{1} = cCCLengths;
 
 %CIRCCURVATURE Compute the curvature for a clockwise, circularly-connected
 %vector of points.
@@ -168,9 +168,7 @@ else
             dx1 = de1 / sqrt(1 + (dp1(1) / dp1(2)) ^ 2);
             p1 = [dy1 dx1] .* sign(dp1) + points(p1I,:);
         end
-        %fprintf('%f, %f\n', dp1(1), dp1(2));
-        %fprintf('%i, %f, %i, %i\n', size(points,1), de1, nextP1I, p1I);
-        %fprintf('%f, %f\n', p1(1), p1(2));
+        %disp([p1I, nextP1I, de1, p1])
         
         % Compute fractional pixels for the second edge.
         de2 = e2 - edgeLength;
@@ -198,25 +196,13 @@ else
         a2 = atan2(points(pvI,1) - p2(1), points(pvI,2) - p2(2));
         a1 = atan2(p1(1) - points(pvI,1), p1(2) - points(pvI,2));
         angles(pvI) = a2-a1;
-        
         if angles(pvI) > pi
             angles(pvI) = angles(pvI) - 2 * pi;
         elseif angles(pvI) < -pi
             angles(pvI) = angles(pvI) + 2 * pi;
         end
         angles(pvI) = angles(pvI) * 180 / pi;
-        %{
-        if((pvI >=3) && (pvI <= 6))
-            %fprintf('%f, %f, %f, %f\n', de2, points(p2I,1), dp2(1), sign(dp2(1)));
-            fprintf('%i\n', pvI);
-            fprintf('P1 = %f, %f\n', p1(1), p1(2));
-            fprintf('P2 = %f, %f\n', p2(1), p2(2));
-            fprintf('%f\n', angles(pvI));
-            fprintf('%f, %i, %i\n', de1, nextP1I, p1I);
-            fprintf('%f, %i, %i\n', de2, prevP2I, p2I);
-            
-        end
-        %}
+        
         % Advance.
         pvI = pvI + 1;
         

@@ -79,8 +79,8 @@ function [worm, errNum, errMsg] = ...
 %
 %
 % © Medical Research Council 2012
-% You will not remove any copyright or other notices from the Software; 
-% you must reproduce all copyright notices and other proprietary 
+% You will not remove any copyright or other notices from the Software;
+% you must reproduce all copyright notices and other proprietary
 % notices on any copies of the Software.
 
 worm = [];
@@ -111,7 +111,7 @@ if isempty(wormPixels)
     % Show the failure.
     if verbose
         warning('segWorm:NoWormFound', ['Frame %d: ' errMsg], frame);
-
+        
         % Open a big figure.
         figure('OuterPosition', [50 50 1280 960]);
         set(gcf, 'Color', [1 .5 .5]);
@@ -314,11 +314,11 @@ if mhfHTSize < 2
     else
         return;
     end
-
-% The head and tail are on the outer contour.
+    
+    % The head and tail are on the outer contour.
 else
     
-    % The low-frequency sampling identified the head and tail. 
+    % The low-frequency sampling identified the head and tail.
     if lfHTSize > 1
         
         
@@ -349,7 +349,7 @@ else
         [~, hfTailI] = min(dhfTailI);
         tailI = mhfHTI(hfTailI);
         
-    % The high-frequency sampling identifies the head and tail. 
+        % The high-frequency sampling identifies the head and tail.
     elseif mhfHTSize < 3
         
         % Find the head and tail convexities in the high-frequency sampling.
@@ -364,7 +364,7 @@ else
             tailI = mhfHTI(1);
         end
         
-    % The high-frequency sampling identifies several, potential heads/tails. 
+        % The high-frequency sampling identifies several, potential heads/tails.
     else
         
         % Initialize our head and tail choicse.
@@ -402,7 +402,7 @@ else
         else
             headI = mhfHTI2;
             tailI = mhfHTI1;
-        end            
+        end
     end
     
     % Find the length of each side.
@@ -437,58 +437,7 @@ else
         end
     end
     
-% In theory, it was a good idea to look for very sharp concavities and
-% assume they indicated a worm end sticking out of a coiled body. But, in
-% practice, the worm can bend tightly at its ends without touching itself
-% and achieve concavities greater than 120 degrees.
-%
-%     % Compute the contour's local high-frequency curvature minima.
-%     [mhfCMinP, ~] = minPeaksCircDist(mhfCAngles, hfAngleEdgeLength);
-%     
-%     % Is there a sharp concavity on the contour?
-%     % Note: if a worm has a sharp concavity, it's probably touching itself.
-%     if sum(mhfCMinP < -90) > 0
-%         warning('segWorm:CoiledWorm', ...
-%             ['The worm contour has a concavity sharper than 90 degrees. ' ...
-%             'Therefore, the worm is coiled and cannot be segmented']);
-%         return;
-%     end
-
-%         % Smooth the contour.
-%         gWin = gausswin(2 * round(wormSegLength / 2) + 1);
-%         gWin = gWin / sum(gWin);
-%         contour(:,1) = round(circConv(contour(:,1), gWin));
-%         contour(:,2) = round(circConv(contour(:,2), gWin));
-%         
-%         % Clean up the contour.
-%         contour = cleanContour(contour);
-% 
-%         % Compute the contour's local curvature.
-%         % On a small scale, noise causes contour imperfections that shift an angle
-%         % from its correct location. Therefore, blurring angles by averaging them
-%         % with their neighbors can localize them better.
-%         hfCAngles = circCurvature(contour, round(size(contour, 1) / (cWormSegs / 2)));
-%         hfBlurSize = 2 * round(size(contour, 1) / (cWormSegs * 2)) + 1;
-%         hfBlurWin(1:hfBlurSize) = 1 / hfBlurSize;
-%         mhfCAngles = circConv(hfCAngles, hfBlurWin);
-% 
-%         % Compute the contour's local curvature maxima.
-%         hfAngleEdgeLength = round(length(mhfCAngles) / (cWormSegs / 2));
-%         [mhfcMaxP mhfcMaxI] = maxPeaksCircDist(mhfCAngles, hfAngleEdgeLength);
-%         
-%         % Determine the head and tail.
-%         htPI = mhfcMaxP > 90;
-%         htP = mhfcMaxP(htPI);
-%         htI = mhfcMaxI(htPI);
-%         if htP(1) >= htP(2)
-%             headI = htI(1);
-%             tailI = htI(2);
-%         else
-%             headI = htI(2);
-%             tailI = htI(1);
-%         end
-
-%if 0
+    %if 0
     % Orient the contour and angles at the maximum curvature (the head or tail).
     if headI > 1
         contour = [contour(headI:end,:); contour(1:(headI - 1),:)];
@@ -506,10 +455,10 @@ else
             tailI = tailI + size(contour, 1);
         end
     end
-%end
-
+    %end
+    
     % Compute the contour's local low-frequency curvature minima.
-    [lfCMinP lfCMinI] = minPeaksCircDist(lfCAngles, lfAngleEdgeLength, ...
+    [lfCMinP, lfCMinI] = minPeaksCircDist(lfCAngles, lfAngleEdgeLength, ...
         cCCLengths);
     
     % Compute the worm's skeleton.
@@ -524,139 +473,60 @@ else
         disp('bad!W')
         figure, plot(cWidths, 'r'), hold on, plot(cWidthsMex, 'b')
     end
-    %}
-    % Measure the skeleton's chain code length.
-    sCCLengths = computeChainCodeLengthsMex(skeleton);
-    sLength = sCCLengths(end);
-    
-    % Compute the worm's head and tail (at this point, we cannot
-    % distinguish between the two). The worm's head and tail occupy,
-    % approximately, 4 muscle segments each, on the skeleton and either
-    % side of the contour.
-    % Note: "The first two muscle cells in the two ventral and two dorsal
-    % rows [of the head] are smaller than their lateral counterparts,
-    % giving a stagger to the packing of the two rows of cells in a
-    % quadrant. The first four muscles in each quadrant are innervated
-    % exclusively by motoneurons in the nerve ring. The second block of
-    % four muscles is dually innervated, receiving synaptic input from
-    % motoneurons in the nerve ring and the anterior ventral cord. The rest
-    % of the muscles in the body are exclusively innervated by NMJs in the
-    % dorsal and ventral cords." - The Structure of the Nervous System of
-    % the Nematode C. elegans, on www.wormatlas.org
-    htSSegLength = sCCLengths(end) * (4 / sWormSegs);
-    [head hlcBounds hrcBounds hsBounds] = ...
-        worm2poly(1, chainCodeLength2Index(htSSegLength, sCCLengths), ...
-        skeleton, headI, tailI, contour, false, sCCLengths, cCCLengths);
-    [tail tlcBounds trcBounds tsBounds] = ...
-        worm2poly(size(skeleton, 1), ...
-        chainCodeLength2Index(sCCLengths(end) - htSSegLength, sCCLengths), ...
-        skeleton, headI, tailI, contour, false, sCCLengths, cCCLengths);
-
-    % Compute the contour's local low-frequency curvature minima.
-    [lfCMinP, lfCMinI] = minPeaksCircDist(lfCAngles, lfAngleEdgeLength, ...
-        cCCLengths);
-
-    % Is the worm coiled?
-    % If there are no large concavities, the worm is not coiled.
-    lfCBendI = lfCMinI(lfCMinP < -30);
-    if ~isempty(lfCBendI)
+        %}
+        % Measure the skeleton's chain code length.
+        sCCLengths = computeChainCodeLengthsMex(skeleton);
+        sLength = sCCLengths(end);
         
-        % Find concavities near the head. If there are any concavities
-        % near the tail, the head may be portruding from a coil; in
-        % which case, the width at the end of the head may be
-        % inaccurate.
-        if hlcBounds(1) < hrcBounds(2)
-            hBendI = lfCBendI(lfCBendI > hlcBounds(1) & ...
-                lfCBendI < hrcBounds(2));
-        else
-            hBendI = lfCBendI(lfCBendI > hlcBounds(1) | ...
-                lfCBendI < hrcBounds(2));
-        end
+        % Compute the worm's head and tail (at this point, we cannot
+        % distinguish between the two). The worm's head and tail occupy,
+        % approximately, 4 muscle segments each, on the skeleton and either
+        % side of the contour.
+        % Note: "The first two muscle cells in the two ventral and two dorsal
+        % rows [of the head] are smaller than their lateral counterparts,
+        % giving a stagger to the packing of the two rows of cells in a
+        % quadrant. The first four muscles in each quadrant are innervated
+        % exclusively by motoneurons in the nerve ring. The second block of
+        % four muscles is dually innervated, receiving synaptic input from
+        % motoneurons in the nerve ring and the anterior ventral cord. The rest
+        % of the muscles in the body are exclusively innervated by NMJs in the
+        % dorsal and ventral cords." - The Structure of the Nervous System of
+        % the Nematode C. elegans, on www.wormatlas.org
+        htSSegLength = sCCLengths(end) * (4 / sWormSegs);
+        [head, hlcBounds, hrcBounds, hsBounds] = ...
+            worm2poly(1, chainCodeLength2Index(htSSegLength, sCCLengths), ...
+            skeleton, headI, tailI, contour, false, sCCLengths, cCCLengths);
+        [tail, tlcBounds, trcBounds, tsBounds] = ...
+            worm2poly(size(skeleton, 1), ...
+            chainCodeLength2Index(sCCLengths(end) - htSSegLength, sCCLengths), ...
+            skeleton, headI, tailI, contour, false, sCCLengths, cCCLengths);
         
-        % Does the worm more than double its width from the head?
-        % Note: if the worm coils, its width will grow to more than
-        % double that at the end of the head.
-        maxWidth = max(cWidths);
-        if isempty(hBendI)
-            if maxWidth / cWidths(hsBounds(2)) > 2 / bodyScale
-                errNum = 107;
-                errMsg = ['The worm more than doubles its width ' ...
-                    'from end of its head. Therefore, the worm is ' ...
-                    'coiled, laid an egg, and/or is significantly ' ...
-                    'obscured and cannot be segmented.'];
-                
-                % Organize the available worm information.
-                if verbose
-                    warning('segWorm:DoubleHeadWidth', ...
-                        ['Frame %d: ' errMsg], frame);
-                    vWorm = worm2struct(frame, contour, [], [], [], ...
-                        lfCAngles, headI, tailI, cCCLengths, [], [], ...
-                        [], [], [], [], [], [], [], [], [], [], [], [], ...
-                        [], [], [], [], [], [], [], [], [], [], [], [], ...
-                        [], [], [], [], [], [], [], [], [], 0, [], [], ...
-                        0, [], []);
-                else
-                    return;
-                end
+        % Compute the contour's local low-frequency curvature minima.
+        [lfCMinP, lfCMinI] = minPeaksCircDist(lfCAngles, lfAngleEdgeLength, ...
+            cCCLengths);
+        
+        % Is the worm coiled?
+        % If there are no large concavities, the worm is not coiled.
+        lfCBendI = lfCMinI(lfCMinP < -30);
+        if ~isempty(lfCBendI)
+            
+            % Find concavities near the head. If there are any concavities
+            % near the tail, the head may be portruding from a coil; in
+            % which case, the width at the end of the head may be
+            % inaccurate.
+            if hlcBounds(1) < hrcBounds(2)
+                hBendI = lfCBendI(lfCBendI > hlcBounds(1) & ...
+                    lfCBendI < hrcBounds(2));
+            else
+                hBendI = lfCBendI(lfCBendI > hlcBounds(1) | ...
+                    lfCBendI < hrcBounds(2));
             end
-        end
-        
-        % Find concavities near the tail. If there are any concavities near
-        % the tail, the tail may be portruding from a coil; in which case,
-        % the width at the end of the tail may be inaccurate.
-        if trcBounds(1) < tlcBounds(2)
-            tBendI = lfCBendI(lfCBendI > trcBounds(1) & ...
-                lfCBendI < tlcBounds(2));
-        else
-            tBendI = lfCBendI(lfCBendI > trcBounds(1) | ...
-                lfCBendI < tlcBounds(2));
-        end
-        
-        % Does the worm more than double its width from the tail?
-        % If the worm coils, its width will grow to more than double
-        % that at the end of the tail.
-        if isempty(tBendI)
-            if maxWidth / cWidths(tsBounds(1)) > 2 / bodyScale
-                errNum = 108;
-                errMsg = ['The worm more than doubles its width ' ...
-                    'from end of its tail. Therefore, the worm is ' ...
-                    'coiled, laid an egg, and/or is significantly ' ...
-                    'obscured and cannot be segmented.'];
-                
-                % Organize the available worm information.
-                if verbose
-                    warning('segWorm:DoubleTailWidth', ...
-                        ['Frame %d: ' errMsg], frame);
-                    vWorm = worm2struct(frame, contour, [], [], [], ...
-                        lfCAngles, headI, tailI, cCCLengths, [], [], ...
-                        [], [], [], [], [], [], [], [], [], [], [], [], ...
-                        [], [], [], [], [], [], [], [], [], [], [], [], ...
-                        [], [], [], [], [], [], [], [], [], 0, [], [], ...
-                        0, [], []);
-                else
-                    return;
-                end
-            end
-        end
-        
-        % Use the most accurate estimate of head/tail width to
-        % determine whether the width of the body is more than double
-        % that at the end of the head/tail; in which case; the worm is
-        % coiled.
-        if ~(isempty(hBendI) && isempty(tBendI))
             
-            % Find the distances of bends near the head.
-            hBendDist = abs(headI - hBendI);
-            hBendDist = min(hBendDist, abs(hBendDist - length(lfCAngles)));
-            
-            % Find the distances of bends near the tail.
-            tBendDist = abs(tailI - tBendI);
-            tBendDist = min(tBendDist, abs(tBendDist - length(lfCAngles)));
-            
-            % The bend near the head is furthest and, therefore, the
-            % width at the end of the head is our most accurate
-            % estimate of the worm's width.
-            if min(hBendDist) >= min(tBendDist)
+            % Does the worm more than double its width from the head?
+            % Note: if the worm coils, its width will grow to more than
+            % double that at the end of the head.
+            maxWidth = max(cWidths);
+            if isempty(hBendI)
                 if maxWidth / cWidths(hsBounds(2)) > 2 / bodyScale
                     errNum = 107;
                     errMsg = ['The worm more than doubles its width ' ...
@@ -669,20 +539,32 @@ else
                         warning('segWorm:DoubleHeadWidth', ...
                             ['Frame %d: ' errMsg], frame);
                         vWorm = worm2struct(frame, contour, [], [], [], ...
-                            lfCAngles, headI, tailI, cCCLengths, [], ...
-                            [], [], [], [], [], [], [], [], [], [], [], ...
-                            [], [], [], [], [], [], [], [], [], [], [], ...
-                            [], [], [], [], [], [], [], [], [], [], [], ...
-                            [], 0, [], [], 0, [], []);
+                            lfCAngles, headI, tailI, cCCLengths, [], [], ...
+                            [], [], [], [], [], [], [], [], [], [], [], [], ...
+                            [], [], [], [], [], [], [], [], [], [], [], [], ...
+                            [], [], [], [], [], [], [], [], [], 0, [], [], ...
+                            0, [], []);
                     else
                         return;
                     end
                 end
-                
-            % The bend near the tail is furthest and, therefore, the
-            % width at the end of the tail is our most accurate
-            % estimate of the worm's width.
+            end
+            
+            % Find concavities near the tail. If there are any concavities near
+            % the tail, the tail may be portruding from a coil; in which case,
+            % the width at the end of the tail may be inaccurate.
+            if trcBounds(1) < tlcBounds(2)
+                tBendI = lfCBendI(lfCBendI > trcBounds(1) & ...
+                    lfCBendI < tlcBounds(2));
             else
+                tBendI = lfCBendI(lfCBendI > trcBounds(1) | ...
+                    lfCBendI < tlcBounds(2));
+            end
+            
+            % Does the worm more than double its width from the tail?
+            % If the worm coils, its width will grow to more than double
+            % that at the end of the tail.
+            if isempty(tBendI)
                 if maxWidth / cWidths(tsBounds(1)) > 2 / bodyScale
                     errNum = 108;
                     errMsg = ['The worm more than doubles its width ' ...
@@ -695,283 +577,133 @@ else
                         warning('segWorm:DoubleTailWidth', ...
                             ['Frame %d: ' errMsg], frame);
                         vWorm = worm2struct(frame, contour, [], [], [], ...
-                            lfCAngles, headI, tailI, cCCLengths, [], ...
-                            [], [], [], [], [], [], [], [], [], [], [], ...
-                            [], [], [], [], [], [], [], [], [], [], [], ...
-                            [], [], [], [], [], [], [], [], [], [], [], ...
-                            [], 0, [], [], 0, [], []);
+                            lfCAngles, headI, tailI, cCCLengths, [], [], ...
+                            [], [], [], [], [], [], [], [], [], [], [], [], ...
+                            [], [], [], [], [], [], [], [], [], [], [], [], ...
+                            [], [], [], [], [], [], [], [], [], 0, [], [], ...
+                            0, [], []);
                     else
                         return;
                     end
                 end
             end
+            
+            % Use the most accurate estimate of head/tail width to
+            % determine whether the width of the body is more than double
+            % that at the end of the head/tail; in which case; the worm is
+            % coiled.
+            if ~(isempty(hBendI) && isempty(tBendI))
+                
+                % Find the distances of bends near the head.
+                hBendDist = abs(headI - hBendI);
+                hBendDist = min(hBendDist, abs(hBendDist - length(lfCAngles)));
+                
+                % Find the distances of bends near the tail.
+                tBendDist = abs(tailI - tBendI);
+                tBendDist = min(tBendDist, abs(tBendDist - length(lfCAngles)));
+                
+                % The bend near the head is furthest and, therefore, the
+                % width at the end of the head is our most accurate
+                % estimate of the worm's width.
+                if min(hBendDist) >= min(tBendDist)
+                    if maxWidth / cWidths(hsBounds(2)) > 2 / bodyScale
+                        errNum = 107;
+                        errMsg = ['The worm more than doubles its width ' ...
+                            'from end of its head. Therefore, the worm is ' ...
+                            'coiled, laid an egg, and/or is significantly ' ...
+                            'obscured and cannot be segmented.'];
+                        
+                        % Organize the available worm information.
+                        if verbose
+                            warning('segWorm:DoubleHeadWidth', ...
+                                ['Frame %d: ' errMsg], frame);
+                            vWorm = worm2struct(frame, contour, [], [], [], ...
+                                lfCAngles, headI, tailI, cCCLengths, [], ...
+                                [], [], [], [], [], [], [], [], [], [], [], ...
+                                [], [], [], [], [], [], [], [], [], [], [], ...
+                                [], [], [], [], [], [], [], [], [], [], [], ...
+                                [], 0, [], [], 0, [], []);
+                        else
+                            return;
+                        end
+                    end
+                    
+                    % The bend near the tail is furthest and, therefore, the
+                    % width at the end of the tail is our most accurate
+                    % estimate of the worm's width.
+                else
+                    if maxWidth / cWidths(tsBounds(1)) > 2 / bodyScale
+                        errNum = 108;
+                        errMsg = ['The worm more than doubles its width ' ...
+                            'from end of its tail. Therefore, the worm is ' ...
+                            'coiled, laid an egg, and/or is significantly ' ...
+                            'obscured and cannot be segmented.'];
+                        
+                        % Organize the available worm information.
+                        if verbose
+                            warning('segWorm:DoubleTailWidth', ...
+                                ['Frame %d: ' errMsg], frame);
+                            vWorm = worm2struct(frame, contour, [], [], [], ...
+                                lfCAngles, headI, tailI, cCCLengths, [], ...
+                                [], [], [], [], [], [], [], [], [], [], [], ...
+                                [], [], [], [], [], [], [], [], [], [], [], ...
+                                [], [], [], [], [], [], [], [], [], [], [], ...
+                                [], 0, [], [], 0, [], []);
+                        else
+                            return;
+                        end
+                    end
+                end
+            end
         end
-    end
-    
-    % % Unify the contour angles as a mix of high-frequency head/tail
-    % % curvature and, low-frequency body curvature.
-    % % Note: the worm's head has finer muscle control than the rest of its body.
-    % % Therefore, we sample its curvature at twice the frequency of its segments.
-    % cAngles = lfCAngles;
-    % if hlcBounds(1) < hrcBounds(2)
-    %     cAngles(hlcBounds(1):hrcBounds(2)) = hfCAngles(hlcBounds(1):hrcBounds(2));
-    % else % wrap
-    %     cAngles(hlcBounds(1):end) = hfCAngles(hlcBounds(1):end);
-    %     cAngles(1:hrcBounds(2)) = hfCAngles(1:hrcBounds(2));
-    % end
-    % if trcBounds(1) < tlcBounds(2)
-    %     cAngles(trcBounds(1):tlcBounds(2)) = hfCAngles(trcBounds(1):tlcBounds(2));
-    % else % wrap
-    %     cAngles(trcBounds(1):end) = hfCAngles(trcBounds(1):end);
-    %     cAngles(1:tlcBounds(2)) = hfCAngles(1:tlcBounds(2));
-    % end
-    % worm.contour.angles = cAngles;
-    %
-    % % Unify the skeleton angles as a mix of high-frequency head/tail
-    % % curvature and, low-frequency body curvature.
-    % % Note: the worm's head has finer muscle control than the rest of its body.
-    % % Therefore, we sample its curvature at twice the frequency of its segments.
-    % skeleton = worm.skeleton.pixels;
-    % sAngles = curvature(skeleton, lfAngleEdgeLength);
-    % hsAngles = curvature(skeleton(1:(hsBounds(2) + hfAngleEdgeLength),:), ...
-    %     hfAngleEdgeLength);
-    % sAngles(1:hsBounds(2)) = hsAngles(1:hsBounds(2));
-    % tsAngles = curvature(skeleton((tsBounds(1) - hfAngleEdgeLength):end,:), ...
-    %     hfAngleEdgeLength);
-    % sAngles(tsBounds(1):end) = tsAngles((hfAngleEdgeLength + 1):end);
-    % worm.skeleton.angles = sAngles;
-    
-    % Measure the skeleton angles (curvature).
-    lfAngleEdgeLength = sCCLengths(end) * 2 / sWormSegs;
-    sAngles = curvatureMex(skeleton, lfAngleEdgeLength, sCCLengths);
-    
-    worm = worm2struct(frame, contour, [], [], [], lfCAngles, ...
+        
+        % % Unify the contour angles as a mix of high-frequency head/tail
+        % % curvature and, low-frequency body curvature.
+        % % Note: the worm's head has finer muscle control than the rest of its body.
+        % % Therefore, we sample its curvature at twice the frequency of its segments.
+        % cAngles = lfCAngles;
+        % if hlcBounds(1) < hrcBounds(2)
+        %     cAngles(hlcBounds(1):hrcBounds(2)) = hfCAngles(hlcBounds(1):hrcBounds(2));
+        % else % wrap
+        %     cAngles(hlcBounds(1):end) = hfCAngles(hlcBounds(1):end);
+        %     cAngles(1:hrcBounds(2)) = hfCAngles(1:hrcBounds(2));
+        % end
+        % if trcBounds(1) < tlcBounds(2)
+        %     cAngles(trcBounds(1):tlcBounds(2)) = hfCAngles(trcBounds(1):tlcBounds(2));
+        % else % wrap
+        %     cAngles(trcBounds(1):end) = hfCAngles(trcBounds(1):end);
+        %     cAngles(1:tlcBounds(2)) = hfCAngles(1:tlcBounds(2));
+        % end
+        % worm.contour.angles = cAngles;
+        %
+        % % Unify the skeleton angles as a mix of high-frequency head/tail
+        % % curvature and, low-frequency body curvature.
+        % % Note: the worm's head has finer muscle control than the rest of its body.
+        % % Therefore, we sample its curvature at twice the frequency of its segments.
+        % skeleton = worm.skeleton.pixels;
+        % sAngles = curvature(skeleton, lfAngleEdgeLength);
+        % hsAngles = curvature(skeleton(1:(hsBounds(2) + hfAngleEdgeLength),:), ...
+        %     hfAngleEdgeLength);
+        % sAngles(1:hsBounds(2)) = hsAngles(1:hsBounds(2));
+        % tsAngles = curvature(skeleton((tsBounds(1) - hfAngleEdgeLength):end,:), ...
+        %     hfAngleEdgeLength);
+        % sAngles(tsBounds(1):end) = tsAngles((hfAngleEdgeLength + 1):end);
+        % worm.skeleton.angles = sAngles;
+        
+        % Measure the skeleton angles (curvature).
+        %lfAngleEdgeLength = sCCLengths(end) * 2 / sWormSegs;
+        %sAngles = curvatureMex(skeleton, lfAngleEdgeLength, sCCLengths);
+        
+        worm = worm2struct(frame, contour, [], [], [], lfCAngles, ...
             headI, tailI, cCCLengths, skeleton, [], [], [], [], ...
-            sAngles, sLength, sCCLengths, cWidths, ...
+            [], sLength, sCCLengths, cWidths, ...
             [], [], [], [], [], [],[], ...
             [], [], [], [], [], [],[], ...
             [], [], [], [], [], [], ...
             [], [], [], [], [], [], ...
             [], [], [], ...
             [], [], []);
-    
-    %remove color statistics, anyway a binary mask is passed
-    %{
-    % Determine the head's MER (minimum enclosing rectangle).
-    hMinY = min(head(:,1));
-    hMaxY = max(head(:,1));
-    hMinX = min(head(:,2));
-    hMaxX = max(head(:,2));
-    
-    % Measure the head statistics.
-    merHImg = oImg(hMinY:hMaxY, hMinX:hMaxX);
-    merHead = [head(:,1) - hMinY + 1, head(:,2) - hMinX + 1];
-    
-    [merHMask,merHeadI] = inPolyMask(merHead, [], size(merHImg));
-    hColors = single(merHImg(merHMask));
-    hArea = length(hColors);
-    hCDF = prctile(hColors,[2.5 25 50 75 97.5]);
-    hStdev = std(hColors);
-    
-    % Determine the tail's MER (minimum enclosing rectangle).
-    tMinY = min(tail(:,1));
-    tMaxY = max(tail(:,1));
-    tMinX = min(tail(:,2));
-    tMaxX = max(tail(:,2));
-    
-    % Measure the tail statistics.
-    
-    merTImg = oImg(tMinY:tMaxY, tMinX:tMaxX);
-    merTail = [tail(:,1) - tMinY + 1, tail(:,2) - tMinX + 1];
-    [merTMask merTailI] = inPolyMask(merTail, [], size(merTImg));
-    tColors = single(merTImg(merTMask));
-    tArea = length(tColors);
-    tCDF = prctile(tColors,[2.5 25 50 75 97.5]);
-    tStdev = std(tColors);
-    
-    % Is the tail too small (or the head too large)?
-    % Note: the area of the head and tail should be roughly the same size.
-    % A 2-fold difference is huge!
-    if hArea > 2 * tArea / bodyScale
-        errNum = 109;
-        errMsg = ['The worm tail is less than half the size of its ' ...
-            'head. Therefore, the worm is significantly obscured and ' ...
-            'cannot be segmented.'];
-                
-        % Defer organizing the available worm information.
-        if verbose
-            warning('segWorm:SmallTail', ['Frame %d: ' errMsg], frame);
-            vWorm = 0;
-        else
-            return;
-        end
-
-    % Is the head too small (or the tail too large)?
-    % Note: the area of the head and tail should be roughly the same size.
-    % A 2-fold difference is huge!
-    elseif tArea > 2 * hArea / bodyScale
-        errNum = 110;
-        errMsg = ['The worm head is less than half the size of its ' ...
-            'tail. Therefore, the worm is significantly obscured and ' ...
-            'cannot be segmented.'];
-                
-        % Defer organizing the available worm information.
-        if verbose
-            warning('segWorm:SmallHead', ['Frame %d: ' errMsg], frame);
-            vWorm = 0;
-        else
-            return;
-        end
-    end
-    
-    
-%     % Does the skeleton exit the head?
-%     merHMask(merHeadI) = true;
-%     merHSkeleton = [skeleton(hsBounds(1):hsBounds(2),1) - hMinY + 1, ...
-%         skeleton(hsBounds(1):hsBounds(2),2) - hMinX + 1];
-%     merHSkeletonI = sub2ind(size(merHMask), merHSkeleton(:,1), ...
-%         merHSkeleton(:,2));
-%     if any(merHMask(merHSkeletonI) == false)
-%         warning('segWorm:SkeletonExitsHead', ['Frame ' num2str(frame) ...
-%             ': The worm skeleton exits its head. Therefore, the worm ' ...
-%             'is significantly obscured and cannot be segmented']);
-%         
-%         % Defer organizing the available worm information.
-%         if verbose
-%             vWorm = 0;
-%         else
-%             return;
-%         end
-%     end
-%     
-%     % Does the skeleton exit the tail?
-%     merTMask(merTailI) = true;
-%     merTSkeleton = [skeleton(tsBounds(1):tsBounds(2),1) - tMinY + 1, ...
-%         skeleton(tsBounds(1):tsBounds(2),2) - tMinX + 1];
-%     merTSkeletonI = sub2ind(size(merTMask), merTSkeleton(:,1), ...
-%         merTSkeleton(:,2));
-%     if any(merTMask(merTSkeletonI) == false)
-%         warning('segWorm:SkeletonExitsTail', ['Frame ' num2str(frame) ...
-%             ': The worm skeleton exits its tail. Therefore, the worm ' ...
-%             'is significantly obscured and cannot be segmented']);
-%         
-%         % Defer organizing the available worm information.
-%         if verbose
-%             vWorm = 0;
-%         else
-%             return;
-%         end
-%     end
-    
-    % How much confidence do we have in our head-to-tail orientation?
-    % Note: generally, the head is less angled, and contains more white
-    % pixels (a higher 50% and 75% CDF for color) and less gray pixels (a higher
-    % variance and 25% to 75% interquartile range) than the tail. We give
-    % each probability equal weight, then compare.
-    isHeadTailFlipped = 0; % default orientation
-    hConfidenceScale = 134217728; % 2^26
-    hConfidence = ((180 - lfCAngles(headI)) * hCDF(3) * hCDF(4) * ...
-        hStdev * (hCDF(4) - hCDF(2))) / hConfidenceScale;
-    tConfidence = ((180 - lfCAngles(tailI)) * tCDF(3) * tCDF(4) * ...
-        tStdev * (tCDF(4) - tCDF(2))) / hConfidenceScale;
-
-    % Determine the left-side's MER (minimum enclosing rectangle).
-    [sides lcBounds rcBounds sBounds] = worm2poly(hsBounds(2), ...
-        tsBounds(1), skeleton, headI, tailI, contour, true, ...
-        sCCLengths, cCCLengths);
-    lSide = sides{2};
-    lMinY = min(lSide(:,1));
-    lMaxY = max(lSide(:,1));
-    lMinX = min(lSide(:,2));
-    lMaxX = max(lSide(:,2));
-    
-    % Measure the left side (counter clockwise from the head) statistics.
-    %lCDF = [];
-    %lStdev = [];
-    merLImg = oImg(lMinY:lMaxY, lMinX:lMaxX);
-    merLSide = [lSide(:,1) - lMinY + 1, lSide(:,2) - lMinX + 1];
-    
-    [merLMask, ~] = inPolyMask(merLSide, [], size(merLImg));
-    lColors = single(merLImg(merLMask));
-    lArea = length(lColors);
-    lCDF = prctile(lColors,[2.5 25 50 75 97.5]);
-    lStdev = std(lColors);
-    
-    % Determine the right-side's MER (minimum enclosing rectangle).
-    rSide = sides{1};
-    rMinY = min(rSide(:,1));
-    rMaxY = max(rSide(:,1));
-    rMinX = min(rSide(:,2));
-    rMaxX = max(rSide(:,2));
-    
-    
-    % Measure the right side (clockwise from the head) statistics.
-    %rCDF = [];
-    %rStdev = [];
-    merRImg = oImg(rMinY:rMaxY, rMinX:rMaxX);
-    merRSide = [rSide(:,1) - rMinY + 1, rSide(:,2) - rMinX + 1];
-    
-    [merRMask, ~] = inPolyMask(merRSide, [], size(merRImg));
-    rColors = single(merRImg(merRMask));
-    rArea = length(rColors);
-    rCDF = prctile(rColors,[2.5 25 50 75 97.5]);
-    rStdev = std(rColors);
-
-    % Are the head and tail too small (or the body too large)?
-    % Note: earlier, the head and tail were each chosen to be 4/24 = 1/6
-    % the body length of the worm. The head and tail are roughly shaped
-    % like rounded triangles with a convex taper. And, the width at their
-    % ends is nearly the width at the center of the worm. Imagine they were
-    % 2 triangles that, when combined, formed a rectangle similar to the
-    % midsection of the worm. The area of this rectangle would be greater
-    % than a 1/6 length portion from the midsection of the worm (the
-    % maximum area per length in a worm is located at its midsection). The
-    % combined area of the right and left sides is 4/6 of the worm.
-    % Therefore, the combined area of the head and tail must be greater
-    % than (1/6) / (4/6) = 1/4 the combined area of the left and right
-    % sides.
-    if 4 * (hArea + tArea) < (lArea + rArea) * bodyScale 
-        errNum = 111;
-        errMsg = ['The worm head and tail are less than 1/4 the size ' ...
-            'of its remaining body. Therefore, the worm is ' ...
-            'significantly obscured and cannot be segmented.'];
-                
-        % Defer organizing the available worm information.
-        if verbose
-            warning('segWorm:SmallHeadTail', ['Frame %d: ' errMsg], frame);
-            vWorm = 0;
-        else
-            return;
-        end
-    end
-    
-    % How much confidence do we have in our vulva orientation?
-    % Note: generally, the vulval side contains less white pixels (a lower
-    % 50% and 75% CDF for color) and more gray pixels (a lower variance and
-    % 25% to 75% interquartile range) than the opposing side. We give each
-    % probability equal weight, then compare. Also, in the absence of
-    % information, we assume the vulva is on the left side (and use a trick
-    % to avoid reciprocals in our equations).
-    isVulvaClockwiseFromHead = 0; % default orientation
-    vConfidenceScale = 1048576; % 2^20
-    vConfidence = (rCDF(3) * rCDF(4) * rStdev * (rCDF(4) - rCDF(2))) ...
-        / vConfidenceScale;
-    nvConfidence = (lCDF(3) * lCDF(4) * lStdev * (lCDF(4) - lCDF(2))) ...
-        / vConfidenceScale;
-    
-    % Organize the available worm information.
-    if isempty(vWorm)
-        worm = worm2struct(frame, contour, [], [], [], lfCAngles, ...
-            headI, tailI, cCCLengths, skeleton, [], [], [], [], ...
-            sAngles, sLength, sCCLengths, cWidths, ...
-            hlcBounds, hrcBounds, hsBounds, head, hArea, hCDF, hStdev, ...
-            tlcBounds, trcBounds, tsBounds, tail, tArea, tCDF, tStdev, ...
-            lcBounds, sBounds, lSide, lArea, lCDF, lStdev, ...
-            rcBounds, sBounds, rSide, rArea, rCDF, rStdev, ...
-            isHeadTailFlipped, hConfidence, tConfidence, ...
-            isVulvaClockwiseFromHead, vConfidence, nvConfidence);
-    end
-    %}
+        
 end
 
 % Get the inner contour, if it exists.

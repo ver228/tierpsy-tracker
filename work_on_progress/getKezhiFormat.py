@@ -64,18 +64,23 @@ def getSmoothedTraj(trajectories_file, smooth_window_size = 101):
     return smoothed_CM
 
 class kezhi_structure:
-    def __init__(self, file_name, total_frames, roi_size):
-        self.fid = h5py.File(file_name, "w");
-        self.masks = self.fid.create_dataset("/masks", (total_frames, roi_size,roi_size), 
+    def __init__(self, fid, worm_group, total_frames, roi_size):
+        self.fid = fid;
+        main_group_str = '/' + worm_group
+        self.main_group = self.fid.create_group(main_group_str)
+        self.masks = self.fid.create_dataset(main_group_str + "/masks", 
+                                    (total_frames, roi_size,roi_size), 
                                     dtype = "u1", maxshape = (total_frames, roi_size,roi_size), 
                                     chunks = (1, roi_size,roi_size),
                                     compression="gzip", 
                                     compression_opts=4,
                                     shuffle=True);
     
-        self.frames = self.fid.create_dataset('/frames', (total_frames,), 
+        self.frames = self.fid.create_dataset(main_group_str + '/frames', 
+                                              (total_frames,), 
                                           dtype = 'i', maxshape = (total_frames,))
-        self.CMs = self.fid.create_dataset('/CMs', (total_frames,2), 
+        self.CMs = self.fid.create_dataset(main_group_str + '/CMs', 
+                                           (total_frames,2), 
                                           dtype = 'i', maxshape = (total_frames,2))
         self.index = 0;
         
@@ -97,13 +102,13 @@ class kezhi_structure:
 
 masked_movies_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150511/Compressed/'
 trajectories_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150511/Trajectories/'
-base_name = 'Capture_Ch1_11052015_195105'
+base_name = 'Capture_Ch5_11052015_195105'
 main_video_save_dir = r'/Users/ajaver/Desktop/Gecko_compressed/20150511/kezhi_format/'
 
 masked_image_file = masked_movies_dir + base_name + '.hdf5'
 trajectories_file = trajectories_dir + base_name + '_trajectories.hdf5'
 segworm_file = trajectories_dir + base_name + '_segworm_fix.hdf5'
-kezhi_save_dir = main_video_save_dir + base_name + os.sep    
+kezhi_save_file = main_video_save_dir + base_name + '_kezhi.hdf5'
 
 
 max_frame_number = -1
@@ -112,10 +117,6 @@ min_mask_area = 50
 
 roi_center = roi_size/2
 roi_window = [-roi_center, roi_center]
-
-
-if not os.path.exists(kezhi_save_dir):
-    os.makedirs(kezhi_save_dir)
 
 smoothed_CM = getSmoothedTraj(trajectories_file, smooth_window_size = 101)
 
@@ -133,6 +134,10 @@ if max_frame_number <0 or max_frame_number > last_frame:
 #open the file with the masked images
 mask_fid = h5py.File(masked_image_file, 'r');
 mask_dataset = mask_fid["/mask"]
+
+
+kezhi_fid = h5py.File(kezhi_save_file, 'w');
+
 
 #create a saved the id of the files being saved
 kezhi_list = {};
@@ -153,8 +158,9 @@ for frame in range(first_frame,max_frame_number):
         if frame == smoothed_CM[worm_index]['first_frame']:
             #intialize figure and movie recorder
             total_frames = smoothed_CM[worm_index]['last_frame'] - smoothed_CM[worm_index]['first_frame'] + 1
-            file_name = kezhi_save_dir + ('worm_%i.hdf5' % worm_index)
-            kezhi_list[worm_index] = kezhi_structure(file_name, total_frames, roi_size);
+            #file_name = kezhi_save_dir + ('worm_%i.hdf5' % worm_index)
+            worm_group = ('worm_%i' % worm_index)
+            kezhi_list[worm_index] = kezhi_structure(kezhi_fid, worm_group, total_frames, roi_size);
         
         #obtain bounding box from the trajectories
         ind = int(frame-smoothed_CM[worm_index]['first_frame'])
@@ -199,7 +205,7 @@ for frame in range(first_frame,max_frame_number):
         kezhi_list[worm_index].add(worm_reduced, frame, worm_CM)
 
     if frame >= smoothed_CM[worm_index]['last_frame']:
-        kezhi_list[worm_index].close()   
+        #kezhi_list[worm_index].close()   
         kezhi_list.pop(worm_index)
  
         
@@ -207,7 +213,7 @@ for frame in range(first_frame,max_frame_number):
         progress_str = progressTime.getStr(frame)
         print(base_name + ' ' + progress_str);
         
-for worm_index in kezhi_list:
-    kezhi_list[worm_index].close()  
-    
+#for worm_index in kezhi_list:
+#    kezhi_list[worm_index].close()  
+kezhi_fid.close()
 mask_fid.close()

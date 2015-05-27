@@ -29,10 +29,17 @@ if __name__  == "__main__":
 #    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/CaptureTest_90pc_Ch1_02022015_141431_trajectories.hdf5';
 #    segworm_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/CaptureTest_90pc_Ch1_02022015_141431_segworm.hdf5';
 #    contrastmap_file = '/Users/ajaver/Desktop/Gecko_compressed/20150323/Trajectories/CaptureTest_90pc_Ch1_02022015_141431_lmap.hdf5';
-    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/20150511/Capture_Ch1_11052015_195105.hdf5';
-    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/20150511/Trajectories/Capture_Ch1_11052015_195105_trajectories.hdf5';
-    segworm_file = '/Users/ajaver/Desktop/Gecko_compressed/20150511/Trajectories/Capture_Ch1_11052015_195105_segworm.hdf5';
-    contrastmap_file = '/Users/ajaver/Desktop/Gecko_compressed/20150511/Trajectories/Capture_Ch1_11052015_195105_lmap.hdf5';
+#    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/20150511/Compressed/Capture_Ch1_11052015_195105.hdf5';
+#    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/20150511/Trajectories/Capture_Ch1_11052015_195105_trajectories.hdf5';
+#    segworm_file = '/Users/ajaver/Desktop/Gecko_compressed/20150511/Trajectories/Capture_Ch1_11052015_195105_segworm.hdf5';
+#    contrastmap_file = '/Users/ajaver/Desktop/Gecko_compressed/20150511/Trajectories/Capture_Ch1_11052015_195105_lmap.hdf5';
+
+
+    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/20150512/Capture_Ch3_12052015_194303.hdf5';
+    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/20150512/Capture_Ch3_12052015_194303_trajectories.hdf5';
+    segworm_file = '/Users/ajaver/Desktop/Gecko_compressed/20150512/Capture_Ch3_12052015_194303_segworm.hdf5';
+    contrastmap_file = '/Users/ajaver/Desktop/Gecko_compressed/20150512/Capture_Ch3_12052015_194303_lmap.hdf5';
+
  
     MAX_DELT = 1;
     #jump_frames = 3; #3
