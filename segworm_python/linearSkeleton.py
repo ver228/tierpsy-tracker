@@ -128,7 +128,6 @@ midbody_tuple, worm_seg_length, search_edge_size):
     bend2_s2 = bend2_s2[good]
     bend2_s1 = bend2_s1[good]
     
-    
     #the skeleton seem to be calculated better if one consider segments from the bending regions
     #% Combine the bend indices from opposing sides and order everything so
     #% that the skeleton segments can never cross.
@@ -152,30 +151,30 @@ def getSkeleton(contour, head_ind, tail_ind, midbody_ind, bend_side1, bend_side2
     j = 0;
     while i > 0:
         #% Skeletonize the segment from the bend to the interbend.
-        segment, widths = skeletonize(bend_side1[i], interbend_side1[i - 1], -1, \
+        segment, cnt_widths = skeletonize(bend_side1[i], interbend_side1[i - 1], -1, \
         bend_side2[i], interbend_side2[i - 1], 1, contour, contour);
         next_j = j + segment.shape[0] - 1;
      
         skeleton_mid_head[j:next_j+1,:] = segment;
-        widths_mid_head[j:next_j+1] = widths;
+        widths_mid_head[j:next_j+1] = cnt_widths;
         j = next_j + 1;
         i = i - 1;
        
         #% Skeletonize the segment from the next bend back to the interbend.
-        [segment, widths] = skeletonize(bend_side1[i], interbend_side1[i], 1, \
+        [segment, cnt_widths] = skeletonize(bend_side1[i], interbend_side1[i], 1, \
         bend_side2[i], interbend_side2[i], -1, contour, contour);
         
         next_j = j + segment.shape[0] - 1;
         skeleton_mid_head[j:next_j+1,:] = segment[::-1,:]
-        widths_mid_head[j:next_j+1] = widths[::-1]
+        widths_mid_head[j:next_j+1] = cnt_widths[::-1]
         j = next_j + 1;
     
     #% Skeletonize the segment from the last bend to the head.
-    [segment, widths] = skeletonize(bend_side1[i], head_side1, -1, bend_side2[i], \
+    [segment, cnt_widths] = skeletonize(bend_side1[i], head_side1, -1, bend_side2[i], \
     head_side2, 1,contour, contour);
     next_j = j + segment.shape[0] - 1;
     skeleton_mid_head[j:next_j+1,:] = segment;
-    widths_mid_head[j:next_j+1] = widths;
+    widths_mid_head[j:next_j+1] = cnt_widths;
     
     #% Clean up.
     skeleton_mid_head = skeleton_mid_head[:next_j,:]
@@ -188,29 +187,29 @@ def getSkeleton(contour, head_ind, tail_ind, midbody_ind, bend_side1, bend_side2
     j = 0;
     while i < bend_side1.size-1:
         #% Skeletonize the segment from the bend to the interbend.
-        [segment, widths] = skeletonize(bend_side1[i], interbend_side1[i], 1, \
+        [segment, cnt_widths] = skeletonize(bend_side1[i], interbend_side1[i], 1, \
         bend_side2[i], interbend_side2[i], -1, contour, contour);
         next_j = j + segment.shape[0] - 1;
         skeleton_mid_tail[j:next_j+1,:] = segment;
-        widths_mid_tail[j:next_j+1] = widths;
+        widths_mid_tail[j:next_j+1] = cnt_widths;
     
         j = next_j + 1;
         i = i + 1;
         
-        [segment,widths] = skeletonize(bend_side1[i], interbend_side1[i - 1], -1, \
+        [segment,cnt_widths] = skeletonize(bend_side1[i], interbend_side1[i - 1], -1, \
         bend_side2[i], interbend_side2[i - 1], 1, contour, contour);
         next_j = j + segment.shape[0] - 1;
         skeleton_mid_tail[j:next_j+1,:] = segment[::-1,:];
-        widths_mid_tail[j:next_j+1] = widths[::-1];
+        widths_mid_tail[j:next_j+1] = cnt_widths[::-1];
         j = next_j + 1;
     
     
-    [segment, widths] = skeletonize(bend_side1[i], tail_side1, 1, \
+    [segment, cnt_widths] = skeletonize(bend_side1[i], tail_side1, 1, \
     bend_side2[i], tail_side2, -1, contour, contour);
     
     next_j = j + segment.shape[0] - 1;
     skeleton_mid_tail[j:next_j+1,:] = segment;
-    widths_mid_tail[j:next_j+1] = widths;
+    widths_mid_tail[j:next_j+1] = cnt_widths;
     
     #% Clean up.
     skeleton_mid_tail = skeleton_mid_tail[:next_j,:]
@@ -315,8 +314,9 @@ maxima_low_freq, maxima_low_freq_ind, contour, worm_seg_length, chain_code_len):
     #get inter-bend seeds
     interbend_side1, interbend_side2 = getInterBendSeeds(bend_side1, bend_side2, contour, chain_code_len)
     
-    #get skeleton and contour widths
+    #get skeleton and contour cnt_widths
     skeleton, cnt_widths = getSkeleton(contour, head_ind, tail_ind, midbody_ind, bend_side1, bend_side2, interbend_side1, interbend_side2)
+    assert (skeleton.size > 0) and (skeleton.ndim == 2)
     
     #% Clean up the rough skeleton.
     skeleton, cnt_widths = cleanSkeleton(skeleton, cnt_widths, worm_seg_length);

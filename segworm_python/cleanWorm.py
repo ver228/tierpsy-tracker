@@ -228,9 +228,10 @@ def connectConnections(conns):
     #% Connect the connections.
     prevConnsSize = conns.shape[0];
     newConnsI = 0; #% the current index for new connections
-    
+    #conns_ori = conns.copy()
     while newConnsI < prevConnsSize:
-        newConns = np.zeros((conns.shape[0], 3)); #% the new connections (pre-allocate memory)
+        newConns = np.zeros((2*conns.shape[0], 3)); #% the new connections (pre-allocate memory)
+        #print newConns.shape
         newConnsI = 0;
         for i in range(conns.shape[0]):
             connected = False; #% have we made any connections?

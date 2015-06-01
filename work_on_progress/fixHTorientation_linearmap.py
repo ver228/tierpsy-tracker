@@ -44,7 +44,7 @@ def angleWindow(x, y, windowSize):
     #calculate angles
     skelAngles = np.arctan2(dY, dX)
     #%repeat final angle to make array the same length as skelX and skelY
-    skelAngles = np.lib.pad(skelAngles, (angleSmoothSize/2, angleSmoothSize/2), 'edge')
+    skelAngles = np.lib.pad(skelAngles, (windowSize//2, windowSize//2), 'edge')
     return skelAngles;
 
 if __name__  == "__main__":

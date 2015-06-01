@@ -680,8 +680,13 @@ def cleanSkeleton(np.ndarray[np.float_t, ndim=2] skeleton, np.ndarray[np.float_t
     cdef np.ndarray[np.int_t, ndim=1] pSortC = np.lexsort((skeleton[:,1], skeleton[:,0])) 
     cdef np.ndarray[np.int_t, ndim=1] iSortC = np.argsort(pSortC)
     
-    cdef np.ndarray[np.int_t, ndim=1] keep = np.arange(number_points)
+    #output
+    cdef int buff_size = 2*number_points;
+    cdef np.ndarray[np.float_t, ndim=2] cSkeleton = np.zeros((buff_size, 2), dtype = np.float); #//% pre-allocate memory
+    cdef np.ndarray[np.float_t, ndim=1] cWidths = np.zeros(buff_size, dtype = np.float);
     
+    #indexes
+    cdef np.ndarray[np.int_t, ndim=1] keep = np.arange(number_points)
     cdef int minI, maxI;
     cdef int s1I = 0; #// % the first index for the skeleton loop
     cdef int i, s2I, pI;
@@ -782,9 +787,6 @@ def cleanSkeleton(np.ndarray[np.float_t, ndim=2] skeleton, np.ndarray[np.float_t
     del iSortC, pSortC;
     
     #//% Heal the skeleton by interpolating missing points.
-    cdef int buff_size = 2*number_points;
-    cdef np.ndarray[np.float_t, ndim=2] cSkeleton = np.zeros((buff_size, 2), dtype = np.float); #//% pre-allocate memory
-    cdef np.ndarray[np.float_t, ndim=1] cWidths = np.zeros(buff_size, dtype = np.float);
             
     cdef int j = 0, m;
     cdef float x,y, x1,x2, y1, y2, delY, delX, delW;
@@ -813,6 +815,7 @@ def cleanSkeleton(np.ndarray[np.float_t, ndim=2] skeleton, np.ndarray[np.float_t
             delX = (x2-x1)/points;
             delW = (widths[i + 1] - widths[i])/points;
             for m in range(points):
+                #here there might be a problem with repeated points
                 cSkeleton[j+m, 0] = round(y1 + m*delY);
                 cSkeleton[j+m, 1] = round(x1 + m*delX);
                 cWidths[j+m] = round(widths[i] + m*delW);

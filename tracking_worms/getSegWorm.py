@@ -161,13 +161,13 @@ thresh_smooth_window = 1501):
     
     
     print(base_name + ' Skeletonization completed.');    
-#%%    
-if __name__ == '__main__':
-#    masked_movies_dir = sys.argv[1]
-#    trajectories_dir = sys.argv[2]
-#    base_name = sys.argv[3]
+#%%  
+    
+import cv2
+import numpy as np
 
-    masked_movies_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150511/'
+if __name__ == '__main__':
+    masked_movies_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150511/Compressed/'
     trajectories_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150511/Trajectories/'
     base_name = 'Capture_Ch1_11052015_195105'
 
@@ -176,24 +176,42 @@ if __name__ == '__main__':
     trajectories_file = trajectories_dir + base_name + '_trajectories.hdf5'
     segworm_file = trajectories_dir + base_name + '_segworm.hdf5'
     
-    n_trials = 0;
-    while n_trials<5:
-        try:
-#            #obtain skeletons
-#            try:
-#                import matlab.engine
-#                getSegWorm(masked_image_file, trajectories_file, segworm_file,\
-#                base_name = base_name, \
-#                min_displacement = 2, thresh_smooth_window = 1501)
-#            except:
-            getSegWorm_noMATLABeng(masked_image_file, trajectories_file, segworm_file,\
-            base_name = base_name, \
-            min_displacement = 2, thresh_smooth_window = 1501)
-                
-            n_trials = 5;
-        except:
-            print('%s: Segworm failed' % base_name)
-            n_trials +=1;
-            time.sleep(1)
-            if n_trials == 5:
-                raise 'Segworm failed'
+    roi_size = 128
+    min_mask_area = 50
+    
+    roi_center = roi_size/2
+    roi_window = [-roi_center, roi_center]
+
+    mask_fid = h5py.File(masked_image_file, 'r');
+    mask_dataset = mask_fid["/mask"]    
+    
+    df = getValidTrajectories(trajectories_file)
+    df = df[['worm_index_joined', 'frame_number', 'coord_x', 'coord_y', 'threshold']]
+    df = df.sort(['worm_index_joined', 'frame_number'])
+    
+    df['segword_id'] = np.arange(len(df))
+    #df = df.sort('frame_number')
+    #%%
+    for frame, frame_data in df.groupby('frame_number'):
+        print frame
+        img = mask_dataset[frame,:,:]
+        for plate_worms_id, row_data in frame_data.iterrows():
+            #obtain bounding box from the trajectories
+            
+            worm_CM = np.round([row_data['coord_x'], row_data['coord_y']])
+            range_x = worm_CM[0] + roi_window
+            range_y = worm_CM[1] + roi_window
+            
+            if range_x[0]<0: range_x -= range_x[0]
+            if range_y[0]<0: range_y -= range_y[0]
+            
+            if range_x[1]>img.shape[1]: range_x += img.shape[1]-range_x[1]-1
+            if range_y[1]>img.shape[0]: range_y += img.shape[0]-range_y[1]-1
+            
+            worm_img =  img[range_y[0]:range_y[1], range_x[0]:range_x[1]]
+            worm_mask = ((worm_img < row_data['threshold']) & (worm_img!=0)).astype(np.uint8)        
+            worm_mask = cv2.morphologyEx(worm_mask, cv2.MORPH_CLOSE,np.ones((5,5)))
+
+
+
+

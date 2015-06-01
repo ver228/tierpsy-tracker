@@ -53,7 +53,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     
     double *skeleton = (double *)mxGetData(mxDuplicateArray(prhs[0]));
     mwSize numberOfPoints = mxGetM(prhs[0]);
-    //mexPrintf("I = %i\n", numberOfPoints);
+    int buffSize = 2*numberOfPoints; //this value would be used later to assing a buffer for the new skeleton. It is important to assing it here to avoid buffer overflow
     
     double *widths = (double *)mxGetData(mxDuplicateArray(prhs[1]));
     double *wormSegSize = (double *)mxGetData(prhs[2]);
@@ -228,7 +228,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     
 //% Heal the skeleton by interpolating missing points.
     double *cSkeleton, *cWidths;
-    int buffSize = 2*numberOfPoints;
+    
     cSkeleton = new double [2*buffSize]; //% pre-allocate memory
     cWidths = new double [buffSize]; //% pre-allocate memory
             
