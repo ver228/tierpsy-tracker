@@ -10,6 +10,13 @@ import numpy as np
 import matplotlib.pylab as plt
 
 def calWormAngles(x,y):
+        
+    assert(len(x.shape)==1)
+    assert(len(y.shape)==1)
+    
+    #if edge_length == 0:
+    #    edge_length = int(round(x.size/12));
+    
     dx = np.diff(x);
     dy = np.diff(y);
     angles = np.arctan2(dx,dy)
@@ -39,6 +46,15 @@ def calWormAngles(x,y):
     angles = angles - meanAngle;
     
     return (angles, meanAngle)
+
+def calWormAnglesAll(skeleton):
+    #edge_length = int(round(x.size/12));
+    
+    angles_all = np.full((skeleton.shape[0], skeleton.shape[2]), np.nan)
+    meanAngles_all = np.zeros(skeleton.shape[0])
+    for ss in range(skeleton.shape[0]):
+        angles_all[ss,:],meanAngles_all[ss] = calWormAngles(skeleton[ss,0,:],skeleton[ss,1,:])
+    return angles_all, meanAngles_all
 
 
 #if __name__ == "__main__":

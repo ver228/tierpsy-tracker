@@ -26,7 +26,10 @@ class timeCounterStr:
         self.fps_time = time.time()
         self.last_frame = frame_number;
         return progress_str;
-        
+    
+    def getTimeStr(self):
+        return  str(datetime.timedelta(seconds = round(time.time()-self.initial_time)))
+
 def sendQueueOrPrint(status_queue, progress_str, base_name):
     '''small code to decide if the progress must be send to a queue or printed in the screen'''
     if type(status_queue).__name__ == 'Queue':
@@ -39,7 +42,7 @@ def printProgress(progress):
     sys.stdout.write('\033[2J')
     sys.stdout.write('\033[H')
     for filename, progress_str in progress.items():
-        print filename, progress_str
+        print(filename + ' ' + progress_str)
 
     sys.stdout.flush()
     

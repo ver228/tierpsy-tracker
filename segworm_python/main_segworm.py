@@ -132,7 +132,7 @@ def binaryMask2Contour(worm_mask, min_mask_area=50, roi_center_x = -1, roi_cente
     
     #select only one contour in the binary mask
     #get contour
-    contour, _ = cv2.findContours(worm_mask.copy(), cv2.cv.CV_RETR_EXTERNAL, cv2.cv.CV_CHAIN_APPROX_NONE)
+    _,contour, _ = cv2.findContours(worm_mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     if len(contour) == 1:
         contour = np.squeeze(contour[0])
     elif len(contour)>1:
@@ -188,7 +188,7 @@ def orientWorm(skeleton, prev_skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt
     #make sure the contours are in the clockwise direction
     #x1y2 - x2y1(http://mathworld.wolfram.com/PolygonArea.html)
     contour = np.vstack((cnt_side1, cnt_side2[::-1,:])) 
-    signed_area = np.sum(contour[:-1,0]*contour[1:,1]-contour[1:,0]*contour[:-1,1])
+    signed_area = np.sum(contour[:-1,0]*contour[1:,1]-contour[1:,0]*contour[:-1,1])/2
     if signed_area<0:
         cnt_side1, cnt_side2 = cnt_side2, cnt_side1
         cnt_side1_len, cnt_side2_len = cnt_side2_len, cnt_side1_len
@@ -212,18 +212,24 @@ def angleSmoothed(x, y, window_size):
     skel_angles = np.lib.pad(skel_angles, (window_size//2, window_size//2), 'edge')
     return skel_angles;
 
-def getStraightenWormInt(worm_img, skeleton, cnt_widths, width_resampling = 7, ang_smooth_win = 6):
+def getStraightenWormInt(worm_img, skeleton, half_width = -1, cnt_widths  = np.zeros(0), width_resampling = 7, ang_smooth_win = 6, length_resampling = 49):
     
     #if np.all(np.isnan(skeleton)):
     #    buff = np.empty((skeleton.shape[0], width_resampling))
     #    buff.fill(np.nan)
     #    return buff
+    assert half_width>0 or cnt_widths.size>0
+    assert not np.any(np.isnan(skeleton))
     
     if ang_smooth_win%2 == 1:
         ang_smooth_win += 1; 
     
+    if skeleton.shape[0] != length_resampling:
+        skeleton, _ = curvspace(np.ascontiguousarray(skeleton), length_resampling)
+    
     skelX = skeleton[:,0];
     skelY = skeleton[:,1];
+    
     assert np.max(skelX) < worm_img.shape[0]
     assert np.max(skelY) < worm_img.shape[1]
     assert np.min(skelY) >= 0
@@ -242,7 +248,8 @@ def getStraightenWormInt(worm_img, skeleton, cnt_widths, width_resampling = 7, a
     #%the line scan)
     
     #resample the points along the worm width
-    half_width = (np.median(cnt_widths[10:-10])/2.) + 1 #add half a pixel to get part of the contour
+    if half_width <= 0:
+        half_width = (np.median(cnt_widths[10:-10])/2.) #add half a pixel to get part of the contour
     r_ind = np.linspace(-half_width, half_width, width_resampling)
     
     #create the grid of points to be interpolated (make use of numpy implicit broadcasting Nx1 + 1xM = NxM)
@@ -288,7 +295,7 @@ if __name__ == '__main__':
     tic = time.time()
     
     for frame in range(total_frames):
-        print frame, total_frames
+        print(frame, total_frames)
         worm_mask = data_set[frame,:,:];
 
         skeleton, ske_len, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths = \
@@ -301,9 +308,9 @@ if __name__ == '__main__':
         
         #this function is quite slow due to a 2D interpolation (RectBivariateSpline), 
         #but it might be useful for me in a further analysis of the image textures
-        straighten_worm = getStraightenWormInt(worm_mask, skeleton, cnt_widths)
+        straighten_worm = getStraightenWormInt(worm_mask, skeleton, cnt_widths=cnt_widths, length_resampling=110, width_resampling=13)
         
-    print time.time() - tic   
+    print(time.time() - tic)
         
     #%% Plot all skeletons
     #plot every jump frames. otherwise the skeletons overlap too much
