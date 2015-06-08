@@ -4,9 +4,9 @@ Created on Sat May 16 12:18:53 2015
 
 @author: ajaver
 """
+import tables
 import pandas as pd
 import numpy as np
-import h5py
 import cv2
 import os
 import sys
@@ -64,8 +64,8 @@ def drawTrajectoriesVideo(masked_image_file, trajectories_file,
     max_frame = max_frame.to_dict()['frame_number']
     
     
-    mask_fid = h5py.File(masked_image_file, "r");
-    I_worms = mask_fid["/mask"]
+    mask_fid = tables.File(masked_image_file, "r");
+    I_worms = mask_fid.get_node("/mask")
     
     track_list = {}
     track_colour = {};

@@ -29,8 +29,8 @@ rm 3.0.0.zip
 brew install --upgrade pyqt --with-python3
 pip3 install spyder
 
-brew install hdf5
-pip3 install pytables
+brew install homebrew/science/hdf5
+pip3 install tables
 pip3 install pandas
 
 pip3 install matplotlib

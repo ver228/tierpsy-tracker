@@ -5,7 +5,6 @@ Created on Wed May 20 12:46:20 2015
 @author: ajaver
 """
 
-import h5py
 import matplotlib.pylab as plt
 import cv2
 import numpy as np
@@ -211,9 +210,9 @@ if __name__ == '__main__':
     worm_name = 'worm_1717.hdf5' #file where the binary masks are stored
     resampling_N = 50; #number of resampling points of the skeleton
     
-    fid = h5py.File(worm_name, 'r');
-    data_set = fid['/masks'][:] #ROI with worm binary mask
-    worm_CMs = fid['CMs'][:] #center of mass of the ROI
+    fid = tables.File(worm_name, 'r');
+    data_set = fid.get_node('/masks')[:] #ROI with worm binary mask
+    worm_CMs = fid.get_node('CMs')[:] #center of mass of the ROI
     
     total_frames = data_set.shape[0]
     

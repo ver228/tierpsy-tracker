@@ -31,8 +31,8 @@ def start_task(movie_file, results_dir, current_tasks, num_tasks):
 
 if __name__ == '__main__':
     
-    masked_movies_dir = '/Users/ajaver/Desktop/Gecko_compressed/Masked_Videos/20150512/'
-    results_dir = '/Users/ajaver/Desktop/Gecko_compressed/Results/20150512/'
+    masked_movies_dir = '/Volumes/behavgenom$/GeckoVideo/MaskedVideos/20150519/'
+    results_dir = '/Volumes/behavgenom$/GeckoVideo/Results/20150519/'
     
 #%%
     max_num_process = 6;
