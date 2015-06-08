@@ -26,11 +26,10 @@ import sys
 sys.path.append('../videoCompression/')
 from parallelProcHelper import timeCounterStr
 
-sys.path.append('../segworm_python/')
-from main_segworm import getSkeleton
+sys.path.append('./segWormPython/')
+from segWormPython.main_segworm import getSkeleton
 
-sys.path.append('../work_on_progress/')
-from check_head_orientation import correctHeadTail
+from checkHeadOrientation import correctHeadTail
 
 
 def getSmoothTrajectories(trajectories_file, displacement_smooth_win = 101, min_displacement = 0, threshold_smooth_win = 501):
@@ -165,8 +164,10 @@ colorpalette = [(119, 158,27 ), (2, 95, 217), (138, 41, 231)]):
     return worm_rgb
 
 
-def movies2Skeletons(masked_image_file, skeletons_file, trajectories_file, \
+def trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file, \
 create_single_movies = False, roi_size = 128, resampling_N = 49, min_mask_area = 50):    
+    
+    base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
     
     #get trajectories, threshold and indexes from the first part of the tracker
     trajectories_df, worms_frame_range, tot_rows = \
@@ -212,7 +213,7 @@ create_single_movies = False, roi_size = 128, resampling_N = 49, min_mask_area =
         prev_skeleton = {}
         
         #timer
-        progressTime = timeCounterStr('Processing data.');
+        progressTime = timeCounterStr('Calculation skeletons.');
         for frame, frame_data in trajectories_df.groupby('frame_number'):
             #if frame >100: break
             
@@ -249,6 +250,8 @@ create_single_movies = False, roi_size = 128, resampling_N = 49, min_mask_area =
 
 def writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir, roi_size = 128, fps=25):    
     
+    base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
+    #remove previous data if exists
     if os.path.exists(video_save_dir):
         shutil.rmtree(video_save_dir)
     os.makedirs(video_save_dir)
@@ -272,7 +275,7 @@ def writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir, roi
         worms_frame_range = trajectories_df.groupby('worm_index_joined').agg({'frame_number': [min, max]})['frame_number']
         
         video_list = {}
-        progressTime = timeCounterStr('Creating videos.');
+        progressTime = timeCounterStr('Creating individual worm videos.');
         for frame, frame_data in trajectories_df.groupby('frame_number'):
             img = mask_dataset[frame,:,:]
             for skeleton_id, row_data in frame_data.iterrows():
@@ -283,7 +286,7 @@ def writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir, roi
                 cnt_side1 = cnt1_array[skeleton_id,:,:]-roi_corner
                 cnt_side2 = cnt2_array[skeleton_id,:,:]-roi_corner
                 
-                if not np.all(np.isnan(skeleton)):
+                if np.any(np.isnan(skeleton)):
                     worm_mask = getWormMask(worm_img, row_data['threshold'])
                 else:
                     worm_mask = np.zeros(0)
@@ -307,19 +310,17 @@ def writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir, roi
 
 #%%
 if __name__ == '__main__':  
-    base_name = 'Capture_Ch3_12052015_194303'
-    root_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150512/'    
+    #base_name = 'Capture_Ch3_12052015_194303'
+    #root_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150512/'    
 
-    #root_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150511/'
-    #base_name = 'Capture_Ch5_11052015_195105'
+    root_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150511/'
+    base_name = 'Capture_Ch1_11052015_195105'
     
     masked_image_file = root_dir + '/Compressed/' + base_name + '.hdf5'
     trajectories_file = root_dir + '/Trajectories/' + base_name + '_trajectories.hdf5'
     skeletons_file = root_dir + '/Trajectories/' + base_name + '_skeletons.hdf5'
-    intensities_file = root_dir + '/Trajectories/' + base_name + '_intensities.hdf5'
     
-    
-    movies2Skeletons(masked_image_file, skeletons_file, trajectories_file, \
+    trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file, \
     create_single_movies = False, roi_size = 128, resampling_N = 49, min_mask_area = 50)
 
     correctHeadTail(skeletons_file, max_gap_allowed = 10, \

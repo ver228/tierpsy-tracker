@@ -127,6 +127,12 @@ class WormFromTable(NormalizedWorm):
             self.angles, meanAngles_all = calWormAnglesAll(self.skeleton)
             
             self.n_segments = self.skeleton.shape[1]
+            self.n_frames = self.skeleton.shape[0]
+            
+            self.segmentation_status = np.zeros(self.n_frames, dtype='unicode_')
+            #flag as segmented (s) evertyhing that is not nan
+            self.segmentation_status[~np.isnan(self.skeleton[:,0,0])] = 's' 
+            
             self.area = calWormArea(self.vulva_contour, self.non_vulva_contour)
             
             assert self.skeleton.shape[2] == 2
@@ -153,26 +159,52 @@ class WormFromTable(NormalizedWorm):
             
             assert getattr(self, field).shape[0] == self.n_segments
 
-if __name__ == "__main__":
-    root_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150511/'
-    base_name = 'Capture_Ch1_11052015_195105'
+def walk_obj(obj, path = '', main_dict = {}):
+    for leaf_name in dir(obj):
+        leaf = getattr(obj, leaf_name)
+        module_name = type(leaf).__module__
+        new_path =  path + '.' + leaf_name
+        if module_name == np.__name__:
+            main_dict[new_path] = leaf
+        elif 'movement_validation' in module_name:
+            walk_obj(leaf, new_path, main_dict)
     
-    masked_image_file = root_dir + '/Compressed/' + base_name + '.hdf5'
-    trajectories_file = root_dir + '/Trajectories/' + base_name + '_trajectories.hdf5'
-    skeleton_file = root_dir + '/Trajectories/' + base_name + '_skeletons.hdf5'
+    return main_dict
+        
+        
+            
+            
+
+if __name__ == "__main__":
+
+    base_name = 'Capture_Ch3_12052015_194303'
+    mask_dir = '/Users/ajaver/Desktop/Gecko_compressed/Masked_Videos/20150512/'
+    results_dir = '/Users/ajaver/Desktop/Gecko_compressed/Results/20150512/'    
+    
+    
+    masked_image_file = mask_dir + base_name + '.hdf5'
+    trajectories_file = results_dir + base_name + '_trajectories.hdf5'
+    skeletons_file = results_dir + base_name + '_skeletons.hdf5'
     
     worm_index = 773
     rows_range = (0,0)
     #assert rows_range[0] <= rows_range[1]
     
-    file_name = skeleton_file;
+    file_name = skeletons_file;
     worm = WormFromTable()
     worm.fromFile(file_name, worm_index)
     worm.changeAxis()
 
     vi = VideoInfo(masked_image_file, 25)    
-#    # Generate the OpenWorm movement validation repo version of the features
+    # Generate the OpenWorm movement validation repo version of the features
     openworm_features = WormFeatures(worm, vi)
+    
+#    all_features = {}
+#    for main_feature in ['path', 'locomotion', 'morphology', 'posture']:
+#        all_features = walk_obj(getattr(openworm_features, main_feature), main_feature, all_features)
+    
+
+
 
 
     

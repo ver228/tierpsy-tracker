@@ -45,18 +45,18 @@ class writeVideoffmpeg:
 
 def drawTrajectoriesVideo(masked_image_file, trajectories_file, 
                           max_track_draw = 100, n_frames_jumped = 25, movie_scale = 0.25):
-    base_name = os.path.split(masked_image_file)[-1][:-5]
+    
+    
+    base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
     
     #get id of trajectories with calculated skeletons
-    table_fid = pd.HDFStore(trajectories_file, 'r');
-    df = table_fid['/plate_worms'];
-    df =  df[df['worm_index_joined'] > 0]
+    with pd.HDFStore(trajectories_file, 'r') as table_fid:
+        df = table_fid['/plate_worms'];
+        df = df[['worm_index_joined', 'frame_number', 'coord_x', 'coord_y']]
+        df = df.query('worm_index_joined>0')
     #df = df[df[str_index]==4423] 
-    
-    good_index = df[df['segworm_id']>=0]['worm_index_joined'].unique();
-    
-    df = df[df['worm_index_joined'].isin(good_index)];
-    table_fid.close()
+    #good_index = df[df['segworm_id']>=0]['worm_index_joined'].unique();
+    #df = df[df['worm_index_joined'].isin(good_index)];
     
     max_frame = df[['worm_index_joined', 'frame_number']].groupby('worm_index_joined').aggregate(np.max);
     last_frame = max_frame['frame_number'].max()
@@ -80,18 +80,22 @@ def drawTrajectoriesVideo(masked_image_file, trajectories_file,
     for frame in range(0, last_frame, n_frames_jumped):
         frame_data = df[df['frame_number'] == frame]
         #clear track that has already ended
+        finished_tracks = []
         for worm_ind in track_list.keys():
             if frame > max_frame[worm_ind]:
-                track_list.pop(worm_ind)
-                track_colour.pop(worm_ind)
+                finished_tracks.append(worm_ind)
+        for worm_ind in finished_tracks:
+            track_list.pop(worm_ind)
+            track_colour.pop(worm_ind)
         
         for  row_ind, worm_row in frame_data.iterrows():
-            worm_ind = int(worm_row['worm_index_joined'])
+            worm_ind = worm_row['worm_index_joined']
             
             if not worm_ind in track_list:
                 track_list[worm_ind] = [];
-                track_colour[worm_ind] = np.random.randint(100, 255, 3)
-                
+                track_colour[worm_ind] = np.random.randint(100, 255, 3) 
+                #it seems that cv2.polynes does not accept np.int64
+                track_colour[worm_ind] = tuple(map(int, track_colour[worm_ind]))
             track_list[worm_ind].append((worm_row['coord_x'], worm_row['coord_y']))
             if len(track_list[worm_ind]) > max_track_draw:
                 track_list[worm_ind].pop(0)
@@ -101,7 +105,7 @@ def drawTrajectoriesVideo(masked_image_file, trajectories_file,
     #%%    
         img = cv2.resize(img, (0,0), fx=movie_scale, fy=movie_scale);
         for worm_ind in track_list:
-            pts = np.array(zip(track_list[worm_ind]))*movie_scale
+            pts = np.array(list(zip(track_list[worm_ind])))*movie_scale
             cv2.polylines(img, [pts.astype(np.int32)], False, track_colour[worm_ind], thickness=2, lineType = 8) 
         video_writer.write(img)
 #    #%%    
@@ -116,5 +120,6 @@ if __name__ == '__main__':
 #    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/20150512/Capture_Ch3_12052015_194303_trajectories.hdf5'
     masked_image_file = sys.argv[1]
     trajectories_file = sys.argv[2]
-    print masked_image_file, trajectories_file
+    print(masked_image_file, trajectories_file)
     drawTrajectoriesVideo(masked_image_file, trajectories_file)
+    

@@ -100,44 +100,6 @@ def isWormHTSwitched(skeletons, segment4angle = 5, max_gap_allowed = 10, \
     is_switch_skel = is_switch_block[block_ids]
     return is_switch_skel, roll_std
 
-def correctHeadTail_old(skeletons_file, max_gap_allowed = 10, window_std = 25, \
-    segment4angle = 5, min_block_size = 250):
-    '''
-    max_gap_allowed = 10 #maximimun number of consecutive skeletons lost before consider it a new block
-    window_std = 25 #frame windows to calculate the standard deviation
-    segment4angle = 5 #separation between skeleton segments to calculate the angles
-    min_block_size = 250 #consider only around 10s intervals to determine if it is head or tail... 
-    '''
-    
-    with h5py.File(skeletons_file, 'r') as skeletons_fid:
-        
-        indexes_data = pd.DataFrame({'worm_index':skeletons_fid['/worm_index_joined'][:], \
-        'skeleton_id':skeletons_fid['/skeleton_id'][:]})
-        
-        #get the first and last frame of each worm_index
-        rows_indexes = indexes_data.groupby('worm_index').agg([min, max])['skeleton_id']
-    
-    progress_timer = timeCounterStr('');
-    for ii, dat in enumerate(rows_indexes.iterrows()):
-        if ii % 10 == 0:
-            dd = "Correcting Head-Tail worm %i of %i." % (ii+1, len(indexes_data))
-            print(dd + ' Total time:' + progress_timer.getTimeStr())
-        
-        worm_index, row_range = dat        
-        worm_data = WormClass(skeletons_file, worm_index, \
-                    rows_range = (row_range['min'],row_range['max']))
-        
-        if np.any(~np.isnan(worm_data.skeleton_length)):
-            is_switched_skel, roll_std = isWormHTSwitched(worm_data.skeleton, \
-            segment4angle = segment4angle, max_gap_allowed = max_gap_allowed, \
-            window_std = window_std, min_block_size=min_block_size)
-            #roll_std[['head_angle','tail_angle']].plot()
-            
-            worm_data.switchHeadTail(is_switched_skel)
-        
-        worm_data.writeData()
-    print('Finished:' + progress_timer.getTimeStr())
-
 def correctHeadTail(skeletons_file, max_gap_allowed = 10, window_std = 25, \
     segment4angle = 5, min_block_size = 250):
     '''
@@ -146,20 +108,23 @@ def correctHeadTail(skeletons_file, max_gap_allowed = 10, window_std = 25, \
     segment4angle = 5 #separation between skeleton segments to calculate the angles
     min_block_size = 250 #consider only around 10s intervals to determine if it is head or tail... 
     '''
-    
+    base_name = skeletons_file.rpartition('.')[0].rpartition(os.sep)[-1].rpartition('_')[0]
+    #%%
     with pd.HDFStore(skeletons_file, 'r') as ske_file_id:
         indexes_data = ske_file_id['/trajectories_data'][['worm_index_joined', 'skeleton_id']]
         #get the first and last frame of each worm_index
         rows_indexes = indexes_data.groupby('worm_index_joined').agg([min, max])['skeleton_id']
         del indexes_data
-    
+    #%%
     progress_timer = timeCounterStr('');
     for ii, dat in enumerate(rows_indexes.iterrows()):
         if ii % 10 == 0:
-            dd = "Correcting Head-Tail worm %i of %i." % (ii+1, len(rows_indexes))
-            print(dd + ' Total time:' + progress_timer.getTimeStr())
+            dd = " Correcting Head-Tail worm %i of %i." % (ii+1, len(rows_indexes))
+            dd = base_name + dd + ' Total time:' + progress_timer.getTimeStr()
+            print(dd)
         
         worm_index, row_range = dat        
+        
         worm_data = WormClass(skeletons_file, worm_index, \
                     rows_range = (row_range['min'],row_range['max']))
         
@@ -167,23 +132,23 @@ def correctHeadTail(skeletons_file, max_gap_allowed = 10, window_std = 25, \
             is_switched_skel, roll_std = isWormHTSwitched(worm_data.skeleton, \
             segment4angle = segment4angle, max_gap_allowed = max_gap_allowed, \
             window_std = window_std, min_block_size=min_block_size)
+            #plt.figure()
             #roll_std[['head_angle','tail_angle']].plot()
             
             worm_data.switchHeadTail(is_switched_skel)
         
         worm_data.writeData()
+        #%%
     print('Finished:' + progress_timer.getTimeStr())
+    
 if __name__ == "__main__":
-    root_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150511/'
-    base_name = 'Capture_Ch1_11052015_195105'
+    #root_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150511/'
+    #base_name = 'Capture_Ch1_11052015_195105'
     #root_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150512/'    
     #base_name = 'Capture_Ch3_12052015_194303'
     
-    masked_image_file = root_dir + '/Compressed/' + base_name + '.hdf5'
-    trajectories_file = root_dir + '/Trajectories/' + base_name + '_trajectories.hdf5'
     skeletons_file = root_dir + '/Trajectories/' + base_name + '_skeletons.hdf5'
-    video_save_dir = root_dir + '/Worm_Movies_corrected/' + base_name + os.sep
+    
 
-
-    correctHeadTail(skeletons_file, max_gap_allowed = 10, \
-    window_std = 25, segment4angle = 5, min_block_size = 250)
+    #correctHeadTail(skeletons_file, max_gap_allowed = 10, \
+    #window_std = 25, segment4angle = 5, min_block_size = 250)

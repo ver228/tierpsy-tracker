@@ -98,6 +98,8 @@ def circSmooth(angles, blurLength):
         
 def getPossibleConnections(worm_contour, maxI, minI, nearSize):
 #%%
+#TODO There is a bug in this function, where the size of the array conns is too small to hold all "posible connections"
+
     #% Connect sharp convexities that are nearby on the contour and/or,
     #% nearby in distance and separated by a sharp concavity.
     #% Note: the worm's width is approximately the size of a muscle segment.

@@ -1,3 +1,4 @@
+
 kezhi_file = '/Users/ajaver/Desktop/Gecko_compressed/20150511/kezhi_format/Capture_Ch5_11052015_195105_kezhi.hdf5';
 worm_name = 'worm_1656.hdf5'; 
 
@@ -5,7 +6,7 @@ worm_name = 'worm_1656.hdf5';
 addpath('/Users/ajaver/GitHub_repositories/Multiworm_Tracking/OnlySegWorm')
 tic
 masks = h5read(kezhi_file, ['/' worm_name '/masks']);
-for frame = 1:size(masks,3)
+for frame = 1:1000%size(masks,3)
     disp(frame)
     %for frame = 1:100
     
