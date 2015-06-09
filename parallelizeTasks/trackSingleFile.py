@@ -21,7 +21,7 @@ def getTrajectoriesWorker(masked_image_file, results_dir, resume_from_previous =
             os.makedirs(results_dir)
         except:
             pass
-        
+
     #construct file names
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
     

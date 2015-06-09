@@ -19,7 +19,7 @@ from parallelProcHelper import runMultiSubproc
 
 masked_movies_root =  '/Volumes/behavgenom$/GeckoVideo/MaskedVideos/'
 results_root = '/Volumes/behavgenom$/GeckoVideo/Results/'
-directories_done = ['20150519', '20150521_1115', '20150522_1940']
+directories_done = ['20150521_1115', '20150522_1940']
 
 
 if results_root[-1] != os.sep:
