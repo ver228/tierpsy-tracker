@@ -13,13 +13,14 @@ from getDrawTrajectories import drawTrajectoriesVideo
 from getSkeletonsTables import trajectories2Skeletons, writeIndividualMovies
 from checkHeadOrientation import correctHeadTail
 
-
 def getTrajectoriesWorker(masked_image_file, results_dir, resume_from_previous = False):
-    
     if results_dir[-1] != os.sep:
         results_dir += os.sep
     if not os.path.exists(results_dir):
-        os.makedirs(results_dir)
+        try:
+            os.makedirs(results_dir)
+        except:
+            pass
         
     #construct file names
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]

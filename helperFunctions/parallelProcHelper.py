@@ -9,9 +9,9 @@ import sys
 import collections
 import subprocess as sp
 
-def startTask(cmd_str, current_tasks, num_tasks):
+def startTask(cmd_str, current_tasks, proc_ind, num_tasks):
     print(cmd_str)
-    current_tasks.append(sp.Popen(cmd_str, shell='True'))
+    current_tasks[proc_ind] = sp.Popen(cmd_str, shell='True')
     num_tasks += 1
     return current_tasks, num_tasks
 
@@ -22,18 +22,23 @@ def runMultiSubproc(cmd_list, max_num_process = 6):
         max_num_process = tot_tasks
     
     #initialize the first max_number_process in the list
-    current_tasks = []        
+    current_tasks = ['']*max_num_process        
     
     num_tasks = 0; 
-    for cmd in cmd_list[0:max_num_process]:
-        current_tasks, num_tasks = startTask(cmd, current_tasks, num_tasks)
-
-    #when one processs finish start a new one 
+    for proc_ind, cmd in enumerate(cmd_list[0:max_num_process]):
+        current_tasks,num_tasks = startTask(cmd, current_tasks, proc_ind, num_tasks)
+    
+    
+    #keep loop tasks as long as there is any task alive and 
+    #the number of tasks stated is less than the total number of tasks
     while num_tasks < tot_tasks or any(tasks.poll()==None for tasks in current_tasks):
-        for ii in range(len(current_tasks)):
-            if not current_tasks[ii].poll() is None and num_tasks < tot_tasks:
+        #loop along the process list to see if there is a task finished
+        for proc_ind in range(len(current_tasks)):
+            
+            #start a new tasks if the taks is finished (it is not none) and there is still tasks to add
+            if current_tasks[proc_ind].poll() != None and num_tasks < tot_tasks:
                 cmd = cmd_list[num_tasks]
-                current_tasks, num_tasks = startTask(cmd, current_tasks, num_tasks)
+                current_tasks, num_tasks = startTask(cmd, current_tasks, proc_ind, num_tasks)
 
 
 #The next code uses the multiprocess module. This module can be problematic. When it works

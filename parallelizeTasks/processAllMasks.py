@@ -37,4 +37,3 @@ for masked_image_file in masks_files:
 
 
 runMultiSubproc(cmd_list, max_num_process = 24)
-    
