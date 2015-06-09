@@ -34,6 +34,7 @@ pip3 install spyder
 brew install homebrew/science/hdf5
 pip3 install tables
 pip3 install pandas
+pip3 install h5py
 
 pip3 install matplotlib
 pip3 install scipy
