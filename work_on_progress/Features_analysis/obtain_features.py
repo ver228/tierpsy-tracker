@@ -6,7 +6,7 @@ Created on Thu Jun  4 11:30:53 2015
 """
 
 import sys
-sys.path.append('../../movement_validation')
+sys.path.append('../../../movement_validation')
 
 #from movement_validation.pre_features import WormParsing
 from movement_validation import NormalizedWorm

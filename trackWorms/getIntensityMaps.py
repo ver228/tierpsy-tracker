@@ -38,7 +38,7 @@ def angleSmoothed(x, y, window_size):
     skel_angles = np.lib.pad(skel_angles, (window_size//2, window_size//2), 'edge')
     return skel_angles;
 
-def getStraightenWormInt(worm_img, skeleton, half_width = -1, cnt_widths  = np.zeros(0), width_resampling = 7, ang_smooth_win = 6, length_resampling = 49):
+def getStraightenWormInt(worm_img, skeleton, half_width = -1, cnt_widths  = np.zeros(0), width_resampling = 7, ang_smooth_win = 12, length_resampling = 49):
     
     #if np.all(np.isnan(skeleton)):
     #    buff = np.empty((skeleton.shape[0], width_resampling))
@@ -97,21 +97,22 @@ results_dir = '/Users/ajaver/Desktop/Gecko_compressed/Results/20150512/'
 masked_image_file = mask_dir + base_name + '.hdf5'
 trajectories_file = results_dir + base_name + '_trajectories.hdf5'
 skeletons_file = results_dir + base_name + '_skeletons.hdf5'
-intensities_file = results_dir + base_name + '_intensities.hdf5'
+intensities_file = results_dir + base_name + '_intensities2.hdf5'
 
 #%%
 base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
 
 #MAKE VIDEOStho
 roi_size = 128
-width_resampling = 13
-length_resampling = 121
+width_resampling = 15#13
+length_resampling = 131#121
 
 
 with pd.HDFStore(skeletons_file, 'r') as ske_file_id:
     #data to extract the ROI
     trajectories_df = ske_file_id['/trajectories_data']
-
+    trajectories_df = trajectories_df.query('worm_index_joined==209')
+    
     #get the first and last frame of each worm_index
     indexes_data = trajectories_df[['worm_index_joined', 'skeleton_id']]
     rows_indexes = indexes_data.groupby('worm_index_joined').agg([min, max])['skeleton_id']
@@ -137,7 +138,7 @@ with tables.File(masked_image_file, 'r')  as mask_fid, \
     
     #get first and last frame for each worm
     worms_frame_range = trajectories_df.groupby('worm_index_joined').agg({'frame_number': [min, max]})['frame_number']
-    tot_rows = len(trajectories_df)
+    tot_rows = skel_tab.shape[0]#len(trajectories_df)
     
     #create array to save the intensities
     filters = tables.Filters(complevel=5, complib='zlib', shuffle=True)
@@ -146,6 +147,8 @@ with tables.File(masked_image_file, 'r')  as mask_fid, \
                                (tot_rows, length_resampling, width_resampling), \
                                 chunkshape = (1, length_resampling, width_resampling),\
                                 filters = filters);
+    
+    
     
     progressTime = timeCounterStr('Obtaining intensity maps.');
     for frame, frame_data in trajectories_df.groupby('frame_number'):

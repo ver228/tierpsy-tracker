@@ -1,1 +1,0 @@
-Hola Euge, aqui te dice como mandar mails desde la linea de comando. http://tecadmin.net/ways-to-send-email-from-linux-command-line/
