@@ -22,13 +22,14 @@ from scipy.ndimage.filters import median_filter
 from scipy.signal import savgol_filter
 from scipy.interpolate import interp1d
 
+#from ..helperFunctions.timeCounterStr import timeCounterStr
+#from .segWormPython.main_segworm import getSkeleton
+
 import sys
 sys.path.append('../helperFunctions/')
 from timeCounterStr import timeCounterStr
-
 sys.path.append('./segWormPython/')
 from segWormPython.main_segworm import getSkeleton
-
 from checkHeadOrientation import correctHeadTail
 
 
@@ -55,7 +56,7 @@ def getSmoothTrajectories(trajectories_file, displacement_smooth_win = 101, min_
     trajectories_df = np.recarray(tot_rows_ini, dtype = [('frame_number', np.int32), \
     ('worm_index_joined', np.int32), \
     ('plate_worm_id', np.int32), ('skeleton_id', np.int32), \
-    ('coord_x', np.float32), ('coord_y', np.float32), ('threshold', np.float32)])
+    ('coord_x', np.float32), ('coord_y', np.float32), ('threshold', np.float32), ('has_skeleton', np.bool)])
 
     #store the maximum and minimum frame of each worm
     worms_frame_range = {}
@@ -100,6 +101,7 @@ def getSmoothTrajectories(trajectories_file, displacement_smooth_win = 101, min_
         trajectories_df['threshold'][skeleton_id] = threshnew
         trajectories_df['plate_worm_id'][skeleton_id] = plate_worm_id
         trajectories_df['skeleton_id'][skeleton_id] = skeleton_id
+        trajectories_df['has_skeleton'][skeleton_id] = False
         
     assert tot_rows == tot_rows_ini
     
@@ -133,50 +135,22 @@ def getWormMask(worm_img, threshold):
     worm_mask = cv2.morphologyEx(worm_mask, cv2.MORPH_CLOSE,np.ones((3,3)))
     return worm_mask
 
-def drawWormContour(worm_img, worm_mask, skeleton, cnt_side1, cnt_side2, \
-colorpalette = [(119, 158,27 ), (2, 95, 217), (138, 41, 231)]):
-    
-    intensity_rescale = 255./min(1.1*np.max(worm_img),255.);
-    
-    if intensity_rescale == np.inf:
-         #the image is likely to be all zeros
-        return cv2.cvtColor(worm_img, cv2.COLOR_GRAY2RGB);
-
-    worm_img = (worm_img*intensity_rescale).astype(np.uint8)
-            
-    worm_rgb = cv2.cvtColor(worm_img, cv2.COLOR_GRAY2RGB);
-    if skeleton.size==0 or np.all(np.isnan(skeleton)):
-        worm_rgb[:,:,1][worm_mask!=0] = 204
-        worm_rgb[:,:,2][worm_mask!=0] = 102
-    else:
-        pts = np.round(cnt_side1).astype(np.int32)
-        cv2.polylines(worm_rgb, [pts], False, colorpalette[1], thickness=1, lineType = 8)
-        pts = np.round(cnt_side2).astype(np.int32)
-        cv2.polylines(worm_rgb, [pts], False, colorpalette[2], thickness=1, lineType = 8)
-        
-        pts = np.round(skeleton).astype(np.int32)
-        cv2.polylines(worm_rgb, [pts], False, colorpalette[0], thickness=1, lineType = 8)
-        
-        #mark the head
-        cv2.circle(worm_rgb, tuple(pts[0]), 2, (225,225,225), thickness=-1, lineType = 8)
-        cv2.circle(worm_rgb, tuple(pts[0]), 3, (0,0,0), thickness=1, lineType = 8)
-    
-    return worm_rgb
-
 
 def trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file, \
 create_single_movies = False, roi_size = 128, resampling_N = 49, min_mask_area = 50):    
     
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
+    table_filters = tables.Filters(complevel=5, complib='zlib', shuffle=True)
     
     #get trajectories, threshold and indexes from the first part of the tracker
     trajectories_df, worms_frame_range, tot_rows = \
     getSmoothTrajectories(trajectories_file, displacement_smooth_win = 101, min_displacement = 0, threshold_smooth_win = 501)
     #trajectories_df = trajectories_df.query('frame_number>43275')
     
+    
     #pytables saving format is more convenient...
     with tables.File(skeletons_file, "w") as ske_file_id:
-        ske_file_id.create_table('/', 'trajectories_data', obj = trajectories_df)
+        ske_file_id.create_table('/', 'trajectories_data', obj = trajectories_df, filters=table_filters)
     
     
     #...but it is easier to process data with pandas
@@ -192,22 +166,23 @@ create_single_movies = False, roi_size = 128, resampling_N = 49, min_mask_area =
         skel_arrays = {}
         
         data_strS = ['skeleton', 'contour_side1', 'contour_side2']        
-        filters = tables.Filters(complevel=5, complib='zlib', shuffle=True)
+        
         for data_str in data_strS:
             length_str = data_str + '_length'
             
             skel_arrays[length_str] = ske_file_id.create_carray("/", length_str, \
-                        tables.Float32Atom(dflt=np.nan), (tot_rows,), filters=filters)
+                        tables.Float32Atom(dflt=np.nan), (tot_rows,), filters=table_filters)
     
             skel_arrays[data_str] = ske_file_id.create_carray("/", data_str, \
                                         tables.Float32Atom(dflt=np.nan), \
-                                       (tot_rows, resampling_N, 2), filters=filters, \
+                                       (tot_rows, resampling_N, 2), filters=table_filters, \
                                         chunkshape = (1, resampling_N,2));
                         
         skel_arrays['contour_width'] = ske_file_id.create_carray('/', "contour_width", \
                                         tables.Float32Atom(dflt=np.nan), \
-                                        (tot_rows, resampling_N), filters=filters, \
+                                        (tot_rows, resampling_N), filters=table_filters, \
                                         chunkshape = (1, resampling_N));
+        has_skeleton = ske_file_id.get_node('/trajectories_data').cols.has_skeleton
         
         #dictionary to store previous skeletons
         prev_skeleton = {}
@@ -243,24 +218,65 @@ create_single_movies = False, roi_size = 128, resampling_N = 49, min_mask_area =
                     skel_arrays['skeleton'][skeleton_id, :, :] = skeleton + roi_corner
                     skel_arrays['contour_side1'][skeleton_id, :, :] = cnt_side1 + roi_corner
                     skel_arrays['contour_side2'][skeleton_id, :, :] = cnt_side2 + roi_corner
-                            
+                    
+                    has_skeleton[skeleton_id] = True
             if frame % 500 == 0:
                 progress_str = progressTime.getStr(frame)
                 print(base_name + ' ' + progress_str);
 
-def writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir, roi_size = 128, fps=25):    
+def drawWormContour(worm_img, worm_mask, skeleton, cnt_side1, cnt_side2, \
+colorpalette = [(119, 158,27 ), (2, 95, 217), (138, 41, 231)]):
+    
+    intensity_rescale = 255./min(1.1*np.max(worm_img),255.);
+    
+    if intensity_rescale == np.inf:
+         #the image is likely to be all zeros
+        return cv2.cvtColor(worm_img, cv2.COLOR_GRAY2RGB);
+
+    worm_img = (worm_img*intensity_rescale).astype(np.uint8)
+            
+    worm_rgb = cv2.cvtColor(worm_img, cv2.COLOR_GRAY2RGB);
+    if skeleton.size==0 or np.all(np.isnan(skeleton)):
+        worm_rgb[:,:,1][worm_mask!=0] = 204
+        worm_rgb[:,:,2][worm_mask!=0] = 102
+    else:
+        pts = np.round(cnt_side1).astype(np.int32)
+        cv2.polylines(worm_rgb, [pts], False, colorpalette[1], thickness=1, lineType = 8)
+        pts = np.round(cnt_side2).astype(np.int32)
+        cv2.polylines(worm_rgb, [pts], False, colorpalette[2], thickness=1, lineType = 8)
+        
+        pts = np.round(skeleton).astype(np.int32)
+        cv2.polylines(worm_rgb, [pts], False, colorpalette[0], thickness=1, lineType = 8)
+        
+        #mark the head
+        cv2.circle(worm_rgb, tuple(pts[0]), 2, (225,225,225), thickness=-1, lineType = 8)
+        cv2.circle(worm_rgb, tuple(pts[0]), 3, (0,0,0), thickness=1, lineType = 8)
+    
+    return worm_rgb
+
+
+def writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir, 
+                          roi_size = 128, fps=25, bad_seg_thresh = 0.5, save_bad_worms = False):    
     
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
     #remove previous data if exists
     if os.path.exists(video_save_dir):
         shutil.rmtree(video_save_dir)
     os.makedirs(video_save_dir)
-
+    if save_bad_worms:
+        bad_videos_dir = video_save_dir + 'bad_worms' + os.sep;
+        os.mkdir(bad_videos_dir)
 
     #data to extract the ROI
     with pd.HDFStore(skeletons_file, 'r') as ske_file_id:
         trajectories_df = ske_file_id['/trajectories_data']
-
+        skeleton_fracc = trajectories_df[['worm_index_joined', 'has_skeleton']].groupby('worm_index_joined').agg('mean')
+        skeleton_fracc = skeleton_fracc['has_skeleton']
+        valid_worm_index = skeleton_fracc[skeleton_fracc>=bad_seg_thresh].index
+        if save_bad_worms:
+            #remove the bad worms, we do not care about them
+            trajectories_df = trajectories_df[trajectories_df.isin(valid_worm_index)]
+    
     with tables.File(skeletons_file, "r") as ske_file_id, \
     tables.File(masked_image_file, 'r') as mask_fid:
         #pointers to images    
@@ -286,13 +302,20 @@ def writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir, roi
                 cnt_side1 = cnt1_array[skeleton_id,:,:]-roi_corner
                 cnt_side2 = cnt2_array[skeleton_id,:,:]-roi_corner
                 
-                if np.any(np.isnan(skeleton)):
+                if not row_data['has_skeleton']:
+                    #if it does not have an skeleton get a good mask
                     worm_mask = getWormMask(worm_img, row_data['threshold'])
                 else:
                     worm_mask = np.zeros(0)
                 
                 if (worms_frame_range['min'][worm_index] == frame) or (not worm_index in video_list):
                     movie_save_name = video_save_dir + ('worm_%i.avi' % worm_index)
+                    if save_bad_worms and not worm_index in valid_worm_index:
+                        #if we want to save the 'bad worms', save them i a different directory
+                        movie_save_name = bad_videos_dir + ('worm_%i.avi' % worm_index)
+                    else:
+                        movie_save_name = video_save_dir + ('worm_%i.avi' % worm_index)
+                    
                     video_list[worm_index] = cv2.VideoWriter(movie_save_name, \
                     cv2.VideoWriter_fourcc('M','J','P','G'), fps, (roi_size, roi_size), isColor=True)
                 
@@ -310,15 +333,19 @@ def writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir, roi
 
 #%%
 if __name__ == '__main__':  
-    #base_name = 'Capture_Ch3_12052015_194303'
-    #root_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150512/'    
-
-    root_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150511/'
-    base_name = 'Capture_Ch1_11052015_195105'
+    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/Masked_videos/20150512/Capture_Ch3_12052015_194303.hdf5'
+    save_dir = '/Users/ajaver/Desktop/Gecko_compressed/Results/20150512/'    
     
-    masked_image_file = root_dir + '/Compressed/' + base_name + '.hdf5'
-    trajectories_file = root_dir + '/Trajectories/' + base_name + '_trajectories.hdf5'
-    skeletons_file = root_dir + '/Trajectories/' + base_name + '_skeletons.hdf5'
+    #masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/Masked_videos/20150511/Capture_Ch1_11052015_195105.hdf5'
+    #save_dir = '/Users/ajaver/Desktop/Gecko_compressed/Results/20150511/'    
+    
+    base_name = masked_image_file.rpartition(os.sep)[-1].rpartition('.')[0]
+    trajectories_file = save_dir + base_name + '_trajectories.hdf5'    
+    skeletons_file = save_dir + base_name + '_skeletons.hdf5'
+    video_save_dir = save_dir + base_name + os.sep
+
+    assert os.path.exists(masked_image_file)
+    assert os.path.exists(trajectories_file)
     
     trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file, \
     create_single_movies = False, roi_size = 128, resampling_N = 49, min_mask_area = 50)
@@ -326,7 +353,7 @@ if __name__ == '__main__':
     correctHeadTail(skeletons_file, max_gap_allowed = 10, \
     window_std = 25, segment4angle = 5, min_block_size = 250)
 
-    video_save_dir = root_dir + '/Worm_Movies_corrected/' + base_name + os.sep
-    writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir, roi_size = 128, fps=25)
+    
+    writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir, roi_size = 128, fps=25, save_bad_worms=True)
 
                 
