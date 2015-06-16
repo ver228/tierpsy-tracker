@@ -101,20 +101,20 @@ check_empty_frames = False,  useVideoCapture = True, has_timestamp=True, expecte
                                     chunks = (1, im_height,im_width),
                                     compression="gzip", 
                                     compression_opts=4,
-                                    shuffle=True);
+                                    shuffle=True, fletcher32=True);
     
     #full frames are saved in "/full_data" every save_full_interval frames
     full_dataset = mask_fid.create_dataset("/full_data", (expected_frames//save_full_interval, im_height,im_width), 
                                     dtype = "u1", maxshape = (None, im_height,im_width), 
                                     chunks = (1, im_height,im_width),
                                     compression="gzip", 
-                                    compression_opts=9,
-                                    shuffle=True);
+                                    compression_opts=4,
+                                    shuffle=True, fletcher32=True);
     full_dataset.attrs['save_interval'] = save_full_interval
     
     im_diff_set = mask_fid.create_dataset('/im_diff', (expected_frames,), 
                                           dtype = 'f4', maxshape = (None,), 
-                                        chunks = True, compression = "gzip", compression_opts=9, shuffle = True)
+                                        chunks = True, compression = "gzip", compression_opts=4, shuffle = True, fletcher32=True)
     
 
     

@@ -18,7 +18,8 @@ from parallelProcHelper import runMultiSubproc
 masked_movies_root =  '/Volumes/behavgenom$/GeckoVideo/MaskedVideos/'
 results_root = '/Volumes/behavgenom$/GeckoVideo/Results/'
 
-dir_main = '/Volumes/Mrc-pc/20150522_1940/'
+dir_main = sys.argv[1]
+#dir_main = '/Volumes/Mrc-pc/20150522_1940/'
 
 if dir_main[-1] == os.sep:
     dir_main = dir_main[:-1]
