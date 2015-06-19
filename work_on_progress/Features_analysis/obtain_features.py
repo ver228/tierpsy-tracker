@@ -16,7 +16,9 @@ warnings.filterwarnings('ignore', '.*empty slice*',)
 tables.parameters.MAX_COLUMNS = 1024 #(http://www.pytables.org/usersguide/parameter_files.html)
 
 from collections import OrderedDict
-import time
+
+sys.path.append('../../helperFunctions/')
+from timeCounterStr import timeCounterStr
 
 sys.path.append('../../../movement_validation')
 #from movement_validation.pre_features import WormParsing
@@ -24,7 +26,6 @@ sys.path.append('../../../movement_validation')
 from movement_validation import NormalizedWorm
 from movement_validation import WormFeatures, VideoInfo
 from movement_validation.statistics import specs
-from movement_validation.statistics.histogram_manager import HistogramManager
 
 # -*- coding: utf-8 -*-
 """
@@ -317,6 +318,7 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, video_f
     #list to save trajectories mean features
     all_stats = []
     
+    progress_timer = timeCounterStr('');
     #filter used for each fo the tables
     filters_tables = tables.Filters(complevel = 5, complib='zlib', shuffle=True)
     with tables.File(features_file, 'w') as features_fid:
@@ -346,7 +348,6 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, video_f
         tot_worms = len(rows_indexes)        
         for ind, dat  in enumerate(rows_indexes.iterrows()):
             worm_index, row_range = dat
-            print(ind, tot_worms, worm_index)
             
             #video info, for the moment we intialize it with the fps
             vi = VideoInfo('', video_fps)  
@@ -399,6 +400,11 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, video_f
                                     obj = tmp_data, filters=filters_tables)
                     table_tmp._v_attrs['is_signed'] = spec.is_signed
             
+            dd = " Extracting features worm %i of %i." % (worm_index+1, tot_worms)
+            dd = base_name + dd + ' Total time:' + progress_timer.getTimeStr()
+            print(dd)
+            
+            
         #create and save a table containing the averaged worm feature for each worm
         tot_rows = len(all_stats)
         dtype = [(x, np.float32) for x in (all_stats[0])]
@@ -407,7 +413,8 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, video_f
             for key in row_dict:
                 mean_features_df[key][kk] = row_dict[key]
         features_fid.create_table('/', 'Features_table', obj = mean_features_df, filters=filters_tables)
-
+        
+        print('Feature extraction finished:' + progress_timer.getTimeStr())
 
 if __name__ == "__main__":
     
