@@ -334,13 +334,13 @@ def writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir,
             if frame % 500 == 0:
                 progress_str = progressTime.getStr(frame)
                 print(base_name + ' ' + progress_str);
-#%%
+
 #%%
 if __name__ == '__main__':  
     #masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/Masked_videos/20150512/Capture_Ch3_12052015_194303.hdf5'
     #save_dir = '/Users/ajaver/Desktop/Gecko_compressed/Results/20150512/'    
     
-    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/Masked_videos/20150511/Capture_Ch1_11052015_195105.hdf5'
+    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/Masked_videos/20150511/Capture_Ch5_11052015_195105.hdf5'
     save_dir = '/Users/ajaver/Desktop/Gecko_compressed/Results/20150511/'    
     
     base_name = masked_image_file.rpartition(os.sep)[-1].rpartition('.')[0]

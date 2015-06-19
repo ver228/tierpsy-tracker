@@ -281,10 +281,20 @@ class wormStatsClass():
         return self.stats
 
 def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, video_fps = 25):
-    
+    #%%
     #read skeletons index data
     with pd.HDFStore(skeletons_file, 'r') as ske_file_id:
-        indexes_data = ske_file_id['/trajectories_data'][['worm_index_joined', 'skeleton_id', 'has_skeleton']]
+        indexes_data = ske_file_id['/trajectories_data']
+    
+    if 'has_skeleton' in indexes_data.columns:
+        indexes_data = indexes_data[['worm_index_joined', 'skeleton_id', 'has_skeleton']]
+    else:
+        indexes_data = indexes_data[['worm_index_joined', 'skeleton_id']]
+        with tables.File(skeletons_file, 'r') as ske_file_id:
+            #this is slow but faster than having to recalculate all the skeletons
+            indexes_data['has_skeleton'] = ~np.isnan(ske_file_id.get_node('/skeleton')[:,0,0])
+            
+    #%%
     
     #get the fraction of worms that were skeletonized per trajectory
     skeleton_fracc = indexes_data.groupby('worm_index_joined').agg({'has_skeleton':'mean'})
@@ -339,7 +349,7 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, video_f
             print(ind, tot_worms, worm_index)
             
             #video info, for the moment we intialize it with the fps
-            vi = VideoInfo(masked_image_file, video_fps)  
+            vi = VideoInfo('', video_fps)  
             
             #initialize worm object, and extract data from skeletons file
             worm = WormFromTable()
@@ -401,13 +411,13 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, video_f
 
 if __name__ == "__main__":
     
-    base_name = 'Capture_Ch3_12052015_194303'
-    mask_dir = '/Users/ajaver/Desktop/Gecko_compressed/Masked_Videos/20150512/'
-    results_dir = '/Users/ajaver/Desktop/Gecko_compressed/Results/20150512/'    
+#    base_name = 'Capture_Ch3_12052015_194303'
+#    mask_dir = '/Users/ajaver/Desktop/Gecko_compressed/Masked_Videos/20150512/'
+#    results_dir = '/Users/ajaver/Desktop/Gecko_compressed/Results/20150512/'    
 
-#    base_name = 'Capture_Ch1_11052015_195105'
-#    mask_dir = '/Users/ajaver/Desktop/Gecko_compressed/Masked_Videos/20150511/'
-#    results_dir = '/Users/ajaver/Desktop/Gecko_compressed/Results/20150511/'
+    base_name = 'Capture_Ch5_11052015_195105'
+    mask_dir = '/Users/ajaver/Desktop/Gecko_compressed/Masked_Videos/20150511/'
+    results_dir = '/Users/ajaver/Desktop/Gecko_compressed/Results/20150511/'
     
     masked_image_file = mask_dir + base_name + '.hdf5'
     trajectories_file = results_dir + base_name + '_trajectories.hdf5'

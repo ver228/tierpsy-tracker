@@ -34,24 +34,29 @@ def getTrajectoriesWorker(masked_image_file, results_dir, over_write_previous = 
     features_file = results_dir + base_name + '_features.hdf5'
     video_save_dir = results_dir + base_name + os.sep
     
-    if os.path.exists(trajectories_file):
-        os.remove(trajectories_file)
-    
     doTrajectories = False
     doSkeletons = False
+    doFeatures = False
     doVideos = False
 
     if over_write_previous or not os.path.exists(trajectories_file):
         doTrajectories = True
         doSkeletons = True
+        doFeatures = True
         doVideos = True
     elif not os.path.exists(skeletons_file):
         doSkeletons = True
+        doFeatures = True
         doVideos = True
-    elif not os.path.exists(video_save_dir):
-        doVideos = True
+    else:
+        if not os.path.exists(features_file):
+            doFeatures = True
+        if not os.path.exists(video_save_dir):
+            doVideos = True
     
     if doTrajectories:
+        if os.path.exists(trajectories_file):
+            os.remove(trajectories_file)
         getWormTrajectories(masked_image_file, trajectories_file, last_frame = -1)
         joinTrajectories(trajectories_file)
         drawTrajectoriesVideo(masked_image_file, trajectories_file)
@@ -66,14 +71,15 @@ def getTrajectoriesWorker(masked_image_file, results_dir, over_write_previous = 
     
         correctHeadTail(skeletons_file, max_gap_allowed = 10, \
                         window_std = 25, segment4angle = 5, min_block_size = 250)
-
-        #extract features
-        getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, video_fps = 25)
-
     if doVideos:
         #create movies of individual worms
         writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir, \
-                              roi_size = 128, fps=25)
+                              roi_size = 128, fps=25)                   
+    if doFeatures:
+        #extract features
+        getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, video_fps = 25)
+
+
 
     print(base_name + ' Finished')
     
