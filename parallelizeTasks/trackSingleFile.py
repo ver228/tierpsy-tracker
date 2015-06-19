@@ -13,6 +13,7 @@ from getDrawTrajectories import drawTrajectoriesVideo
 from getSkeletonsTables import trajectories2Skeletons, writeIndividualMovies
 from checkHeadOrientation import correctHeadTail
 
+sys.path.append('../../movement_validation')
 sys.path.append('../work_on_progress/Features_analysis/')
 from obtain_features import getWormFeatures
 
