@@ -14,17 +14,22 @@ Created on Fri Apr  3 01:56:06 2015
 import os
 import sys
 
+
 sys.path.append('../helperFunctions/')
 from parallelProcHelper import runMultiSubproc
 
+
+
 def get_tracking_cmd(masked_movie_file, results_dir):
-    cmd =  ' '.join(["python3 trackSingleFile.py", masked_movie_file, results_dir, '</dev/null'])
+    cmd =  ' '.join(["python3 trackSingleFile.py", masked_movie_file, results_dir])
     return cmd
+
+
 
 if __name__ == '__main__':
     
-    masked_movies_dir = '/Volumes/behavgenom$/GeckoVideo/MaskedVideos/20150519/'
-    results_dir = '/Volumes/behavgenom$/GeckoVideo/Results/20150519/'
+    #masked_movies_dir = '/Volumes/behavgenom$/GeckoVideo/MaskedVideos/20150519/'
+    #results_dir = '/Volumes/behavgenom$/GeckoVideo/Results/20150519/'
     
     max_num_process = 6;
     if not os.path.exists(results_dir):

@@ -31,10 +31,18 @@ masked_movies_dir = masked_movies_root + subdir_base + os.sep
 results_dir = results_root + subdir_base + os.sep
 
 
-cmd_list = []
+cmd_list_compress = []
+cmd_list_track = []
 for movief in movie_files:
-    cmd_list += [' '.join(['python3 compNTrackSingleFile.py', movief, masked_movies_dir, results_dir])]
+    cmd_list_compress += [' '.join(['python3 compressSingleFile.py', movief, masked_movies_dir])]
+    
+    base_name = video_file.rpartition('.')[0].rpartition(os.sep)[-1]
+    masked_image_file = masked_movies_dir + base_name + '.hdf5'
+    
+    cmd_list_track += [' '.join(['python3 compressSingleFile.py', masked_image_file, results_dir])]
 
 
-runMultiSubproc(cmd_list, max_num_process = 6)
+runMultiSubproc(cmd_list_compress, max_num_process = 12)
+print('%'*500)
+runMultiSubproc(cmd_list_track, max_num_process = 12)
     

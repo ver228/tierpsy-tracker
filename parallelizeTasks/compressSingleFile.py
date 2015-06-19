@@ -29,8 +29,8 @@ def getCompressVidWorker(video_file, mask_files_dir,
         initial_time = time.time();
         
         compressVideo(video_file, masked_image_file, buffer_size = FPS, \
-        save_full_interval = 5000//FPS, base_name = base_name, useVideoCapture = False, 
-        has_timestamp=True, expected_frames = 15000)
+        save_full_interval = 5000//FPS, base_name = base_name, useVideoCapture = True,
+        has_timestamp=has_timestamp, expected_frames = expected_frames)
         
         writeDownsampledVideo(masked_image_file, base_name = base_name);
         writeFullFramesTiff(masked_image_file, base_name = base_name);
@@ -49,4 +49,4 @@ if __name__ == "__main__":
     mask_files_dir = sys.argv[2]
 
     getCompressVidWorker(video_file, mask_files_dir, has_timestamp = True, 
-                         FPS = 25, expected_frames = 15000)
+                         FPS = 25, expected_frames = 100000)
