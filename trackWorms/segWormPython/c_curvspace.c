@@ -10,28 +10,12 @@ double c_curvspace(double *points, int p_size, int p_dim, int N, double *output)
 {
     
     /*
-% CURVSPACE Evenly spaced points along an existing curve in 2D or 3D.
-%   CURVSPACE(points,N) generates N points that interpolates a curve
-%   (represented by a set of points) with an equal spacing. Each
-%   row of P defines a point, which means that P should be a n x 2
-%   (2D)
-%
-%   (Example)
-%   x = -2*pi:0.5:2*pi;
-%   y = 10*sin(x);
-%   z = linspace(0,10,length(x));
-%   N = 50;
-%   points = [x',y',z'];
-%   q = curvspace(points,N);
-%   figure;
-%   plot3(points(:,1),points(:,2),points(:,3),'*b',q(:,1),q(:,2),q(:,3),'.r');
-%   axis equal;
-%   legend('Original Points','Interpolated Points');
-%
-%   See also LINSPACE.
-%
- 
-%   25/03/15 AEJ adapted from Yo Fukushima
+    Resamples a curve into N points whose norm is equaly spaced.
+    points -> the pointer to the data of p_size x p_dim dimensions.
+    p_size -> number of points original data
+    p_dim -> number of dimensions
+    N -> number of points (resampling) in the output array 
+    output -> pointer to the output array
      */
     
 //%% initial settings %%
@@ -127,7 +111,7 @@ double c_curvspace(double *points, int p_size, int p_dim, int N, double *output)
 
 double distance(double *x, double *y, int p_dim)
 {
-//%% calculate distance %%
+//calculate the distance between two points
     double dum;
     double R = 0;
     for(int k = 0; k<p_dim; k++)
@@ -141,6 +125,8 @@ double distance(double *x, double *y, int p_dim)
 
 void interpintv(double *pt1, double *pt2, int p_dim, double intv, double *newpt)
 {
+    //interpolates a point between points pt1 and pt2 with intv magnitud.
+    //results are save into the newpt direction.
     double dum;
     double normR = 0;
     for(int k = 0; k<p_dim; k++)

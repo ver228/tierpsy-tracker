@@ -25,19 +25,23 @@ def getCompressVidWorker(video_file, mask_files_dir,
     
     base_name = video_file.rpartition('.')[0].rpartition(os.sep)[-1]
     masked_image_file = mask_files_dir + base_name + '.hdf5'
-
-    initial_time = time.time();
-    
-    compressVideo(video_file, masked_image_file, buffer_size = FPS, \
-    save_full_interval = 5000//FPS, base_name = base_name, useVideoCapture = False, 
-    has_timestamp=True, expected_frames = 15000)
-    
-    writeDownsampledVideo(masked_image_file, base_name = base_name);
-    writeFullFramesTiff(masked_image_file, base_name = base_name);
+    if not os.path.exists(masked_image_file):
+        initial_time = time.time();
         
-    time_str = str(datetime.timedelta(seconds=round(time.time()-initial_time)))
-    progress_str = 'Processing Done. Total time = %s' % time_str;
-    print(base_name + ' ' + progress_str)
+        compressVideo(video_file, masked_image_file, buffer_size = FPS, \
+        save_full_interval = 5000//FPS, base_name = base_name, useVideoCapture = False, 
+        has_timestamp=True, expected_frames = 15000)
+        
+        writeDownsampledVideo(masked_image_file, base_name = base_name);
+        writeFullFramesTiff(masked_image_file, base_name = base_name);
+            
+        time_str = str(datetime.timedelta(seconds=round(time.time()-initial_time)))
+        progress_str = 'Processing Done. Total time = %s' % time_str;
+        print(base_name + ' ' + progress_str)
+    else:
+        print('File alread exists: %s' % masked_image_file)
+        print('If you want to calculate the mask again delete the existing file.')
+    
     return masked_image_file
     
 if __name__ == "__main__":
