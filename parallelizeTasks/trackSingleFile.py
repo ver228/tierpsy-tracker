@@ -74,7 +74,8 @@ def getTrajectoriesWorker(masked_image_file, results_dir, over_write_previous = 
     if doVideos:
         #create movies of individual worms
         writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir, \
-                              roi_size = 128, fps=25)                   
+                              roi_size = 128, fps=25)           
+        
     if doFeatures:
         #extract features
         getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, video_fps = 25)
@@ -87,6 +88,9 @@ def getTrajectoriesWorker(masked_image_file, results_dir, over_write_previous = 
 if __name__ == '__main__':
     masked_image_file = sys.argv[1]
     results_dir = sys.argv[2]
+    
+    #masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/Masked_Videos/20150511/Capture_Ch1_11052015_195105.hdf5'
+    #results_dir = '/Users/ajaver/Desktop/Gecko_compressed/Results/20150511/' 
     
     getTrajectoriesWorker(masked_image_file, results_dir, over_write_previous = False)
     

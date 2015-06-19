@@ -275,7 +275,7 @@ def writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir,
         valid_worm_index = skeleton_fracc[skeleton_fracc>=bad_seg_thresh].index
         if not save_bad_worms:
             #remove the bad worms, we do not care about them
-            trajectories_df = trajectories_df[trajectories_df.isin(valid_worm_index)]
+            trajectories_df = trajectories_df[trajectories_df['worm_index_joined'].isin(valid_worm_index)]
 #%%    
     with tables.File(skeletons_file, "r") as ske_file_id, tables.File(masked_image_file, 'r') as mask_fid:
         #pointers to images    
@@ -351,10 +351,10 @@ if __name__ == '__main__':
     assert os.path.exists(masked_image_file)
     assert os.path.exists(trajectories_file)
     
-    trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file, \
-    create_single_movies = False, roi_size = 128, resampling_N = 49, min_mask_area = 50)
+    #trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file, \
+    #create_single_movies = False, roi_size = 128, resampling_N = 49, min_mask_area = 50)
     
     #correctHeadTail(skeletons_file, max_gap_allowed = 10, \
     #window_std = 25, segment4angle = 5, min_block_size = 250)
 
-    #writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir, roi_size = 128, fps=25, save_bad_worms=True)
+    writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir, roi_size = 128, fps=25, save_bad_worms=True)
