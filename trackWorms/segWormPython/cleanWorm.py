@@ -5,8 +5,8 @@ Created on Fri May 22 18:10:04 2015
 @author: ajaver
 """
 
-from .cleanWorm_cython import extremaPeaksCircDist, removeSmallSegments, cleanContour
-from .circCurvature import circCurvature
+from .cythonFiles.cleanWorm_cython import extremaPeaksCircDist, removeSmallSegments, cleanContour
+from .cythonFiles.circCurvature import circCurvature
 
 import numpy as np
 

@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-# cython: profile=True
-# cython: boundscheck=False
-# cython: wraparound=False
-# cython: nonecheck=False
-
+# cython: profile=False
+# cython: boundscheck=True
+# cython: wraparound=True
+# cython: nonecheck=True
 """
 Created on Sun May 24 19:42:56 2015
-
 @author: ajaver
 """
 
@@ -16,6 +14,16 @@ cimport cython
 from libc.math cimport round as c_round;
 from libc.math cimport sqrt, fabs, floor, ceil, fmin, fmax
 
+
+cdef inline double absDiff(double a, double b): 
+    return a-b if a>b else b-a
+
+#for some weird reason libc.math does not have an integer max and min functions (the python ones are slow)
+cdef int int_max(int a, int b):
+    return a if a>b else b;
+cdef int int_min(int a, int b):
+    return a if a<b else b;
+    
 def chainCodeLength2Index(double length, np.ndarray[np.float64_t, ndim=1] chain_code_len):
     '''%CHAINCODELENGTH2INDEX Translate a length into an index. The index
     %   represents the numerically-closest element to the desired length in
@@ -72,12 +80,12 @@ def chainCodeLength2Index(double length, np.ndarray[np.float64_t, ndim=1] chain_
                 j = 0;
             
             #//% find the closest index.
-            dist_j = fabs(length - chain_code_len[j]); #//important use fabs, abs will cast the value to integer
+            dist_j = absDiff(length, chain_code_len[j]); #//important use fabs, abs will cast the value to integer
             while (j < last_index_chain):
                 #//% Is this index closer than the next one?
                 #//% Note: overlapping points have equal distances. Therefore, if
                 #//% the distances are equal, we advance.
-                dist_next_j = fabs(length - chain_code_len[j + 1]);
+                dist_next_j = absDiff(length, chain_code_len[j + 1]);
                 if (dist_j < dist_next_j):
                     break;
                 
@@ -545,8 +553,6 @@ np.ndarray[np.float_t, ndim=2] cnt_side1, np.ndarray[np.float_t, ndim=2] cnt_sid
     skeleton[0,1] = c_round((cnt_side1[j1,1] + cnt_side2[j2,1])/ 2);
     cnt_widths[0] = getDistance(cnt_side1[j1,0], cnt_side2[j2,0], cnt_side1[j1,1], cnt_side2[j2,1]);
     
-    
-    
     cdef int ske_ind = 1;
     #//% Skeletonize the contour segments and measure the width.
     while ((j1 != end_side1) and (j2 != end_side2)):
@@ -622,15 +628,7 @@ np.ndarray[np.float_t, ndim=2] cnt_side1, np.ndarray[np.float_t, ndim=2] cnt_sid
     return (skeleton, cnt_widths)
 
 
-#include <mex.h>
-#include <cmath>
-cdef inline double absDiff(double a, double b): 
-    return a-b if a>b else b-a
 
-cdef int max(int a, int b):
-    return a if a>b else b;
-cdef int min(int a, int b):
-    return a if a<b else b;
     
 def cleanSkeleton(np.ndarray[np.float_t, ndim=2] skeleton, np.ndarray[np.float_t, ndim=1] widths, double worm_seg_size):
     ''' * %CLEANSKELETON Clean an 8-connected skeleton by removing any overlap and
@@ -681,7 +679,7 @@ def cleanSkeleton(np.ndarray[np.float_t, ndim=2] skeleton, np.ndarray[np.float_t
     cdef np.ndarray[np.int_t, ndim=1] iSortC = np.argsort(pSortC)
     
     #output
-    cdef int buff_size = 2*number_points;
+    cdef int buff_size = 10*number_points;
     cdef np.ndarray[np.float_t, ndim=2] cSkeleton = np.zeros((buff_size, 2), dtype = np.float); #//% pre-allocate memory
     cdef np.ndarray[np.float_t, ndim=1] cWidths = np.zeros(buff_size, dtype = np.float);
     
@@ -711,8 +709,8 @@ def cleanSkeleton(np.ndarray[np.float_t, ndim=2] skeleton, np.ndarray[np.float_t
                 while ((dSkeleton[0]<=1) or (dSkeleton[1]<=1)):
                     if ((s2I > s1I) and (keep[s2I]!=FLAG_MAX) and (dSkeleton[0]<=1) and \
                     (dSkeleton[1]<=1) and absDiff(s1I, s2I) < maxSkeletonOverlap):
-                        minI = min(minI, s2I);
-                        maxI = max(maxI, s2I);
+                        minI = int_min(minI, s2I);
+                        maxI = int_max(maxI, s2I);
                     
                     #// Advance the second index for the skeleton loop.
                     pI = pI - 1;
@@ -790,14 +788,19 @@ def cleanSkeleton(np.ndarray[np.float_t, ndim=2] skeleton, np.ndarray[np.float_t
             
     cdef int j = 0, m;
     cdef float x,y, x1,x2, y1, y2, delY, delX, delW;
-    cdef int points;
+    cdef float points;
+    
+    #variables used to check for repeated points in interpolations
+    cdef float xd, yd, xprev, yprev;
+    cdef int n_interp
+
     for i in range(last_index):
         #//% Initialize the point differences.
         y = absDiff(skeleton[i + 1, 0], skeleton[i, 0]);
-        x = abs(skeleton[i + 1, 1] - skeleton[i, 1]);
+        x = absDiff(skeleton[i + 1, 1], skeleton[i, 1]);
         
         #//% Add the point.
-        if ((y == 0 or y == 1) and (x == 0 or x == 1)):
+        if ((y == 0. or y == 1.) and (x == 0. or x == 1.)):
             cSkeleton[j,0] = skeleton[i,0];
             cSkeleton[j,1] = skeleton[i,1];
             
@@ -806,7 +809,7 @@ def cleanSkeleton(np.ndarray[np.float_t, ndim=2] skeleton, np.ndarray[np.float_t
         
         #//% Interpolate the missing points.
         else:
-            points = <int>fmax(y, x);
+            points = fmax(y, x);
             y1 = skeleton[i,0];
             y2 = skeleton[i + 1,0];
             delY = (y2-y1)/points;
@@ -814,12 +817,20 @@ def cleanSkeleton(np.ndarray[np.float_t, ndim=2] skeleton, np.ndarray[np.float_t
             x2 = skeleton[i + 1,1];
             delX = (x2-x1)/points;
             delW = (widths[i + 1] - widths[i])/points;
-            for m in range(points):
-                #here there might be a problem with repeated points
-                cSkeleton[j+m, 0] = round(y1 + m*delY);
-                cSkeleton[j+m, 1] = round(x1 + m*delX);
-                cWidths[j+m] = round(widths[i] + m*delW);
-            j += points;
+            
+            #used to avoid repeated points (they can overflow the buffer)
+            xprev  = -1;
+            yprev  = -1;
+            n_interp = 0; #number of points in the interpolation
+            for m in range(<int>points):
+                xd = round(x1 + m*delX);
+                yd = round(y1 + m*delY);
+                if (xd != xprev) or (yd !=yprev):
+                    cSkeleton[j+n_interp, 0] = yd;
+                    cSkeleton[j+n_interp, 1] = xd;
+                    cWidths[j+n_interp] = round(widths[i] + m*delW);
+                    n_interp += 1;
+            j += n_interp+1;
 
     
     #//% Add the last point.

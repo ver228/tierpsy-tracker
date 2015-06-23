@@ -5,7 +5,7 @@ Created on Sun May 24 19:25:04 2015
 @author: ajaver
 """
 import numpy as np
-from .linearSkeleton_cython import chainCodeLength2Index, circOpposingNearestPoints, \
+from .cythonFiles.linearSkeleton_cython import chainCodeLength2Index, circOpposingNearestPoints, \
 getHeadTailRegion, getInterBendSeeds, skeletonize, cleanSkeleton
 
 
@@ -139,7 +139,7 @@ midbody_tuple, worm_seg_length, search_edge_size):
     
     return bend_side1, bend_side2, midbody_ind
 
-def getSkeleton(contour, head_ind, tail_ind, midbody_ind, bend_side1, bend_side2, interbend_side1, interbend_side2):
+def getLinearSkeleton(contour, head_ind, tail_ind, midbody_ind, bend_side1, bend_side2, interbend_side1, interbend_side2):
     
     head_side1, head_side2, tail_side1, tail_side2 = \
     getHeadTailSeed(contour, head_ind, tail_ind)
@@ -315,11 +315,15 @@ maxima_low_freq, maxima_low_freq_ind, contour, worm_seg_length, chain_code_len):
     interbend_side1, interbend_side2 = getInterBendSeeds(bend_side1, bend_side2, contour, chain_code_len)
     
     #get skeleton and contour cnt_widths
-    skeleton, cnt_widths = getSkeleton(contour, head_ind, tail_ind, midbody_ind, bend_side1, bend_side2, interbend_side1, interbend_side2)
+    skeleton, cnt_widths = getLinearSkeleton(contour, head_ind, tail_ind, midbody_ind, bend_side1, bend_side2, interbend_side1, interbend_side2)
     assert (skeleton.size > 0) and (skeleton.ndim == 2)
+    #assert np.all(skeleton[0]==contour[head_ind])
+    #assert np.all(skeleton[-1]==contour[tail_ind])
     
     #% Clean up the rough skeleton.
     skeleton, cnt_widths = cleanSkeleton(skeleton, cnt_widths, worm_seg_length);
+    #assert np.all(skeleton[0]==contour[head_ind])
+    #assert np.all(skeleton[-1]==contour[tail_ind])
     
     return skeleton, cnt_widths
 

@@ -357,4 +357,4 @@ if __name__ == '__main__':
     #correctHeadTail(skeletons_file, max_gap_allowed = 10, \
     #window_std = 25, segment4angle = 5, min_block_size = 250)
 
-    writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir, roi_size = 128, fps=25, save_bad_worms=True)
+    #writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir, roi_size = 128, fps=25, save_bad_worms=True)

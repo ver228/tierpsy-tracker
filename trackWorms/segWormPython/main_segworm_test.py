@@ -9,21 +9,29 @@ import matplotlib.pylab as plt
 import cv2
 import numpy as np
 import time
-from scipy.interpolate import interp1d
+#from scipy.interpolate import interp1d
 
+import tables 
+import sys
+sys.path.append('../../../movement_validation') 
+from movement_validation.pre_features import WormParsing
+
+
+sys.path.append('./') 
 from .cleanWorm import circSmooth, extremaPeaksCircDist
 from .linearSkeleton import linearSkeleton
+from .segWorm_cython import circComputeChainCodeLengths
 from .getHeadTail import getHeadTail, rollHead2FirstIndex
-from .cythonFiles.segWorm_cython import circComputeChainCodeLengths
 
 #wrappers around C functions
-from .cythonFiles.circCurvature import circCurvature
-from .cythonFiles.curvspace import curvspace
+from .circCurvature import circCurvature
+#from .curvspace import curvspace
 
 def contour2Skeleton(contour, resampling_N=50):
 #%%    
-    #contour must be a Nx2 numpy array
-    assert type(contour) == np.ndarray and contour.ndim == 2 and contour.shape[1] ==2
+    if type(contour) != np.ndarray or contour.ndim != 2 or contour.shape[1] !=2:
+        err_msg =  'Contour must be a Nx2 numpy array'
+        return 3*[np.zeros(0)]+[err_msg]
     
     if contour.dtype != np.double:
         contour = contour.astype(np.double)
@@ -35,8 +43,8 @@ def contour2Skeleton(contour, resampling_N=50):
     #% arranged as staggered pairs in four longitudinal bundles located in four
     #% quadrants. Three of these bundles (DL, DR, VR) contain 24 cells each,
     #% whereas VL bundle contains 23 cells." - www.wormatlas.org
-    ske_worm_segments = 24.;
-    cnt_worm_segments = 2. * ske_worm_segments;
+    #ske_worm_segments = 24.;
+    cnt_worm_segments = 48.;
 
     #this line does not really seem to be useful
     #contour = cleanWorm(contour, cnt_worm_segments) 
@@ -44,19 +52,7 @@ def contour2Skeleton(contour, resampling_N=50):
     #% The contour is too small.
     if contour.shape[0] < cnt_worm_segments:
         err_msg =  'Contour is too small'
-        return 4*[np.zeros(0)]+[err_msg]
-    
-    #make sure the contours are in the counter-clockwise direction
-    #head tail indentification will not work otherwise
-    #x1y2 - x2y1(http://mathworld.wolfram.com/PolygonArea.html)
-    signed_area = np.sum(contour[:-1,0]*contour[1:,1]-contour[1:,0]*contour[:-1,1])/2
-    if signed_area>0:
-        contour =  np.ascontiguousarray(contour[::-1,:])
-    
-    #make sure the array is C_continguous. Several functions required this.
-    if not contour.flags['C_CONTIGUOUS']:
-        contour = np.ascontiguousarray(contour)
-    
+        return 3*[np.zeros(0)]+[err_msg]
     
     #% Compute the contour's local high/low-frequency curvature.
     #% Note: worm body muscles are arranged and innervated as staggered pairs.
@@ -96,7 +92,7 @@ def contour2Skeleton(contour, resampling_N=50):
     getHeadTail(cnt_ang_low_freq, maxima_low_freq_ind, cnt_ang_hi_freq, maxima_hi_freq_ind, cnt_chain_code_len)
     
     if err_msg:
-        return 4*[np.zeros(0)]+[err_msg]
+        return 3*[np.zeros(0)]+[err_msg]
     
     #change arrays so the head correspond to the first position
     head_ind, tail_ind, contour, cnt_chain_code_len, cnt_ang_low_freq, maxima_low_freq_ind = \
@@ -105,7 +101,7 @@ def contour2Skeleton(contour, resampling_N=50):
     #% Compute the contour's local low-frequency curvature minima.
     minima_low_freq, minima_low_freq_ind = \
     extremaPeaksCircDist(-1, cnt_ang_low_freq, edge_len_low_freq, cnt_chain_code_len);
-#%%
+
     #% Compute the worm's skeleton.
     skeleton, cnt_widths = linearSkeleton(head_ind, tail_ind, minima_low_freq, minima_low_freq_ind, \
         maxima_low_freq, maxima_low_freq_ind, contour.copy(), worm_seg_length, cnt_chain_code_len);
@@ -120,10 +116,19 @@ def contour2Skeleton(contour, resampling_N=50):
     assert np.all(cnt_side1[0] == cnt_side2[0])
     assert np.all(cnt_side1[-1] == cnt_side2[-1])
     assert np.all(skeleton[-1] == cnt_side1[-1])
-    assert np.all(skeleton[0] == np.round(cnt_side2[0]))
+    assert np.all(skeleton[0] == cnt_side2[0])
+
     
-#%%    
-    return skeleton, cnt_side1, cnt_side2, cnt_widths,  ''
+#    #resample data
+#    skeleton, ske_len = curvspace(skeleton, resampling_N)
+#    cnt_side1, cnt_side1_len = curvspace(cnt_side1, resampling_N)
+#    cnt_side2, cnt_side2_len = curvspace(cnt_side2, resampling_N)
+#    
+#    f = interp1d(np.arange(cnt_widths.size), cnt_widths)
+#    x = np.linspace(0,cnt_widths.size-1, resampling_N)
+#    cnt_widths = f(x);
+    
+    return skeleton, cnt_side1, cnt_side2, cnt_widths
 
 def binaryMask2Contour(worm_mask, min_mask_area=50, roi_center_x = -1, roi_center_y = -1, pick_center = True):
     if roi_center_x < 1:
@@ -170,103 +175,38 @@ def binaryMask2Contour(worm_mask, min_mask_area=50, roi_center_x = -1, roi_cente
     return contour.astype(np.double)
 
 
-def orientWorm(skeleton, prev_skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths):
-    if skeleton.size == 0:
-        return skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths
-    
-    #orient head tail with respect to hte previous worm
-    if prev_skeleton.size > 0:
-        dist2prev_head = np.sum((skeleton[0:3,:]-prev_skeleton[0:3,:])**2)
-        dist2prev_tail = np.sum((skeleton[0:3,:]-prev_skeleton[-3:,:])**2)
-        
-        if dist2prev_head > dist2prev_tail: 
-            #the skeleton is switched
-            skeleton = skeleton[::-1,:]
-            cnt_widths = cnt_widths[::-1]
-            cnt_side1 = cnt_side1[::-1,:]
-            cnt_side2 = cnt_side2[::-1,:]
-        
-    #make sure the contours are in the counter-clockwise direction
-    #x1y2 - x2y1(http://mathworld.wolfram.com/PolygonArea.html)
-    contour = np.vstack((cnt_side1, cnt_side2[::-1,:])) 
-    signed_area = np.sum(contour[:-1,0]*contour[1:,1]-contour[1:,0]*contour[:-1,1])/2
-    if signed_area<0:
-        cnt_side1, cnt_side2 = cnt_side2, cnt_side1
-        cnt_side1_len, cnt_side2_len = cnt_side2_len, cnt_side1_len
-    
-    return skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths
+#def orientWorm(skeleton, prev_skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths):
+#    if skeleton.size == 0:
+#        return skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths
+#    
+#    #orient head tail with respect to hte previous worm
+#    if prev_skeleton.size > 0:
+#        dist2prev_head = np.sum((skeleton[0:3,:]-prev_skeleton[0:3,:])**2)
+#        dist2prev_tail = np.sum((skeleton[0:3,:]-prev_skeleton[-3:,:])**2)
+#        
+#        if dist2prev_head > dist2prev_tail: 
+#            #the skeleton is switched
+#            skeleton = skeleton[::-1,:]
+#            cnt_widths = cnt_widths[::-1]
+#            cnt_side1 = cnt_side1[::-1,:]
+#            cnt_side2 = cnt_side2[::-1,:]
+#        
+#    #make sure the contours are in the clockwise direction
+#    #x1y2 - x2y1(http://mathworld.wolfram.com/PolygonArea.html)
+#    contour = np.vstack((cnt_side1, cnt_side2[::-1,:])) 
+#    signed_area = np.sum(contour[:-1,0]*contour[1:,1]-contour[1:,0]*contour[:-1,1])/2
+#    if signed_area<0:
+#        cnt_side1, cnt_side2 = cnt_side2, cnt_side1
+#        cnt_side1_len, cnt_side2_len = cnt_side2_len, cnt_side1_len
+#    
+#    return skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths
 
 
 def getSkeleton(worm_mask, prev_skeleton = np.zeros(0), resampling_N=50, min_mask_area = 50):
     contour = binaryMask2Contour(worm_mask, min_mask_area=50)
     
-    skeleton, cnt_side1, cnt_side2, cnt_widths, err_msg = \
+    skeleton, cnt_side1, cnt_side2, cnt_widths = \
     contour2Skeleton(contour, resampling_N)
-    
-    #resample data
-    skeleton, ske_len = curvspace(skeleton, resampling_N)
-    cnt_side1, cnt_side1_len = curvspace(cnt_side1, resampling_N)
-    cnt_side2, cnt_side2_len = curvspace(cnt_side2, resampling_N)
-    
-    f = interp1d(np.arange(cnt_widths.size), cnt_widths)
-    x = np.linspace(0,cnt_widths.size-1, resampling_N)
-    cnt_widths = f(x);
-    
-    #orient skeleton with respect to the previous skeleton
-    skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths = \
-    orientWorm(skeleton, prev_skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths)
-    
-    return skeleton, ske_len, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths
 
-if __name__ == '__main__':
-    import tables
-    worm_name = 'worm_1717.hdf5' #file where the binary masks are stored
-    resampling_N = 50; #number of resampling points of the skeleton
-    
-    fid = tables.File(worm_name, 'r');
-    data_set = fid.get_node('/masks')[:] #ROI with worm binary mask
-    worm_CMs = fid.get_node('CMs')[:] #center of mass of the ROI
-    
-    total_frames = data_set.shape[0]
-    
-    all_skeletons = np.empty((total_frames, resampling_N, 2))
-    all_skeletons.fill(np.nan)
-    prev_skeleton = np.zeros(0)
-    
-    tic = time.time()
-    
-    for frame in range(total_frames):
-        print(frame, total_frames)
-        worm_mask = data_set[frame,:,:];
+    return skeleton, cnt_side1, cnt_side2, cnt_widths
 
-        skeleton, ske_len, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths = \
-        getSkeleton(worm_mask, prev_skeleton, resampling_N)
-        if skeleton.size == 0:
-            continue
-        prev_skeleton = skeleton
-        
-        all_skeletons[frame, :, :] = skeleton;
-        
-
-    print(time.time() - tic)
-        
-    #%% Plot all skeletons
-    #plot every jump frames. otherwise the skeletons overlap too much
-    jump = 25 
-    
-    #add the ROI CMs to show the worm displacements, this value would be offshift by worm_mask.shape/2
-    xx = (all_skeletons[:total_frames:jump,:,0] + worm_CMs[:total_frames:jump,0][:, np.newaxis]).T
-    yy = (all_skeletons[:total_frames:jump,:,1] + worm_CMs[:total_frames:jump,1][:, np.newaxis]).T
-            
-    plt.figure()
-    plt.plot(xx,yy)
-    #%% Plot the results of the last  mask
-    plt.figure()
-    plt.imshow(worm_mask, cmap= 'gray', interpolation = 'none')
-    plt.plot(skeleton[:,0], skeleton[:,1], 'x-g')
-    plt.plot(cnt_side1[:,0], cnt_side1[:,1], '.-r')
-    plt.plot(cnt_side2[:,0], cnt_side2[:,1], '.-c')
-    plt.plot(cnt_side1[0,0], cnt_side1[0,1], 'og')
-    plt.plot(cnt_side2[0,0], cnt_side2[0,1], 'og')
-    plt.plot(cnt_side1[-1,0], cnt_side1[-1,1], 'sg')
-    plt.plot(cnt_side2[-1,0], cnt_side2[-1,1], 'sg')
