@@ -136,11 +136,11 @@ class WormFromTable(NormalizedWorm):
             self.worm_index = worm_index
             self.rows_range = rows_range
             
-            self.frame_code = file_id.get_node('/trajectories_data').read(ini,end,1,'frame_number')
+            self.frame_number = file_id.get_node('/trajectories_data').read(ini,end,1,'frame_number')
             
             self.skeleton = file_id.get_node('/skeleton')[ini:end+1,:,:]
-            self.vulva_contour = file_id.get_node('/contour_side1')[ini:end+1,:,:]
-            self.non_vulva_contour = file_id.get_node('/contour_side2')[ini:end+1,:,:]
+            self.ventral_contour = file_id.get_node('/contour_side1')[ini:end+1,:,:]
+            self.dorsal_contour = file_id.get_node('/contour_side2')[ini:end+1,:,:]
             
             self.angles, meanAngles_all = calWormAnglesAll(self.skeleton)            
             
@@ -150,21 +150,21 @@ class WormFromTable(NormalizedWorm):
             self.n_segments = self.skeleton.shape[1]
             self.n_frames = self.skeleton.shape[0]
             
-            self.segmentation_status = np.zeros(self.n_frames, dtype='unicode_')
+            self.frame_code = np.zeros(self.n_frames, dtype=np.int32)
             #flag as segmented (s) evertyhing that is not nan
-            self.segmentation_status[~np.isnan(self.skeleton[:,0,0])] = 's' 
+            self.frame_code[~np.isnan(self.skeleton[:,0,0])] = 1
             
-            self.area = calWormArea(self.vulva_contour, self.non_vulva_contour)
+            self.area = calWormArea(self.ventral_contour, self.dorsal_contour)
             
             
             assert self.angles.shape[1] == self.n_segments            
             
             assert self.skeleton.shape[2] == 2
-            assert self.vulva_contour.shape[2] == 2
-            assert self.non_vulva_contour.shape[2] == 2
+            assert self.ventral_contour.shape[2] == 2
+            assert self.dorsal_contour.shape[2] == 2
             
-            assert self.vulva_contour.shape[1] == self.n_segments            
-            assert self.non_vulva_contour.shape[1] == self.n_segments
+            assert self.ventral_contour.shape[1] == self.n_segments            
+            assert self.dorsal_contour.shape[1] == self.n_segments
             assert self.widths.shape[1] == self.n_segments
             
             assert self.length.ndim == 1
@@ -173,7 +173,7 @@ class WormFromTable(NormalizedWorm):
                 self.changeAxis()
             
     def changeAxis(self):
-        for field in ['skeleton', 'vulva_contour', 'non_vulva_contour', 'widths', 'angles']:
+        for field in ['skeleton', 'ventral_contour', 'dorsal_contour', 'widths', 'angles']:
             A = getattr(self, field)
             #roll axis to have it as 49x2xn
             A = np.rollaxis(A,0,A.ndim)
@@ -283,6 +283,10 @@ class wormStatsClass():
 
 def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, video_fps = 25):
     #%%
+    
+    #useful to display progress 
+    base_name = skeletons_file.rpartition('.')[0].rpartition(os.sep)[-1]
+    
     #read skeletons index data
     with pd.HDFStore(skeletons_file, 'r') as ske_file_id:
         indexes_data = ske_file_id['/trajectories_data']
@@ -337,7 +341,7 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, video_f
         
         #get the is_signed flag for motion specs and store it as an attribute
         #is_signed flag is used by featureStat in order to subdivide the data if required
-        is_signed_motion = np.zeros(len(motion_header), np.bool);
+        is_signed_motion = np.zeros(len(motion_header), np.uint8);
         for ii, spec in enumerate(wStats.specs_motion):
             feature = wStats.spec2tableName[spec.name]
             is_signed_motion[motion_header[feature]._v_pos] = spec.is_signed
@@ -349,13 +353,14 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, video_f
         for ind, dat  in enumerate(rows_indexes.iterrows()):
             worm_index, row_range = dat
             
-            #video info, for the moment we intialize it with the fps
-            vi = VideoInfo('', video_fps)  
             
             #initialize worm object, and extract data from skeletons file
             worm = WormFromTable()
             worm.fromFile(skeletons_file, worm_index, rows_range= tuple(row_range.values), isOpenWorm=True)
             
+            #video info, for the moment we intialize it with the fps
+            vi = VideoInfo('', video_fps)  
+            vi.frame_code = worm.frame_code
             #(this shouldn't happend if the data was filter correctly)
             assert not np.all(np.isnan(worm.skeleton))
             
@@ -398,9 +403,9 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, video_f
                 if tmp_data is not None and tmp_data.size > 0:
                     table_tmp = features_fid.create_carray(worm_node, feature, \
                                     obj = tmp_data, filters=filters_tables)
-                    table_tmp._v_attrs['is_signed'] = spec.is_signed
+                    table_tmp._v_attrs['is_signed'] = int(spec.is_signed)
             
-            dd = " Extracting features worm %i of %i." % (worm_index+1, tot_worms)
+            dd = " Extracting features. Worm %i of %i done." % (ind+1, tot_worms)
             dd = base_name + dd + ' Total time:' + progress_timer.getTimeStr()
             print(dd)
             
