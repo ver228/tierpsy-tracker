@@ -297,7 +297,7 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, video_f
         indexes_data = indexes_data[['worm_index_joined', 'skeleton_id']]
         with tables.File(skeletons_file, 'r') as ske_file_id:
             #this is slow but faster than having to recalculate all the skeletons
-            indexes_data['has_skeleton'] = ~np.isnan(ske_file_id.get_node('/skeleton')[:,0,0])
+            indexes_data['has_skeleton'] = ~np.isnan(ske_file_id.get_node('/skeleton_length'))
             
     #%%
     

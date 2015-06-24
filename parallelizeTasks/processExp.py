@@ -17,6 +17,7 @@ from parallelProcHelper import runMultiSubproc
 
 masked_movies_root =  '/Volumes/behavgenom$/GeckoVideo/MaskedVideos/'
 results_root = '/Volumes/behavgenom$/GeckoVideo/Results/'
+max_num_process = 6
 
 dir_main = sys.argv[1]
 #dir_main = '/Volumes/Mrc-pc/20150522_1940/'
@@ -42,7 +43,7 @@ for video_file in movie_files:
     cmd_list_track += [' '.join(['python3 trackSingleFile.py', masked_image_file, results_dir])]
 
 
-runMultiSubproc(cmd_list_compress, max_num_process = 12)
+runMultiSubproc(cmd_list_compress, max_num_process = max_num_process)
 print('%'*500)
-runMultiSubproc(cmd_list_track, max_num_process = 12)
+runMultiSubproc(cmd_list_track, max_num_process = max_num_process)
     
