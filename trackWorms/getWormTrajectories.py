@@ -90,7 +90,7 @@ def getWormThreshold(pix_valid):
     
 def getWormTrajectories(masked_image_file, trajectories_file, initial_frame = 0, last_frame = -1, \
 min_area = 25, min_length = 5, max_allowed_dist = 20, \
-area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue=''):
+area_ratio_lim = (0.5, 2), buffer_size = 25):
     '''
     #read images from 'masked_image_file', and save the linked trajectories and their features into 'trajectories_file'
     #use the first 'total_frames' number of frames, if it is equal -1, use all the frames in 'masked_image_file'
@@ -111,6 +111,9 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue=''):
         feature_table = feature_fid.create_table('/', "plate_worms", 
                                                  plate_worms, "Worm feature List",
                                                  filters = tables.Filters(complevel=5, complib='zlib', shuffle=True))
+        
+        #flag used to determine if the function finished correctly
+        feature_table._v_attrs['has_finished'] = 0
         
         if last_frame <= 0:
             last_frame = mask_dataset.shape[0]
@@ -351,8 +354,10 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, status_queue=''):
         feature_table.cols.worm_index.create_csindex()
         feature_table.flush()
     
+        #flag used to determine if the function finished correctly
+        feature_table._v_attrs['has_finished'] = 1
+        
     print(base_name + ' ' + progress_str);
-
 
 def joinTrajectories(trajectories_file, min_track_size = 50, \
 max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
@@ -362,6 +367,7 @@ max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
     max_time_gap -- time gap between joined trajectories
     '''
     
+    
     #use data as a recarray (less confusing)
     frame_dtype = np.dtype([('worm_index', int), ('frame_number', int), 
                         ('coord_x', float), ('coord_y',float), ('area',float), 
@@ -369,6 +375,9 @@ max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
     with tables.open_file(trajectories_file, mode = 'r+') as feature_fid:
         feature_table = feature_fid.get_node('/plate_worms')
         
+        if 'has_finished' in dir(feature_table._v_attrs):
+            assert feature_table._v_attrs['has_finished'] == 1
+    
         #calculate the track size, and select only tracks with at least min_track_size length
         track_size = np.bincount(feature_table.cols.worm_index)    
         indexes = np.arange(track_size.size);
@@ -432,6 +441,7 @@ max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
                 row['worm_index_joined'] = ind;
                 row.update()
         
+        feature_table._v_attrs['has_finished'] = 2
         feature_fid.flush()
 
 
@@ -463,14 +473,11 @@ number_trajectories = 20, plot_limits = (2048,2048), index_str = 'worm_index_joi
 #%%    
 
 if __name__ == '__main__':
-    root_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150511/'
-    base_name = 'Capture_Ch3_11052015_195105'
-    
-    masked_image_file = root_dir + '/Compressed/' + base_name + '.hdf5'
-    trajectories_file = root_dir + '/Trajectories/' + base_name + '_trajectories.hdf5'
+    masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/Masked_Videos/Anne_Strains_20150619/Capture_Ch2_19062015_170506.hdf5'
+    trajectories_file = '/Users/ajaver/Desktop/Gecko_compressed/Results/Anne_Strains_20150619/Capture_Ch2_19062015_170506_trajectories.hdf5'
         
     getWormTrajectories(masked_image_file, trajectories_file, last_frame = -1,\
-    base_name=base_name, initial_frame = 0)
+    initial_frame = 0)
     joinTrajectories(trajectories_file)
     
     from getDrawTrajectories import drawTrajectoriesVideo

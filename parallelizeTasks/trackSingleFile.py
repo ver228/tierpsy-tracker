@@ -17,7 +17,13 @@ sys.path.append('../../movement_validation')
 sys.path.append('../work_on_progress/Features_analysis/')
 from obtain_features import getWormFeatures
 
+import config_param as param
+
 def getTrajectoriesWorker(masked_image_file, results_dir, over_write_previous = False):
+    
+    #check if the file with the masked images exists
+    assert os.exists(masked_image_file)
+        
     if results_dir[-1] != os.sep:
         results_dir += os.sep
     if not os.path.exists(results_dir):
@@ -25,7 +31,7 @@ def getTrajectoriesWorker(masked_image_file, results_dir, over_write_previous = 
             os.makedirs(results_dir)
         except:
             pass
-        
+    
     #construct file names
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
     
@@ -57,8 +63,8 @@ def getTrajectoriesWorker(masked_image_file, results_dir, over_write_previous = 
     if doTrajectories:
         if os.path.exists(trajectories_file):
             os.remove(trajectories_file)
-        getWormTrajectories(masked_image_file, trajectories_file, last_frame = -1)
-        joinTrajectories(trajectories_file)
+        getWormTrajectories(masked_image_file, trajectories_file, **param.get_trajectories_param)
+        joinTrajectories(trajectories_file, **param.join_traj_param)
         drawTrajectoriesVideo(masked_image_file, trajectories_file)
 
     if doSkeletons:
@@ -66,19 +72,16 @@ def getTrajectoriesWorker(masked_image_file, results_dir, over_write_previous = 
         if os.path.exists(skeletons_file):
             os.remove(skeletons_file);
 
-        trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file, \
-                           create_single_movies = False, roi_size = 128, resampling_N = 49, min_mask_area = 50)
+        trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file, **param.get_skeletons_param)
     
-        correctHeadTail(skeletons_file, max_gap_allowed = 10, \
-                        window_std = 25, segment4angle = 5, min_block_size = 250)
+        correctHeadTail(skeletons_file, **param.head_tail_param)
     if doVideos:
         #create movies of individual worms
-        writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir, \
-                              roi_size = 128, fps=25)           
+        writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir, **param.ind_mov_param)           
         
     if doFeatures:
         #extract features
-        getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, video_fps = 25)
+        getWormFeatures(skeletons_file, features_file, **param.features_param)
 
 
 

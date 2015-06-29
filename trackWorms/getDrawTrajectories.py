@@ -16,7 +16,7 @@ sys.path.append('../helperFunctions/')
 from timeCounterStr import timeCounterStr
 
 class writeVideoffmpeg:
-    def __init__(self, file_name, width = 100, height = 100, pix_fmt = 'gray'):
+    def __init__(self, file_name, width = 100, height = 100, fps=25, pix_fmt = 'gray'):
         #use pix_fmt = rgb24 for color images
         command = [ 'ffmpeg',
         '-y', # (optional) overwrite output file if it exists
@@ -24,7 +24,7 @@ class writeVideoffmpeg:
         '-vcodec','rawvideo',
         '-s', '%ix%i' % (width,height), # size of one frame
         '-pix_fmt', pix_fmt,
-        '-r', '25', # frames per second
+        '-r', str(fps), # frames per second
         '-i', '-', # The imput comes from a pipe
         '-an', # Tells FFMPEG not to expect any audio
         '-vcodec', 'mjpeg',

@@ -137,14 +137,14 @@ def getWormMask(worm_img, threshold):
 
 
 def trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file, \
-create_single_movies = False, roi_size = 128, resampling_N = 49, min_mask_area = 50):    
+create_single_movies = False, roi_size = 128, resampling_N = 49, min_mask_area = 50, smoothed_traj_param = {}):    
     
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
     table_filters = tables.Filters(complevel=5, complib='zlib', shuffle=True, fletcher32=True)
     
     #get trajectories, threshold and indexes from the first part of the tracker
     trajectories_df, worms_frame_range, tot_rows = \
-    getSmoothTrajectories(trajectories_file, displacement_smooth_win = 101, min_displacement = 0, threshold_smooth_win = 501)
+    getSmoothTrajectories(trajectories_file, **smoothed_traj_param)
     #trajectories_df = trajectories_df.query('frame_number>43275')
     
     

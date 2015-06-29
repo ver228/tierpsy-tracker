@@ -24,7 +24,7 @@ def writeFullFramesTiff(masked_image_file, tiff_file = '', reduce_fractor = 8, b
         #determine the expected size of the full_data size with respect to the
         #number of frames in full_data and the same interval (I only do that 
         #to correct for a bug in previously saved files)
-        expected_size = int(np.floor(mask_fid.get_node("/mask").shape[0]/(full_data._f_getattr('save_interval') + 1)));
+        expected_size = int(np.floor(mask_fid.get_node("/mask").shape[0]/full_data._f_getattr('save_interval')) + 1);
         if expected_size > full_data.shape[0]:
             expected_size = full_data.shape[0]
         

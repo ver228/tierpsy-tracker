@@ -679,7 +679,7 @@ def cleanSkeleton(np.ndarray[np.float_t, ndim=2] skeleton, np.ndarray[np.float_t
     cdef np.ndarray[np.int_t, ndim=1] iSortC = np.argsort(pSortC)
     
     #output
-    cdef int buff_size = 10*number_points;
+    cdef int buff_size = 2*number_points;
     cdef np.ndarray[np.float_t, ndim=2] cSkeleton = np.zeros((buff_size, 2), dtype = np.float); #//% pre-allocate memory
     cdef np.ndarray[np.float_t, ndim=1] cWidths = np.zeros(buff_size, dtype = np.float);
     
@@ -810,6 +810,13 @@ def cleanSkeleton(np.ndarray[np.float_t, ndim=2] skeleton, np.ndarray[np.float_t
         #//% Interpolate the missing points.
         else:
             points = fmax(y, x);
+            
+            if j + points > buff_size:
+                #increase in case there is a buffer overflow
+                buff_size *= 2
+                cSkeleton.resize((buff_size,2))
+                cWidths.resize(buff_size)
+            
             y1 = skeleton[i,0];
             y2 = skeleton[i + 1,0];
             delY = (y2-y1)/points;
@@ -834,12 +841,10 @@ def cleanSkeleton(np.ndarray[np.float_t, ndim=2] skeleton, np.ndarray[np.float_t
 
     
     #//% Add the last point.
-    if ((cSkeleton[0,0] != skeleton[last_index,0]) or \
-    (cSkeleton[buff_size-1,1] != skeleton[last_index,1])):
-        cSkeleton[j,0] = skeleton[last_index,0];
-        cSkeleton[j,1] = skeleton[last_index,1];
-        cWidths[j] = widths[last_index];
-        j+=1;
+    cSkeleton[j,0] = skeleton[last_index,0];
+    cSkeleton[j,1] = skeleton[last_index,1];
+    cWidths[j] = widths[last_index];
+    j+=1;
     
     number_points = j;
     

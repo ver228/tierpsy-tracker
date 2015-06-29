@@ -1227,6 +1227,7 @@ static char __pyx_k_import[] = "__import__";
 static char __pyx_k_length[] = "length";
 static char __pyx_k_pSortC[] = "pSortC";
 static char __pyx_k_points[] = "points";
+static char __pyx_k_resize[] = "resize";
 static char __pyx_k_side12[] = "side12";
 static char __pyx_k_start1[] = "start1";
 static char __pyx_k_start2[] = "start2";
@@ -1453,6 +1454,7 @@ static PyObject *__pyx_n_s_points_ind;
 static PyObject *__pyx_n_s_points_ind_out;
 static PyObject *__pyx_n_s_prev_width;
 static PyObject *__pyx_n_s_range;
+static PyObject *__pyx_n_s_resize;
 static PyObject *__pyx_n_s_round;
 static PyObject *__pyx_n_s_s1I;
 static PyObject *__pyx_n_s_s2I;
@@ -7994,7 +7996,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  *     skeleton[0,1] = c_round((cnt_side1[j1,1] + cnt_side2[j2,1])/ 2);
  *     cnt_widths[0] = getDistance(cnt_side1[j1,0], cnt_side2[j2,0], cnt_side1[j1,1], cnt_side2[j2,1]);             # <<<<<<<<<<<<<<
  * 
- * 
+ *     cdef int ske_ind = 1;
  */
   if (unlikely(((PyObject *)__pyx_v_cnt_side1) == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
@@ -8088,8 +8090,8 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
   }
   *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_widths.rcbuffer->pybuffer.buf, __pyx_t_31, __pyx_pybuffernd_cnt_widths.diminfo[0].strides) = __pyx_f_21linearSkeleton_cython_getDistance((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side1.rcbuffer->pybuffer.buf, __pyx_t_20, __pyx_pybuffernd_cnt_side1.diminfo[0].strides, __pyx_t_23, __pyx_pybuffernd_cnt_side1.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side2.rcbuffer->pybuffer.buf, __pyx_t_24, __pyx_pybuffernd_cnt_side2.diminfo[0].strides, __pyx_t_25, __pyx_pybuffernd_cnt_side2.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side1.rcbuffer->pybuffer.buf, __pyx_t_26, __pyx_pybuffernd_cnt_side1.diminfo[0].strides, __pyx_t_27, __pyx_pybuffernd_cnt_side1.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side2.rcbuffer->pybuffer.buf, __pyx_t_28, __pyx_pybuffernd_cnt_side2.diminfo[0].strides, __pyx_t_29, __pyx_pybuffernd_cnt_side2.diminfo[1].strides)));
 
-  /* "linearSkeleton_cython.pyx":558
- * 
+  /* "linearSkeleton_cython.pyx":556
+ *     cnt_widths[0] = getDistance(cnt_side1[j1,0], cnt_side2[j2,0], cnt_side1[j1,1], cnt_side2[j2,1]);
  * 
  *     cdef int ske_ind = 1;             # <<<<<<<<<<<<<<
  *     #//% Skeletonize the contour segments and measure the width.
@@ -8097,7 +8099,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
   __pyx_v_ske_ind = 1;
 
-  /* "linearSkeleton_cython.pyx":560
+  /* "linearSkeleton_cython.pyx":558
  *     cdef int ske_ind = 1;
  *     #//% Skeletonize the contour segments and measure the width.
  *     while ((j1 != end_side1) and (j2 != end_side2)):             # <<<<<<<<<<<<<<
@@ -8116,7 +8118,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     __pyx_L7_bool_binop_done:;
     if (!__pyx_t_11) break;
 
-    /* "linearSkeleton_cython.pyx":562
+    /* "linearSkeleton_cython.pyx":560
  *     while ((j1 != end_side1) and (j2 != end_side2)):
  *         #//% Compute the widths.
  *         next_j1 = j1 + inc_side1;             # <<<<<<<<<<<<<<
@@ -8125,7 +8127,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
     __pyx_v_next_j1 = (__pyx_v_j1 + __pyx_v_inc_side1);
 
-    /* "linearSkeleton_cython.pyx":563
+    /* "linearSkeleton_cython.pyx":561
  *         #//% Compute the widths.
  *         next_j1 = j1 + inc_side1;
  *         if (next_j1 == wrap_end1): #//% wrap             # <<<<<<<<<<<<<<
@@ -8135,7 +8137,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     __pyx_t_11 = ((__pyx_v_next_j1 == __pyx_v_wrap_end1) != 0);
     if (__pyx_t_11) {
 
-      /* "linearSkeleton_cython.pyx":564
+      /* "linearSkeleton_cython.pyx":562
  *         next_j1 = j1 + inc_side1;
  *         if (next_j1 == wrap_end1): #//% wrap
  *             next_j1 = wrap_start1;             # <<<<<<<<<<<<<<
@@ -8147,7 +8149,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     }
     __pyx_L9:;
 
-    /* "linearSkeleton_cython.pyx":566
+    /* "linearSkeleton_cython.pyx":564
  *             next_j1 = wrap_start1;
  * 
  *         next_j2 = j2 + inc_side2;             # <<<<<<<<<<<<<<
@@ -8156,7 +8158,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
     __pyx_v_next_j2 = (__pyx_v_j2 + __pyx_v_inc_side2);
 
-    /* "linearSkeleton_cython.pyx":567
+    /* "linearSkeleton_cython.pyx":565
  * 
  *         next_j2 = j2 + inc_side2;
  *         if (next_j2 == wrap_end2): #//% wrap             # <<<<<<<<<<<<<<
@@ -8166,7 +8168,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     __pyx_t_11 = ((__pyx_v_next_j2 == __pyx_v_wrap_end2) != 0);
     if (__pyx_t_11) {
 
-      /* "linearSkeleton_cython.pyx":568
+      /* "linearSkeleton_cython.pyx":566
  *         next_j2 = j2 + inc_side2;
  *         if (next_j2 == wrap_end2): #//% wrap
  *             next_j2 = wrap_start2;             # <<<<<<<<<<<<<<
@@ -8178,7 +8180,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     }
     __pyx_L10:;
 
-    /* "linearSkeleton_cython.pyx":570
+    /* "linearSkeleton_cython.pyx":568
  *             next_j2 = wrap_start2;
  * 
  *         d1 = getDistance(cnt_side1[next_j1,0], cnt_side2[j2,0], cnt_side1[next_j1,1], cnt_side2[j2,1])             # <<<<<<<<<<<<<<
@@ -8187,7 +8189,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
     if (unlikely(((PyObject *)__pyx_v_cnt_side1) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 570; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 568; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_30 = __pyx_v_next_j1;
     __pyx_t_33 = 0;
@@ -8202,11 +8204,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_33 >= __pyx_pybuffernd_cnt_side1.diminfo[1].shape)) __pyx_t_34 = 1;
     if (unlikely(__pyx_t_34 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_34);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 570; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 568; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_side2) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 570; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 568; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_34 = __pyx_v_j2;
     __pyx_t_35 = 0;
@@ -8221,11 +8223,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_35 >= __pyx_pybuffernd_cnt_side2.diminfo[1].shape)) __pyx_t_36 = 1;
     if (unlikely(__pyx_t_36 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_36);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 570; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 568; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_side1) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 570; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 568; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_36 = __pyx_v_next_j1;
     __pyx_t_37 = 1;
@@ -8240,11 +8242,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_37 >= __pyx_pybuffernd_cnt_side1.diminfo[1].shape)) __pyx_t_38 = 1;
     if (unlikely(__pyx_t_38 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_38);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 570; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 568; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_side2) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 570; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 568; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_38 = __pyx_v_j2;
     __pyx_t_39 = 1;
@@ -8259,11 +8261,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_39 >= __pyx_pybuffernd_cnt_side2.diminfo[1].shape)) __pyx_t_40 = 1;
     if (unlikely(__pyx_t_40 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_40);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 570; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 568; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_v_d1 = __pyx_f_21linearSkeleton_cython_getDistance((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side1.rcbuffer->pybuffer.buf, __pyx_t_30, __pyx_pybuffernd_cnt_side1.diminfo[0].strides, __pyx_t_33, __pyx_pybuffernd_cnt_side1.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side2.rcbuffer->pybuffer.buf, __pyx_t_34, __pyx_pybuffernd_cnt_side2.diminfo[0].strides, __pyx_t_35, __pyx_pybuffernd_cnt_side2.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side1.rcbuffer->pybuffer.buf, __pyx_t_36, __pyx_pybuffernd_cnt_side1.diminfo[0].strides, __pyx_t_37, __pyx_pybuffernd_cnt_side1.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side2.rcbuffer->pybuffer.buf, __pyx_t_38, __pyx_pybuffernd_cnt_side2.diminfo[0].strides, __pyx_t_39, __pyx_pybuffernd_cnt_side2.diminfo[1].strides)));
 
-    /* "linearSkeleton_cython.pyx":571
+    /* "linearSkeleton_cython.pyx":569
  * 
  *         d1 = getDistance(cnt_side1[next_j1,0], cnt_side2[j2,0], cnt_side1[next_j1,1], cnt_side2[j2,1])
  *         d2 = getDistance(cnt_side1[j1,0], cnt_side2[next_j2,0], cnt_side1[j1,1], cnt_side2[next_j2,1])             # <<<<<<<<<<<<<<
@@ -8272,7 +8274,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
     if (unlikely(((PyObject *)__pyx_v_cnt_side1) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 571; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 569; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_40 = __pyx_v_j1;
     __pyx_t_41 = 0;
@@ -8287,11 +8289,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_41 >= __pyx_pybuffernd_cnt_side1.diminfo[1].shape)) __pyx_t_42 = 1;
     if (unlikely(__pyx_t_42 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_42);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 571; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 569; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_side2) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 571; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 569; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_42 = __pyx_v_next_j2;
     __pyx_t_43 = 0;
@@ -8306,11 +8308,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_43 >= __pyx_pybuffernd_cnt_side2.diminfo[1].shape)) __pyx_t_44 = 1;
     if (unlikely(__pyx_t_44 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_44);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 571; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 569; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_side1) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 571; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 569; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_44 = __pyx_v_j1;
     __pyx_t_45 = 1;
@@ -8325,11 +8327,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_45 >= __pyx_pybuffernd_cnt_side1.diminfo[1].shape)) __pyx_t_46 = 1;
     if (unlikely(__pyx_t_46 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_46);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 571; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 569; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_side2) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 571; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 569; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_46 = __pyx_v_next_j2;
     __pyx_t_47 = 1;
@@ -8344,11 +8346,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_47 >= __pyx_pybuffernd_cnt_side2.diminfo[1].shape)) __pyx_t_48 = 1;
     if (unlikely(__pyx_t_48 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_48);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 571; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 569; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_v_d2 = __pyx_f_21linearSkeleton_cython_getDistance((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side1.rcbuffer->pybuffer.buf, __pyx_t_40, __pyx_pybuffernd_cnt_side1.diminfo[0].strides, __pyx_t_41, __pyx_pybuffernd_cnt_side1.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side2.rcbuffer->pybuffer.buf, __pyx_t_42, __pyx_pybuffernd_cnt_side2.diminfo[0].strides, __pyx_t_43, __pyx_pybuffernd_cnt_side2.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side1.rcbuffer->pybuffer.buf, __pyx_t_44, __pyx_pybuffernd_cnt_side1.diminfo[0].strides, __pyx_t_45, __pyx_pybuffernd_cnt_side1.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side2.rcbuffer->pybuffer.buf, __pyx_t_46, __pyx_pybuffernd_cnt_side2.diminfo[0].strides, __pyx_t_47, __pyx_pybuffernd_cnt_side2.diminfo[1].strides)));
 
-    /* "linearSkeleton_cython.pyx":572
+    /* "linearSkeleton_cython.pyx":570
  *         d1 = getDistance(cnt_side1[next_j1,0], cnt_side2[j2,0], cnt_side1[next_j1,1], cnt_side2[j2,1])
  *         d2 = getDistance(cnt_side1[j1,0], cnt_side2[next_j2,0], cnt_side1[j1,1], cnt_side2[next_j2,1])
  *         d12 = getDistance(cnt_side1[next_j1,0], cnt_side2[next_j2,0], cnt_side1[next_j1,1], cnt_side2[next_j2,1])             # <<<<<<<<<<<<<<
@@ -8357,7 +8359,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
     if (unlikely(((PyObject *)__pyx_v_cnt_side1) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 572; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 570; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_48 = __pyx_v_next_j1;
     __pyx_t_49 = 0;
@@ -8372,11 +8374,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_49 >= __pyx_pybuffernd_cnt_side1.diminfo[1].shape)) __pyx_t_50 = 1;
     if (unlikely(__pyx_t_50 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_50);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 572; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 570; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_side2) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 572; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 570; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_50 = __pyx_v_next_j2;
     __pyx_t_51 = 0;
@@ -8391,11 +8393,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_51 >= __pyx_pybuffernd_cnt_side2.diminfo[1].shape)) __pyx_t_52 = 1;
     if (unlikely(__pyx_t_52 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_52);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 572; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 570; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_side1) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 572; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 570; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_52 = __pyx_v_next_j1;
     __pyx_t_53 = 1;
@@ -8410,11 +8412,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_53 >= __pyx_pybuffernd_cnt_side1.diminfo[1].shape)) __pyx_t_54 = 1;
     if (unlikely(__pyx_t_54 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_54);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 572; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 570; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_side2) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 572; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 570; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_54 = __pyx_v_next_j2;
     __pyx_t_55 = 1;
@@ -8429,11 +8431,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_55 >= __pyx_pybuffernd_cnt_side2.diminfo[1].shape)) __pyx_t_56 = 1;
     if (unlikely(__pyx_t_56 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_56);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 572; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 570; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_v_d12 = __pyx_f_21linearSkeleton_cython_getDistance((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side1.rcbuffer->pybuffer.buf, __pyx_t_48, __pyx_pybuffernd_cnt_side1.diminfo[0].strides, __pyx_t_49, __pyx_pybuffernd_cnt_side1.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side2.rcbuffer->pybuffer.buf, __pyx_t_50, __pyx_pybuffernd_cnt_side2.diminfo[0].strides, __pyx_t_51, __pyx_pybuffernd_cnt_side2.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side1.rcbuffer->pybuffer.buf, __pyx_t_52, __pyx_pybuffernd_cnt_side1.diminfo[0].strides, __pyx_t_53, __pyx_pybuffernd_cnt_side1.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side2.rcbuffer->pybuffer.buf, __pyx_t_54, __pyx_pybuffernd_cnt_side2.diminfo[0].strides, __pyx_t_55, __pyx_pybuffernd_cnt_side2.diminfo[1].strides)));
 
-    /* "linearSkeleton_cython.pyx":574
+    /* "linearSkeleton_cython.pyx":572
  *         d12 = getDistance(cnt_side1[next_j1,0], cnt_side2[next_j2,0], cnt_side1[next_j1,1], cnt_side2[next_j2,1])
  * 
  *         dnj12_0 = (cnt_side1[next_j1,0]-cnt_side1[j1,0])*(cnt_side1[next_j2,0]-cnt_side1[j2,0]);             # <<<<<<<<<<<<<<
@@ -8442,7 +8444,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
     if (unlikely(((PyObject *)__pyx_v_cnt_side1) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 574; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 572; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_56 = __pyx_v_next_j1;
     __pyx_t_57 = 0;
@@ -8457,11 +8459,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_57 >= __pyx_pybuffernd_cnt_side1.diminfo[1].shape)) __pyx_t_58 = 1;
     if (unlikely(__pyx_t_58 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_58);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 574; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 572; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_side1) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 574; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 572; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_58 = __pyx_v_j1;
     __pyx_t_59 = 0;
@@ -8476,11 +8478,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_59 >= __pyx_pybuffernd_cnt_side1.diminfo[1].shape)) __pyx_t_60 = 1;
     if (unlikely(__pyx_t_60 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_60);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 574; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 572; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_side1) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 574; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 572; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_60 = __pyx_v_next_j2;
     __pyx_t_61 = 0;
@@ -8495,11 +8497,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_61 >= __pyx_pybuffernd_cnt_side1.diminfo[1].shape)) __pyx_t_62 = 1;
     if (unlikely(__pyx_t_62 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_62);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 574; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 572; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_side1) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 574; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 572; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_62 = __pyx_v_j2;
     __pyx_t_63 = 0;
@@ -8514,11 +8516,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_63 >= __pyx_pybuffernd_cnt_side1.diminfo[1].shape)) __pyx_t_64 = 1;
     if (unlikely(__pyx_t_64 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_64);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 574; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 572; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_v_dnj12_0 = (((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side1.rcbuffer->pybuffer.buf, __pyx_t_56, __pyx_pybuffernd_cnt_side1.diminfo[0].strides, __pyx_t_57, __pyx_pybuffernd_cnt_side1.diminfo[1].strides)) - (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side1.rcbuffer->pybuffer.buf, __pyx_t_58, __pyx_pybuffernd_cnt_side1.diminfo[0].strides, __pyx_t_59, __pyx_pybuffernd_cnt_side1.diminfo[1].strides))) * ((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side1.rcbuffer->pybuffer.buf, __pyx_t_60, __pyx_pybuffernd_cnt_side1.diminfo[0].strides, __pyx_t_61, __pyx_pybuffernd_cnt_side1.diminfo[1].strides)) - (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side1.rcbuffer->pybuffer.buf, __pyx_t_62, __pyx_pybuffernd_cnt_side1.diminfo[0].strides, __pyx_t_63, __pyx_pybuffernd_cnt_side1.diminfo[1].strides))));
 
-    /* "linearSkeleton_cython.pyx":575
+    /* "linearSkeleton_cython.pyx":573
  * 
  *         dnj12_0 = (cnt_side1[next_j1,0]-cnt_side1[j1,0])*(cnt_side1[next_j2,0]-cnt_side1[j2,0]);
  *         dnj12_1 = (cnt_side1[next_j1,1]-cnt_side1[j1,1])*(cnt_side1[next_j2,1]-cnt_side1[j2,1]);             # <<<<<<<<<<<<<<
@@ -8527,7 +8529,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
     if (unlikely(((PyObject *)__pyx_v_cnt_side1) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 575; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 573; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_64 = __pyx_v_next_j1;
     __pyx_t_65 = 1;
@@ -8542,11 +8544,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_65 >= __pyx_pybuffernd_cnt_side1.diminfo[1].shape)) __pyx_t_66 = 1;
     if (unlikely(__pyx_t_66 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_66);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 575; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 573; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_side1) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 575; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 573; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_66 = __pyx_v_j1;
     __pyx_t_67 = 1;
@@ -8561,11 +8563,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_67 >= __pyx_pybuffernd_cnt_side1.diminfo[1].shape)) __pyx_t_68 = 1;
     if (unlikely(__pyx_t_68 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_68);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 575; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 573; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_side1) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 575; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 573; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_68 = __pyx_v_next_j2;
     __pyx_t_69 = 1;
@@ -8580,11 +8582,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_69 >= __pyx_pybuffernd_cnt_side1.diminfo[1].shape)) __pyx_t_70 = 1;
     if (unlikely(__pyx_t_70 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_70);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 575; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 573; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_side1) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 575; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 573; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_70 = __pyx_v_j2;
     __pyx_t_71 = 1;
@@ -8599,11 +8601,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_71 >= __pyx_pybuffernd_cnt_side1.diminfo[1].shape)) __pyx_t_72 = 1;
     if (unlikely(__pyx_t_72 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_72);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 575; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 573; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_v_dnj12_1 = (((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side1.rcbuffer->pybuffer.buf, __pyx_t_64, __pyx_pybuffernd_cnt_side1.diminfo[0].strides, __pyx_t_65, __pyx_pybuffernd_cnt_side1.diminfo[1].strides)) - (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side1.rcbuffer->pybuffer.buf, __pyx_t_66, __pyx_pybuffernd_cnt_side1.diminfo[0].strides, __pyx_t_67, __pyx_pybuffernd_cnt_side1.diminfo[1].strides))) * ((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side1.rcbuffer->pybuffer.buf, __pyx_t_68, __pyx_pybuffernd_cnt_side1.diminfo[0].strides, __pyx_t_69, __pyx_pybuffernd_cnt_side1.diminfo[1].strides)) - (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side1.rcbuffer->pybuffer.buf, __pyx_t_70, __pyx_pybuffernd_cnt_side1.diminfo[0].strides, __pyx_t_71, __pyx_pybuffernd_cnt_side1.diminfo[1].strides))));
 
-    /* "linearSkeleton_cython.pyx":578
+    /* "linearSkeleton_cython.pyx":576
  * 
  *         #//% Advance along both contours.
  *         if ((d12 <= d1 and d12 <= d2) or d1 == d2):             # <<<<<<<<<<<<<<
@@ -8627,7 +8629,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     __pyx_L12_bool_binop_done:;
     if (__pyx_t_11) {
 
-      /* "linearSkeleton_cython.pyx":579
+      /* "linearSkeleton_cython.pyx":577
  *         #//% Advance along both contours.
  *         if ((d12 <= d1 and d12 <= d2) or d1 == d2):
  *             j1 = next_j1;             # <<<<<<<<<<<<<<
@@ -8636,7 +8638,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
       __pyx_v_j1 = __pyx_v_next_j1;
 
-      /* "linearSkeleton_cython.pyx":580
+      /* "linearSkeleton_cython.pyx":578
  *         if ((d12 <= d1 and d12 <= d2) or d1 == d2):
  *             j1 = next_j1;
  *             j2 = next_j2;             # <<<<<<<<<<<<<<
@@ -8645,7 +8647,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
       __pyx_v_j2 = __pyx_v_next_j2;
 
-      /* "linearSkeleton_cython.pyx":581
+      /* "linearSkeleton_cython.pyx":579
  *             j1 = next_j1;
  *             j2 = next_j2;
  *             cnt_widths[ske_ind] = d12;             # <<<<<<<<<<<<<<
@@ -8654,7 +8656,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
       if (unlikely(((PyObject *)__pyx_v_cnt_widths) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 581; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_72 = __pyx_v_ske_ind;
       __pyx_t_73 = -1;
@@ -8664,14 +8666,14 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
       } else if (unlikely(__pyx_t_72 >= __pyx_pybuffernd_cnt_widths.diminfo[0].shape)) __pyx_t_73 = 0;
       if (unlikely(__pyx_t_73 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_73);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 581; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 579; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_widths.rcbuffer->pybuffer.buf, __pyx_t_72, __pyx_pybuffernd_cnt_widths.diminfo[0].strides) = __pyx_v_d12;
       goto __pyx_L11;
     }
     /*else*/ {
 
-      /* "linearSkeleton_cython.pyx":584
+      /* "linearSkeleton_cython.pyx":582
  *         #//% The contours go in similar directions. Follow the smallest width.
  *         else:
  *             if ((dnj12_0> -1) and (dnj12_1> -1)):             # <<<<<<<<<<<<<<
@@ -8689,7 +8691,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
       __pyx_L16_bool_binop_done:;
       if (__pyx_t_11) {
 
-        /* "linearSkeleton_cython.pyx":586
+        /* "linearSkeleton_cython.pyx":584
  *             if ((dnj12_0> -1) and (dnj12_1> -1)):
  *                 #//% Advance along the the first contour.
  *                 if (d1 <= d2):             # <<<<<<<<<<<<<<
@@ -8699,7 +8701,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
         __pyx_t_11 = ((__pyx_v_d1 <= __pyx_v_d2) != 0);
         if (__pyx_t_11) {
 
-          /* "linearSkeleton_cython.pyx":587
+          /* "linearSkeleton_cython.pyx":585
  *                 #//% Advance along the the first contour.
  *                 if (d1 <= d2):
  *                     j1 = next_j1;             # <<<<<<<<<<<<<<
@@ -8708,7 +8710,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
           __pyx_v_j1 = __pyx_v_next_j1;
 
-          /* "linearSkeleton_cython.pyx":588
+          /* "linearSkeleton_cython.pyx":586
  *                 if (d1 <= d2):
  *                     j1 = next_j1;
  *                     cnt_widths[ske_ind] = d1;             # <<<<<<<<<<<<<<
@@ -8717,7 +8719,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
           if (unlikely(((PyObject *)__pyx_v_cnt_widths) == Py_None)) {
             PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 588; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 586; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           __pyx_t_73 = __pyx_v_ske_ind;
           __pyx_t_74 = -1;
@@ -8727,14 +8729,14 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
           } else if (unlikely(__pyx_t_73 >= __pyx_pybuffernd_cnt_widths.diminfo[0].shape)) __pyx_t_74 = 0;
           if (unlikely(__pyx_t_74 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_74);
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 588; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 586; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_widths.rcbuffer->pybuffer.buf, __pyx_t_73, __pyx_pybuffernd_cnt_widths.diminfo[0].strides) = __pyx_v_d1;
           goto __pyx_L18;
         }
         /*else*/ {
 
-          /* "linearSkeleton_cython.pyx":591
+          /* "linearSkeleton_cython.pyx":589
  *                 #//% Advance along the the second contour.
  *                 else:
  *                     j2 = next_j2;             # <<<<<<<<<<<<<<
@@ -8743,7 +8745,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
           __pyx_v_j2 = __pyx_v_next_j2;
 
-          /* "linearSkeleton_cython.pyx":592
+          /* "linearSkeleton_cython.pyx":590
  *                 else:
  *                     j2 = next_j2;
  *                     cnt_widths[ske_ind] = d2;             # <<<<<<<<<<<<<<
@@ -8752,7 +8754,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
           if (unlikely(((PyObject *)__pyx_v_cnt_widths) == Py_None)) {
             PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 592; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 590; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           __pyx_t_74 = __pyx_v_ske_ind;
           __pyx_t_75 = -1;
@@ -8762,7 +8764,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
           } else if (unlikely(__pyx_t_74 >= __pyx_pybuffernd_cnt_widths.diminfo[0].shape)) __pyx_t_75 = 0;
           if (unlikely(__pyx_t_75 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_75);
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 592; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 590; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_widths.rcbuffer->pybuffer.buf, __pyx_t_74, __pyx_pybuffernd_cnt_widths.diminfo[0].strides) = __pyx_v_d2;
         }
@@ -8771,7 +8773,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
       }
       /*else*/ {
 
-        /* "linearSkeleton_cython.pyx":600
+        /* "linearSkeleton_cython.pyx":598
  *             else:
  *                 #//% Advance along both contours.
  *                 prev_width = cnt_widths[ske_ind - 1];             # <<<<<<<<<<<<<<
@@ -8780,7 +8782,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
         if (unlikely(((PyObject *)__pyx_v_cnt_widths) == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 600; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 598; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_t_76 = (__pyx_v_ske_ind - 1);
         __pyx_t_75 = -1;
@@ -8790,11 +8792,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
         } else if (unlikely(__pyx_t_76 >= __pyx_pybuffernd_cnt_widths.diminfo[0].shape)) __pyx_t_75 = 0;
         if (unlikely(__pyx_t_75 != -1)) {
           __Pyx_RaiseBufferIndexError(__pyx_t_75);
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 600; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 598; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_v_prev_width = (*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_widths.rcbuffer->pybuffer.buf, __pyx_t_76, __pyx_pybuffernd_cnt_widths.diminfo[0].strides));
 
-        /* "linearSkeleton_cython.pyx":601
+        /* "linearSkeleton_cython.pyx":599
  *                 #//% Advance along both contours.
  *                 prev_width = cnt_widths[ske_ind - 1];
  *                 if ((d12 <= d1 and d12 <= d2) or d1 == d2 or (d1 > prev_width and d2 > prev_width )):             # <<<<<<<<<<<<<<
@@ -8830,7 +8832,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
         __pyx_L20_bool_binop_done:;
         if (__pyx_t_11) {
 
-          /* "linearSkeleton_cython.pyx":602
+          /* "linearSkeleton_cython.pyx":600
  *                 prev_width = cnt_widths[ske_ind - 1];
  *                 if ((d12 <= d1 and d12 <= d2) or d1 == d2 or (d1 > prev_width and d2 > prev_width )):
  *                     j1 = next_j1;             # <<<<<<<<<<<<<<
@@ -8839,7 +8841,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
           __pyx_v_j1 = __pyx_v_next_j1;
 
-          /* "linearSkeleton_cython.pyx":603
+          /* "linearSkeleton_cython.pyx":601
  *                 if ((d12 <= d1 and d12 <= d2) or d1 == d2 or (d1 > prev_width and d2 > prev_width )):
  *                     j1 = next_j1;
  *                     j2 = next_j2;             # <<<<<<<<<<<<<<
@@ -8848,7 +8850,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
           __pyx_v_j2 = __pyx_v_next_j2;
 
-          /* "linearSkeleton_cython.pyx":604
+          /* "linearSkeleton_cython.pyx":602
  *                     j1 = next_j1;
  *                     j2 = next_j2;
  *                     cnt_widths[ske_ind] = d12;             # <<<<<<<<<<<<<<
@@ -8857,7 +8859,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
           if (unlikely(((PyObject *)__pyx_v_cnt_widths) == Py_None)) {
             PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 604; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 602; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           __pyx_t_75 = __pyx_v_ske_ind;
           __pyx_t_77 = -1;
@@ -8867,14 +8869,14 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
           } else if (unlikely(__pyx_t_75 >= __pyx_pybuffernd_cnt_widths.diminfo[0].shape)) __pyx_t_77 = 0;
           if (unlikely(__pyx_t_77 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_77);
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 604; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 602; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_widths.rcbuffer->pybuffer.buf, __pyx_t_75, __pyx_pybuffernd_cnt_widths.diminfo[0].strides) = __pyx_v_d12;
           goto __pyx_L19;
         }
         /*else*/ {
 
-          /* "linearSkeleton_cython.pyx":607
+          /* "linearSkeleton_cython.pyx":605
  *                 #//% Advance along the the first contour.
  *                 else:
  *                     if (d1 < d2):             # <<<<<<<<<<<<<<
@@ -8884,7 +8886,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
           __pyx_t_11 = ((__pyx_v_d1 < __pyx_v_d2) != 0);
           if (__pyx_t_11) {
 
-            /* "linearSkeleton_cython.pyx":608
+            /* "linearSkeleton_cython.pyx":606
  *                 else:
  *                     if (d1 < d2):
  *                         j1 = next_j1;             # <<<<<<<<<<<<<<
@@ -8893,7 +8895,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
             __pyx_v_j1 = __pyx_v_next_j1;
 
-            /* "linearSkeleton_cython.pyx":609
+            /* "linearSkeleton_cython.pyx":607
  *                     if (d1 < d2):
  *                         j1 = next_j1;
  *                         cnt_widths[ske_ind] = d1;             # <<<<<<<<<<<<<<
@@ -8902,7 +8904,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
             if (unlikely(((PyObject *)__pyx_v_cnt_widths) == Py_None)) {
               PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 609; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 607; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
             }
             __pyx_t_77 = __pyx_v_ske_ind;
             __pyx_t_78 = -1;
@@ -8912,14 +8914,14 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
             } else if (unlikely(__pyx_t_77 >= __pyx_pybuffernd_cnt_widths.diminfo[0].shape)) __pyx_t_78 = 0;
             if (unlikely(__pyx_t_78 != -1)) {
               __Pyx_RaiseBufferIndexError(__pyx_t_78);
-              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 609; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 607; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
             }
             *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_widths.rcbuffer->pybuffer.buf, __pyx_t_77, __pyx_pybuffernd_cnt_widths.diminfo[0].strides) = __pyx_v_d1;
             goto __pyx_L25;
           }
           /*else*/ {
 
-            /* "linearSkeleton_cython.pyx":612
+            /* "linearSkeleton_cython.pyx":610
  *                     #//% Advance along the the second contour.
  *                     else:
  *                         j2 = next_j2;             # <<<<<<<<<<<<<<
@@ -8928,7 +8930,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
             __pyx_v_j2 = __pyx_v_next_j2;
 
-            /* "linearSkeleton_cython.pyx":613
+            /* "linearSkeleton_cython.pyx":611
  *                     else:
  *                         j2 = next_j2;
  *                         cnt_widths[ske_ind] = d2;             # <<<<<<<<<<<<<<
@@ -8937,7 +8939,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
             if (unlikely(((PyObject *)__pyx_v_cnt_widths) == Py_None)) {
               PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 613; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
             }
             __pyx_t_78 = __pyx_v_ske_ind;
             __pyx_t_79 = -1;
@@ -8947,7 +8949,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
             } else if (unlikely(__pyx_t_78 >= __pyx_pybuffernd_cnt_widths.diminfo[0].shape)) __pyx_t_79 = 0;
             if (unlikely(__pyx_t_79 != -1)) {
               __Pyx_RaiseBufferIndexError(__pyx_t_79);
-              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 613; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 611; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
             }
             *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_widths.rcbuffer->pybuffer.buf, __pyx_t_78, __pyx_pybuffernd_cnt_widths.diminfo[0].strides) = __pyx_v_d2;
           }
@@ -8959,7 +8961,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     }
     __pyx_L11:;
 
-    /* "linearSkeleton_cython.pyx":616
+    /* "linearSkeleton_cython.pyx":614
  * 
  *         #//% Compute the skeleton.
  *         skeleton[ske_ind, 0] = c_round((cnt_side1[j1, 0] + cnt_side2[j2, 0]) / 2);             # <<<<<<<<<<<<<<
@@ -8968,7 +8970,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
     if (unlikely(((PyObject *)__pyx_v_cnt_side1) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 616; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 614; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_79 = __pyx_v_j1;
     __pyx_t_80 = 0;
@@ -8983,11 +8985,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_80 >= __pyx_pybuffernd_cnt_side1.diminfo[1].shape)) __pyx_t_81 = 1;
     if (unlikely(__pyx_t_81 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_81);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 616; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 614; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_side2) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 616; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 614; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_81 = __pyx_v_j2;
     __pyx_t_82 = 0;
@@ -9002,11 +9004,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_82 >= __pyx_pybuffernd_cnt_side2.diminfo[1].shape)) __pyx_t_83 = 1;
     if (unlikely(__pyx_t_83 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_83);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 616; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 614; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 616; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 614; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_83 = __pyx_v_ske_ind;
     __pyx_t_84 = 0;
@@ -9021,11 +9023,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_84 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_85 = 1;
     if (unlikely(__pyx_t_85 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_85);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 616; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 614; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     *__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_83, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_84, __pyx_pybuffernd_skeleton.diminfo[1].strides) = round((((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side1.rcbuffer->pybuffer.buf, __pyx_t_79, __pyx_pybuffernd_cnt_side1.diminfo[0].strides, __pyx_t_80, __pyx_pybuffernd_cnt_side1.diminfo[1].strides)) + (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side2.rcbuffer->pybuffer.buf, __pyx_t_81, __pyx_pybuffernd_cnt_side2.diminfo[0].strides, __pyx_t_82, __pyx_pybuffernd_cnt_side2.diminfo[1].strides))) / 2.0));
 
-    /* "linearSkeleton_cython.pyx":617
+    /* "linearSkeleton_cython.pyx":615
  *         #//% Compute the skeleton.
  *         skeleton[ske_ind, 0] = c_round((cnt_side1[j1, 0] + cnt_side2[j2, 0]) / 2);
  *         skeleton[ske_ind, 1] = c_round((cnt_side1[j1, 1] + cnt_side2[j2, 1]) / 2);             # <<<<<<<<<<<<<<
@@ -9034,7 +9036,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
     if (unlikely(((PyObject *)__pyx_v_cnt_side1) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 617; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_85 = __pyx_v_j1;
     __pyx_t_86 = 1;
@@ -9049,11 +9051,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_86 >= __pyx_pybuffernd_cnt_side1.diminfo[1].shape)) __pyx_t_87 = 1;
     if (unlikely(__pyx_t_87 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_87);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 617; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_side2) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 617; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_87 = __pyx_v_j2;
     __pyx_t_88 = 1;
@@ -9068,11 +9070,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_88 >= __pyx_pybuffernd_cnt_side2.diminfo[1].shape)) __pyx_t_89 = 1;
     if (unlikely(__pyx_t_89 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_89);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 617; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 617; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_89 = __pyx_v_ske_ind;
     __pyx_t_90 = 1;
@@ -9087,11 +9089,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_90 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_91 = 1;
     if (unlikely(__pyx_t_91 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_91);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 617; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 615; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     *__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_89, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_90, __pyx_pybuffernd_skeleton.diminfo[1].strides) = round((((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side1.rcbuffer->pybuffer.buf, __pyx_t_85, __pyx_pybuffernd_cnt_side1.diminfo[0].strides, __pyx_t_86, __pyx_pybuffernd_cnt_side1.diminfo[1].strides)) + (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side2.rcbuffer->pybuffer.buf, __pyx_t_87, __pyx_pybuffernd_cnt_side2.diminfo[0].strides, __pyx_t_88, __pyx_pybuffernd_cnt_side2.diminfo[1].strides))) / 2.0));
 
-    /* "linearSkeleton_cython.pyx":618
+    /* "linearSkeleton_cython.pyx":616
  *         skeleton[ske_ind, 0] = c_round((cnt_side1[j1, 0] + cnt_side2[j2, 0]) / 2);
  *         skeleton[ske_ind, 1] = c_round((cnt_side1[j1, 1] + cnt_side2[j2, 1]) / 2);
  *         ske_ind +=1;             # <<<<<<<<<<<<<<
@@ -9101,7 +9103,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     __pyx_v_ske_ind = (__pyx_v_ske_ind + 1);
   }
 
-  /* "linearSkeleton_cython.pyx":621
+  /* "linearSkeleton_cython.pyx":619
  * 
  *     #//% Add the last point.
  *     if (j1 != end_side1) or (j2 != end_side2):             # <<<<<<<<<<<<<<
@@ -9119,7 +9121,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
   __pyx_L27_bool_binop_done:;
   if (__pyx_t_11) {
 
-    /* "linearSkeleton_cython.pyx":622
+    /* "linearSkeleton_cython.pyx":620
  *     #//% Add the last point.
  *     if (j1 != end_side1) or (j2 != end_side2):
  *         skeleton[ske_ind, 0] = c_round((cnt_side1[end_side1, 0] + cnt_side2[end_side2, 0]) / 2);             # <<<<<<<<<<<<<<
@@ -9128,7 +9130,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
     if (unlikely(((PyObject *)__pyx_v_cnt_side1) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 622; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 620; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_91 = __pyx_v_end_side1;
     __pyx_t_92 = 0;
@@ -9143,11 +9145,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_92 >= __pyx_pybuffernd_cnt_side1.diminfo[1].shape)) __pyx_t_93 = 1;
     if (unlikely(__pyx_t_93 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_93);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 622; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 620; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_side2) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 622; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 620; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_93 = __pyx_v_end_side2;
     __pyx_t_94 = 0;
@@ -9162,11 +9164,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_94 >= __pyx_pybuffernd_cnt_side2.diminfo[1].shape)) __pyx_t_95 = 1;
     if (unlikely(__pyx_t_95 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_95);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 622; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 620; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 622; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 620; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_95 = __pyx_v_ske_ind;
     __pyx_t_96 = 0;
@@ -9181,11 +9183,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_96 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_97 = 1;
     if (unlikely(__pyx_t_97 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_97);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 622; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 620; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     *__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_95, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_96, __pyx_pybuffernd_skeleton.diminfo[1].strides) = round((((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side1.rcbuffer->pybuffer.buf, __pyx_t_91, __pyx_pybuffernd_cnt_side1.diminfo[0].strides, __pyx_t_92, __pyx_pybuffernd_cnt_side1.diminfo[1].strides)) + (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side2.rcbuffer->pybuffer.buf, __pyx_t_93, __pyx_pybuffernd_cnt_side2.diminfo[0].strides, __pyx_t_94, __pyx_pybuffernd_cnt_side2.diminfo[1].strides))) / 2.0));
 
-    /* "linearSkeleton_cython.pyx":623
+    /* "linearSkeleton_cython.pyx":621
  *     if (j1 != end_side1) or (j2 != end_side2):
  *         skeleton[ske_ind, 0] = c_round((cnt_side1[end_side1, 0] + cnt_side2[end_side2, 0]) / 2);
  *         skeleton[ske_ind, 1] = c_round((cnt_side1[end_side1, 1] + cnt_side2[end_side2, 1]) / 2);             # <<<<<<<<<<<<<<
@@ -9194,7 +9196,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
     if (unlikely(((PyObject *)__pyx_v_cnt_side1) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 623; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 621; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_97 = __pyx_v_end_side1;
     __pyx_t_98 = 1;
@@ -9209,11 +9211,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_98 >= __pyx_pybuffernd_cnt_side1.diminfo[1].shape)) __pyx_t_99 = 1;
     if (unlikely(__pyx_t_99 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_99);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 623; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 621; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_side2) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 623; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 621; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_99 = __pyx_v_end_side2;
     __pyx_t_100 = 1;
@@ -9228,11 +9230,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_100 >= __pyx_pybuffernd_cnt_side2.diminfo[1].shape)) __pyx_t_101 = 1;
     if (unlikely(__pyx_t_101 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_101);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 623; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 621; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 623; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 621; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_101 = __pyx_v_ske_ind;
     __pyx_t_102 = 1;
@@ -9247,11 +9249,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_102 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_103 = 1;
     if (unlikely(__pyx_t_103 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_103);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 623; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 621; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     *__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_101, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_102, __pyx_pybuffernd_skeleton.diminfo[1].strides) = round((((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side1.rcbuffer->pybuffer.buf, __pyx_t_97, __pyx_pybuffernd_cnt_side1.diminfo[0].strides, __pyx_t_98, __pyx_pybuffernd_cnt_side1.diminfo[1].strides)) + (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side2.rcbuffer->pybuffer.buf, __pyx_t_99, __pyx_pybuffernd_cnt_side2.diminfo[0].strides, __pyx_t_100, __pyx_pybuffernd_cnt_side2.diminfo[1].strides))) / 2.0));
 
-    /* "linearSkeleton_cython.pyx":624
+    /* "linearSkeleton_cython.pyx":622
  *         skeleton[ske_ind, 0] = c_round((cnt_side1[end_side1, 0] + cnt_side2[end_side2, 0]) / 2);
  *         skeleton[ske_ind, 1] = c_round((cnt_side1[end_side1, 1] + cnt_side2[end_side2, 1]) / 2);
  *         cnt_widths[ske_ind] = getDistance(cnt_side1[end_side1,0], cnt_side2[end_side2,0], cnt_side1[end_side1,1], cnt_side2[end_side2,1])             # <<<<<<<<<<<<<<
@@ -9260,7 +9262,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
     if (unlikely(((PyObject *)__pyx_v_cnt_side1) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 624; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 622; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_103 = __pyx_v_end_side1;
     __pyx_t_104 = 0;
@@ -9275,11 +9277,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_104 >= __pyx_pybuffernd_cnt_side1.diminfo[1].shape)) __pyx_t_105 = 1;
     if (unlikely(__pyx_t_105 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_105);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 624; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 622; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_side2) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 624; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 622; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_105 = __pyx_v_end_side2;
     __pyx_t_106 = 0;
@@ -9294,11 +9296,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_106 >= __pyx_pybuffernd_cnt_side2.diminfo[1].shape)) __pyx_t_107 = 1;
     if (unlikely(__pyx_t_107 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_107);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 624; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 622; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_side1) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 624; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 622; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_107 = __pyx_v_end_side1;
     __pyx_t_108 = 1;
@@ -9313,11 +9315,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_108 >= __pyx_pybuffernd_cnt_side1.diminfo[1].shape)) __pyx_t_109 = 1;
     if (unlikely(__pyx_t_109 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_109);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 624; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 622; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_side2) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 624; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 622; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_109 = __pyx_v_end_side2;
     __pyx_t_110 = 1;
@@ -9332,11 +9334,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_110 >= __pyx_pybuffernd_cnt_side2.diminfo[1].shape)) __pyx_t_111 = 1;
     if (unlikely(__pyx_t_111 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_111);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 624; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 622; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cnt_widths) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 624; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 622; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_111 = __pyx_v_ske_ind;
     __pyx_t_112 = -1;
@@ -9346,11 +9348,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
     } else if (unlikely(__pyx_t_111 >= __pyx_pybuffernd_cnt_widths.diminfo[0].shape)) __pyx_t_112 = 0;
     if (unlikely(__pyx_t_112 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_112);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 624; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 622; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_widths.rcbuffer->pybuffer.buf, __pyx_t_111, __pyx_pybuffernd_cnt_widths.diminfo[0].strides) = __pyx_f_21linearSkeleton_cython_getDistance((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side1.rcbuffer->pybuffer.buf, __pyx_t_103, __pyx_pybuffernd_cnt_side1.diminfo[0].strides, __pyx_t_104, __pyx_pybuffernd_cnt_side1.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side2.rcbuffer->pybuffer.buf, __pyx_t_105, __pyx_pybuffernd_cnt_side2.diminfo[0].strides, __pyx_t_106, __pyx_pybuffernd_cnt_side2.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side1.rcbuffer->pybuffer.buf, __pyx_t_107, __pyx_pybuffernd_cnt_side1.diminfo[0].strides, __pyx_t_108, __pyx_pybuffernd_cnt_side1.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cnt_side2.rcbuffer->pybuffer.buf, __pyx_t_109, __pyx_pybuffernd_cnt_side2.diminfo[0].strides, __pyx_t_110, __pyx_pybuffernd_cnt_side2.diminfo[1].strides)));
 
-    /* "linearSkeleton_cython.pyx":625
+    /* "linearSkeleton_cython.pyx":623
  *         skeleton[ske_ind, 1] = c_round((cnt_side1[end_side1, 1] + cnt_side2[end_side2, 1]) / 2);
  *         cnt_widths[ske_ind] = getDistance(cnt_side1[end_side1,0], cnt_side2[end_side2,0], cnt_side1[end_side1,1], cnt_side2[end_side2,1])
  *         ske_ind +=1;             # <<<<<<<<<<<<<<
@@ -9362,7 +9364,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
   }
   __pyx_L26:;
 
-  /* "linearSkeleton_cython.pyx":627
+  /* "linearSkeleton_cython.pyx":625
  *         ske_ind +=1;
  * 
  *     skeleton = skeleton[:ske_ind,:];             # <<<<<<<<<<<<<<
@@ -9371,14 +9373,14 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  */
   if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 627; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 625; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
-  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_ske_ind); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 627; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_ske_ind); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 625; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_8 = PySlice_New(Py_None, __pyx_t_2, Py_None); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 627; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_8 = PySlice_New(Py_None, __pyx_t_2, Py_None); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 625; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 627; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 625; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_8);
   __Pyx_GIVEREF(__pyx_t_8);
@@ -9386,10 +9388,10 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
   PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_slice__2);
   __Pyx_GIVEREF(__pyx_slice__2);
   __pyx_t_8 = 0;
-  __pyx_t_8 = PyObject_GetItem(((PyObject *)__pyx_v_skeleton), __pyx_t_2); if (unlikely(__pyx_t_8 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 627; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+  __pyx_t_8 = PyObject_GetItem(((PyObject *)__pyx_v_skeleton), __pyx_t_2); if (unlikely(__pyx_t_8 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 625; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (!(likely(((__pyx_t_8) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_8, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 627; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(((__pyx_t_8) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_8, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 625; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_9 = ((PyArrayObject *)__pyx_t_8);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
@@ -9405,22 +9407,22 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
       }
     }
     __pyx_pybuffernd_skeleton.diminfo[0].strides = __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_skeleton.diminfo[0].shape = __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_skeleton.diminfo[1].strides = __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_skeleton.diminfo[1].shape = __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.shape[1];
-    if (unlikely(__pyx_t_112 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 627; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (unlikely(__pyx_t_112 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 625; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_t_9 = 0;
   __Pyx_DECREF_SET(__pyx_v_skeleton, ((PyArrayObject *)__pyx_t_8));
   __pyx_t_8 = 0;
 
-  /* "linearSkeleton_cython.pyx":628
+  /* "linearSkeleton_cython.pyx":626
  * 
  *     skeleton = skeleton[:ske_ind,:];
  *     cnt_widths = cnt_widths[:ske_ind]             # <<<<<<<<<<<<<<
  * 
  *     return (skeleton, cnt_widths)
  */
-  __pyx_t_8 = __Pyx_PyObject_GetSlice(((PyObject *)__pyx_v_cnt_widths), 0, __pyx_v_ske_ind, NULL, NULL, NULL, 0, 1, 1); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 628; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_8 = __Pyx_PyObject_GetSlice(((PyObject *)__pyx_v_cnt_widths), 0, __pyx_v_ske_ind, NULL, NULL, NULL, 0, 1, 1); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 626; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_8);
-  if (!(likely(((__pyx_t_8) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_8, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 628; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(((__pyx_t_8) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_8, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 626; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_10 = ((PyArrayObject *)__pyx_t_8);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
@@ -9436,13 +9438,13 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
       }
     }
     __pyx_pybuffernd_cnt_widths.diminfo[0].strides = __pyx_pybuffernd_cnt_widths.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_cnt_widths.diminfo[0].shape = __pyx_pybuffernd_cnt_widths.rcbuffer->pybuffer.shape[0];
-    if (unlikely(__pyx_t_112 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 628; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (unlikely(__pyx_t_112 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 626; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_t_10 = 0;
   __Pyx_DECREF_SET(__pyx_v_cnt_widths, ((PyArrayObject *)__pyx_t_8));
   __pyx_t_8 = 0;
 
-  /* "linearSkeleton_cython.pyx":630
+  /* "linearSkeleton_cython.pyx":628
  *     cnt_widths = cnt_widths[:ske_ind]
  * 
  *     return (skeleton, cnt_widths)             # <<<<<<<<<<<<<<
@@ -9450,7 +9452,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_8 = PyTuple_New(2); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 630; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_8 = PyTuple_New(2); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 628; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_INCREF(((PyObject *)__pyx_v_skeleton));
   PyTuple_SET_ITEM(__pyx_t_8, 0, ((PyObject *)__pyx_v_skeleton));
@@ -9500,7 +9502,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_12skeletonize(CYTHON_UNUSED Py
   return __pyx_r;
 }
 
-/* "linearSkeleton_cython.pyx":635
+/* "linearSkeleton_cython.pyx":633
  * 
  * 
  * def cleanSkeleton(np.ndarray[np.float_t, ndim=2] skeleton, np.ndarray[np.float_t, ndim=1] widths, double worm_seg_size):             # <<<<<<<<<<<<<<
@@ -9543,16 +9545,16 @@ static PyObject *__pyx_pw_21linearSkeleton_cython_15cleanSkeleton(PyObject *__py
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_widths)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("cleanSkeleton", 1, 3, 3, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 635; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("cleanSkeleton", 1, 3, 3, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 633; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
         case  2:
         if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_worm_seg_size)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("cleanSkeleton", 1, 3, 3, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 635; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("cleanSkeleton", 1, 3, 3, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 633; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "cleanSkeleton") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 635; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "cleanSkeleton") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 633; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
       goto __pyx_L5_argtuple_error;
@@ -9563,18 +9565,18 @@ static PyObject *__pyx_pw_21linearSkeleton_cython_15cleanSkeleton(PyObject *__py
     }
     __pyx_v_skeleton = ((PyArrayObject *)values[0]);
     __pyx_v_widths = ((PyArrayObject *)values[1]);
-    __pyx_v_worm_seg_size = __pyx_PyFloat_AsDouble(values[2]); if (unlikely((__pyx_v_worm_seg_size == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 635; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_worm_seg_size = __pyx_PyFloat_AsDouble(values[2]); if (unlikely((__pyx_v_worm_seg_size == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 633; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("cleanSkeleton", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 635; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("cleanSkeleton", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 633; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("linearSkeleton_cython.cleanSkeleton", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_skeleton), __pyx_ptype_5numpy_ndarray, 1, "skeleton", 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 635; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_widths), __pyx_ptype_5numpy_ndarray, 1, "widths", 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 635; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_skeleton), __pyx_ptype_5numpy_ndarray, 1, "skeleton", 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 633; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_widths), __pyx_ptype_5numpy_ndarray, 1, "widths", 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 633; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_pf_21linearSkeleton_cython_14cleanSkeleton(__pyx_self, __pyx_v_skeleton, __pyx_v_widths, __pyx_v_worm_seg_size);
 
   /* function exit code */
@@ -9771,22 +9773,22 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
   long __pyx_t_130;
   long __pyx_t_131;
   long __pyx_t_132;
-  long __pyx_t_133;
-  long __pyx_t_134;
-  long __pyx_t_135;
-  long __pyx_t_136;
-  long __pyx_t_137;
-  int __pyx_t_138;
-  long __pyx_t_139;
-  int __pyx_t_140;
+  int __pyx_t_133;
+  int __pyx_t_134;
+  PyObject *__pyx_t_135 = NULL;
+  PyObject *__pyx_t_136 = NULL;
+  PyObject *__pyx_t_137 = NULL;
+  long __pyx_t_138;
+  int __pyx_t_139;
+  long __pyx_t_140;
   int __pyx_t_141;
-  int __pyx_t_142;
-  PyObject *__pyx_t_143 = NULL;
-  PyObject *__pyx_t_144 = NULL;
-  PyObject *__pyx_t_145 = NULL;
+  long __pyx_t_142;
+  int __pyx_t_143;
+  long __pyx_t_144;
+  int __pyx_t_145;
   long __pyx_t_146;
   int __pyx_t_147;
-  long __pyx_t_148;
+  int __pyx_t_148;
   int __pyx_t_149;
   long __pyx_t_150;
   int __pyx_t_151;
@@ -9794,18 +9796,10 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
   int __pyx_t_153;
   long __pyx_t_154;
   int __pyx_t_155;
-  int __pyx_t_156;
+  long __pyx_t_156;
   int __pyx_t_157;
-  long __pyx_t_158;
+  int __pyx_t_158;
   int __pyx_t_159;
-  long __pyx_t_160;
-  int __pyx_t_161;
-  long __pyx_t_162;
-  int __pyx_t_163;
-  long __pyx_t_164;
-  int __pyx_t_165;
-  int __pyx_t_166;
-  int __pyx_t_167;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -9840,16 +9834,16 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
   __pyx_pybuffernd_widths.rcbuffer = &__pyx_pybuffer_widths;
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_skeleton.rcbuffer->pybuffer, (PyObject*)__pyx_v_skeleton, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 2, 0, __pyx_stack) == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 635; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_skeleton.rcbuffer->pybuffer, (PyObject*)__pyx_v_skeleton, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 2, 0, __pyx_stack) == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 633; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_pybuffernd_skeleton.diminfo[0].strides = __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_skeleton.diminfo[0].shape = __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_skeleton.diminfo[1].strides = __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_skeleton.diminfo[1].shape = __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.shape[1];
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_widths.rcbuffer->pybuffer, (PyObject*)__pyx_v_widths, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 1, 0, __pyx_stack) == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 635; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_widths.rcbuffer->pybuffer, (PyObject*)__pyx_v_widths, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 1, 0, __pyx_stack) == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 633; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_pybuffernd_widths.diminfo[0].strides = __pyx_pybuffernd_widths.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_widths.diminfo[0].shape = __pyx_pybuffernd_widths.rcbuffer->pybuffer.shape[0];
 
-  /* "linearSkeleton_cython.pyx":675
+  /* "linearSkeleton_cython.pyx":673
  *      * % segments.'''
  * 
  *     cdef int FLAG_MAX = 2147483647 #max 32 integer. initialization             # <<<<<<<<<<<<<<
@@ -9858,7 +9852,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
   __pyx_v_FLAG_MAX = 2147483647;
 
-  /* "linearSkeleton_cython.pyx":676
+  /* "linearSkeleton_cython.pyx":674
  * 
  *     cdef int FLAG_MAX = 2147483647 #max 32 integer. initialization
  *     cdef int maxSkeletonOverlap = <int>(ceil(2 * worm_seg_size));             # <<<<<<<<<<<<<<
@@ -9867,7 +9861,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
   __pyx_v_maxSkeletonOverlap = ((int)ceil((2.0 * __pyx_v_worm_seg_size)));
 
-  /* "linearSkeleton_cython.pyx":677
+  /* "linearSkeleton_cython.pyx":675
  *     cdef int FLAG_MAX = 2147483647 #max 32 integer. initialization
  *     cdef int maxSkeletonOverlap = <int>(ceil(2 * worm_seg_size));
  *     cdef int number_points = skeleton.shape[0]             # <<<<<<<<<<<<<<
@@ -9876,11 +9870,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
   if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%s'", "shape");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 677; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 675; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_v_number_points = (__pyx_v_skeleton->dimensions[0]);
 
-  /* "linearSkeleton_cython.pyx":678
+  /* "linearSkeleton_cython.pyx":676
  *     cdef int maxSkeletonOverlap = <int>(ceil(2 * worm_seg_size));
  *     cdef int number_points = skeleton.shape[0]
  *     cdef int last_index = number_points - 1             # <<<<<<<<<<<<<<
@@ -9889,31 +9883,31 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
   __pyx_v_last_index = (__pyx_v_number_points - 1);
 
-  /* "linearSkeleton_cython.pyx":680
+  /* "linearSkeleton_cython.pyx":678
  *     cdef int last_index = number_points - 1
  * 
  *     cdef np.ndarray[np.int_t, ndim=1] pSortC = np.lexsort((skeleton[:,1], skeleton[:,0]))             # <<<<<<<<<<<<<<
  *     cdef np.ndarray[np.int_t, ndim=1] iSortC = np.argsort(pSortC)
  * 
  */
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 680; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 678; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_lexsort); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 680; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_lexsort); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 678; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 680; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 678; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
-  __pyx_t_2 = PyObject_GetItem(((PyObject *)__pyx_v_skeleton), __pyx_tuple__4); if (unlikely(__pyx_t_2 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 680; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+  __pyx_t_2 = PyObject_GetItem(((PyObject *)__pyx_v_skeleton), __pyx_tuple__4); if (unlikely(__pyx_t_2 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 678; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __Pyx_GOTREF(__pyx_t_2);
   if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 680; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 678; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
-  __pyx_t_4 = PyObject_GetItem(((PyObject *)__pyx_v_skeleton), __pyx_tuple__6); if (unlikely(__pyx_t_4 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 680; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+  __pyx_t_4 = PyObject_GetItem(((PyObject *)__pyx_v_skeleton), __pyx_tuple__6); if (unlikely(__pyx_t_4 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 678; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 680; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 678; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
   PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_2);
@@ -9932,28 +9926,28 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
     }
   }
   if (!__pyx_t_4) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_5); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 680; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_5); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 678; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_GOTREF(__pyx_t_1);
   } else {
-    __pyx_t_2 = PyTuple_New(1+1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 680; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = PyTuple_New(1+1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 678; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_4); __Pyx_GIVEREF(__pyx_t_4); __pyx_t_4 = NULL;
     PyTuple_SET_ITEM(__pyx_t_2, 0+1, __pyx_t_5);
     __Pyx_GIVEREF(__pyx_t_5);
     __pyx_t_5 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 680; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 678; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 680; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 678; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_6 = ((PyArrayObject *)__pyx_t_1);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_pSortC.rcbuffer->pybuffer, (PyObject*)__pyx_t_6, &__Pyx_TypeInfo_nn___pyx_t_5numpy_int_t, PyBUF_FORMAT| PyBUF_STRIDES, 1, 0, __pyx_stack) == -1)) {
       __pyx_v_pSortC = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_pSortC.rcbuffer->pybuffer.buf = NULL;
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 680; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 678; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     } else {__pyx_pybuffernd_pSortC.diminfo[0].strides = __pyx_pybuffernd_pSortC.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_pSortC.diminfo[0].shape = __pyx_pybuffernd_pSortC.rcbuffer->pybuffer.shape[0];
     }
   }
@@ -9961,16 +9955,16 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
   __pyx_v_pSortC = ((PyArrayObject *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "linearSkeleton_cython.pyx":681
+  /* "linearSkeleton_cython.pyx":679
  * 
  *     cdef np.ndarray[np.int_t, ndim=1] pSortC = np.lexsort((skeleton[:,1], skeleton[:,0]))
  *     cdef np.ndarray[np.int_t, ndim=1] iSortC = np.argsort(pSortC)             # <<<<<<<<<<<<<<
  * 
  *     #output
  */
-  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 681; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 679; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_argsort); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 681; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_argsort); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 679; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_3 = NULL;
@@ -9984,27 +9978,27 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
     }
   }
   if (!__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, ((PyObject *)__pyx_v_pSortC)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 681; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, ((PyObject *)__pyx_v_pSortC)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 679; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
   } else {
-    __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 681; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 679; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
     PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_3); __Pyx_GIVEREF(__pyx_t_3); __pyx_t_3 = NULL;
     __Pyx_INCREF(((PyObject *)__pyx_v_pSortC));
     PyTuple_SET_ITEM(__pyx_t_5, 0+1, ((PyObject *)__pyx_v_pSortC));
     __Pyx_GIVEREF(((PyObject *)__pyx_v_pSortC));
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 681; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 679; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 681; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 679; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_7 = ((PyArrayObject *)__pyx_t_1);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_iSortC.rcbuffer->pybuffer, (PyObject*)__pyx_t_7, &__Pyx_TypeInfo_nn___pyx_t_5numpy_int_t, PyBUF_FORMAT| PyBUF_STRIDES, 1, 0, __pyx_stack) == -1)) {
       __pyx_v_iSortC = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_iSortC.rcbuffer->pybuffer.buf = NULL;
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 681; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 679; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     } else {__pyx_pybuffernd_iSortC.diminfo[0].strides = __pyx_pybuffernd_iSortC.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_iSortC.diminfo[0].shape = __pyx_pybuffernd_iSortC.rcbuffer->pybuffer.shape[0];
     }
   }
@@ -10012,30 +10006,30 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
   __pyx_v_iSortC = ((PyArrayObject *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "linearSkeleton_cython.pyx":684
+  /* "linearSkeleton_cython.pyx":682
  * 
  *     #output
- *     cdef int buff_size = 10*number_points;             # <<<<<<<<<<<<<<
+ *     cdef int buff_size = 2*number_points;             # <<<<<<<<<<<<<<
  *     cdef np.ndarray[np.float_t, ndim=2] cSkeleton = np.zeros((buff_size, 2), dtype = np.float); #//% pre-allocate memory
  *     cdef np.ndarray[np.float_t, ndim=1] cWidths = np.zeros(buff_size, dtype = np.float);
  */
-  __pyx_v_buff_size = (10 * __pyx_v_number_points);
+  __pyx_v_buff_size = (2 * __pyx_v_number_points);
 
-  /* "linearSkeleton_cython.pyx":685
+  /* "linearSkeleton_cython.pyx":683
  *     #output
- *     cdef int buff_size = 10*number_points;
+ *     cdef int buff_size = 2*number_points;
  *     cdef np.ndarray[np.float_t, ndim=2] cSkeleton = np.zeros((buff_size, 2), dtype = np.float); #//% pre-allocate memory             # <<<<<<<<<<<<<<
  *     cdef np.ndarray[np.float_t, ndim=1] cWidths = np.zeros(buff_size, dtype = np.float);
  * 
  */
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 685; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 685; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_buff_size); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 685; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_buff_size); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 685; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
   PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
@@ -10043,32 +10037,32 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
   PyTuple_SET_ITEM(__pyx_t_5, 1, __pyx_int_2);
   __Pyx_GIVEREF(__pyx_int_2);
   __pyx_t_1 = 0;
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 685; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_5);
   __Pyx_GIVEREF(__pyx_t_5);
   __pyx_t_5 = 0;
-  __pyx_t_5 = PyDict_New(); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 685; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = PyDict_New(); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 685; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_float); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 685; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_float); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_dtype, __pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 685; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_dtype, __pyx_t_4) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_1, __pyx_t_5); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 685; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_1, __pyx_t_5); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (!(likely(((__pyx_t_4) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_4, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 685; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(((__pyx_t_4) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_4, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_8 = ((PyArrayObject *)__pyx_t_4);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer, (PyObject*)__pyx_t_8, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 2, 0, __pyx_stack) == -1)) {
       __pyx_v_cSkeleton = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf = NULL;
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 685; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 683; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     } else {__pyx_pybuffernd_cSkeleton.diminfo[0].strides = __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_cSkeleton.diminfo[0].shape = __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_cSkeleton.diminfo[1].strides = __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_cSkeleton.diminfo[1].shape = __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.shape[1];
     }
   }
@@ -10076,46 +10070,46 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
   __pyx_v_cSkeleton = ((PyArrayObject *)__pyx_t_4);
   __pyx_t_4 = 0;
 
-  /* "linearSkeleton_cython.pyx":686
- *     cdef int buff_size = 10*number_points;
+  /* "linearSkeleton_cython.pyx":684
+ *     cdef int buff_size = 2*number_points;
  *     cdef np.ndarray[np.float_t, ndim=2] cSkeleton = np.zeros((buff_size, 2), dtype = np.float); #//% pre-allocate memory
  *     cdef np.ndarray[np.float_t, ndim=1] cWidths = np.zeros(buff_size, dtype = np.float);             # <<<<<<<<<<<<<<
  * 
  *     #indexes
  */
-  __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 686; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 684; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_zeros); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 686; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_zeros); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 684; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_buff_size); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 686; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_buff_size); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 684; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 686; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 684; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_4);
   __pyx_t_4 = 0;
-  __pyx_t_4 = PyDict_New(); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 686; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyDict_New(); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 684; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 686; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 684; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_float); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 686; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_float); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 684; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_3) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 686; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_3) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 684; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_1, __pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 686; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_1, __pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 684; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 686; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 684; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_9 = ((PyArrayObject *)__pyx_t_3);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_cWidths.rcbuffer->pybuffer, (PyObject*)__pyx_t_9, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 1, 0, __pyx_stack) == -1)) {
       __pyx_v_cWidths = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_cWidths.rcbuffer->pybuffer.buf = NULL;
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 686; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 684; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     } else {__pyx_pybuffernd_cWidths.diminfo[0].strides = __pyx_pybuffernd_cWidths.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_cWidths.diminfo[0].shape = __pyx_pybuffernd_cWidths.rcbuffer->pybuffer.shape[0];
     }
   }
@@ -10123,19 +10117,19 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
   __pyx_v_cWidths = ((PyArrayObject *)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "linearSkeleton_cython.pyx":689
+  /* "linearSkeleton_cython.pyx":687
  * 
  *     #indexes
  *     cdef np.ndarray[np.int_t, ndim=1] keep = np.arange(number_points)             # <<<<<<<<<<<<<<
  *     cdef int minI, maxI;
  *     cdef int s1I = 0; #// % the first index for the skeleton loop
  */
-  __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 689; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 687; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_arange); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 689; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_arange); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 687; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_number_points); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 689; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_number_points); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 687; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_5 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_1))) {
@@ -10148,28 +10142,28 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
     }
   }
   if (!__pyx_t_5) {
-    __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 689; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 687; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_GOTREF(__pyx_t_3);
   } else {
-    __pyx_t_2 = PyTuple_New(1+1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 689; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = PyTuple_New(1+1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 687; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_5); __Pyx_GIVEREF(__pyx_t_5); __pyx_t_5 = NULL;
     PyTuple_SET_ITEM(__pyx_t_2, 0+1, __pyx_t_4);
     __Pyx_GIVEREF(__pyx_t_4);
     __pyx_t_4 = 0;
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 689; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 687; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 689; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 687; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_10 = ((PyArrayObject *)__pyx_t_3);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_keep.rcbuffer->pybuffer, (PyObject*)__pyx_t_10, &__Pyx_TypeInfo_nn___pyx_t_5numpy_int_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 1, 0, __pyx_stack) == -1)) {
       __pyx_v_keep = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_keep.rcbuffer->pybuffer.buf = NULL;
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 689; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 687; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     } else {__pyx_pybuffernd_keep.diminfo[0].strides = __pyx_pybuffernd_keep.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_keep.diminfo[0].shape = __pyx_pybuffernd_keep.rcbuffer->pybuffer.shape[0];
     }
   }
@@ -10177,7 +10171,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
   __pyx_v_keep = ((PyArrayObject *)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "linearSkeleton_cython.pyx":691
+  /* "linearSkeleton_cython.pyx":689
  *     cdef np.ndarray[np.int_t, ndim=1] keep = np.arange(number_points)
  *     cdef int minI, maxI;
  *     cdef int s1I = 0; #// % the first index for the skeleton loop             # <<<<<<<<<<<<<<
@@ -10186,7 +10180,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
   __pyx_v_s1I = 0;
 
-  /* "linearSkeleton_cython.pyx":695
+  /* "linearSkeleton_cython.pyx":693
  *     cdef double dSkeleton[2];
  * 
  *     while (s1I < last_index):             # <<<<<<<<<<<<<<
@@ -10197,7 +10191,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
     __pyx_t_11 = ((__pyx_v_s1I < __pyx_v_last_index) != 0);
     if (!__pyx_t_11) break;
 
-    /* "linearSkeleton_cython.pyx":699
+    /* "linearSkeleton_cython.pyx":697
  *         #// % Note: distal, looped sections are most likely touching;
  *         #// % therefore, we don't remove these.
  *         if (keep[s1I] != FLAG_MAX):             # <<<<<<<<<<<<<<
@@ -10206,7 +10200,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
     if (unlikely(((PyObject *)__pyx_v_keep) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 699; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 697; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_12 = __pyx_v_s1I;
     __pyx_t_13 = -1;
@@ -10216,12 +10210,12 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
     } else if (unlikely(__pyx_t_12 >= __pyx_pybuffernd_keep.diminfo[0].shape)) __pyx_t_13 = 0;
     if (unlikely(__pyx_t_13 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_13);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 699; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 697; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_11 = (((*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_keep.rcbuffer->pybuffer.buf, __pyx_t_12, __pyx_pybuffernd_keep.diminfo[0].strides)) != __pyx_v_FLAG_MAX) != 0);
     if (__pyx_t_11) {
 
-      /* "linearSkeleton_cython.pyx":700
+      /* "linearSkeleton_cython.pyx":698
  *         #// % therefore, we don't remove these.
  *         if (keep[s1I] != FLAG_MAX):
  *             minI = s1I; #//% the minimum index for the loop             # <<<<<<<<<<<<<<
@@ -10230,7 +10224,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
       __pyx_v_minI = __pyx_v_s1I;
 
-      /* "linearSkeleton_cython.pyx":701
+      /* "linearSkeleton_cython.pyx":699
  *         if (keep[s1I] != FLAG_MAX):
  *             minI = s1I; #//% the minimum index for the loop
  *             maxI = s1I; #//% the maximum index for the loop             # <<<<<<<<<<<<<<
@@ -10239,7 +10233,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
       __pyx_v_maxI = __pyx_v_s1I;
 
-      /* "linearSkeleton_cython.pyx":704
+      /* "linearSkeleton_cython.pyx":702
  * 
  *             #//% Search backwards.
  *             if (iSortC[s1I] > 0):             # <<<<<<<<<<<<<<
@@ -10248,7 +10242,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
       if (unlikely(((PyObject *)__pyx_v_iSortC) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 704; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 702; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_13 = __pyx_v_s1I;
       __pyx_t_14 = -1;
@@ -10258,12 +10252,12 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       } else if (unlikely(__pyx_t_13 >= __pyx_pybuffernd_iSortC.diminfo[0].shape)) __pyx_t_14 = 0;
       if (unlikely(__pyx_t_14 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_14);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 704; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 702; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_11 = (((*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_iSortC.rcbuffer->pybuffer.buf, __pyx_t_13, __pyx_pybuffernd_iSortC.diminfo[0].strides)) > 0) != 0);
       if (__pyx_t_11) {
 
-        /* "linearSkeleton_cython.pyx":705
+        /* "linearSkeleton_cython.pyx":703
  *             #//% Search backwards.
  *             if (iSortC[s1I] > 0):
  *                 pI = iSortC[s1I] - 1; #//% the index for the sorted points             # <<<<<<<<<<<<<<
@@ -10272,7 +10266,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
         if (unlikely(((PyObject *)__pyx_v_iSortC) == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 705; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 703; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_t_14 = __pyx_v_s1I;
         __pyx_t_15 = -1;
@@ -10282,11 +10276,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
         } else if (unlikely(__pyx_t_14 >= __pyx_pybuffernd_iSortC.diminfo[0].shape)) __pyx_t_15 = 0;
         if (unlikely(__pyx_t_15 != -1)) {
           __Pyx_RaiseBufferIndexError(__pyx_t_15);
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 705; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 703; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_v_pI = ((*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_iSortC.rcbuffer->pybuffer.buf, __pyx_t_14, __pyx_pybuffernd_iSortC.diminfo[0].strides)) - 1);
 
-        /* "linearSkeleton_cython.pyx":706
+        /* "linearSkeleton_cython.pyx":704
  *             if (iSortC[s1I] > 0):
  *                 pI = iSortC[s1I] - 1; #//% the index for the sorted points
  *                 s2I = pSortC[pI]; #// % the second index for the skeleton loop             # <<<<<<<<<<<<<<
@@ -10295,7 +10289,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
         if (unlikely(((PyObject *)__pyx_v_pSortC) == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 706; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 704; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_t_15 = __pyx_v_pI;
         __pyx_t_16 = -1;
@@ -10305,11 +10299,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
         } else if (unlikely(__pyx_t_15 >= __pyx_pybuffernd_pSortC.diminfo[0].shape)) __pyx_t_16 = 0;
         if (unlikely(__pyx_t_16 != -1)) {
           __Pyx_RaiseBufferIndexError(__pyx_t_16);
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 706; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 704; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_v_s2I = (*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_pSortC.rcbuffer->pybuffer.buf, __pyx_t_15, __pyx_pybuffernd_pSortC.diminfo[0].strides));
 
-        /* "linearSkeleton_cython.pyx":708
+        /* "linearSkeleton_cython.pyx":706
  *                 s2I = pSortC[pI]; #// % the second index for the skeleton loop
  * 
  *                 dSkeleton[0] = absDiff(skeleton[s1I, 0], skeleton[s2I, 0]);             # <<<<<<<<<<<<<<
@@ -10318,7 +10312,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
         if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 708; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 706; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_t_16 = __pyx_v_s1I;
         __pyx_t_17 = 0;
@@ -10333,11 +10327,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
         } else if (unlikely(__pyx_t_17 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_18 = 1;
         if (unlikely(__pyx_t_18 != -1)) {
           __Pyx_RaiseBufferIndexError(__pyx_t_18);
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 708; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 706; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 708; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 706; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_t_18 = __pyx_v_s2I;
         __pyx_t_19 = 0;
@@ -10352,11 +10346,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
         } else if (unlikely(__pyx_t_19 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_20 = 1;
         if (unlikely(__pyx_t_20 != -1)) {
           __Pyx_RaiseBufferIndexError(__pyx_t_20);
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 708; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 706; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         (__pyx_v_dSkeleton[0]) = __pyx_f_21linearSkeleton_cython_absDiff((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_16, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_17, __pyx_pybuffernd_skeleton.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_18, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_19, __pyx_pybuffernd_skeleton.diminfo[1].strides)));
 
-        /* "linearSkeleton_cython.pyx":709
+        /* "linearSkeleton_cython.pyx":707
  * 
  *                 dSkeleton[0] = absDiff(skeleton[s1I, 0], skeleton[s2I, 0]);
  *                 dSkeleton[1] = absDiff(skeleton[s1I, 1], skeleton[s2I, 1]);             # <<<<<<<<<<<<<<
@@ -10365,7 +10359,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
         if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 709; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 707; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_t_20 = __pyx_v_s1I;
         __pyx_t_21 = 1;
@@ -10380,11 +10374,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
         } else if (unlikely(__pyx_t_21 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_22 = 1;
         if (unlikely(__pyx_t_22 != -1)) {
           __Pyx_RaiseBufferIndexError(__pyx_t_22);
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 709; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 707; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 709; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 707; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_t_22 = __pyx_v_s2I;
         __pyx_t_23 = 1;
@@ -10399,11 +10393,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
         } else if (unlikely(__pyx_t_23 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_24 = 1;
         if (unlikely(__pyx_t_24 != -1)) {
           __Pyx_RaiseBufferIndexError(__pyx_t_24);
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 709; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 707; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         (__pyx_v_dSkeleton[1]) = __pyx_f_21linearSkeleton_cython_absDiff((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_20, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_21, __pyx_pybuffernd_skeleton.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_22, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_23, __pyx_pybuffernd_skeleton.diminfo[1].strides)));
 
-        /* "linearSkeleton_cython.pyx":711
+        /* "linearSkeleton_cython.pyx":709
  *                 dSkeleton[1] = absDiff(skeleton[s1I, 1], skeleton[s2I, 1]);
  * 
  *                 while ((dSkeleton[0]<=1) or (dSkeleton[1]<=1)):             # <<<<<<<<<<<<<<
@@ -10422,7 +10416,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           __pyx_L9_bool_binop_done:;
           if (!__pyx_t_11) break;
 
-          /* "linearSkeleton_cython.pyx":712
+          /* "linearSkeleton_cython.pyx":710
  * 
  *                 while ((dSkeleton[0]<=1) or (dSkeleton[1]<=1)):
  *                     if ((s2I > s1I) and (keep[s2I]!=FLAG_MAX) and (dSkeleton[0]<=1) and \             # <<<<<<<<<<<<<<
@@ -10437,7 +10431,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           }
           if (unlikely(((PyObject *)__pyx_v_keep) == Py_None)) {
             PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 712; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 710; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           __pyx_t_24 = __pyx_v_s2I;
           __pyx_t_26 = -1;
@@ -10447,7 +10441,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           } else if (unlikely(__pyx_t_24 >= __pyx_pybuffernd_keep.diminfo[0].shape)) __pyx_t_26 = 0;
           if (unlikely(__pyx_t_26 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_26);
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 712; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 710; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           __pyx_t_25 = (((*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_keep.rcbuffer->pybuffer.buf, __pyx_t_24, __pyx_pybuffernd_keep.diminfo[0].strides)) != __pyx_v_FLAG_MAX) != 0);
           if (__pyx_t_25) {
@@ -10462,7 +10456,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
             goto __pyx_L12_bool_binop_done;
           }
 
-          /* "linearSkeleton_cython.pyx":713
+          /* "linearSkeleton_cython.pyx":711
  *                 while ((dSkeleton[0]<=1) or (dSkeleton[1]<=1)):
  *                     if ((s2I > s1I) and (keep[s2I]!=FLAG_MAX) and (dSkeleton[0]<=1) and \
  *                     (dSkeleton[1]<=1) and absDiff(s1I, s2I) < maxSkeletonOverlap):             # <<<<<<<<<<<<<<
@@ -10480,7 +10474,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           __pyx_L12_bool_binop_done:;
           if (__pyx_t_11) {
 
-            /* "linearSkeleton_cython.pyx":714
+            /* "linearSkeleton_cython.pyx":712
  *                     if ((s2I > s1I) and (keep[s2I]!=FLAG_MAX) and (dSkeleton[0]<=1) and \
  *                     (dSkeleton[1]<=1) and absDiff(s1I, s2I) < maxSkeletonOverlap):
  *                         minI = int_min(minI, s2I);             # <<<<<<<<<<<<<<
@@ -10489,7 +10483,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
             __pyx_v_minI = __pyx_f_21linearSkeleton_cython_int_min(__pyx_v_minI, __pyx_v_s2I);
 
-            /* "linearSkeleton_cython.pyx":715
+            /* "linearSkeleton_cython.pyx":713
  *                     (dSkeleton[1]<=1) and absDiff(s1I, s2I) < maxSkeletonOverlap):
  *                         minI = int_min(minI, s2I);
  *                         maxI = int_max(maxI, s2I);             # <<<<<<<<<<<<<<
@@ -10501,7 +10495,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           }
           __pyx_L11:;
 
-          /* "linearSkeleton_cython.pyx":718
+          /* "linearSkeleton_cython.pyx":716
  * 
  *                     #// Advance the second index for the skeleton loop.
  *                     pI = pI - 1;             # <<<<<<<<<<<<<<
@@ -10510,7 +10504,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
           __pyx_v_pI = (__pyx_v_pI - 1);
 
-          /* "linearSkeleton_cython.pyx":719
+          /* "linearSkeleton_cython.pyx":717
  *                     #// Advance the second index for the skeleton loop.
  *                     pI = pI - 1;
  *                     if(pI < 1):             # <<<<<<<<<<<<<<
@@ -10520,7 +10514,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           __pyx_t_11 = ((__pyx_v_pI < 1) != 0);
           if (__pyx_t_11) {
 
-            /* "linearSkeleton_cython.pyx":720
+            /* "linearSkeleton_cython.pyx":718
  *                     pI = pI - 1;
  *                     if(pI < 1):
  *                         break;             # <<<<<<<<<<<<<<
@@ -10530,7 +10524,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
             goto __pyx_L8_break;
           }
 
-          /* "linearSkeleton_cython.pyx":722
+          /* "linearSkeleton_cython.pyx":720
  *                         break;
  * 
  *                     s2I = pSortC[pI];             # <<<<<<<<<<<<<<
@@ -10539,7 +10533,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
           if (unlikely(((PyObject *)__pyx_v_pSortC) == Py_None)) {
             PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 722; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 720; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           __pyx_t_26 = __pyx_v_pI;
           __pyx_t_27 = -1;
@@ -10549,11 +10543,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           } else if (unlikely(__pyx_t_26 >= __pyx_pybuffernd_pSortC.diminfo[0].shape)) __pyx_t_27 = 0;
           if (unlikely(__pyx_t_27 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_27);
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 722; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 720; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           __pyx_v_s2I = (*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_pSortC.rcbuffer->pybuffer.buf, __pyx_t_26, __pyx_pybuffernd_pSortC.diminfo[0].strides));
 
-          /* "linearSkeleton_cython.pyx":723
+          /* "linearSkeleton_cython.pyx":721
  * 
  *                     s2I = pSortC[pI];
  *                     dSkeleton[0] = absDiff(skeleton[s1I, 0], skeleton[s2I, 0]);             # <<<<<<<<<<<<<<
@@ -10562,7 +10556,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
           if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
             PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 723; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 721; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           __pyx_t_27 = __pyx_v_s1I;
           __pyx_t_28 = 0;
@@ -10577,11 +10571,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           } else if (unlikely(__pyx_t_28 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_29 = 1;
           if (unlikely(__pyx_t_29 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_29);
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 723; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 721; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
             PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 723; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 721; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           __pyx_t_29 = __pyx_v_s2I;
           __pyx_t_30 = 0;
@@ -10596,11 +10590,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           } else if (unlikely(__pyx_t_30 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_31 = 1;
           if (unlikely(__pyx_t_31 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_31);
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 723; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 721; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           (__pyx_v_dSkeleton[0]) = __pyx_f_21linearSkeleton_cython_absDiff((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_27, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_28, __pyx_pybuffernd_skeleton.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_29, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_30, __pyx_pybuffernd_skeleton.diminfo[1].strides)));
 
-          /* "linearSkeleton_cython.pyx":724
+          /* "linearSkeleton_cython.pyx":722
  *                     s2I = pSortC[pI];
  *                     dSkeleton[0] = absDiff(skeleton[s1I, 0], skeleton[s2I, 0]);
  *                     dSkeleton[1] = absDiff(skeleton[s1I, 1], skeleton[s2I, 1]);             # <<<<<<<<<<<<<<
@@ -10609,7 +10603,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
           if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
             PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 724; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 722; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           __pyx_t_31 = __pyx_v_s1I;
           __pyx_t_32 = 1;
@@ -10624,11 +10618,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           } else if (unlikely(__pyx_t_32 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_33 = 1;
           if (unlikely(__pyx_t_33 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_33);
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 724; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 722; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
             PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 724; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 722; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           __pyx_t_33 = __pyx_v_s2I;
           __pyx_t_34 = 1;
@@ -10643,7 +10637,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           } else if (unlikely(__pyx_t_34 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_35 = 1;
           if (unlikely(__pyx_t_35 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_35);
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 724; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 722; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           (__pyx_v_dSkeleton[1]) = __pyx_f_21linearSkeleton_cython_absDiff((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_31, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_32, __pyx_pybuffernd_skeleton.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_33, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_34, __pyx_pybuffernd_skeleton.diminfo[1].strides)));
         }
@@ -10652,7 +10646,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       }
       __pyx_L6:;
 
-      /* "linearSkeleton_cython.pyx":727
+      /* "linearSkeleton_cython.pyx":725
  * 
  *             #//% Search forwards.
  *             if (iSortC[s1I]< last_index):             # <<<<<<<<<<<<<<
@@ -10661,7 +10655,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
       if (unlikely(((PyObject *)__pyx_v_iSortC) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 727; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 725; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_35 = __pyx_v_s1I;
       __pyx_t_36 = -1;
@@ -10671,12 +10665,12 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       } else if (unlikely(__pyx_t_35 >= __pyx_pybuffernd_iSortC.diminfo[0].shape)) __pyx_t_36 = 0;
       if (unlikely(__pyx_t_36 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_36);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 727; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 725; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_11 = (((*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_iSortC.rcbuffer->pybuffer.buf, __pyx_t_35, __pyx_pybuffernd_iSortC.diminfo[0].strides)) < __pyx_v_last_index) != 0);
       if (__pyx_t_11) {
 
-        /* "linearSkeleton_cython.pyx":728
+        /* "linearSkeleton_cython.pyx":726
  *             #//% Search forwards.
  *             if (iSortC[s1I]< last_index):
  *                 pI = iSortC[s1I] + 1; #//% the index for the sorted points             # <<<<<<<<<<<<<<
@@ -10685,7 +10679,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
         if (unlikely(((PyObject *)__pyx_v_iSortC) == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 728; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 726; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_t_36 = __pyx_v_s1I;
         __pyx_t_37 = -1;
@@ -10695,11 +10689,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
         } else if (unlikely(__pyx_t_36 >= __pyx_pybuffernd_iSortC.diminfo[0].shape)) __pyx_t_37 = 0;
         if (unlikely(__pyx_t_37 != -1)) {
           __Pyx_RaiseBufferIndexError(__pyx_t_37);
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 728; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 726; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_v_pI = ((*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_iSortC.rcbuffer->pybuffer.buf, __pyx_t_36, __pyx_pybuffernd_iSortC.diminfo[0].strides)) + 1);
 
-        /* "linearSkeleton_cython.pyx":729
+        /* "linearSkeleton_cython.pyx":727
  *             if (iSortC[s1I]< last_index):
  *                 pI = iSortC[s1I] + 1; #//% the index for the sorted points
  *                 s2I = pSortC[pI]; #//% the second index for the skeleton loop             # <<<<<<<<<<<<<<
@@ -10708,7 +10702,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
         if (unlikely(((PyObject *)__pyx_v_pSortC) == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 729; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 727; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_t_37 = __pyx_v_pI;
         __pyx_t_38 = -1;
@@ -10718,11 +10712,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
         } else if (unlikely(__pyx_t_37 >= __pyx_pybuffernd_pSortC.diminfo[0].shape)) __pyx_t_38 = 0;
         if (unlikely(__pyx_t_38 != -1)) {
           __Pyx_RaiseBufferIndexError(__pyx_t_38);
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 729; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 727; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_v_s2I = (*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_pSortC.rcbuffer->pybuffer.buf, __pyx_t_37, __pyx_pybuffernd_pSortC.diminfo[0].strides));
 
-        /* "linearSkeleton_cython.pyx":730
+        /* "linearSkeleton_cython.pyx":728
  *                 pI = iSortC[s1I] + 1; #//% the index for the sorted points
  *                 s2I = pSortC[pI]; #//% the second index for the skeleton loop
  *                 dSkeleton[0] = absDiff(skeleton[s1I, 0], skeleton[s2I, 0]);             # <<<<<<<<<<<<<<
@@ -10731,7 +10725,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
         if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 730; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 728; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_t_38 = __pyx_v_s1I;
         __pyx_t_39 = 0;
@@ -10746,11 +10740,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
         } else if (unlikely(__pyx_t_39 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_40 = 1;
         if (unlikely(__pyx_t_40 != -1)) {
           __Pyx_RaiseBufferIndexError(__pyx_t_40);
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 730; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 728; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 730; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 728; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_t_40 = __pyx_v_s2I;
         __pyx_t_41 = 0;
@@ -10765,11 +10759,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
         } else if (unlikely(__pyx_t_41 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_42 = 1;
         if (unlikely(__pyx_t_42 != -1)) {
           __Pyx_RaiseBufferIndexError(__pyx_t_42);
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 730; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 728; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         (__pyx_v_dSkeleton[0]) = __pyx_f_21linearSkeleton_cython_absDiff((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_38, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_39, __pyx_pybuffernd_skeleton.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_40, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_41, __pyx_pybuffernd_skeleton.diminfo[1].strides)));
 
-        /* "linearSkeleton_cython.pyx":731
+        /* "linearSkeleton_cython.pyx":729
  *                 s2I = pSortC[pI]; #//% the second index for the skeleton loop
  *                 dSkeleton[0] = absDiff(skeleton[s1I, 0], skeleton[s2I, 0]);
  *                 dSkeleton[1] = absDiff(skeleton[s1I, 1], skeleton[s2I, 1]);             # <<<<<<<<<<<<<<
@@ -10778,7 +10772,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
         if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 731; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 729; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_t_42 = __pyx_v_s1I;
         __pyx_t_43 = 1;
@@ -10793,11 +10787,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
         } else if (unlikely(__pyx_t_43 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_44 = 1;
         if (unlikely(__pyx_t_44 != -1)) {
           __Pyx_RaiseBufferIndexError(__pyx_t_44);
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 731; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 729; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 731; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 729; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_t_44 = __pyx_v_s2I;
         __pyx_t_45 = 1;
@@ -10812,11 +10806,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
         } else if (unlikely(__pyx_t_45 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_46 = 1;
         if (unlikely(__pyx_t_46 != -1)) {
           __Pyx_RaiseBufferIndexError(__pyx_t_46);
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 731; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 729; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         (__pyx_v_dSkeleton[1]) = __pyx_f_21linearSkeleton_cython_absDiff((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_42, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_43, __pyx_pybuffernd_skeleton.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_44, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_45, __pyx_pybuffernd_skeleton.diminfo[1].strides)));
 
-        /* "linearSkeleton_cython.pyx":733
+        /* "linearSkeleton_cython.pyx":731
  *                 dSkeleton[1] = absDiff(skeleton[s1I, 1], skeleton[s2I, 1]);
  * 
  *                 while ((dSkeleton[0]<=1) or (dSkeleton[1]<=1)):             # <<<<<<<<<<<<<<
@@ -10835,7 +10829,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           __pyx_L21_bool_binop_done:;
           if (!__pyx_t_11) break;
 
-          /* "linearSkeleton_cython.pyx":734
+          /* "linearSkeleton_cython.pyx":732
  * 
  *                 while ((dSkeleton[0]<=1) or (dSkeleton[1]<=1)):
  *                     if ((s2I > s1I) and (keep[s2I]!=FLAG_MAX) \             # <<<<<<<<<<<<<<
@@ -10849,7 +10843,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
             goto __pyx_L24_bool_binop_done;
           }
 
-          /* "linearSkeleton_cython.pyx":735
+          /* "linearSkeleton_cython.pyx":733
  *                 while ((dSkeleton[0]<=1) or (dSkeleton[1]<=1)):
  *                     if ((s2I > s1I) and (keep[s2I]!=FLAG_MAX) \
  *                     and (dSkeleton[0]<=1) and (dSkeleton[1]<=1) \             # <<<<<<<<<<<<<<
@@ -10858,10 +10852,10 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
           if (unlikely(((PyObject *)__pyx_v_keep) == Py_None)) {
             PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 734; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 732; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
 
-          /* "linearSkeleton_cython.pyx":734
+          /* "linearSkeleton_cython.pyx":732
  * 
  *                 while ((dSkeleton[0]<=1) or (dSkeleton[1]<=1)):
  *                     if ((s2I > s1I) and (keep[s2I]!=FLAG_MAX) \             # <<<<<<<<<<<<<<
@@ -10876,7 +10870,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           } else if (unlikely(__pyx_t_46 >= __pyx_pybuffernd_keep.diminfo[0].shape)) __pyx_t_47 = 0;
           if (unlikely(__pyx_t_47 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_47);
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 734; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 732; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           __pyx_t_25 = (((*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_keep.rcbuffer->pybuffer.buf, __pyx_t_46, __pyx_pybuffernd_keep.diminfo[0].strides)) != __pyx_v_FLAG_MAX) != 0);
           if (__pyx_t_25) {
@@ -10885,7 +10879,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
             goto __pyx_L24_bool_binop_done;
           }
 
-          /* "linearSkeleton_cython.pyx":735
+          /* "linearSkeleton_cython.pyx":733
  *                 while ((dSkeleton[0]<=1) or (dSkeleton[1]<=1)):
  *                     if ((s2I > s1I) and (keep[s2I]!=FLAG_MAX) \
  *                     and (dSkeleton[0]<=1) and (dSkeleton[1]<=1) \             # <<<<<<<<<<<<<<
@@ -10899,7 +10893,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
             goto __pyx_L24_bool_binop_done;
           }
 
-          /* "linearSkeleton_cython.pyx":736
+          /* "linearSkeleton_cython.pyx":734
  *                     if ((s2I > s1I) and (keep[s2I]!=FLAG_MAX) \
  *                     and (dSkeleton[0]<=1) and (dSkeleton[1]<=1) \
  *                     and absDiff(s1I, s2I) < maxSkeletonOverlap):             # <<<<<<<<<<<<<<
@@ -10917,7 +10911,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           __pyx_L24_bool_binop_done:;
           if (__pyx_t_11) {
 
-            /* "linearSkeleton_cython.pyx":737
+            /* "linearSkeleton_cython.pyx":735
  *                     and (dSkeleton[0]<=1) and (dSkeleton[1]<=1) \
  *                     and absDiff(s1I, s2I) < maxSkeletonOverlap):
  *                         minI = min(minI, s2I);             # <<<<<<<<<<<<<<
@@ -10933,7 +10927,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
             }
             __pyx_v_minI = __pyx_t_49;
 
-            /* "linearSkeleton_cython.pyx":738
+            /* "linearSkeleton_cython.pyx":736
  *                     and absDiff(s1I, s2I) < maxSkeletonOverlap):
  *                         minI = min(minI, s2I);
  *                         maxI = max(maxI, s2I);             # <<<<<<<<<<<<<<
@@ -10952,7 +10946,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           }
           __pyx_L23:;
 
-          /* "linearSkeleton_cython.pyx":741
+          /* "linearSkeleton_cython.pyx":739
  * 
  *                     #// Advance the second index for the skeleton loop.
  *                     pI = pI + 1;             # <<<<<<<<<<<<<<
@@ -10961,7 +10955,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
           __pyx_v_pI = (__pyx_v_pI + 1);
 
-          /* "linearSkeleton_cython.pyx":742
+          /* "linearSkeleton_cython.pyx":740
  *                     #// Advance the second index for the skeleton loop.
  *                     pI = pI + 1;
  *                     if (pI > last_index):             # <<<<<<<<<<<<<<
@@ -10971,7 +10965,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           __pyx_t_11 = ((__pyx_v_pI > __pyx_v_last_index) != 0);
           if (__pyx_t_11) {
 
-            /* "linearSkeleton_cython.pyx":743
+            /* "linearSkeleton_cython.pyx":741
  *                     pI = pI + 1;
  *                     if (pI > last_index):
  *                         break;             # <<<<<<<<<<<<<<
@@ -10981,7 +10975,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
             goto __pyx_L20_break;
           }
 
-          /* "linearSkeleton_cython.pyx":745
+          /* "linearSkeleton_cython.pyx":743
  *                         break;
  * 
  *                     s2I = pSortC[pI];             # <<<<<<<<<<<<<<
@@ -10990,7 +10984,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
           if (unlikely(((PyObject *)__pyx_v_pSortC) == Py_None)) {
             PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 745; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 743; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           __pyx_t_48 = __pyx_v_pI;
           __pyx_t_49 = -1;
@@ -11000,11 +10994,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           } else if (unlikely(__pyx_t_48 >= __pyx_pybuffernd_pSortC.diminfo[0].shape)) __pyx_t_49 = 0;
           if (unlikely(__pyx_t_49 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_49);
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 745; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 743; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           __pyx_v_s2I = (*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_pSortC.rcbuffer->pybuffer.buf, __pyx_t_48, __pyx_pybuffernd_pSortC.diminfo[0].strides));
 
-          /* "linearSkeleton_cython.pyx":746
+          /* "linearSkeleton_cython.pyx":744
  * 
  *                     s2I = pSortC[pI];
  *                     dSkeleton[0] = absDiff(skeleton[s1I, 0], skeleton[s2I, 0]);             # <<<<<<<<<<<<<<
@@ -11013,7 +11007,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
           if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
             PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 746; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 744; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           __pyx_t_49 = __pyx_v_s1I;
           __pyx_t_50 = 0;
@@ -11028,11 +11022,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           } else if (unlikely(__pyx_t_50 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_47 = 1;
           if (unlikely(__pyx_t_47 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_47);
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 746; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 744; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
             PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 746; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 744; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           __pyx_t_47 = __pyx_v_s2I;
           __pyx_t_51 = 0;
@@ -11047,11 +11041,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           } else if (unlikely(__pyx_t_51 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_52 = 1;
           if (unlikely(__pyx_t_52 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_52);
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 746; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 744; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           (__pyx_v_dSkeleton[0]) = __pyx_f_21linearSkeleton_cython_absDiff((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_49, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_50, __pyx_pybuffernd_skeleton.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_47, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_51, __pyx_pybuffernd_skeleton.diminfo[1].strides)));
 
-          /* "linearSkeleton_cython.pyx":747
+          /* "linearSkeleton_cython.pyx":745
  *                     s2I = pSortC[pI];
  *                     dSkeleton[0] = absDiff(skeleton[s1I, 0], skeleton[s2I, 0]);
  *                     dSkeleton[1] = absDiff(skeleton[s1I, 1], skeleton[s2I, 1]);             # <<<<<<<<<<<<<<
@@ -11060,7 +11054,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
           if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
             PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 747; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 745; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           __pyx_t_52 = __pyx_v_s1I;
           __pyx_t_53 = 1;
@@ -11075,11 +11069,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           } else if (unlikely(__pyx_t_53 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_54 = 1;
           if (unlikely(__pyx_t_54 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_54);
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 747; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 745; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
             PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 747; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 745; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           __pyx_t_54 = __pyx_v_s2I;
           __pyx_t_55 = 1;
@@ -11094,7 +11088,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           } else if (unlikely(__pyx_t_55 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_56 = 1;
           if (unlikely(__pyx_t_56 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_56);
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 747; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 745; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           (__pyx_v_dSkeleton[1]) = __pyx_f_21linearSkeleton_cython_absDiff((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_52, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_53, __pyx_pybuffernd_skeleton.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_54, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_55, __pyx_pybuffernd_skeleton.diminfo[1].strides)));
         }
@@ -11103,7 +11097,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       }
       __pyx_L18:;
 
-      /* "linearSkeleton_cython.pyx":751
+      /* "linearSkeleton_cython.pyx":749
  * 
  *             #//% Remove small loops.
  *             if (minI < maxI):             # <<<<<<<<<<<<<<
@@ -11113,7 +11107,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       __pyx_t_11 = ((__pyx_v_minI < __pyx_v_maxI) != 0);
       if (__pyx_t_11) {
 
-        /* "linearSkeleton_cython.pyx":753
+        /* "linearSkeleton_cython.pyx":751
  *             if (minI < maxI):
  *                 #//% Remove the overlap.
  *                 if ((skeleton[minI,0] == skeleton[maxI,0]) and  \             # <<<<<<<<<<<<<<
@@ -11122,7 +11116,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
         if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 753; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 751; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_t_56 = __pyx_v_minI;
         __pyx_t_57 = 0;
@@ -11137,11 +11131,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
         } else if (unlikely(__pyx_t_57 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_58 = 1;
         if (unlikely(__pyx_t_58 != -1)) {
           __Pyx_RaiseBufferIndexError(__pyx_t_58);
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 753; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 751; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 753; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 751; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_t_58 = __pyx_v_maxI;
         __pyx_t_59 = 0;
@@ -11156,7 +11150,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
         } else if (unlikely(__pyx_t_59 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_60 = 1;
         if (unlikely(__pyx_t_60 != -1)) {
           __Pyx_RaiseBufferIndexError(__pyx_t_60);
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 753; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 751; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_t_25 = (((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_56, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_57, __pyx_pybuffernd_skeleton.diminfo[1].strides)) == (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_58, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_59, __pyx_pybuffernd_skeleton.diminfo[1].strides))) != 0);
         if (__pyx_t_25) {
@@ -11165,7 +11159,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           goto __pyx_L32_bool_binop_done;
         }
 
-        /* "linearSkeleton_cython.pyx":754
+        /* "linearSkeleton_cython.pyx":752
  *                 #//% Remove the overlap.
  *                 if ((skeleton[minI,0] == skeleton[maxI,0]) and  \
  *                 (skeleton[minI,1] == skeleton[maxI,1])):             # <<<<<<<<<<<<<<
@@ -11174,7 +11168,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
         if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 754; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 752; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_t_60 = __pyx_v_minI;
         __pyx_t_61 = 1;
@@ -11189,11 +11183,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
         } else if (unlikely(__pyx_t_61 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_62 = 1;
         if (unlikely(__pyx_t_62 != -1)) {
           __Pyx_RaiseBufferIndexError(__pyx_t_62);
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 754; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 752; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 754; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 752; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_t_62 = __pyx_v_maxI;
         __pyx_t_63 = 1;
@@ -11208,14 +11202,14 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
         } else if (unlikely(__pyx_t_63 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_64 = 1;
         if (unlikely(__pyx_t_64 != -1)) {
           __Pyx_RaiseBufferIndexError(__pyx_t_64);
-          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 754; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          {__pyx_filename = __pyx_f[0]; __pyx_lineno = 752; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         __pyx_t_25 = (((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_60, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_61, __pyx_pybuffernd_skeleton.diminfo[1].strides)) == (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_62, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_63, __pyx_pybuffernd_skeleton.diminfo[1].strides))) != 0);
         __pyx_t_11 = __pyx_t_25;
         __pyx_L32_bool_binop_done:;
         if (__pyx_t_11) {
 
-          /* "linearSkeleton_cython.pyx":755
+          /* "linearSkeleton_cython.pyx":753
  *                 if ((skeleton[minI,0] == skeleton[maxI,0]) and  \
  *                 (skeleton[minI,1] == skeleton[maxI,1])):
  *                     for i in range(minI+1, maxI+1):             # <<<<<<<<<<<<<<
@@ -11226,7 +11220,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           for (__pyx_t_64 = (__pyx_v_minI + 1); __pyx_t_64 < __pyx_t_65; __pyx_t_64+=1) {
             __pyx_v_i = __pyx_t_64;
 
-            /* "linearSkeleton_cython.pyx":756
+            /* "linearSkeleton_cython.pyx":754
  *                 (skeleton[minI,1] == skeleton[maxI,1])):
  *                     for i in range(minI+1, maxI+1):
  *                         keep[i] = FLAG_MAX;             # <<<<<<<<<<<<<<
@@ -11235,7 +11229,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
             if (unlikely(((PyObject *)__pyx_v_keep) == Py_None)) {
               PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 756; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 754; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
             }
             __pyx_t_66 = __pyx_v_i;
             __pyx_t_67 = -1;
@@ -11245,11 +11239,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
             } else if (unlikely(__pyx_t_66 >= __pyx_pybuffernd_keep.diminfo[0].shape)) __pyx_t_67 = 0;
             if (unlikely(__pyx_t_67 != -1)) {
               __Pyx_RaiseBufferIndexError(__pyx_t_67);
-              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 756; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 754; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
             }
             *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_keep.rcbuffer->pybuffer.buf, __pyx_t_66, __pyx_pybuffernd_keep.diminfo[0].strides) = __pyx_v_FLAG_MAX;
 
-            /* "linearSkeleton_cython.pyx":757
+            /* "linearSkeleton_cython.pyx":755
  *                     for i in range(minI+1, maxI+1):
  *                         keep[i] = FLAG_MAX;
  *                         widths[minI] = fmin(widths[minI], widths[i]);             # <<<<<<<<<<<<<<
@@ -11258,7 +11252,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
             if (unlikely(((PyObject *)__pyx_v_widths) == Py_None)) {
               PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 757; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 755; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
             }
             __pyx_t_67 = __pyx_v_minI;
             __pyx_t_68 = -1;
@@ -11268,11 +11262,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
             } else if (unlikely(__pyx_t_67 >= __pyx_pybuffernd_widths.diminfo[0].shape)) __pyx_t_68 = 0;
             if (unlikely(__pyx_t_68 != -1)) {
               __Pyx_RaiseBufferIndexError(__pyx_t_68);
-              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 757; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 755; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
             }
             if (unlikely(((PyObject *)__pyx_v_widths) == Py_None)) {
               PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 757; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 755; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
             }
             __pyx_t_68 = __pyx_v_i;
             __pyx_t_69 = -1;
@@ -11282,11 +11276,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
             } else if (unlikely(__pyx_t_68 >= __pyx_pybuffernd_widths.diminfo[0].shape)) __pyx_t_69 = 0;
             if (unlikely(__pyx_t_69 != -1)) {
               __Pyx_RaiseBufferIndexError(__pyx_t_69);
-              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 757; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 755; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
             }
             if (unlikely(((PyObject *)__pyx_v_widths) == Py_None)) {
               PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 757; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 755; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
             }
             __pyx_t_69 = __pyx_v_minI;
             __pyx_t_70 = -1;
@@ -11296,7 +11290,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
             } else if (unlikely(__pyx_t_69 >= __pyx_pybuffernd_widths.diminfo[0].shape)) __pyx_t_70 = 0;
             if (unlikely(__pyx_t_70 != -1)) {
               __Pyx_RaiseBufferIndexError(__pyx_t_70);
-              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 757; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+              {__pyx_filename = __pyx_f[0]; __pyx_lineno = 755; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
             }
             *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_widths.rcbuffer->pybuffer.buf, __pyx_t_69, __pyx_pybuffernd_widths.diminfo[0].strides) = fmin((*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_widths.rcbuffer->pybuffer.buf, __pyx_t_67, __pyx_pybuffernd_widths.diminfo[0].strides)), (*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_widths.rcbuffer->pybuffer.buf, __pyx_t_68, __pyx_pybuffernd_widths.diminfo[0].strides)));
           }
@@ -11304,7 +11298,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
         }
         /*else*/ {
 
-          /* "linearSkeleton_cython.pyx":760
+          /* "linearSkeleton_cython.pyx":758
  *                 #//% Remove the loop.
  *                 else:
  *                     if(minI < maxI - 1):             # <<<<<<<<<<<<<<
@@ -11314,7 +11308,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           __pyx_t_11 = ((__pyx_v_minI < (__pyx_v_maxI - 1)) != 0);
           if (__pyx_t_11) {
 
-            /* "linearSkeleton_cython.pyx":761
+            /* "linearSkeleton_cython.pyx":759
  *                 else:
  *                     if(minI < maxI - 1):
  *                         for i in range(minI+1, maxI):             # <<<<<<<<<<<<<<
@@ -11325,7 +11319,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
             for (__pyx_t_70 = (__pyx_v_minI + 1); __pyx_t_70 < __pyx_t_64; __pyx_t_70+=1) {
               __pyx_v_i = __pyx_t_70;
 
-              /* "linearSkeleton_cython.pyx":762
+              /* "linearSkeleton_cython.pyx":760
  *                     if(minI < maxI - 1):
  *                         for i in range(minI+1, maxI):
  *                             keep[i] = FLAG_MAX;             # <<<<<<<<<<<<<<
@@ -11334,7 +11328,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
               if (unlikely(((PyObject *)__pyx_v_keep) == Py_None)) {
                 PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 760; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
               }
               __pyx_t_71 = __pyx_v_i;
               __pyx_t_72 = -1;
@@ -11344,11 +11338,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
               } else if (unlikely(__pyx_t_71 >= __pyx_pybuffernd_keep.diminfo[0].shape)) __pyx_t_72 = 0;
               if (unlikely(__pyx_t_72 != -1)) {
                 __Pyx_RaiseBufferIndexError(__pyx_t_72);
-                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 760; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
               }
               *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_keep.rcbuffer->pybuffer.buf, __pyx_t_71, __pyx_pybuffernd_keep.diminfo[0].strides) = __pyx_v_FLAG_MAX;
 
-              /* "linearSkeleton_cython.pyx":763
+              /* "linearSkeleton_cython.pyx":761
  *                         for i in range(minI+1, maxI):
  *                             keep[i] = FLAG_MAX;
  *                             widths[minI] = fmin(widths[minI], widths[i]);             # <<<<<<<<<<<<<<
@@ -11357,7 +11351,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
               if (unlikely(((PyObject *)__pyx_v_widths) == Py_None)) {
                 PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 763; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 761; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
               }
               __pyx_t_72 = __pyx_v_minI;
               __pyx_t_73 = -1;
@@ -11367,11 +11361,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
               } else if (unlikely(__pyx_t_72 >= __pyx_pybuffernd_widths.diminfo[0].shape)) __pyx_t_73 = 0;
               if (unlikely(__pyx_t_73 != -1)) {
                 __Pyx_RaiseBufferIndexError(__pyx_t_73);
-                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 763; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 761; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
               }
               if (unlikely(((PyObject *)__pyx_v_widths) == Py_None)) {
                 PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 763; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 761; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
               }
               __pyx_t_73 = __pyx_v_i;
               __pyx_t_74 = -1;
@@ -11381,11 +11375,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
               } else if (unlikely(__pyx_t_73 >= __pyx_pybuffernd_widths.diminfo[0].shape)) __pyx_t_74 = 0;
               if (unlikely(__pyx_t_74 != -1)) {
                 __Pyx_RaiseBufferIndexError(__pyx_t_74);
-                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 763; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 761; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
               }
               if (unlikely(((PyObject *)__pyx_v_widths) == Py_None)) {
                 PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 763; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 761; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
               }
               __pyx_t_74 = __pyx_v_minI;
               __pyx_t_75 = -1;
@@ -11395,11 +11389,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
               } else if (unlikely(__pyx_t_74 >= __pyx_pybuffernd_widths.diminfo[0].shape)) __pyx_t_75 = 0;
               if (unlikely(__pyx_t_75 != -1)) {
                 __Pyx_RaiseBufferIndexError(__pyx_t_75);
-                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 763; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 761; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
               }
               *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_widths.rcbuffer->pybuffer.buf, __pyx_t_74, __pyx_pybuffernd_widths.diminfo[0].strides) = fmin((*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_widths.rcbuffer->pybuffer.buf, __pyx_t_72, __pyx_pybuffernd_widths.diminfo[0].strides)), (*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_widths.rcbuffer->pybuffer.buf, __pyx_t_73, __pyx_pybuffernd_widths.diminfo[0].strides)));
 
-              /* "linearSkeleton_cython.pyx":764
+              /* "linearSkeleton_cython.pyx":762
  *                             keep[i] = FLAG_MAX;
  *                             widths[minI] = fmin(widths[minI], widths[i]);
  *                             widths[maxI] = fmin(widths[maxI], widths[i]);             # <<<<<<<<<<<<<<
@@ -11408,7 +11402,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
               if (unlikely(((PyObject *)__pyx_v_widths) == Py_None)) {
                 PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 764; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
               }
               __pyx_t_75 = __pyx_v_maxI;
               __pyx_t_76 = -1;
@@ -11418,11 +11412,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
               } else if (unlikely(__pyx_t_75 >= __pyx_pybuffernd_widths.diminfo[0].shape)) __pyx_t_76 = 0;
               if (unlikely(__pyx_t_76 != -1)) {
                 __Pyx_RaiseBufferIndexError(__pyx_t_76);
-                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 764; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
               }
               if (unlikely(((PyObject *)__pyx_v_widths) == Py_None)) {
                 PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 764; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
               }
               __pyx_t_76 = __pyx_v_i;
               __pyx_t_77 = -1;
@@ -11432,11 +11426,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
               } else if (unlikely(__pyx_t_76 >= __pyx_pybuffernd_widths.diminfo[0].shape)) __pyx_t_77 = 0;
               if (unlikely(__pyx_t_77 != -1)) {
                 __Pyx_RaiseBufferIndexError(__pyx_t_77);
-                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 764; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
               }
               if (unlikely(((PyObject *)__pyx_v_widths) == Py_None)) {
                 PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 764; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
               }
               __pyx_t_77 = __pyx_v_maxI;
               __pyx_t_78 = -1;
@@ -11446,7 +11440,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
               } else if (unlikely(__pyx_t_77 >= __pyx_pybuffernd_widths.diminfo[0].shape)) __pyx_t_78 = 0;
               if (unlikely(__pyx_t_78 != -1)) {
                 __Pyx_RaiseBufferIndexError(__pyx_t_78);
-                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 764; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+                {__pyx_filename = __pyx_f[0]; __pyx_lineno = 762; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
               }
               *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_widths.rcbuffer->pybuffer.buf, __pyx_t_77, __pyx_pybuffernd_widths.diminfo[0].strides) = fmin((*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_widths.rcbuffer->pybuffer.buf, __pyx_t_75, __pyx_pybuffernd_widths.diminfo[0].strides)), (*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_widths.rcbuffer->pybuffer.buf, __pyx_t_76, __pyx_pybuffernd_widths.diminfo[0].strides)));
             }
@@ -11459,7 +11453,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       }
       __pyx_L30:;
 
-      /* "linearSkeleton_cython.pyx":767
+      /* "linearSkeleton_cython.pyx":765
  * 
  *             #//% Advance the first index for the skeleton loop.
  *             s1I = maxI if (s1I < maxI) else s1I + 1;             # <<<<<<<<<<<<<<
@@ -11476,7 +11470,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
     }
     /*else*/ {
 
-      /* "linearSkeleton_cython.pyx":770
+      /* "linearSkeleton_cython.pyx":768
  *         #//% Advance the first index for the skeleton loop.
  *         else:
  *             s1I = s1I + 1;             # <<<<<<<<<<<<<<
@@ -11488,7 +11482,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
     __pyx_L5:;
   }
 
-  /* "linearSkeleton_cython.pyx":773
+  /* "linearSkeleton_cython.pyx":771
  * 
  * 
  *     cdef int newTotal = 0;             # <<<<<<<<<<<<<<
@@ -11497,7 +11491,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
   __pyx_v_newTotal = 0;
 
-  /* "linearSkeleton_cython.pyx":774
+  /* "linearSkeleton_cython.pyx":772
  * 
  *     cdef int newTotal = 0;
  *     for i in range(number_points):             # <<<<<<<<<<<<<<
@@ -11508,7 +11502,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
   for (__pyx_t_70 = 0; __pyx_t_70 < __pyx_t_64; __pyx_t_70+=1) {
     __pyx_v_i = __pyx_t_70;
 
-    /* "linearSkeleton_cython.pyx":775
+    /* "linearSkeleton_cython.pyx":773
  *     cdef int newTotal = 0;
  *     for i in range(number_points):
  *         if (keep[i] != FLAG_MAX):             # <<<<<<<<<<<<<<
@@ -11517,7 +11511,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
     if (unlikely(((PyObject *)__pyx_v_keep) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 775; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 773; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_78 = __pyx_v_i;
     __pyx_t_79 = -1;
@@ -11527,12 +11521,12 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
     } else if (unlikely(__pyx_t_78 >= __pyx_pybuffernd_keep.diminfo[0].shape)) __pyx_t_79 = 0;
     if (unlikely(__pyx_t_79 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_79);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 775; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 773; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_11 = (((*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_keep.rcbuffer->pybuffer.buf, __pyx_t_78, __pyx_pybuffernd_keep.diminfo[0].strides)) != __pyx_v_FLAG_MAX) != 0);
     if (__pyx_t_11) {
 
-      /* "linearSkeleton_cython.pyx":776
+      /* "linearSkeleton_cython.pyx":774
  *     for i in range(number_points):
  *         if (keep[i] != FLAG_MAX):
  *             skeleton[newTotal, 0] = skeleton[i,0];             # <<<<<<<<<<<<<<
@@ -11541,7 +11535,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
       if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 776; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 774; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_79 = __pyx_v_i;
       __pyx_t_65 = 0;
@@ -11556,11 +11550,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       } else if (unlikely(__pyx_t_65 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_80 = 1;
       if (unlikely(__pyx_t_80 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_80);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 776; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 774; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 776; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 774; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_80 = __pyx_v_newTotal;
       __pyx_t_81 = 0;
@@ -11575,11 +11569,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       } else if (unlikely(__pyx_t_81 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_82 = 1;
       if (unlikely(__pyx_t_82 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_82);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 776; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 774; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       *__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_80, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_81, __pyx_pybuffernd_skeleton.diminfo[1].strides) = (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_79, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_65, __pyx_pybuffernd_skeleton.diminfo[1].strides));
 
-      /* "linearSkeleton_cython.pyx":777
+      /* "linearSkeleton_cython.pyx":775
  *         if (keep[i] != FLAG_MAX):
  *             skeleton[newTotal, 0] = skeleton[i,0];
  *             skeleton[newTotal, 1] = skeleton[i,1];             # <<<<<<<<<<<<<<
@@ -11588,7 +11582,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
       if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 777; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 775; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_82 = __pyx_v_i;
       __pyx_t_83 = 1;
@@ -11603,11 +11597,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       } else if (unlikely(__pyx_t_83 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_84 = 1;
       if (unlikely(__pyx_t_84 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_84);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 777; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 775; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 777; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 775; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_84 = __pyx_v_newTotal;
       __pyx_t_85 = 1;
@@ -11622,11 +11616,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       } else if (unlikely(__pyx_t_85 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_86 = 1;
       if (unlikely(__pyx_t_86 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_86);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 777; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 775; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       *__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_84, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_85, __pyx_pybuffernd_skeleton.diminfo[1].strides) = (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_82, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_83, __pyx_pybuffernd_skeleton.diminfo[1].strides));
 
-      /* "linearSkeleton_cython.pyx":778
+      /* "linearSkeleton_cython.pyx":776
  *             skeleton[newTotal, 0] = skeleton[i,0];
  *             skeleton[newTotal, 1] = skeleton[i,1];
  *             widths[newTotal] = widths[i];             # <<<<<<<<<<<<<<
@@ -11635,7 +11629,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
       if (unlikely(((PyObject *)__pyx_v_widths) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 778; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 776; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_86 = __pyx_v_i;
       __pyx_t_87 = -1;
@@ -11645,11 +11639,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       } else if (unlikely(__pyx_t_86 >= __pyx_pybuffernd_widths.diminfo[0].shape)) __pyx_t_87 = 0;
       if (unlikely(__pyx_t_87 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_87);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 778; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 776; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       if (unlikely(((PyObject *)__pyx_v_widths) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 778; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 776; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_87 = __pyx_v_newTotal;
       __pyx_t_88 = -1;
@@ -11659,11 +11653,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       } else if (unlikely(__pyx_t_87 >= __pyx_pybuffernd_widths.diminfo[0].shape)) __pyx_t_88 = 0;
       if (unlikely(__pyx_t_88 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_88);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 778; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 776; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_widths.rcbuffer->pybuffer.buf, __pyx_t_87, __pyx_pybuffernd_widths.diminfo[0].strides) = (*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_widths.rcbuffer->pybuffer.buf, __pyx_t_86, __pyx_pybuffernd_widths.diminfo[0].strides));
 
-      /* "linearSkeleton_cython.pyx":779
+      /* "linearSkeleton_cython.pyx":777
  *             skeleton[newTotal, 1] = skeleton[i,1];
  *             widths[newTotal] = widths[i];
  *             newTotal+=1;             # <<<<<<<<<<<<<<
@@ -11676,7 +11670,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
     __pyx_L41:;
   }
 
-  /* "linearSkeleton_cython.pyx":782
+  /* "linearSkeleton_cython.pyx":780
  * 
  *     #//% The head and tail have no width.
  *     widths[0] = 0;             # <<<<<<<<<<<<<<
@@ -11685,7 +11679,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
   if (unlikely(((PyObject *)__pyx_v_widths) == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 782; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 780; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_t_89 = 0;
   __pyx_t_64 = -1;
@@ -11695,11 +11689,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
   } else if (unlikely(__pyx_t_89 >= __pyx_pybuffernd_widths.diminfo[0].shape)) __pyx_t_64 = 0;
   if (unlikely(__pyx_t_64 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_64);
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 782; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 780; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_widths.rcbuffer->pybuffer.buf, __pyx_t_89, __pyx_pybuffernd_widths.diminfo[0].strides) = 0.0;
 
-  /* "linearSkeleton_cython.pyx":783
+  /* "linearSkeleton_cython.pyx":781
  *     #//% The head and tail have no width.
  *     widths[0] = 0;
  *     widths[newTotal-1] = 0;             # <<<<<<<<<<<<<<
@@ -11708,7 +11702,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
   if (unlikely(((PyObject *)__pyx_v_widths) == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 783; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 781; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_t_90 = (__pyx_v_newTotal - 1);
   __pyx_t_64 = -1;
@@ -11718,11 +11712,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
   } else if (unlikely(__pyx_t_90 >= __pyx_pybuffernd_widths.diminfo[0].shape)) __pyx_t_64 = 0;
   if (unlikely(__pyx_t_64 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_64);
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 783; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 781; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_widths.rcbuffer->pybuffer.buf, __pyx_t_90, __pyx_pybuffernd_widths.diminfo[0].strides) = 0.0;
 
-  /* "linearSkeleton_cython.pyx":784
+  /* "linearSkeleton_cython.pyx":782
  *     widths[0] = 0;
  *     widths[newTotal-1] = 0;
  *     number_points = newTotal;             # <<<<<<<<<<<<<<
@@ -11731,7 +11725,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
   __pyx_v_number_points = __pyx_v_newTotal;
 
-  /* "linearSkeleton_cython.pyx":785
+  /* "linearSkeleton_cython.pyx":783
  *     widths[newTotal-1] = 0;
  *     number_points = newTotal;
  *     last_index = number_points-1             # <<<<<<<<<<<<<<
@@ -11740,7 +11734,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
   __pyx_v_last_index = (__pyx_v_number_points - 1);
 
-  /* "linearSkeleton_cython.pyx":787
+  /* "linearSkeleton_cython.pyx":785
  *     last_index = number_points-1
  * 
  *     del iSortC, pSortC;             # <<<<<<<<<<<<<<
@@ -11752,7 +11746,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
   __Pyx_DECREF(((PyObject *)__pyx_v_pSortC));
   __pyx_v_pSortC = NULL;
 
-  /* "linearSkeleton_cython.pyx":791
+  /* "linearSkeleton_cython.pyx":789
  *     #//% Heal the skeleton by interpolating missing points.
  * 
  *     cdef int j = 0, m;             # <<<<<<<<<<<<<<
@@ -11761,7 +11755,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
   __pyx_v_j = 0;
 
-  /* "linearSkeleton_cython.pyx":799
+  /* "linearSkeleton_cython.pyx":797
  *     cdef int n_interp
  * 
  *     for i in range(last_index):             # <<<<<<<<<<<<<<
@@ -11772,7 +11766,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
   for (__pyx_t_70 = 0; __pyx_t_70 < __pyx_t_64; __pyx_t_70+=1) {
     __pyx_v_i = __pyx_t_70;
 
-    /* "linearSkeleton_cython.pyx":801
+    /* "linearSkeleton_cython.pyx":799
  *     for i in range(last_index):
  *         #//% Initialize the point differences.
  *         y = absDiff(skeleton[i + 1, 0], skeleton[i, 0]);             # <<<<<<<<<<<<<<
@@ -11781,7 +11775,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
     if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 801; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 799; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_91 = (__pyx_v_i + 1);
     __pyx_t_92 = 0;
@@ -11796,11 +11790,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
     } else if (unlikely(__pyx_t_92 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_88 = 1;
     if (unlikely(__pyx_t_88 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_88);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 801; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 799; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 801; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 799; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_88 = __pyx_v_i;
     __pyx_t_93 = 0;
@@ -11815,11 +11809,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
     } else if (unlikely(__pyx_t_93 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_94 = 1;
     if (unlikely(__pyx_t_94 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_94);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 801; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 799; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_v_y = __pyx_f_21linearSkeleton_cython_absDiff((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_91, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_92, __pyx_pybuffernd_skeleton.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_88, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_93, __pyx_pybuffernd_skeleton.diminfo[1].strides)));
 
-    /* "linearSkeleton_cython.pyx":802
+    /* "linearSkeleton_cython.pyx":800
  *         #//% Initialize the point differences.
  *         y = absDiff(skeleton[i + 1, 0], skeleton[i, 0]);
  *         x = absDiff(skeleton[i + 1, 1], skeleton[i, 1]);             # <<<<<<<<<<<<<<
@@ -11828,7 +11822,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
     if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 802; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 800; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_95 = (__pyx_v_i + 1);
     __pyx_t_96 = 1;
@@ -11843,11 +11837,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
     } else if (unlikely(__pyx_t_96 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_94 = 1;
     if (unlikely(__pyx_t_94 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_94);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 802; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 800; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 802; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 800; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_t_94 = __pyx_v_i;
     __pyx_t_97 = 1;
@@ -11862,11 +11856,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
     } else if (unlikely(__pyx_t_97 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_98 = 1;
     if (unlikely(__pyx_t_98 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_98);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 802; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 800; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __pyx_v_x = __pyx_f_21linearSkeleton_cython_absDiff((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_95, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_96, __pyx_pybuffernd_skeleton.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_94, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_97, __pyx_pybuffernd_skeleton.diminfo[1].strides)));
 
-    /* "linearSkeleton_cython.pyx":805
+    /* "linearSkeleton_cython.pyx":803
  * 
  *         #//% Add the point.
  *         if ((y == 0. or y == 1.) and (x == 0. or x == 1.)):             # <<<<<<<<<<<<<<
@@ -11896,7 +11890,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
     __pyx_L45_bool_binop_done:;
     if (__pyx_t_11) {
 
-      /* "linearSkeleton_cython.pyx":806
+      /* "linearSkeleton_cython.pyx":804
  *         #//% Add the point.
  *         if ((y == 0. or y == 1.) and (x == 0. or x == 1.)):
  *             cSkeleton[j,0] = skeleton[i,0];             # <<<<<<<<<<<<<<
@@ -11905,7 +11899,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
       if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 806; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 804; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_98 = __pyx_v_i;
       __pyx_t_99 = 0;
@@ -11920,11 +11914,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       } else if (unlikely(__pyx_t_99 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_100 = 1;
       if (unlikely(__pyx_t_100 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_100);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 806; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 804; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       if (unlikely(((PyObject *)__pyx_v_cSkeleton) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 806; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 804; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_100 = __pyx_v_j;
       __pyx_t_101 = 0;
@@ -11939,11 +11933,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       } else if (unlikely(__pyx_t_101 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_102 = 1;
       if (unlikely(__pyx_t_102 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_102);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 806; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 804; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       *__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_100, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_101, __pyx_pybuffernd_cSkeleton.diminfo[1].strides) = (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_98, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_99, __pyx_pybuffernd_skeleton.diminfo[1].strides));
 
-      /* "linearSkeleton_cython.pyx":807
+      /* "linearSkeleton_cython.pyx":805
  *         if ((y == 0. or y == 1.) and (x == 0. or x == 1.)):
  *             cSkeleton[j,0] = skeleton[i,0];
  *             cSkeleton[j,1] = skeleton[i,1];             # <<<<<<<<<<<<<<
@@ -11952,7 +11946,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
       if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 807; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 805; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_102 = __pyx_v_i;
       __pyx_t_103 = 1;
@@ -11967,11 +11961,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       } else if (unlikely(__pyx_t_103 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_104 = 1;
       if (unlikely(__pyx_t_104 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_104);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 807; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 805; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       if (unlikely(((PyObject *)__pyx_v_cSkeleton) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 807; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 805; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_104 = __pyx_v_j;
       __pyx_t_105 = 1;
@@ -11986,11 +11980,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       } else if (unlikely(__pyx_t_105 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_106 = 1;
       if (unlikely(__pyx_t_106 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_106);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 807; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 805; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       *__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_104, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_105, __pyx_pybuffernd_cSkeleton.diminfo[1].strides) = (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_102, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_103, __pyx_pybuffernd_skeleton.diminfo[1].strides));
 
-      /* "linearSkeleton_cython.pyx":809
+      /* "linearSkeleton_cython.pyx":807
  *             cSkeleton[j,1] = skeleton[i,1];
  * 
  *             cWidths[j] = widths[i];             # <<<<<<<<<<<<<<
@@ -11999,7 +11993,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
       if (unlikely(((PyObject *)__pyx_v_widths) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 809; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 807; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_106 = __pyx_v_i;
       __pyx_t_107 = -1;
@@ -12009,11 +12003,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       } else if (unlikely(__pyx_t_106 >= __pyx_pybuffernd_widths.diminfo[0].shape)) __pyx_t_107 = 0;
       if (unlikely(__pyx_t_107 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_107);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 809; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 807; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       if (unlikely(((PyObject *)__pyx_v_cWidths) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 809; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 807; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_107 = __pyx_v_j;
       __pyx_t_108 = -1;
@@ -12023,11 +12017,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       } else if (unlikely(__pyx_t_107 >= __pyx_pybuffernd_cWidths.diminfo[0].shape)) __pyx_t_108 = 0;
       if (unlikely(__pyx_t_108 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_108);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 809; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 807; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cWidths.rcbuffer->pybuffer.buf, __pyx_t_107, __pyx_pybuffernd_cWidths.diminfo[0].strides) = (*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_widths.rcbuffer->pybuffer.buf, __pyx_t_106, __pyx_pybuffernd_widths.diminfo[0].strides));
 
-      /* "linearSkeleton_cython.pyx":810
+      /* "linearSkeleton_cython.pyx":808
  * 
  *             cWidths[j] = widths[i];
  *             j +=1;             # <<<<<<<<<<<<<<
@@ -12039,25 +12033,133 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
     }
     /*else*/ {
 
-      /* "linearSkeleton_cython.pyx":814
+      /* "linearSkeleton_cython.pyx":812
  *         #//% Interpolate the missing points.
  *         else:
  *             points = fmax(y, x);             # <<<<<<<<<<<<<<
- *             y1 = skeleton[i,0];
- *             y2 = skeleton[i + 1,0];
+ * 
+ *             if j + points > buff_size:
  */
       __pyx_v_points = fmax(__pyx_v_y, __pyx_v_x);
 
-      /* "linearSkeleton_cython.pyx":815
- *         else:
+      /* "linearSkeleton_cython.pyx":814
  *             points = fmax(y, x);
+ * 
+ *             if j + points > buff_size:             # <<<<<<<<<<<<<<
+ *                 #increase in case there is a buffer overflow
+ *                 buff_size *= 2
+ */
+      __pyx_t_11 = (((__pyx_v_j + __pyx_v_points) > __pyx_v_buff_size) != 0);
+      if (__pyx_t_11) {
+
+        /* "linearSkeleton_cython.pyx":816
+ *             if j + points > buff_size:
+ *                 #increase in case there is a buffer overflow
+ *                 buff_size *= 2             # <<<<<<<<<<<<<<
+ *                 cSkeleton.resize((buff_size,2))
+ *                 cWidths.resize(buff_size)
+ */
+        __pyx_v_buff_size = (__pyx_v_buff_size * 2);
+
+        /* "linearSkeleton_cython.pyx":817
+ *                 #increase in case there is a buffer overflow
+ *                 buff_size *= 2
+ *                 cSkeleton.resize((buff_size,2))             # <<<<<<<<<<<<<<
+ *                 cWidths.resize(buff_size)
+ * 
+ */
+        __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_cSkeleton), __pyx_n_s_resize); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 817; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_1);
+        __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_buff_size); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 817; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_2);
+        __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 817; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_4);
+        PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_2);
+        __Pyx_GIVEREF(__pyx_t_2);
+        __Pyx_INCREF(__pyx_int_2);
+        PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_int_2);
+        __Pyx_GIVEREF(__pyx_int_2);
+        __pyx_t_2 = 0;
+        __pyx_t_2 = NULL;
+        if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_1))) {
+          __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_1);
+          if (likely(__pyx_t_2)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
+            __Pyx_INCREF(__pyx_t_2);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_1, function);
+          }
+        }
+        if (!__pyx_t_2) {
+          __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_4); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 817; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+          __Pyx_GOTREF(__pyx_t_3);
+        } else {
+          __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 817; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __Pyx_GOTREF(__pyx_t_5);
+          PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_2); __Pyx_GIVEREF(__pyx_t_2); __pyx_t_2 = NULL;
+          PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_t_4);
+          __Pyx_GIVEREF(__pyx_t_4);
+          __pyx_t_4 = 0;
+          __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_5, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 817; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __Pyx_GOTREF(__pyx_t_3);
+          __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+        }
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+
+        /* "linearSkeleton_cython.pyx":818
+ *                 buff_size *= 2
+ *                 cSkeleton.resize((buff_size,2))
+ *                 cWidths.resize(buff_size)             # <<<<<<<<<<<<<<
+ * 
+ *             y1 = skeleton[i,0];
+ */
+        __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_cWidths), __pyx_n_s_resize); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 818; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_1);
+        __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_buff_size); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 818; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __Pyx_GOTREF(__pyx_t_5);
+        __pyx_t_4 = NULL;
+        if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_1))) {
+          __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_1);
+          if (likely(__pyx_t_4)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
+            __Pyx_INCREF(__pyx_t_4);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_1, function);
+          }
+        }
+        if (!__pyx_t_4) {
+          __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_5); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 818; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+          __Pyx_GOTREF(__pyx_t_3);
+        } else {
+          __pyx_t_2 = PyTuple_New(1+1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 818; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __Pyx_GOTREF(__pyx_t_2);
+          PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_4); __Pyx_GIVEREF(__pyx_t_4); __pyx_t_4 = NULL;
+          PyTuple_SET_ITEM(__pyx_t_2, 0+1, __pyx_t_5);
+          __Pyx_GIVEREF(__pyx_t_5);
+          __pyx_t_5 = 0;
+          __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 818; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __Pyx_GOTREF(__pyx_t_3);
+          __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        }
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+        goto __pyx_L49;
+      }
+      __pyx_L49:;
+
+      /* "linearSkeleton_cython.pyx":820
+ *                 cWidths.resize(buff_size)
+ * 
  *             y1 = skeleton[i,0];             # <<<<<<<<<<<<<<
  *             y2 = skeleton[i + 1,0];
  *             delY = (y2-y1)/points;
  */
       if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 815; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 820; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_108 = __pyx_v_i;
       __pyx_t_109 = 0;
@@ -12072,12 +12174,12 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       } else if (unlikely(__pyx_t_109 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_110 = 1;
       if (unlikely(__pyx_t_110 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_110);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 815; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 820; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_v_y1 = (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_108, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_109, __pyx_pybuffernd_skeleton.diminfo[1].strides));
 
-      /* "linearSkeleton_cython.pyx":816
- *             points = fmax(y, x);
+      /* "linearSkeleton_cython.pyx":821
+ * 
  *             y1 = skeleton[i,0];
  *             y2 = skeleton[i + 1,0];             # <<<<<<<<<<<<<<
  *             delY = (y2-y1)/points;
@@ -12085,7 +12187,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
       if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 816; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 821; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_111 = (__pyx_v_i + 1);
       __pyx_t_112 = 0;
@@ -12100,11 +12202,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       } else if (unlikely(__pyx_t_112 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_110 = 1;
       if (unlikely(__pyx_t_110 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_110);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 816; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 821; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_v_y2 = (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_111, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_112, __pyx_pybuffernd_skeleton.diminfo[1].strides));
 
-      /* "linearSkeleton_cython.pyx":817
+      /* "linearSkeleton_cython.pyx":822
  *             y1 = skeleton[i,0];
  *             y2 = skeleton[i + 1,0];
  *             delY = (y2-y1)/points;             # <<<<<<<<<<<<<<
@@ -12120,11 +12222,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
         #ifdef WITH_THREAD
         PyGILState_Release(__pyx_gilstate_save);
         #endif
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 817; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 822; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_v_delY = (__pyx_t_113 / __pyx_v_points);
 
-      /* "linearSkeleton_cython.pyx":818
+      /* "linearSkeleton_cython.pyx":823
  *             y2 = skeleton[i + 1,0];
  *             delY = (y2-y1)/points;
  *             x1 = skeleton[i,1];             # <<<<<<<<<<<<<<
@@ -12133,7 +12235,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
       if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 818; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 823; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_110 = __pyx_v_i;
       __pyx_t_114 = 1;
@@ -12148,11 +12250,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       } else if (unlikely(__pyx_t_114 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_115 = 1;
       if (unlikely(__pyx_t_115 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_115);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 818; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 823; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_v_x1 = (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_110, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_114, __pyx_pybuffernd_skeleton.diminfo[1].strides));
 
-      /* "linearSkeleton_cython.pyx":819
+      /* "linearSkeleton_cython.pyx":824
  *             delY = (y2-y1)/points;
  *             x1 = skeleton[i,1];
  *             x2 = skeleton[i + 1,1];             # <<<<<<<<<<<<<<
@@ -12161,7 +12263,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
       if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 819; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 824; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_116 = (__pyx_v_i + 1);
       __pyx_t_117 = 1;
@@ -12176,11 +12278,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       } else if (unlikely(__pyx_t_117 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_115 = 1;
       if (unlikely(__pyx_t_115 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_115);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 819; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 824; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_v_x2 = (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_116, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_117, __pyx_pybuffernd_skeleton.diminfo[1].strides));
 
-      /* "linearSkeleton_cython.pyx":820
+      /* "linearSkeleton_cython.pyx":825
  *             x1 = skeleton[i,1];
  *             x2 = skeleton[i + 1,1];
  *             delX = (x2-x1)/points;             # <<<<<<<<<<<<<<
@@ -12196,11 +12298,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
         #ifdef WITH_THREAD
         PyGILState_Release(__pyx_gilstate_save);
         #endif
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 820; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 825; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_v_delX = (__pyx_t_113 / __pyx_v_points);
 
-      /* "linearSkeleton_cython.pyx":821
+      /* "linearSkeleton_cython.pyx":826
  *             x2 = skeleton[i + 1,1];
  *             delX = (x2-x1)/points;
  *             delW = (widths[i + 1] - widths[i])/points;             # <<<<<<<<<<<<<<
@@ -12209,7 +12311,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
       if (unlikely(((PyObject *)__pyx_v_widths) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 821; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 826; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_118 = (__pyx_v_i + 1);
       __pyx_t_115 = -1;
@@ -12219,11 +12321,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       } else if (unlikely(__pyx_t_118 >= __pyx_pybuffernd_widths.diminfo[0].shape)) __pyx_t_115 = 0;
       if (unlikely(__pyx_t_115 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_115);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 821; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 826; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       if (unlikely(((PyObject *)__pyx_v_widths) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 821; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 826; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_115 = __pyx_v_i;
       __pyx_t_119 = -1;
@@ -12233,7 +12335,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       } else if (unlikely(__pyx_t_115 >= __pyx_pybuffernd_widths.diminfo[0].shape)) __pyx_t_119 = 0;
       if (unlikely(__pyx_t_119 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_119);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 821; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 826; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_t_120 = ((*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_widths.rcbuffer->pybuffer.buf, __pyx_t_118, __pyx_pybuffernd_widths.diminfo[0].strides)) - (*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_widths.rcbuffer->pybuffer.buf, __pyx_t_115, __pyx_pybuffernd_widths.diminfo[0].strides)));
       if (unlikely(__pyx_v_points == 0)) {
@@ -12244,11 +12346,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
         #ifdef WITH_THREAD
         PyGILState_Release(__pyx_gilstate_save);
         #endif
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 821; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 826; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_v_delW = (__pyx_t_120 / __pyx_v_points);
 
-      /* "linearSkeleton_cython.pyx":824
+      /* "linearSkeleton_cython.pyx":829
  * 
  *             #used to avoid repeated points (they can overflow the buffer)
  *             xprev  = -1;             # <<<<<<<<<<<<<<
@@ -12257,7 +12359,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
       __pyx_v_xprev = -1.0;
 
-      /* "linearSkeleton_cython.pyx":825
+      /* "linearSkeleton_cython.pyx":830
  *             #used to avoid repeated points (they can overflow the buffer)
  *             xprev  = -1;
  *             yprev  = -1;             # <<<<<<<<<<<<<<
@@ -12266,7 +12368,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
       __pyx_v_yprev = -1.0;
 
-      /* "linearSkeleton_cython.pyx":826
+      /* "linearSkeleton_cython.pyx":831
  *             xprev  = -1;
  *             yprev  = -1;
  *             n_interp = 0; #number of points in the interpolation             # <<<<<<<<<<<<<<
@@ -12275,7 +12377,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
       __pyx_v_n_interp = 0;
 
-      /* "linearSkeleton_cython.pyx":827
+      /* "linearSkeleton_cython.pyx":832
  *             yprev  = -1;
  *             n_interp = 0; #number of points in the interpolation
  *             for m in range(<int>points):             # <<<<<<<<<<<<<<
@@ -12286,49 +12388,49 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
       for (__pyx_t_121 = 0; __pyx_t_121 < __pyx_t_119; __pyx_t_121+=1) {
         __pyx_v_m = __pyx_t_121;
 
-        /* "linearSkeleton_cython.pyx":828
+        /* "linearSkeleton_cython.pyx":833
  *             n_interp = 0; #number of points in the interpolation
  *             for m in range(<int>points):
  *                 xd = round(x1 + m*delX);             # <<<<<<<<<<<<<<
  *                 yd = round(y1 + m*delY);
  *                 if (xd != xprev) or (yd !=yprev):
  */
-        __pyx_t_3 = PyFloat_FromDouble((__pyx_v_x1 + (__pyx_v_m * __pyx_v_delX))); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 828; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_3 = PyFloat_FromDouble((__pyx_v_x1 + (__pyx_v_m * __pyx_v_delX))); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 833; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_3);
-        __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 828; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 833; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_1);
         PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_3);
         __Pyx_GIVEREF(__pyx_t_3);
         __pyx_t_3 = 0;
-        __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_round, __pyx_t_1, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 828; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_round, __pyx_t_1, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 833; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_3);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        __pyx_t_113 = __pyx_PyFloat_AsFloat(__pyx_t_3); if (unlikely((__pyx_t_113 == (float)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 828; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_113 = __pyx_PyFloat_AsFloat(__pyx_t_3); if (unlikely((__pyx_t_113 == (float)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 833; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __pyx_v_xd = __pyx_t_113;
 
-        /* "linearSkeleton_cython.pyx":829
+        /* "linearSkeleton_cython.pyx":834
  *             for m in range(<int>points):
  *                 xd = round(x1 + m*delX);
  *                 yd = round(y1 + m*delY);             # <<<<<<<<<<<<<<
  *                 if (xd != xprev) or (yd !=yprev):
  *                     cSkeleton[j+n_interp, 0] = yd;
  */
-        __pyx_t_3 = PyFloat_FromDouble((__pyx_v_y1 + (__pyx_v_m * __pyx_v_delY))); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 829; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_3 = PyFloat_FromDouble((__pyx_v_y1 + (__pyx_v_m * __pyx_v_delY))); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 834; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_3);
-        __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 829; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 834; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_1);
         PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_3);
         __Pyx_GIVEREF(__pyx_t_3);
         __pyx_t_3 = 0;
-        __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_round, __pyx_t_1, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 829; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_round, __pyx_t_1, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 834; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_3);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        __pyx_t_113 = __pyx_PyFloat_AsFloat(__pyx_t_3); if (unlikely((__pyx_t_113 == (float)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 829; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_113 = __pyx_PyFloat_AsFloat(__pyx_t_3); if (unlikely((__pyx_t_113 == (float)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 834; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __pyx_v_yd = __pyx_t_113;
 
-        /* "linearSkeleton_cython.pyx":830
+        /* "linearSkeleton_cython.pyx":835
  *                 xd = round(x1 + m*delX);
  *                 yd = round(y1 + m*delY);
  *                 if (xd != xprev) or (yd !=yprev):             # <<<<<<<<<<<<<<
@@ -12339,14 +12441,14 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
         if (!__pyx_t_25) {
         } else {
           __pyx_t_11 = __pyx_t_25;
-          goto __pyx_L52_bool_binop_done;
+          goto __pyx_L53_bool_binop_done;
         }
         __pyx_t_25 = ((__pyx_v_yd != __pyx_v_yprev) != 0);
         __pyx_t_11 = __pyx_t_25;
-        __pyx_L52_bool_binop_done:;
+        __pyx_L53_bool_binop_done:;
         if (__pyx_t_11) {
 
-          /* "linearSkeleton_cython.pyx":831
+          /* "linearSkeleton_cython.pyx":836
  *                 yd = round(y1 + m*delY);
  *                 if (xd != xprev) or (yd !=yprev):
  *                     cSkeleton[j+n_interp, 0] = yd;             # <<<<<<<<<<<<<<
@@ -12355,7 +12457,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
           if (unlikely(((PyObject *)__pyx_v_cSkeleton) == Py_None)) {
             PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 831; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 836; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           __pyx_t_122 = (__pyx_v_j + __pyx_v_n_interp);
           __pyx_t_123 = 0;
@@ -12370,11 +12472,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           } else if (unlikely(__pyx_t_123 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_124 = 1;
           if (unlikely(__pyx_t_124 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_124);
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 831; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 836; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           *__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_122, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_123, __pyx_pybuffernd_cSkeleton.diminfo[1].strides) = __pyx_v_yd;
 
-          /* "linearSkeleton_cython.pyx":832
+          /* "linearSkeleton_cython.pyx":837
  *                 if (xd != xprev) or (yd !=yprev):
  *                     cSkeleton[j+n_interp, 0] = yd;
  *                     cSkeleton[j+n_interp, 1] = xd;             # <<<<<<<<<<<<<<
@@ -12383,7 +12485,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
           if (unlikely(((PyObject *)__pyx_v_cSkeleton) == Py_None)) {
             PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 832; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 837; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           __pyx_t_124 = (__pyx_v_j + __pyx_v_n_interp);
           __pyx_t_125 = 1;
@@ -12398,11 +12500,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           } else if (unlikely(__pyx_t_125 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_126 = 1;
           if (unlikely(__pyx_t_126 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_126);
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 832; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 837; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           *__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_124, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_125, __pyx_pybuffernd_cSkeleton.diminfo[1].strides) = __pyx_v_xd;
 
-          /* "linearSkeleton_cython.pyx":833
+          /* "linearSkeleton_cython.pyx":838
  *                     cSkeleton[j+n_interp, 0] = yd;
  *                     cSkeleton[j+n_interp, 1] = xd;
  *                     cWidths[j+n_interp] = round(widths[i] + m*delW);             # <<<<<<<<<<<<<<
@@ -12411,7 +12513,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
           if (unlikely(((PyObject *)__pyx_v_widths) == Py_None)) {
             PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 833; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 838; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           __pyx_t_126 = __pyx_v_i;
           __pyx_t_127 = -1;
@@ -12421,23 +12523,23 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           } else if (unlikely(__pyx_t_126 >= __pyx_pybuffernd_widths.diminfo[0].shape)) __pyx_t_127 = 0;
           if (unlikely(__pyx_t_127 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_127);
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 833; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 838; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
-          __pyx_t_3 = PyFloat_FromDouble(((*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_widths.rcbuffer->pybuffer.buf, __pyx_t_126, __pyx_pybuffernd_widths.diminfo[0].strides)) + (__pyx_v_m * __pyx_v_delW))); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 833; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __pyx_t_3 = PyFloat_FromDouble(((*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_widths.rcbuffer->pybuffer.buf, __pyx_t_126, __pyx_pybuffernd_widths.diminfo[0].strides)) + (__pyx_v_m * __pyx_v_delW))); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 838; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           __Pyx_GOTREF(__pyx_t_3);
-          __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 833; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 838; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           __Pyx_GOTREF(__pyx_t_1);
           PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_3);
           __Pyx_GIVEREF(__pyx_t_3);
           __pyx_t_3 = 0;
-          __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_round, __pyx_t_1, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 833; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_round, __pyx_t_1, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 838; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           __Pyx_GOTREF(__pyx_t_3);
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-          __pyx_t_120 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_120 == (npy_double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 833; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          __pyx_t_120 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_120 == (npy_double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 838; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
           if (unlikely(((PyObject *)__pyx_v_cWidths) == Py_None)) {
             PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 833; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 838; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           __pyx_t_127 = (__pyx_v_j + __pyx_v_n_interp);
           __pyx_t_128 = -1;
@@ -12447,11 +12549,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
           } else if (unlikely(__pyx_t_127 >= __pyx_pybuffernd_cWidths.diminfo[0].shape)) __pyx_t_128 = 0;
           if (unlikely(__pyx_t_128 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_128);
-            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 833; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+            {__pyx_filename = __pyx_f[0]; __pyx_lineno = 838; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
           }
           *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cWidths.rcbuffer->pybuffer.buf, __pyx_t_127, __pyx_pybuffernd_cWidths.diminfo[0].strides) = __pyx_t_120;
 
-          /* "linearSkeleton_cython.pyx":834
+          /* "linearSkeleton_cython.pyx":839
  *                     cSkeleton[j+n_interp, 1] = xd;
  *                     cWidths[j+n_interp] = round(widths[i] + m*delW);
  *                     n_interp += 1;             # <<<<<<<<<<<<<<
@@ -12459,12 +12561,12 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  * 
  */
           __pyx_v_n_interp = (__pyx_v_n_interp + 1);
-          goto __pyx_L51;
+          goto __pyx_L52;
         }
-        __pyx_L51:;
+        __pyx_L52:;
       }
 
-      /* "linearSkeleton_cython.pyx":835
+      /* "linearSkeleton_cython.pyx":840
  *                     cWidths[j+n_interp] = round(widths[i] + m*delW);
  *                     n_interp += 1;
  *             j += n_interp+1;             # <<<<<<<<<<<<<<
@@ -12476,253 +12578,148 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
     __pyx_L44:;
   }
 
-  /* "linearSkeleton_cython.pyx":839
+  /* "linearSkeleton_cython.pyx":844
  * 
  *     #//% Add the last point.
- *     if ((cSkeleton[0,0] != skeleton[last_index,0]) or \             # <<<<<<<<<<<<<<
- *     (cSkeleton[buff_size-1,1] != skeleton[last_index,1])):
- *         cSkeleton[j,0] = skeleton[last_index,0];
+ *     cSkeleton[j,0] = skeleton[last_index,0];             # <<<<<<<<<<<<<<
+ *     cSkeleton[j,1] = skeleton[last_index,1];
+ *     cWidths[j] = widths[last_index];
  */
-  if (unlikely(((PyObject *)__pyx_v_cSkeleton) == Py_None)) {
-    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 839; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-  __pyx_t_129 = 0;
-  __pyx_t_130 = 0;
-  __pyx_t_64 = -1;
-  if (__pyx_t_129 < 0) {
-    __pyx_t_129 += __pyx_pybuffernd_cSkeleton.diminfo[0].shape;
-    if (unlikely(__pyx_t_129 < 0)) __pyx_t_64 = 0;
-  } else if (unlikely(__pyx_t_129 >= __pyx_pybuffernd_cSkeleton.diminfo[0].shape)) __pyx_t_64 = 0;
-  if (__pyx_t_130 < 0) {
-    __pyx_t_130 += __pyx_pybuffernd_cSkeleton.diminfo[1].shape;
-    if (unlikely(__pyx_t_130 < 0)) __pyx_t_64 = 1;
-  } else if (unlikely(__pyx_t_130 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_64 = 1;
-  if (unlikely(__pyx_t_64 != -1)) {
-    __Pyx_RaiseBufferIndexError(__pyx_t_64);
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 839; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
   if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 839; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 844; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_t_64 = __pyx_v_last_index;
-  __pyx_t_131 = 0;
+  __pyx_t_129 = 0;
   __pyx_t_70 = -1;
   if (__pyx_t_64 < 0) {
     __pyx_t_64 += __pyx_pybuffernd_skeleton.diminfo[0].shape;
     if (unlikely(__pyx_t_64 < 0)) __pyx_t_70 = 0;
   } else if (unlikely(__pyx_t_64 >= __pyx_pybuffernd_skeleton.diminfo[0].shape)) __pyx_t_70 = 0;
-  if (__pyx_t_131 < 0) {
-    __pyx_t_131 += __pyx_pybuffernd_skeleton.diminfo[1].shape;
-    if (unlikely(__pyx_t_131 < 0)) __pyx_t_70 = 1;
-  } else if (unlikely(__pyx_t_131 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_70 = 1;
+  if (__pyx_t_129 < 0) {
+    __pyx_t_129 += __pyx_pybuffernd_skeleton.diminfo[1].shape;
+    if (unlikely(__pyx_t_129 < 0)) __pyx_t_70 = 1;
+  } else if (unlikely(__pyx_t_129 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_70 = 1;
   if (unlikely(__pyx_t_70 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_70);
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 839; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 844; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
-  __pyx_t_25 = (((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_129, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_130, __pyx_pybuffernd_cSkeleton.diminfo[1].strides)) != (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_64, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_131, __pyx_pybuffernd_skeleton.diminfo[1].strides))) != 0);
-  if (!__pyx_t_25) {
-  } else {
-    __pyx_t_11 = __pyx_t_25;
-    goto __pyx_L55_bool_binop_done;
-  }
-
-  /* "linearSkeleton_cython.pyx":840
- *     #//% Add the last point.
- *     if ((cSkeleton[0,0] != skeleton[last_index,0]) or \
- *     (cSkeleton[buff_size-1,1] != skeleton[last_index,1])):             # <<<<<<<<<<<<<<
- *         cSkeleton[j,0] = skeleton[last_index,0];
- *         cSkeleton[j,1] = skeleton[last_index,1];
- */
   if (unlikely(((PyObject *)__pyx_v_cSkeleton) == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 840; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 844; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
-  __pyx_t_132 = (__pyx_v_buff_size - 1);
-  __pyx_t_133 = 1;
-  __pyx_t_70 = -1;
-  if (__pyx_t_132 < 0) {
-    __pyx_t_132 += __pyx_pybuffernd_cSkeleton.diminfo[0].shape;
-    if (unlikely(__pyx_t_132 < 0)) __pyx_t_70 = 0;
-  } else if (unlikely(__pyx_t_132 >= __pyx_pybuffernd_cSkeleton.diminfo[0].shape)) __pyx_t_70 = 0;
-  if (__pyx_t_133 < 0) {
-    __pyx_t_133 += __pyx_pybuffernd_cSkeleton.diminfo[1].shape;
-    if (unlikely(__pyx_t_133 < 0)) __pyx_t_70 = 1;
-  } else if (unlikely(__pyx_t_133 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_70 = 1;
-  if (unlikely(__pyx_t_70 != -1)) {
-    __Pyx_RaiseBufferIndexError(__pyx_t_70);
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 840; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-  if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
-    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 840; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-  __pyx_t_70 = __pyx_v_last_index;
-  __pyx_t_134 = 1;
+  __pyx_t_70 = __pyx_v_j;
+  __pyx_t_130 = 0;
   __pyx_t_119 = -1;
   if (__pyx_t_70 < 0) {
-    __pyx_t_70 += __pyx_pybuffernd_skeleton.diminfo[0].shape;
+    __pyx_t_70 += __pyx_pybuffernd_cSkeleton.diminfo[0].shape;
     if (unlikely(__pyx_t_70 < 0)) __pyx_t_119 = 0;
-  } else if (unlikely(__pyx_t_70 >= __pyx_pybuffernd_skeleton.diminfo[0].shape)) __pyx_t_119 = 0;
-  if (__pyx_t_134 < 0) {
-    __pyx_t_134 += __pyx_pybuffernd_skeleton.diminfo[1].shape;
-    if (unlikely(__pyx_t_134 < 0)) __pyx_t_119 = 1;
-  } else if (unlikely(__pyx_t_134 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_119 = 1;
+  } else if (unlikely(__pyx_t_70 >= __pyx_pybuffernd_cSkeleton.diminfo[0].shape)) __pyx_t_119 = 0;
+  if (__pyx_t_130 < 0) {
+    __pyx_t_130 += __pyx_pybuffernd_cSkeleton.diminfo[1].shape;
+    if (unlikely(__pyx_t_130 < 0)) __pyx_t_119 = 1;
+  } else if (unlikely(__pyx_t_130 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_119 = 1;
   if (unlikely(__pyx_t_119 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_119);
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 840; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 844; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
-  __pyx_t_25 = (((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_132, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_133, __pyx_pybuffernd_cSkeleton.diminfo[1].strides)) != (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_70, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_134, __pyx_pybuffernd_skeleton.diminfo[1].strides))) != 0);
-  __pyx_t_11 = __pyx_t_25;
-  __pyx_L55_bool_binop_done:;
-  if (__pyx_t_11) {
+  *__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_70, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_130, __pyx_pybuffernd_cSkeleton.diminfo[1].strides) = (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_64, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_129, __pyx_pybuffernd_skeleton.diminfo[1].strides));
 
-    /* "linearSkeleton_cython.pyx":841
- *     if ((cSkeleton[0,0] != skeleton[last_index,0]) or \
- *     (cSkeleton[buff_size-1,1] != skeleton[last_index,1])):
- *         cSkeleton[j,0] = skeleton[last_index,0];             # <<<<<<<<<<<<<<
- *         cSkeleton[j,1] = skeleton[last_index,1];
- *         cWidths[j] = widths[last_index];
+  /* "linearSkeleton_cython.pyx":845
+ *     #//% Add the last point.
+ *     cSkeleton[j,0] = skeleton[last_index,0];
+ *     cSkeleton[j,1] = skeleton[last_index,1];             # <<<<<<<<<<<<<<
+ *     cWidths[j] = widths[last_index];
+ *     j+=1;
  */
-    if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
-      PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 841; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    }
-    __pyx_t_119 = __pyx_v_last_index;
-    __pyx_t_135 = 0;
-    __pyx_t_121 = -1;
-    if (__pyx_t_119 < 0) {
-      __pyx_t_119 += __pyx_pybuffernd_skeleton.diminfo[0].shape;
-      if (unlikely(__pyx_t_119 < 0)) __pyx_t_121 = 0;
-    } else if (unlikely(__pyx_t_119 >= __pyx_pybuffernd_skeleton.diminfo[0].shape)) __pyx_t_121 = 0;
-    if (__pyx_t_135 < 0) {
-      __pyx_t_135 += __pyx_pybuffernd_skeleton.diminfo[1].shape;
-      if (unlikely(__pyx_t_135 < 0)) __pyx_t_121 = 1;
-    } else if (unlikely(__pyx_t_135 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_121 = 1;
-    if (unlikely(__pyx_t_121 != -1)) {
-      __Pyx_RaiseBufferIndexError(__pyx_t_121);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 841; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    }
-    if (unlikely(((PyObject *)__pyx_v_cSkeleton) == Py_None)) {
-      PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 841; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    }
-    __pyx_t_121 = __pyx_v_j;
-    __pyx_t_136 = 0;
-    __pyx_t_128 = -1;
-    if (__pyx_t_121 < 0) {
-      __pyx_t_121 += __pyx_pybuffernd_cSkeleton.diminfo[0].shape;
-      if (unlikely(__pyx_t_121 < 0)) __pyx_t_128 = 0;
-    } else if (unlikely(__pyx_t_121 >= __pyx_pybuffernd_cSkeleton.diminfo[0].shape)) __pyx_t_128 = 0;
-    if (__pyx_t_136 < 0) {
-      __pyx_t_136 += __pyx_pybuffernd_cSkeleton.diminfo[1].shape;
-      if (unlikely(__pyx_t_136 < 0)) __pyx_t_128 = 1;
-    } else if (unlikely(__pyx_t_136 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_128 = 1;
-    if (unlikely(__pyx_t_128 != -1)) {
-      __Pyx_RaiseBufferIndexError(__pyx_t_128);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 841; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    }
-    *__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_121, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_136, __pyx_pybuffernd_cSkeleton.diminfo[1].strides) = (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_119, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_135, __pyx_pybuffernd_skeleton.diminfo[1].strides));
+  if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
+    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 845; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  }
+  __pyx_t_119 = __pyx_v_last_index;
+  __pyx_t_131 = 1;
+  __pyx_t_121 = -1;
+  if (__pyx_t_119 < 0) {
+    __pyx_t_119 += __pyx_pybuffernd_skeleton.diminfo[0].shape;
+    if (unlikely(__pyx_t_119 < 0)) __pyx_t_121 = 0;
+  } else if (unlikely(__pyx_t_119 >= __pyx_pybuffernd_skeleton.diminfo[0].shape)) __pyx_t_121 = 0;
+  if (__pyx_t_131 < 0) {
+    __pyx_t_131 += __pyx_pybuffernd_skeleton.diminfo[1].shape;
+    if (unlikely(__pyx_t_131 < 0)) __pyx_t_121 = 1;
+  } else if (unlikely(__pyx_t_131 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_121 = 1;
+  if (unlikely(__pyx_t_121 != -1)) {
+    __Pyx_RaiseBufferIndexError(__pyx_t_121);
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 845; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  }
+  if (unlikely(((PyObject *)__pyx_v_cSkeleton) == Py_None)) {
+    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 845; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  }
+  __pyx_t_121 = __pyx_v_j;
+  __pyx_t_132 = 1;
+  __pyx_t_128 = -1;
+  if (__pyx_t_121 < 0) {
+    __pyx_t_121 += __pyx_pybuffernd_cSkeleton.diminfo[0].shape;
+    if (unlikely(__pyx_t_121 < 0)) __pyx_t_128 = 0;
+  } else if (unlikely(__pyx_t_121 >= __pyx_pybuffernd_cSkeleton.diminfo[0].shape)) __pyx_t_128 = 0;
+  if (__pyx_t_132 < 0) {
+    __pyx_t_132 += __pyx_pybuffernd_cSkeleton.diminfo[1].shape;
+    if (unlikely(__pyx_t_132 < 0)) __pyx_t_128 = 1;
+  } else if (unlikely(__pyx_t_132 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_128 = 1;
+  if (unlikely(__pyx_t_128 != -1)) {
+    __Pyx_RaiseBufferIndexError(__pyx_t_128);
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 845; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  }
+  *__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_121, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_132, __pyx_pybuffernd_cSkeleton.diminfo[1].strides) = (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_119, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_131, __pyx_pybuffernd_skeleton.diminfo[1].strides));
 
-    /* "linearSkeleton_cython.pyx":842
- *     (cSkeleton[buff_size-1,1] != skeleton[last_index,1])):
- *         cSkeleton[j,0] = skeleton[last_index,0];
- *         cSkeleton[j,1] = skeleton[last_index,1];             # <<<<<<<<<<<<<<
- *         cWidths[j] = widths[last_index];
- *         j+=1;
- */
-    if (unlikely(((PyObject *)__pyx_v_skeleton) == Py_None)) {
-      PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 842; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    }
-    __pyx_t_128 = __pyx_v_last_index;
-    __pyx_t_137 = 1;
-    __pyx_t_138 = -1;
-    if (__pyx_t_128 < 0) {
-      __pyx_t_128 += __pyx_pybuffernd_skeleton.diminfo[0].shape;
-      if (unlikely(__pyx_t_128 < 0)) __pyx_t_138 = 0;
-    } else if (unlikely(__pyx_t_128 >= __pyx_pybuffernd_skeleton.diminfo[0].shape)) __pyx_t_138 = 0;
-    if (__pyx_t_137 < 0) {
-      __pyx_t_137 += __pyx_pybuffernd_skeleton.diminfo[1].shape;
-      if (unlikely(__pyx_t_137 < 0)) __pyx_t_138 = 1;
-    } else if (unlikely(__pyx_t_137 >= __pyx_pybuffernd_skeleton.diminfo[1].shape)) __pyx_t_138 = 1;
-    if (unlikely(__pyx_t_138 != -1)) {
-      __Pyx_RaiseBufferIndexError(__pyx_t_138);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 842; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    }
-    if (unlikely(((PyObject *)__pyx_v_cSkeleton) == Py_None)) {
-      PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 842; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    }
-    __pyx_t_138 = __pyx_v_j;
-    __pyx_t_139 = 1;
-    __pyx_t_140 = -1;
-    if (__pyx_t_138 < 0) {
-      __pyx_t_138 += __pyx_pybuffernd_cSkeleton.diminfo[0].shape;
-      if (unlikely(__pyx_t_138 < 0)) __pyx_t_140 = 0;
-    } else if (unlikely(__pyx_t_138 >= __pyx_pybuffernd_cSkeleton.diminfo[0].shape)) __pyx_t_140 = 0;
-    if (__pyx_t_139 < 0) {
-      __pyx_t_139 += __pyx_pybuffernd_cSkeleton.diminfo[1].shape;
-      if (unlikely(__pyx_t_139 < 0)) __pyx_t_140 = 1;
-    } else if (unlikely(__pyx_t_139 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_140 = 1;
-    if (unlikely(__pyx_t_140 != -1)) {
-      __Pyx_RaiseBufferIndexError(__pyx_t_140);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 842; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    }
-    *__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_138, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_139, __pyx_pybuffernd_cSkeleton.diminfo[1].strides) = (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_skeleton.rcbuffer->pybuffer.buf, __pyx_t_128, __pyx_pybuffernd_skeleton.diminfo[0].strides, __pyx_t_137, __pyx_pybuffernd_skeleton.diminfo[1].strides));
-
-    /* "linearSkeleton_cython.pyx":843
- *         cSkeleton[j,0] = skeleton[last_index,0];
- *         cSkeleton[j,1] = skeleton[last_index,1];
- *         cWidths[j] = widths[last_index];             # <<<<<<<<<<<<<<
- *         j+=1;
+  /* "linearSkeleton_cython.pyx":846
+ *     cSkeleton[j,0] = skeleton[last_index,0];
+ *     cSkeleton[j,1] = skeleton[last_index,1];
+ *     cWidths[j] = widths[last_index];             # <<<<<<<<<<<<<<
+ *     j+=1;
  * 
  */
-    if (unlikely(((PyObject *)__pyx_v_widths) == Py_None)) {
-      PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 843; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    }
-    __pyx_t_140 = __pyx_v_last_index;
-    __pyx_t_141 = -1;
-    if (__pyx_t_140 < 0) {
-      __pyx_t_140 += __pyx_pybuffernd_widths.diminfo[0].shape;
-      if (unlikely(__pyx_t_140 < 0)) __pyx_t_141 = 0;
-    } else if (unlikely(__pyx_t_140 >= __pyx_pybuffernd_widths.diminfo[0].shape)) __pyx_t_141 = 0;
-    if (unlikely(__pyx_t_141 != -1)) {
-      __Pyx_RaiseBufferIndexError(__pyx_t_141);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 843; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    }
-    if (unlikely(((PyObject *)__pyx_v_cWidths) == Py_None)) {
-      PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 843; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    }
-    __pyx_t_141 = __pyx_v_j;
-    __pyx_t_142 = -1;
-    if (__pyx_t_141 < 0) {
-      __pyx_t_141 += __pyx_pybuffernd_cWidths.diminfo[0].shape;
-      if (unlikely(__pyx_t_141 < 0)) __pyx_t_142 = 0;
-    } else if (unlikely(__pyx_t_141 >= __pyx_pybuffernd_cWidths.diminfo[0].shape)) __pyx_t_142 = 0;
-    if (unlikely(__pyx_t_142 != -1)) {
-      __Pyx_RaiseBufferIndexError(__pyx_t_142);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 843; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    }
-    *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cWidths.rcbuffer->pybuffer.buf, __pyx_t_141, __pyx_pybuffernd_cWidths.diminfo[0].strides) = (*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_widths.rcbuffer->pybuffer.buf, __pyx_t_140, __pyx_pybuffernd_widths.diminfo[0].strides));
+  if (unlikely(((PyObject *)__pyx_v_widths) == Py_None)) {
+    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 846; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  }
+  __pyx_t_128 = __pyx_v_last_index;
+  __pyx_t_133 = -1;
+  if (__pyx_t_128 < 0) {
+    __pyx_t_128 += __pyx_pybuffernd_widths.diminfo[0].shape;
+    if (unlikely(__pyx_t_128 < 0)) __pyx_t_133 = 0;
+  } else if (unlikely(__pyx_t_128 >= __pyx_pybuffernd_widths.diminfo[0].shape)) __pyx_t_133 = 0;
+  if (unlikely(__pyx_t_133 != -1)) {
+    __Pyx_RaiseBufferIndexError(__pyx_t_133);
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 846; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  }
+  if (unlikely(((PyObject *)__pyx_v_cWidths) == Py_None)) {
+    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 846; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  }
+  __pyx_t_133 = __pyx_v_j;
+  __pyx_t_134 = -1;
+  if (__pyx_t_133 < 0) {
+    __pyx_t_133 += __pyx_pybuffernd_cWidths.diminfo[0].shape;
+    if (unlikely(__pyx_t_133 < 0)) __pyx_t_134 = 0;
+  } else if (unlikely(__pyx_t_133 >= __pyx_pybuffernd_cWidths.diminfo[0].shape)) __pyx_t_134 = 0;
+  if (unlikely(__pyx_t_134 != -1)) {
+    __Pyx_RaiseBufferIndexError(__pyx_t_134);
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 846; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  }
+  *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cWidths.rcbuffer->pybuffer.buf, __pyx_t_133, __pyx_pybuffernd_cWidths.diminfo[0].strides) = (*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_widths.rcbuffer->pybuffer.buf, __pyx_t_128, __pyx_pybuffernd_widths.diminfo[0].strides));
 
-    /* "linearSkeleton_cython.pyx":844
- *         cSkeleton[j,1] = skeleton[last_index,1];
- *         cWidths[j] = widths[last_index];
- *         j+=1;             # <<<<<<<<<<<<<<
+  /* "linearSkeleton_cython.pyx":847
+ *     cSkeleton[j,1] = skeleton[last_index,1];
+ *     cWidths[j] = widths[last_index];
+ *     j+=1;             # <<<<<<<<<<<<<<
  * 
  *     number_points = j;
  */
-    __pyx_v_j = (__pyx_v_j + 1);
-    goto __pyx_L54;
-  }
-  __pyx_L54:;
+  __pyx_v_j = (__pyx_v_j + 1);
 
-  /* "linearSkeleton_cython.pyx":846
- *         j+=1;
+  /* "linearSkeleton_cython.pyx":849
+ *     j+=1;
  * 
  *     number_points = j;             # <<<<<<<<<<<<<<
  * 
@@ -12730,69 +12727,69 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
   __pyx_v_number_points = __pyx_v_j;
 
-  /* "linearSkeleton_cython.pyx":849
+  /* "linearSkeleton_cython.pyx":852
  * 
  *     #//% Anti alias.
  *     keep = np.arange(number_points)             # <<<<<<<<<<<<<<
  *     cdef int nextI
  *     i = 0;
  */
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 849; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 852; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_arange); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 849; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_arange); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 852; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_number_points); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 849; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_number_points); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 852; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4 = NULL;
+  __pyx_t_5 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_2))) {
-    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_2);
-    if (likely(__pyx_t_4)) {
+    __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_2);
+    if (likely(__pyx_t_5)) {
       PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-      __Pyx_INCREF(__pyx_t_4);
+      __Pyx_INCREF(__pyx_t_5);
       __Pyx_INCREF(function);
       __Pyx_DECREF_SET(__pyx_t_2, function);
     }
   }
-  if (!__pyx_t_4) {
-    __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 849; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!__pyx_t_5) {
+    __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 852; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_GOTREF(__pyx_t_3);
   } else {
-    __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 849; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_5);
-    PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4); __Pyx_GIVEREF(__pyx_t_4); __pyx_t_4 = NULL;
-    PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_t_1);
+    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 852; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_4);
+    PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_5); __Pyx_GIVEREF(__pyx_t_5); __pyx_t_5 = NULL;
+    PyTuple_SET_ITEM(__pyx_t_4, 0+1, __pyx_t_1);
     __Pyx_GIVEREF(__pyx_t_1);
     __pyx_t_1 = 0;
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 849; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 852; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 849; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 852; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_10 = ((PyArrayObject *)__pyx_t_3);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_keep.rcbuffer->pybuffer);
-    __pyx_t_142 = __Pyx_GetBufferAndValidate(&__pyx_pybuffernd_keep.rcbuffer->pybuffer, (PyObject*)__pyx_t_10, &__Pyx_TypeInfo_nn___pyx_t_5numpy_int_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 1, 0, __pyx_stack);
-    if (unlikely(__pyx_t_142 < 0)) {
-      PyErr_Fetch(&__pyx_t_143, &__pyx_t_144, &__pyx_t_145);
+    __pyx_t_134 = __Pyx_GetBufferAndValidate(&__pyx_pybuffernd_keep.rcbuffer->pybuffer, (PyObject*)__pyx_t_10, &__Pyx_TypeInfo_nn___pyx_t_5numpy_int_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 1, 0, __pyx_stack);
+    if (unlikely(__pyx_t_134 < 0)) {
+      PyErr_Fetch(&__pyx_t_135, &__pyx_t_136, &__pyx_t_137);
       if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_keep.rcbuffer->pybuffer, (PyObject*)__pyx_v_keep, &__Pyx_TypeInfo_nn___pyx_t_5numpy_int_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 1, 0, __pyx_stack) == -1)) {
-        Py_XDECREF(__pyx_t_143); Py_XDECREF(__pyx_t_144); Py_XDECREF(__pyx_t_145);
+        Py_XDECREF(__pyx_t_135); Py_XDECREF(__pyx_t_136); Py_XDECREF(__pyx_t_137);
         __Pyx_RaiseBufferFallbackError();
       } else {
-        PyErr_Restore(__pyx_t_143, __pyx_t_144, __pyx_t_145);
+        PyErr_Restore(__pyx_t_135, __pyx_t_136, __pyx_t_137);
       }
     }
     __pyx_pybuffernd_keep.diminfo[0].strides = __pyx_pybuffernd_keep.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_keep.diminfo[0].shape = __pyx_pybuffernd_keep.rcbuffer->pybuffer.shape[0];
-    if (unlikely(__pyx_t_142 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 849; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (unlikely(__pyx_t_134 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 852; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_t_10 = 0;
   __Pyx_DECREF_SET(__pyx_v_keep, ((PyArrayObject *)__pyx_t_3));
   __pyx_t_3 = 0;
 
-  /* "linearSkeleton_cython.pyx":851
+  /* "linearSkeleton_cython.pyx":854
  *     keep = np.arange(number_points)
  *     cdef int nextI
  *     i = 0;             # <<<<<<<<<<<<<<
@@ -12801,7 +12798,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
   __pyx_v_i = 0;
 
-  /* "linearSkeleton_cython.pyx":853
+  /* "linearSkeleton_cython.pyx":856
  *     i = 0;
  * 
  *     while (i < number_points - 2):             # <<<<<<<<<<<<<<
@@ -12812,7 +12809,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
     __pyx_t_11 = ((__pyx_v_i < (__pyx_v_number_points - 2)) != 0);
     if (!__pyx_t_11) break;
 
-    /* "linearSkeleton_cython.pyx":855
+    /* "linearSkeleton_cython.pyx":858
  *     while (i < number_points - 2):
  *         #//% Smooth any stairs.
  *         nextI = i + 2;             # <<<<<<<<<<<<<<
@@ -12821,7 +12818,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
     __pyx_v_nextI = (__pyx_v_i + 2);
 
-    /* "linearSkeleton_cython.pyx":856
+    /* "linearSkeleton_cython.pyx":859
  *         #//% Smooth any stairs.
  *         nextI = i + 2;
  *         if ((absDiff(cSkeleton[i,0], cSkeleton[nextI,0])<=1) and (absDiff(cSkeleton[i,1], cSkeleton[nextI,1])<=1)):             # <<<<<<<<<<<<<<
@@ -12830,92 +12827,92 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
     if (unlikely(((PyObject *)__pyx_v_cSkeleton) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 856; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 859; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
-    __pyx_t_142 = __pyx_v_i;
-    __pyx_t_146 = 0;
-    __pyx_t_147 = -1;
-    if (__pyx_t_142 < 0) {
-      __pyx_t_142 += __pyx_pybuffernd_cSkeleton.diminfo[0].shape;
-      if (unlikely(__pyx_t_142 < 0)) __pyx_t_147 = 0;
-    } else if (unlikely(__pyx_t_142 >= __pyx_pybuffernd_cSkeleton.diminfo[0].shape)) __pyx_t_147 = 0;
-    if (__pyx_t_146 < 0) {
-      __pyx_t_146 += __pyx_pybuffernd_cSkeleton.diminfo[1].shape;
-      if (unlikely(__pyx_t_146 < 0)) __pyx_t_147 = 1;
-    } else if (unlikely(__pyx_t_146 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_147 = 1;
-    if (unlikely(__pyx_t_147 != -1)) {
-      __Pyx_RaiseBufferIndexError(__pyx_t_147);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 856; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_134 = __pyx_v_i;
+    __pyx_t_138 = 0;
+    __pyx_t_139 = -1;
+    if (__pyx_t_134 < 0) {
+      __pyx_t_134 += __pyx_pybuffernd_cSkeleton.diminfo[0].shape;
+      if (unlikely(__pyx_t_134 < 0)) __pyx_t_139 = 0;
+    } else if (unlikely(__pyx_t_134 >= __pyx_pybuffernd_cSkeleton.diminfo[0].shape)) __pyx_t_139 = 0;
+    if (__pyx_t_138 < 0) {
+      __pyx_t_138 += __pyx_pybuffernd_cSkeleton.diminfo[1].shape;
+      if (unlikely(__pyx_t_138 < 0)) __pyx_t_139 = 1;
+    } else if (unlikely(__pyx_t_138 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_139 = 1;
+    if (unlikely(__pyx_t_139 != -1)) {
+      __Pyx_RaiseBufferIndexError(__pyx_t_139);
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 859; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cSkeleton) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 856; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 859; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
-    __pyx_t_147 = __pyx_v_nextI;
-    __pyx_t_148 = 0;
-    __pyx_t_149 = -1;
-    if (__pyx_t_147 < 0) {
-      __pyx_t_147 += __pyx_pybuffernd_cSkeleton.diminfo[0].shape;
-      if (unlikely(__pyx_t_147 < 0)) __pyx_t_149 = 0;
-    } else if (unlikely(__pyx_t_147 >= __pyx_pybuffernd_cSkeleton.diminfo[0].shape)) __pyx_t_149 = 0;
-    if (__pyx_t_148 < 0) {
-      __pyx_t_148 += __pyx_pybuffernd_cSkeleton.diminfo[1].shape;
-      if (unlikely(__pyx_t_148 < 0)) __pyx_t_149 = 1;
-    } else if (unlikely(__pyx_t_148 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_149 = 1;
-    if (unlikely(__pyx_t_149 != -1)) {
-      __Pyx_RaiseBufferIndexError(__pyx_t_149);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 856; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_139 = __pyx_v_nextI;
+    __pyx_t_140 = 0;
+    __pyx_t_141 = -1;
+    if (__pyx_t_139 < 0) {
+      __pyx_t_139 += __pyx_pybuffernd_cSkeleton.diminfo[0].shape;
+      if (unlikely(__pyx_t_139 < 0)) __pyx_t_141 = 0;
+    } else if (unlikely(__pyx_t_139 >= __pyx_pybuffernd_cSkeleton.diminfo[0].shape)) __pyx_t_141 = 0;
+    if (__pyx_t_140 < 0) {
+      __pyx_t_140 += __pyx_pybuffernd_cSkeleton.diminfo[1].shape;
+      if (unlikely(__pyx_t_140 < 0)) __pyx_t_141 = 1;
+    } else if (unlikely(__pyx_t_140 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_141 = 1;
+    if (unlikely(__pyx_t_141 != -1)) {
+      __Pyx_RaiseBufferIndexError(__pyx_t_141);
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 859; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
-    __pyx_t_25 = ((__pyx_f_21linearSkeleton_cython_absDiff((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_142, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_146, __pyx_pybuffernd_cSkeleton.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_147, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_148, __pyx_pybuffernd_cSkeleton.diminfo[1].strides))) <= 1.0) != 0);
+    __pyx_t_25 = ((__pyx_f_21linearSkeleton_cython_absDiff((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_134, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_138, __pyx_pybuffernd_cSkeleton.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_139, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_140, __pyx_pybuffernd_cSkeleton.diminfo[1].strides))) <= 1.0) != 0);
     if (__pyx_t_25) {
     } else {
       __pyx_t_11 = __pyx_t_25;
-      goto __pyx_L60_bool_binop_done;
+      goto __pyx_L58_bool_binop_done;
     }
     if (unlikely(((PyObject *)__pyx_v_cSkeleton) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 856; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 859; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
-    __pyx_t_149 = __pyx_v_i;
-    __pyx_t_150 = 1;
-    __pyx_t_151 = -1;
-    if (__pyx_t_149 < 0) {
-      __pyx_t_149 += __pyx_pybuffernd_cSkeleton.diminfo[0].shape;
-      if (unlikely(__pyx_t_149 < 0)) __pyx_t_151 = 0;
-    } else if (unlikely(__pyx_t_149 >= __pyx_pybuffernd_cSkeleton.diminfo[0].shape)) __pyx_t_151 = 0;
-    if (__pyx_t_150 < 0) {
-      __pyx_t_150 += __pyx_pybuffernd_cSkeleton.diminfo[1].shape;
-      if (unlikely(__pyx_t_150 < 0)) __pyx_t_151 = 1;
-    } else if (unlikely(__pyx_t_150 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_151 = 1;
-    if (unlikely(__pyx_t_151 != -1)) {
-      __Pyx_RaiseBufferIndexError(__pyx_t_151);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 856; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_141 = __pyx_v_i;
+    __pyx_t_142 = 1;
+    __pyx_t_143 = -1;
+    if (__pyx_t_141 < 0) {
+      __pyx_t_141 += __pyx_pybuffernd_cSkeleton.diminfo[0].shape;
+      if (unlikely(__pyx_t_141 < 0)) __pyx_t_143 = 0;
+    } else if (unlikely(__pyx_t_141 >= __pyx_pybuffernd_cSkeleton.diminfo[0].shape)) __pyx_t_143 = 0;
+    if (__pyx_t_142 < 0) {
+      __pyx_t_142 += __pyx_pybuffernd_cSkeleton.diminfo[1].shape;
+      if (unlikely(__pyx_t_142 < 0)) __pyx_t_143 = 1;
+    } else if (unlikely(__pyx_t_142 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_143 = 1;
+    if (unlikely(__pyx_t_143 != -1)) {
+      __Pyx_RaiseBufferIndexError(__pyx_t_143);
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 859; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     if (unlikely(((PyObject *)__pyx_v_cSkeleton) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 856; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 859; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
-    __pyx_t_151 = __pyx_v_nextI;
-    __pyx_t_152 = 1;
-    __pyx_t_153 = -1;
-    if (__pyx_t_151 < 0) {
-      __pyx_t_151 += __pyx_pybuffernd_cSkeleton.diminfo[0].shape;
-      if (unlikely(__pyx_t_151 < 0)) __pyx_t_153 = 0;
-    } else if (unlikely(__pyx_t_151 >= __pyx_pybuffernd_cSkeleton.diminfo[0].shape)) __pyx_t_153 = 0;
-    if (__pyx_t_152 < 0) {
-      __pyx_t_152 += __pyx_pybuffernd_cSkeleton.diminfo[1].shape;
-      if (unlikely(__pyx_t_152 < 0)) __pyx_t_153 = 1;
-    } else if (unlikely(__pyx_t_152 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_153 = 1;
-    if (unlikely(__pyx_t_153 != -1)) {
-      __Pyx_RaiseBufferIndexError(__pyx_t_153);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 856; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_143 = __pyx_v_nextI;
+    __pyx_t_144 = 1;
+    __pyx_t_145 = -1;
+    if (__pyx_t_143 < 0) {
+      __pyx_t_143 += __pyx_pybuffernd_cSkeleton.diminfo[0].shape;
+      if (unlikely(__pyx_t_143 < 0)) __pyx_t_145 = 0;
+    } else if (unlikely(__pyx_t_143 >= __pyx_pybuffernd_cSkeleton.diminfo[0].shape)) __pyx_t_145 = 0;
+    if (__pyx_t_144 < 0) {
+      __pyx_t_144 += __pyx_pybuffernd_cSkeleton.diminfo[1].shape;
+      if (unlikely(__pyx_t_144 < 0)) __pyx_t_145 = 1;
+    } else if (unlikely(__pyx_t_144 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_145 = 1;
+    if (unlikely(__pyx_t_145 != -1)) {
+      __Pyx_RaiseBufferIndexError(__pyx_t_145);
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 859; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
-    __pyx_t_25 = ((__pyx_f_21linearSkeleton_cython_absDiff((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_149, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_150, __pyx_pybuffernd_cSkeleton.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_151, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_152, __pyx_pybuffernd_cSkeleton.diminfo[1].strides))) <= 1.0) != 0);
+    __pyx_t_25 = ((__pyx_f_21linearSkeleton_cython_absDiff((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_141, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_142, __pyx_pybuffernd_cSkeleton.diminfo[1].strides)), (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_143, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_144, __pyx_pybuffernd_cSkeleton.diminfo[1].strides))) <= 1.0) != 0);
     __pyx_t_11 = __pyx_t_25;
-    __pyx_L60_bool_binop_done:;
+    __pyx_L58_bool_binop_done:;
     if (__pyx_t_11) {
 
-      /* "linearSkeleton_cython.pyx":857
+      /* "linearSkeleton_cython.pyx":860
  *         nextI = i + 2;
  *         if ((absDiff(cSkeleton[i,0], cSkeleton[nextI,0])<=1) and (absDiff(cSkeleton[i,1], cSkeleton[nextI,1])<=1)):
  *             keep[i + 1] = FLAG_MAX;             # <<<<<<<<<<<<<<
@@ -12924,21 +12921,21 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
       if (unlikely(((PyObject *)__pyx_v_keep) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 857; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 860; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
-      __pyx_t_154 = (__pyx_v_i + 1);
-      __pyx_t_153 = -1;
-      if (__pyx_t_154 < 0) {
-        __pyx_t_154 += __pyx_pybuffernd_keep.diminfo[0].shape;
-        if (unlikely(__pyx_t_154 < 0)) __pyx_t_153 = 0;
-      } else if (unlikely(__pyx_t_154 >= __pyx_pybuffernd_keep.diminfo[0].shape)) __pyx_t_153 = 0;
-      if (unlikely(__pyx_t_153 != -1)) {
-        __Pyx_RaiseBufferIndexError(__pyx_t_153);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 857; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_146 = (__pyx_v_i + 1);
+      __pyx_t_145 = -1;
+      if (__pyx_t_146 < 0) {
+        __pyx_t_146 += __pyx_pybuffernd_keep.diminfo[0].shape;
+        if (unlikely(__pyx_t_146 < 0)) __pyx_t_145 = 0;
+      } else if (unlikely(__pyx_t_146 >= __pyx_pybuffernd_keep.diminfo[0].shape)) __pyx_t_145 = 0;
+      if (unlikely(__pyx_t_145 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_145);
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 860; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
-      *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_keep.rcbuffer->pybuffer.buf, __pyx_t_154, __pyx_pybuffernd_keep.diminfo[0].strides) = __pyx_v_FLAG_MAX;
+      *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_keep.rcbuffer->pybuffer.buf, __pyx_t_146, __pyx_pybuffernd_keep.diminfo[0].strides) = __pyx_v_FLAG_MAX;
 
-      /* "linearSkeleton_cython.pyx":859
+      /* "linearSkeleton_cython.pyx":862
  *             keep[i + 1] = FLAG_MAX;
  *             #//% Advance.
  *             i = nextI;             # <<<<<<<<<<<<<<
@@ -12946,11 +12943,11 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  *         else:
  */
       __pyx_v_i = __pyx_v_nextI;
-      goto __pyx_L59;
+      goto __pyx_L57;
     }
     /*else*/ {
 
-      /* "linearSkeleton_cython.pyx":862
+      /* "linearSkeleton_cython.pyx":865
  *         #//% Advance.
  *         else:
  *             i+=1;             # <<<<<<<<<<<<<<
@@ -12959,10 +12956,10 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
       __pyx_v_i = (__pyx_v_i + 1);
     }
-    __pyx_L59:;
+    __pyx_L57:;
   }
 
-  /* "linearSkeleton_cython.pyx":864
+  /* "linearSkeleton_cython.pyx":867
  *             i+=1;
  * 
  *     newTotal = 0;             # <<<<<<<<<<<<<<
@@ -12971,18 +12968,18 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
   __pyx_v_newTotal = 0;
 
-  /* "linearSkeleton_cython.pyx":865
+  /* "linearSkeleton_cython.pyx":868
  * 
  *     newTotal = 0;
  *     for i in range(number_points):             # <<<<<<<<<<<<<<
  *         if (keep[i] != FLAG_MAX):
  *             cSkeleton[newTotal,0] = cSkeleton[i,0];
  */
-  __pyx_t_153 = __pyx_v_number_points;
-  for (__pyx_t_155 = 0; __pyx_t_155 < __pyx_t_153; __pyx_t_155+=1) {
-    __pyx_v_i = __pyx_t_155;
+  __pyx_t_145 = __pyx_v_number_points;
+  for (__pyx_t_147 = 0; __pyx_t_147 < __pyx_t_145; __pyx_t_147+=1) {
+    __pyx_v_i = __pyx_t_147;
 
-    /* "linearSkeleton_cython.pyx":866
+    /* "linearSkeleton_cython.pyx":869
  *     newTotal = 0;
  *     for i in range(number_points):
  *         if (keep[i] != FLAG_MAX):             # <<<<<<<<<<<<<<
@@ -12991,22 +12988,22 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
     if (unlikely(((PyObject *)__pyx_v_keep) == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 866; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 869; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
-    __pyx_t_156 = __pyx_v_i;
-    __pyx_t_157 = -1;
-    if (__pyx_t_156 < 0) {
-      __pyx_t_156 += __pyx_pybuffernd_keep.diminfo[0].shape;
-      if (unlikely(__pyx_t_156 < 0)) __pyx_t_157 = 0;
-    } else if (unlikely(__pyx_t_156 >= __pyx_pybuffernd_keep.diminfo[0].shape)) __pyx_t_157 = 0;
-    if (unlikely(__pyx_t_157 != -1)) {
-      __Pyx_RaiseBufferIndexError(__pyx_t_157);
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 866; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_148 = __pyx_v_i;
+    __pyx_t_149 = -1;
+    if (__pyx_t_148 < 0) {
+      __pyx_t_148 += __pyx_pybuffernd_keep.diminfo[0].shape;
+      if (unlikely(__pyx_t_148 < 0)) __pyx_t_149 = 0;
+    } else if (unlikely(__pyx_t_148 >= __pyx_pybuffernd_keep.diminfo[0].shape)) __pyx_t_149 = 0;
+    if (unlikely(__pyx_t_149 != -1)) {
+      __Pyx_RaiseBufferIndexError(__pyx_t_149);
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 869; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
-    __pyx_t_11 = (((*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_keep.rcbuffer->pybuffer.buf, __pyx_t_156, __pyx_pybuffernd_keep.diminfo[0].strides)) != __pyx_v_FLAG_MAX) != 0);
+    __pyx_t_11 = (((*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_keep.rcbuffer->pybuffer.buf, __pyx_t_148, __pyx_pybuffernd_keep.diminfo[0].strides)) != __pyx_v_FLAG_MAX) != 0);
     if (__pyx_t_11) {
 
-      /* "linearSkeleton_cython.pyx":867
+      /* "linearSkeleton_cython.pyx":870
  *     for i in range(number_points):
  *         if (keep[i] != FLAG_MAX):
  *             cSkeleton[newTotal,0] = cSkeleton[i,0];             # <<<<<<<<<<<<<<
@@ -13015,45 +13012,45 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
       if (unlikely(((PyObject *)__pyx_v_cSkeleton) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 867; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 870; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
-      __pyx_t_157 = __pyx_v_i;
-      __pyx_t_158 = 0;
-      __pyx_t_159 = -1;
-      if (__pyx_t_157 < 0) {
-        __pyx_t_157 += __pyx_pybuffernd_cSkeleton.diminfo[0].shape;
-        if (unlikely(__pyx_t_157 < 0)) __pyx_t_159 = 0;
-      } else if (unlikely(__pyx_t_157 >= __pyx_pybuffernd_cSkeleton.diminfo[0].shape)) __pyx_t_159 = 0;
-      if (__pyx_t_158 < 0) {
-        __pyx_t_158 += __pyx_pybuffernd_cSkeleton.diminfo[1].shape;
-        if (unlikely(__pyx_t_158 < 0)) __pyx_t_159 = 1;
-      } else if (unlikely(__pyx_t_158 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_159 = 1;
-      if (unlikely(__pyx_t_159 != -1)) {
-        __Pyx_RaiseBufferIndexError(__pyx_t_159);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 867; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_149 = __pyx_v_i;
+      __pyx_t_150 = 0;
+      __pyx_t_151 = -1;
+      if (__pyx_t_149 < 0) {
+        __pyx_t_149 += __pyx_pybuffernd_cSkeleton.diminfo[0].shape;
+        if (unlikely(__pyx_t_149 < 0)) __pyx_t_151 = 0;
+      } else if (unlikely(__pyx_t_149 >= __pyx_pybuffernd_cSkeleton.diminfo[0].shape)) __pyx_t_151 = 0;
+      if (__pyx_t_150 < 0) {
+        __pyx_t_150 += __pyx_pybuffernd_cSkeleton.diminfo[1].shape;
+        if (unlikely(__pyx_t_150 < 0)) __pyx_t_151 = 1;
+      } else if (unlikely(__pyx_t_150 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_151 = 1;
+      if (unlikely(__pyx_t_151 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_151);
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 870; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       if (unlikely(((PyObject *)__pyx_v_cSkeleton) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 867; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 870; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
-      __pyx_t_159 = __pyx_v_newTotal;
-      __pyx_t_160 = 0;
-      __pyx_t_161 = -1;
-      if (__pyx_t_159 < 0) {
-        __pyx_t_159 += __pyx_pybuffernd_cSkeleton.diminfo[0].shape;
-        if (unlikely(__pyx_t_159 < 0)) __pyx_t_161 = 0;
-      } else if (unlikely(__pyx_t_159 >= __pyx_pybuffernd_cSkeleton.diminfo[0].shape)) __pyx_t_161 = 0;
-      if (__pyx_t_160 < 0) {
-        __pyx_t_160 += __pyx_pybuffernd_cSkeleton.diminfo[1].shape;
-        if (unlikely(__pyx_t_160 < 0)) __pyx_t_161 = 1;
-      } else if (unlikely(__pyx_t_160 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_161 = 1;
-      if (unlikely(__pyx_t_161 != -1)) {
-        __Pyx_RaiseBufferIndexError(__pyx_t_161);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 867; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_151 = __pyx_v_newTotal;
+      __pyx_t_152 = 0;
+      __pyx_t_153 = -1;
+      if (__pyx_t_151 < 0) {
+        __pyx_t_151 += __pyx_pybuffernd_cSkeleton.diminfo[0].shape;
+        if (unlikely(__pyx_t_151 < 0)) __pyx_t_153 = 0;
+      } else if (unlikely(__pyx_t_151 >= __pyx_pybuffernd_cSkeleton.diminfo[0].shape)) __pyx_t_153 = 0;
+      if (__pyx_t_152 < 0) {
+        __pyx_t_152 += __pyx_pybuffernd_cSkeleton.diminfo[1].shape;
+        if (unlikely(__pyx_t_152 < 0)) __pyx_t_153 = 1;
+      } else if (unlikely(__pyx_t_152 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_153 = 1;
+      if (unlikely(__pyx_t_153 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_153);
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 870; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
-      *__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_159, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_160, __pyx_pybuffernd_cSkeleton.diminfo[1].strides) = (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_157, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_158, __pyx_pybuffernd_cSkeleton.diminfo[1].strides));
+      *__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_151, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_152, __pyx_pybuffernd_cSkeleton.diminfo[1].strides) = (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_149, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_150, __pyx_pybuffernd_cSkeleton.diminfo[1].strides));
 
-      /* "linearSkeleton_cython.pyx":868
+      /* "linearSkeleton_cython.pyx":871
  *         if (keep[i] != FLAG_MAX):
  *             cSkeleton[newTotal,0] = cSkeleton[i,0];
  *             cSkeleton[newTotal,1] = cSkeleton[i,1];             # <<<<<<<<<<<<<<
@@ -13062,45 +13059,45 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
       if (unlikely(((PyObject *)__pyx_v_cSkeleton) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 868; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 871; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
-      __pyx_t_161 = __pyx_v_i;
-      __pyx_t_162 = 1;
-      __pyx_t_163 = -1;
-      if (__pyx_t_161 < 0) {
-        __pyx_t_161 += __pyx_pybuffernd_cSkeleton.diminfo[0].shape;
-        if (unlikely(__pyx_t_161 < 0)) __pyx_t_163 = 0;
-      } else if (unlikely(__pyx_t_161 >= __pyx_pybuffernd_cSkeleton.diminfo[0].shape)) __pyx_t_163 = 0;
-      if (__pyx_t_162 < 0) {
-        __pyx_t_162 += __pyx_pybuffernd_cSkeleton.diminfo[1].shape;
-        if (unlikely(__pyx_t_162 < 0)) __pyx_t_163 = 1;
-      } else if (unlikely(__pyx_t_162 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_163 = 1;
-      if (unlikely(__pyx_t_163 != -1)) {
-        __Pyx_RaiseBufferIndexError(__pyx_t_163);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 868; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_153 = __pyx_v_i;
+      __pyx_t_154 = 1;
+      __pyx_t_155 = -1;
+      if (__pyx_t_153 < 0) {
+        __pyx_t_153 += __pyx_pybuffernd_cSkeleton.diminfo[0].shape;
+        if (unlikely(__pyx_t_153 < 0)) __pyx_t_155 = 0;
+      } else if (unlikely(__pyx_t_153 >= __pyx_pybuffernd_cSkeleton.diminfo[0].shape)) __pyx_t_155 = 0;
+      if (__pyx_t_154 < 0) {
+        __pyx_t_154 += __pyx_pybuffernd_cSkeleton.diminfo[1].shape;
+        if (unlikely(__pyx_t_154 < 0)) __pyx_t_155 = 1;
+      } else if (unlikely(__pyx_t_154 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_155 = 1;
+      if (unlikely(__pyx_t_155 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_155);
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 871; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       if (unlikely(((PyObject *)__pyx_v_cSkeleton) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 868; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 871; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
-      __pyx_t_163 = __pyx_v_newTotal;
-      __pyx_t_164 = 1;
-      __pyx_t_165 = -1;
-      if (__pyx_t_163 < 0) {
-        __pyx_t_163 += __pyx_pybuffernd_cSkeleton.diminfo[0].shape;
-        if (unlikely(__pyx_t_163 < 0)) __pyx_t_165 = 0;
-      } else if (unlikely(__pyx_t_163 >= __pyx_pybuffernd_cSkeleton.diminfo[0].shape)) __pyx_t_165 = 0;
-      if (__pyx_t_164 < 0) {
-        __pyx_t_164 += __pyx_pybuffernd_cSkeleton.diminfo[1].shape;
-        if (unlikely(__pyx_t_164 < 0)) __pyx_t_165 = 1;
-      } else if (unlikely(__pyx_t_164 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_165 = 1;
-      if (unlikely(__pyx_t_165 != -1)) {
-        __Pyx_RaiseBufferIndexError(__pyx_t_165);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 868; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_155 = __pyx_v_newTotal;
+      __pyx_t_156 = 1;
+      __pyx_t_157 = -1;
+      if (__pyx_t_155 < 0) {
+        __pyx_t_155 += __pyx_pybuffernd_cSkeleton.diminfo[0].shape;
+        if (unlikely(__pyx_t_155 < 0)) __pyx_t_157 = 0;
+      } else if (unlikely(__pyx_t_155 >= __pyx_pybuffernd_cSkeleton.diminfo[0].shape)) __pyx_t_157 = 0;
+      if (__pyx_t_156 < 0) {
+        __pyx_t_156 += __pyx_pybuffernd_cSkeleton.diminfo[1].shape;
+        if (unlikely(__pyx_t_156 < 0)) __pyx_t_157 = 1;
+      } else if (unlikely(__pyx_t_156 >= __pyx_pybuffernd_cSkeleton.diminfo[1].shape)) __pyx_t_157 = 1;
+      if (unlikely(__pyx_t_157 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_157);
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 871; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
-      *__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_163, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_164, __pyx_pybuffernd_cSkeleton.diminfo[1].strides) = (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_161, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_162, __pyx_pybuffernd_cSkeleton.diminfo[1].strides));
+      *__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_155, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_156, __pyx_pybuffernd_cSkeleton.diminfo[1].strides) = (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.buf, __pyx_t_153, __pyx_pybuffernd_cSkeleton.diminfo[0].strides, __pyx_t_154, __pyx_pybuffernd_cSkeleton.diminfo[1].strides));
 
-      /* "linearSkeleton_cython.pyx":869
+      /* "linearSkeleton_cython.pyx":872
  *             cSkeleton[newTotal,0] = cSkeleton[i,0];
  *             cSkeleton[newTotal,1] = cSkeleton[i,1];
  *             cWidths[newTotal] = cWidths[i];             # <<<<<<<<<<<<<<
@@ -13109,35 +13106,35 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
       if (unlikely(((PyObject *)__pyx_v_cWidths) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 869; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 872; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
-      __pyx_t_165 = __pyx_v_i;
-      __pyx_t_166 = -1;
-      if (__pyx_t_165 < 0) {
-        __pyx_t_165 += __pyx_pybuffernd_cWidths.diminfo[0].shape;
-        if (unlikely(__pyx_t_165 < 0)) __pyx_t_166 = 0;
-      } else if (unlikely(__pyx_t_165 >= __pyx_pybuffernd_cWidths.diminfo[0].shape)) __pyx_t_166 = 0;
-      if (unlikely(__pyx_t_166 != -1)) {
-        __Pyx_RaiseBufferIndexError(__pyx_t_166);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 869; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_157 = __pyx_v_i;
+      __pyx_t_158 = -1;
+      if (__pyx_t_157 < 0) {
+        __pyx_t_157 += __pyx_pybuffernd_cWidths.diminfo[0].shape;
+        if (unlikely(__pyx_t_157 < 0)) __pyx_t_158 = 0;
+      } else if (unlikely(__pyx_t_157 >= __pyx_pybuffernd_cWidths.diminfo[0].shape)) __pyx_t_158 = 0;
+      if (unlikely(__pyx_t_158 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_158);
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 872; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       if (unlikely(((PyObject *)__pyx_v_cWidths) == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 869; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 872; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
-      __pyx_t_166 = __pyx_v_newTotal;
-      __pyx_t_167 = -1;
-      if (__pyx_t_166 < 0) {
-        __pyx_t_166 += __pyx_pybuffernd_cWidths.diminfo[0].shape;
-        if (unlikely(__pyx_t_166 < 0)) __pyx_t_167 = 0;
-      } else if (unlikely(__pyx_t_166 >= __pyx_pybuffernd_cWidths.diminfo[0].shape)) __pyx_t_167 = 0;
-      if (unlikely(__pyx_t_167 != -1)) {
-        __Pyx_RaiseBufferIndexError(__pyx_t_167);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 869; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_158 = __pyx_v_newTotal;
+      __pyx_t_159 = -1;
+      if (__pyx_t_158 < 0) {
+        __pyx_t_158 += __pyx_pybuffernd_cWidths.diminfo[0].shape;
+        if (unlikely(__pyx_t_158 < 0)) __pyx_t_159 = 0;
+      } else if (unlikely(__pyx_t_158 >= __pyx_pybuffernd_cWidths.diminfo[0].shape)) __pyx_t_159 = 0;
+      if (unlikely(__pyx_t_159 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_159);
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 872; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
-      *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cWidths.rcbuffer->pybuffer.buf, __pyx_t_166, __pyx_pybuffernd_cWidths.diminfo[0].strides) = (*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cWidths.rcbuffer->pybuffer.buf, __pyx_t_165, __pyx_pybuffernd_cWidths.diminfo[0].strides));
+      *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cWidths.rcbuffer->pybuffer.buf, __pyx_t_158, __pyx_pybuffernd_cWidths.diminfo[0].strides) = (*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float_t *, __pyx_pybuffernd_cWidths.rcbuffer->pybuffer.buf, __pyx_t_157, __pyx_pybuffernd_cWidths.diminfo[0].strides));
 
-      /* "linearSkeleton_cython.pyx":870
+      /* "linearSkeleton_cython.pyx":873
  *             cSkeleton[newTotal,1] = cSkeleton[i,1];
  *             cWidths[newTotal] = cWidths[i];
  *             newTotal+=1;             # <<<<<<<<<<<<<<
@@ -13145,12 +13142,12 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  * 
  */
       __pyx_v_newTotal = (__pyx_v_newTotal + 1);
-      goto __pyx_L64;
+      goto __pyx_L62;
     }
-    __pyx_L64:;
+    __pyx_L62:;
   }
 
-  /* "linearSkeleton_cython.pyx":873
+  /* "linearSkeleton_cython.pyx":876
  * 
  * 
  *     cSkeleton = cSkeleton[:newTotal, :]             # <<<<<<<<<<<<<<
@@ -13159,14 +13156,14 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  */
   if (unlikely(((PyObject *)__pyx_v_cSkeleton) == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 873; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 876; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
-  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_newTotal); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 873; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_newTotal); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 876; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = PySlice_New(Py_None, __pyx_t_3, Py_None); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 873; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PySlice_New(Py_None, __pyx_t_3, Py_None); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 876; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 873; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 876; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_2);
@@ -13174,63 +13171,63 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
   PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_slice__7);
   __Pyx_GIVEREF(__pyx_slice__7);
   __pyx_t_2 = 0;
-  __pyx_t_2 = PyObject_GetItem(((PyObject *)__pyx_v_cSkeleton), __pyx_t_3); if (unlikely(__pyx_t_2 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 873; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+  __pyx_t_2 = PyObject_GetItem(((PyObject *)__pyx_v_cSkeleton), __pyx_t_3); if (unlikely(__pyx_t_2 == NULL)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 876; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 873; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 876; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_8 = ((PyArrayObject *)__pyx_t_2);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer);
-    __pyx_t_153 = __Pyx_GetBufferAndValidate(&__pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer, (PyObject*)__pyx_t_8, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 2, 0, __pyx_stack);
-    if (unlikely(__pyx_t_153 < 0)) {
-      PyErr_Fetch(&__pyx_t_145, &__pyx_t_144, &__pyx_t_143);
+    __pyx_t_145 = __Pyx_GetBufferAndValidate(&__pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer, (PyObject*)__pyx_t_8, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 2, 0, __pyx_stack);
+    if (unlikely(__pyx_t_145 < 0)) {
+      PyErr_Fetch(&__pyx_t_137, &__pyx_t_136, &__pyx_t_135);
       if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer, (PyObject*)__pyx_v_cSkeleton, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 2, 0, __pyx_stack) == -1)) {
-        Py_XDECREF(__pyx_t_145); Py_XDECREF(__pyx_t_144); Py_XDECREF(__pyx_t_143);
+        Py_XDECREF(__pyx_t_137); Py_XDECREF(__pyx_t_136); Py_XDECREF(__pyx_t_135);
         __Pyx_RaiseBufferFallbackError();
       } else {
-        PyErr_Restore(__pyx_t_145, __pyx_t_144, __pyx_t_143);
+        PyErr_Restore(__pyx_t_137, __pyx_t_136, __pyx_t_135);
       }
     }
     __pyx_pybuffernd_cSkeleton.diminfo[0].strides = __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_cSkeleton.diminfo[0].shape = __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_cSkeleton.diminfo[1].strides = __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_cSkeleton.diminfo[1].shape = __pyx_pybuffernd_cSkeleton.rcbuffer->pybuffer.shape[1];
-    if (unlikely(__pyx_t_153 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 873; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (unlikely(__pyx_t_145 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 876; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_t_8 = 0;
   __Pyx_DECREF_SET(__pyx_v_cSkeleton, ((PyArrayObject *)__pyx_t_2));
   __pyx_t_2 = 0;
 
-  /* "linearSkeleton_cython.pyx":874
+  /* "linearSkeleton_cython.pyx":877
  * 
  *     cSkeleton = cSkeleton[:newTotal, :]
  *     cWidths = cWidths[:newTotal]             # <<<<<<<<<<<<<<
  * 
  *     return cSkeleton, cWidths
  */
-  __pyx_t_2 = __Pyx_PyObject_GetSlice(((PyObject *)__pyx_v_cWidths), 0, __pyx_v_newTotal, NULL, NULL, NULL, 0, 1, 1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 874; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetSlice(((PyObject *)__pyx_v_cWidths), 0, __pyx_v_newTotal, NULL, NULL, NULL, 0, 1, 1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 877; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 874; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 877; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_9 = ((PyArrayObject *)__pyx_t_2);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_cWidths.rcbuffer->pybuffer);
-    __pyx_t_153 = __Pyx_GetBufferAndValidate(&__pyx_pybuffernd_cWidths.rcbuffer->pybuffer, (PyObject*)__pyx_t_9, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 1, 0, __pyx_stack);
-    if (unlikely(__pyx_t_153 < 0)) {
-      PyErr_Fetch(&__pyx_t_143, &__pyx_t_144, &__pyx_t_145);
+    __pyx_t_145 = __Pyx_GetBufferAndValidate(&__pyx_pybuffernd_cWidths.rcbuffer->pybuffer, (PyObject*)__pyx_t_9, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 1, 0, __pyx_stack);
+    if (unlikely(__pyx_t_145 < 0)) {
+      PyErr_Fetch(&__pyx_t_135, &__pyx_t_136, &__pyx_t_137);
       if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_cWidths.rcbuffer->pybuffer, (PyObject*)__pyx_v_cWidths, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES| PyBUF_WRITABLE, 1, 0, __pyx_stack) == -1)) {
-        Py_XDECREF(__pyx_t_143); Py_XDECREF(__pyx_t_144); Py_XDECREF(__pyx_t_145);
+        Py_XDECREF(__pyx_t_135); Py_XDECREF(__pyx_t_136); Py_XDECREF(__pyx_t_137);
         __Pyx_RaiseBufferFallbackError();
       } else {
-        PyErr_Restore(__pyx_t_143, __pyx_t_144, __pyx_t_145);
+        PyErr_Restore(__pyx_t_135, __pyx_t_136, __pyx_t_137);
       }
     }
     __pyx_pybuffernd_cWidths.diminfo[0].strides = __pyx_pybuffernd_cWidths.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_cWidths.diminfo[0].shape = __pyx_pybuffernd_cWidths.rcbuffer->pybuffer.shape[0];
-    if (unlikely(__pyx_t_153 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 874; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (unlikely(__pyx_t_145 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 877; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_t_9 = 0;
   __Pyx_DECREF_SET(__pyx_v_cWidths, ((PyArrayObject *)__pyx_t_2));
   __pyx_t_2 = 0;
 
-  /* "linearSkeleton_cython.pyx":876
+  /* "linearSkeleton_cython.pyx":879
  *     cWidths = cWidths[:newTotal]
  * 
  *     return cSkeleton, cWidths             # <<<<<<<<<<<<<<
@@ -13238,7 +13235,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 876; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 879; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(((PyObject *)__pyx_v_cSkeleton));
   PyTuple_SET_ITEM(__pyx_t_2, 0, ((PyObject *)__pyx_v_cSkeleton));
@@ -13250,7 +13247,7 @@ static PyObject *__pyx_pf_21linearSkeleton_cython_14cleanSkeleton(CYTHON_UNUSED 
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "linearSkeleton_cython.pyx":635
+  /* "linearSkeleton_cython.pyx":633
  * 
  * 
  * def cleanSkeleton(np.ndarray[np.float_t, ndim=2] skeleton, np.ndarray[np.float_t, ndim=1] widths, double worm_seg_size):             # <<<<<<<<<<<<<<
@@ -15439,6 +15436,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_points_ind_out, __pyx_k_points_ind_out, sizeof(__pyx_k_points_ind_out), 0, 0, 1, 1},
   {&__pyx_n_s_prev_width, __pyx_k_prev_width, sizeof(__pyx_k_prev_width), 0, 0, 1, 1},
   {&__pyx_n_s_range, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
+  {&__pyx_n_s_resize, __pyx_k_resize, sizeof(__pyx_k_resize), 0, 0, 1, 1},
   {&__pyx_n_s_round, __pyx_k_round, sizeof(__pyx_k_round), 0, 0, 1, 1},
   {&__pyx_n_s_s1I, __pyx_k_s1I, sizeof(__pyx_k_s1I), 0, 0, 1, 1},
   {&__pyx_n_s_s2I, __pyx_k_s2I, sizeof(__pyx_k_s2I), 0, 0, 1, 1},
@@ -15494,7 +15492,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
 };
 static int __Pyx_InitCachedBuiltins(void) {
   __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 175; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_round = __Pyx_GetBuiltinName(__pyx_n_s_round); if (!__pyx_builtin_round) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 828; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_round = __Pyx_GetBuiltinName(__pyx_n_s_round); if (!__pyx_builtin_round) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 833; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 218; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_RuntimeError = __Pyx_GetBuiltinName(__pyx_n_s_RuntimeError); if (!__pyx_builtin_RuntimeError) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 802; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   return 0;
@@ -15517,45 +15515,45 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_slice_);
   __Pyx_GIVEREF(__pyx_slice_);
 
-  /* "linearSkeleton_cython.pyx":627
+  /* "linearSkeleton_cython.pyx":625
  *         ske_ind +=1;
  * 
  *     skeleton = skeleton[:ske_ind,:];             # <<<<<<<<<<<<<<
  *     cnt_widths = cnt_widths[:ske_ind]
  * 
  */
-  __pyx_slice__2 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 627; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_slice__2 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 625; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_slice__2);
   __Pyx_GIVEREF(__pyx_slice__2);
 
-  /* "linearSkeleton_cython.pyx":680
+  /* "linearSkeleton_cython.pyx":678
  *     cdef int last_index = number_points - 1
  * 
  *     cdef np.ndarray[np.int_t, ndim=1] pSortC = np.lexsort((skeleton[:,1], skeleton[:,0]))             # <<<<<<<<<<<<<<
  *     cdef np.ndarray[np.int_t, ndim=1] iSortC = np.argsort(pSortC)
  * 
  */
-  __pyx_slice__3 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 680; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_slice__3 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 678; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_slice__3);
   __Pyx_GIVEREF(__pyx_slice__3);
-  __pyx_tuple__4 = PyTuple_Pack(2, __pyx_slice__3, __pyx_int_1); if (unlikely(!__pyx_tuple__4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 680; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__4 = PyTuple_Pack(2, __pyx_slice__3, __pyx_int_1); if (unlikely(!__pyx_tuple__4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 678; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__4);
   __Pyx_GIVEREF(__pyx_tuple__4);
-  __pyx_slice__5 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 680; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_slice__5 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 678; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_slice__5);
   __Pyx_GIVEREF(__pyx_slice__5);
-  __pyx_tuple__6 = PyTuple_Pack(2, __pyx_slice__5, __pyx_int_0); if (unlikely(!__pyx_tuple__6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 680; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__6 = PyTuple_Pack(2, __pyx_slice__5, __pyx_int_0); if (unlikely(!__pyx_tuple__6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 678; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__6);
   __Pyx_GIVEREF(__pyx_tuple__6);
 
-  /* "linearSkeleton_cython.pyx":873
+  /* "linearSkeleton_cython.pyx":876
  * 
  * 
  *     cSkeleton = cSkeleton[:newTotal, :]             # <<<<<<<<<<<<<<
  *     cWidths = cWidths[:newTotal]
  * 
  */
-  __pyx_slice__7 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 873; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_slice__7 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 876; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_slice__7);
   __Pyx_GIVEREF(__pyx_slice__7);
 
@@ -15709,17 +15707,17 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_GIVEREF(__pyx_tuple__26);
   __pyx_codeobj__27 = (PyObject*)__Pyx_PyCode_New(8, 0, 30, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__26, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Users_ajaver_GitHub_repositorie, __pyx_n_s_skeletonize, 483, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__27)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 483; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "linearSkeleton_cython.pyx":635
+  /* "linearSkeleton_cython.pyx":633
  * 
  * 
  * def cleanSkeleton(np.ndarray[np.float_t, ndim=2] skeleton, np.ndarray[np.float_t, ndim=1] widths, double worm_seg_size):             # <<<<<<<<<<<<<<
  *     ''' * %CLEANSKELETON Clean an 8-connected skeleton by removing any overlap and
  *      * %interpolating any missing points.
  */
-  __pyx_tuple__28 = PyTuple_Pack(39, __pyx_n_s_skeleton, __pyx_n_s_widths, __pyx_n_s_worm_seg_size, __pyx_n_s_FLAG_MAX, __pyx_n_s_maxSkeletonOverlap, __pyx_n_s_number_points, __pyx_n_s_last_index, __pyx_n_s_pSortC, __pyx_n_s_iSortC, __pyx_n_s_buff_size, __pyx_n_s_cSkeleton, __pyx_n_s_cWidths, __pyx_n_s_keep, __pyx_n_s_minI, __pyx_n_s_maxI, __pyx_n_s_s1I, __pyx_n_s_i, __pyx_n_s_s2I, __pyx_n_s_pI, __pyx_n_s_dSkeleton, __pyx_n_s_newTotal, __pyx_n_s_j, __pyx_n_s_m, __pyx_n_s_x, __pyx_n_s_y, __pyx_n_s_x1, __pyx_n_s_x2, __pyx_n_s_y1, __pyx_n_s_y2, __pyx_n_s_delY, __pyx_n_s_delX, __pyx_n_s_delW, __pyx_n_s_points, __pyx_n_s_xd, __pyx_n_s_yd, __pyx_n_s_xprev, __pyx_n_s_yprev, __pyx_n_s_n_interp, __pyx_n_s_nextI); if (unlikely(!__pyx_tuple__28)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 635; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__28 = PyTuple_Pack(39, __pyx_n_s_skeleton, __pyx_n_s_widths, __pyx_n_s_worm_seg_size, __pyx_n_s_FLAG_MAX, __pyx_n_s_maxSkeletonOverlap, __pyx_n_s_number_points, __pyx_n_s_last_index, __pyx_n_s_pSortC, __pyx_n_s_iSortC, __pyx_n_s_buff_size, __pyx_n_s_cSkeleton, __pyx_n_s_cWidths, __pyx_n_s_keep, __pyx_n_s_minI, __pyx_n_s_maxI, __pyx_n_s_s1I, __pyx_n_s_i, __pyx_n_s_s2I, __pyx_n_s_pI, __pyx_n_s_dSkeleton, __pyx_n_s_newTotal, __pyx_n_s_j, __pyx_n_s_m, __pyx_n_s_x, __pyx_n_s_y, __pyx_n_s_x1, __pyx_n_s_x2, __pyx_n_s_y1, __pyx_n_s_y2, __pyx_n_s_delY, __pyx_n_s_delX, __pyx_n_s_delW, __pyx_n_s_points, __pyx_n_s_xd, __pyx_n_s_yd, __pyx_n_s_xprev, __pyx_n_s_yprev, __pyx_n_s_n_interp, __pyx_n_s_nextI); if (unlikely(!__pyx_tuple__28)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 633; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__28);
   __Pyx_GIVEREF(__pyx_tuple__28);
-  __pyx_codeobj__29 = (PyObject*)__Pyx_PyCode_New(3, 0, 39, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__28, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Users_ajaver_GitHub_repositorie, __pyx_n_s_cleanSkeleton, 635, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__29)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 635; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__29 = (PyObject*)__Pyx_PyCode_New(3, 0, 39, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__28, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Users_ajaver_GitHub_repositorie, __pyx_n_s_cleanSkeleton, 633, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__29)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 633; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -15931,16 +15929,16 @@ PyMODINIT_FUNC PyInit_linearSkeleton_cython(void)
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_skeletonize, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 483; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "linearSkeleton_cython.pyx":635
+  /* "linearSkeleton_cython.pyx":633
  * 
  * 
  * def cleanSkeleton(np.ndarray[np.float_t, ndim=2] skeleton, np.ndarray[np.float_t, ndim=1] widths, double worm_seg_size):             # <<<<<<<<<<<<<<
  *     ''' * %CLEANSKELETON Clean an 8-connected skeleton by removing any overlap and
  *      * %interpolating any missing points.
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_21linearSkeleton_cython_15cleanSkeleton, NULL, __pyx_n_s_linearSkeleton_cython); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 635; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_21linearSkeleton_cython_15cleanSkeleton, NULL, __pyx_n_s_linearSkeleton_cython); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 633; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_cleanSkeleton, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 635; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_cleanSkeleton, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 633; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "linearSkeleton_cython.pyx":1

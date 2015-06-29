@@ -281,7 +281,7 @@ class wormStatsClass():
         
         return self.stats
 
-def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, video_fps = 25):
+def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 25):
     #%%
     
     #useful to display progress 
@@ -359,7 +359,7 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, video_f
             worm.fromFile(skeletons_file, worm_index, rows_range= tuple(row_range.values), isOpenWorm=True)
             
             #video info, for the moment we intialize it with the fps
-            vi = VideoInfo('', video_fps)  
+            vi = VideoInfo('', fps)  
             vi.frame_code = worm.frame_code
             #(this shouldn't happend if the data was filter correctly)
             assert not np.all(np.isnan(worm.skeleton))
@@ -441,8 +441,3 @@ if __name__ == "__main__":
     assert os.path.exists(skeletons_file)
         
     getWormFeatures(skeletons_file, features_file)
-
-
-    
-
-

@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+Created on Sat Jun 27 14:25:41 2015
+
+@author: ajaver
+"""
+
+# -*- coding: utf-8 -*-
+"""
 Created on Mon Jun  1 22:15:48 2015
 
 @author: ajaver
@@ -11,15 +18,19 @@ import tables
 from scipy.interpolate import RectBivariateSpline
 import sys
 import os
-#import matplotlib.pylab as plt
 
+import cv2
+import matplotlib.pylab as plt
+
+
+sys.path.append('../trackWorms/')
 from getSkeletonsTables import getWormROI
 
 
 sys.path.append('../helperFunctions/')
 from timeCounterStr import timeCounterStr
 
-sys.path.append('../segworm_python/')
+sys.path.append('../trackWorms/segWormPython/')
 from curvspace import curvspace
 
 def angleSmoothed(x, y, window_size):
@@ -38,7 +49,7 @@ def angleSmoothed(x, y, window_size):
     skel_angles = np.lib.pad(skel_angles, (window_size//2, window_size//2), 'edge')
     return skel_angles;
 
-def getStraightenWormInt(worm_img, skeleton, half_width = -1, cnt_widths  = np.zeros(0), width_resampling = 7, ang_smooth_win = 12, length_resampling = 49):
+def getStraightenWormIntT(worm_img, skeleton, half_width = -1, cnt_widths  = np.zeros(0), width_resampling = 7, ang_smooth_win = 12, length_resampling = 49):
     
     #if np.all(np.isnan(skeleton)):
     #    buff = np.empty((skeleton.shape[0], width_resampling))
@@ -84,20 +95,20 @@ def getStraightenWormInt(worm_img, skeleton, half_width = -1, cnt_widths  = np.z
     
     
     f = RectBivariateSpline(np.arange(worm_img.shape[0]), np.arange(worm_img.shape[1]), worm_img)
-    return f.ev(grid_y, grid_x) #return interpolated intensity map
+    return f.ev(grid_y, grid_x), grid_x, grid_y #return interpolated intensity map
 
 
 base_name = 'Capture_Ch3_12052015_194303'
 mask_dir = '/Users/ajaver/Desktop/Gecko_compressed/Masked_Videos/20150512/'
 results_dir = '/Users/ajaver/Desktop/Gecko_compressed/Results/20150512/'    
 
-#root_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150511/'
 #base_name = 'Capture_Ch1_11052015_195105'
+#mask_dir = '/Users/ajaver/Desktop/Gecko_compressed/Masked_Videos/20150511/'
+#results_dir = '/Users/ajaver/Desktop/Gecko_compressed/Results/20150511/'    
 
 masked_image_file = mask_dir + base_name + '.hdf5'
 trajectories_file = results_dir + base_name + '_trajectories.hdf5'
 skeletons_file = results_dir + base_name + '_skeletons.hdf5'
-intensities_file = results_dir + base_name + '_intensities2.hdf5'
 
 #%%
 base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
@@ -107,11 +118,15 @@ roi_size = 128
 width_resampling = 15#13
 length_resampling = 131#121
 
+worm_id = 1
+min_frame = 0
+max_frame = 1000
+
 
 with pd.HDFStore(skeletons_file, 'r') as ske_file_id:
     #data to extract the ROI
     trajectories_df = ske_file_id['/trajectories_data']
-    #trajectories_df = trajectories_df.query('worm_index_joined==209')
+    trajectories_df = trajectories_df.query('worm_index_joined==%i' % worm_id)
     
     #get the first and last frame of each worm_index
     indexes_data = trajectories_df[['worm_index_joined', 'skeleton_id']]
@@ -120,8 +135,7 @@ with pd.HDFStore(skeletons_file, 'r') as ske_file_id:
 
 #def getIntensitiesMap(masked_image_file, skeletons_file, intensities_file, roi_size = 128):
 with tables.File(masked_image_file, 'r')  as mask_fid, \
-     tables.File(skeletons_file, 'r') as ske_file_id, \
-     tables.File(intensities_file, "w") as int_file_id:
+     tables.File(skeletons_file, 'r') as ske_file_id:
     
     #pointer to the compressed videos
     mask_dataset = mask_fid.get_node("/mask")
@@ -142,16 +156,14 @@ with tables.File(masked_image_file, 'r')  as mask_fid, \
     
     #create array to save the intensities
     filters = tables.Filters(complevel=5, complib='zlib', shuffle=True)
-    worm_int_tab = int_file_id.create_carray("/", "straighten_worm_intensity", \
-                               tables.Float16Atom(dflt=np.nan), \
-                               (tot_rows, length_resampling, width_resampling), \
-                                chunkshape = (1, length_resampling, width_resampling),\
-                                filters = filters);
     
-    
+    worm_int = np.zeros((max_frame-min_frame+2, length_resampling, width_resampling))
+    ii = 0
     
     progressTime = timeCounterStr('Obtaining intensity maps.');
     for frame, frame_data in trajectories_df.groupby('frame_number'):
+        if frame < min_frame: continue
+        if frame >= max_frame: break
         img = mask_dataset[frame,:,:]
         for segworm_id, row_data in frame_data.iterrows():
             worm_index = row_data['worm_index_joined']
@@ -160,16 +172,35 @@ with tables.File(masked_image_file, 'r')  as mask_fid, \
             skeleton = skel_tab[segworm_id,:,:]-roi_corner
             
             if not np.any(np.isnan(skeleton)): 
-                straighten_worm = getStraightenWormInt(worm_img, skeleton, half_width = half_widths[worm_index], \
+                straighten_worm, grid_x, grid_y = \
+                getStraightenWormIntT(worm_img, skeleton, half_width = half_widths[worm_index], \
                 width_resampling = width_resampling, length_resampling = length_resampling)
-                worm_int_tab[segworm_id, :, :]  = straighten_worm.T
-                
-        if frame % 500 == 0:
-            progress_str = progressTime.getStr(frame)
-            print(base_name + ' ' + progress_str);   
+                ii += 1
+                worm_int[ii, :, :]  = straighten_worm.T
     
-    mask_fid.close()
-    int_file_id.close()
+#%%
+    worm_prefix = 'worm_%i' % worm_id
+    plt.figure()
+    plt.imshow(worm_img, interpolation='none', cmap='gray')
+    plt.axis('off')
+    plt.savefig(worm_prefix+".png",bbox_inches='tight')
+    
+    plt.plot(grid_x, grid_y)
+    plt.plot(skeleton[:,0], skeleton[:,1], 'k')
+    plt.axis('off')
+    plt.savefig(worm_prefix+"_ske.png",bbox_inches='tight')
+#%%    
+    plt.figure()
+    plt.imshow(straighten_worm, interpolation='none', cmap='gray')
+    plt.axis('off')
+    plt.savefig(worm_prefix+"_straighten.png",bbox_inches='tight')
+#%%
+    plt.figure()
+    plt.imshow(np.nanmean(worm_int[ii-50:ii], axis=0).T, interpolation='none', cmap='gray')
+    plt.axis('off')
+    plt.savefig(worm_prefix+"_straighten_mean.png",bbox_inches='tight')
+    
+    
 #%%
 
  
