@@ -52,5 +52,11 @@ Most of this fields are features with a self-explanatory name I would only to th
  
  ![skeleton](https://cloud.githubusercontent.com/assets/8364368/8456643/a99e69c0-2004-11e5-936e-91c0ab1120b0.png)
 
-4. **Extracting worm features:** 
+4. **Extracting worm features:** Uses the code in `obtainFeatures.py` in the `FeaturesAnalysis` directory, and the movement validation repository. This part is still in progress but bassically creates a normalized worm object from the '_skeletons.hdf5' tables, and extract features and mean features using the movement_validation functions. The motion data is store in a large table with all the worms on it and with with the indexes frame_number and worm_index, where the event data is store in individual tables for each worm. The seven hundredth or so mean features are store in another table where each worm correspond to worm index.
+
+TODO: 
+- Filter "bad worms", meaning any particle indentified and analyzed for the tracker that it is not a worm, or any trajectory that correspond to two or more worms in contact.
+- Determine ventral and dorsal orientation. This could be done by the worm intensity [worm_on_progress/Intensity_analysis](https://github.com/ver228/Multiworm_Tracking/tree/master/work_on_progress/Intensity_analysis).
+- Indentify all the trajectories that correspond to the same worm along the video. This might be a bit challenging, but I think that by extracting morphological features or even intensity maps it might be possible to identify all the trajectories segments for the same worm, even after a collision event.
+- Test the feature extraction. I haven't check that the features are stored appropiately. There might be some bugs on this part.
 
