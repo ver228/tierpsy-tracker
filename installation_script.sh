@@ -1,11 +1,12 @@
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 brew install wget
-brew install cmake
 brew install ffmpeg
 
 brew install python3
 pip3 install numpy
+
+brew install cmake
 
 wget https://github.com/Itseez/opencv/archive/3.0.0.zip
 unzip 3.0.0.zip
