@@ -31,11 +31,3 @@ if __name__ == '__main__':
     delY = tracks_data['coord_y']['max'] - tracks_data['coord_y']['min']
     
     good_index = tracks_data[(delX>min_displacement) & (delY>min_displacement)].index
-    
-    
-#    df = df[df.worm_index_joined.isin(good_index)]
-#    
-#    track_lenghts = (tracks_data['frame_number']['max'] - tracks_data['frame_number']['min']+1)
-#    tot_rows_ini = track_lenghts[track_lenghts>displacement_smooth_win].sum()
-#    del track_lenghts
-    
