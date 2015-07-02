@@ -18,7 +18,7 @@ masked_movies_root =  '/Volumes/behavgenom$/GeckoVideo/MaskedVideos/'
 results_root = '/Volumes/behavgenom$/GeckoVideo/Results/'
 
 
-max_num_process = 6
+max_num_process = 12
 
 subdir_base = sys.argv[1]
 
@@ -30,16 +30,12 @@ if not os.path.exists(results_dir):
 
 movie_files = glob.glob(masked_movies_dir + os.sep + '*.hdf5') 
 
-cmd_list_compress = []
 cmd_list_track = []
-for video_file in movie_files:
-    masked_image_file = masked_movies_dir + video_file
+for masked_image_file in movie_files:
     assert os.path.exists(masked_image_file)
     
     cmd_list_track += [' '.join(['python3 trackSingleFile.py', masked_image_file, results_dir])]
 
 
-runMultiSubproc(cmd_list_compress, max_num_process = max_num_process)
-print('%'*500)
 runMultiSubproc(cmd_list_track, max_num_process = max_num_process)
     
