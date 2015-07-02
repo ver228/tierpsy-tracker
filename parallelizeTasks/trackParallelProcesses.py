@@ -1,47 +1,45 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Apr  3 16:46:25 2015
+Created on Tue Jun  9 15:12:48 2015
 
 @author: ajaver
 """
 
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Apr  3 01:56:06 2015
-
-@author: ajaver
-"""
 import os
+import glob
 import sys
 
 
-sys.path.append('../helperFunctions/')
-from parallelProcHelper import runMultiSubproc
+sys.path.append('..')
+from MWTracker.helperFunctions.parallelProcHelper import runMultiSubproc
 
 
-
-def get_tracking_cmd(masked_movie_file, results_dir):
-    cmd =  ' '.join(["python3 trackSingleFile.py", masked_movie_file, results_dir])
-    return cmd
+masked_movies_root =  '/Volumes/behavgenom$/GeckoVideo/MaskedVideos/'
+results_root = '/Volumes/behavgenom$/GeckoVideo/Results/'
 
 
+max_num_process = 6
 
-if __name__ == '__main__':
+subdir_base = sys.argv[1]
+
+masked_movies_dir = masked_movies_root + subdir_base + os.sep
+results_dir = results_root + subdir_base + os.sep
+
+if not os.path.exists(results_dir):
+    os.mkdir(results_dir)
+
+movie_files = glob.glob(masked_movies_dir + os.sep + '*.hdf5') 
+
+cmd_list_compress = []
+cmd_list_track = []
+for video_file in movie_files:
+    masked_image_file = masked_movies_dir + video_file
+    assert os.path.exists(masked_image_file)
     
-    masked_movies_dir = '/Volumes/behavgenom$/GeckoVideo/MaskedVideos/Bertie_20150618/'
-    results_dir = '/Volumes/behavgenom$/GeckoVideo/Results/Bertie_20150618/'
-    
-    max_num_process = 6;
-    if not os.path.exists(results_dir):
-        os.makedirs(results_dir)
+    cmd_list_track += [' '.join(['python3 trackSingleFile.py', masked_image_file, results_dir])]
 
-    #get a file list 
-    masked_movies_list = os.listdir(masked_movies_dir);
-    #filter for files with .hdf5 and add the full path
-    args_list = [(masked_movies_dir + x, results_dir) \
-    for x in masked_movies_list if ('.hdf5' in x)]
-    
-    runMultiSubproc(get_tracking_cmd, max_num_process = 6)
-    
 
+runMultiSubproc(cmd_list_compress, max_num_process = max_num_process)
+print('%'*500)
+runMultiSubproc(cmd_list_track, max_num_process = max_num_process)
     

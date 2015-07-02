@@ -10,9 +10,8 @@ import glob
 import sys
 
 
-sys.path.append('../helperFunctions/')
-from parallelProcHelper import runMultiSubproc
-
+sys.path.append('..')
+from MWTracker.helperFunctions.parallelProcHelper import runMultiSubproc
 
 
 masked_movies_root =  '/Volumes/behavgenom$/GeckoVideo/MaskedVideos/'
@@ -30,6 +29,12 @@ subdir_base = os.path.split(dir_main)[-1]
 movie_files = glob.glob(dir_main + os.sep + '*.mjpg') 
 masked_movies_dir = masked_movies_root + subdir_base + os.sep
 results_dir = results_root + subdir_base + os.sep
+
+if not os.path.exists(results_dir):
+    os.mkdir(results_dir)
+
+if not os.path.exists(masked_movies_dir):
+    os.mkdir(masked_movies_dir)
 
 
 cmd_list_compress = []
