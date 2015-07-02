@@ -16,7 +16,7 @@ from ..compressVideos.writeFullFramesTiff import writeFullFramesTiff
 
 from .. import config_param as param
 
-def getCompressVidWorker(video_file, mask_files_dir):
+def compressVideoWorker(video_file, mask_files_dir):
     
     #check if the video file exists
     assert os.path.exists(video_file)
@@ -47,8 +47,3 @@ def getCompressVidWorker(video_file, mask_files_dir):
     
     return masked_image_file
     
-if __name__ == "__main__":
-    video_file = sys.argv[1]
-    mask_files_dir = sys.argv[2]
-
-    getCompressVidWorker(video_file, mask_files_dir)

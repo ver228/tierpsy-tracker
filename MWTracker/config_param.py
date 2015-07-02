@@ -11,13 +11,13 @@ thresh_C = 15 #use 15 for worm rig and 60 for zeiss dissecting microscope
 expected_frames = 15000 #expected number of frames in the video
 fps = 25 #frame rate
 roi_size = 128 #region of interest size (pixels) used for the skeletonization and individual worm videos
+bad_seg_thresh = 0.5
 
 #absolute path for the movement validation repository
 movement_validation_dir = '/Users/ajaver/GitHub_repositories/movement_validation'
 
 if not isinstance(fps, int):
     fps = int(fps)
-
 
 #getROIMask
 mask_param = {'min_area': min_area*2, 'max_area': max_area, 'has_timestamp': True, 
@@ -47,7 +47,6 @@ get_skeletons_param = {'roi_size' : roi_size, 'resampling_N' : 49,
 head_tail_param = {'max_gap_allowed' : fps//2, 'window_std' : fps, 'segment4angle' : 5, 
                    'min_block_size' : fps*10}
 
-bad_seg_thresh = 0.5
 
 #writeIndividualMovies
 ind_mov_param = {'roi_size' : roi_size, 'fps' : fps, 

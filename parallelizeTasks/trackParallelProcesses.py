@@ -28,8 +28,8 @@ def get_tracking_cmd(masked_movie_file, results_dir):
 
 if __name__ == '__main__':
     
-    #masked_movies_dir = '/Volumes/behavgenom$/GeckoVideo/MaskedVideos/20150519/'
-    #results_dir = '/Volumes/behavgenom$/GeckoVideo/Results/20150519/'
+    masked_movies_dir = '/Volumes/behavgenom$/GeckoVideo/MaskedVideos/Bertie_20150618/'
+    results_dir = '/Volumes/behavgenom$/GeckoVideo/Results/Bertie_20150618/'
     
     max_num_process = 6;
     if not os.path.exists(results_dir):

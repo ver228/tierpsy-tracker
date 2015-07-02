@@ -128,7 +128,7 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
             #select pixels as connected regions that were selected as worms at least once in the masks
             main_mask = np.any(image_buffer, axis=0)
             
-            
+            #TODO addd the option to do not remove this information in videos without the timestamp
             main_mask[0:15, 0:479] = False; #remove the timestamp region in the upper corner
             
             main_mask = main_mask.astype(np.uint8) #change from bool to uint since same datatype is required in opencv

@@ -42,3 +42,13 @@ pip3 install scipy
 pip3 install scikit-learn
 pip3 install scikit-image
 pip3 install tifffile
+
+cd ./MWTracker/compressVideos
+python3 setup.py build_ext --inplace
+cd ../..
+
+cd ./MWTracker/trackWorms/segWormPython/cythonFiles/
+python3 setup.py build_ext --inplace
+cd ../../../..
+
+

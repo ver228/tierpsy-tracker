@@ -347,7 +347,7 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
             is_signed_motion[motion_header[feature]._v_pos] = spec.is_signed
 
         table_motion._v_attrs['is_signed'] = is_signed_motion
-
+        
         #start to calculate features for each worm trajectory      
         tot_worms = len(rows_indexes)        
         for ind, dat  in enumerate(rows_indexes.iterrows()):
@@ -417,7 +417,9 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
         for kk, row_dict in enumerate(all_stats):
             for key in row_dict:
                 mean_features_df[key][kk] = row_dict[key]
-        features_fid.create_table('/', 'Features_table', obj = mean_features_df, filters=filters_tables)
+        feat_mean = features_fid.create_table('/', 'Features_means', obj = mean_features_df, filters=filters_tables)
+        
+        feat_mean._v_attrs['has_finished'] = 1
         
         print('Feature extraction finished:' + progress_timer.getTimeStr())
 

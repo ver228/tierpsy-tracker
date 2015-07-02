@@ -7,10 +7,12 @@ Created on Thu Jun 25 10:55:55 2015
 
 import cv2
 import numpy as np
-import matplotlib.pylab as plt
+
+import sys
+sys.path.append('..')
+from MWTracker.compressVideo.compressVideo import getROIMask
 
 from skimage.viewer import ImageViewer
-from compressVideo import getROIMask
 from skimage.viewer.plugins.base import Plugin
 from skimage.viewer.widgets import Slider
 
