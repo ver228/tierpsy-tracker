@@ -14,7 +14,11 @@ roi_size = 128 #region of interest size (pixels) used for the skeletonization an
 bad_seg_thresh = 0.5
 
 #absolute path for the movement validation repository
-movement_validation_dir = '/Users/ajaver/GitHub_repositories/movement_validation'
+#movement_validation_dir = '/Users/ajaver/GitHub_repositories/movement_validation'
+movement_validation_dir = '/Users/ajaver/Documents/GitHub/movement_validation'
+
+import os
+assert os.path.exists(movement_validation_dir)
 
 if not isinstance(fps, int):
     fps = int(fps)
