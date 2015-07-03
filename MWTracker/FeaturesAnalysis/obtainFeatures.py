@@ -116,7 +116,7 @@ class WormFromTable(NormalizedWorm):
         """
         NormalizedWorm.__init__(self)
     
-    def fromFile(self, file_name, worm_index, rows_range = (0,0), isOpenWorm = False):
+    def fromFile(self, file_name, worm_index, fps = 25, rows_range = (0,0), isOpenWorm = False):
         self.file_name = file_name;
         with tables.File(file_name, 'r') as file_id:
             #data range
@@ -132,7 +132,12 @@ class WormFromTable(NormalizedWorm):
                 del skeleton_id
             
             ini, end = rows_range
-            
+
+            #video info, for the moment we intialize it with the fps
+            self.video_info = VideoInfo('', fps)  
+            #flag as segmented flags should be marked by the has_skeletons column
+            self.video_info.frame_code = file_id.get_node('/trajectories_data').cols.has_skeleton[:]
+                        
             self.worm_index = worm_index
             self.rows_range = rows_range
             
@@ -150,12 +155,8 @@ class WormFromTable(NormalizedWorm):
             self.n_segments = self.skeleton.shape[1]
             self.n_frames = self.skeleton.shape[0]
             
-            self.frame_code = np.zeros(self.n_frames, dtype=np.int32)
-            #flag as segmented (s) evertyhing that is not nan
-            self.frame_code[~np.isnan(self.skeleton[:,0,0])] = 1
             
             self.area = calWormArea(self.ventral_contour, self.dorsal_contour)
-            
             
             assert self.angles.shape[1] == self.n_segments            
             
@@ -356,16 +357,12 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
             
             #initialize worm object, and extract data from skeletons file
             worm = WormFromTable()
-            worm.fromFile(skeletons_file, worm_index, rows_range= tuple(row_range.values), isOpenWorm=True)
+            worm.fromFile(skeletons_file, worm_index, fps = 25, rows_range= tuple(row_range.values), isOpenWorm=True)
             
-            #video info, for the moment we intialize it with the fps
-            vi = VideoInfo('', fps)  
-            vi.frame_code = worm.frame_code
-            #(this shouldn't happend if the data was filter correctly)
             assert not np.all(np.isnan(worm.skeleton))
             
             # Generate the OpenWorm movement validation repo version of the features
-            worm_features = WormFeatures(worm, vi)
+            worm_features = WormFeatures(worm)
             
             #get the average for each worm feature
             worm_stats = wStats.getWormStats(worm_features, np.mean)
@@ -378,7 +375,7 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
             
             #save the motion data as a general table
             motion_data = [[]]*len(motion_header)
-            motion_data[motion_header['frame_number']._v_pos] = worm.frame_code
+            motion_data[motion_header['frame_number']._v_pos] = worm.frame_number
             motion_data[motion_header['worm_index']._v_pos] = np.full(worm.n_frames, worm.worm_index)
             motion_data[motion_header['Motion_Modes']._v_pos] = worm_features.locomotion.motion_mode
             for spec in wStats.specs_motion:
@@ -394,7 +391,7 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
             #save events data as a subgroup for the worm
             worm_node = features_fid.create_group(group_events, 'worm_%i' % worm_index )
             worm_node._v_attrs['worm_index'] = worm_index
-            worm_node._v_attrs['frame_range'] = (worm.frame_code[0], worm.frame_code[-1])
+            worm_node._v_attrs['frame_range'] = (worm.frame_number[0], worm.frame_number[-1])
             worm_node._v_attrs['skeletons_rows_range'] = tuple(row_range.values)
             for spec in wStats.specs_events:
                 feature = wStats.spec2tableName[spec.name]
