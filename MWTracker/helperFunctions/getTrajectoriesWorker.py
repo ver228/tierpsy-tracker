@@ -104,7 +104,7 @@ def getTrajectoriesWorker(masked_image_file, results_dir, overwrite = False):
             os.makedirs(results_dir)
         except:
             pass
-    
+    #%%
     #construct file names
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
     
@@ -113,7 +113,7 @@ def getTrajectoriesWorker(masked_image_file, results_dir, overwrite = False):
     skeletons_file = results_dir + base_name + '_skeletons.hdf5'
     features_file = results_dir + base_name + '_features.hdf5'
     video_save_dir = results_dir + base_name + os.sep
-    
+    #%%
     if overwrite:
         start_point = checkpoint['TRAJ_CREATE']
     else:

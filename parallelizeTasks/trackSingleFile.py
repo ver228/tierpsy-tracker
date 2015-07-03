@@ -11,11 +11,11 @@ sys.path.append('..')
 from MWTracker.helperFunctions.getTrajectoriesWorker import getTrajectoriesWorker
 
 if __name__ == '__main__':
-    #masked_image_file = sys.argv[1]
-    #results_dir = sys.argv[2]
+    masked_image_file = sys.argv[1]
+    results_dir = sys.argv[2]
     
-    masked_image_file = '/Volumes/behavgenom$/GeckoVideo/MaskedVideos/Bertie_20150618/Capture_Ch2_18062015_141051.hdf5'
-    results_dir = '/Volumes/behavgenom$/GeckoVideo/Results/Bertie_20150618/' 
+    #masked_image_file = '/Volumes/behavgenom$/GeckoVideo/MaskedVideos/Bertie_20150618/Capture_Ch3_18062015_141051.hdf5'
+    #results_dir = '/Volumes/behavgenom$/GeckoVideo/Results/Bertie_20150618/' 
     
     getTrajectoriesWorker(masked_image_file, results_dir, overwrite = False)
 
