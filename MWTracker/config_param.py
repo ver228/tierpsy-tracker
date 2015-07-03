@@ -4,6 +4,7 @@ Created on Thu Jun 25 12:44:07 2015
 
 @author: ajaver
 """
+import os
 
 min_area = 50 #minimum area in pixels allowed
 max_area = 5000 #maximum area in pixels allowed
@@ -14,8 +15,7 @@ roi_size = 128 #region of interest size (pixels) used for the skeletonization an
 bad_seg_thresh = 0.5
 
 #absolute path for the movement validation repository
-movement_validation_dir = '/Users/ajaver/GitHub_repositories/movement_validation'
-#movement_validation_dir = '/Users/ajaver/Documents/GitHub/movement_validation'
+movement_validation_dir = os.path.expanduser('~') + '/Documents/GitHub/movement_validation'
 
 import os
 assert os.path.exists(movement_validation_dir)
