@@ -16,6 +16,8 @@ from MWTracker.helperFunctions.parallelProcHelper import runMultiSubproc
 
 masked_movies_root =  '/Volumes/behavgenom$/GeckoVideo/MaskedVideos/'
 results_root = '/Volumes/behavgenom$/GeckoVideo/Results/'
+#masked_movies_root =  '/Users/ajaver/Desktop/Gecko_compressed/MaskedVideos/'
+#results_root = '/Users/ajaver/Desktop/Gecko_compressed/Results/'
 
 
 max_num_process = 12

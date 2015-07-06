@@ -25,14 +25,17 @@ from scipy.interpolate import interp1d
 from ..helperFunctions.timeCounterStr import timeCounterStr
 from .segWormPython.mainSegworm import getSkeleton
 
-def getSmoothTrajectories(trajectories_file, displacement_smooth_win = 101, min_displacement = 0, threshold_smooth_win = 501):
+def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_win = 101, min_displacement = 0, threshold_smooth_win = 501):
     '''
     Smooth trajectories and thresholds created by getWormTrajectories. 
     If min_displacement is specified there is the option to filter immobile particles, typically spurious.
     '''
     #read that frame an select trajectories that were considered valid by join_trajectories
     table_fid = pd.HDFStore(trajectories_file, 'r')
-    df = table_fid['/plate_worms'][['worm_index_joined', 'frame_number', 'coord_x', 'coord_y','threshold']]
+    df = table_fid['/plate_worms'][['worm_index_joined', 'frame_number', \
+    'coord_x', 'coord_y','threshold', 'bounding_box_xmax', 'bounding_box_xmin',\
+    'bounding_box_ymax' , 'bounding_box_ymin']]
+    
     df =  df[df['worm_index_joined'] > 0]
     table_fid.close()
     
@@ -52,11 +55,26 @@ def getSmoothTrajectories(trajectories_file, displacement_smooth_win = 101, min_
     tot_rows_ini = track_lenghts[track_lenghts>displacement_smooth_win].sum()
     del track_lenghts
 
+
+    #add the possibility to have variable size ROI
+    if roi_size <= 0:
+        bb_x = df['bounding_box_xmax']-df['bounding_box_xmin']+1;
+        bb_y = df['bounding_box_ymax']-df['bounding_box_ymin']+1;
+        worm_lim = pd.concat([bb_x, bb_y], axis=1).max(axis=1)
+        
+        df_bb = pd.DataFrame({'worm_index_joined':df['worm_index_joined'], 'roi_range': worm_lim})
+        #roi_size = df_bb.groupby('worm_index').agg([max , functools.partial(np.percentile, q=0.98)])
+        roi_range = df_bb.groupby('worm_index_joined').agg(max) + 10
+        roi_range = dict(roi_range['roi_range'])
+    else:
+        roi_range = {ii:roi_size for ii in np.unique(df['worm_index_joined'])}
+
     #initialize output data as a numpy recarray (pytables friendly format)
     trajectories_df = np.recarray(tot_rows_ini, dtype = [('frame_number', np.int32), \
     ('worm_index_joined', np.int32), \
     ('plate_worm_id', np.int32), ('skeleton_id', np.int32), \
-    ('coord_x', np.float32), ('coord_y', np.float32), ('threshold', np.float32), ('has_skeleton', np.uint8)])
+    ('coord_x', np.float32), ('coord_y', np.float32), ('threshold', np.float32), 
+    ('has_skeleton', np.uint8), ('roi_size', np.float32)])
 
     #store the maximum and minimum frame of each worm
     worms_frame_range = {}
@@ -106,6 +124,7 @@ def getSmoothTrajectories(trajectories_file, displacement_smooth_win = 101, min_
         trajectories_df['plate_worm_id'][skeleton_id] = plate_worm_id
         trajectories_df['skeleton_id'][skeleton_id] = skeleton_id
         trajectories_df['has_skeleton'][skeleton_id] = False
+        trajectories_df['roi_size'][skeleton_id] = roi_range[worm_index]
         
     assert tot_rows == tot_rows_ini
     
@@ -153,7 +172,7 @@ def getWormMask(worm_img, threshold):
 
 
 def trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file, \
-create_single_movies = False, roi_size = 128, resampling_N = 49, min_mask_area = 50, smoothed_traj_param = {}):    
+create_single_movies = False, resampling_N = 49, min_mask_area = 50, smoothed_traj_param = {}):    
     
     #extract the base name from the masked_image_file. This is used in the progress status.
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
@@ -219,7 +238,7 @@ create_single_movies = False, roi_size = 128, resampling_N = 49, min_mask_area =
             img = mask_dataset[frame,:,:]
             for skeleton_id, row_data in frame_data.iterrows():
                 
-                worm_img, roi_corner = getWormROI(img, row_data['coord_x'], row_data['coord_y'], roi_size)
+                worm_img, roi_corner = getWormROI(img, row_data['coord_x'], row_data['coord_y'], row_data['roi_size'])
                 worm_mask = getWormMask(worm_img, row_data['threshold'])
                 
                 worm_index = row_data['worm_index_joined']
@@ -295,7 +314,7 @@ colorpalette = [(119, 158,27 ), (2, 95, 217), (138, 41, 231)]):
 
 
 def writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir, 
-                          roi_size = 128, fps=25, bad_seg_thresh = 0.5, save_bad_worms = False):    
+                          fps=25, bad_seg_thresh = 0.5, save_bad_worms = False):    
     
     '''
         Create individual worms videos.
@@ -352,7 +371,7 @@ def writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir,
                 worm_index = row_data['worm_index_joined']
                 assert not np.isnan(row_data['coord_x']) and not np.isnan(row_data['coord_y'])
 
-                worm_img, roi_corner = getWormROI(img, row_data['coord_x'], row_data['coord_y'], roi_size)
+                worm_img, roi_corner = getWormROI(img, row_data['coord_x'], row_data['coord_y'], row_data['roi_size'])
 
                 skeleton = skel_array[skeleton_id,:,:]-roi_corner
                 cnt_side1 = cnt1_array[skeleton_id,:,:]-roi_corner
@@ -375,7 +394,7 @@ def writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir,
                         movie_save_name = video_save_dir + ('worm_%i.avi' % worm_index)
                     
                     video_list[worm_index] = cv2.VideoWriter(movie_save_name, \
-                    cv2.VideoWriter_fourcc('M','J','P','G'), fps, (roi_size, roi_size), isColor=True)
+                    cv2.VideoWriter_fourcc('M','J','P','G'), fps, (row_data['roi_size'], row_data['roi_size']), isColor=True)
                 
                 #draw contour/mask
                 worm_rgb = drawWormContour(worm_img, worm_mask, skeleton, cnt_side1, cnt_side2)

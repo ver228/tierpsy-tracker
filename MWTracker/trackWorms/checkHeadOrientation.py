@@ -163,7 +163,7 @@ def correctHeadTail(skeletons_file, max_gap_allowed = 10, window_std = 25, \
         
         worm_data.writeData()
         #%%
-    print('Finished:' + progress_timer.getTimeStr())
+    print('Head-Tail correction finished:' + progress_timer.getTimeStr())
 
     with tables.File(skeletons_file, "r+") as ske_file_id:
         #Mark a succesful termination

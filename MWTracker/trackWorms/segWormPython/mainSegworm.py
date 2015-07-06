@@ -132,14 +132,17 @@ def binaryMask2Contour(worm_mask, min_mask_area=50, roi_center_x = -1, roi_cente
     #get contour
     _,contour, _ = cv2.findContours(worm_mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     if len(contour) == 1:
-        contour = np.squeeze(contour[0])
+        contour = np.squeeze(contour[0], axis=1)
+        #filter for small areas
+        if cv2.contourArea(contour) < min_mask_area:
+            contour = np.zeros(0)
     elif len(contour)>1:
     #clean mask if there is more than one contour
         #select the largest area  object
         cnt_areas = [cv2.contourArea(cnt) for cnt in contour]
         
         #filter only contours with areas larger than min_mask_area
-        cnt_tuple = [(contour[ii], cnt_area) for ii, cnt_area in enumerate(cnt_areas) if cnt_area>min_mask_area]
+        cnt_tuple = [(contour[ii], cnt_area) for ii, cnt_area in enumerate(cnt_areas) if cnt_area>=min_mask_area]
         if not cnt_tuple:
             return np.zeros(0)
         contour, cnt_areas = zip(*cnt_tuple)
@@ -198,6 +201,8 @@ def getSkeleton(worm_mask, prev_skeleton = np.zeros(0), resampling_N=50, min_mas
     contour = binaryMask2Contour(worm_mask, min_mask_area=50)
     if contour.size == 0:
         return 7*[np.zeros(0)]
+    
+    assert type(contour) == np.ndarray and contour.ndim == 2 and contour.shape[1] ==2
     
     skeleton, cnt_side1, cnt_side2, cnt_widths, err_msg = \
     contour2Skeleton(contour, resampling_N)
