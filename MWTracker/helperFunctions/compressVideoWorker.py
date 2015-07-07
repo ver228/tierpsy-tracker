@@ -8,15 +8,17 @@ Created on Tue Jun  9 12:59:25 2015
 import time
 import datetime
 import os
-import sys
 
 from ..compressVideos.compressVideo import compressVideo
 from ..compressVideos.writeDownsampledVideo import writeDownsampledVideo
 from ..compressVideos.writeFullFramesTiff import writeFullFramesTiff
 
-from .. import config_param as param
+from ..helperFunctions.tracker_param import tracker_param
 
-def compressVideoWorker(video_file, mask_files_dir):
+def compressVideoWorker(video_file, mask_files_dir, param_file = ''):
+    
+    #get function parameters
+    param = tracker_param(param_file)
     
     #check if the video file exists
     assert os.path.exists(video_file)

@@ -7,6 +7,8 @@ Created on Fri Apr  3 01:56:06 2015
 import os
 import tables
 
+from .. import config_param
+
 from ..trackWorms.getWormTrajectories import getWormTrajectories, joinTrajectories
 from ..trackWorms.getDrawTrajectories import drawTrajectoriesVideo
 from ..trackWorms.getSkeletonsTables import trajectories2Skeletons, writeIndividualMovies
@@ -14,7 +16,7 @@ from ..trackWorms.checkHeadOrientation import correctHeadTail
 
 from ..FeaturesAnalysis.obtainFeatures import getWormFeatures
 
-from .. import config_param as param
+from ..helperFunctions.tracker_param import tracker_param
 
 
 checkpoint = {'TRAJ_CREATE':0, 'TRAJ_JOIN':1, 'TRAJ_VID':2, 
@@ -92,7 +94,7 @@ def getStartingPoint(trajectories_file, trajectories_video, skeletons_file, vide
         
     return checkpoint['END'];
 
-def getTrajectoriesWorker(masked_image_file, results_dir, overwrite = False):
+def getTrajectoriesWorker(masked_image_file, results_dir, param_file ='', overwrite = False):
     
     #check if the file with the masked images exists
     assert os.path.exists(masked_image_file)
@@ -104,6 +106,11 @@ def getTrajectoriesWorker(masked_image_file, results_dir, overwrite = False):
             os.makedirs(results_dir)
         except:
             pass
+        
+    #%%
+    #get function parameters
+    param = tracker_param(param_file)
+    
     #%%
     #construct file names
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]

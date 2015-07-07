@@ -5,7 +5,7 @@ Created on Thu Jun  4 11:30:53 2015
 @author: ajaver
 """
 import os
-import sys
+#import sys
 import tables
 import pandas as pd
 import numpy as np
@@ -20,8 +20,8 @@ from collections import OrderedDict
 from ..helperFunctions.timeCounterStr import timeCounterStr
 
 #add movement_validation path
-from .. import config_param as param
-sys.path.append(param.movement_validation_dir)
+#from .. import config_param as param
+#sys.path.append(movement_validation_dir)
 
 from movement_validation import NormalizedWorm
 from movement_validation import WormFeatures, VideoInfo
