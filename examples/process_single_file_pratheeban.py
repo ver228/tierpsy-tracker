@@ -12,12 +12,13 @@ from MWTracker.helperFunctions.compressVideoWorker import compressVideoWorker
 from MWTracker.helperFunctions.getTrajectoriesWorker import getTrajectoriesWorker
 
 
-example_dir = '/Users/ajaver/Desktop/Multiworm/MWTracker_Example/'
 
-video_file = example_dir + 'Capture_Ch1_18062015_140908.mjpg'
-mask_files_dir = os.path.join(example_dir, 'MaskedVideos') + os.sep
-results_dir = os.path.join(example_dir, 'Results') + os.sep
+video_file = '/Users/ajaver/Desktop/Pratheeban_videos/RawData/15_07_03_2hrL1_Ch1_03072015_162628.mjpg'
 
-masked_image_file = compressVideoWorker(video_file, mask_files_dir)
-getTrajectoriesWorker(masked_image_file, results_dir, overwrite = False)
+json_file = video_file.rpartition('.')[0] + '.json'
 
+mask_files_dir = '/Users/ajaver/Desktop/Pratheeban_videos/MaskedVideos/'
+results_dir = '/Users/ajaver/Desktop/Pratheeban_videos/Results/'
+
+masked_image_file = compressVideoWorker(video_file, mask_files_dir, param_file = json_file)
+getTrajectoriesWorker(masked_image_file, results_dir, param_file = json_file)

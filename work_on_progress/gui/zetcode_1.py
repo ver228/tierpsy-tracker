@@ -32,10 +32,10 @@ class MainProgram(QtGui.QWidget):
         btn.setToolTip('This is a <b>QPushButton</b> widget')
         btn.resize(btn.sizeHint())
         btn.move(50, 50)       
-        
+        btn.clicked.connect(self.selectFile)
         
         qbtn = QtGui.QPushButton('Quit', self)
-        qbtn.clicked.connect(QtGui.qApp.quit)#QtCore.QCoreApplication.instance().quit)
+        qbtn.clicked.connect(QtCore.QCoreApplication.instance().quit)
         qbtn.resize(qbtn.sizeHint())
         qbtn.move(10, 10)  
         
@@ -49,6 +49,23 @@ class MainProgram(QtGui.QWidget):
         self.show()
 
 
+        okButton = QtGui.QPushButton("OK")
+        cancelButton = QtGui.QPushButton("Cancel")
+        hbox = QtGui.QHBoxLayout()
+        hbox.addStretch(1)
+        hbox.addWidget(okButton)
+        hbox.addWidget(cancelButton)
+        
+        vbox = QtGui.QVBoxLayout()
+        vbox.addStretch(1)
+        vbox.addLayout(hbox)
+        
+        self.setLayout(vbox)    
+    
+    def selectFile(self):
+        QtGui.QLineEdit.setText(QtGui.QFileDialog.getOpenFileName())
+
+        
     def closeEvent(self, event):
         
         reply = QtGui.QMessageBox.question(self, 'Message',
