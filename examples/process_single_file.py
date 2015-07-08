@@ -12,6 +12,7 @@ from MWTracker.helperFunctions.compressVideoWorker import compressVideoWorker
 from MWTracker.helperFunctions.getTrajectoriesWorker import getTrajectoriesWorker
 
 
+
 example_dir = '/Users/ajaver/Desktop/Multiworm/MWTracker_Example/'
 
 video_file = example_dir + 'Capture_Ch1_18062015_140908.mjpg'

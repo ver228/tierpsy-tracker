@@ -200,9 +200,9 @@ def walk_obj(obj, path = '', main_dict = {}, chr_sep='.'):
 class wormStatsClass():
     def __init__(self):
         #get the info for each feature chategory
-        specs_simple = specs.SimpleSpecs.getSpecs()
-        specs_event = specs.EventSpecs.getSpecs()
-        self.specs_motion = specs.MovementSpecs.getSpecs()
+        specs_simple = specs.SimpleSpecs.specs_factory()
+        specs_event = specs.EventSpecs.specs_factory()
+        self.specs_motion = specs.MovementSpecs.specs_factory()
     
         #create a new category for events where data corresponds to variable size numpy arrays
         self.specs_events = specs_simple + [x for x in specs_event \
@@ -267,17 +267,17 @@ class wormStatsClass():
         motion_mode = worm_features.locomotion.motion_mode;
         for spec in self.specs_motion:
             feature = self.spec2tableName[spec.name]
-            tmp_data = spec.getData(worm_features)
+            tmp_data = spec.get_data(worm_features)
             self.featureStat(stat_func, tmp_data, feature, spec.is_signed, True, motion_mode, stats=self.stats)
         
         for spec in self.specs_events:
             feature = self.spec2tableName[spec.name]
-            tmp_data = spec.getData(worm_features)
+            tmp_data = spec.get_data(worm_features)
             self.featureStat(stat_func, tmp_data, feature, spec.is_signed, False, stats=self.stats)
         
         for spec in self.specs4table:
             feature = self.spec2tableName[spec.name]
-            tmp_data = spec.getData(worm_features)
+            tmp_data = spec.get_data(worm_features)
             self.stats[feature] = tmp_data
         
         return self.stats
@@ -380,7 +380,7 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
             motion_data[motion_header['Motion_Modes']._v_pos] = worm_features.locomotion.motion_mode
             for spec in wStats.specs_motion:
                 feature = wStats.spec2tableName[spec.name]
-                tmp_data = spec.getData(worm_features)
+                tmp_data = spec.get_data(worm_features)
                 motion_data[motion_header[feature]._v_pos] = tmp_data
             
             motion_data = list(zip(*motion_data))
@@ -395,7 +395,7 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
             worm_node._v_attrs['skeletons_rows_range'] = tuple(row_range.values)
             for spec in wStats.specs_events:
                 feature = wStats.spec2tableName[spec.name]
-                tmp_data = spec.getData(worm_features)
+                tmp_data = spec.get_data(worm_features)
                 
                 if tmp_data is not None and tmp_data.size > 0:
                     table_tmp = features_fid.create_carray(worm_node, feature, \
