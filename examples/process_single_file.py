@@ -13,7 +13,7 @@ from MWTracker.helperFunctions.getTrajectoriesWorker import getTrajectoriesWorke
 
 
 
-example_dir = '/Users/ajaver/Desktop/Multiworm/MWTracker_Example/'
+example_dir = '/Users/ajaver/Google Drive/MWTracker_Example/'
 
 video_file = example_dir + 'Capture_Ch1_18062015_140908.mjpg'
 mask_files_dir = os.path.join(example_dir, 'MaskedVideos') + os.sep

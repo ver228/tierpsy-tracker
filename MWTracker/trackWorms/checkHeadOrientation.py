@@ -40,7 +40,6 @@ def getAnglesDelta(dx,dy):
     return angles, meanAngle
 
 def calculateHeadTailAng(skeletons, segment4angle, good):
-    
     '''
     For each skeleton two angles are caculated: one vector between the index 0 and segment4angle ('head'), and the other from the index -1 and -segment4angle-1 ('tail').
     '''
@@ -61,7 +60,8 @@ def calculateHeadTailAng(skeletons, segment4angle, good):
 
 def getBlocksIDs(invalid, max_gap_allowed = 10):
     
-    '''The skeleton array is divided in blocks of contingous skeletons with a gap between unskeletonized frames less than max_gap_allowed'''
+    '''The skeleton array is divided in blocks of contingous skeletons with 
+    a gap between unskeletonized frames less than max_gap_allowed'''
     
     good_ind = np.where(~invalid)[0];            
     delTs = np.diff(good_ind)

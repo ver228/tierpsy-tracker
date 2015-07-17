@@ -103,7 +103,14 @@ expected_frames = 15000, mask_param ={'has_timestamp':True}):
                                     compression="gzip", 
                                     compression_opts=4,
                                     shuffle=True, fletcher32=True);
-    
+
+    #labels to make the group compatible with the standard image definition in hdf5
+    mask_dataset.attrs["CLASS"] = np.string_("IMAGE")
+    mask_dataset.attrs["IMAGE_SUBCLASS"] = np.string_("IMAGE_GRAYSCALE")
+    mask_dataset.attrs["IMAGE_WHITE_IS_ZERO"] = np.array(0, dtype="uint8")
+    mask_dataset.attrs["DISPLAY_ORIGIN"] = np.string_("UL") # not rotated
+    mask_dataset.attrs["IMAGE_VERSION"] = np.string_("1.2")
+
     #full frames are saved in "/full_data" every save_full_interval frames
     full_dataset = mask_fid.create_dataset("/full_data", (expected_frames//save_full_interval, im_height,im_width), 
                                     dtype = "u1", maxshape = (None, im_height,im_width), 
@@ -113,6 +120,15 @@ expected_frames = 15000, mask_param ={'has_timestamp':True}):
                                     shuffle=True, fletcher32=True);
     full_dataset.attrs['save_interval'] = save_full_interval
     
+    #labels to make the group compatible with the standard image definition in hdf5
+    full_dataset.attrs["CLASS"] = np.string_("IMAGE")
+    full_dataset.attrs["IMAGE_SUBCLASS"] = np.string_("IMAGE_GRAYSCALE")
+    full_dataset.attrs["IMAGE_WHITE_IS_ZERO"] = np.array(0, dtype="uint8")
+    full_dataset.attrs["DISPLAY_ORIGIN"] = np.string_("UL") # not rotated
+    full_dataset.attrs["IMAGE_VERSION"] = np.string_("1.2")
+
+
+
     im_diff_set = mask_fid.create_dataset('/im_diff', (expected_frames,), 
                                           dtype = 'f4', maxshape = (None,), 
                                         chunks = True, compression = "gzip", compression_opts=4, shuffle = True, fletcher32=True)
