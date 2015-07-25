@@ -25,7 +25,8 @@ from scipy.interpolate import interp1d
 from ..helperFunctions.timeCounterStr import timeCounterStr
 from .segWormPython.mainSegworm import getSkeleton
 
-def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_win = 101, min_displacement = 0, threshold_smooth_win = 501):
+def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_win = 101, 
+    min_displacement = 0, threshold_smooth_win = 501):
     '''
     Smooth trajectories and thresholds created by getWormTrajectories. 
     If min_displacement is specified there is the option to filter immobile particles, typically spurious.
@@ -79,7 +80,7 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_
     #store the maximum and minimum frame of each worm
     worms_frame_range = {}
     
-    #smooth trajectories (reduce jiggling from the CM to obtain a nicer video)
+    #smooth trajectories (reduce giggling from the CM to obtain a nicer video)
     #interpolate for possible missing frames in the trajectories
     tot_rows = 0;    
     for worm_index, worm_data in df.groupby('worm_index_joined'):
