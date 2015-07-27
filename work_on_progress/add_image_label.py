@@ -19,7 +19,8 @@ for name in file_list:
 		mask_dataset.attrs["IMAGE_WHITE_IS_ZERO"] = np.array(0, dtype="uint8")
 		mask_dataset.attrs["DISPLAY_ORIGIN"] = np.string_("UL") # not rotated
 		mask_dataset.attrs["IMAGE_VERSION"] = np.string_("1.2")
-
+		mask_dataset.attrs["has_finished"] = 1
+		
 		#labels to make the group compatible with the standard image definition in hdf5
 		full_dataset.attrs["CLASS"] = np.string_("IMAGE")
 		full_dataset.attrs["IMAGE_SUBCLASS"] = np.string_("IMAGE_GRAYSCALE")

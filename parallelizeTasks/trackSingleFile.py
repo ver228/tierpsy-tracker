@@ -15,4 +15,3 @@ if __name__ == '__main__':
     results_dir = sys.argv[2]
     
     getTrajectoriesWorker(masked_image_file, results_dir, overwrite = False)
-
