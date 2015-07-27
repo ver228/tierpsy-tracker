@@ -25,7 +25,7 @@ from ..helperFunctions.timeCounterStr import timeCounterStr
 
 from movement_validation import NormalizedWorm
 from movement_validation import WormFeatures, VideoInfo
-from movement_validation.statistics import specs
+from movement_validation.statistics import specifications
 
 # -*- coding: utf-8 -*-
 """
@@ -200,9 +200,9 @@ def walk_obj(obj, path = '', main_dict = {}, chr_sep='.'):
 class wormStatsClass():
     def __init__(self):
         #get the info for each feature chategory
-        specs_simple = specs.SimpleSpecs.specs_factory()
-        specs_event = specs.EventSpecs.specs_factory()
-        self.specs_motion = specs.MovementSpecs.specs_factory()
+        specs_simple = specifications.SimpleSpecs.specs_factory()
+        specs_event = specifications.EventSpecs.specs_factory()
+        self.specs_motion = specifications.MovementSpecs.specs_factory()
     
         #create a new category for events where data corresponds to variable size numpy arrays
         self.specs_events = specs_simple + [x for x in specs_event \
