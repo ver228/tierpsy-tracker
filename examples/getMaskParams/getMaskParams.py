@@ -13,7 +13,9 @@ import cv2
 import matplotlib.pylab as plt
 
 import sys
-sys.path.append('../..')
+#sys.path.append('../..')
+sys.path.append(os.path.join(os.path.expanduser("~") , 'Documents', 'GitHub', 'Multiworm_Tracking'))
+
 from MWTracker.compressVideos.compressVideo import getROIMask
 from MWTracker.helperFunctions.compressVideoWorker import compressVideoWorker
 from MWTracker.helperFunctions.getTrajectoriesWorker import getTrajectoriesWorker
