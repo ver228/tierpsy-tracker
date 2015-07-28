@@ -14,7 +14,12 @@ from .imageDifferenceMask import imageDifferenceMask
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
 
-def getROIMask(image,  min_area = 100, max_area = 5000, has_timestamp = True, thresh_block_size=61, thresh_C=15):
+DEFAULT_MASK_PARAM = {'min_area':100, 'max_area':5000, 'has_timestamp':True, 'thresh_block_size':61, 'thresh_C':15}
+
+
+def getROIMask(image,  min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEFAULT_MASK_PARAM['max_area'], 
+    has_timestamp = DEFAULT_MASK_PARAM['has_timestamp'], thresh_block_size = DEFAULT_MASK_PARAM['thresh_block_size'], 
+    thresh_C = DEFAULT_MASK_PARAM['thresh_C']):
     '''
     Calculate a binary mask to mark areas where it is possible to find worms.
     Objects with less than min_area or more than max_area pixels are rejected.
@@ -32,7 +37,7 @@ def getROIMask(image,  min_area = 100, max_area = 5000, has_timestamp = True, th
     #find the contour of the connected objects (much faster than labeled images)
     _, contours, hierarchy = cv2.findContours(mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-
+    
     #find good contours: between max_area and min_area, and do not touch the image border
     goodIndex = []
     for ii, contour in enumerate(contours):
@@ -59,10 +64,13 @@ def getROIMask(image,  min_area = 100, max_area = 5000, has_timestamp = True, th
         cv2.rectangle(mask, (0,0), (479,15), 1, thickness=-1) 
 
     return mask
-   
+
+
+
 def compressVideo(video_file, masked_image_file, buffer_size = 25, \
 save_full_interval = 5000, max_frame = 1e32, useVideoCapture = True, 
-expected_frames = 15000, mask_param ={'has_timestamp':True}):
+expected_frames = 15000, mask_param = DEFAULT_MASK_PARAM):
+
     '''
     Compressed video in "video_file" by selecting ROI and making the rest of 
     the image zero (creating a large amount of redundant data)
@@ -112,6 +120,13 @@ expected_frames = 15000, mask_param ={'has_timestamp':True}):
     mask_dataset.attrs["IMAGE_WHITE_IS_ZERO"] = np.array(0, dtype="uint8")
     mask_dataset.attrs["DISPLAY_ORIGIN"] = np.string_("UL") # not rotated
     mask_dataset.attrs["IMAGE_VERSION"] = np.string_("1.2")
+
+    #flag to store the parameters using in the mask calculation
+    for key in DEFAULT_MASK_PARAM:
+        if key in mask_param:
+            mask_dataset.attrs[key] = mask_param[key]
+        else:
+            mask_dataset.attrs[key] = DEFAULT_MASK_PARAM[key]
     
     #flag to indicate that the conversion finished succesfully
     mask_dataset.attrs['has_finished'] = 0
@@ -137,8 +152,6 @@ expected_frames = 15000, mask_param ={'has_timestamp':True}):
     im_diff_set = mask_fid.create_dataset('/im_diff', (expected_frames,), 
                                           dtype = 'f4', maxshape = (None,), 
                                         chunks = True, compression = "gzip", compression_opts=4, shuffle = True, fletcher32=True)
-    
-
     
     #intialize frame number
     frame_number = 0;
