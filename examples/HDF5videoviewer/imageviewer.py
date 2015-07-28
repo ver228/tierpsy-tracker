@@ -12,7 +12,9 @@ import sys
 
 from functools import partial
 
-sys.path.append('/Users/ajaver/Documents/GitHub/Multiworm_Tracking')
+#sys.path.append('/Users/ajaver/Documents/GitHub/Multiworm_Tracking')
+sys.path.append('../..')
+
 from MWTracker.trackWorms.getSkeletonsTables import getWormROI
 
 import matplotlib.pylab as plt
