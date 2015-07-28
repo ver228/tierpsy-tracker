@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Tue Jul 28 11:41:00 2015
+# Created: Tue Jul 28 17:08:23 2015
 #      by: PyQt5 UI code generator 5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(727, 746)
+        MainWindow.resize(970, 746)
         self.centralWidget = QtWidgets.QWidget(MainWindow)
         self.centralWidget.setObjectName("centralWidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralWidget)
@@ -133,8 +133,6 @@ class Ui_MainWindow(object):
         self.label_mask.setText("")
         self.label_mask.setObjectName("label_mask")
         self.gridLayout.addWidget(self.label_mask, 0, 3, 6, 2)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem2, 6, 0, 1, 1)
         self.pushButton_start = QtWidgets.QPushButton(self.centralWidget)
         font = QtGui.QFont()
         font.setPointSize(24)
@@ -143,10 +141,14 @@ class Ui_MainWindow(object):
         self.pushButton_start.setAutoFillBackground(False)
         self.pushButton_start.setCheckable(False)
         self.pushButton_start.setObjectName("pushButton_start")
-        self.gridLayout.addWidget(self.pushButton_start, 5, 0, 1, 1)
+        self.gridLayout.addWidget(self.pushButton_start, 6, 0, 1, 1)
+        self.checkBox_hasTimestamp = QtWidgets.QCheckBox(self.centralWidget)
+        self.checkBox_hasTimestamp.setChecked(True)
+        self.checkBox_hasTimestamp.setObjectName("checkBox_hasTimestamp")
+        self.gridLayout.addWidget(self.checkBox_hasTimestamp, 5, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtWidgets.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 727, 22))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 970, 22))
         self.menuBar.setObjectName("menuBar")
         MainWindow.setMenuBar(self.menuBar)
         self.mainToolBar = QtWidgets.QToolBar(MainWindow)
@@ -170,4 +172,5 @@ class Ui_MainWindow(object):
         self.pushButton_mask.setText(_translate("MainWindow", "Mask Dir"))
         self.label.setText(_translate("MainWindow", "Min Area"))
         self.pushButton_start.setText(_translate("MainWindow", "Start"))
+        self.checkBox_hasTimestamp.setText(_translate("MainWindow", "has time stamp?"))
 

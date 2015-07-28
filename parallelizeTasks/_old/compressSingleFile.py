@@ -6,7 +6,7 @@ Created on Thu Jul  2 14:38:05 2015
 """
 
 import sys
-sys.path.append('..')
+sys.path.append('../..')
 
 from MWTracker.helperFunctions.compressVideoWorker import compressVideoWorker
 

@@ -124,9 +124,9 @@ expected_frames = 15000, mask_param = DEFAULT_MASK_PARAM):
     #flag to store the parameters using in the mask calculation
     for key in DEFAULT_MASK_PARAM:
         if key in mask_param:
-            mask_dataset.attrs[key] = mask_param[key]
+            mask_dataset.attrs[key] = int(mask_param[key])
         else:
-            mask_dataset.attrs[key] = DEFAULT_MASK_PARAM[key]
+            mask_dataset.attrs[key] = int(DEFAULT_MASK_PARAM[key])
     
     #flag to indicate that the conversion finished succesfully
     mask_dataset.attrs['has_finished'] = 0

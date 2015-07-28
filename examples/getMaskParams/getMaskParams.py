@@ -17,8 +17,8 @@ import sys
 sys.path.append(os.path.join(os.path.expanduser("~") , 'Documents', 'GitHub', 'Multiworm_Tracking'))
 
 from MWTracker.compressVideos.compressVideo import getROIMask
-from MWTracker.helperFunctions.compressVideoWorker import compressVideoWorker
-from MWTracker.helperFunctions.getTrajectoriesWorker import getTrajectoriesWorker
+from MWTracker.helperFunctions.compressVideoWorkerL import compressVideoWorkerL
+from MWTracker.helperFunctions.getTrajectoriesWorkerL import getTrajectoriesWorkerL
 
 class getMaskParams(QMainWindow):
 	def __init__(self):
@@ -38,11 +38,13 @@ class getMaskParams(QMainWindow):
 		self.ui.spinBox_block_size.valueChanged.connect(self.updateBlockSize)
 		self.ui.spinBox_thresh_C.valueChanged.connect(self.updateThreshC)
 
+		self.ui.checkBox_hasTimestamp.stateChanged.connect(self.updateMask)
+
 		self.mask_files_dir = '/Users/ajaver/Desktop/Pratheeban_videos/MaskedVideos/'
 		self.results_dir = '/Users/ajaver/Desktop/Pratheeban_videos/Results/'
 		self.video_file = ''
 
-		self.videos_dir = '/Users/ajaver/Desktop/Pratheeban_videos/Worm_Videos/'
+		self.videos_dir = '/Volumes/behavgenom$/Andre/shige-oda/Worm_Videos/'#'/Users/ajaver/Desktop/Pratheeban_videos/Worm_Videos/'
 		self.buffer_size = 25
 		self.Ifull = np.zeros(0)
 
@@ -89,6 +91,9 @@ class getMaskParams(QMainWindow):
 				if 'Worm_Videos' in self.videos_dir:
 					self.results_dir = self.videos_dir.replace('Worm_Videos', 'Results')
 					self.mask_files_dir = self.videos_dir.replace('Worm_Videos', 'MaskedVideos')
+					self.ui.lineEdit_mask.setText(self.mask_files_dir)
+					self.ui.lineEdit_results.setText(self.results_dir)
+
 				
 				Ibuff = np.zeros((self.buffer_size, self.im_height, self.im_width), dtype = np.uint8)
 				for ii in range(self.buffer_size):    
@@ -101,7 +106,7 @@ class getMaskParams(QMainWindow):
 				
 				self.updateMask()
 
-				self.updateImage()
+				
 			
 
 	def updateImage(self):
@@ -120,9 +125,10 @@ class getMaskParams(QMainWindow):
 		pixmap = QPixmap.fromImage(image)
 		self.ui.label_full.setPixmap(pixmap);
 
-		self.mask_size = min(self.ui.label_mask.height(), self.ui.label_mask.width())
+		self.mask_size = self.full_size
+
 		mask = QImage(self.Imask.data, 
-			self.im_height, self.im_width, self.Imask.strides[0], QImage.Format_Indexed8)
+			self.im_width, self.im_height, self.Imask.strides[0], QImage.Format_Indexed8)
 		
 		mask = mask.scaled(self.mask_size, self.mask_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 		
@@ -135,34 +141,33 @@ class getMaskParams(QMainWindow):
 	def updateMaxArea(self):
 		self.ui.dial_max_area.setValue(self.ui.spinBox_max_area.value())
 		self.updateMask()
-		self.updateImage()
 
 	def updateMinArea(self):
 		self.ui.dial_min_area.setValue(self.ui.spinBox_min_area.value())
 		self.updateMask()
-		self.updateImage()
 
 	def updateBlockSize(self):
 		self.ui.dial_block_size.setValue(self.ui.spinBox_block_size.value())
 		self.updateMask()
-		self.updateImage()
 
 	def updateThreshC(self):
 		self.ui.dial_thresh_C.setValue(self.ui.spinBox_thresh_C.value())
 		self.updateMask()
-		self.updateImage()
 
 	def updateMask(self):
 		if self.Ifull.size == 0:
 			return
 
-		max_area = self.ui.spinBox_max_area.value()
-		min_area = self.ui.spinBox_min_area.value()
-		thresh_block_size = self.ui.spinBox_block_size.value()
-		thresh_C = self.ui.spinBox_thresh_C.value()
+		self.mask_param = {'max_area': self.ui.spinBox_max_area.value(),
+		'min_area' : self.ui.spinBox_min_area.value(), 
+		'thresh_block_size' : self.ui.spinBox_block_size.value(),
+		'thresh_C' : self.ui.spinBox_thresh_C.value(),
+		'has_timestamp':self.ui.checkBox_hasTimestamp.isChecked()}
 		
-		mask = getROIMask(self.Imin.copy(),  min_area=min_area, max_area=max_area, thresh_block_size=thresh_block_size, thresh_C=thresh_C, has_timestamp=False)
+		mask = getROIMask(self.Imin.copy(), **self.mask_param)
 		self.Imask =  mask*self.Ifull
+
+		self.updateImage()
 		
 	#update image if the GUI is resized event
 	def resizeEvent(self, event):
@@ -175,19 +180,13 @@ class getMaskParams(QMainWindow):
 
 		self.close()
 
-
-		mask_param = {'max_area': self.ui.spinBox_max_area.value(),
-		'min_area' : self.ui.spinBox_min_area.value(), 
-		'thresh_block_size' : self.ui.spinBox_block_size.value(),
-		'thresh_C' : self.ui.spinBox_thresh_C.value()}
-
 		json_file = self.video_file.rpartition('.')[0] + '.json'
 		with open(json_file, 'w') as fid:
-			json.dump(mask_param, fid)
+			json.dump(self.mask_param, fid)
 
 		
-		masked_image_file = compressVideoWorker(self.video_file, self.mask_files_dir, param_file = json_file)
-		getTrajectoriesWorker(masked_image_file, self.results_dir, param_file = json_file)
+		masked_image_file = compressVideoWorkerL(self.video_file, self.mask_files_dir, param_file = json_file)
+		getTrajectoriesWorkerL(masked_image_file, self.results_dir, param_file = json_file)
 
 		
 

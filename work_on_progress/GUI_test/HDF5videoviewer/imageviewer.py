@@ -35,10 +35,12 @@ class ImageViewer(QMainWindow):
 		self.frame_data = -1
 		self.h5path = self.ui.comboBox_h5path.itemText(0)
 		
+		self.wlab = {'U':0, 'WORM':1, 'WORMS':2, 'BAD':3}
+		self.wlabC = {self.wlab['U']:Qt.white, self.wlab['WORM']:Qt.green, self.wlab['WORMS']:Qt.blue, self.wlab['BAD']:Qt.darkRed}
 		
-		#self.videos_dir = "/Users/ajaver/Google Drive/MWTracker_Example/MaskedVideos/18062015/"
-		self.videos_dir = r"/Volumes/behavgenom$/GeckoVideo/"
-		#"/Users/ajaver/Desktop/Gecko_compressed/MaskedVideos/"
+		self.videos_dir = '/Volumes/behavgenom$/Andre/shige-oda/MaskedVideos/'#"/Users/ajaver/Google Drive/MWTracker_Example/MaskedVideos/"
+		#self.videos_dir = r"/Volumes/behavgenom$/GeckoVideo/"
+		#self.videos_dir = "/Users/ajaver/Desktop/Gecko_compressed/MaskedVideos/"
 		self.results_dir = ''
 		self.skel_file = ''
 
@@ -65,6 +67,9 @@ class ImageViewer(QMainWindow):
 
 		self.ui.imageCanvas.mousePressEvent = self.getPos
 
+		self.ui.pushButton_bad.clicked.connect(self.tagAsBad)
+		self.ui.pushButton_wormS.clicked.connect(self.tagAsWormS)
+		self.ui.pushButton_worm.clicked.connect(self.tagAsWorm)
 
 		self.updateFPS()
 		self.updateFrameStep()
@@ -73,6 +78,7 @@ class ImageViewer(QMainWindow):
 		self.timer = QTimer()
 		self.timer.timeout.connect(self.getNextImage)
 		
+
 
 	def getPos(self , event):
 		x = event.pos().x()
@@ -87,7 +93,7 @@ class ImageViewer(QMainWindow):
 			ind = R.idxmin()
 			good_row = self.frame_data.loc[ind]
 			if np.sqrt(R.loc[ind]) < good_row['roi_size']:
-				worm_ind = int(good_row['worm_index_joined'])
+				worm_ind = int(good_row['worm_index_N'])
 				
 				if self.ui.radioButton_ROI1.isChecked():
 					self.worm_index_roi1 = worm_ind
@@ -144,9 +150,13 @@ class ImageViewer(QMainWindow):
 			return
 
 		with pd.HDFStore(self.skel_file, 'r') as ske_file_id:
-			trajectories_df = ske_file_id['/trajectories_data']
-			self.trajectories_data = trajectories_df.groupby('frame_number')
-			del(trajectories_df)
+			self.trajectories_data = ske_file_id['/trajectories_data']
+			self.trajectories_data['worm_label'] = self.wlab['U']
+			self.trajectories_data['worm_index_N'] = self.trajectories_data['worm_index_joined']
+			#self.trajectories_data = trajectories_df.groupby('frame_number')
+			#del(trajectories_df)
+
+
 
 		self.ske_file_id = h5py.File(self.skel_file, 'r')
 		
@@ -179,8 +189,8 @@ class ImageViewer(QMainWindow):
 					QMessageBox.Ok)
 
 		self.tot_frames = self.image_group.shape[0]
-		self.image_height = self.image_group.shape[1]
-		self.image_width = self.image_group.shape[2]
+		self.image_height = self.image_group.shape[2]
+		self.image_width = self.image_group.shape[1]
 			
 		self.ui.spinBox_frame.setMaximum(self.tot_frames-1)
 
@@ -288,15 +298,20 @@ class ImageViewer(QMainWindow):
 
 		self.original_image = self.image_group[self.frame_number];
 		
+		#import matplotlib.pylab as plt
+		#plt.imshow(self.original_image)
+		#plt.show()
+
 		image = QImage(self.original_image.data, 
 			self.image_height, self.image_width, self.original_image.strides[0], QImage.Format_Indexed8)
-		image = image.scaled(self.label_width, self.label_height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-		self.img_w_ratio = image.size().width()/self.image_width;
-		self.img_h_ratio = image.size().height()/self.image_height;
+		image = image.convertToFormat(QImage.Format_RGB32, Qt.AutoColor)
 		
-		if self.trajectories_data != -1:
+		self.img_h_ratio = self.label_height/self.image_width;
+		self.img_w_ratio = self.label_width/self.image_height;
+		
+		if isinstance(self.trajectories_data, pd.DataFrame): 
 			try:
-				self.frame_data = self.trajectories_data.get_group(self.frame_number)
+				self.frame_data = self.trajectories_data[self.trajectories_data['frame_number'] == self.frame_number]#self.trajectories_data.get_group(self.frame_number)
 			except KeyError:
 				self.frame_data = -1
 
@@ -304,16 +319,23 @@ class ImageViewer(QMainWindow):
 			
 				painter = QPainter()
 				painter.begin(image)
-				painter.setPen(QColor(205,205,205))
-				painter.setFont(QFont('Decorative', 10))
 				for row_id, row_data in self.frame_data.iterrows():
-					x = int(row_data['coord_x']*self.img_w_ratio)
-					y = int(row_data['coord_y']*self.img_h_ratio)
-					painter.drawText(x, y, str(int(row_data['worm_index_joined'])))
+					x = int(row_data['coord_x'])#*self.img_h_ratio)
+					y = int(row_data['coord_y'])#*self.img_w_ratio)
+					
+					
+					c = self.wlabC[int(row_data['worm_label'])]
+					#print(int(row_data['worm_label']), c)
+					painter.setPen(c)
+					painter.setFont(QFont('Decorative', 10))
+				
+					painter.drawText(x, y, str(int(row_data['worm_index_N'])))
 
-					bb = row_data['roi_size']*self.img_w_ratio
+					bb = row_data['roi_size']#*self.img_w_ratio
 					painter.drawRect(x-bb/2, y-bb/2, bb, bb);
 				painter.end()
+		
+		image = image.scaled(self.label_width, self.label_height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 		
 		pixmap = QPixmap.fromImage(image)
 		self.ui.imageCanvas.setPixmap(pixmap);
@@ -342,6 +364,7 @@ class ImageViewer(QMainWindow):
 			self.updateROIcanvas(self.ui.wormCanvas2, self.worm_index_roi2, self.ui.comboBox_ROI2, self.ui.checkBox_ROI2.isChecked())
 
 
+
 	#function that generalized the updating of the ROI
 	def updateROIcanvas(self, wormCanvas, worm_index_roi, comboBox_ROI, isDrawSkel):
 		if not isinstance(self.frame_data, pd.DataFrame):
@@ -352,13 +375,13 @@ class ImageViewer(QMainWindow):
 		comboBox_ROI.clear()
 		comboBox_ROI.addItem(str(worm_index_roi))
 		
-		for ind in self.frame_data['worm_index_joined'].data:
+		for ind in self.frame_data['worm_index_N'].data:
 			comboBox_ROI.addItem(str(ind))
 		
 		canvas_size = min(wormCanvas.height(),wormCanvas.width())
 		
 		#extract individual worm ROI
-		good = self.frame_data['worm_index_joined'] == worm_index_roi
+		good = self.frame_data['worm_index_N'] == worm_index_roi
 		roi_data = self.frame_data.loc[good].squeeze()
 
 		if roi_data.size == 0:
@@ -408,7 +431,40 @@ class ImageViewer(QMainWindow):
 		
 		pixmap = QPixmap.fromImage(worm_img)
 		wormCanvas.setPixmap(pixmap);
+	
+	def tagAsBad(self):
+		if self.ui.radioButton_ROI1.isChecked():
+			worm_ind = self.worm_index_roi1
+		elif self.ui.radioButton_ROI2.isChecked():
+			worm_ind = self.worm_index_roi2
+
+		good = self.trajectories_data['worm_index_N'] == worm_ind
+		self.trajectories_data.loc[good, 'worm_label'] = self.wlab['BAD']
 		
+		self.updateImage()
+
+	def tagAsWorm(self):
+		if self.ui.radioButton_ROI1.isChecked():
+			worm_ind = self.worm_index_roi1
+		elif self.ui.radioButton_ROI2.isChecked():
+			worm_ind = self.worm_index_roi2
+
+		good = self.trajectories_data['worm_index_N'] == worm_ind
+		self.trajectories_data.loc[good, 'worm_label'] = self.wlab['WORM']
+		
+		self.updateImage()
+
+	def tagAsWormS(self):
+		if self.ui.radioButton_ROI1.isChecked():
+			worm_ind = self.worm_index_roi1
+		elif self.ui.radioButton_ROI2.isChecked():
+			worm_ind = self.worm_index_roi2
+
+		good = self.trajectories_data['worm_index_N'] == worm_ind
+		self.trajectories_data.loc[good, 'worm_label'] = self.wlab['WORMS']
+		
+		self.updateImage()
+
 if __name__ == '__main__':
 	app = QApplication(sys.argv)
 	

@@ -10,7 +10,7 @@ import glob
 import sys
 
 
-sys.path.append('..')
+sys.path.append('../..')
 from MWTracker.helperFunctions.parallelProcHelper import runMultiSubproc
 
 

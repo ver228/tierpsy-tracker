@@ -6,7 +6,7 @@ Created on Thu Jul  2 14:36:06 2015
 """
 
 import sys
-sys.path.append('..')
+sys.path.append('../..')
 
 from MWTracker.helperFunctions.getTrajectoriesWorker import getTrajectoriesWorker
 
