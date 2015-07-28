@@ -13,7 +13,8 @@ import sys
 from functools import partial
 
 #sys.path.append('/Users/ajaver/Documents/GitHub/Multiworm_Tracking')
-sys.path.append('../..')
+sys.path.append(os.path.join(os.path.expanduser("~") , 'Documents', 'GitHub', 'Multiworm_Tracking'))
+
 
 from MWTracker.trackWorms.getSkeletonsTables import getWormROI
 
