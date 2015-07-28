@@ -93,7 +93,9 @@ expected_frames = 15000, mask_param ={'has_timestamp':True}):
         im_width= vid.get(cv2.CAP_PROP_FRAME_WIDTH)
         im_height= vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
     
-    
+    if im_width == 0 or im_height == 0:
+        raise(RuntimeError('Cannot read the video file correctly. Dimensions w=%i h=%i' % (im_width, im_height)))
+
     #open hdf5 to store the processed data
     mask_fid = h5py.File(masked_image_file, "w");
     #open node to store the compressed (masked) data
@@ -110,6 +112,9 @@ expected_frames = 15000, mask_param ={'has_timestamp':True}):
     mask_dataset.attrs["IMAGE_WHITE_IS_ZERO"] = np.array(0, dtype="uint8")
     mask_dataset.attrs["DISPLAY_ORIGIN"] = np.string_("UL") # not rotated
     mask_dataset.attrs["IMAGE_VERSION"] = np.string_("1.2")
+    
+    #flag to indicate that the conversion finished succesfully
+    mask_dataset.attrs['has_finished'] = 0
 
     #full frames are saved in "/full_data" every save_full_interval frames
     full_dataset = mask_fid.create_dataset("/full_data", (expected_frames//save_full_interval, im_height,im_width), 
@@ -184,12 +189,8 @@ expected_frames = 15000, mask_param ={'has_timestamp':True}):
             mask = getROIMask(np.min(Ibuff, axis=0), **mask_param)
             
             #mask all the images in the buffer
-            #for ii in range(Ibuff.shape[0]):
-            #    #create a reference copy
-            #    im = Ibuff[ii,:,:]; 
-            #    im *= mask; 
-            
             Ibuff *= mask
+            
             #add buffer to the hdf5 file
             mask_dataset[(frame_number-buffer_size):frame_number,:,:] = Ibuff
             
@@ -221,6 +222,8 @@ expected_frames = 15000, mask_param ={'has_timestamp':True}):
         
     if full_dataset.shape[0] != full_frame_number:
         full_dataset.resize(full_frame_number, axis=0);
+    
+    mask_dataset.attrs['has_finished'] = 1
         
     #close the video and hdf5 files
     vid.release() 
