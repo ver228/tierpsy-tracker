@@ -44,9 +44,13 @@ class getMaskParams(QMainWindow):
 		self.results_dir = '/Users/ajaver/Desktop/Pratheeban_videos/Results/'
 		self.video_file = ''
 
-		self.videos_dir = '/Volumes/behavgenom$/Andre/shige-oda/Worm_Videos/'#'/Users/ajaver/Desktop/Pratheeban_videos/Worm_Videos/'
-		self.buffer_size = 25
+		#self.videos_dir = '/Users/ajaver/Google Drive/MWTracker_Example/Worm_Videos'
+		self.videos_dir = '/Volumes/behavgenom$/Andre/shige-oda/Worm_Videos/'
+		#self.videos_dir = '/Users/ajaver/Desktop/Pratheeban_videos/Worm_Videos/'
+		
+		
 		self.Ifull = np.zeros(0)
+		self.vid = 0
 
 		if not os.path.exists(self.mask_files_dir):
 			self.mask_files_dir = ''
@@ -62,10 +66,19 @@ class getMaskParams(QMainWindow):
 		self.ui.pushButton_results.clicked.connect(self.updateResultsDir)
 		self.ui.pushButton_mask.clicked.connect(self.updateMasksDir)
 		
+		self.ui.pushButton_next.clicked.connect(self.getNextChunk)
 		self.ui.pushButton_start.clicked.connect(self.startAnalysis)
+
+		self.ui.spinBox_fps.valueChanged.connect(self.updateFPS)
+		self.updateFPS()
+
+		
+	def updateFPS(self):
+		self.buffer_size = int(np.round(self.ui.spinBox_fps.value()))
 
 	#file dialog to the the hdf5 file
 	def getVideoFile(self):
+		#print(self.videos_dir)
 		video_file, _ = QFileDialog.getOpenFileName(self, "Find video file", 
 		self.videos_dir, "MJPG files (*.mjpg);; All files (*)")
 
@@ -79,13 +92,14 @@ class getMaskParams(QMainWindow):
 				
 
 				self.ui.lineEdit_video.setText(self.video_file)
-				vid = cv2.VideoCapture(self.video_file);
+				self.vid = cv2.VideoCapture(self.video_file);
 
-				self.im_width= vid.get(cv2.CAP_PROP_FRAME_WIDTH)
-				self.im_height= vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
+				self.im_width= self.vid.get(cv2.CAP_PROP_FRAME_WIDTH)
+				self.im_height= self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
 				if self.im_width == 0 or self.im_height == 0:
 					 QMessageBox.critical(self, 'Cannot read video file.', "Cannot read video file. Try another file",
 					QMessageBox.Ok)
+					 self.vid = 0
 					 return
 
 				if 'Worm_Videos' in self.videos_dir:
@@ -94,20 +108,29 @@ class getMaskParams(QMainWindow):
 					self.ui.lineEdit_mask.setText(self.mask_files_dir)
 					self.ui.lineEdit_results.setText(self.results_dir)
 
+				self.getNextChunk()
 				
-				Ibuff = np.zeros((self.buffer_size, self.im_height, self.im_width), dtype = np.uint8)
-				for ii in range(self.buffer_size):    
-					ret, image = vid.read() #get video frame, stop program when no frame is retrive (end of file)
-					if ret == 0:
-						break
-					Ibuff[ii] = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-				self.Imin = np.min(Ibuff, axis=0)
-				self.Ifull = Ibuff[0]
 				
-				self.updateMask()
 
-				
-			
+	def getNextChunk(self):
+		if self.vid:
+			Ibuff = np.zeros((self.buffer_size, self.im_height, self.im_width), dtype = np.uint8)
+
+			tot = 0;
+			for ii in range(self.buffer_size):    
+				ret, image = self.vid.read() #get video frame, stop program when no frame is retrive (end of file)
+				if ret == 0:
+					break
+				Ibuff[ii] = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+				tot += 1
+			if tot < self.buffer_size:
+				return
+
+			self.Imin = np.min(Ibuff, axis=0)
+			self.Ifull = Ibuff[0]
+		
+			self.updateMask()
+
 
 	def updateImage(self):
 		if self.Ifull.size == 0:
@@ -157,18 +180,19 @@ class getMaskParams(QMainWindow):
 	def updateMask(self):
 		if self.Ifull.size == 0:
 			return
-
+		
 		self.mask_param = {'max_area': self.ui.spinBox_max_area.value(),
 		'min_area' : self.ui.spinBox_min_area.value(), 
 		'thresh_block_size' : self.ui.spinBox_block_size.value(),
 		'thresh_C' : self.ui.spinBox_thresh_C.value(),
-		'has_timestamp':self.ui.checkBox_hasTimestamp.isChecked()}
+		'has_timestamp':self.ui.checkBox_hasTimestamp.isChecked()
+		}
 		
 		mask = getROIMask(self.Imin.copy(), **self.mask_param)
 		self.Imask =  mask*self.Ifull
 
 		self.updateImage()
-		
+	
 	#update image if the GUI is resized event
 	def resizeEvent(self, event):
 		self.updateImage()
@@ -178,17 +202,16 @@ class getMaskParams(QMainWindow):
 			QMessageBox.critical(self, 'No valid video file selected.', "No valid video file selected.", QMessageBox.Ok)
 			return
 
+		self.mask_param['fps'] = self.ui.spinBox_fps.value()
+		self.mask_param['resampling_N'] = self.ui.spinBox_skelSeg.value()
 		self.close()
 
 		json_file = self.video_file.rpartition('.')[0] + '.json'
 		with open(json_file, 'w') as fid:
 			json.dump(self.mask_param, fid)
 
-		
 		masked_image_file = compressVideoWorkerL(self.video_file, self.mask_files_dir, param_file = json_file)
 		getTrajectoriesWorkerL(masked_image_file, self.results_dir, param_file = json_file)
-
-		
 
 	def updateResultsDir(self):
 		results_dir = QFileDialog.getExistingDirectory(self, "Selects the directory where the analysis results will be stored", 
@@ -204,14 +227,11 @@ class getMaskParams(QMainWindow):
 			self.mask_files_dir = mask_files_dir + os.sep
 			self.ui.lineEdit_mask.setText(self.mask_files_dir)
 
-
 if __name__ == '__main__':
 	app = QApplication(sys.argv)
 	
 	ui = getMaskParams()
 	ui.show()
 	app.exec_()
-	
-
 	#sys.exit()
 

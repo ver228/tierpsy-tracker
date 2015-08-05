@@ -32,24 +32,7 @@
       <property name="sizeConstraint">
        <enum>QLayout::SetMaximumSize</enum>
       </property>
-      <item row="1" column="2">
-       <widget class="QRadioButton" name="radioButton_ROI1">
-        <property name="text">
-         <string/>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="2">
-       <widget class="QRadioButton" name="radioButton_ROI2">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2" colspan="3">
+      <item row="0" column="2" colspan="6">
        <widget class="QLabel" name="wormCanvas1">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
@@ -68,58 +51,10 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="2" colspan="3">
-       <widget class="QLabel" name="wormCanvas2">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::Box</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
+      <item row="1" column="5">
+       <widget class="QPushButton" name="pushButton_ROI1_RW">
         <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
-       <widget class="QComboBox" name="comboBox_ROI1"/>
-      </item>
-      <item row="1" column="4">
-       <widget class="QCheckBox" name="checkBox_ROI1">
-        <property name="text">
-         <string>Show skeletons</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="3">
-       <widget class="QComboBox" name="comboBox_ROI2"/>
-      </item>
-      <item row="4" column="4">
-       <widget class="QCheckBox" name="checkBox_ROI2">
-        <property name="text">
-         <string>Show skeletons</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QCheckBox" name="checkBox_label">
-        <property name="text">
-         <string>Show labels</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
+         <string>&lt;&lt;</string>
         </property>
        </widget>
       </item>
@@ -145,6 +80,46 @@
         </property>
        </widget>
       </item>
+      <item row="4" column="3">
+       <widget class="QComboBox" name="comboBox_ROI2"/>
+      </item>
+      <item row="4" column="4">
+       <widget class="QCheckBox" name="checkBox_ROI2">
+        <property name="text">
+         <string>Skeleton</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QRadioButton" name="radioButton_ROI1">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QCheckBox" name="checkBox_showLabel">
+        <property name="text">
+         <string>Show all labels</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="2">
+       <widget class="QRadioButton" name="radioButton_ROI2">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
       <item row="4" column="1">
        <spacer name="horizontalSpacer_2">
         <property name="orientation">
@@ -160,6 +135,65 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item row="1" column="3">
+       <widget class="QComboBox" name="comboBox_ROI1"/>
+      </item>
+      <item row="2" column="2" colspan="6">
+       <widget class="QLabel" name="wormCanvas2">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::Box</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="6">
+       <widget class="QPushButton" name="pushButton_ROI1_FF">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>&gt;&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QCheckBox" name="checkBox_ROI1">
+        <property name="text">
+         <string>Skeleton</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="5">
+       <widget class="QPushButton" name="pushButton_ROI2_RW">
+        <property name="text">
+         <string>&lt;&lt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="6">
+       <widget class="QPushButton" name="pushButton_ROI2_FF">
+        <property name="text">
+         <string>&gt;&gt;</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
@@ -194,22 +228,6 @@
     </item>
     <item row="1" column="1">
      <layout class="QGridLayout" name="gridLayout">
-      <item row="2" column="7">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Maximum</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
       <item row="0" column="3" colspan="4">
        <widget class="QSlider" name="imageSlider">
         <property name="cursor">
@@ -238,28 +256,13 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="4">
-       <widget class="QPushButton" name="pushButton_split">
-        <property name="text">
-         <string>Split Trajectory</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="1">
        <widget class="QSpinBox" name="spinBox_frame"/>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_frame">
-        <property name="font">
-         <font>
-          <pointsize>13</pointsize>
-         </font>
-        </property>
+      <item row="3" column="3" colspan="5">
+       <widget class="QLineEdit" name="lineEdit_video">
         <property name="text">
-         <string>Frame</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
+         <string/>
         </property>
        </widget>
       </item>
@@ -281,6 +284,21 @@
         </property>
        </widget>
       </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_frame">
+        <property name="font">
+         <font>
+          <pointsize>13</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Frame</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
       <item row="4" column="0" colspan="2">
        <widget class="QPushButton" name="pushButton_skel">
         <property name="sizePolicy">
@@ -299,55 +317,22 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_fps">
+      <item row="4" column="3" colspan="5">
+       <widget class="QLineEdit" name="lineEdit_skel"/>
+      </item>
+      <item row="0" column="7">
+       <widget class="QPushButton" name="playButton">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="font">
-         <font>
-          <pointsize>13</pointsize>
-         </font>
-        </property>
         <property name="text">
-         <string>FPS display</string>
+         <string>Play</string>
         </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_step">
-        <property name="font">
-         <font>
-          <pointsize>13</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Step Size</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox_fps">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="maximum">
-         <double>100.000000000000000</double>
-        </property>
-        <property name="value">
-         <double>25.000000000000000</double>
+        <property name="checkable">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -382,15 +367,42 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="3" colspan="5">
-       <widget class="QLineEdit" name="lineEdit_video">
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_fps">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>13</pointsize>
+         </font>
+        </property>
         <property name="text">
-         <string/>
+         <string>FPS display</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </item>
-      <item row="4" column="3" colspan="5">
-       <widget class="QLineEdit" name="lineEdit_skel"/>
+      <item row="2" column="1">
+       <widget class="QDoubleSpinBox" name="doubleSpinBox_fps">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximum">
+         <double>100.000000000000000</double>
+        </property>
+        <property name="value">
+         <double>25.000000000000000</double>
+        </property>
+       </widget>
       </item>
       <item row="5" column="3" colspan="5">
        <widget class="QComboBox" name="comboBox_h5path">
@@ -409,45 +421,88 @@
         </item>
        </widget>
       </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_step">
+        <property name="font">
+         <font>
+          <pointsize>13</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Step Size</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
       <item row="2" column="5">
+       <widget class="QSpinBox" name="spinBox_join1">
+        <property name="showGroupSeparator" stdset="0">
+         <bool>false</bool>
+        </property>
+        <property name="maximum">
+         <number>999999999</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="6">
+       <widget class="QSpinBox" name="spinBox_join2">
+        <property name="maximum">
+         <number>999999999</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
        <widget class="QPushButton" name="pushButton_join">
         <property name="text">
          <string>Join Trajectory</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="7">
-       <widget class="QPushButton" name="playButton">
+      <item row="2" column="4">
+       <widget class="QPushButton" name="pushButton_split">
+        <property name="text">
+         <string>Split Trajectory</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="7" rowspan="2">
+       <widget class="QPushButton" name="pushButton_save">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Play</string>
-        </property>
-        <property name="checkable">
-         <bool>false</bool>
+         <string>SAVE</string>
         </property>
        </widget>
       </item>
       <item row="1" column="3">
-       <widget class="QPushButton" name="pushButton_worm">
+       <widget class="QPushButton" name="pushButton_U">
         <property name="text">
-         <string>Single Worm</string>
+         <string>Undefined</string>
         </property>
        </widget>
       </item>
       <item row="1" column="4">
-       <widget class="QPushButton" name="pushButton_wormS">
+       <widget class="QPushButton" name="pushButton_W">
+        <property name="text">
+         <string>Single Worms</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QPushButton" name="pushButton_WS">
         <property name="text">
          <string>Worm Cluster</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="5">
-       <widget class="QPushButton" name="pushButton_bad">
+      <item row="1" column="6">
+       <widget class="QPushButton" name="pushButton_B">
         <property name="text">
          <string>Bad</string>
         </property>

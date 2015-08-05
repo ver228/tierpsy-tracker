@@ -136,7 +136,7 @@ class WormFromTable(NormalizedWorm):
             #video info, for the moment we intialize it with the fps
             self.video_info = VideoInfo('', fps)  
             #flag as segmented flags should be marked by the has_skeletons column
-            self.video_info.frame_code = file_id.get_node('/trajectories_data').cols.has_skeleton[:]
+            self.video_info.frame_code = file_id.get_node('/trajectories_data').cols.has_skeleton[ini:end+1]
                         
             self.worm_index = worm_index
             self.rows_range = rows_range
@@ -158,8 +158,7 @@ class WormFromTable(NormalizedWorm):
             
             self.area = calWormArea(self.ventral_contour, self.dorsal_contour)
             
-            assert self.angles.shape[1] == self.n_segments            
-            
+            assert self.angles.shape[1] == self.n_segments
             assert self.skeleton.shape[2] == 2
             assert self.ventral_contour.shape[2] == 2
             assert self.dorsal_contour.shape[2] == 2
@@ -354,11 +353,12 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
         for ind, dat  in enumerate(rows_indexes.iterrows()):
             worm_index, row_range = dat
             
-            
             #initialize worm object, and extract data from skeletons file
             worm = WormFromTable()
-            worm.fromFile(skeletons_file, worm_index, fps = 25, rows_range= tuple(row_range.values), isOpenWorm=True)
+            worm.fromFile(skeletons_file, worm_index, fps = 25, rows_range= tuple(row_range.values), isOpenWorm=False)
             
+
+            worm.changeAxis()
             assert not np.all(np.isnan(worm.skeleton))
             
             # Generate the OpenWorm movement validation repo version of the features
