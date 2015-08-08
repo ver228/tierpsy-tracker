@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'imageviewer.ui'
 #
-# Created: Fri Jul 17 15:41:01 2015
+# Created: Wed Aug  5 17:26:14 2015
 #      by: PyQt5 UI code generator 5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -25,7 +25,7 @@ class Ui_ImageViewer(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 572, 536))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 572, 527))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
@@ -69,12 +69,20 @@ class Ui_ImageViewer(object):
         self.verticalLayout.addLayout(self.horizontalLayout_3)
         self.horizontalLayout_6 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
-        self.lineEdit_h5path = QtWidgets.QLineEdit(self.centralWidget)
-        self.lineEdit_h5path.setObjectName("lineEdit_h5path")
-        self.horizontalLayout_6.addWidget(self.lineEdit_h5path)
-        self.label = QtWidgets.QLabel(self.centralWidget)
-        self.label.setObjectName("label")
-        self.horizontalLayout_6.addWidget(self.label)
+        self.comboBox_h5path = QtWidgets.QComboBox(self.centralWidget)
+        self.comboBox_h5path.setEditable(True)
+        self.comboBox_h5path.setObjectName("comboBox_h5path")
+        self.comboBox_h5path.addItem("")
+        self.comboBox_h5path.addItem("")
+        self.horizontalLayout_6.addWidget(self.comboBox_h5path)
+        self.pushButton_h5groups = QtWidgets.QPushButton(self.centralWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_h5groups.sizePolicy().hasHeightForWidth())
+        self.pushButton_h5groups.setSizePolicy(sizePolicy)
+        self.pushButton_h5groups.setObjectName("pushButton_h5groups")
+        self.horizontalLayout_6.addWidget(self.pushButton_h5groups)
         self.verticalLayout.addLayout(self.horizontalLayout_6)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
@@ -126,8 +134,9 @@ class Ui_ImageViewer(object):
         self.label_frame.setText(_translate("ImageViewer", "Frame"))
         self.label_step.setText(_translate("ImageViewer", "Step Size"))
         self.label_fps.setText(_translate("ImageViewer", "FPS display"))
-        self.lineEdit_h5path.setText(_translate("ImageViewer", "/mask"))
-        self.label.setText(_translate("ImageViewer", "HDF5 video group"))
+        self.comboBox_h5path.setItemText(0, _translate("ImageViewer", "/mask"))
+        self.comboBox_h5path.setItemText(1, _translate("ImageViewer", "/full_data"))
+        self.pushButton_h5groups.setText(_translate("ImageViewer", "Update Groups"))
         self.playButton.setText(_translate("ImageViewer", "Play"))
         self.fileButton.setText(_translate("ImageViewer", "Select File"))
         self.toolBar.setWindowTitle(_translate("ImageViewer", "toolBar"))

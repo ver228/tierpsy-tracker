@@ -5,6 +5,8 @@ from PyQt5.QtGui import QPixmap, QImage
 from imageviewer_ui import Ui_ImageViewer
 
 import h5py
+import os
+import numpy as np
 
 class ImageViewer(QMainWindow):
 	def __init__(self):
@@ -17,10 +19,12 @@ class ImageViewer(QMainWindow):
 		self.isPlay = False
 		self.fid = -1
 		self.image_group = -1
-
+		self.videos_dir =  r"/Volumes/behavgenom$/GeckoVideo/Results/20150521_1115/"
 		#self.ui.centralWidget.setChildrenFocusPolicy(Qt.NoFocus)
 
-		self.ui.fileButton.clicked.connect(self.getFilePath)
+		self.h5path = self.ui.comboBox_h5path.itemText(0)
+		
+		self.ui.fileButton.clicked.connect(self.getVideoFile)
 		
 		self.ui.playButton.clicked.connect(self.playVideo)
 		self.ui.imageSlider.sliderPressed.connect(self.imSldPressed)
@@ -32,7 +36,9 @@ class ImageViewer(QMainWindow):
 		
 		self.ui.spinBox_step.valueChanged.connect(self.updateFrameStep)
 
-		self.ui.lineEdit_h5path.returnPressed.connect(self.updateImGroup)
+		self.ui.comboBox_h5path.activated.connect(self.getImGroup)
+
+		self.ui.pushButton_h5groups.clicked.connect(self.updateGroupNames)
 
 		self.updateFPS()
 		self.updateFrameStep()
@@ -103,8 +109,20 @@ class ImageViewer(QMainWindow):
 		
 		self.label_height = self.ui.imageCanvas.height()
 		self.label_width = self.ui.imageCanvas.width()
-		image = QImage(self.image_group[self.frame_number].data, 
-			self.image_height, self.image_width, QImage.Format_Indexed8) 
+		
+		self.original_image = self.image_group[self.frame_number];
+		
+		#equalize and cast if it is not uint8
+		if self.original_image.dtype != np.uint8:
+			top = np.max(self.original_image)
+			bot = np.min(self.original_image)
+
+			self.original_image = (self.original_image-bot)*255./(top-bot)
+
+			self.original_image = np.round(self.original_image).astype(np.uint8)
+			#print(self.original_image)
+		image = QImage(self.original_image.data, 
+			self.image_height, self.image_width, self.original_image.strides[0], QImage.Format_Indexed8)
 		image = image.scaled(self.label_width, self.label_height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 		
 		self.ui.imageCanvas.setPixmap(QPixmap.fromImage(image));
@@ -114,25 +132,58 @@ class ImageViewer(QMainWindow):
 			self.ui.imageSlider.setValue(progress)
 
 	#file dialog to the the hdf5 file
-	def getFilePath(self):
-		filename, _ = QFileDialog.getOpenFileName(self, "Find HDF5 file", 
-		"/Users/ajaver/Desktop/Gecko_compressed/MaskedVideos", "HDF5 files (*.hdf5);; All files (*)")
+	def getVideoFile(self):
+		vfilename, _ = QFileDialog.getOpenFileName(self, "Find HDF5 video file", 
+		self.videos_dir, "HDF5 files (*.hdf5);; All files (*)")
 
-		if filename:
+		if vfilename:
 			if self.fid != -1:
 				self.fid.close()
 				self.ui.imageCanvas.clear()
 
-			self.setFileName(filename)
-			self.fid = h5py.File(self.filename, 'r')
-			self.updateImGroup()
+			self.vfilename = vfilename
+			self.updateVideoFile()
 	
+	def updateVideoFile(self):
+		if not os.path.exists(self.vfilename):
+			QMessageBox.critical(self, 'The hdf5 video file does not exists', "The hdf5 video file does not exists. Please select a valid file",
+					QMessageBox.Ok)
+			return
+		
+		self.ui.lineEdit.setText(self.vfilename)
+		self.videos_dir = self.vfilename.rpartition(os.sep)[0] + os.sep
+		self.fid = h5py.File(self.vfilename, 'r')
+		
+		self.updateImGroup()
+
+	def updateGroupNames(self):
+		valid_groups = []
+		def geth5name(name, dat):
+			if isinstance(dat, h5py.Dataset) and len(dat.shape) == 3:# and dat.dtype == np.uint8:
+		 		valid_groups.append('/' + name)
+		self.fid.visititems(geth5name)
+		
+		if not valid_groups:
+			QMessageBox.critical(self, '', "No valid video groups were found. Dataset with three dimensions and uint8 data type.",
+					QMessageBox.Ok)
+			return
+
+		self.ui.comboBox_h5path.clear()
+		for kk in valid_groups:
+			self.ui.comboBox_h5path.addItem(kk)
+		self.getImGroup(0)
+		self.updateImage()
+
+	def getImGroup(self, index):
+		self.h5path = self.ui.comboBox_h5path.itemText(index)
+		self.updateImGroup()
+
 	#read a valid groupset from the hdf5
 	def updateImGroup(self):
 		if self.fid == -1:
 			return
 
-		self.h5path = self.ui.lineEdit_h5path.text()
+		#self.h5path = self.ui.comboBox_h5path.text()
 		if not self.h5path in self.fid:
 			self.ui.imageCanvas.clear()
 			self.image_group == -1

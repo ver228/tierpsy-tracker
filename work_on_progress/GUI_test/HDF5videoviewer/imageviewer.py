@@ -74,6 +74,8 @@ class ImageViewer(QMainWindow):
 		self.ui.checkBox_ROI2.stateChanged.connect(partial(self.updateROIcanvasN, 2))
 		self.ui.checkBox_showLabel.stateChanged.connect(self.updateImage)
 
+		self.ui.pushButton_h5groups.clicked.connect(self.updateGroupNames)
+
 		#flags for RW and FF
 		self.RW = 1
 		self.FF = 2
@@ -210,8 +212,28 @@ class ImageViewer(QMainWindow):
 			self.ui.lineEdit_skel.setText(self.skel_file)
 
 		self.fid = h5py.File(self.vfilename, 'r')
+		
 		self.updateImGroup()
 		self.updateSkelFile()
+
+	def updateGroupNames(self):
+		valid_groups = []
+		def geth5name(name, dat):
+			if isinstance(dat, h5py.Dataset) and len(dat.shape) == 3 and dat.dtype == np.uint8:
+		 		valid_groups.append('/' + name)
+		self.fid.visititems(geth5name)
+		
+		if not valid_groups:
+			QMessageBox.critical(self, '', "No valid video groups were found. Dataset with three dimensions and uint8 data type.",
+					QMessageBox.Ok)
+			return
+
+		self.ui.comboBox_h5path.clear()
+		for kk in valid_groups:
+			self.ui.comboBox_h5path.addItem(kk)
+
+		self.getImGroup(0)
+		self.self.updateImage()
 
 	def getSkelFile(self):
 		self.skel_file, _ = QFileDialog.getOpenFileName(self, 'Select file with the worm skeletons', 

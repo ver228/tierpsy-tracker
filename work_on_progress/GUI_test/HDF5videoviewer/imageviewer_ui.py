@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'imageviewer.ui'
 #
-# Created: Wed Jul 29 22:09:54 2015
+# Created: Wed Aug  5 17:30:24 2015
 #      by: PyQt5 UI code generator 5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_ImageViewer(object):
     def setupUi(self, ImageViewer):
         ImageViewer.setObjectName("ImageViewer")
-        ImageViewer.resize(1055, 880)
+        ImageViewer.resize(1157, 880)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -178,18 +178,6 @@ class Ui_ImageViewer(object):
         self.spinBox_step.setProperty("value", 1)
         self.spinBox_step.setObjectName("spinBox_step")
         self.gridLayout.addWidget(self.spinBox_step, 1, 1, 1, 1)
-        self.label = QtWidgets.QLabel(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy)
-        font = QtGui.QFont()
-        font.setPointSize(13)
-        self.label.setFont(font)
-        self.label.setAlignment(QtCore.Qt.AlignCenter)
-        self.label.setObjectName("label")
-        self.gridLayout.addWidget(self.label, 5, 0, 1, 2)
         self.label_fps = QtWidgets.QLabel(self.centralWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -260,10 +248,13 @@ class Ui_ImageViewer(object):
         self.pushButton_B = QtWidgets.QPushButton(self.centralWidget)
         self.pushButton_B.setObjectName("pushButton_B")
         self.gridLayout.addWidget(self.pushButton_B, 1, 6, 1, 1)
+        self.pushButton_h5groups = QtWidgets.QPushButton(self.centralWidget)
+        self.pushButton_h5groups.setObjectName("pushButton_h5groups")
+        self.gridLayout.addWidget(self.pushButton_h5groups, 5, 0, 1, 2)
         self.gridLayout_4.addLayout(self.gridLayout, 1, 1, 1, 1)
         ImageViewer.setCentralWidget(self.centralWidget)
         self.menuBar = QtWidgets.QMenuBar(ImageViewer)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 1055, 22))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 1157, 22))
         self.menuBar.setObjectName("menuBar")
         ImageViewer.setMenuBar(self.menuBar)
         self.mainToolBar = QtWidgets.QToolBar(ImageViewer)
@@ -290,7 +281,6 @@ class Ui_ImageViewer(object):
         self.label_frame.setText(_translate("ImageViewer", "Frame"))
         self.pushButton_skel.setText(_translate("ImageViewer", "Select Skeletons File"))
         self.playButton.setText(_translate("ImageViewer", "Play"))
-        self.label.setText(_translate("ImageViewer", "HDF5 video group"))
         self.label_fps.setText(_translate("ImageViewer", "FPS display"))
         self.comboBox_h5path.setItemText(0, _translate("ImageViewer", "/mask"))
         self.comboBox_h5path.setItemText(1, _translate("ImageViewer", "/full_data"))
@@ -302,5 +292,6 @@ class Ui_ImageViewer(object):
         self.pushButton_W.setText(_translate("ImageViewer", "Single Worms"))
         self.pushButton_WS.setText(_translate("ImageViewer", "Worm Cluster"))
         self.pushButton_B.setText(_translate("ImageViewer", "Bad"))
+        self.pushButton_h5groups.setText(_translate("ImageViewer", "Update Groups"))
         self.toolBar.setWindowTitle(_translate("ImageViewer", "toolBar"))
 
