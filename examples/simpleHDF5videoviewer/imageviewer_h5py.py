@@ -4,7 +4,7 @@ from PyQt5.QtCore import QDir, QTimer, Qt
 from PyQt5.QtGui import QPixmap, QImage
 from imageviewer_ui import Ui_ImageViewer
 
-import tables
+import h5py
 import os
 import numpy as np
 
@@ -154,16 +154,16 @@ class ImageViewer(QMainWindow):
 		
 		self.ui.lineEdit.setText(self.vfilename)
 		self.videos_dir = self.vfilename.rpartition(os.sep)[0] + os.sep
-		self.fid = tables.File(self.vfilename, 'r')
+		self.fid = h5py.File(self.vfilename, 'r')
 		
 		self.updateImGroup()
 
 	def updateGroupNames(self):
 		valid_groups = []
-		for group in self.fid.walk_groups("/"):
-			for array in self.fid.list_nodes(group, classname='Array'):
-				if array.ndim == 3:
-					valid_groups.append(array._v_pathname)
+		def geth5name(name, dat):
+			if isinstance(dat, h5py.Dataset) and len(dat.shape) == 3:# and dat.dtype == np.uint8:
+		 		valid_groups.append('/' + name)
+		self.fid.visititems(geth5name)
 		
 		if not valid_groups:
 			QMessageBox.critical(self, '', "No valid video groups were found. Dataset with three dimensions and uint8 data type.",
@@ -193,7 +193,7 @@ class ImageViewer(QMainWindow):
 					QMessageBox.Ok)
 			return
 
-		self.image_group = self.fid.get_node(self.h5path)
+		self.image_group = self.fid[self.h5path]
 		if len(self.image_group.shape) != 3:
 			self.ui.imageCanvas.clear()
 			self.image_group == -1

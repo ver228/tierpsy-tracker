@@ -118,7 +118,7 @@ class WormFromTable(NormalizedWorm):
         """
         NormalizedWorm.__init__(self)
     
-    def fromFile(self, file_name, worm_index, fps = 25, isOpenWorm = False):
+    def fromFile(self, file_name, worm_index, fps = 25, isOpenWorm = False, pix2mum = 1):
         
         #get the skeletons_id and frame_number in case they were not given by the user
         with pd.HDFStore(file_name, 'r') as ske_file_id:
@@ -147,9 +147,6 @@ class WormFromTable(NormalizedWorm):
             
             tot_frames = self.n_frames
 
-            
-            
-            
             self.skeleton = np.full((tot_frames, n_ske_points,2), np.nan)
             self.ventral_contour = np.full((tot_frames, n_ske_points,2), np.nan)
             self.dorsal_contour = np.full((tot_frames, n_ske_points,2), np.nan)
@@ -170,11 +167,11 @@ class WormFromTable(NormalizedWorm):
             self.video_info.frame_code = np.zeros(tot_frames, np.int32)
             self.video_info.frame_code[ind_ff] = frame_code
 
-            self.skeleton[ind_ff] = ske_file_id.get_node('/skeleton')[skeleton_id,:,:]
-            self.ventral_contour[ind_ff] = ske_file_id.get_node('/contour_side1')[skeleton_id,:,:]
-            self.dorsal_contour[ind_ff] = ske_file_id.get_node('/contour_side2')[skeleton_id,:,:]
-            self.length[ind_ff] = ske_file_id.get_node('/skeleton_length')[skeleton_id]
-            self.widths[ind_ff] = ske_file_id.get_node('/contour_width')[skeleton_id,:]
+            self.skeleton[ind_ff] = ske_file_id.get_node('/skeleton')[skeleton_id,:,:]*pix2mum
+            self.ventral_contour[ind_ff] = ske_file_id.get_node('/contour_side1')[skeleton_id,:,:]*pix2mum
+            self.dorsal_contour[ind_ff] = ske_file_id.get_node('/contour_side2')[skeleton_id,:,:]*pix2mum
+            self.length[ind_ff] = ske_file_id.get_node('/skeleton_length')[skeleton_id]*pix2mum
+            self.widths[ind_ff] = ske_file_id.get_node('/contour_width')[skeleton_id,:]*pix2mum
 
 #             #READ DATA ON BLOCKS. This is faster than fancy indexing
 #            block_ind, block_frame = self.getBlockInd(skeleton_id, frame_number, self.first_frame)
