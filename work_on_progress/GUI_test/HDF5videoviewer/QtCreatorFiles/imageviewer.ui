@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1157</width>
-    <height>880</height>
+    <height>675</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -55,28 +55,6 @@
        <widget class="QPushButton" name="pushButton_ROI1_RW">
         <property name="text">
          <string>&lt;&lt;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0" rowspan="3" colspan="2">
-       <widget class="QLabel" name="imageCanvas">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="focusPolicy">
-         <enum>Qt::ClickFocus</enum>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::Box</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="text">
-         <string/>
         </property>
        </widget>
       </item>
@@ -195,6 +173,28 @@
         </property>
        </widget>
       </item>
+      <item row="0" column="0" rowspan="3" colspan="2">
+       <widget class="QLabel" name="imageCanvas">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::ClickFocus</enum>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::Box</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item row="0" column="2">
@@ -228,34 +228,6 @@
     </item>
     <item row="1" column="1">
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="3" colspan="4">
-       <widget class="QSlider" name="imageSlider">
-        <property name="cursor">
-         <cursorShape>OpenHandCursor</cursorShape>
-        </property>
-        <property name="mouseTracking">
-         <bool>true</bool>
-        </property>
-        <property name="autoFillBackground">
-         <bool>false</bool>
-        </property>
-        <property name="maximum">
-         <number>100</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="invertedAppearance">
-         <bool>false</bool>
-        </property>
-        <property name="invertedControls">
-         <bool>false</bool>
-        </property>
-        <property name="tickPosition">
-         <enum>QSlider::TicksBothSides</enum>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="1">
        <widget class="QSpinBox" name="spinBox_frame"/>
       </item>
@@ -491,6 +463,34 @@
        <widget class="QPushButton" name="pushButton_h5groups">
         <property name="text">
          <string>Update Groups</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3" colspan="4">
+       <widget class="QSlider" name="imageSlider">
+        <property name="cursor">
+         <cursorShape>OpenHandCursor</cursorShape>
+        </property>
+        <property name="mouseTracking">
+         <bool>true</bool>
+        </property>
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="maximum">
+         <number>100</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="invertedAppearance">
+         <bool>false</bool>
+        </property>
+        <property name="invertedControls">
+         <bool>false</bool>
+        </property>
+        <property name="tickPosition">
+         <enum>QSlider::TicksBothSides</enum>
         </property>
        </widget>
       </item>

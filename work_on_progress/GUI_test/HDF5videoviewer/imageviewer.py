@@ -50,6 +50,7 @@ class ImageViewer(QMainWindow):
 		#self.videos_dir = "/Users/ajaver/Google Drive/MWTracker_Example/MaskedVideos/"
 		self.videos_dir = r"/Volumes/behavgenom$/GeckoVideo/MaskedVideos/"
 		#self.videos_dir = "/Users/ajaver/Desktop/Gecko_compressed/MaskedVideos/"
+		
 		self.results_dir = ''
 		self.skel_file = ''
 

@@ -10,8 +10,6 @@ import os
 import pandas as pd
 import numpy as np
 import h5py
-from scipy.signal import savgol_filter
-from scipy.interpolate import interp1d
 import cv2
 
 import sys
