@@ -15,7 +15,8 @@ movement_validation_dir = ''
 
 #add the movement validation directory
 if not movement_validation_dir:
-    movement_validation_dir = os.path.expanduser('~') + '/Documents/GitHub/movement_validation'
+    movement_validation_dir = '/Users/ajaver/Documents/GitHub/movement_validation'
+    #movement_validation_dir = os.path.expanduser('~') + '/Documents/GitHub/movement_validation'
 
 if not os.path.exists(movement_validation_dir):
     print("""Introduce a valid path in the variable movement_validation_dir of the file config_param.py.
