@@ -1,0 +1,20 @@
+filename = '/Volumes/behavgenom$/Pratheeban/Results/L1_early/15_07_07/15_07_07_C1_overnt_Ch1_07072015_160917_features.hdf5';
+
+
+info = h5info(filename);
+
+%% mean values of each features, it is the easier way to get the list of valid worm ids
+
+feat_avg = h5read(filename, '/Features_means');
+worm_ids = feat_avg.worm_index;
+
+%%
+feat_motion = h5read(filename, '/Features_motion');
+
+for worm_id = worm_ids'
+    
+    frame = feat_motion.midbody_nm;
+    speed = feat_motion.midbody_speed;
+end
+
+

@@ -26,8 +26,9 @@ if __name__ == "__main__":
 #    mask_dir = '/Users/ajaver/Desktop/Gecko_compressed/Masked_Videos/20150512/'
 #    results_dir = '/Users/ajaver/Desktop/Gecko_compressed/Results/20150512/'    
 
-    for ii in [4]:
-        skeletons_file = '/Users/ajaver/Desktop/Gecko_compressed/Results/20150521_1115/Capture_Ch%i_21052015_111806_skeletons.hdf5' % ii
+    for ii in range(1,7):
+        #skeletons_file = '/Users/ajaver/Desktop/Gecko_compressed/Results/20150521_1115/Capture_Ch%i_21052015_111806_skeletons.hdf5' % ii
+        skeletons_file = '/Users/ajaver/Desktop/Gecko_compressed/Results/20150612_1430/Capture_Ch%i_12062015_142858_skeletons.hdf5' % ii
         print(skeletons_file)
         base_name = skeletons_file.rpartition('_skeletons')[0].rpartition(os.sep)[-1]
         

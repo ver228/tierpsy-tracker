@@ -118,13 +118,21 @@ class WormFromTable(NormalizedWorm):
         """
         NormalizedWorm.__init__(self)
     
-    def fromFile(self, file_name, worm_index, fps = 25, isOpenWorm = False, pix2mum = 1):
+    def fromFile(self, file_name, worm_index, fps = 25, isOpenWorm = False, pix2mum = 1, time_range = []):
+        
+        assert len(time_range) == 0 or len(time_range) == 2
         
         #get the skeletons_id and frame_number in case they were not given by the user
         with pd.HDFStore(file_name, 'r') as ske_file_id:
             trajectories_data = ske_file_id['/trajectories_data']
             good = trajectories_data['worm_index_N']==worm_index
-            #good = good & (trajectories_data['frame_number']<10000)
+            
+            #if a time_range is given only consider frames within the time range 
+            if len(time_range) == 2:
+                good = good & (trajectories_data['frame_number']>=time_range[0]) \
+                & (trajectories_data['frame_number']<=time_range[1])
+                
+            
             trajectories_data = trajectories_data.loc[good, ['skeleton_id', 'frame_number', 'has_skeleton']]
             
             skeleton_id = trajectories_data['skeleton_id'].values
@@ -352,7 +360,7 @@ class wormStatsClass():
         return self.stats
 
 
-def getWormFeaturesLab(skeletons_file, features_file, worm_indexes, fps = 25):
+def getWormFeaturesLab(skeletons_file, features_file, worm_indexes, fps = 25, time_range = []):
 
     #overight processing options
     processing_options = FeatureProcessingOptions()
@@ -401,7 +409,7 @@ def getWormFeaturesLab(skeletons_file, features_file, worm_indexes, fps = 25):
         for ind, worm_index  in enumerate(worm_indexes):
             #initialize worm object, and extract data from skeletons file
             worm = WormFromTable()
-            worm.fromFile(skeletons_file, worm_index, fps = fps, isOpenWorm=False)
+            worm.fromFile(skeletons_file, worm_index, fps = fps, isOpenWorm = False, time_range=time_range)
             assert not np.all(np.isnan(worm.skeleton))
 
             #save data as a subgroup for each worm
