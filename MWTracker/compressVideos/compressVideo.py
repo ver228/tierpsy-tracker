@@ -9,7 +9,9 @@ import cv2
 import h5py
 import os
 
+
 from .readVideoffmpeg import readVideoffmpeg
+from .readVideoHDF5 import readVideoHDF5
 from .imageDifferenceMask import imageDifferenceMask
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
@@ -92,7 +94,12 @@ expected_frames = 15000, mask_param = DEFAULT_MASK_PARAM):
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
     
     #open video to read
-    if not useVideoCapture:
+    isHDF5video = video_file[-5:] == '.hdf5';
+    if isHDF5video:
+        vid = readVideoHDF5(video_file);
+        im_height = vid.height;
+        im_width = vid.width;
+    elif not useVideoCapture:
         vid = readVideoffmpeg(video_file);
         im_height = vid.height;
         im_width = vid.width;
@@ -166,7 +173,7 @@ expected_frames = 15000, mask_param = DEFAULT_MASK_PARAM):
         if ret == 0:
             break
         
-        if useVideoCapture:
+        if useVideoCapture and not isHDF5video:
             image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         
         frame_number += 1;

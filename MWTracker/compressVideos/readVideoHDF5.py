@@ -1,0 +1,44 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Oct  4 14:33:18 2015
+
+@author: ajaver
+"""
+import tables
+import numpy as np
+
+class readVideoHDF5:
+    def __init__(self, fileName, full_img_period = np.inf):
+        self.fid = tables.File(fileName, 'r')
+        self.dataset = self.fid.get_node('/mask') 
+        
+        self.tot_frames = self.dataset.shape[0]
+        
+        self.width = self.dataset.shape[1]
+        self.height = self.dataset.shape[2]
+        self.tot_pix = self.height*self.width
+        
+        #initialize pointer for frames
+        self.curr_frame = -1
+        
+        #how often we get a full frame
+        self.full_img_period = full_img_period
+        
+        
+    def read(self):
+        self.curr_frame += 1
+        if self.curr_frame % self.full_img_period == 0:
+            self.full_img = self.dataset[self.curr_frame, :, :]
+        
+        if self.curr_frame < self.tot_frames:
+            image = self.dataset[self.curr_frame, :, :]
+            mask_bw = image == 0
+            image[mask_bw] = self.full_img[mask_bw]
+            return (1, image)
+        else:
+            return (0, [])
+        
+    
+    def release(self):
+        #close the buffer
+        self.fid.close()
