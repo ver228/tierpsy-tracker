@@ -29,11 +29,12 @@ class readVideoHDF5:
         self.curr_frame += 1
         if self.curr_frame % self.full_img_period == 0:
             self.full_img = self.dataset[self.curr_frame, :, :]
-        
+            self.value2replace = np.median(self.full_img)
+            
         if self.curr_frame < self.tot_frames:
             image = self.dataset[self.curr_frame, :, :]
             mask_bw = image == 0
-            image[mask_bw] = self.full_img[mask_bw]
+            image[mask_bw] = self.value2replace
             return (1, image)
         else:
             return (0, [])
