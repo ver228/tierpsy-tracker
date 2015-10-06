@@ -16,8 +16,11 @@ import tables
 from functools import partial
 
 sys.path.append('/Users/ajaver/Documents/GitHub/Multiworm_Tracking')
+sys.path.append('/Users/ajaver/Documents/GitHub/movement_validation')
 from MWTracker.trackWorms.getSkeletonsTables import getWormROI, getWormMask
 from MWTracker.trackWorms.segWormPython.mainSegworm import binaryMask2Contour
+
+from MWTracker.FeaturesAnalysis.obtainFeatures_N import getWormFeaturesLab
 
 import matplotlib.pylab as plt
 
@@ -105,6 +108,8 @@ class ImageViewer(QMainWindow):
 		self.ui.pushButton_join.clicked.connect(self.joinTraj)
 		self.ui.pushButton_split.clicked.connect(self.splitTraj)
 		
+		self.ui.pushButton_feats.clicked.connect(self.calcIndFeat)
+
 		self.updateFPS()
 		self.updateFrameStep()
 		
@@ -118,6 +123,21 @@ class ImageViewer(QMainWindow):
 		self.ui.comboBox_ROI2.setEditable(state)
 
 
+	def calcIndFeat(self):
+		if self.image_group == -1:
+			return
+
+		#save data
+		self.saveData()
+		#close GUI
+		self.close()
+
+		#start the analysis
+		trajectories_data = self.trajectories_data[self.trajectories_data['worm_label']==1]
+		worm_indexes = trajectories_data['worm_index_N'].unique()
+
+		features_file = self.results_dir + os.sep + self.basename + '_feat_ind.hdf5'
+		getWormFeaturesLab(self.skel_file, features_file, worm_indexes)
 
 	def saveData(self):
 		

@@ -297,7 +297,7 @@ class wormStatsClass():
             feature = spec.name.split(' (')[0].replace(' ', '_').replace('.', '').replace('-', '_')
             if '/' in feature:
                 feature = feature.replace('/', '_') + '_ratio'
-            self.spec2tableName[spec.name] = feature.lower()
+            self.spec2tableName[spec.name] = feature#.lower()
         
     def featureStat(self, stat_func, data, name, is_signed, is_motion, motion_mode = np.zeros(0), stats={}):
         # I prefer to keep this function quite independend and pass the stats and moition_mode argument 
