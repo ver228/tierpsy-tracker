@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'imageviewer.ui'
 #
-# Created: Thu Aug 13 23:29:31 2015
+# Created: Tue Oct  6 14:50:59 2015
 #      by: PyQt5 UI code generator 5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_ImageViewer(object):
     def setupUi(self, ImageViewer):
         ImageViewer.setObjectName("ImageViewer")
-        ImageViewer.resize(1157, 675)
+        ImageViewer.resize(1153, 802)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -42,6 +42,7 @@ class Ui_ImageViewer(object):
         self.pushButton_ROI1_RW.setObjectName("pushButton_ROI1_RW")
         self.gridLayout_3.addWidget(self.pushButton_ROI1_RW, 1, 5, 1, 1)
         self.comboBox_ROI2 = QtWidgets.QComboBox(self.centralWidget)
+        self.comboBox_ROI2.setEditable(False)
         self.comboBox_ROI2.setObjectName("comboBox_ROI2")
         self.gridLayout_3.addWidget(self.comboBox_ROI2, 4, 3, 1, 1)
         self.checkBox_ROI2 = QtWidgets.QCheckBox(self.centralWidget)
@@ -64,6 +65,7 @@ class Ui_ImageViewer(object):
         spacerItem = QtWidgets.QSpacerItem(600, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout_3.addItem(spacerItem, 4, 1, 1, 1)
         self.comboBox_ROI1 = QtWidgets.QComboBox(self.centralWidget)
+        self.comboBox_ROI1.setEditable(True)
         self.comboBox_ROI1.setObjectName("comboBox_ROI1")
         self.gridLayout_3.addWidget(self.comboBox_ROI1, 1, 3, 1, 1)
         self.wormCanvas2 = QtWidgets.QLabel(self.centralWidget)
@@ -254,7 +256,7 @@ class Ui_ImageViewer(object):
         self.gridLayout_4.addLayout(self.gridLayout, 1, 1, 1, 1)
         ImageViewer.setCentralWidget(self.centralWidget)
         self.menuBar = QtWidgets.QMenuBar(ImageViewer)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 1157, 22))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 1153, 22))
         self.menuBar.setObjectName("menuBar")
         ImageViewer.setMenuBar(self.menuBar)
         self.mainToolBar = QtWidgets.QToolBar(ImageViewer)

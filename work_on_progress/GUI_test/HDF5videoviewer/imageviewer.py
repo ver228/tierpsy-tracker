@@ -71,6 +71,7 @@ class ImageViewer(QMainWindow):
 		self.ui.comboBox_ROI1.activated.connect(self.updateROI1)
 		self.ui.comboBox_ROI2.activated.connect(self.updateROI2)
 
+		
 		self.ui.checkBox_ROI1.stateChanged.connect(partial(self.updateROIcanvasN, 1))
 		self.ui.checkBox_ROI2.stateChanged.connect(partial(self.updateROIcanvasN, 2))
 		self.ui.checkBox_showLabel.stateChanged.connect(self.updateImage)
@@ -92,8 +93,8 @@ class ImageViewer(QMainWindow):
 
 		self.ui.pushButton_save.clicked.connect(self.saveData)
 
-		#self.ui.radioButton_ROI2.toggled.connect(self.radio_ROI1)
-		#self.ui.radioButton_ROI2.toggled.connect(self.radio_ROI2)
+		self.ui.radioButton_ROI1.toggled.connect(self.makeEditableROI1)
+		self.ui.radioButton_ROI2.toggled.connect(self.makeEditableROI2)
 
 		self.ui.imageCanvas.mousePressEvent = self.getPos
 
@@ -111,6 +112,13 @@ class ImageViewer(QMainWindow):
 		self.timer = QTimer()
 		self.timer.timeout.connect(self.getNextImage)
 	
+	def makeEditableROI1(self, state):
+		self.ui.comboBox_ROI1.setEditable(state)
+	def makeEditableROI2(self, state):
+		self.ui.comboBox_ROI2.setEditable(state)
+
+
+
 	def saveData(self):
 		
 		#pytables saving format is more convenient than pandas
@@ -403,7 +411,6 @@ class ImageViewer(QMainWindow):
 				self.frame_number = self.tot_frames-1
 			self.ui.spinBox_frame.setValue(self.frame_number)
 
-		print(event.key())
 		#undefined: u
 		if event.key() == 85:
 			self.tagWorm(self.wlab['U'])
@@ -519,13 +526,21 @@ class ImageViewer(QMainWindow):
 		if progress != self.ui.imageSlider.value():
 			self.ui.imageSlider.setValue(progress)
 
+
 	#update zoomed ROI
 	def updateROI1(self, index):
-		self.worm_index_roi1 = int(self.ui.comboBox_ROI1.itemText(index))
+		try:
+			self.worm_index_roi1 = int(self.ui.comboBox_ROI1.itemText(index))
+		except ValueError:
+			self.worm_index_roi1 = -1
+
 		self.updateROIcanvasN(1)
 
 	def updateROI2(self, index):
-		self.worm_index_roi2 = int(self.ui.comboBox_ROI2.itemText(index))
+		try:
+			self.worm_index_roi2 = int(self.ui.comboBox_ROI2.itemText(index))
+		except ValueError:
+			self.worm_index_roi2 = -1
 		self.updateROIcanvasN(2)
 
 	def updateROIcanvasN(self, n_canvas):
@@ -533,7 +548,6 @@ class ImageViewer(QMainWindow):
 			self.updateROIcanvas(self.ui.wormCanvas1, self.worm_index_roi1, self.ui.comboBox_ROI1, self.ui.checkBox_ROI1.isChecked())
 		elif n_canvas == 2:
 			self.updateROIcanvas(self.ui.wormCanvas2, self.worm_index_roi2, self.ui.comboBox_ROI2, self.ui.checkBox_ROI2.isChecked())
-
 
 	#function that generalized the updating of the ROI
 	def updateROIcanvas(self, wormCanvas, worm_index_roi, comboBox_ROI, isDrawSkel):
