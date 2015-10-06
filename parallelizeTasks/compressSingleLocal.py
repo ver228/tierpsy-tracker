@@ -17,7 +17,7 @@ if __name__ == "__main__":
 	video_file = sys.argv[1]
 	mask_dir = sys.argv[2]
 	tmp_mask_dir = sys.argv[3]
-
+	
 	base_name = video_file.rpartition('.')[0].rpartition(os.sep)[-1]
 	masked_image_file = mask_dir + base_name + '.hdf5'
 	masked_image_file_tmp = tmp_mask_dir + base_name + '.hdf5'

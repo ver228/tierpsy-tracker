@@ -14,8 +14,8 @@ sys.path.append('..')
 from MWTracker.helperFunctions.parallelProcHelper import runMultiSubproc
 
 
-masked_movies_root =  '/Volumes/behavgenom$-2/GeckoVideo/MaskedVideos/'
-results_root = '/Volumes/behavgenom$-2/GeckoVideo/Results/'
+masked_movies_root =  '/Volumes/behavgenom$/Bertie/MaskedVideos/'
+results_root = '/Volumes/behavgenom$/Bertie/Results/'
 
 home = os.path.expanduser("~")
 tmp_masked_root = home + os.sep + 'Tmp' + os.sep +  'MaskedVideos' + os.sep
@@ -57,14 +57,12 @@ if not os.path.exists(masked_movies_dir):
 cmd_list_compress = []
 cmd_list_track = []
 for video_file in movie_files:
-    cmd_list_compress += [' '.join(['python3 compressSingleLocal.py', "'" + video_file + "'",
-                                    "'" + masked_movies_dir + "'", "'" + tmp_masked_dir + "'"])]
+    cmd_list_compress += [' '.join(['python3 compressSingleLocal.py', video_file, masked_movies_dir, tmp_masked_dir])]
     
     base_name = video_file.rpartition('.')[0].rpartition(os.sep)[-1]
     masked_image_file = masked_movies_dir + base_name + '.hdf5'
     
-    cmd_list_track += [' '.join(['python3 trackSingleLocal.py', "'" + masked_image_file + "'",
-                                 "'" + results_dir + "'", "'" + tmp_masked_dir + "'", "'" + tmp_results_dir + "'"])]
+    cmd_list_track += [' '.join(['python3 trackSingleLocal.py', masked_image_file, results_dir, tmp_masked_dir, tmp_results_dir])]
 
 
 runMultiSubproc(cmd_list_compress, max_num_process = max_num_process)
