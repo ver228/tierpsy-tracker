@@ -12,13 +12,12 @@ wget https://github.com/Itseez/opencv/archive/3.0.0.zip
 unzip 3.0.0.zip
 
 cd opencv-3.0.0
-
 cmake "Unix Makefile" -D BUILD_opencv_python3=ON \
 -D BUILD_opencv_python2=OFF \
--D PYTHON3_INCLUDE_DIR=/usr/local/Cellar/python3/3.4.3/Frameworks/Python.framework/Versions/3.4/include/python3.4m/ \
--D PYTHON3_LIBRARY=/usr/local/Cellar/python3/3.4.3/Frameworks/Python.framework/Versions/3.4/lib/libpython3.4m.dylib \
--D PYTHON3_PACKAGES_PATH=/usr/local/lib/python3.4/site-packages \
--D PYTHON3_NUMPY_INCLUDE_DIRS=/usr/local/lib/python3.4/site-packages/numpy/core/include \
+-D PYTHON3_INCLUDE_DIR=/usr/local/Cellar/python3/3.5.0/Frameworks/Python.framework/Versions/3.5/include/python3.5m/ \
+-D PYTHON3_LIBRARY=/usr/local/Cellar/python3/3.5.0/Frameworks/Python.framework/Versions/3.5/lib/libpython3.5m.dylib \
+-D PYTHON3_PACKAGES_PATH=/usr/local/lib/python3.5/site-packages \
+-D PYTHON3_NUMPY_INCLUDE_DIRS=/usr/local/lib/python3.5/site-packages/numpy/core/include \
 -D FFMPEG_INCLUDE_DIR=/usr/local/include \
 -D FFMPEG_LIB_DIR=/usr/local/include/../lib \
 .

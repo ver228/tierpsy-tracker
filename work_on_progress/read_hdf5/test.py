@@ -1,31 +1,28 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Oct  3 00:32:57 2015
+Created on Wed Oct  7 14:00:52 2015
 
 @author: ajaver
 """
 
+import os
 import tables
-import matplotlib.pylab as plt
-import numpy as np
-import cv2
 
-filename = '/Users/ajaver/Desktop/test/CSTCTest_Ch1_02102015_122155.hdf5'
+dir2check = '/Volumes/D/hdf5_bad_20151003_2000/'
 
-#with tables.FILE(filename, 'r') as ff:
-ff =  tables.File(filename, 'r')
-masks = ff.get_node('/mask') 
-
-full_img = masks[0,:,:]
-
-
-
-curr_img = masks[100,:,:]
-mask_bw = curr_img == 0
-curr_img[mask_bw] = np.median(full_img)#full_img[mask_bw]
-
-mask = cv2.adaptiveThreshold(curr_img.copy(), 255,cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 61, 15)
-
-plt.imshow(mask)
-
-
+for file_name in os.listdir(dir2check):
+    full_name = dir2check + file_name
+    
+    #if os.path.exists(full_name):    
+    #    print(full_name)
+    
+    try:
+        with tables.File(full_name, 'r') as fid:
+            dat_shape = fid.get_node('/mask').shape
+            print(dat_shape)
+    
+    except OSError:
+        print('Read Error:', full_name)
+    
+    except tables.HDF5ExtError:
+        print('Error:', full_name)

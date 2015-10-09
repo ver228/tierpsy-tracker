@@ -94,9 +94,23 @@ class getMaskParams(QMainWindow):
 
 				self.ui.lineEdit_video.setText(self.video_file)
 				self.vid = cv2.VideoCapture(self.video_file);
+				#self.im_width= self.vid.get(cv2.CAP_PROP_FRAME_WIDTH)
+				#self.im_height= self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
 
-				self.im_width= self.vid.get(cv2.CAP_PROP_FRAME_WIDTH)
-				self.im_height= self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
+				ret, image = self.vid.read()
+				if not ret:
+					QMessageBox.critical(self, 'Cannot read video file.', "Cannot read video file. Try another file",
+					QMessageBox.Ok)
+					self.vid = 0
+					return
+
+				self.im_width= image.shape[1]
+				self.im_height= image.shape[0]
+
+				
+				print('H', self.im_height)
+				print('W', self.im_width)
+				
 				if self.im_width == 0 or self.im_height == 0:
 					 QMessageBox.critical(self, 'Cannot read video file.', "Cannot read video file. Try another file",
 					QMessageBox.Ok)
@@ -120,6 +134,8 @@ class getMaskParams(QMainWindow):
 			tot = 0;
 			for ii in range(self.buffer_size):    
 				ret, image = self.vid.read() #get video frame, stop program when no frame is retrive (end of file)
+				
+
 				if ret == 0:
 					break
 				Ibuff[ii] = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
