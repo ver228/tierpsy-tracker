@@ -23,7 +23,7 @@ class readVideoffmpeg:
         if os.name == 'nt':
             ffmpeg_cmd = 'ffmpeg.exe'
         else:
-            ffmpeg_cmd = 'ffmpeg'
+            ffmpeg_cmd = 'ffmpeg263' #this version reads the Gecko files
         
         #try to open the file and determine the frame size. Raise an exception otherwise.
         if width<=0 or height <=0:
