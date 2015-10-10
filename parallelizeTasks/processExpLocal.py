@@ -14,8 +14,8 @@ sys.path.append('..')
 from MWTracker.helperFunctions.parallelProcHelper import runMultiSubproc
 
 
-masked_movies_root =  '/Volumes/behavgenom$-2/GeckoVideo/MaskedVideos/'
-results_root = '/Volumes/behavgenom$-2/GeckoVideo/Results/'
+masked_movies_root =  '/Volumes/behavgenom$/GeckoVideo/MaskedVideos/'
+results_root = '/Volumes/behavgenom$/GeckoVideo/Results/'
 
 home = os.path.expanduser("~")
 tmp_masked_root = home + os.sep + 'Tmp' + os.sep +  'MaskedVideos' + os.sep
@@ -69,5 +69,5 @@ for video_file in movie_files:
 
 runMultiSubproc(cmd_list_compress, max_num_process = max_num_process)
 print('%'*500)
-runMultiSubproc(cmd_list_track, max_num_process = max_num_process)
+#runMultiSubproc(cmd_list_track, max_num_process = max_num_process)
     

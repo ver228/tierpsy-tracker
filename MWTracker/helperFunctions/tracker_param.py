@@ -63,7 +63,7 @@ class tracker_param:
         
         #compressVideo
         self.compress_vid_param =  {'buffer_size' : fps, 'save_full_interval' : 200*fps, 
-                               'max_frame' : 1e32, 'useVideoCapture': True, 
+                               'max_frame' : 1e32, 
                                'expected_frames':expected_frames, 'mask_param':self.mask_param}
         #getWormTrajectories
         self.get_trajectories_param = {'initial_frame':0, 'last_frame': -1,

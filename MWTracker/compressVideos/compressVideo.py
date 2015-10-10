@@ -12,7 +12,7 @@ import os
 
 from .readVideoffmpeg import readVideoffmpeg
 from .readVideoHDF5 import readVideoHDF5
-from .imageDifferenceMask import imageDifferenceMask
+#from .imageDifferenceMask import imageDifferenceMask
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
 
@@ -70,7 +70,7 @@ def getROIMask(image,  min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEF
 
 
 def compressVideo(video_file, masked_image_file, buffer_size = 25, \
-save_full_interval = 5000, max_frame = 1e32, useVideoCapture = True, 
+save_full_interval = 5000, max_frame = 1e32, 
 expected_frames = 15000, mask_param = DEFAULT_MASK_PARAM):
 
     '''
@@ -95,11 +95,13 @@ expected_frames = 15000, mask_param = DEFAULT_MASK_PARAM):
     
     #open video to read
     isHDF5video = video_file[-5:] == '.hdf5';
+    isMJPGvideo = video_file[-5:] == '.mjpg';
+
     if isHDF5video:
         vid = readVideoHDF5(video_file);
         im_height = vid.height;
         im_width = vid.width;
-    elif not useVideoCapture:
+    elif isMJPGvideo:
         vid = readVideoffmpeg(video_file);
         im_height = vid.height;
         im_width = vid.width;
@@ -156,9 +158,9 @@ expected_frames = 15000, mask_param = DEFAULT_MASK_PARAM):
 
 
 
-    im_diff_set = mask_fid.create_dataset('/im_diff', (expected_frames,), 
-                                          dtype = 'f4', maxshape = (None,), 
-                                        chunks = True, compression = "gzip", compression_opts=4, shuffle = True, fletcher32=True)
+    #im_diff_set = mask_fid.create_dataset('/im_diff', (expected_frames,), 
+    #                                      dtype = 'f4', maxshape = (None,), 
+    #                                    chunks = True, compression = "gzip", compression_opts=4, shuffle = True, fletcher32=True)
     
     #intialize frame number
     frame_number = 0;
@@ -173,7 +175,7 @@ expected_frames = 15000, mask_param = DEFAULT_MASK_PARAM):
         if ret == 0:
             break
         
-        if useVideoCapture and not isHDF5video:
+        if not isMJPGvideo and not isHDF5video:
             image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         
         frame_number += 1;
@@ -185,7 +187,7 @@ expected_frames = 15000, mask_param = DEFAULT_MASK_PARAM):
         #Resize mask array every 1000 frames (doing this every frame does not impact much the performance)
         if mask_dataset.shape[0] <= frame_number + 1:
             mask_dataset.resize(frame_number + 1000, axis=0); 
-            im_diff_set.resize(frame_number + 1000, axis=0); 
+            #im_diff_set.resize(frame_number + 1000, axis=0); 
         #Add a full frame every save_full_interval
         if frame_number % save_full_interval == 1:
             if full_dataset.shape[0] <= full_frame_number:
@@ -220,15 +222,15 @@ expected_frames = 15000, mask_param = DEFAULT_MASK_PARAM):
                 #remove timestamp before calculation
                 Ibuff[:,0:15,0:479] = 0; 
             
-            for ii in range(Ibuff.shape[0]):
-                if image_prev.shape and ii == 0:
-                    dd = imageDifferenceMask(Ibuff[ii,:,:],image_prev)
-                else:
-                    dd = imageDifferenceMask(Ibuff[ii,:,:],Ibuff[ii-1,:,:])
+            #for ii in range(Ibuff.shape[0]):
+            #    if image_prev.shape and ii == 0:
+            #        dd = imageDifferenceMask(Ibuff[ii,:,:],image_prev)
+            #    else:
+            #        dd = imageDifferenceMask(Ibuff[ii,:,:],Ibuff[ii-1,:,:])
+            #    
+            #    im_diff_set[frame_number-buffer_size+ii] = dd
                 
-                im_diff_set[frame_number-buffer_size+ii] = dd
-                
-            image_prev = Ibuff[-1,:,:].copy();  
+            #image_prev = Ibuff[-1,:,:].copy();  
 
         if frame_number%500 == 0:
             #calculate the progress and put it in a string
@@ -238,7 +240,7 @@ expected_frames = 15000, mask_param = DEFAULT_MASK_PARAM):
     
     if mask_dataset.shape[0] != frame_number:
         mask_dataset.resize(frame_number, axis=0);
-        im_diff_set.resize(frame_number, axis=0);
+        #im_diff_set.resize(frame_number, axis=0);
         
     if full_dataset.shape[0] != full_frame_number:
         full_dataset.resize(full_frame_number, axis=0);
