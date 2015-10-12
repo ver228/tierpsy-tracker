@@ -37,8 +37,11 @@ movie_files = glob.glob(dir_main + os.sep + '*.mjpg')
 masked_movies_dir = masked_movies_root + subdir_base + os.sep
 results_dir = results_root + subdir_base + os.sep
 
-tmp_masked_dir = tmp_masked_root + subdir_base + os.sep
+
 tmp_results_dir = tmp_results_root + subdir_base + os.sep
+
+#I'll try to do everything having the masked files in the server otherwise the local harddrive gets full
+tmp_masked_dir = masked_movies_dir #tmp_masked_root + subdir_base + os.sep
 
 
 if not os.path.exists(results_dir):

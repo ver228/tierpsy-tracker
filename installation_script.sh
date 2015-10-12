@@ -5,7 +5,6 @@ brew install ffmpeg
 brew install python3
 brew install homebrew/science/hdf5
 brew install cmake
-brew uninstall --force numpy
 brew install numpy --with-python3
 brew uninstall --force sip
 brew install sip --with-python3
