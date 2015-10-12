@@ -38,8 +38,7 @@ class readVideoffmpeg:
                 self.height = int(dd[0])
                 self.width = int(dd[1])
             except:
-                print(buff)
-                raise
+                raise Exception('Error while getting the width and height using ffmpeg. Buffer output:', buff)
         else:
             self.width = width
             self.height = height
