@@ -47,10 +47,10 @@ if not os.path.exists(results_dir):
 if not os.path.exists(masked_movies_dir):
     os.makedirs(masked_movies_dir)
 
-if not os.path.exists(results_dir):
+if not os.path.exists(tmp_masked_dir):
     os.makedirs(tmp_masked_dir)
 
-if not os.path.exists(masked_movies_dir):
+if not os.path.exists(tmp_results_dir):
     os.makedirs(tmp_results_dir)
 
 

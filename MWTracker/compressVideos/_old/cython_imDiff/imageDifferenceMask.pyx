@@ -36,3 +36,4 @@ def imageDifferenceMask(np.ndarray[np.uint8_t, ndim=2] f, np.ndarray[np.uint8_t,
         return total/tot_pix;
     else:
         return -1;
+    
