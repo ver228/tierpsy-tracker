@@ -33,13 +33,12 @@ class getMaskParams(QMainWindow):
 		self.ui.dial_max_area.valueChanged.connect(self.ui.spinBox_max_area.setValue)
 		self.ui.dial_block_size.valueChanged.connect(self.ui.spinBox_block_size.setValue)
 		self.ui.dial_thresh_C.valueChanged.connect(self.ui.spinBox_thresh_C.setValue)
-		self.ui.dial_buff_size.valueChanged.connect(self.ui.spinBox_buff_size.setValue)
 
 		self.ui.spinBox_max_area.valueChanged.connect(self.updateMaxArea)
 		self.ui.spinBox_min_area.valueChanged.connect(self.updateMinArea)
 		self.ui.spinBox_block_size.valueChanged.connect(self.updateBlockSize)
 		self.ui.spinBox_thresh_C.valueChanged.connect(self.updateThreshC)
-		self.ui.spinBox_buff_size.valueChanged.connect(self.ui.updateBuffSize)
+		self.ui.spinBox_buff_size.valueChanged.connect(self.updateBuffSize)
 
 		self.ui.checkBox_hasTimestamp.stateChanged.connect(self.updateMask)
 
@@ -72,13 +71,12 @@ class getMaskParams(QMainWindow):
 		self.ui.pushButton_next.clicked.connect(self.getNextChunk)
 		self.ui.pushButton_start.clicked.connect(self.startAnalysis)
 
-		self.ui.spinBox_fps.valueChanged.connect(self.updateFPS)
-		self.updateFPS()
+		self.updateBuffSize()
 
 		
-	def updateFPS(self):
-		self.buffer_size = int(np.round(self.ui.spinBox_fps.value()))
-
+	def updateBuffSize(self):
+		self.buffer_size = int(np.round(self.ui.spinBox_buff_size.value()))
+	
 	#file dialog to the the hdf5 file
 	def getVideoFile(self):
 		#print(self.videos_dir)
@@ -195,6 +193,9 @@ class getMaskParams(QMainWindow):
 		self.ui.dial_thresh_C.setValue(self.ui.spinBox_thresh_C.value())
 		self.updateMask()
 
+		
+
+
 	def updateMask(self):
 		if self.Ifull.size == 0:
 			return
@@ -203,7 +204,7 @@ class getMaskParams(QMainWindow):
 		'min_area' : self.ui.spinBox_min_area.value(), 
 		'thresh_block_size' : self.ui.spinBox_block_size.value(),
 		'thresh_C' : self.ui.spinBox_thresh_C.value(),
-		'has_timestamp':self.ui.checkBox_hasTimestamp.isChecked()
+		'has_timestamp':self.ui.checkBox_hasTimestamp.isChecked(),
 		}
 		
 		mask = getROIMask(self.Imin.copy(), **self.mask_param)
@@ -222,6 +223,7 @@ class getMaskParams(QMainWindow):
 
 		self.mask_param['fps'] = self.ui.spinBox_fps.value()
 		self.mask_param['resampling_N'] = self.ui.spinBox_skelSeg.value()
+		self.mask_param['compression_buff'] = self.ui.spinBox_buff_size.value()
 		self.close()
 
 		json_file = self.video_file.rpartition('.')[0] + '.json'

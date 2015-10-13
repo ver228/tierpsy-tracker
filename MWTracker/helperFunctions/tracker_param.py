@@ -63,7 +63,7 @@ class tracker_param:
         'thresh_block_size':thresh_block_size, 'thresh_C':thresh_C}
         
         #compressVideo
-        self.compress_vid_param =  {'buffer_size' : fps, 'save_full_interval' : 200*fps, 
+        self.compress_vid_param =  {'buffer_size' : compression_buff, 'save_full_interval' : 200*fps, 
                                'max_frame' : 1e32, 
                                'expected_frames':expected_frames, 'mask_param':self.mask_param}
         #getWormTrajectories
