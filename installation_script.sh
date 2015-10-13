@@ -4,13 +4,12 @@ MW_MAIN_DIR=`pwd`
 
 sudo chown -R `whoami` /usr/local/
 
-wget http://ffmpegmac.net/resources/SnowLeopard_Lion_Mountain_Lion_Mavericks_27.03.2014.zip -O $MW_MAIN_DIR/ffmpeg_old.zip
+curl http://ffmpegmac.net/resources/SnowLeopard_Lion_Mountain_Lion_Mavericks_27.03.2014.zip > $MW_MAIN_DIR/ffmpeg_old.zip
 unzip $MW_MAIN_DIR/ffmpeg_old.zip ffmpeg
 sudo mv ffmpeg /usr/local/bin/ffmpeg22
 rm $MW_MAIN_DIR/ffmpeg_old.zip
 
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-brew install wget
 brew install ffmpeg
 brew install python3
 brew install homebrew/science/hdf5
@@ -22,7 +21,7 @@ brew uninstall --force pyqt5
 brew install pyqt5 --with-python3
 
 
-wget https://github.com/Itseez/opencv/archive/3.0.0.zip -O $MW_MAIN_DIR/opencv-3.0.0.zip
+curl https://github.com/Itseez/opencv/archive/3.0.0.zip > $MW_MAIN_DIR/opencv-3.0.0.zip
 unzip $MW_MAIN_DIR/opencv-3.0.0.zip
 cd $MW_MAIN_DIR/opencv-3.0.0
 
