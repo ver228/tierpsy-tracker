@@ -1,5 +1,15 @@
-ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+sudo echo "Thanks."
 
+MW_MAIN_DIR=`pwd`
+
+sudo chown -R `whoami` /usr/local/
+
+wget http://ffmpegmac.net/resources/SnowLeopard_Lion_Mountain_Lion_Mavericks_27.03.2014.zip -O $MW_MAIN_DIR/ffmpeg_old.zip
+unzip $MW_MAIN_DIR/ffmpeg_old.zip ffmpeg
+sudo mv ffmpeg /usr/local/bin/ffmpeg22
+rm $MW_MAIN_DIR/ffmpeg_old.zip
+
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 brew install wget
 brew install ffmpeg
 brew install python3
@@ -11,14 +21,13 @@ brew install sip --with-python3
 brew uninstall --force pyqt5
 brew install pyqt5 --with-python3
 
-wget https://github.com/Itseez/opencv/archive/3.0.0.zip
-unzip 3.0.0.zip
 
-cd opencv-3.0.0
+wget https://github.com/Itseez/opencv/archive/3.0.0.zip -O $MW_MAIN_DIR/opencv-3.0.0.zip
+unzip $MW_MAIN_DIR/opencv-3.0.0.zip
+cd $MW_MAIN_DIR/opencv-3.0.0
 
 PY_VER=`python3 -c "import sys; print(sys.version.partition(' ')[0])"`
 PY_VER_SHORT=`python3 -c "import sys; print('.'.join(sys.version.partition(' ')[0].split('.')[0:2]))"`
-
 cmake '"Unix Makefile"' -DBUILD_opencv_python3=ON \
 -DBUILD_opencv_python2=OFF \
 -DPYTHON3_INCLUDE_DIR=/usr/local/Cellar/python3/$PY_VER/Frameworks/Python.framework/Versions/$PY_VER_SHORT/include/python$PY_VER_SHORTm/ \
@@ -33,9 +42,9 @@ cmake '"Unix Makefile"' -DBUILD_opencv_python3=ON \
 make -j24
 make install
 
-cd ..
-rm -rf opencv-3.0.0
-rm 3.0.0.zip
+cd $MW_MAIN_DIR
+rm -rf $MW_MAIN_DIR/opencv-3.0.0
+rm $MW_MAIN_DIR/opencv-3.0.0.zip
 
 pip3 install spyder
 pip3 install tables
@@ -48,9 +57,8 @@ pip3 install scikit-image
 pip3 install tifffile
 pip3 install seaborn
 
-MW_MAIN_DIR=`pwd`
+
 cd $MW_MAIN_DIR/MWTracker/trackWorms/segWormPython/cythonFiles/
 make
 make clean
 cd $MW_MAIN_DIR
-

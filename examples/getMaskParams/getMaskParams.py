@@ -17,7 +17,7 @@ import sys
 #sys.path.append(os.path.join(os.path.expanduser("~") , 'Documents', 'GitHub', 'Multiworm_Tracking'))
 sys.path.append('/Users/ajaver/Documents/GitHub/Multiworm_Tracking')
 
-from MWTracker.compressVideos.compressVideo import getROIMask
+from MWTracker.compressVideos.compressVideo import getROIMask, selectVideoReader
 from MWTracker.helperFunctions.compressVideoWorkerL import compressVideoWorkerL
 from MWTracker.helperFunctions.getTrajectoriesWorkerL import getTrajectoriesWorkerL
 
@@ -33,11 +33,13 @@ class getMaskParams(QMainWindow):
 		self.ui.dial_max_area.valueChanged.connect(self.ui.spinBox_max_area.setValue)
 		self.ui.dial_block_size.valueChanged.connect(self.ui.spinBox_block_size.setValue)
 		self.ui.dial_thresh_C.valueChanged.connect(self.ui.spinBox_thresh_C.setValue)
+		self.ui.dial_buff_size.valueChanged.connect(self.ui.spinBox_buff_size.setValue)
 
 		self.ui.spinBox_max_area.valueChanged.connect(self.updateMaxArea)
 		self.ui.spinBox_min_area.valueChanged.connect(self.updateMinArea)
 		self.ui.spinBox_block_size.valueChanged.connect(self.updateBlockSize)
 		self.ui.spinBox_thresh_C.valueChanged.connect(self.updateThreshC)
+		self.ui.spinBox_buff_size.valueChanged.connect(self.ui.updateBuffSize)
 
 		self.ui.checkBox_hasTimestamp.stateChanged.connect(self.updateMask)
 
@@ -81,7 +83,7 @@ class getMaskParams(QMainWindow):
 	def getVideoFile(self):
 		#print(self.videos_dir)
 		video_file, _ = QFileDialog.getOpenFileName(self, "Find video file", 
-		self.videos_dir, "MJPG files (*.mjpg);; All files (*)")
+		self.videos_dir, "All files (*)")
 
 		if video_file:
 			self.video_file = video_file
@@ -93,9 +95,7 @@ class getMaskParams(QMainWindow):
 				
 
 				self.ui.lineEdit_video.setText(self.video_file)
-				self.vid = cv2.VideoCapture(self.video_file);
-				#self.im_width= self.vid.get(cv2.CAP_PROP_FRAME_WIDTH)
-				#self.im_height= self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
+				self.vid, self.im_width, self.im_height = selectVideoReader(video_file)
 
 				ret, image = self.vid.read()
 				if not ret:
@@ -106,7 +106,6 @@ class getMaskParams(QMainWindow):
 
 				self.im_width= image.shape[1]
 				self.im_height= image.shape[0]
-
 				
 				print('H', self.im_height)
 				print('W', self.im_width)
@@ -135,10 +134,12 @@ class getMaskParams(QMainWindow):
 			for ii in range(self.buffer_size):    
 				ret, image = self.vid.read() #get video frame, stop program when no frame is retrive (end of file)
 				
-
 				if ret == 0:
 					break
-				Ibuff[ii] = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+				if image.ndim==3:
+					image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+
+				Ibuff[ii] = image
 				tot += 1
 			if tot < self.buffer_size:
 				return

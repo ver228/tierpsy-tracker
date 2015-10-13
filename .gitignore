@@ -7,3 +7,5 @@ helperFunctions/__pycache__/parallelProcHelper.cpython-34.pyc
 trackWorms/__pycache__/getSkeletonsTables.cpython-34.pyc
 
 trackWorms/__pycache__/getDrawTrajectories.cpython-34.pyc
+
+*.so
