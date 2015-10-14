@@ -88,6 +88,12 @@ def selectVideoReader(video_file):
         vid = cv2.VideoCapture(video_file);
         im_width= vid.get(cv2.CAP_PROP_FRAME_WIDTH)
         im_height= vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
+        #sometimes video capture seems to give the wrong dimenssions read the firest image and try again
+        ret, image = vid.read() #get video frame, stop program when no frame is retrive (end of file)
+        if ret:
+            im_height, im_width, _ = image.shape
+            vid.release()
+            vid = cv2.VideoCapture(video_file);
 
     return vid, im_width, im_height
 

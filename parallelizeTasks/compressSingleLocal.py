@@ -4,7 +4,7 @@ Created on Thu Jul  2 14:38:05 2015
 
 @author: ajaver
 """
-import os
+import os, stat
 import sys
 import h5py
 import shutil
@@ -34,7 +34,12 @@ if __name__ == "__main__":
 		compressVideoWorkerL(video_file, tmp_mask_dir)
 
 		print("Copying temporal masked file into the final directory.")
-		shutil.copy(masked_image_file_tmp, mask_dir)
+		shutil.copy(masked_image_file_tmp, masked_image_file)
+		os.chmod(masked_image_file, stat.S_IRUSR|stat.S_IRGRP|stat.S_IROTH) #change the permissions to read only
+
+		print("Removing temporary files.")
+		if tmp_mask_file != masked_image_file:
+			os.remove(tmp_mask_file)
 
 		print("Finished to create masked file")
 	else:

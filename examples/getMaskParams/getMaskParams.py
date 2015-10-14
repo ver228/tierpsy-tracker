@@ -91,19 +91,9 @@ class getMaskParams(QMainWindow):
 
 				self.videos_dir = self.video_file.rpartition(os.sep)[0] + os.sep
 				
-
 				self.ui.lineEdit_video.setText(self.video_file)
 				self.vid, self.im_width, self.im_height = selectVideoReader(video_file)
 
-				ret, image = self.vid.read()
-				if not ret:
-					QMessageBox.critical(self, 'Cannot read video file.', "Cannot read video file. Try another file",
-					QMessageBox.Ok)
-					self.vid = 0
-					return
-
-				self.im_width= image.shape[1]
-				self.im_height= image.shape[0]
 				
 				print('H', self.im_height)
 				print('W', self.im_width)

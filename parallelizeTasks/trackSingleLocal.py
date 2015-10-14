@@ -44,8 +44,9 @@ if __name__ == '__main__':
 			if not os.path.exists(tmp_masked_dir):
 				os.makedirs(tmp_masked_dir)
 
-			print("Copying masked file %s into the temporary directory %s" % (masked_image_file, tmp_masked_dir))
-			shutil.copy(masked_image_file, tmp_masked_dir)
+			if tmp_mask_file != masked_image_file:
+				print("Copying masked file %s into the temporary directory %s" % (masked_image_file, tmp_masked_dir))
+				shutil.copy(masked_image_file, tmp_masked_dir)
 
 		if not os.path.exists(tmp_results_dir):
 				os.makedirs(tmp_results_dir)
@@ -68,10 +69,13 @@ if __name__ == '__main__':
 		shutil.copy(features_tmp, results_dir)
 
 		print("Removing temporary files.")
-		os.remove(tmp_mask_file)
-		os.remove(trajectories_tmp)
-		os.remove(skeletons_tmp)
-		os.remove(features_tmp)
+		if tmp_mask_file != masked_image_file:
+			os.remove(tmp_mask_file)
+
+		if tmp_results_dir != results_dir:
+			os.remove(trajectories_tmp)
+			os.remove(skeletons_tmp)
+			os.remove(features_tmp)
 
 		print("Finished")
 

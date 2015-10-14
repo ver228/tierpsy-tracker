@@ -42,6 +42,9 @@ brew uninstall --force sip
 brew install sip --with-python3
 brew uninstall --force pyqt5
 brew install pyqt5 --with-python3
+brew uninstall --force pyqt
+brew install pyqt --with-python3
+
 
 #install opencv
 wget https://github.com/Itseez/opencv/archive/3.0.0.zip -O $MW_MAIN_DIR/opencv-3.0.0.zip
