@@ -19,7 +19,10 @@ rm $MW_MAIN_DIR/ffmpeg_old.zip
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 brew install wget
 brew install cmake
-brew install ffmpeg
+
+#ffmpeg libraries, I need them to install opencv
+brew uninstall ffmpeg
+brew install ffmpeg --with-fdk-aac --with-ffplay --with-freetype --with-libass --with-libquvi --with-libvorbis --with-libvpx --with-opus --with-x265
 
 #python dependencies
 brew install python3
@@ -36,6 +39,7 @@ pip3 install scikit-learn
 pip3 install scikit-image
 pip3 install tifffile
 pip3 install seaborn
+
 
 #install pyqt5 for the GUI
 brew uninstall --force sip
@@ -67,6 +71,9 @@ cmake '"Unix Makefile"' -DBUILD_opencv_python3=ON \
 make -j24
 make install
 
+cd $MW_MAIN_DIR
+rm $MW_MAIN_DIR/opencv-3.0.0.zip
+rm -Rf $MW_MAIN_DIR/opencv-3.0.0
 
 #compile cython files
 cd $MW_MAIN_DIR/MWTracker/trackWorms/segWormPython/cythonFiles/

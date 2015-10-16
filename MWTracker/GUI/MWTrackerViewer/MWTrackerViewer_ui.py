@@ -2,8 +2,7 @@
 
 # Form implementation generated from reading ui file 'imageviewer.ui'
 #
-# Created: Tue Oct  6 17:05:41 2015
-#      by: PyQt5 UI code generator 5.4
+# Created by: PyQt5 UI code generator 5.5
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -23,9 +22,13 @@ class Ui_ImageViewer(object):
         self.centralWidget.setEnabled(True)
         self.centralWidget.setObjectName("centralWidget")
         self.gridLayout_4 = QtWidgets.QGridLayout(self.centralWidget)
+        self.gridLayout_4.setContentsMargins(11, 11, 11, 11)
+        self.gridLayout_4.setSpacing(6)
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.gridLayout_3 = QtWidgets.QGridLayout()
         self.gridLayout_3.setSizeConstraint(QtWidgets.QLayout.SetMaximumSize)
+        self.gridLayout_3.setContentsMargins(11, 11, 11, 11)
+        self.gridLayout_3.setSpacing(6)
         self.gridLayout_3.setObjectName("gridLayout_3")
         self.wormCanvas1 = QtWidgets.QLabel(self.centralWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
@@ -118,6 +121,8 @@ class Ui_ImageViewer(object):
         spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout_4.addItem(spacerItem2, 0, 0, 1, 1)
         self.gridLayout = QtWidgets.QGridLayout()
+        self.gridLayout.setContentsMargins(11, 11, 11, 11)
+        self.gridLayout.setSpacing(6)
         self.gridLayout.setObjectName("gridLayout")
         self.spinBox_frame = QtWidgets.QSpinBox(self.centralWidget)
         self.spinBox_frame.setObjectName("spinBox_frame")
@@ -282,7 +287,7 @@ class Ui_ImageViewer(object):
         self.checkBox_ROI1.setText(_translate("ImageViewer", "Skeleton"))
         self.pushButton_ROI2_FF.setText(_translate("ImageViewer", ">>"))
         self.checkBox_showLabel.setText(_translate("ImageViewer", "Show all labels"))
-        self.pushButton_feats.setText(_translate("ImageViewer", "Recalculate Features"))
+        self.pushButton_feats.setText(_translate("ImageViewer", "Calc Individual Feat"))
         self.pushButton_video.setText(_translate("ImageViewer", "Select Video File"))
         self.label_frame.setText(_translate("ImageViewer", "Frame"))
         self.pushButton_skel.setText(_translate("ImageViewer", "Select Skeletons File"))

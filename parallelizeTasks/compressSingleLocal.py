@@ -38,8 +38,8 @@ if __name__ == "__main__":
 		os.chmod(masked_image_file, stat.S_IRUSR|stat.S_IRGRP|stat.S_IROTH) #change the permissions to read only
 
 		print("Removing temporary files.")
-		if tmp_mask_file != masked_image_file:
-			os.remove(tmp_mask_file)
+		if masked_image_file_tmp != masked_image_file:
+			os.remove(masked_image_file_tmp)
 
 		print("Finished to create masked file")
 	else:

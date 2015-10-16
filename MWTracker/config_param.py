@@ -15,7 +15,7 @@ movement_validation_dir = ''
 
 #add the movement validation directory
 if not movement_validation_dir:
-    movement_validation_dir = '/Users/ajaver/Documents/GitHub/movement_validation'
+    movement_validation_dir = '../../movement_validation'#'/Users/ajaver/Documents/GitHub/movement_validation'
     #movement_validation_dir = os.path.expanduser('~') + '/Documents/GitHub/movement_validation'
 
 if not os.path.exists(movement_validation_dir):
@@ -23,5 +23,5 @@ if not os.path.exists(movement_validation_dir):
           The path must point to the openWorm movement_validation repository.""")
     raise
     
-sys.path.append(movement_validation_dir)        
+sys.path.append(movement_validation_dir)       
         

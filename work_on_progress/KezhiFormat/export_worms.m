@@ -1,4 +1,4 @@
-indexes2check = [10, 11, 679];
+\\\\\\\\\\\\\\\indexes2check = [10, 11, 679];
 file_name = '/Volumes/behavgenom$/GeckoVideo/MaskedVideos/20151001_1525/CSTCTest_Ch1_01102015_152413.hdf5';%'/Volumes/behavgenom$/GeckoVideo/MaskedVideos/Chris_20150803/CSTCTest_Ch2_03082015_113211.hdf5';
 save_dir = '/Users/ajaver/CSTCTest_Ch1_01102015_152413/';
 

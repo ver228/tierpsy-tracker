@@ -21,8 +21,6 @@ home = os.path.expanduser("~")
 tmp_masked_root = home + os.sep + 'Tmp' + os.sep +  'MaskedVideos' + os.sep
 tmp_results_root = home + os.sep + 'Tmp' + os.sep + 'Results' + os.sep
 
-
-
 max_num_process = 12
 
 dir_main = sys.argv[1]

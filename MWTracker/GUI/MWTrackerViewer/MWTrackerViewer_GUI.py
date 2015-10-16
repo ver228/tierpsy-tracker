@@ -1,10 +1,3 @@
-import sys
-
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QFrame
-from PyQt5.QtCore import QDir, QTimer, Qt, QPointF
-from PyQt5.QtGui import QPixmap, QImage, QPainter, QColor, QFont, QPolygonF, QPen
-from imageviewer_ui import Ui_ImageViewer
-
 import h5py
 import os
 import pandas as pd
@@ -12,19 +5,20 @@ import numpy as np
 import sys
 import cv2
 import tables
-
 from functools import partial
 
-sys.path.append('/Users/ajaver/Documents/GitHub/Multiworm_Tracking')
-sys.path.append('/Users/ajaver/Documents/GitHub/movement_validation')
+import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QFrame
+from PyQt5.QtCore import QDir, QTimer, Qt, QPointF
+from PyQt5.QtGui import QPixmap, QImage, QPainter, QColor, QFont, QPolygonF, QPen
+
+from MWTracker.GUI.MWTrackerViewer.MWTrackerViewer_ui import Ui_ImageViewer
+
 from MWTracker.trackWorms.getSkeletonsTables import getWormROI, getWormMask
 from MWTracker.trackWorms.segWormPython.mainSegworm import binaryMask2Contour
-
 from MWTracker.FeaturesAnalysis.obtainFeatures_N import getWormFeaturesLab
 
-import matplotlib.pylab as plt
-
-class ImageViewer(QMainWindow):
+class MWTrackerViewer_GUI(QMainWindow):
 	def __init__(self):
 		super().__init__()
 		# Set up the user interface from Designer.
@@ -496,10 +490,6 @@ class ImageViewer(QMainWindow):
 		self.label_width = self.ui.imageCanvas.width()
 
 		self.original_image = self.image_group[self.frame_number];
-		
-		#import matplotlib.pylab as plt
-		#plt.imshow(self.original_image)
-		#plt.show()
 
 		image = QImage(self.original_image.data, 
 			self.image_width, self.image_height, self.original_image.strides[0], QImage.Format_Indexed8)
@@ -744,7 +734,7 @@ class ImageViewer(QMainWindow):
 if __name__ == '__main__':
 	app = QApplication(sys.argv)
 	
-	ui = ImageViewer()
+	ui = MWTrackerViewer_GUI()
 	ui.show()
 	
 	sys.exit(app.exec_())
