@@ -99,7 +99,7 @@ if __name__ == '__main__':
     sys.path.append('../segworm_python/')
     from main_segworm import getStraightenWormInt
 
-    import matplotlib.pylab as plt
+    #import matplotlib.pylab as plt
     
     #base_name = 'Capture_Ch3_12052015_194303'
     #root_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150512/'    

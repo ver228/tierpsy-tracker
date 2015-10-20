@@ -6,10 +6,6 @@ sudo echo "Thanks."
 sudo chown -R `whoami` /usr/local/
 
 #old ffmpeg to read mjpg
-cd $MW_MAIN_DIR
-rm -rf $MW_MAIN_DIR/opencv-3.0.0
-rm $MW_MAIN_DIR/opencv-3.0.0.zip
-
 curl http://ffmpegmac.net/resources/SnowLeopard_Lion_Mountain_Lion_Mavericks_27.03.2014.zip > $MW_MAIN_DIR/ffmpeg_old.zip
 unzip $MW_MAIN_DIR/ffmpeg_old.zip ffmpeg
 sudo mv ffmpeg /usr/local/bin/ffmpeg22
@@ -59,6 +55,7 @@ PY_VER=`python3 -c "import sys; print(sys.version.partition(' ')[0])"`
 PY_VER_SHORT=`python3 -c "import sys; print('.'.join(sys.version.partition(' ')[0].split('.')[0:2]))"`
 cmake '"Unix Makefile"' -DBUILD_opencv_python3=ON \
 -DBUILD_opencv_python2=OFF \
+-DPYTHON_EXECUTABLE=`which python3` \
 -DPYTHON3_INCLUDE_DIR=/usr/local/Cellar/python3/${PY_VER}/Frameworks/Python.framework/Versions/${PY_VER_SHORT}/include/python${PY_VER_SHORT}m/ \
 -DPYTHON3_LIBRARY=/usr/local/Cellar/python3/${PY_VER}/Frameworks/Python.framework/Versions/${PY_VER_SHORT}/lib/libpython${PY_VER_SHORT}m.dylib \
 -DPYTHON3_PACKAGES_PATH=/usr/local/lib/python${PY_VER_SHORT}/site-packages \

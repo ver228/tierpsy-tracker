@@ -10,8 +10,8 @@ import datetime
 import os
 
 from ..compressVideos.compressVideo import compressVideo
-from ..compressVideos.writeDownsampledVideo import writeDownsampledVideo
-from ..compressVideos.writeFullFramesTiff import writeFullFramesTiff
+#from ..compressVideos.writeDownsampledVideo import writeDownsampledVideo
+#from ..compressVideos.writeFullFramesTiff import writeFullFramesTiff
 
 from ..helperFunctions.tracker_param import tracker_param
 

@@ -12,7 +12,6 @@ Created on Thu Feb  5 16:08:07 2015
 @author: ajaver
 """
 
-import matplotlib.pylab as plt
 import numpy as np
 import pandas as pd
 import tables
