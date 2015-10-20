@@ -4,7 +4,7 @@ Created on Fri Apr  3 01:56:06 2015
 
 @author: ajaver
 """
-import os
+import os, sys
 import tables
 
 from .. import config_param
@@ -14,7 +14,7 @@ from ..trackWorms.getDrawTrajectories import drawTrajectoriesVideo
 from ..trackWorms.getSkeletonsTables import trajectories2Skeletons, writeIndividualMovies
 from ..trackWorms.checkHeadOrientation import correctHeadTail
 
-from ..FeaturesAnalysis.obtainFeatures import getWormFeatures
+from ..featuresAnalysis.obtainFeatures import getWormFeatures
 
 from ..helperFunctions.tracker_param import tracker_param
 
@@ -109,6 +109,7 @@ def getTrajectoriesWorkerL(masked_image_file, results_dir, param_file ='', overw
         start_point = getStartingPoint(trajectories_file, skeletons_file, features_file)
 
     print(base_name + ' Starting checkpoint: ' + checkpoint_label[start_point])
+    sys.stdout.flush()
 
     #get trajectory data
     if start_point <= checkpoint['TRAJ_CREATE']:
@@ -129,7 +130,7 @@ def getTrajectoriesWorkerL(masked_image_file, results_dir, param_file ='', overw
         getWormFeatures(skeletons_file, features_file, **param.features_param)
     
     print(base_name + ' Finished')
-    
+    sys.stdout.flush()
 
     
     

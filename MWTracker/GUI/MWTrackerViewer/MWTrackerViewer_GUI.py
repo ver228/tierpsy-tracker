@@ -16,7 +16,7 @@ from MWTracker.GUI.MWTrackerViewer.MWTrackerViewer_ui import Ui_ImageViewer
 
 from MWTracker.trackWorms.getSkeletonsTables import getWormROI, getWormMask
 from MWTracker.trackWorms.segWormPython.mainSegworm import binaryMask2Contour
-from MWTracker.FeaturesAnalysis.obtainFeatures_N import getWormFeaturesLab
+from MWTracker.featuresAnalysis.obtainFeatures_N import getWormFeaturesLab
 
 class MWTrackerViewer_GUI(QMainWindow):
 	def __init__(self):

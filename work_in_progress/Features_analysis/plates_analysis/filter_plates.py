@@ -120,7 +120,7 @@ def labelValidTraj(skeletons_file, features_file):
     good_WL = (feat_avg['Width_Length_Ratio']>0.06) & (feat_avg['Width_Length_Ratio']<0.11)
     
     worm_length = feat_avg[good_AL]['Length']*pix2mum        
-    good_L = (worm_length>750) & (worm_length<1400) #900 and 1400 gives a more narrow estimate
+    good_L = (worm_length>750) & (worm_length<1400) #900 and 1400 gives a narrower estimate
     good = good_AL & good_WL & good_L
     valid_worm_index = feat_avg.loc[good, 'worm_index']
     valid_rows = trajectories_data['worm_index_joined'].isin(valid_worm_index)

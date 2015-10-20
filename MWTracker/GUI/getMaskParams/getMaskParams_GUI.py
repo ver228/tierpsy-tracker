@@ -34,6 +34,8 @@ class getMaskParams_GUI(QMainWindow):
 		self.ui.spinBox_min_area.valueChanged.connect(self.updateMinArea)
 		self.ui.spinBox_block_size.valueChanged.connect(self.updateBlockSize)
 		self.ui.spinBox_thresh_C.valueChanged.connect(self.updateThreshC)
+		self.ui.spinBox_dilation_size.valueChanged.connect(self.updateDilationSize)
+
 		self.ui.spinBox_buff_size.valueChanged.connect(self.updateBuffSize)
 
 		self.ui.checkBox_hasTimestamp.stateChanged.connect(self.updateMask)
@@ -179,7 +181,8 @@ class getMaskParams_GUI(QMainWindow):
 		self.ui.dial_thresh_C.setValue(self.ui.spinBox_thresh_C.value())
 		self.updateMask()
 
-		
+	def updateDilationSize(self):
+		self.updateMask()
 
 
 	def updateMask(self):
@@ -190,6 +193,7 @@ class getMaskParams_GUI(QMainWindow):
 		'min_area' : self.ui.spinBox_min_area.value(), 
 		'thresh_block_size' : self.ui.spinBox_block_size.value(),
 		'thresh_C' : self.ui.spinBox_thresh_C.value(),
+		'dilation_size' : self.ui.spinBox_dilation_size.value(),
 		'has_timestamp':self.ui.checkBox_hasTimestamp.isChecked(),
 		}
 		

@@ -21,7 +21,7 @@ class tracker_param:
              expected_frames = 15000, fps = 25, compression_buff = 25, roi_size = -1, 
              bad_seg_thresh = 0.5, save_bad_worms = True, 
              thresh_block_size = 61, min_displacement = 0, resampling_N = 49, 
-             has_timestamp = True):
+             has_timestamp = True, dilation_size = 9):
         '''
         min_area - minimum area in pixels allowed
         max_area - maximum area in pixels allowed
@@ -60,7 +60,7 @@ class tracker_param:
 
         #getROIMask
         self.mask_param = {'min_area': min_area*2, 'max_area': max_area, 'has_timestamp': has_timestamp, 
-        'thresh_block_size':thresh_block_size, 'thresh_C':thresh_C}
+        'thresh_block_size':thresh_block_size, 'thresh_C':thresh_C, 'dilation_size':dilation_size}
         
         #compressVideo
         self.compress_vid_param =  {'buffer_size' : compression_buff, 'save_full_interval' : 200*fps, 

@@ -31,7 +31,7 @@ class WormClass:
             self.index = worm_index
             self.rows_range = rows_range
             self.data_fields = ['skeleton', 'skeleton_length', 'contour_side1', 
-            'contour_side2', 'contour_side1_length', 'contour_side2_length', 'contour_width']        
+            'contour_side2', 'contour_side1_length', 'contour_side2_length', 'contour_width', 'contour_area']        
             
             tab = file_id.get_node('/trajectories_data')
             self.frames = tab.read(ini,end,1,'frame_number')
@@ -49,6 +49,7 @@ class WormClass:
             
             self.contour_width = file_id.get_node('/contour_width')[ini:end+1, :]
             
+            self.contour_area = file_id.get_node('/contour_area')[ini:end+1]
 
         #change invalid data zeros for np.nan
         invalid = self.skeleton_length == 0

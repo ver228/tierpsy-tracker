@@ -15,8 +15,7 @@ from ..compressVideos.writeFullFramesTiff import writeFullFramesTiff
 
 from ..helperFunctions.tracker_param import tracker_param
 
-def compressVideoWorkerL(video_file, mask_dir, param_file = ''):
-    
+def compressVideoWorkerL(video_file, mask_dir, param_file = ''): 
     #get function parameters
     param = tracker_param(param_file)
     
@@ -44,13 +43,13 @@ def compressVideoWorkerL(video_file, mask_dir, param_file = ''):
         
         #writeDownsampledVideo(masked_image_file, base_name = base_name);
         #writeFullFramesTiff(masked_image_file, base_name = base_name);
-            
+
         time_str = str(datetime.timedelta(seconds=round(time.time()-initial_time)))
         progress_str = 'Processing Done. Total time = %s' % time_str
         print(base_name + ' ' + progress_str)
     else:
-        print('File alread exists: %s' % masked_image_file)
-        print('If you want to calculate the mask again delete the existing file.')
+        print('File alread exists: %s. If you want to calculate the mask again delete the existing file.' % masked_image_file)
+        
     
     return masked_image_file
     

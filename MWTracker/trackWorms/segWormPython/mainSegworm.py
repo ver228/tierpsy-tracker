@@ -119,8 +119,7 @@ def contour2Skeleton(contour, resampling_N=50):
     assert np.all(skeleton[-1] == cnt_side1[-1])
     assert np.all(skeleton[0] == np.round(cnt_side2[0]))
     
-#%%    
-    return skeleton, cnt_side1, cnt_side2, cnt_widths,  ''
+    return (skeleton, cnt_side1, cnt_side2, cnt_widths, '')
 
 def binaryMask2Contour(worm_mask, min_mask_area=50, roi_center_x = -1, roi_center_y = -1, pick_center = True):
     if roi_center_x < 1:
@@ -172,7 +171,7 @@ def binaryMask2Contour(worm_mask, min_mask_area=50, roi_center_x = -1, roi_cente
 
 def orientWorm(skeleton, prev_skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths):
     if skeleton.size == 0:
-        return skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths
+        return skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths, np.float(0)
     
     #orient head tail with respect to hte previous worm
     if prev_skeleton.size > 0:
@@ -194,13 +193,18 @@ def orientWorm(skeleton, prev_skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt
         cnt_side1, cnt_side2 = cnt_side2, cnt_side1
         cnt_side1_len, cnt_side2_len = cnt_side2_len, cnt_side1_len
     
-    return skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths
+    return skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths, np.abs(signed_area)
 
 
 def getSkeleton(worm_mask, prev_skeleton = np.zeros(0), resampling_N=50, min_mask_area = 50):
+    
+    n_output_param = 8 #number of expected output parameters
+
     contour = binaryMask2Contour(worm_mask, min_mask_area=50)
+
+    
     if contour.size == 0:
-        return 7*[np.zeros(0)]
+        return n_output_param*[np.zeros(0)]
     
     assert type(contour) == np.ndarray and contour.ndim == 2 and contour.shape[1] ==2
     
@@ -208,7 +212,7 @@ def getSkeleton(worm_mask, prev_skeleton = np.zeros(0), resampling_N=50, min_mas
     contour2Skeleton(contour, resampling_N)
     
     if skeleton.size == 0:
-        return 7*[np.zeros(0)]
+        return n_output_param*[np.zeros(0)]
     
     #resample data
     skeleton, ske_len = curvspace(skeleton, resampling_N)
@@ -220,7 +224,10 @@ def getSkeleton(worm_mask, prev_skeleton = np.zeros(0), resampling_N=50, min_mas
     cnt_widths = f(x);
     
     #orient skeleton with respect to the previous skeleton
-    skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths = \
+    skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths, cnt_area = \
     orientWorm(skeleton, prev_skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths)
     
-    return skeleton, ske_len, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths
+
+    output_data =(skeleton, ske_len, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths, cnt_area)
+    assert len(output_data) == n_output_param
+    return output_data

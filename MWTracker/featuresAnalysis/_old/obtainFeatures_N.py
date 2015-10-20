@@ -23,8 +23,9 @@ from ..helperFunctions.timeCounterStr import timeCounterStr
 #from .. import config_param as param
 #sys.path.append(movement_validation_dir)
 
+from MWTracker import config_param
 from movement_validation import NormalizedWorm
-from movement_validation import WormFeatures, VideoInfo
+from movement_validation import WormFeatures, VideoInfo, FeatureProcessingOptions
 from movement_validation.statistics import specifications
 
 # -*- coding: utf-8 -*-
@@ -76,13 +77,17 @@ def calWormAngles(x,y, segment_size):
     return (angles, meanAngle)
 
 def calWormAnglesAll(skeleton, segment_size=5):
-    
+    '''calculate the angles of each of the skeletons'''
+
     segment_half = segment_size/2
     ang_pad =  (floor(segment_half),ceil(segment_half))
     
     meanAngles_all = np.zeros(skeleton.shape[0])    
     angles_all = np.full((skeleton.shape[0], skeleton.shape[1]), np.nan)
     for ss in range(skeleton.shape[0]):
+        if skeleton[ss,0,0] == np.nan:
+            continue #skip if skeleton is invalid
+
         angles_all[ss,ang_pad[0]:-ang_pad[1]],meanAngles_all[ss] = \
         calWormAngles(skeleton[ss,:,0],skeleton[ss,:,1], segment_size=segment_size)
     
@@ -90,9 +95,7 @@ def calWormAnglesAll(skeleton, segment_size=5):
 
 
 def calWormArea(cnt_side1, cnt_side2):
-    #x1y2 - x2y1(http://mathworld.wolfram.com/PolygonArea.html)
-    #contour = np.vstack((cnt_side1, cnt_side2[::-1,:])) 
-    
+    '''calculate the contour area using the shoelace method'''
     contour = np.hstack((cnt_side1, cnt_side2[:,::-1,:])) 
     signed_area = np.sum(contour[:, :-1,0]*contour[:, 1:,1]-contour[:, 1:,0]*contour[:, :-1,1], axis=1)
     
@@ -116,51 +119,106 @@ class WormFromTable(NormalizedWorm):
         """
         NormalizedWorm.__init__(self)
     
-    def fromFile(self, file_name, worm_index, fps = 25, rows_range = (0,0), isOpenWorm = False):
-        self.file_name = file_name;
-        with tables.File(file_name, 'r') as file_id:
-            #data range
-            if rows_range[0] == 0 and rows_range[1] == 0:
-                #try to read it from the file
-                tab = file_id.get_node('/trajectories_data')
-                skeleton_id = tab.read_where('worm_index_joined==%i' % 1, field='skeleton_id')
-                
-                #the indexes must be continous
-                assert np.all(np.diff(skeleton_id) == 1) 
-                
-                rows_range = (np.min(skeleton_id), np.max(skeleton_id))
-                del skeleton_id
+    def fromFile(self, file_name, worm_index, fps = 25, isOpenWorm = False, pix2mum = 1, time_range = []):
+        
+        assert len(time_range) == 0 or len(time_range) == 2
+        
+        #get the skeletons_id and frame_number in case they were not given by the user
+        with pd.HDFStore(file_name, 'r') as ske_file_id:
+            trajectories_data = ske_file_id['/trajectories_data']
+            good = trajectories_data['worm_index_N']==worm_index
             
-            ini, end = rows_range
+            #if a time_range is given only consider frames within the time range 
+            if len(time_range) == 2:
+                good = good & (trajectories_data['frame_number']>=time_range[0]) \
+                & (trajectories_data['frame_number']<=time_range[1])
+                
+            
+            trajectories_data = trajectories_data.loc[good, ['skeleton_id', 'frame_number', 'has_skeleton']]
+            
+            skeleton_id = trajectories_data['skeleton_id'].values
+            frame_number = trajectories_data['frame_number'].values
+            frame_code = trajectories_data['has_skeleton'].values
+            
+            del trajectories_data         
+        
+        
+        self.file_name = file_name;
+        self.worm_index = worm_index
+
+        self.first_frame = np.min(frame_number)
+        self.last_frame = np.max(frame_number)
+        self.n_frames = self.last_frame - self.first_frame +1;
+        
+        with tables.File(file_name, 'r') as ske_file_id:
+            n_ske_points =  ske_file_id.get_node('/skeleton').shape[1]
+            self.n_segments = n_ske_points
+            
+            tot_frames = self.n_frames
+
+            self.skeleton = np.full((tot_frames, n_ske_points,2), np.nan)
+            self.ventral_contour = np.full((tot_frames, n_ske_points,2), np.nan)
+            self.dorsal_contour = np.full((tot_frames, n_ske_points,2), np.nan)
+            self.length = np.full(tot_frames, np.nan)
+            self.widths = np.full((tot_frames,n_ske_points), np.nan)
+    
+            self.frame_number = np.full(tot_frames, -1, np.int32)
+
+            ind_ff = frame_number - self.first_frame
+            self.frame_number[ind_ff] = frame_number
+            
+            self.skeleton_id = np.full(tot_frames, -1, np.int32)
+            self.skeleton_id[ind_ff] = skeleton_id
 
             #video info, for the moment we intialize it with the fps
             self.video_info = VideoInfo('', fps)  
             #flag as segmented flags should be marked by the has_skeletons column
-            self.video_info.frame_code = file_id.get_node('/trajectories_data').cols.has_skeleton[ini:end+1]
-                        
-            self.worm_index = worm_index
-            self.rows_range = rows_range
-            
-            self.frame_number = file_id.get_node('/trajectories_data').read(ini,end,1,'frame_number')
-            
-            self.skeleton = file_id.get_node('/skeleton')[ini:end+1,:,:]
-            self.ventral_contour = file_id.get_node('/contour_side1')[ini:end+1,:,:]
-            self.dorsal_contour = file_id.get_node('/contour_side2')[ini:end+1,:,:]
+            self.video_info.frame_code = np.zeros(tot_frames, np.int32)
+            self.video_info.frame_code[ind_ff] = frame_code
+
+            self.skeleton[ind_ff] = ske_file_id.get_node('/skeleton')[skeleton_id,:,:]*pix2mum
+            self.ventral_contour[ind_ff] = ske_file_id.get_node('/contour_side1')[skeleton_id,:,:]*pix2mum
+            self.dorsal_contour[ind_ff] = ske_file_id.get_node('/contour_side2')[skeleton_id,:,:]*pix2mum
+            self.length[ind_ff] = ske_file_id.get_node('/skeleton_length')[skeleton_id]*pix2mum
+            self.widths[ind_ff] = ske_file_id.get_node('/contour_width')[skeleton_id,:]*pix2mum
+
+#             #READ DATA ON BLOCKS. This is faster than fancy indexing
+#            block_ind, block_frame = self.getBlockInd(skeleton_id, frame_number, self.first_frame)
+#            for bi, bf in zip(*(block_ind, block_frame)):
+#                self.skeleton[bf[0]:bf[1]+1] = \
+#                ske_file_id.get_node('/skeleton')[bi[0]:bi[1]+1]
+#                
+#                self.ventral_contour[bf[0]:bf[1]+1] = \
+#                ske_file_id.get_node('/contour_side1')[bi[0]:bi[1]+1]
+#    
+#                self.dorsal_contour[bf[0]:bf[1]+1] = \
+#                ske_file_id.get_node('/contour_side2')[bi[0]:bi[1]+1]
+#    
+#                self.length[bf[0]:bf[1]+1] = \
+#                ske_file_id.get_node('/skeleton_length')[bi[0]:bi[1]+1]
+#    
+#                self.widths[bf[0]:bf[1]+1] = \
+#                ske_file_id.get_node('/contour_width')[bi[0]:bi[1]+1]
+                
             
             self.angles, meanAngles_all = calWormAnglesAll(self.skeleton)            
+            self.area = calWormArea(self.ventral_contour, self.dorsal_contour)
             
-            self.length = file_id.get_node('/skeleton_length')[ini:end+1] 
-            self.widths = file_id.get_node('/contour_width')[ini:end+1,:]
+            #assertions to check the data has the proper dimensions
+            assert self.frame_number.shape[0] == self.n_frames
+            assert self.skeleton_id.shape[0] == self.n_frames
+            assert self.video_info.frame_code.shape[0] == self.n_frames
             
-            self.n_segments = self.skeleton.shape[1]
-            self.n_frames = self.skeleton.shape[0]
+            assert self.skeleton.shape[0] == self.n_frames
+            assert self.ventral_contour.shape[0] == self.n_frames
+            assert self.dorsal_contour.shape[0] == self.n_frames
+            assert self.length.shape[0] == self.n_frames
+            assert self.widths.shape[0] == self.n_frames
             
-            try: 
-                self.length = file_id.get_node('/skeleton_area')[ini:end+1] 
-            except:
-                self.area = calWormArea(self.ventral_contour, self.dorsal_contour)
+            assert self.angles.shape[0] == self.n_frames
+            assert self.area.shape[0] == self.n_frames
             
-            assert self.angles.shape[1] == self.n_segments
+            
             assert self.skeleton.shape[2] == 2
             assert self.ventral_contour.shape[2] == 2
             assert self.dorsal_contour.shape[2] == 2
@@ -171,9 +229,40 @@ class WormFromTable(NormalizedWorm):
             
             assert self.length.ndim == 1
             
+            assert self.angles.shape[1] == self.n_segments
+            
+            #check the axis dimensions to make it compatible with openworm
             if isOpenWorm:
                 self.changeAxis()
+    
+    def getBlockInd(self, skeleton_id, frame_number, first_frame):
+        
+        #use frame_number since it could contain more gaps than skeleton_id
+        jumps = np.where(np.diff(frame_number) != 1)[0]
+        block_ind = []
+        block_frame = []
+        for n in range(jumps.size+1):
+            if n == 0:
+                ini = skeleton_id[0]
+                ini_f = frame_number[0] - first_frame
+            else:
+                ii = jumps[n-1]+1
+                ini = skeleton_id[ii]
+                ini_f = frame_number[ii] - first_frame
+    
+            if n >= jumps.size:
+                fin = skeleton_id[-1]
+                fin_f = frame_number[-1] - first_frame
+            else:
+                ii = jumps[n]
+                fin = skeleton_id[ii]
+                fin_f = frame_number[ii] - first_frame
+    
+            block_ind.append((ini, fin))
+            block_frame.append((ini_f, fin_f))
             
+        return block_ind, block_frame    
+    
     def changeAxis(self):
         for field in ['skeleton', 'ventral_contour', 'dorsal_contour', 'widths', 'angles']:
             A = getattr(self, field)
@@ -186,21 +275,9 @@ class WormFromTable(NormalizedWorm):
             
             assert getattr(self, field).shape[0] == self.n_segments
 
-def walk_obj(obj, path = '', main_dict = {}, chr_sep='.'):
-    for leaf_name in dir(obj):
-        leaf = getattr(obj, leaf_name)
-        module_name = type(leaf).__module__
-        new_path =  path + chr_sep + leaf_name
-        if module_name == np.__name__:
-            main_dict[new_path] = leaf
-        elif 'movement_validation' in module_name:
-            walk_obj(leaf, new_path, main_dict, chr_sep)
-    
-    return main_dict
-
 class wormStatsClass():
     def __init__(self):
-        #get the info for each feature chategory
+        '''get the info for each feature chategory'''
         specs_simple = specifications.SimpleSpecs.specs_factory()
         specs_event = specifications.EventSpecs.specs_factory()
         self.specs_motion = specifications.MovementSpecs.specs_factory()
@@ -222,7 +299,7 @@ class wormStatsClass():
             if '/' in feature:
                 feature = feature.replace('/', '_') + '_Ratio'
             self.spec2tableName[spec.name] = feature.lower()
-
+        
     def featureStat(self, stat_func, data, name, is_signed, is_motion, motion_mode = np.zeros(0), stats={}):
         # I prefer to keep this function quite independend and pass the stats and moition_mode argument 
         #rather than save those values in the class
@@ -283,124 +360,92 @@ class wormStatsClass():
         
         return self.stats
 
-def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 25):
-    #%%
-    
+
+def getWormFeaturesLab(skeletons_file, features_file, worm_indexes, fps = 25, time_range = []):
+
+    #overight processing options
+    processing_options = FeatureProcessingOptions()
+    #increase the time window (s) for the velocity calculation 
+    processing_options.locomotion.velocity_tip_diff = 0.5
+    processing_options.locomotion.velocity_body_diff = 1
+
     #useful to display progress 
     base_name = skeletons_file.rpartition('.')[0].rpartition(os.sep)[-1]
     
-    #read skeletons index data
-    with pd.HDFStore(skeletons_file, 'r') as ske_file_id:
-        indexes_data = ske_file_id['/trajectories_data']
-    
-    if 'has_skeleton' in indexes_data.columns:
-        indexes_data = indexes_data[['worm_index_joined', 'skeleton_id', 'has_skeleton']]
-    else:
-        indexes_data = indexes_data[['worm_index_joined', 'skeleton_id']]
-        with tables.File(skeletons_file, 'r') as ske_file_id:
-            #this is slow but faster than having to recalculate all the skeletons
-            indexes_data['has_skeleton'] = ~np.isnan(ske_file_id.get_node('/skeleton_length'))
-            
-    #%%
-    
-    #get the fraction of worms that were skeletonized per trajectory
-    skeleton_fracc = indexes_data.groupby('worm_index_joined').agg({'has_skeleton':'mean'})
-    skeleton_fracc = skeleton_fracc['has_skeleton']
-    valid_worm_index = skeleton_fracc[skeleton_fracc>=bad_seg_thresh].index
-    
-    #remove the bad worms, we do not care about them
-    indexes_data = indexes_data[indexes_data['worm_index_joined'].isin(valid_worm_index)]
-    
-    #get the first and last frame of each worm_index
-    rows_indexes = indexes_data.groupby('worm_index_joined').agg({'skeleton_id':[min, max]})
-    rows_indexes = rows_indexes['skeleton_id']
-    
-    #remove extra variable to free memory
-    del indexes_data
-    
     #initialize by getting the specs data subdivision
     wStats = wormStatsClass()
-    
+
     #list to save trajectories mean features
     all_stats = []
     
     progress_timer = timeCounterStr('');
+
     #filter used for each fo the tables
     filters_tables = tables.Filters(complevel = 5, complib='zlib', shuffle=True)
+    
+    #create the motion table header
+    motion_header = {'frame_number':tables.Int32Col(pos=0),\
+    'skeleton_id':tables.Int32Col(pos=1),\
+    'motion_modes':tables.Float32Col(pos=2)}
+
+    for ii, spec in enumerate(wStats.specs_motion):
+        feature = wStats.spec2tableName[spec.name]
+        motion_header[feature] = tables.Float32Col(pos=ii+2)
+
+    #get the is_signed flag for motion specs and store it as an attribute
+    #is_signed flag is used by featureStat in order to subdivide the data if required
+    is_signed_motion = np.zeros(len(motion_header), np.uint8);
+    for ii, spec in enumerate(wStats.specs_motion):
+        feature = wStats.spec2tableName[spec.name]
+        is_signed_motion[motion_header[feature]._v_pos] = spec.is_signed
+
+
     with tables.File(features_file, 'w') as features_fid:
 
-        group_events = features_fid.create_group('/', 'Features_events')
-        
-        #initialize motion table. All the features here are a numpy array having the same length as the worm trajectory
-        motion_header = {'worm_index':tables.Int32Col(pos=0),\
-        'frame_number':tables.Int32Col(pos=1),\
-        'Motion_Modes':tables.Float32Col(pos=2)}
-        
-        for ii, spec in enumerate(wStats.specs_motion):
-            feature = wStats.spec2tableName[spec.name]
-            motion_header[feature] = tables.Float32Col(pos=ii+2)
-        table_motion = features_fid.create_table('/', 'Features_motion', motion_header, filters=filters_tables)
-        
-        #get the is_signed flag for motion specs and store it as an attribute
-        #is_signed flag is used by featureStat in order to subdivide the data if required
-        is_signed_motion = np.zeros(len(motion_header), np.uint8);
-        for ii, spec in enumerate(wStats.specs_motion):
-            feature = wStats.spec2tableName[spec.name]
-            is_signed_motion[motion_header[feature]._v_pos] = spec.is_signed
+        #features group
+        group_features = features_fid.create_group('/', 'features')
 
-        table_motion._v_attrs['is_signed'] = is_signed_motion
-        
-        #start to calculate features for each worm trajectory      
-        tot_worms = len(rows_indexes)        
-        for ind, dat  in enumerate(rows_indexes.iterrows()):
-            worm_index, row_range = dat
-            
+        #Calculate features for each worm trajectory      
+        tot_worms = len(worm_indexes)        
+        for ind, worm_index  in enumerate(worm_indexes):
             #initialize worm object, and extract data from skeletons file
             worm = WormFromTable()
-            worm.fromFile(skeletons_file, worm_index, fps = 25, rows_range= tuple(row_range.values), isOpenWorm=False)
+            worm.fromFile(skeletons_file, worm_index, fps = fps, isOpenWorm = False, time_range=time_range)
+            assert not np.all(np.isnan(worm.skeleton))
+
+            #save data as a subgroup for each worm
+            worm_node = features_fid.create_group(group_features, 'worm_%i' % worm_index )
+            worm_node._v_attrs['worm_index'] = worm_index
+            worm_node._v_attrs['frame_range'] = (worm.frame_number[0], worm.frame_number[-1])
+
+            #save skeleton
+            features_fid.create_carray(worm_node, 'skeletons', \
+                                    obj = worm.skeleton, filters=filters_tables)
+            
+            #change axis to an openworm format
+            worm.changeAxis()
+
+            # Generate the OpenWorm movement validation repo version of the features
+            worm_features = WormFeatures(worm, processing_options=processing_options)
             
 
-            worm.changeAxis()
-            assert not np.all(np.isnan(worm.skeleton))
-            
-            # Generate the OpenWorm movement validation repo version of the features
-            worm_features = WormFeatures(worm)
-            
             #get the average for each worm feature
             worm_stats = wStats.getWormStats(worm_features, np.mean)
             worm_stats['n_frames'] = worm.n_frames
             worm_stats['worm_index'] = worm_index
             worm_stats.move_to_end('n_frames', last=False)
             worm_stats.move_to_end('worm_index', last=False)
-            
             all_stats.append(worm_stats)
             
-            #save the motion data as a general table
-            motion_data = [[]]*len(motion_header)
-            motion_data[motion_header['frame_number']._v_pos] = worm.frame_number
-            motion_data[motion_header['worm_index']._v_pos] = np.full(worm.n_frames, worm.worm_index)
-            motion_data[motion_header['Motion_Modes']._v_pos] = worm_features.locomotion.motion_mode
-            for spec in wStats.specs_motion:
-                feature = wStats.spec2tableName[spec.name]
-                tmp_data = spec.get_data(worm_features)
-                motion_data[motion_header[feature]._v_pos] = tmp_data
             
-            motion_data = list(zip(*motion_data))
-            table_motion.append(motion_data)
-            table_motion.flush()
-            del motion_data
-            
-            #save events data as a subgroup for the worm
-            worm_node = features_fid.create_group(group_events, 'worm_%i' % worm_index )
-            worm_node._v_attrs['worm_index'] = worm_index
-            worm_node._v_attrs['frame_range'] = (worm.frame_number[0], worm.frame_number[-1])
-            worm_node._v_attrs['skeletons_rows_range'] = tuple(row_range.values)
+            #save event features
+            events_node = features_fid.create_group(worm_node, 'events')
             for spec in wStats.specs_events:
                 feature = wStats.spec2tableName[spec.name]
                 tmp_data = spec.get_data(worm_features)
                 
                 if tmp_data is not None and tmp_data.size > 0:
-                    table_tmp = features_fid.create_carray(worm_node, feature, \
+                    table_tmp = features_fid.create_carray(events_node, feature, \
                                     obj = tmp_data, filters=filters_tables)
                     table_tmp._v_attrs['is_signed'] = int(spec.is_signed)
             
@@ -409,6 +454,26 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
             print(dd)
             sys.stdout.flush()
             
+            #initialize motion table. All the features here are a numpy array having the same length as the worm trajectory
+            table_motion = features_fid.create_table(worm_node, 'locomotion', motion_header, filters=filters_tables)
+            table_motion._v_attrs['is_signed'] = is_signed_motion
+            
+            #save the motion data as a general table
+            motion_data = [[]]*len(motion_header)
+            motion_data[motion_header['frame_number']._v_pos] = worm.frame_number
+            #motion_data[motion_header['worm_index']._v_pos] = np.full(worm.n_frames, worm.worm_index)
+            motion_data[motion_header['skeleton_id']._v_pos] = worm.skeleton_id
+            motion_data[motion_header['motion_modes']._v_pos] = worm_features.locomotion.motion_mode
+            for spec in wStats.specs_motion:
+                feature = wStats.spec2tableName[spec.name]
+                tmp_data = spec.get_data(worm_features)
+                motion_data[motion_header[feature]._v_pos] = tmp_data
+            
+            motion_data = list(zip(*motion_data))
+            table_motion.append(motion_data)
+            
+            table_motion.flush()
+            del motion_data
             
         #create and save a table containing the averaged worm feature for each worm
         tot_rows = len(all_stats)
@@ -417,30 +482,9 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
         for kk, row_dict in enumerate(all_stats):
             for key in row_dict:
                 mean_features_df[key][kk] = row_dict[key]
-        feat_mean = features_fid.create_table('/', 'Features_means', obj = mean_features_df, filters=filters_tables)
+        feat_mean = features_fid.create_table('/', 'features_means', obj = mean_features_df, filters=filters_tables)
         
         feat_mean._v_attrs['has_finished'] = 1
         
         print('Feature extraction finished:' + progress_timer.getTimeStr())
         sys.stdout.flush()
-        
-if __name__ == "__main__":
-    
-#    base_name = 'Capture_Ch3_12052015_194303'
-#    mask_dir = '/Users/ajaver/Desktop/Gecko_compressed/Masked_Videos/20150512/'
-#    results_dir = '/Users/ajaver/Desktop/Gecko_compressed/Results/20150512/'    
-
-    base_name = 'Capture_Ch5_11052015_195105'
-    mask_dir = '/Users/ajaver/Desktop/Gecko_compressed/Masked_Videos/20150511/'
-    results_dir = '/Users/ajaver/Desktop/Gecko_compressed/Results/20150511/'
-    
-    masked_image_file = mask_dir + base_name + '.hdf5'
-    trajectories_file = results_dir + base_name + '_trajectories.hdf5'
-    skeletons_file = results_dir + base_name + '_skeletons.hdf5'
-    features_file = results_dir + base_name + '_features.hdf5'
-    
-    assert os.path.exists(masked_image_file)
-    assert os.path.exists(trajectories_file)
-    assert os.path.exists(skeletons_file)
-        
-    getWormFeatures(skeletons_file, features_file)

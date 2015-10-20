@@ -8,7 +8,7 @@ Created on Wed May 13 19:35:04 2015
 import pandas as pd
 
 import numpy as np
-import os
+import os, sys
 import tables
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
@@ -148,6 +148,7 @@ def correctHeadTail(skeletons_file, max_gap_allowed = 10, window_std = 25, \
             dd = " Correcting Head-Tail worm %i of %i." % (ii+1, len(rows_indexes))
             dd = base_name + dd + ' Total time:' + progress_timer.getTimeStr()
             print(dd)
+            sys.stdout.flush()
         
         worm_index, row_range = dat        
         
@@ -164,6 +165,7 @@ def correctHeadTail(skeletons_file, max_gap_allowed = 10, window_std = 25, \
         worm_data.writeData()
         #%%
     print('Head-Tail correction finished:' + progress_timer.getTimeStr())
+    sys.stdout.flush()
 
     with tables.File(skeletons_file, "r+") as ske_file_id:
         #Mark a succesful termination

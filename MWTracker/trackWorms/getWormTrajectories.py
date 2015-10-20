@@ -19,7 +19,7 @@ import tables
 from math import sqrt
 import cv2
 from skimage.filters import threshold_otsu
-import os
+import os, sys
 
 from sklearn.utils.linear_assignment_ import linear_assignment #hungarian algorithm
 from scipy.spatial.distance import cdist
@@ -343,7 +343,7 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
                 #calculate the progress and put it in a string
                 progress_str = progressTime.getStr(frame_number)
                 print(base_name + ' ' + progress_str);
-            
+                sys.stdout.flush()
         #flush any remaining and create indexes
         feature_table.flush()
         feature_table.cols.frame_number.create_csindex() #make searches faster
@@ -354,7 +354,7 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
         feature_table._v_attrs['has_finished'] = 1
         
     print(base_name + ' ' + progress_str);
-
+    sys.stdout.flush()
 def joinTrajectories(trajectories_file, min_track_size = 50, \
 max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
     '''

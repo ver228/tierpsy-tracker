@@ -8,7 +8,7 @@ import numpy as np
 import cv2
 import h5py
 import os
-
+import sys
 
 from .readVideoffmpeg import readVideoffmpeg
 from .readVideoHDF5 import readVideoHDF5
@@ -16,12 +16,12 @@ from .readVideoHDF5 import readVideoHDF5
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
 
-DEFAULT_MASK_PARAM = {'min_area':100, 'max_area':5000, 'has_timestamp':True, 'thresh_block_size':61, 'thresh_C':15}
+DEFAULT_MASK_PARAM = {'min_area':100, 'max_area':5000, 'has_timestamp':True, 'thresh_block_size':61, 'thresh_C':15, 'dilation_size': 9}
 
 
 def getROIMask(image,  min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEFAULT_MASK_PARAM['max_area'], 
     has_timestamp = DEFAULT_MASK_PARAM['has_timestamp'], thresh_block_size = DEFAULT_MASK_PARAM['thresh_block_size'], 
-    thresh_C = DEFAULT_MASK_PARAM['thresh_C']):
+    thresh_C = DEFAULT_MASK_PARAM['thresh_C'], dilation_size = DEFAULT_MASK_PARAM['dilation_size']):
     '''
     Calculate a binary mask to mark areas where it is possible to find worms.
     Objects with less than min_area or more than max_area pixels are rejected.
@@ -58,7 +58,7 @@ def getROIMask(image,  min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEF
     mask[0,:] = 0; mask[:,0] = 0; mask[-1,:] = 0; mask[:,-1]=0;
     
     #dilate the elements to increase the ROI, in case we are missing something important
-    struct_element = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9,9)) 
+    struct_element = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (dilation_size,dilation_size)) 
     mask = cv2.dilate(mask, struct_element, iterations = 3)
     
     if has_timestamp:
@@ -251,6 +251,7 @@ expected_frames = 15000, mask_param = DEFAULT_MASK_PARAM):
             #calculate the progress and put it in a string
             progress_str = progressTime.getStr(frame_number)
             print(base_name + ' ' + progress_str);
+            sys.stdout.flush()
             
     
     if mask_dataset.shape[0] != frame_number:
@@ -266,6 +267,7 @@ expected_frames = 15000, mask_param = DEFAULT_MASK_PARAM):
     vid.release() 
     mask_fid.close()
     print(base_name + ' Compressed video done.');
+    sys.stdout.flush()
 
 if __name__ == '__main__':
     video_file = '/Users/ajaver/Desktop/Gecko_compressed/Raw_Video/Capture_Ch1_11052015_195105.mjpg'

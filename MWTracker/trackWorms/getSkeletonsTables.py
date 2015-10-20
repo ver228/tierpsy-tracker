@@ -13,7 +13,7 @@ Created on Fri Mar 13 19:39:41 2015
 """
 import pandas as pd
 import tables #h5py gives an error when I tried to do a large amount of write operations (~1e6)
-import os
+import os, sys
 import shutil
 import cv2
 import numpy as np
@@ -223,6 +223,12 @@ create_single_movies = False, resampling_N = 49, min_mask_area = 50, smoothed_tr
                                         (tot_rows, resampling_N), filters=table_filters, \
                                         chunkshape = (1, resampling_N));
 
+        skel_arrays['contour_area'] = ske_file_id.create_carray('/', "contour_area", \
+                                        tables.Float32Atom(dflt = np.nan), \
+                                        (tot_rows,), filters = table_filters);
+
+
+
         #flags to mark if a frame was skeletonized
         has_skeleton = ske_file_id.get_node('/trajectories_data').cols.has_skeleton
 
@@ -247,7 +253,8 @@ create_single_movies = False, resampling_N = 49, min_mask_area = 50, smoothed_tr
                     prev_skeleton[worm_index] = np.zeros(0)
                 
                 #get skeletons
-                skeleton, ske_len, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths = \
+                
+                skeleton, ske_len, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths, cnt_area = \
                 getSkeleton(worm_mask, prev_skeleton[worm_index], resampling_N, min_mask_area)
                                 
                 if skeleton.size>0:
@@ -259,6 +266,9 @@ create_single_movies = False, resampling_N = 49, min_mask_area = 50, smoothed_tr
                     skel_arrays['contour_side2_length'][skeleton_id] = cnt_side2_len
     
                     skel_arrays['contour_width'][skeleton_id, :] = cnt_widths                
+                    skel_arrays['contour_area'][skeleton_id] = cnt_area                
+                                        
+
                     #convert into the main image coordinates
                     skel_arrays['skeleton'][skeleton_id, :, :] = skeleton + roi_corner
                     skel_arrays['contour_side1'][skeleton_id, :, :] = cnt_side1 + roi_corner
@@ -268,7 +278,7 @@ create_single_movies = False, resampling_N = 49, min_mask_area = 50, smoothed_tr
             if frame % 500 == 0:
                 progress_str = progressTime.getStr(frame)
                 print(base_name + ' ' + progress_str);
-
+                sys.stdout.flush()
         #Mark a succesful termination
         skel_arrays['skeleton']._v_attrs['has_finished'] = 1;
 
@@ -413,7 +423,7 @@ def writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir,
             if frame % 500 == 0:
                 progress_str = progressTime.getStr(frame)
                 print(base_name + ' ' + progress_str);
-
+                sys.stdout.flush()
 #%%
 if __name__ == '__main__':  
     #masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/Masked_videos/20150512/Capture_Ch3_12052015_194303.hdf5'
