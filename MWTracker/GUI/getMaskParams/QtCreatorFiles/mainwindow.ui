@@ -55,10 +55,10 @@
     <item row="1" column="1">
      <widget class="QDial" name="dial_max_area">
       <property name="minimum">
-       <number>500</number>
+       <number>100</number>
       </property>
       <property name="maximum">
-       <number>10000</number>
+       <number>100000</number>
       </property>
       <property name="value">
        <number>5000</number>
@@ -155,10 +155,10 @@
       <item>
        <widget class="QSpinBox" name="spinBox_max_area">
         <property name="minimum">
-         <number>500</number>
+         <number>100</number>
         </property>
         <property name="maximum">
-         <number>10000</number>
+         <number>100000</number>
         </property>
         <property name="value">
          <number>5000</number>
@@ -369,6 +369,9 @@
         </property>
         <property name="maximum">
          <number>999</number>
+        </property>
+        <property name="value">
+         <number>9</number>
         </property>
        </widget>
       </item>

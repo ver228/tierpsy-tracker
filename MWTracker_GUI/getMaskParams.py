@@ -7,7 +7,9 @@ from PyQt5.QtWidgets import QApplication
 if __name__ == '__main__':
 	app = QApplication(sys.argv)
 	
-	ui = getMaskParams_GUI()
+	videos_dir = '/Volumes/behavgenom$/Camille/Worm_Videos/Camille_12102015_1530_1730/'
+	
+	ui = getMaskParams_GUI(videos_dir=videos_dir)
 	ui.show()
 	app.exec_()
 	#sys.exit()

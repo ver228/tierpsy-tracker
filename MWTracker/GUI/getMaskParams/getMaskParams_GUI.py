@@ -18,9 +18,23 @@ from MWTracker.helperFunctions.getTrajectoriesWorkerL import getTrajectoriesWork
 
 
 class getMaskParams_GUI(QMainWindow):
-	def __init__(self):
+	def __init__(self, videos_dir = '', mask_files_dir = '', results_dir = ''):
 		super().__init__()
 		
+		self.videos_dir = videos_dir
+		print(videos_dir)
+		if not os.path.exists(self.videos_dir): self.videos_dir = ''
+
+		self.mask_files_dir = '/Users/ajaver/Desktop/Pratheeban_videos/MaskedVideos/'
+		if not os.path.exists(self.mask_files_dir): self.mask_files_dir = ''
+
+		self.results_dir = '/Users/ajaver/Desktop/Pratheeban_videos/Results/'
+		if not os.path.exists(self.results_dir): self.results_dir = ''
+
+		self.video_file = ''
+		self.Ifull = np.zeros(0)
+		self.vid = 0
+
 		# Set up the user interface from Designer.
 		self.ui = Ui_MainWindow()
 		self.ui.setupUi(self)
@@ -40,23 +54,6 @@ class getMaskParams_GUI(QMainWindow):
 
 		self.ui.checkBox_hasTimestamp.stateChanged.connect(self.updateMask)
 
-		self.mask_files_dir = '/Users/ajaver/Desktop/Pratheeban_videos/MaskedVideos/'
-		self.results_dir = '/Users/ajaver/Desktop/Pratheeban_videos/Results/'
-		self.video_file = ''
-
-		#self.videos_dir = '/Users/ajaver/Google Drive/MWTracker_Example/Worm_Videos'
-		self.videos_dir = '/Volumes/behavgenom$/Andre/shige-oda/Worm_Videos/'
-		#self.videos_dir = '/Users/ajaver/Desktop/Pratheeban_videos/Worm_Videos/'
-		
-		
-		self.Ifull = np.zeros(0)
-		self.vid = 0
-
-		if not os.path.exists(self.mask_files_dir):
-			self.mask_files_dir = ''
-		
-		if not os.path.exists(self.results_dir):
-			self.results_dir = ''
 					
 
 		self.ui.lineEdit_mask.setText(self.mask_files_dir)
