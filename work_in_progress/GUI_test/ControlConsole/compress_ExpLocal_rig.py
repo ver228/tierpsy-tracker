@@ -24,26 +24,27 @@ dir_main = sys.argv[1]
 #construct saving directories from the root directory
 masked_movies_root =  '/Volumes/behavgenom$/GeckoVideo/MaskedVideos/'
 results_root = '/Volumes/behavgenom$/GeckoVideo/Results/'
-
+tmp_dir_root = os.path.join(os.path.expanduser("~"), 'Tmp')
 
 assert os.path.exists(dir_main)
 if dir_main[-1] != os.sep: dir_main += os.sep #add the path separator at the end the main directory 
 
-if not os.path.exists(results_dir): os.makedirs(results_dir)
-if dir_main[-1] != os.sep: dir_main += os.sep 
-
-if not os.path.exists(masked_movies_dir): os.makedirs(masked_movies_dir)
-if dir_main[-1] != os.sep: dir_main += os.sep 
 
 #create temporary directories. For the moment the user is responsable to clean the directories when
-home = os.path.expanduser("~")
-subdir_base = os.path.split(dir_main)[-1]
-tmp_masked_dir = os.path.join(home, 'Tmp', 'MaskedVideos', subdir_base) + os.sep
-tmp_results_dir = os.path.join(home, 'Tmp', 'Results', subdir_base) + os.sep
 
+subdir_base = os.path.split(dir_main)[-1]
+
+masked_movies_dir = masked_movies_root + subdir_base + os.sep
+results_dir = results_root + subdir_base + os.sep
+
+tmp_masked_dir = os.path.join(tmp_dir_root, 'MaskedVideos', subdir_base) + os.sep
+tmp_results_dir = os.path.join(tmp_dir_root, 'Results', subdir_base) + os.sep
+
+
+if not os.path.exists(results_dir): os.makedirs(results_dir)
+if not os.path.exists(masked_movies_dir): os.makedirs(masked_movies_dir)
 if not os.path.exists(tmp_masked_dir): os.makedirs(tmp_masked_dir)
 if not os.path.exists(tmp_results_dir): os.makedirs(tmp_results_dir)
-
 
 #create the list of commands for the analsys
 movie_files = glob.glob(dir_main + os.sep + video_ext) 
