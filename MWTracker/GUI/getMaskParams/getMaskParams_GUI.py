@@ -18,19 +18,20 @@ from MWTracker.helperFunctions.getTrajectoriesWorkerL import getTrajectoriesWork
 
 
 class getMaskParams_GUI(QMainWindow):
-	def __init__(self, videos_dir = '', mask_files_dir = '', results_dir = ''):
+	def __init__(self, default_videos_dir = '', scripts_dir = ''):
 		super().__init__()
 		
-		self.videos_dir = videos_dir
-		print(videos_dir)
+
+		scripts_dir = scripts_dir
+		self.script_compress = os.path.join(scripts_dir, 'compressSingleLocal.py')
+		self.script_track = os.path.join(scripts_dir,  'trackSingleLocal.py')
+		
+		self.videos_dir = default_videos_dir
 		if not os.path.exists(self.videos_dir): self.videos_dir = ''
 
-		self.mask_files_dir = '/Users/ajaver/Desktop/Pratheeban_videos/MaskedVideos/'
-		if not os.path.exists(self.mask_files_dir): self.mask_files_dir = ''
-
-		self.results_dir = '/Users/ajaver/Desktop/Pratheeban_videos/Results/'
-		if not os.path.exists(self.results_dir): self.results_dir = ''
-
+		self.mask_files_dir = ''
+		self.results_dir = ''
+		
 		self.video_file = ''
 		self.Ifull = np.zeros(0)
 		self.vid = 0
@@ -74,13 +75,17 @@ class getMaskParams_GUI(QMainWindow):
 	
 	#file dialog to the the hdf5 file
 	def getVideoFile(self):
-		#print(self.videos_dir)
 		video_file, _ = QFileDialog.getOpenFileName(self, "Find video file", 
 		self.videos_dir, "All files (*)")
 
 		if video_file:
 			self.video_file = video_file
 			if os.path.exists(self.video_file):
+				
+				self.json_file = self.video_file.rpartition('.')[0] + '.json'
+				if os.path.exists(self.json_file): self.read_json()
+
+
 				self.ui.label_full.clear()
 				self.Ifull = np.zeros(0)
 
@@ -89,10 +94,6 @@ class getMaskParams_GUI(QMainWindow):
 				self.ui.lineEdit_video.setText(self.video_file)
 				self.vid, self.im_width, self.im_height = selectVideoReader(video_file)
 
-				
-				print('H', self.im_height)
-				print('W', self.im_width)
-				
 				if self.im_width == 0 or self.im_height == 0:
 					 QMessageBox.critical(self, 'Cannot read video file.', "Cannot read video file. Try another file",
 					QMessageBox.Ok)
@@ -106,7 +107,8 @@ class getMaskParams_GUI(QMainWindow):
 					self.ui.lineEdit_results.setText(self.results_dir)
 
 				self.getNextChunk()
-				
+	
+
 				
 
 	def getNextChunk(self):
@@ -203,22 +205,7 @@ class getMaskParams_GUI(QMainWindow):
 	def resizeEvent(self, event):
 		self.updateImage()
 
-	def startAnalysis(self):
-		if self.video_file == '' or self.Ifull.size == 0:
-			QMessageBox.critical(self, 'No valid video file selected.', "No valid video file selected.", QMessageBox.Ok)
-			return
-
-		self.mask_param['fps'] = self.ui.spinBox_fps.value()
-		self.mask_param['resampling_N'] = self.ui.spinBox_skelSeg.value()
-		self.mask_param['compression_buff'] = self.ui.spinBox_buff_size.value()
-		self.close()
-
-		json_file = self.video_file.rpartition('.')[0] + '.json'
-		with open(json_file, 'w') as fid:
-			json.dump(self.mask_param, fid)
-
-		masked_image_file = compressVideoWorkerL(self.video_file, self.mask_files_dir, param_file = json_file)
-		getTrajectoriesWorkerL(masked_image_file, self.results_dir, param_file = json_file)
+	
 
 	def updateResultsDir(self):
 		results_dir = QFileDialog.getExistingDirectory(self, "Selects the directory where the analysis results will be stored", 
@@ -233,6 +220,76 @@ class getMaskParams_GUI(QMainWindow):
 		if mask_files_dir:
 			self.mask_files_dir = mask_files_dir + os.sep
 			self.ui.lineEdit_mask.setText(self.mask_files_dir)
+
+	def startAnalysis(self):
+		if self.video_file == '' or self.Ifull.size == 0:
+			QMessageBox.critical(self, 'No valid video file selected.', "No valid video file selected.", QMessageBox.Ok)
+			return
+
+		self.mask_param['fps'] = self.ui.spinBox_fps.value()
+		self.mask_param['resampling_N'] = self.ui.spinBox_skelSeg.value()
+		self.mask_param['compression_buff'] = self.ui.spinBox_buff_size.value()
+		self.close()
+
+		#self.json_file = self.video_file.rpartition('.')[0] + '.json'
+		with open(self.json_file, 'w') as fid:
+			json.dump(self.mask_param, fid)
+
+
+		base_name = self.video_file.rpartition('.')[0].rpartition(os.sep)[-1]
+		self.masked_image_file = self.mask_files_dir + base_name + '.hdf5'
+
+
+		arg_compress = [self.script_compress, self.video_file, self.mask_files_dir, self.mask_files_dir, self.json_file]
+		self.cmd_compress = self.list2cmd(arg_compress)
+		
+		arg_track = [self.script_track, self.masked_image_file, self.results_dir, self.mask_files_dir, self.results_dir, self.json_file]
+		self.cmd_track = self.list2cmd(arg_track)
+
+		print(self.cmd_compress)
+		os.system(self.cmd_compress)
+		
+		print(self.cmd_track)
+		os.system(self.cmd_track)
+
+		#masked_image_file = compressVideoWorkerL(self.video_file, self.mask_files_dir, param_file = self.json_file)
+		#getTrajectoriesWorkerL(masked_image_file, self.results_dir, param_file = self.json_file)
+
+	def list2cmd(self, arglist):
+		cmd = ''
+		for arg in arglist:
+			cmd += '"' + arg + '" '
+
+		cmd = ' '.join(['python3', cmd])
+		return cmd
+
+	def read_json(self):
+
+		with open(self.json_file, 'r') as fid:
+			json_str = fid.read()
+			self.mask_param = json.loads(json_str)
+
+			if 'max_area' in self.mask_param.keys():
+				self.ui.spinBox_max_area.setValue(self.mask_param['max_area'])
+			if 'min_area' in self.mask_param.keys():
+				self.ui.spinBox_min_area.setValue(self.mask_param['min_area'])
+			if 'thresh_block_size' in self.mask_param.keys():
+				self.ui.spinBox_block_size.setValue(self.mask_param['thresh_block_size'])
+			if 'thresh_C' in self.mask_param.keys():
+				self.ui.spinBox_thresh_C.setValue(self.mask_param['thresh_C'])
+			if 'dilation_size' in self.mask_param.keys():
+				self.ui.spinBox_dilation_size.setValue(self.mask_param['dilation_size'])
+			
+			if 'has_timestamp' in self.mask_param.keys():
+				self.ui.checkBox_hasTimestamp.setCheckState(self.mask_param['has_timestamp'])
+			
+			if 'fps' in self.mask_param.keys():
+				self.ui.spinBox_fps.setValue(self.mask_param['fps'])
+			if 'resampling_N' in self.mask_param.keys():
+				self.ui.spinBox_skelSeg.setValue(self.mask_param['resampling_N'])
+			if 'compression_buff' in self.mask_param.keys():
+				self.ui.spinBox_buff_size.setValue(self.mask_param['compression_buff'])
+			
 
 if __name__ == '__main__':
 	app = QApplication(sys.argv)

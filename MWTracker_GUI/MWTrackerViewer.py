@@ -12,4 +12,3 @@ if __name__ == '__main__':
 	ui.show()
 	app.exec_()
 	#sys.exit()
-

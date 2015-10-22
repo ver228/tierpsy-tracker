@@ -279,11 +279,16 @@ class MWTrackerViewer_GUI(QMainWindow):
 				self.trajectories_data['worm_index_N'] = self.trajectories_data['worm_index_joined']
 
 		self.ske_file_id = h5py.File(self.skel_file, 'r')
+		if self.ske_file_id == -1:
+			return
 		
-		self.skel_dat = {}
-		self.skel_dat['skeleton'] = self.ske_file_id['/skeleton']
-		self.skel_dat['contour_side1'] = self.ske_file_id['/contour_side1']
-		self.skel_dat['contour_side2'] = self.ske_file_id['/contour_side2']
+		try:
+			self.skel_dat = {}
+			self.skel_dat['skeleton'] = self.ske_file_id['/skeleton']
+			self.skel_dat['contour_side1'] = self.ske_file_id['/contour_side1']
+			self.skel_dat['contour_side2'] = self.ske_file_id['/contour_side2']
+		except:
+			pass
 
 	def getImGroup(self, index):
 		self.h5path = self.ui.comboBox_h5path.itemText(index)

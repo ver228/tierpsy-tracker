@@ -53,8 +53,16 @@ class plate_worms(tables.IsDescription):
     segworm_id = tables.Int32Col(pos=20);
 
 def getWormThreshold(pix_valid):
+
+    
     #calculate otsu_threshold as lower limit. Otsu understimate the threshold.
-    otsu_thresh = threshold_otsu(pix_valid)        
+    try:
+        otsu_thresh = threshold_otsu(pix_valid)
+    except:
+       #print(type(pix_valid))
+       #print(pix_valid.size)
+       #print(pix_valid)
+       return np.nan
     
     #calculate the histogram
     pix_hist = np.bincount(pix_valid)

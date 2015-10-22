@@ -11,14 +11,15 @@ import sys
 from start_console import runMultiCMD
 
 #name of the scripts used
-scripts_dir = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/parallelizeTasks/'
+scripts_dir = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/MWTracker_GUI/'
 script_track = scripts_dir +  'trackSingleLocal.py'
 
 #input parameters
 max_num_process = 6
-json_file = '/Users/ajaver/Desktop/Gecko_compressed/Alex_Anderson/param.json'
 
 masked_movies_dir = '/Users/ajaver/Desktop/Gecko_compressed/Alex_Anderson/MaskedVideos/Locomotion_videos_for_analysis_2015/'
+json_file = '/Users/ajaver/Desktop/Gecko_compressed/Alex_Anderson/param.json'
+
 assert os.path.exists(masked_movies_dir)
 if masked_movies_dir[-1] != os.sep: masked_movies_dir += os.sep #add the path separator at the end the main directory 
 
