@@ -201,8 +201,8 @@ class HDF5videoViewer_GUI(QMainWindow):
                     QMessageBox.Ok)
 
         self.tot_frames = self.image_group.shape[0]
-        self.image_height = self.image_group.shape[1]
-        self.image_width = self.image_group.shape[2]
+        self.image_height = self.image_group.shape[2]
+        self.image_width = self.image_group.shape[1]
             
         self.ui.spinBox_frame.setMaximum(self.tot_frames-1)
 

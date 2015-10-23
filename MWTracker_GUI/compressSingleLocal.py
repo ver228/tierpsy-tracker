@@ -54,7 +54,7 @@ if __name__ == "__main__":
 				#it is very important to use os.path.abspath() otherwise there could be some 
 				#confunsion in the same file name
 				print("Copying temporal masked file into the final directory.")
-				shutil.copy(masked_image_file_tmp, masked_image_file)
+				shutil.copy(tmp_mask_file, masked_image_file)
 			
 				print("Removing temporary files.")
 				os.remove(tmp_mask_file)

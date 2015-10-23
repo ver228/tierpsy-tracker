@@ -17,7 +17,7 @@ script_track = scripts_dir +  'trackSingleLocal.py'
 
 #input parameters
 max_num_process = 6
-video_ext = '*.mjpeg'
+video_ext = '*.mjpg'
 json_file = ''
 
 dir_main = sys.argv[1]
