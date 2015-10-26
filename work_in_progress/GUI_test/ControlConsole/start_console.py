@@ -66,11 +66,14 @@ def runMultiCMD(cmd_list, max_num_process = 3, refresh_time = 10):
                 if task.output:
                     last_line = task.output[-1]
                     sys.stdout.write(last_line)
+
+            N_active_tasks = sum(tasks.pid.poll() is None for tasks in current_tasks)
             
-            if task.pid.poll() is not None:
+            if task.pid.poll() is not None and N_active_tasks < max_num_process:
                 #check if the current task finished
                 if task.pid.poll() != 0:
-                    sys.stdout.write(task.pid.stderr.read().decode("utf-8"))
+                    task.output[-1] += task.pid.stderr.read().decode("utf-8")
+                    #sys.stdout.write()
                 
                 #task = None
                 
