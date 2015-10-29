@@ -32,7 +32,7 @@ if dir_main[-1] != os.sep: dir_main += os.sep #add the path separator at the end
 
 #create temporary directories. For the moment the user is responsable to clean the directories when
 
-subdir_base = os.path.split(dir_main)[-1]
+subdir_base = os.path.split(dir_main[:-1])[-1]
 
 masked_movies_dir = masked_movies_root + subdir_base + os.sep
 results_dir = results_root + subdir_base + os.sep

@@ -17,8 +17,8 @@ class tracker_param:
             self.get_param()
         
     
-    def get_param(self, min_area = 50, max_area = 5000, thresh_C = 15, 
-             expected_frames = 15000, fps = 25, compression_buff = 25, roi_size = -1, 
+    def get_param(self, min_area = 50, max_area = 1e32, thresh_C = 15, 
+             expected_frames = 1e32, fps = 25, compression_buff = 25, roi_size = -1, 
              bad_seg_thresh = 0.5, save_bad_worms = True, 
              thresh_block_size = 61, min_displacement = 0, resampling_N = 49, 
              has_timestamp = True, dilation_size = 9):
