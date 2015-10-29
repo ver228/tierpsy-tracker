@@ -65,5 +65,6 @@ if __name__ == "__main__":
 		else:
 			print('File alread exists: %s. If you want to calculate the mask again delete the existing file.' % masked_image_file)
 	except:
-		print('Error')
 		raise
+		print('Error')
+		

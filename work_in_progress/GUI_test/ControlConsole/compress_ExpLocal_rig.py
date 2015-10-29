@@ -21,9 +21,16 @@ video_ext = '*.mjpg'
 json_file = ''
 
 dir_main = sys.argv[1]
+if len(sys.argv) > 2:
+	main_subfolder = sys.argv[2]
+else:
+	main_subfolder = '/Volumes/behavgenom$/GeckoVideo'
+if dir_main[-1] != os.sep: dir_main += os.sep
+
+
 #construct saving directories from the root directory
-masked_movies_root =  '/Volumes/behavgenom$/GeckoVideo/MaskedVideos/'
-results_root = '/Volumes/behavgenom$/GeckoVideo/Results/'
+masked_movies_root =  main_subfolder + 'MaskedVideos/'
+results_root = main_subfolder + 'Results/'
 tmp_dir_root = os.path.join(os.path.expanduser("~"), 'Tmp')
 
 assert os.path.exists(dir_main)
@@ -59,8 +66,9 @@ for video_file in movie_files:
     cmd_list_track += [['python3', script_track, masked_image_file, results_dir, tmp_masked_dir, tmp_results_dir, json_file]]
 
 
-cmd_list_compress = cmd_list_compress
-runMultiCMD(cmd_list_compress, max_num_process = max_num_process)
+cmd_list_compress = cmd_list_compress[0:1]
+#print(cmd_list_compress)
+runMultiCMD(cmd_list_compress, max_num_process = max_num_process, refresh_time=0.1)
 #print('%'*500)
 #runMultiSubproc(cmd_list_track, max_num_process = max_num_process)
 #if tmp_masked_dir != masked_movies_dir: os.remove(tmp_masked_dir)

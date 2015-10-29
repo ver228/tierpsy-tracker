@@ -73,7 +73,7 @@ def runMultiCMD(cmd_list, max_num_process = 3, refresh_time = 10):
                 #check if the current task finished
                 if task.pid.poll() != 0:
                     task.output[-1] += task.pid.stderr.read().decode("utf-8")
-                    #sys.stdout.write()
+                    sys.stdout.write(task.pid.stderr.read().decode("utf-8"))
                 
                 #task = None
                 
