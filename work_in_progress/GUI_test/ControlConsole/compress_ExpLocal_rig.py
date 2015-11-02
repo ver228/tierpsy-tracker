@@ -32,26 +32,19 @@ if main_subfolder[-1] != os.sep: main_subfolder += os.sep
 
 #construct saving directories from the root directory
 masked_movies_root =  main_subfolder + 'MaskedVideos/'
-results_root = main_subfolder + 'Results/'
 tmp_dir_root = os.path.join(os.path.expanduser("~"), 'Tmp')
-
-
 
 #create temporary directories. For the moment the user is responsable to clean the directories when
 
 subdir_base = os.path.split(dir_main[:-1])[-1]
 
 masked_movies_dir = masked_movies_root + subdir_base + os.sep
-results_dir = results_root + subdir_base + os.sep
 
 tmp_masked_dir = os.path.join(tmp_dir_root, 'MaskedVideos', subdir_base) + os.sep
-tmp_results_dir = os.path.join(tmp_dir_root, 'Results', subdir_base) + os.sep
 
 
-if not os.path.exists(results_dir): os.makedirs(results_dir)
 if not os.path.exists(masked_movies_dir): os.makedirs(masked_movies_dir)
 if not os.path.exists(tmp_masked_dir): os.makedirs(tmp_masked_dir)
-if not os.path.exists(tmp_results_dir): os.makedirs(tmp_results_dir)
 
 #create the list of commands for the analsys
 movie_files = glob.glob(dir_main + os.sep + video_ext) 
@@ -68,11 +61,15 @@ for video_file in movie_files:
 
 cmd_list_compress = cmd_list_compress
 #print(cmd_list_compress)
-<<<<<<< Updated upstream
-runMultiCMD(cmd_list_compress, max_num_process = max_num_process, refresh_time=10)
-=======
 runMultiCMD(cmd_list_compress, max_num_process = max_num_process, refresh_time = 10)
->>>>>>> Stashed changes
+
+
+#results_root = main_subfolder + 'Results/'
+#results_dir = results_root + subdir_base + os.sep
+#tmp_results_dir = os.path.join(tmp_dir_root, 'Results', subdir_base) + os.sep
+#if not os.path.exists(results_dir): os.makedirs(results_dir)
+#if not os.path.exists(tmp_results_dir): os.makedirs(tmp_results_dir)
+
 #print('%'*500)
 #runMultiSubproc(cmd_list_track, max_num_process = max_num_process)
 #if tmp_masked_dir != masked_movies_dir: os.remove(tmp_masked_dir)
