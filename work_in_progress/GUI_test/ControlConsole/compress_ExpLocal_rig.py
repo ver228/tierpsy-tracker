@@ -68,7 +68,11 @@ for video_file in movie_files:
 
 cmd_list_compress = cmd_list_compress
 #print(cmd_list_compress)
+<<<<<<< Updated upstream
 runMultiCMD(cmd_list_compress, max_num_process = max_num_process, refresh_time=10)
+=======
+runMultiCMD(cmd_list_compress, max_num_process = max_num_process, refresh_time = 10)
+>>>>>>> Stashed changes
 #print('%'*500)
 #runMultiSubproc(cmd_list_track, max_num_process = max_num_process)
 #if tmp_masked_dir != masked_movies_dir: os.remove(tmp_masked_dir)

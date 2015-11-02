@@ -17,7 +17,7 @@ script_track = scripts_dir +  'trackSingleLocal.py'
 #input parameters
 max_num_process = 6
 
-masked_movies_dir = '/Users/ajaver/Desktop/Gecko_compressed/Alex_Anderson/MaskedVideos/Locomotion_videos_for_analysis_2015/'
+masked_movies_dir = '/Users/ajaver/Desktop/Gecko_compressed/Alex_Anderson/MaskedVideos/Locomotion_videos_for_analysis_2015-2/'
 json_file = '/Users/ajaver/Desktop/Gecko_compressed/Alex_Anderson/param.json'
 
 assert os.path.exists(masked_movies_dir)
@@ -48,7 +48,7 @@ cmd_list_track = []
 for masked_image_file in masked_image_files:
     cmd_list_track += [['python3', script_track, masked_image_file, results_dir, tmp_masked_dir, tmp_results_dir, json_file]]
 
-cmd_list_track = cmd_list_track
+cmd_list_track = cmd_list_track[-2:-1]
 #print(cmd_list_track)
 runMultiCMD(cmd_list_track, max_num_process = max_num_process, refresh_time = 10)
 #print('%'*500)

@@ -20,6 +20,7 @@ from MWTracker.helperFunctions.getTrajectoriesWorkerL import getTrajectoriesWork
 
 if __name__ == '__main__':
 	try:
+		base_name = ''
 		masked_image_file = sys.argv[1]
 		results_dir = sys.argv[2]
 		tmp_masked_dir = sys.argv[3]
@@ -70,14 +71,12 @@ if __name__ == '__main__':
 			if start_point > checkpoint['FEAT_CREATE'] and not os.path.exists(features_tmp):
 				shutil.copy(features_file, tmp_results_dir)
 
-
 			getTrajectoriesWorkerL(tmp_mask_file, tmp_results_dir, param_file = json_file, overwrite = False)
-
 
 			if os.path.abspath(tmp_mask_file) != os.path.abspath(masked_image_file):
 				#it is very important to use os.path.abspath() otherwise there could be some confunsion in the same file name
 				print(masked_image_file, tmp_mask_file)
-				print("Removing temporary mask file.")
+				print("Removing temporary mask file %s" % tmp_mask_file)
 				os.remove(tmp_mask_file)
 			
 			if os.path.abspath(tmp_results_dir) != os.path.abspath(results_dir):
@@ -86,14 +85,14 @@ if __name__ == '__main__':
 				shutil.copy(skeletons_tmp, results_dir)
 				shutil.copy(features_tmp, results_dir)
 
-				print("Removing temporary results files.")
+				print("Removing temporary results files %s %s %s" % (trajectories_tmp, skeletons_tmp, features_tmp))
 				os.remove(trajectories_tmp)
 				os.remove(skeletons_tmp)
 				os.remove(features_tmp)
 
-			print("Finished")
+			print(base_name + " Finished")
 	except:
-		print("Error")
+		print(base_name + " Error")
 		raise
 
 

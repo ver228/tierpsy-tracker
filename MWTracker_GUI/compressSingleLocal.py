@@ -20,6 +20,7 @@ from MWTracker.helperFunctions.compressVideoWorkerL import compressVideoWorkerL
 if __name__ == "__main__":
 
 	try:
+		base_name = ''
 		video_file = sys.argv[1]
 		mask_dir = sys.argv[2]
 		tmp_mask_dir = sys.argv[3]
@@ -38,7 +39,6 @@ if __name__ == "__main__":
 		tmp_mask_file = tmp_mask_dir + base_name + '.hdf5'
 	    
 		try:
-
 			with h5py.File(masked_image_file, "r") as mask_fid:
 				if mask_fid['/mask'].attrs['has_finished'] == 1:
 					has_finished = 1
@@ -47,24 +47,27 @@ if __name__ == "__main__":
 
 		print(has_finished, masked_image_file)
 		if not has_finished:	
-			print("Creating temporal masked file.")
+			print(base_name + " Creating temporal masked file.")
 			compressVideoWorkerL(video_file, tmp_mask_dir, json_file)
 			
 			if os.path.abspath(tmp_mask_file) != os.path.abspath(masked_image_file):
 				#it is very important to use os.path.abspath() otherwise there could be some 
 				#confunsion in the same file name
-				print("Copying temporal masked file into the final directory.")
+				print(base_name + " Copying temporal masked file into the final directory.")
 				shutil.copy(tmp_mask_file, masked_image_file)
 			
-				print("Removing temporary files.")
+				print(base_name + " Removing temporary files.")
 				os.remove(tmp_mask_file)
 
-			#does not seem to really protect a file from being deleted
-			os.chmod(masked_image_file, stat.S_IRUSR|stat.S_IRGRP|stat.S_IROTH) #change the permissions to read only
-			print("Finished to create masked file")
+			#change the permissions to read only. Do not seem to protect from deletion
+			#os.chmod(masked_image_file, stat.S_IRUSR|stat.S_IRGRP|stat.S_IROTH) 
+			
+			#protect file from deletion
+			os.chflags(masked_image_file, stat.UF_IMMUTABLE)
+			print(base_name + " Finished to create masked file")
 		else:
 			print('File alread exists: %s. If you want to calculate the mask again delete the existing file.' % masked_image_file)
 	except:
 		raise
-		print('Error')
+		print(base_name + ' Error')
 		
