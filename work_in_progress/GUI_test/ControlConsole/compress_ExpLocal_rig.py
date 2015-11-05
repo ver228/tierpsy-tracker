@@ -50,13 +50,13 @@ if not os.path.exists(tmp_masked_dir): os.makedirs(tmp_masked_dir)
 movie_files = glob.glob(dir_main + os.sep + video_ext) 
 
 cmd_list_compress = []
-cmd_list_track = []
+#cmd_list_track = []
 for video_file in movie_files:
     base_name = video_file.rpartition('.')[0].rpartition(os.sep)[-1]
     masked_image_file = masked_movies_dir + base_name + '.hdf5'
     
     cmd_list_compress += [['python3',  script_compress, video_file, masked_movies_dir, tmp_masked_dir, json_file]]
-    cmd_list_track += [['python3', script_track, masked_image_file, results_dir, tmp_masked_dir, tmp_results_dir, json_file]]
+    #cmd_list_track += [['python3', script_track, masked_image_file, results_dir, tmp_masked_dir, tmp_results_dir, json_file]]
 
 
 cmd_list_compress = cmd_list_compress

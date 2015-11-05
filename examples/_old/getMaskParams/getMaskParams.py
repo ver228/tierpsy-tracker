@@ -92,7 +92,7 @@ class getMaskParams(QMainWindow):
 				self.videos_dir = self.video_file.rpartition(os.sep)[0] + os.sep
 				
 				self.ui.lineEdit_video.setText(self.video_file)
-				self.vid, self.im_width, self.im_height = selectVideoReader(video_file)
+				self.vid, self.im_width, self.im_height, self.reader_type= selectVideoReader(video_file)
 
 				
 				print('H', self.im_height)

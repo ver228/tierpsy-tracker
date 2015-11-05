@@ -59,10 +59,11 @@ if __name__ == "__main__":
 				print(base_name + " Removing temporary files.")
 				os.remove(tmp_mask_file)
 
-			#change the permissions to read only. Do not seem to protect from deletion
-			#os.chmod(masked_image_file, stat.S_IRUSR|stat.S_IRGRP|stat.S_IROTH) 
+			#Change the permissions so everybody can read/write. 
+			#Otherwise only the owner would be able to change the ummutable flag.
+			os.chmod(masked_image_file, stat.S_IRUSR|stat.S_IRGRP|stat.S_IROTH|stat.S_IWUSR|stat.S_IWGRP|stat.S_IWOTH) 
 			
-			#protect file from deletion
+			#Protect file from deletion.
 			os.chflags(masked_image_file, stat.UF_IMMUTABLE)
 			print(base_name + " Finished to create masked file")
 		else:

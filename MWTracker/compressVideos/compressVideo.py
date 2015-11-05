@@ -70,6 +70,7 @@ def getROIMask(image,  min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEF
     return mask
 
 
+READER_TYPE = {'OPENCV':0, 'FFMPEG_CMD':1, 'HDF5':2};
 def selectVideoReader(video_file):
     #open video to read
     isHDF5video = video_file[-5:] == '.hdf5';
@@ -80,11 +81,14 @@ def selectVideoReader(video_file):
         vid = readVideoHDF5(video_file);
         im_height = vid.height;
         im_width = vid.width;
+        reader_type = READER_TYPE['HDF5']
+
     elif isMJPGvideo:
         #use previous ffmpeg that is more compatible with the Gecko MJPG format
         vid = readVideoffmpeg(video_file);
         im_height = vid.height;
         im_width = vid.width;
+        reader_type = READER_TYPE['FFMPEG_CMD']
     else:
         #use opencv VideoCapture
         vid = cv2.VideoCapture(video_file);
@@ -96,8 +100,9 @@ def selectVideoReader(video_file):
             im_height, im_width, _ = image.shape
             vid.release()
             vid = cv2.VideoCapture(video_file);
+        reader_type = READER_TYPE['OPENCV']
 
-    return vid, im_width, im_height
+    return vid, im_width, im_height, reader_type
 
 
 def compressVideo(video_file, masked_image_file, buffer_size = 25, \
@@ -125,7 +130,7 @@ expected_frames = 15000, mask_param = DEFAULT_MASK_PARAM):
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
     
     #select the video reader class according to the file type. 
-    vid, im_width, im_height = selectVideoReader(video_file)
+    vid, im_width, im_height, reader_type = selectVideoReader(video_file)
     
     if im_width == 0 or im_height == 0:
         raise(RuntimeError('Cannot read the video file correctly. Dimensions w=%i h=%i' % (im_width, im_height)))
@@ -184,10 +189,17 @@ expected_frames = 15000, mask_param = DEFAULT_MASK_PARAM):
     full_frame_number = 0;
     image_prev = np.zeros([]);
     
+    vid_frame_pos = []
+    vid_time_pos = []
+
     #initialize timers
     progressTime = timeCounterStr('Compressing video.');
 
     while frame_number < max_frame:
+        if reader_type == READER_TYPE['OPENCV']:
+            vid_frame_pos.append(int(vid.get(cv2.CAP_PROP_POS_FRAMES)))
+            vid_time_pos.append(vid.get(cv2.CAP_PROP_POS_MSEC))
+
         ret, image = vid.read() #get video frame, stop program when no frame is retrive (end of file)
         if ret == 0:
             break
@@ -254,7 +266,7 @@ expected_frames = 15000, mask_param = DEFAULT_MASK_PARAM):
             progress_str = progressTime.getStr(frame_number)
             print(base_name + ' ' + progress_str);
             sys.stdout.flush()
-            
+        
     
     if mask_dataset.shape[0] != frame_number:
         mask_dataset.resize(frame_number, axis=0);
@@ -265,8 +277,20 @@ expected_frames = 15000, mask_param = DEFAULT_MASK_PARAM):
     
     mask_dataset.attrs['has_finished'] = 1
         
-    #close the video and hdf5 files
+    #close the video
     vid.release() 
+
+    #if it is not opencv the timestamp from the vid reader
+    if reader_type != READER_TYPE['OPENCV']:
+        vid_frame_pos = vid.vid_frame_pos
+        vid_time_pos = vid.vid_time_pos
+
+    #save time stamp
+    mask_fid.create_dataset("/vid_frame_pos", data = np.asarray(vid_frame_pos));
+    mask_fid.create_dataset("/vid_time_pos", data = np.asarray(vid_time_pos));
+
+
+    #close the hdf5 files
     mask_fid.close()
     print(base_name + ' Compressed video done.');
     sys.stdout.flush()

@@ -92,7 +92,7 @@ class getMaskParams_GUI(QMainWindow):
 				self.videos_dir = self.video_file.rpartition(os.sep)[0] + os.sep
 				
 				self.ui.lineEdit_video.setText(self.video_file)
-				self.vid, self.im_width, self.im_height = selectVideoReader(video_file)
+				self.vid, self.im_width, self.im_height, self.reader_type = selectVideoReader(video_file)
 
 				if self.im_width == 0 or self.im_height == 0:
 					 QMessageBox.critical(self, 'Cannot read video file.', "Cannot read video file. Try another file",

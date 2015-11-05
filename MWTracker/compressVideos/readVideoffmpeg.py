@@ -9,6 +9,14 @@ import os
 import re
 import subprocess as sp
 import numpy as np
+from threading  import Thread
+from queue import Queue, Empty
+
+
+def enqueue_error(out, queue):
+    for line in iter(out.readline, b''):
+        queue.put(line)
+    out.close
 
 class readVideoffmpeg:
     '''
@@ -48,13 +56,40 @@ class readVideoffmpeg:
         command = [ffmpeg_cmd, 
            '-i', fileName,
            '-f', 'image2pipe',
+           '-vsync', 'drop', #avoid repeating frames due to changes in the time stamp, it is better to solve those situations manually after
            '-threads', '0',
+           '-vf', 'showinfo',
            '-vcodec', 'rawvideo', '-']
-        devnull = open(os.devnull, 'w') #use devnull to avoid printing the ffmpeg command output in the screen
-        self.pipe = sp.Popen(command, stdout = sp.PIPE, \
-        bufsize = self.tot_pix, stderr=devnull) 
-        #use a buffer size as small as possible (frame size), makes things faster
         
+        self.vid_frame_pos = []
+        self.vid_time_pos = []
+        
+        #devnull = open(os.devnull, 'w') #use devnull to avoid printing the ffmpeg command output in the screen
+        self.pipe = sp.Popen(command, stdout = sp.PIPE, \
+        bufsize = self.tot_pix, stderr=sp.PIPE)
+
+        self.queue = Queue()
+        self.thread = Thread(target = enqueue_error, args = (self.pipe.stderr, self.queue))
+        self.thread.start()
+
+        
+        #use a buffer size as small as possible (frame size), makes things faster
+    
+    def get_timestamp(self):
+        while 1:    
+            # read line without blocking
+            try: 
+                line = self.queue.get_nowait().decode("utf-8")
+                #self.err_out.append(line)
+
+                frame_N = line.partition(' n:')[-1].partition(' ')[0]
+                timestamp = line.partition(' pts_time:')[-1].partition(' ')[0]
+                
+                if frame_N and timestamp:
+                    self.vid_frame_pos.append(int(frame_N))
+                    self.vid_time_pos.append(float(timestamp))
+            except Empty: break
+
     
     def read(self):
         #retrieve an image as numpy array 
@@ -63,11 +98,16 @@ class readVideoffmpeg:
             return (0, []);
         
         image = np.fromstring(raw_image, dtype='uint8')
-        #print len(image), self.width, self.height
+        #print(len(image), self.width, self.height)
         image = image.reshape(self.width,self.height)
+
+        # i need to read this here because otherwise the err buff will get full.
+        self.get_timestamp()
+
         return (1, image)
     
     def release(self):
         #close the buffer
         self.pipe.stdout.flush()
+        self.get_timestamp()
         self.pipe.terminate()
