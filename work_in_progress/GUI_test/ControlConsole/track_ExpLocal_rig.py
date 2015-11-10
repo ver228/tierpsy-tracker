@@ -33,14 +33,14 @@ tmp_masked_dir = os.path.join(tmp_dir_root, 'MaskedVideos', subdir_base) + os.se
 tmp_results_dir = os.path.join(tmp_dir_root, 'Results', subdir_base) + os.sep
 
 
+if not os.path.exists(results_dir): os.makedirs(results_dir)
 if not os.path.exists(tmp_results_dir): os.makedirs(tmp_results_dir)
-if not os.path.exists(masked_movies_dir): os.makedirs(masked_movies_dir)
 if not os.path.exists(tmp_masked_dir): os.makedirs(tmp_masked_dir)
 
 #create the list of commands for the analsys
-mask_files = glob.glob(dir_main + os.sep + '*.hdf5') 
+mask_files = glob.glob(masked_movies_dir + os.sep + '*.hdf5') 
 
-cmd_list_compress = []
+cmd_list_track = []
 for masked_image_file in mask_files:
     cmd_list_track += [['python3', script_track, masked_image_file, results_dir, tmp_masked_dir, tmp_results_dir, json_file]]
 
