@@ -220,7 +220,7 @@ class wormStatsClass():
         for spec in self.specs_events + self.specs_motion + self.specs4table:
             feature = spec.name.split(' (')[0].replace(' ', '_').replace('.', '').replace('-', '_')
             if '/' in feature:
-                feature = feature.replace('/', '_') + '_Ratio'
+                feature = feature.replace('/', '_') + '_ratio'
             self.spec2tableName[spec.name] = feature.lower()
 
     def featureStat(self, stat_func, data, name, is_signed, is_motion, motion_mode = np.zeros(0), stats={}):
@@ -233,9 +233,9 @@ class wormStatsClass():
         if is_motion:
             #if the the feature is motion type we can subdivide in Foward, Paused or Backward motion
             assert motion_mode.size == data.size
-            motion_types['Foward'] = 1;
-            motion_types['Paused'] = 0;
-            motion_types['Backward'] = -1;
+            motion_types['foward'] = 1;
+            motion_types['paused'] = 0;
+            motion_types['backward'] = -1;
         
         
         for key in motion_types:
@@ -249,9 +249,9 @@ class wormStatsClass():
             stats[sub_name] = stat_func(data[valid]);
             if is_signed:
                 # if the feature is signed we can subdivide in positive, negative and absolute 
-                stats[sub_name + '_Abs'] = stat_func(np.abs(data[valid]))
-                stats[sub_name + '_Neg'] = stat_func(data[data<0 & valid])
-                stats[sub_name + '_Pos'] = stat_func(data[data>0 & valid])
+                stats[sub_name + '_abs'] = stat_func(np.abs(data[valid]))
+                stats[sub_name + '_neg'] = stat_func(data[data<0 & valid])
+                stats[sub_name + '_pos'] = stat_func(data[data>0 & valid])
 
     def getWormStats(self, worm_features, stat_func = np.mean):
         ''' Calculate the statistics of an object worm features, subdividing data
@@ -330,7 +330,7 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
     filters_tables = tables.Filters(complevel = 5, complib='zlib', shuffle=True)
     with tables.File(features_file, 'w') as features_fid:
 
-        group_events = features_fid.create_group('/', 'Features_events')
+        group_events = features_fid.create_group('/', 'features_events')
         
         #initialize motion table. All the features here are a numpy array having the same length as the worm trajectory
         motion_header = {'worm_index':tables.Int32Col(pos=0),\
@@ -340,7 +340,7 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
         for ii, spec in enumerate(wStats.specs_motion):
             feature = wStats.spec2tableName[spec.name]
             motion_header[feature] = tables.Float32Col(pos=ii+2)
-        table_motion = features_fid.create_table('/', 'Features_motion', motion_header, filters=filters_tables)
+        table_motion = features_fid.create_table('/', 'features_motion', motion_header, filters=filters_tables)
         
         #get the is_signed flag for motion specs and store it as an attribute
         #is_signed flag is used by featureStat in order to subdivide the data if required

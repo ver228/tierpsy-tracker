@@ -18,6 +18,16 @@ sys.path.append(MWTracker_dir)
 
 from MWTracker.helperFunctions.getTrajectoriesWorkerL import getTrajectoriesWorkerL, getStartingPoint, checkpoint
 
+
+from MWTracker.featuresAnalysis.obtainFeatures_N import getWormFeaturesLab
+def featFromLabSkel(skel_file, ind_feat_file):
+	with pd.HDFStore(skel_file, 'r') as ske_file_id:
+		trajectories_data = ske_file_id['/trajectories_data']
+
+	trajectories_data = trajectories_data[self.trajectories_data['worm_label']==1]
+	worm_indexes = trajectories_data['worm_index_N'].unique()
+	getWormFeaturesLab(skel_file, ind_feat_file, worm_indexes)
+
 if __name__ == '__main__':
 	try:
 		base_name = ''
@@ -55,14 +65,16 @@ if __name__ == '__main__':
 			if not os.path.exists(tmp_masked_dir): os.makedirs(tmp_masked_dir)
 			if not os.path.exists(tmp_results_dir): os.makedirs(tmp_results_dir)
 
-			#check if there is already a finished/readable temporary mask file in current directory otherwise copy the 
-			try:
-				with h5py.File(tmp_mask_file, "r") as mask_fid:
-					if mask_fid['/mask'].attrs['has_finished'] != 1:
-						raise
-			except:
-				if os.path.abspath(tmp_mask_file) != os.path.abspath(masked_image_file):
-					print("Copying masked file %s into the temporary directory %s" % (masked_image_file, tmp_masked_dir))
+
+			if start_point < checkpoint['FEAT_CREATE']: #features do not need the mask
+				#check if there is already a finished/readable temporary mask file in current directory otherwise copy the 
+				try:
+					with h5py.File(tmp_mask_file, "r") as mask_fid:
+						if mask_fid['/mask'].attrs['has_finished'] != 1:
+							raise
+				except:
+					if os.path.abspath(tmp_mask_file) != os.path.abspath(masked_image_file):
+						print("Copying masked file %s into the temporary directory %s" % (masked_image_file, tmp_masked_dir))
 					shutil.copy(masked_image_file, tmp_masked_dir)
 
 					
@@ -78,6 +90,19 @@ if __name__ == '__main__':
 
 			#start the analysis
 			getTrajectoriesWorkerL(tmp_mask_file, tmp_results_dir, param_file = json_file, overwrite = False)
+
+
+			try:
+				feat_ind_file = results_dir + base_name + '_feat_ind.hdf5'
+				feat_ind_tmp = tmp_results_dir + base_name + '_feat_ind.hdf5'
+				
+				featFromLabSkel(skeletons_tmp, feat_ind_tmp)
+
+				shutil.copy(feat_ind_tmp, results_dir)
+				if os.path.abspath(tmp_results_dir) != os.path.abspath(results_dir):
+					os.remove(feat_ind_tmp)
+			except:
+				pass
 
 			#copy results files and remove temporary files
 			if os.path.abspath(tmp_mask_file) != os.path.abspath(masked_image_file):
