@@ -2,6 +2,7 @@ MW_MAIN_DIR=`pwd`
 
 #get sudo permissions
 sudo echo "Thanks."
+
 #make sure the /usr/loca/ is writable by the user
 sudo chown -R `whoami` /usr/local/
 
@@ -10,6 +11,15 @@ curl http://ffmpegmac.net/resources/SnowLeopard_Lion_Mountain_Lion_Mavericks_27.
 unzip $MW_MAIN_DIR/ffmpeg_old.zip ffmpeg
 sudo mv ffmpeg /usr/local/bin/ffmpeg22
 rm $MW_MAIN_DIR/ffmpeg_old.zip
+
+#clone movement validation repository if it does not exist
+if [ -d '../movement_validation']; then 
+	git clone https://github.com/openworm/movement_validation ../movement_validation
+fi
+
+#change permissions so other users can access to this
+chmod -R ugo+rx '../movement_validation'
+chmod -R ugo+rx '.'
 
 #install homebrew and other software used
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -35,7 +45,7 @@ pip3 install scikit-learn
 pip3 install scikit-image
 pip3 install tifffile
 pip3 install seaborn
-#pip3 install xlrd
+pip3 install xlrd
 
 #install pyqt5 for the GUI
 brew uninstall --force sip
@@ -71,6 +81,9 @@ make install
 cd $MW_MAIN_DIR
 rm $MW_MAIN_DIR/opencv-3.0.0.zip
 rm -Rf $MW_MAIN_DIR/opencv-3.0.0
+
+#change permissions so other users can access to the python3 installation
+sudo chmod -R ugo+rx '/usr/local/'
 
 #compile cython files
 cd $MW_MAIN_DIR/MWTracker/trackWorms/segWormPython/cythonFiles/

@@ -51,28 +51,35 @@ if __name__ == '__main__':
 			skeletons_tmp = tmp_results_dir + base_name + '_skeletons.hdf5'
 			features_tmp = tmp_results_dir + base_name + '_features.hdf5'
 
-			if not os.path.exists(tmp_mask_file):
-				if not os.path.exists(tmp_masked_dir):
-					os.makedirs(tmp_masked_dir)
+			#create temporary directories if they do not exists	
+			if not os.path.exists(tmp_masked_dir): os.makedirs(tmp_masked_dir)
+			if not os.path.exists(tmp_results_dir): os.makedirs(tmp_results_dir)
 
+			#check if there is already a finished/readable temporary mask file in current directory otherwise copy the 
+			try:
+				with h5py.File(tmp_mask_file, "r") as mask_fid:
+					if mask_fid['/mask'].attrs['has_finished'] != 1:
+						raise
+			except:
 				if os.path.abspath(tmp_mask_file) != os.path.abspath(masked_image_file):
 					print("Copying masked file %s into the temporary directory %s" % (masked_image_file, tmp_masked_dir))
 					shutil.copy(masked_image_file, tmp_masked_dir)
 
-			if not os.path.exists(tmp_results_dir):
-					os.makedirs(tmp_results_dir)
-
+					
+			#copy files from an incomplete analysis files if there are not in the tmp directory.
 			if start_point > checkpoint['TRAJ_CREATE'] and not os.path.exists(trajectories_tmp):
 				shutil.copy(trajectories_file, tmp_results_dir)
 
-			if start_point > checkpoint['SKE_CREATE'] and not os.path.exists(features_tmp):
+			if start_point > checkpoint['SKE_CREATE'] and not os.path.exists(skeletons_tmp):
 				shutil.copy(skeletons_file, tmp_results_dir)
 
 			if start_point > checkpoint['FEAT_CREATE'] and not os.path.exists(features_tmp):
 				shutil.copy(features_file, tmp_results_dir)
 
+			#start the analysis
 			getTrajectoriesWorkerL(tmp_mask_file, tmp_results_dir, param_file = json_file, overwrite = False)
 
+			#copy results files and remove temporary files
 			if os.path.abspath(tmp_mask_file) != os.path.abspath(masked_image_file):
 				#it is very important to use os.path.abspath() otherwise there could be some confunsion in the same file name
 				print(masked_image_file, tmp_mask_file)
@@ -80,6 +87,7 @@ if __name__ == '__main__':
 				os.remove(tmp_mask_file)
 			
 			if os.path.abspath(tmp_results_dir) != os.path.abspath(results_dir):
+				#it is very important to use os.path.abspath() otherwise there could be some confunsion in the same file name
 				print("Copying result files into the final directory %s" % results_dir)
 				shutil.copy(trajectories_tmp, results_dir)
 				shutil.copy(skeletons_tmp, results_dir)

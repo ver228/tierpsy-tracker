@@ -257,9 +257,9 @@ class wormStatsClass():
         if is_motion:
             #if the the feature is motion type we can subdivide in Foward, Paused or Backward motion
             assert motion_mode.size == data.size
-            motion_types['Foward'] = 1;
-            motion_types['Paused'] = 0;
-            motion_types['Backward'] = -1;
+            motion_types['foward'] = 1;
+            motion_types['paused'] = 0;
+            motion_types['backward'] = -1;
         
         
         for key in motion_types:
@@ -273,9 +273,9 @@ class wormStatsClass():
             stats[sub_name] = stat_func(data[valid]);
             if is_signed:
                 # if the feature is signed we can subdivide in positive, negative and absolute 
-                stats[sub_name + '_Abs'] = stat_func(np.abs(data[valid]))
-                stats[sub_name + '_Neg'] = stat_func(data[data<0 & valid])
-                stats[sub_name + '_Pos'] = stat_func(data[data>0 & valid])
+                stats[sub_name + '_abs'] = stat_func(np.abs(data[valid]))
+                stats[sub_name + '_neg'] = stat_func(data[data<0 & valid])
+                stats[sub_name + '_pos'] = stat_func(data[data>0 & valid])
 
     def getWormStats(self, worm_features, stat_func = np.mean):
         ''' Calculate the statistics of an object worm features, subdividing data

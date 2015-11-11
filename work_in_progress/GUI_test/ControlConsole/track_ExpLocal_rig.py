@@ -15,7 +15,7 @@ scripts_dir = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/MWTracker_GUI/'
 script_track = scripts_dir +  'trackSingleLocal.py'
 
 #input parameters
-max_num_process = 6
+max_num_process = 1
 
 if len(sys.argv) > 2:
 	json_file = sys.argv[2]
@@ -50,6 +50,6 @@ for masked_image_file in mask_files:
 
 
 print(cmd_list_track)
-runMultiCMD(cmd_list_track, max_num_process = max_num_process, refresh_time = 0.1)
+runMultiCMD(cmd_list_track, max_num_process = max_num_process, refresh_time = 10)
 
     
