@@ -22,6 +22,7 @@ if len(sys.argv) > 2:
 else:
 	json_file = ''
 
+
 masked_movies_dir = sys.argv[1]
 assert os.path.exists(masked_movies_dir)
 if masked_movies_dir[-1] != os.sep: masked_movies_dir += os.sep #add the path separator at the end the main directory 
@@ -48,6 +49,7 @@ for masked_image_file in mask_files:
     cmd_list_track += [['python3', script_track, masked_image_file, results_dir, tmp_masked_dir, tmp_results_dir, json_file]]
 
 
+print(cmd_list_track)
 runMultiCMD(cmd_list_track, max_num_process = max_num_process, refresh_time = 0.1)
 
     
