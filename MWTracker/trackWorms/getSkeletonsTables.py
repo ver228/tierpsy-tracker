@@ -32,15 +32,13 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_
     If min_displacement is specified there is the option to filter immobile particles, typically spurious.
     '''
     #read that frame an select trajectories that were considered valid by join_trajectories
-    table_fid = pd.HDFStore(trajectories_file, 'r')
-    df = table_fid['/plate_worms'][['worm_index_joined', 'frame_number', \
-    'coord_x', 'coord_y','threshold', 'bounding_box_xmax', 'bounding_box_xmin',\
-    'bounding_box_ymax' , 'bounding_box_ymin']]
+    with pd.HDFStore(trajectories_file, 'r') as table_fid:
+        df = table_fid['/plate_worms'][['worm_index_joined', 'frame_number', \
+        'coord_x', 'coord_y','threshold', 'bounding_box_xmax', 'bounding_box_xmin',\
+        'bounding_box_ymax' , 'bounding_box_ymin']]
+        
+        df =  df[df['worm_index_joined'] > 0]
     
-    df =  df[df['worm_index_joined'] > 0]
-    table_fid.close()
-    
-   
     tracks_data = df.groupby('worm_index_joined').aggregate(['max', 'min', 'count'])
     
     #filter for trajectories that move too little (static objects)
@@ -99,9 +97,13 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_
         
         #iterpolate missing points in the trajectory and smooth data using the savitzky golay filter
         fx = interp1d(t, x)
-        xnew = savgol_filter(fx(tnew), displacement_smooth_win, 3);
         fy = interp1d(t, y)
-        ynew = savgol_filter(fy(tnew), displacement_smooth_win, 3);
+        xnew = fx(tnew)
+        ynew = fy(tnew)
+
+        if displacement_smooth_win > 3:
+            xnew = savgol_filter(xnew, displacement_smooth_win, 3);
+            ynew = savgol_filter(ynew, displacement_smooth_win, 3);
         
         #smooth the threshold (the worm intensity shouldn't change abruptly along the trajectory)
         fthresh = interp1d(t, thresh)

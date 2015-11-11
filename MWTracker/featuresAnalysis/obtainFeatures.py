@@ -304,9 +304,10 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
     #%%
     
     #get the fraction of worms that were skeletonized per trajectory
-    skeleton_fracc = indexes_data.groupby('worm_index_joined').agg({'has_skeleton':'mean'})
-    skeleton_fracc = skeleton_fracc['has_skeleton']
-    valid_worm_index = skeleton_fracc[skeleton_fracc>=bad_seg_thresh].index
+    dum = indexes_data.groupby('worm_index_joined').agg({'has_skeleton':['mean', 'sum']})
+    skeleton_fracc = dum['has_skeleton']['mean']
+    skeleton_tot = dum['has_skeleton']['sum']
+    valid_worm_index = skeleton_fracc[(skeleton_fracc>=bad_seg_thresh) & (skeleton_tot>=fps)].index
     
     #remove the bad worms, we do not care about them
     indexes_data = indexes_data[indexes_data['worm_index_joined'].isin(valid_worm_index)]

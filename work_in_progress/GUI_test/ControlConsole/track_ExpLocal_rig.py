@@ -16,8 +16,11 @@ script_track = scripts_dir +  'trackSingleLocal.py'
 
 #input parameters
 max_num_process = 6
-json_file = ''
 
+if len(sys.argv) > 2:
+	json_file = sys.argv[2]
+else:
+	json_file = ''
 
 masked_movies_dir = sys.argv[1]
 assert os.path.exists(masked_movies_dir)
@@ -45,6 +48,6 @@ for masked_image_file in mask_files:
     cmd_list_track += [['python3', script_track, masked_image_file, results_dir, tmp_masked_dir, tmp_results_dir, json_file]]
 
 
-runMultiCMD(cmd_list_track, max_num_process = max_num_process, refresh_time = 10)
+runMultiCMD(cmd_list_track, max_num_process = max_num_process, refresh_time = 0.1)
 
     

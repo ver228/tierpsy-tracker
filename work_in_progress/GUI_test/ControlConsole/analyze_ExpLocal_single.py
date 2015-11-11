@@ -24,18 +24,20 @@ video_ext = '*.avi'
 #json_file = ''
 
 dir_main = sys.argv[1]
+
+assert os.path.exists(dir_main)
+if dir_main[-1] != os.sep: dir_main += os.sep #add the path separator at the end the main directory 
+
 #construct saving directories from the root directory
 masked_movies_dir = dir_main.replace('Worm_Videos', 'MaskedVideos')
 results_dir = dir_main.replace('Worm_Videos', 'Results')
 tmp_dir_root = os.path.join(os.path.expanduser("~"), 'Tmp')
 
-assert os.path.exists(dir_main)
-if dir_main[-1] != os.sep: dir_main += os.sep #add the path separator at the end the main directory 
 
 
 #create temporary directories. For the moment the user is responsable to clean the directories when
 
-subdir_base = os.path.split(dir_main)[-1]
+subdir_base = os.path.split(dir_main[:-1])[-1]
 
 #masked_movies_dir = masked_movies_root + subdir_base + os.sep
 #results_dir = results_root + subdir_base + os.sep
@@ -72,8 +74,10 @@ for video_file in movie_files:
 
 
 cmd_list_compress = cmd_list_compress
+#print(cmd_list_track)
+
 runMultiCMD(cmd_list_compress, max_num_process = max_num_process)
-print('%'*500)
+#print('%'*500)
 runMultiCMD(cmd_list_track, max_num_process = max_num_process)
 #if tmp_masked_dir != masked_movies_dir: os.remove(tmp_masked_dir)
     
