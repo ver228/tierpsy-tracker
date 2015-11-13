@@ -9,7 +9,7 @@ import os
 import glob
 import sys
 from start_console import runMultiCMD
-
+import fnmatch
 
 def getTrackCommands(video_dir_root, mask_dir_root, tmp_dir_root, json_file = '', video_ext = '.mjpg',
 	script_abs_path = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/MWTracker_GUI/compressSingleLocal.py'):
@@ -19,7 +19,7 @@ def getTrackCommands(video_dir_root, mask_dir_root, tmp_dir_root, json_file = ''
 	cmd_list_compress = []
 	for dpath, dnames, fnames in os.walk(video_dir_root):
 		for fname in fnames:
-			if fname.endswith(video_ext):
+			if fnmatch.fnmatch(fname, video_ext):
 				video_file = os.path.abspath(os.path.join(dpath, fname))
 				assert(os.path.exists(video_file))
 
@@ -46,7 +46,7 @@ if __name__ == '__main__':
 
 	#input parameters
 	max_num_process = 6
-	video_ext = '.mjpg'
+	video_ext = '*.mjpg'
 	json_file = ''
 
 	video_dir_root = sys.argv[1]
@@ -63,6 +63,9 @@ if __name__ == '__main__':
 		json_file = sys.argv[3]
 	else:
 		json_file = ''
+
+	if len(sys.argv) > 4:
+		video_ext = sys.argv[4]
 
 	cmd_list_compress = getTrackCommands(video_dir_root, mask_dir_root, tmp_dir_root, json_file, video_ext, script_abs_path)
 	
