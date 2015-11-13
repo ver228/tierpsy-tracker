@@ -76,7 +76,7 @@ def getStartingPoint(masked_image_file, results_dir):
                 return checkpoint['FEAT_IND'];
     except:
         #if there is any problem while reading the file, create it again
-        with pd.File(skel_file, 'r') as ske_file_id:
+        with tables.File(skeletons_file, 'r') as ske_file_id:
             if 'worm_label' in ske_file_id.get_node('/trajectories_data').colnames:
                 return checkpoint['FEAT_IND'];
 

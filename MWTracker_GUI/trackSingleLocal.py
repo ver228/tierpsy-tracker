@@ -119,7 +119,7 @@ if __name__ == '__main__':
 	copyFilesLocal(files2copy)
 	
 	print(base_name + " Deleting temporary files")
-	use the os.path.abspath really compare between paths
+	#use the os.path.abspath really compare between paths
 	if os.path.abspath(tmp_mask_file) != os.path.abspath(masked_image_file):
 		if os.path.exists(tmp_mask_file): os.remove(tmp_mask_file)
 	
