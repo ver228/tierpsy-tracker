@@ -118,7 +118,7 @@ def getWormFeaturesLab(skeletons_file, features_file, worm_indexes, fps = 25, ti
                                     obj = tmp_data, filters=filters_tables)
                     table_tmp._v_attrs['is_signed'] = int(spec.is_signed)
             
-            dd = " Extracting features. Worm %i of %i done." % (ind+1, tot_worms)
+            dd = " Extracting features (labeled). Worm %i of %i done." % (ind+1, tot_worms)
             dd = base_name + dd + ' Total time:' + progress_timer.getTimeStr()
             print(dd)
             sys.stdout.flush()
@@ -155,5 +155,17 @@ def getWormFeaturesLab(skeletons_file, features_file, worm_indexes, fps = 25, ti
         
         feat_mean._v_attrs['has_finished'] = 1
         
-        print('Feature extraction finished:' + progress_timer.getTimeStr())
+        print(base_name + ' Feature extraction (labeled) finished:' + progress_timer.getTimeStr())
         sys.stdout.flush()
+
+def featFromLabSkel(skel_file, ind_feat_file, fps=25):
+
+    with pd.HDFStore(skel_file, 'r') as ske_file_id:
+        trajectories_data = ske_file_id['/trajectories_data']
+
+    if not 'worm_label' in trajectories_data.columns:
+        return
+    
+    trajectories_data = trajectories_data[trajectories_data['worm_label']==1]
+    worm_indexes = trajectories_data['worm_index_N'].unique()
+    getWormFeaturesLab(skel_file, ind_feat_file, worm_indexes, fps)

@@ -29,8 +29,6 @@ if __name__ == "__main__":
 		if len(sys.argv) > 4:
 			json_file = sys.argv[4]
 		
-		print(json_file)
-		
 		if mask_dir[-1] != os.sep: mask_dir += os.sep 
 		if tmp_mask_dir[-1] != os.sep: tmp_mask_dir += os.sep 
 
@@ -39,16 +37,24 @@ if __name__ == "__main__":
 		tmp_mask_file = tmp_mask_dir + base_name + '.hdf5'
 	    
 		try:
+			#raise
 			with h5py.File(masked_image_file, "r") as mask_fid:
 				if mask_fid['/mask'].attrs['has_finished'] == 1:
 					has_finished = 1
 		except:
 			has_finished = 0
-
+		
 		print(has_finished, masked_image_file)
-		if not has_finished:	
-			print(base_name + " Creating temporal masked file.")
-			compressVideoWorkerL(video_file, tmp_mask_dir, json_file)
+		if not has_finished:
+			#check if a finished temporal mask exists. The processes was interrupted during copying.
+			try:
+				with h5py.File(tmp_mask_file, "r") as mask_fid:
+					if mask_fid['/mask'].attrs['has_finished'] != 1:
+						raise
+			except:
+				#start to calculate the mask from raw video
+				print(base_name + " Creating temporal masked file.")
+				compressVideoWorkerL(video_file, tmp_mask_dir, json_file)
 			
 			if os.path.abspath(tmp_mask_file) != os.path.abspath(masked_image_file):
 				#it is very important to use os.path.abspath() otherwise there could be some 
