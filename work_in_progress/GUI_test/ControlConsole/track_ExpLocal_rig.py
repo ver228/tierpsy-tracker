@@ -25,8 +25,12 @@ def getTrackCommands(mask_dir_root, results_dir_root, tmp_dir_root, json_file = 
 				masked_image_file = os.path.abspath(os.path.join(dpath, fname))
 				assert(os.path.exists(masked_image_file))
 
-				subdir_path = dpath.replace(mask_dir_root, '')
-				if subdir_path[0] == os.sep: subdir_path = subdir_path[1:]
+				subdir_path = dpath.replace(video_dir_root, '')
+				if subdir_path and subdir_path[0] == os.sep: 
+					subdir_path =  subdir_path[1:] if len(subdir_path[0]) >1 else ;;
+						
+					else:
+						subdir_path = ''
 
 				results_dir = os.path.abspath(os.path.join(results_dir_root, subdir_path))
 				tmp_masked_dir = os.path.abspath(os.path.join(tmp_dir_root, 'MaskedVideos', subdir_path))

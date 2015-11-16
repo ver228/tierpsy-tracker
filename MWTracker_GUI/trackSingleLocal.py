@@ -89,7 +89,7 @@ if __name__ == '__main__':
 				#check if the video to mask conversion did indeed finished correctly
 				assert mask_fid['/mask'].attrs['has_finished'] == 1
 
-			files2copy += [(masked_image_file, tmp_results_dir)]
+			files2copy += [(masked_image_file, tmp_masked_dir)]
 
 	
 	print(base_name + ' Starting checkpoint: ' + checkpoint_label[analysis_start_point])

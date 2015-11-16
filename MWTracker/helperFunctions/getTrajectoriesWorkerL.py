@@ -71,7 +71,7 @@ def getStartingPoint(masked_image_file, results_dir):
     
     try:
         with tables.File(feat_ind_file, "r") as feat_file_id:
-            features_table = feat_ind_file.get_node('/features_means')
+            features_table = feat_file_id.get_node('/features_means')
             if features_table._v_attrs['has_finished'] == 0:
                 return checkpoint['FEAT_IND'];
     except:
