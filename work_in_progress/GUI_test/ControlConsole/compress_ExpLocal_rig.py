@@ -25,7 +25,7 @@ def getTrackCommands(video_dir_root, mask_dir_root, tmp_dir_root, json_file = ''
 
 				subdir_path = dpath.replace(video_dir_root, '')
 				if subdir_path and subdir_path[0] == os.sep: 
-					subdir_path = subdir_path[1:] if len(subdir_path) >1 else ''
+					subdir_path = subdir_path[1:] if len(subdir_path[0]) >1 else ''
 
 				mask_dir = os.path.abspath(os.path.join(mask_dir_root, 'MaskedVideos', subdir_path))
 				tmp_masked_dir = os.path.abspath(os.path.join(tmp_dir_root, 'MaskedVideos', subdir_path))
@@ -70,24 +70,11 @@ if __name__ == '__main__':
 
 	cmd_list_compress = getTrackCommands(video_dir_root, mask_dir_root, tmp_dir_root, json_file, video_ext, script_abs_path)
 	
-
-	cmd_list_compress = cmd_list_compress
+	#cmd_list_compress = cmd_list_compress[0:1]
 	#display commands to be executed
 	if cmd_list_compress: 
-		
-		for cmd in cmd_list_compress: 
-			for ii, dd in enumerate(cmd):
-				
-				if ii >= 2:
-					dd = '"' + dd + '"'
+		for dd in cmd_list_compress: print(' '.join(dd))
 
-				if ii == 0:
-					cmd_str = dd
-				else:
-					cmd_str += ' ' +  dd
-			print(cmd_str)
-
-	print(len(cmd_list_compress))
 	#run all the commands
 	runMultiCMD(cmd_list_compress, max_num_process = max_num_process, refresh_time = 10)
     

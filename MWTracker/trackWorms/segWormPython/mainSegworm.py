@@ -127,8 +127,6 @@ def binaryMask2Contour(worm_mask, min_mask_area=50, roi_center_x = -1, roi_cente
     if roi_center_y < 1:
         roi_center_y = (worm_mask.shape[0]-1)/2.
     
-    assert worm_mask.size > 0 #assest this is not an empty arrays
-
     #select only one contour in the binary mask
     #get contour
     _,contour, _ = cv2.findContours(worm_mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
@@ -201,8 +199,6 @@ def orientWorm(skeleton, prev_skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt
 def getSkeleton(worm_mask, prev_skeleton = np.zeros(0), resampling_N=50, min_mask_area = 50):
     
     n_output_param = 8 #number of expected output parameters
-    if worm_mask.size == 0:
-        return n_output_param*[np.zeros(0)]
 
     contour = binaryMask2Contour(worm_mask, min_mask_area=50)
 
