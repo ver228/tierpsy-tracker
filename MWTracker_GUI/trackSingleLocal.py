@@ -39,7 +39,7 @@ if __name__ == '__main__':
 #	try:
 	masked_image_file = sys.argv[1]
 	results_dir = sys.argv[2]
-	tmp_masked_dir = sys.argv[3]
+	tmp_mask_dir = sys.argv[3]
 	tmp_results_dir = sys.argv[4]
 
 	json_file = ''
@@ -47,17 +47,17 @@ if __name__ == '__main__':
 		json_file = sys.argv[5]
 
 	#create temporary directories if they do not exists	
-	if not os.path.exists(tmp_masked_dir): os.makedirs(tmp_masked_dir)
+	if not os.path.exists(tmp_mask_dir): os.makedirs(tmp_mask_dir)
 	if not os.path.exists(tmp_results_dir): os.makedirs(tmp_results_dir)
 
 	#get file names
 	base_name, trajectories_file, skeletons_file, features_file, feat_ind_file = constructNames(masked_image_file, results_dir)
-	tmp_mask_file = tmp_masked_dir + os.sep + base_name + '.hdf5'
+	tmp_mask_file = tmp_mask_dir + os.sep + base_name + '.hdf5'
 	_, trajectories_tmp, skeletons_tmp, features_tmp, feat_ind_tmp = constructNames(tmp_mask_file, tmp_results_dir)
-	
+	print(trajectories_tmp, skeletons_tmp, features_tmp, feat_ind_tmp)
 	#get starting directories
 	final_start_point = getStartingPoint(masked_image_file, results_dir) #starting point calculated from the files in the final destination
-	tmp_start_point = getStartingPoint(tmp_masked_dir, tmp_results_dir) #starting point calculated from the files in the temporal directory
+	tmp_start_point = getStartingPoint(tmp_mask_file, tmp_results_dir) #starting point calculated from the files in the temporal directory
 	analysis_start_point = max(final_start_point, tmp_start_point) #starting point for the analysis
 	
 	print(tmp_start_point)
@@ -89,7 +89,7 @@ if __name__ == '__main__':
 				#check if the video to mask conversion did indeed finished correctly
 				assert mask_fid['/mask'].attrs['has_finished'] == 1
 
-			files2copy += [(masked_image_file, tmp_masked_dir)]
+			files2copy += [(masked_image_file, tmp_mask_dir)]
 
 	
 	print(base_name + ' Starting checkpoint: ' + checkpoint_label[analysis_start_point])
@@ -107,14 +107,15 @@ if __name__ == '__main__':
 	print(base_name + " Copying result files into the final directory.")
 	if final_start_point <= checkpoint['TRAJ_JOIN']:
 		files2copy += [(trajectories_tmp, results_dir)]
-	elif final_start_point <= checkpoint['SKE_ORIENT']:
+	if final_start_point <= checkpoint['SKE_ORIENT']:
 		files2copy += [(skeletons_tmp, results_dir)]
-	elif final_start_point <= checkpoint['FEAT_CREATE']:
+	if final_start_point <= checkpoint['FEAT_CREATE']:
 		files2copy += [(features_tmp, results_dir)]
-	elif final_start_point <= checkpoint['FEAT_IND']:
+	if final_start_point <= checkpoint['FEAT_IND']:
 		files2copy += [(feat_ind_tmp, results_dir)]
 
 	#print(files2copy)
+	#sys.stdout.flush()
 	#copy files into the final directory
 	copyFilesLocal(files2copy)
 	
@@ -123,6 +124,11 @@ if __name__ == '__main__':
 	if os.path.abspath(tmp_mask_file) != os.path.abspath(masked_image_file):
 		if os.path.exists(tmp_mask_file): os.remove(tmp_mask_file)
 	
+	#this files must exists at this point in the program. Let's check it before deleting anything.
+	assert os.path.exists(trajectories_file)
+	assert os.path.exists(skeletons_file)
+	assert os.path.exists(features_file)
+
 	if os.path.abspath(tmp_results_dir) != os.path.abspath(results_dir):
 		if os.path.exists(trajectories_tmp): os.remove(trajectories_tmp)
 		if os.path.exists(skeletons_tmp): os.remove(skeletons_tmp)
@@ -130,7 +136,7 @@ if __name__ == '__main__':
 		if os.path.exists(feat_ind_tmp): os.remove(feat_ind_tmp)
 	
 	
-	print(base_name + " Finished")
+	print(base_name + " Finished ")#,  features_tmp, features_file)
 #except:
 	#	print(base_name + " Error")
 	#	raise

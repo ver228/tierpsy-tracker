@@ -144,14 +144,17 @@ def getWormFeaturesLab(skeletons_file, features_file, worm_indexes, fps = 25, ti
             table_motion.flush()
             del motion_data
             
-        #create and save a table containing the averaged worm feature for each worm
-        tot_rows = len(all_stats)
-        dtype = [(x, np.float32) for x in (all_stats[0])]
-        mean_features_df = np.recarray(tot_rows, dtype = dtype);
-        for kk, row_dict in enumerate(all_stats):
-            for key in row_dict:
-                mean_features_df[key][kk] = row_dict[key]
-        feat_mean = features_fid.create_table('/', 'features_means', obj = mean_features_df, filters=filters_tables)
+        assert tot_worms == tot_rows
+        
+        if tot_rows > 0:
+            dtype = [(x, np.float32) for x in (all_stats[0])]
+            mean_features_df = np.recarray(tot_rows, dtype = dtype);
+            for kk, row_dict in enumerate(all_stats):
+                for key in row_dict:
+                    mean_features_df[key][kk] = row_dict[key]
+            feat_mean = features_fid.create_table('/', 'features_means', obj = mean_features_df, filters=filters_tables)
+        else:
+            feat_mean = features_fid.create_table('/', 'features_means', {'worm_index' : tables.Int32Col(pos=0)}, filters=filters_tables)
         
         feat_mean._v_attrs['has_finished'] = 1
         

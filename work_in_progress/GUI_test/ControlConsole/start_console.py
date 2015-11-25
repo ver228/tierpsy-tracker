@@ -37,9 +37,12 @@ class start_process():
             # read line without blocking
             try: self.output.append(self.queue.get_nowait().decode("utf-8"))
             except Empty: break
+        #store only the last line
+        self.output = self.output[-1:]
 
 def runMultiCMD(cmd_list, max_num_process = 3, refresh_time = 10):
     '''Start different process using the command is cmd_list'''
+    cmd_list = cmd_list[::-1] #since I am using pop to get the next element i need to invert the list to get athe same order
     tot_tasks = len(cmd_list)
     if tot_tasks < max_num_process:
         max_num_process = tot_tasks
@@ -66,7 +69,7 @@ def runMultiCMD(cmd_list, max_num_process = 3, refresh_time = 10):
                 if task.output:
                     last_line = task.output[-1]
                     sys.stdout.write(last_line)
-
+                    #sys.stdout.write('------- %i ------\n' % len(task.output))
             N_active_tasks = sum(tasks.pid.poll() is None for tasks in current_tasks)
             
             if task.pid.poll() is not None and N_active_tasks < max_num_process:
@@ -75,8 +78,12 @@ def runMultiCMD(cmd_list, max_num_process = 3, refresh_time = 10):
                     task.output[-1] += task.pid.stderr.read().decode("utf-8")
                     sys.stdout.write(task.output[-1])
                 
-                #task = None
+                #task.pid.stdout.close()
+                #task.pid.stderr.close() #for some reason this gives problem of early closed socked.
+                task.pid.wait()
+                task = None
                 
+
                 if cmd_list:
                     cmd = cmd_list.pop()
                     current_tasks.append(start_process(cmd))
