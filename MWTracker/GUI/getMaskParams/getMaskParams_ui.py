@@ -83,7 +83,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.addWidget(self.label_3)
         self.spinBox_block_size = QtWidgets.QSpinBox(self.centralWidget)
         self.spinBox_block_size.setMinimum(5)
-        self.spinBox_block_size.setMaximum(200)
+        self.spinBox_block_size.setMaximum(1000000)
         self.spinBox_block_size.setProperty("value", 61)
         self.spinBox_block_size.setObjectName("spinBox_block_size")
         self.verticalLayout_3.addWidget(self.spinBox_block_size)

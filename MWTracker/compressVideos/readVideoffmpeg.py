@@ -109,5 +109,10 @@ class readVideoffmpeg:
     def release(self):
         #close the buffer
         self.pipe.stdout.flush()
+        self.pipe.stderr.flush()
         self.get_timestamp()
+        
         self.pipe.terminate()
+        self.pipe.stdout.close()
+        self.pipe.wait()
+        
