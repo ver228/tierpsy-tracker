@@ -25,10 +25,13 @@ def getTrackCommands(mask_dir_root, results_dir_root, tmp_dir_root, json_file = 
 				masked_image_file = os.path.abspath(os.path.join(dpath, fname))
 				assert(os.path.exists(masked_image_file))
 
-				subdir_path = dpath.replace(mask_dir_root, '')
+				subdir_path = dpath.replace(video_dir_root, '')
 				if subdir_path and subdir_path[0] == os.sep: 
-					subdir_path = subdir_path[1:] if len(subdir_path) >1 else ''
-					
+					subdir_path =  subdir_path[1:] if len(subdir_path[0]) >1 else ;;
+						
+					else:
+						subdir_path = ''
+
 				results_dir = os.path.abspath(os.path.join(results_dir_root, subdir_path))
 				tmp_masked_dir = os.path.abspath(os.path.join(tmp_dir_root, 'MaskedVideos', subdir_path))
 				tmp_results_dir = os.path.abspath(os.path.join(tmp_dir_root, 'Results', subdir_path))
@@ -51,7 +54,7 @@ if __name__ == '__main__':
 	tmp_dir_root = os.path.join(os.path.expanduser("~"), 'Tmp')
 
 	#input parameters
-	max_num_process = 2
+	max_num_process = 6
 
 	mask_dir_root = sys.argv[1]
 	assert os.path.exists(mask_dir_root)
@@ -67,7 +70,6 @@ if __name__ == '__main__':
 	
 
 	cmd_list_track = getTrackCommands(mask_dir_root, results_dir_root, tmp_dir_root, json_file, script_abs_path)
-	#cmd_list_track = cmd_list_track[0:1]
 	
 	#display commands to be executed
 	if cmd_list_track: 

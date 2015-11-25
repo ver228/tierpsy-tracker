@@ -136,164 +136,164 @@ expected_frames = 15000, mask_param = DEFAULT_MASK_PARAM):
         raise(RuntimeError('Cannot read the video file correctly. Dimensions w=%i h=%i' % (im_width, im_height)))
 
     #open hdf5 to store the processed data
-    with h5py.File(masked_image_file, "w") as mask_fid:
-        #open node to store the compressed (masked) data
-        mask_dataset = mask_fid.create_dataset("/mask", (expected_frames, im_height,im_width), 
-                                        dtype = "u1", maxshape = (None, im_height,im_width), 
-                                        chunks = (1, im_height,im_width),
-                                        compression="gzip", 
-                                        compression_opts=4,
-                                        shuffle=True, fletcher32=True);
+    mask_fid = h5py.File(masked_image_file, "w");
+    #open node to store the compressed (masked) data
+    mask_dataset = mask_fid.create_dataset("/mask", (expected_frames, im_height,im_width), 
+                                    dtype = "u1", maxshape = (None, im_height,im_width), 
+                                    chunks = (1, im_height,im_width),
+                                    compression="gzip", 
+                                    compression_opts=4,
+                                    shuffle=True, fletcher32=True);
 
-        #labels to make the group compatible with the standard image definition in hdf5
-        mask_dataset.attrs["CLASS"] = np.string_("IMAGE")
-        mask_dataset.attrs["IMAGE_SUBCLASS"] = np.string_("IMAGE_GRAYSCALE")
-        mask_dataset.attrs["IMAGE_WHITE_IS_ZERO"] = np.array(0, dtype="uint8")
-        mask_dataset.attrs["DISPLAY_ORIGIN"] = np.string_("UL") # not rotated
-        mask_dataset.attrs["IMAGE_VERSION"] = np.string_("1.2")
+    #labels to make the group compatible with the standard image definition in hdf5
+    mask_dataset.attrs["CLASS"] = np.string_("IMAGE")
+    mask_dataset.attrs["IMAGE_SUBCLASS"] = np.string_("IMAGE_GRAYSCALE")
+    mask_dataset.attrs["IMAGE_WHITE_IS_ZERO"] = np.array(0, dtype="uint8")
+    mask_dataset.attrs["DISPLAY_ORIGIN"] = np.string_("UL") # not rotated
+    mask_dataset.attrs["IMAGE_VERSION"] = np.string_("1.2")
 
-        #flag to store the parameters using in the mask calculation
-        for key in DEFAULT_MASK_PARAM:
-            if key in mask_param:
-                mask_dataset.attrs[key] = int(mask_param[key])
-            else:
-                mask_dataset.attrs[key] = int(DEFAULT_MASK_PARAM[key])
+    #flag to store the parameters using in the mask calculation
+    for key in DEFAULT_MASK_PARAM:
+        if key in mask_param:
+            mask_dataset.attrs[key] = int(mask_param[key])
+        else:
+            mask_dataset.attrs[key] = int(DEFAULT_MASK_PARAM[key])
+    
+    #flag to indicate that the conversion finished succesfully
+    mask_dataset.attrs['has_finished'] = 0
+
+    #full frames are saved in "/full_data" every save_full_interval frames
+    full_dataset = mask_fid.create_dataset("/full_data", (expected_frames//save_full_interval, im_height,im_width), 
+                                    dtype = "u1", maxshape = (None, im_height,im_width), 
+                                    chunks = (1, im_height,im_width),
+                                    compression="gzip", 
+                                    compression_opts=4,
+                                    shuffle=True, fletcher32=True);
+    full_dataset.attrs['save_interval'] = save_full_interval
+    
+    #labels to make the group compatible with the standard image definition in hdf5
+    full_dataset.attrs["CLASS"] = np.string_("IMAGE")
+    full_dataset.attrs["IMAGE_SUBCLASS"] = np.string_("IMAGE_GRAYSCALE")
+    full_dataset.attrs["IMAGE_WHITE_IS_ZERO"] = np.array(0, dtype="uint8")
+    full_dataset.attrs["DISPLAY_ORIGIN"] = np.string_("UL") # not rotated
+    full_dataset.attrs["IMAGE_VERSION"] = np.string_("1.2")
+
+
+
+    #im_diff_set = mask_fid.create_dataset('/im_diff', (expected_frames,), 
+    #                                      dtype = 'f4', maxshape = (None,), 
+    #                                    chunks = True, compression = "gzip", compression_opts=4, shuffle = True, fletcher32=True)
+    
+    #intialize frame number
+    frame_number = 0;
+    full_frame_number = 0;
+    image_prev = np.zeros([]);
+    
+    vid_frame_pos = []
+    vid_time_pos = []
+
+    #initialize timers
+    progressTime = timeCounterStr('Compressing video.');
+
+    while frame_number < max_frame:
+        if reader_type == READER_TYPE['OPENCV']:
+            vid_frame_pos.append(int(vid.get(cv2.CAP_PROP_POS_FRAMES)))
+            vid_time_pos.append(vid.get(cv2.CAP_PROP_POS_MSEC))
+
+        ret, image = vid.read() #get video frame, stop program when no frame is retrive (end of file)
+        if ret == 0:
+            break
         
-        #flag to indicate that the conversion finished succesfully
-        mask_dataset.attrs['has_finished'] = 0
-
-        #full frames are saved in "/full_data" every save_full_interval frames
-        full_dataset = mask_fid.create_dataset("/full_data", (expected_frames//save_full_interval, im_height,im_width), 
-                                        dtype = "u1", maxshape = (None, im_height,im_width), 
-                                        chunks = (1, im_height,im_width),
-                                        compression="gzip", 
-                                        compression_opts=4,
-                                        shuffle=True, fletcher32=True);
-        full_dataset.attrs['save_interval'] = save_full_interval
+        if image.ndim==3:
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         
-        #labels to make the group compatible with the standard image definition in hdf5
-        full_dataset.attrs["CLASS"] = np.string_("IMAGE")
-        full_dataset.attrs["IMAGE_SUBCLASS"] = np.string_("IMAGE_GRAYSCALE")
-        full_dataset.attrs["IMAGE_WHITE_IS_ZERO"] = np.array(0, dtype="uint8")
-        full_dataset.attrs["DISPLAY_ORIGIN"] = np.string_("UL") # not rotated
-        full_dataset.attrs["IMAGE_VERSION"] = np.string_("1.2")
-
-
-
-        #im_diff_set = mask_fid.create_dataset('/im_diff', (expected_frames,), 
-        #                                      dtype = 'f4', maxshape = (None,), 
-        #                                    chunks = True, compression = "gzip", compression_opts=4, shuffle = True, fletcher32=True)
+        frame_number += 1;
         
-        #intialize frame number
-        frame_number = 0;
-        full_frame_number = 0;
-        image_prev = np.zeros([]);
+        #import matplotlib.pylab as plt
+        #plt.figure()
+        #plt.imshow(image)
         
-        vid_frame_pos = []
-        vid_time_pos = []
+        #Resize mask array every 1000 frames (doing this every frame does not impact much the performance)
+        if mask_dataset.shape[0] <= frame_number + 1:
+            mask_dataset.resize(frame_number + 1000, axis=0); 
+            #im_diff_set.resize(frame_number + 1000, axis=0); 
+        #Add a full frame every save_full_interval
+        if frame_number % save_full_interval == 1:
+            if full_dataset.shape[0] <= full_frame_number:
+                full_dataset.resize(full_frame_number+1, axis=0); 
+                assert(frame_number//save_full_interval == full_frame_number) #just to be sure that the index we are saving in is what we what we are expecting
+            full_dataset[full_frame_number,:,:] = image.copy()
+            full_frame_number += 1;
 
-        #initialize timers
-        progressTime = timeCounterStr('Compressing video.');
+        
+        ind_buff = (frame_number-1) % buffer_size #buffer index
+        
+        #initialize the buffer when the index correspond to 0
+        if ind_buff == 0:
+            Ibuff = np.zeros((buffer_size, im_height, im_width), dtype = np.uint8)
 
-        while frame_number < max_frame:
-            if reader_type == READER_TYPE['OPENCV']:
-                vid_frame_pos.append(int(vid.get(cv2.CAP_PROP_POS_FRAMES)))
-                vid_time_pos.append(vid.get(cv2.CAP_PROP_POS_MSEC))
-
-            ret, image = vid.read() #get video frame, stop program when no frame is retrive (end of file)
-            if ret == 0:
-                break
+        #add image to the buffer
+        Ibuff[ind_buff, :, :] = image.copy()
+        
+        if ind_buff == buffer_size-1:
+            #calculate the mask only when the buffer is full
+            mask = getROIMask(np.min(Ibuff, axis=0), **mask_param)
             
-            if image.ndim==3:
-                image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+            #mask all the images in the buffer
+            Ibuff *= mask
             
-            frame_number += 1;
+            #add buffer to the hdf5 file
+            mask_dataset[(frame_number-buffer_size):frame_number,:,:] = Ibuff
             
-            #import matplotlib.pylab as plt
-            #plt.figure()
-            #plt.imshow(image)
             
-            #Resize mask array every 1000 frames (doing this every frame does not impact much the performance)
-            if mask_dataset.shape[0] <= frame_number + 1:
-                mask_dataset.resize(frame_number + 1000, axis=0); 
-                #im_diff_set.resize(frame_number + 1000, axis=0); 
-            #Add a full frame every save_full_interval
-            if frame_number % save_full_interval == 1:
-                if full_dataset.shape[0] <= full_frame_number:
-                    full_dataset.resize(full_frame_number+1, axis=0); 
-                    assert(frame_number//save_full_interval == full_frame_number) #just to be sure that the index we are saving in is what we what we are expecting
-                full_dataset[full_frame_number,:,:] = image.copy()
-                full_frame_number += 1;
-
+            #calculate difference between image (it's usefull to indentified corrupted frames)
+            if mask_param['has_timestamp']:
+                #remove timestamp before calculation
+                Ibuff[:,0:15,0:479] = 0; 
             
-            ind_buff = (frame_number-1) % buffer_size #buffer index
-            
-            #initialize the buffer when the index correspond to 0
-            if ind_buff == 0:
-                Ibuff = np.zeros((buffer_size, im_height, im_width), dtype = np.uint8)
-
-            #add image to the buffer
-            Ibuff[ind_buff, :, :] = image.copy()
-            
-            if ind_buff == buffer_size-1:
-                #calculate the mask only when the buffer is full
-                mask = getROIMask(np.min(Ibuff, axis=0), **mask_param)
+            #for ii in range(Ibuff.shape[0]):
+            #    if image_prev.shape and ii == 0:
+            #        dd = imageDifferenceMask(Ibuff[ii,:,:],image_prev)
+            #    else:
+            #        dd = imageDifferenceMask(Ibuff[ii,:,:],Ibuff[ii-1,:,:])
+            #    
+            #    im_diff_set[frame_number-buffer_size+ii] = dd
                 
-                #mask all the images in the buffer
-                Ibuff *= mask
-                
-                #add buffer to the hdf5 file
-                mask_dataset[(frame_number-buffer_size):frame_number,:,:] = Ibuff
-                
-                
-                #calculate difference between image (it's usefull to indentified corrupted frames)
-                if mask_param['has_timestamp']:
-                    #remove timestamp before calculation
-                    Ibuff[:,0:15,0:479] = 0; 
-                
-                #for ii in range(Ibuff.shape[0]):
-                #    if image_prev.shape and ii == 0:
-                #        dd = imageDifferenceMask(Ibuff[ii,:,:],image_prev)
-                #    else:
-                #        dd = imageDifferenceMask(Ibuff[ii,:,:],Ibuff[ii-1,:,:])
-                #    
-                #    im_diff_set[frame_number-buffer_size+ii] = dd
-                    
-                #image_prev = Ibuff[-1,:,:].copy();  
+            #image_prev = Ibuff[-1,:,:].copy();  
 
-            if frame_number%500 == 0:
-                #calculate the progress and put it in a string
-                progress_str = progressTime.getStr(frame_number)
-                print(base_name + ' ' + progress_str);
-                sys.stdout.flush()
-            
+        if frame_number%500 == 0:
+            #calculate the progress and put it in a string
+            progress_str = progressTime.getStr(frame_number)
+            print(base_name + ' ' + progress_str);
+            sys.stdout.flush()
         
-        if mask_dataset.shape[0] != frame_number:
-            mask_dataset.resize(frame_number, axis=0);
-            #im_diff_set.resize(frame_number, axis=0);
-            
-        if full_dataset.shape[0] != full_frame_number:
-            full_dataset.resize(full_frame_number, axis=0);
+    
+    if mask_dataset.shape[0] != frame_number:
+        mask_dataset.resize(frame_number, axis=0);
+        #im_diff_set.resize(frame_number, axis=0);
         
-        mask_dataset.attrs['has_finished'] = 1
-            
-        #close the video
-        vid.release() 
+    if full_dataset.shape[0] != full_frame_number:
+        full_dataset.resize(full_frame_number, axis=0);
+    
+    mask_dataset.attrs['has_finished'] = 1
+        
+    #close the video
+    vid.release() 
 
-        #if it is not opencv the timestamp from the vid reader
-        if reader_type != READER_TYPE['OPENCV']:
-            vid_frame_pos = vid.vid_frame_pos
-            vid_time_pos = vid.vid_time_pos
+    #if it is not opencv the timestamp from the vid reader
+    if reader_type != READER_TYPE['OPENCV']:
+        vid_frame_pos = vid.vid_frame_pos
+        vid_time_pos = vid.vid_time_pos
 
-        #save time stamp
-        mask_fid.create_dataset("/vid_frame_pos", data = np.asarray(vid_frame_pos));
-        mask_fid.create_dataset("/vid_time_pos", data = np.asarray(vid_time_pos));
+    #save time stamp
+    mask_fid.create_dataset("/vid_frame_pos", data = np.asarray(vid_frame_pos));
+    mask_fid.create_dataset("/vid_time_pos", data = np.asarray(vid_time_pos));
 
 
-        #close the hdf5 files
-        mask_fid.close()
-        print(base_name + ' Compressed video done.');
-        sys.stdout.flush()
+    #close the hdf5 files
+    mask_fid.close()
+    print(base_name + ' Compressed video done.');
+    sys.stdout.flush()
 
 if __name__ == '__main__':
     video_file = '/Users/ajaver/Desktop/Gecko_compressed/Raw_Video/Capture_Ch1_11052015_195105.mjpg'
