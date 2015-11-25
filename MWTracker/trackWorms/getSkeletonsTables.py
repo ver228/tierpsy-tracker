@@ -140,7 +140,11 @@ def getWormROI(img, CMx, CMy, roi_size = 128):
     CMx, CMy - coordinates of the center of the ROI
     roi_size - side size in pixels of the ROI
     '''
-    roi_center = roi_size/2
+
+    if np.any(np.isnan(CMx)) or np.any(np.isnan(CMy)):
+        return np.zeros(0, dtype=np.uint8), np.array([np.nan]*2)
+
+    roi_center = int(roi_size)//2
     roi_range = np.array([-roi_center, roi_center])
 
     #obtain bounding box from the trajectories
@@ -152,8 +156,8 @@ def getWormROI(img, CMx, CMy, roi_size = 128):
     
     if range_x[1]>img.shape[1]: range_x += img.shape[1]-range_x[1]-1
     if range_y[1]>img.shape[0]: range_y += img.shape[0]-range_y[1]-1
-    
     worm_img = img[range_y[0]:range_y[1], range_x[0]:range_x[1]]
+    
     roi_corner = np.array([range_x[0]-1, range_y[0]-1])
     
     return worm_img, roi_corner
@@ -162,6 +166,10 @@ def getWormMask(worm_img, threshold):
     '''
     Calculate worm mask using an specific threshold.
     '''
+
+    if np.any(worm_img.shape) < 3:
+        return np.zeros_like(worm_img)
+    
     #make the worm more uniform. This is important to get smoother contours.
     worm_img = cv2.medianBlur(worm_img, 3);
     

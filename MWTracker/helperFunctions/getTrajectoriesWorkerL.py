@@ -43,7 +43,6 @@ def getStartingPoint(masked_image_file, results_dir):
              elif trajectories._v_attrs['has_finished'] == 1:
                  return checkpoint['TRAJ_JOIN'];
     except:
-
         #if there is any problem while reading the file, create it again
         return checkpoint['TRAJ_CREATE'];
 
@@ -98,13 +97,12 @@ def constructNames(masked_image_file, results_dir):
 def getTrajectoriesWorkerL(masked_image_file, results_dir, param_file ='', overwrite = False, start_point = -1):
     
     base_name, trajectories_file, skeletons_file, features_file, feat_ind_file = constructNames(masked_image_file, results_dir)
-    
+    print(trajectories_file, skeletons_file, features_file, feat_ind_file)
     #if starting point is not given, calculate it again
     if overwrite:
         start_point = checkpoint['TRAJ_CREATE']
     elif start_point < 0:
         start_point = getStartingPoint(masked_image_file, results_dir)
-
 
     if start_point < checkpoint['FEAT_CREATE']:
         #check if the file with the masked images exists
