@@ -35,9 +35,9 @@ if __name__ == "__main__":
 		base_name = video_file.rpartition('.')[0].rpartition(os.sep)[-1]
 		masked_image_file = mask_dir + base_name + '.hdf5'
 		tmp_mask_file = tmp_mask_dir + base_name + '.hdf5'
-	    
+
 		try:
-			#raise
+			has_finished = 1
 			with h5py.File(masked_image_file, "r") as mask_fid:
 				if mask_fid['/mask'].attrs['has_finished'] == 1:
 					has_finished = 1
@@ -54,15 +54,18 @@ if __name__ == "__main__":
 			except:
 				#start to calculate the mask from raw video
 				print(base_name + " Creating temporal masked file.")
+				sys.stdout.flush()
 				compressVideoWorkerL(video_file, tmp_mask_dir, json_file)
 			
 			if os.path.abspath(tmp_mask_file) != os.path.abspath(masked_image_file):
 				#it is very important to use os.path.abspath() otherwise there could be some 
 				#confunsion in the same file name
 				print(base_name + " Copying temporal masked file into the final directory.")
+				sys.stdout.flush()
 				shutil.copy(tmp_mask_file, masked_image_file)
 			
 				print(base_name + " Removing temporary files.")
+				sys.stdout.flush()
 				os.remove(tmp_mask_file)
 
 			#Change the permissions so everybody can read/write. 
@@ -72,9 +75,11 @@ if __name__ == "__main__":
 			#Protect file from deletion.
 			os.chflags(masked_image_file, stat.UF_IMMUTABLE)
 			print(base_name + " Finished to create masked file")
+			sys.stdout.flush()
 		else:
 			print('File alread exists: %s. If you want to calculate the mask again delete the existing file.' % masked_image_file)
+			sys.stdout.flush()
 	except:
 		raise
 		print(base_name + ' Error')
-		
+		sys.stdout.flush()
