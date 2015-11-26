@@ -201,6 +201,7 @@ def orientWorm(skeleton, prev_skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt
 def getSkeleton(worm_mask, prev_skeleton = np.zeros(0), resampling_N=50, min_mask_area = 50):
     
     n_output_param = 8 #number of expected output parameters
+    
     if worm_mask.size == 0:
         return n_output_param*[np.zeros(0)]
 

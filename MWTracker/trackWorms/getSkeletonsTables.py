@@ -141,7 +141,7 @@ def getWormROI(img, CMx, CMy, roi_size = 128):
     roi_size - side size in pixels of the ROI
     '''
 
-    if np.any(np.isnan(CMx)) or np.any(np.isnan(CMy)):
+    if np.isnan(CMx) or np.isnan(CMy):
         return np.zeros(0, dtype=np.uint8), np.array([np.nan]*2)
 
     roi_center = int(roi_size)//2
@@ -167,7 +167,7 @@ def getWormMask(worm_img, threshold):
     Calculate worm mask using an specific threshold.
     '''
 
-    if np.any(worm_img.shape) < 3:
+    if np.any(worm_img.shape<3):
         return np.zeros_like(worm_img)
     
     #make the worm more uniform. This is important to get smoother contours.

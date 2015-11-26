@@ -330,6 +330,7 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
     all_stats = []
     
     progress_timer = timeCounterStr('');
+    
     #filter used for each fo the tables
     filters_tables = tables.Filters(complevel = 5, complib='zlib', shuffle=True)
     with tables.File(features_file, 'w') as features_fid:
