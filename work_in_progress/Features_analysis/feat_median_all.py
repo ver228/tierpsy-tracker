@@ -16,12 +16,14 @@ from start_console import runMultiCMD
 
 script_abs_path = 'feat_median.py'
 if __name__ == '__main__':
-    main_dir = '/Volumes/behavgenom$/GeckoVideo/Results/Avelino_17112015_2100/'
+    #main_dir = '/Volumes/behavgenom$/GeckoVideo/Results/Avelino_17112015_2100/'
+    main_dir = '/Users/ajaver/Desktop/Videos/Avelino_17112015/Results/'
+    assert(os.path.exists(main_dir))
     feat_files = glob.glob(main_dir + '*_features.hdf5')
     feat_files = sorted(feat_files)
     
     cmd_list = []
-    for feat_file in feat_files[45:]:
+    for feat_file in feat_files:
 
         cmd_list += [['python3', script_abs_path, feat_file]]
         print(' '.join(cmd_list[-1]))
