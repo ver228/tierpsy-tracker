@@ -392,7 +392,9 @@ max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
         for ii in indexes:
             min_frame = 1e32;
             max_frame = 0;
-            
+            max_row = (); #empty tuple
+            min_row = ();
+
             for dd in feature_table.where('worm_index == %i'% ii):
                 if dd['frame_number'] < min_frame:
                     min_frame = dd['frame_number']
@@ -401,6 +403,9 @@ max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
                 if dd['frame_number'] > max_frame:
                     max_frame = dd['frame_number']
                     max_row = (dd['worm_index'], dd['frame_number'], dd['coord_x'], dd['coord_y'], dd['area'], dd['box_length'])
+            
+            if len(min_row) == 0 or len(max_row) == 0: 
+                continue
             last_frames.append(max_row)
             first_frames.append(min_row)
         

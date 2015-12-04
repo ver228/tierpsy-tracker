@@ -167,7 +167,7 @@ def getWormMask(worm_img, threshold):
     Calculate worm mask using an specific threshold.
     '''
 
-    if np.any(worm_img.shape<3):
+    if any(x<3 for x in worm_img.shape):
         return np.zeros_like(worm_img)
     
     #make the worm more uniform. This is important to get smoother contours.

@@ -63,7 +63,7 @@ if __name__ == '__main__':
 	print(tmp_start_point)
 	if final_start_point == checkpoint['END']:
 		#If the program has finished there is nothing to do here.
-		print('The files from completed results analysis were found in %s. Remove them if you want to recalculated them again.' % results_dir)
+		print('%s The files from completed results analysis were found in %s. Remove them if you want to recalculated them again.' % (base_name, results_dir))
 		sys.stdout.flush()
 		sys.exit(0)
 	
