@@ -51,7 +51,7 @@ if __name__ == '__main__':
 	tmp_dir_root = os.path.join(os.path.expanduser("~"), 'Tmp')
 
 	#input parameters
-	max_num_process = 2
+	max_num_process = 6
 
 	mask_dir_root = sys.argv[1]
 	assert os.path.exists(mask_dir_root)
