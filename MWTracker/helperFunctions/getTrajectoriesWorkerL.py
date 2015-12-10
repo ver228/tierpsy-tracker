@@ -132,6 +132,8 @@ def getTrajectoriesWorkerL(masked_image_file, results_dir, param_file ='', overw
     if start_point <= checkpoint['TRAJ_JOIN']:        
         joinTrajectories(trajectories_file, **param.join_traj_param)
 
+    return
+
     #get skeletons data    
     if start_point <= checkpoint['SKE_CREATE']:
         trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file, **param.get_skeletons_param)

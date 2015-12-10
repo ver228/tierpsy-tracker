@@ -11,7 +11,7 @@ import sys
 from start_console import runMultiCMD
 
 
-def getTrackCommands(mask_dir_root, results_dir_root, tmp_dir_root, json_file = '', 
+def getTrackCommands(mask_dir_root, results_dir_root, tmp_dir_root='', json_file = '', 
 	script_abs_path = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/MWTracker_GUI/trackSingleLocal.py',
 	invalid_ext = ['_skeletons', '_trajectories', '_features', '_feat_ind']):
 	
@@ -30,8 +30,14 @@ def getTrackCommands(mask_dir_root, results_dir_root, tmp_dir_root, json_file = 
 					subdir_path = subdir_path[1:] if len(subdir_path) >1 else ''
 					
 				results_dir = os.path.abspath(os.path.join(results_dir_root, subdir_path))
-				tmp_masked_dir = os.path.abspath(os.path.join(tmp_dir_root, 'MaskedVideos', subdir_path))
-				tmp_results_dir = os.path.abspath(os.path.join(tmp_dir_root, 'Results', subdir_path))
+				
+				if tmp_dir_root:
+					tmp_masked_dir = os.path.abspath(os.path.join(tmp_dir_root, 'MaskedVideos', subdir_path))
+					tmp_results_dir = os.path.abspath(os.path.join(tmp_dir_root, 'Results', subdir_path))
+				else:
+					#if tmp_dir_root is empty just use the same directory (no tmp files)
+					tmp_masked_dir = os.path.split(masked_image_file)[0] + os.sep
+					tmp_results_dir = results_dir
 
 				if not os.path.exists(results_dir): os.makedirs(results_dir)
 				if not os.path.exists(tmp_results_dir): os.makedirs(tmp_results_dir)
@@ -48,7 +54,8 @@ if __name__ == '__main__':
 	script_abs_path = scripts_dir +  'trackSingleLocal.py'
 
 	#create temporary directories. For the moment the user is responsable to clean the directories when the scripts finish
-	tmp_dir_root = os.path.join(os.path.expanduser("~"), 'Tmp')
+	#tmp_dir_root = os.path.join(os.path.expanduser("~"), 'Tmp')
+	tmp_dir_root = '' #left empty to use the same dir
 
 	#input parameters
 	max_num_process = 6
@@ -65,7 +72,6 @@ if __name__ == '__main__':
 
 	results_dir_root = mask_dir_root.replace('MaskedVideos', 'Results')
 	
-
 	cmd_list_track = getTrackCommands(mask_dir_root, results_dir_root, tmp_dir_root, json_file, script_abs_path)
 	#cmd_list_track = cmd_list_track[0:1]
 	

@@ -52,6 +52,15 @@ class plate_worms(tables.IsDescription):
     
     segworm_id = tables.Int32Col(pos=20);
 
+    hu0 = tables.Float32Col(pos=21)
+    hu1 = tables.Float32Col(pos=22)
+    hu2 = tables.Float32Col(pos=23)
+    hu3 = tables.Float32Col(pos=24)
+    hu4 = tables.Float32Col(pos=25)
+    hu5 = tables.Float32Col(pos=26)
+    hu6 = tables.Float32Col(pos=27)
+
+
 def getWormThreshold(pix_valid):
 
     
@@ -265,10 +274,8 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
                         #calculate the mean intensity of the worm
                         intensity_mean, intensity_std = cv2.meanStdDev(ROI_image, mask = worm_mask)
                         
-                        
-                        #worm_mask CAN BE USED TO CALCULATE THE SKELETON AT THIS POINT
-                        #with open('/Users/ajaver/Desktop/Gecko_compressed/image_dums/B%i_C%i_W%i.txt'%(buff_ind, ROI_ind, worm_ind), 'w') as f:
-                        #    np.savetxt(f, worm_mask, delimiter = ',')
+                        #calculate hu moments, they are scale and rotation invariant
+                        hu_moments = cv2.HuMoments(cv2.moments(worm_cnt))
                         
                         #append worm features.
                         mask_feature_list.append((frame_number+ buff_ind, 
@@ -278,7 +285,7 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
                                                   intensity_mean[0,0], intensity_std[0,0], thresh,
                                                   ROI_bbox[0] + worm_bbox[0], ROI_bbox[0] + worm_bbox[0] + worm_bbox[2],
                                                   ROI_bbox[1] + worm_bbox[1], ROI_bbox[1] + worm_bbox[1] + worm_bbox[3],
-                                                  SEGWORM_ID_DEFAULT)) 
+                                                  SEGWORM_ID_DEFAULT, *hu_moments)) 
                     
                     if len(mask_feature_list)>0:
                         mask_feature_list = list(zip(*mask_feature_list))
@@ -362,6 +369,7 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
         
     print(base_name + ' ' + progress_str);
     sys.stdout.flush()
+
 def joinTrajectories(trajectories_file, min_track_size = 50, \
 max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
     '''
