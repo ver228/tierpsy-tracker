@@ -8,7 +8,7 @@ import os, stat
 import sys
 import h5py
 import shutil
-
+import argparse
 
 curr_script_dir = os.path.dirname(os.path.realpath(__file__))
 with open(os.path.join(curr_script_dir, 'MWTracker_dir.txt'), 'r') as f:
@@ -16,19 +16,11 @@ with open(os.path.join(curr_script_dir, 'MWTracker_dir.txt'), 'r') as f:
 sys.path.append(MWTracker_dir)
 
 from MWTracker.helperFunctions.compressVideoWorkerL import compressVideoWorkerL
+import argparse
 
-if __name__ == "__main__":
-
+def main(video_file, mask_dir, tmp_mask_dir='', json_file=''):
 	try:
-		base_name = ''
-		video_file = sys.argv[1]
-		mask_dir = sys.argv[2]
-		tmp_mask_dir = sys.argv[3]
-
-		json_file = ''
-		if len(sys.argv) > 4:
-			json_file = sys.argv[4]
-		
+		if not tmp_mask_dir: tmp_mask_dir = mask_dir
 		if mask_dir[-1] != os.sep: mask_dir += os.sep 
 		if tmp_mask_dir[-1] != os.sep: tmp_mask_dir += os.sep 
 
@@ -83,3 +75,14 @@ if __name__ == "__main__":
 		raise
 		print(base_name + ' Error')
 		sys.stdout.flush()
+
+if __name__ == "__main__":
+	parser = argparse.ArgumentParser(description="Compress worm videos into masked hdf5 files processing data first into the local drive.")
+	parser.add_argument('video_file', help='Original video.')
+	parser.add_argument('mask_dir', help='Final directory where the compressed files are going to be stored')
+	parser.add_argument('--tmp_mask_dir', default='', help='Temporary directory where the masked file is stored')
+	parser.add_argument('--json_file', default='', help='File (.json) containing the compressed parameters.')
+	args = parser.parse_args()
+
+	main(**vars(args))
+

@@ -40,6 +40,15 @@ class start_process():
         #store only the last line
         self.output = self.output[-1:]
 
+    def close(self):
+        if self.pid.poll() != 0:
+            self.output[-1] += self.pid.stderr.read().decode("utf-8")
+            self.pid.stderr.flush()
+        
+        self.pid.wait()
+        self.pid.stdout.close()
+        self.pid.stderr.close()
+
 def runMultiCMD(cmd_list, max_num_process = 3, refresh_time = 10):
     '''Start different process using the command is cmd_list'''
     cmd_list = cmd_list[::-1] #since I am using pop to get the next element i need to invert the list to get athe same order
@@ -48,10 +57,11 @@ def runMultiCMD(cmd_list, max_num_process = 3, refresh_time = 10):
         max_num_process = tot_tasks
     
     #initialize the first max_number_process in the list
-    current_tasks = [];
+    finished_tasks = [];
     num_tasks = 0;
     
     
+    current_tasks = [];
     for ii in range(max_num_process):
         cmd = cmd_list.pop()
         current_tasks.append(start_process(cmd))
@@ -59,41 +69,50 @@ def runMultiCMD(cmd_list, max_num_process = 3, refresh_time = 10):
     #keep loop tasks as long as there is any task alive and 
     #the number of tasks stated is less than the total number of tasks
     while cmd_list or any(tasks.pid.poll() is None for tasks in current_tasks):
-
         time.sleep(refresh_time)
         os.system(['clear','cls'][os.name == 'nt'])
-        #loop along the process list to see if there is a task finished
-        for task in current_tasks:
-            if task is not None:        
-                task.read_buff()
-                if task.output:
-                    last_line = task.output[-1]
-                    sys.stdout.write(last_line)
-                    #sys.stdout.write('------- %i ------\n' % len(task.output))
-            N_active_tasks = sum(tasks.pid.poll() is None for tasks in current_tasks)
-            
-            if task.pid.poll() is not None and N_active_tasks < max_num_process:
-                #check if the current task finished
-                if task.pid.poll() != 0:
-                    task.output[-1] += task.pid.stderr.read().decode("utf-8")
-                    sys.stdout.write(task.output[-1])
-                
-                #task.pid.stdout.close()
-                #task.pid.stderr.close() #for some reason this gives problem of early closed socked.
-                task.pid.wait()
-                task = None
-                
+        
+        #print info of the finished tasks
+        for task in finished_tasks: 
+            sys.stdout.write(task)
 
-                if cmd_list:
-                    cmd = cmd_list.pop()
-                    current_tasks.append(start_process(cmd))
+        #loop along the process list to update output and see if there is any task finished
+        next_tasks = []
+        for task in current_tasks:
+            task.read_buff()
+                
+            if task.pid.poll() is None:
+                #add task to the new list if it hasn't complete
+                next_tasks.append(task)
+            else:
+                #close the task and add its las output to the finished_tasks list
+                task.close()
+                finished_tasks.append(task.output[-1])
+        
+            sys.stdout.write(task.output[-1])
+            
+        #add new tasks if there is room for them
+        while cmd_list and len(next_tasks) < max_num_process:
+            cmd = cmd_list.pop()
+            next_tasks.append(start_process(cmd))
+        current_tasks = next_tasks
+        
+                    
         print('%%%%%%%%%%')
 
+def print_cmd_list(cmd_list_compress):
+    if cmd_list_compress: 
+        for cmd in cmd_list_compress: 
+            for ii, dd in enumerate(cmd):
+                if ii >= 2 and not dd[0] == '-':
+                    dd = '"' + dd + '"'
 
-#%%
-#cmd_list = []
-#for kk in range(1, 10):
-#    cmd_list += [['python3', 'dum_count.py', str(kk)]]
+                if ii == 0:
+                    cmd_str = dd
+                else:
+                    cmd_str += ' ' +  dd
+            print(cmd_str)
 
-#%%
+    print(len(cmd_list_compress))
+
 

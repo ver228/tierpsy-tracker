@@ -25,6 +25,9 @@ from scipy.spatial.distance import cdist
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
 
+
+table_filters = tables.Filters(complevel=5, complib='zlib', shuffle=True)
+    
 class plate_worms(tables.IsDescription):
 #class for the pytables 
     worm_index = tables.Int32Col(pos=0)
@@ -62,8 +65,6 @@ class plate_worms(tables.IsDescription):
 
 
 def getWormThreshold(pix_valid):
-
-    
     #calculate otsu_threshold as lower limit. Otsu understimate the threshold.
     try:
         otsu_thresh = threshold_otsu(pix_valid)
@@ -99,10 +100,147 @@ def getWormThreshold(pix_valid):
         thresh = otsu_thresh
         
     return thresh
+
+
+# def filterLargestArea(contours, hierarchy):
+#     ii = np.argmax([cv2.contourArea(x) for x in contours])
+#     contours = [contours[ii]]
+#     #print(hierarchy, len(hierarchy), type(hierarchy))
+#     #print('c', type(contours), len(contours))
+#     hierarchy = [[hierarchy[0][ii]]]
+#     return contours, hierarchy
+
+# def correctIndSigleWorm(trajectories_file):
+#     #dirty solution in pandas but very easy to implement
+#     with pd.HDFStore(trajectories_file, 'r') as traj_fid:
+#         plate_worms = traj_fid['/plate_worms']
+        
+#         #check that there is only one blob per frame
+#         assert all(plate_worms['frame_number'].value_counts()<=1)
+
+#         #make all the indexes equal
+#         plate_worms['worm_index'] = np.asarray(1, dtype=np.int32)
+
+#     with tables.File(trajectories_file, 'r+') as traj_fid:
+#         #open with tables in order to save the corrected table
+#         newT = traj_fid.create_table('/', 'plate_worms_t', 
+#                                        obj = plate_worms.to_records(index=False), 
+#                                        filters = table_filters)
+#         traj_fid.remove_node('/', 'plate_worms')
+#         newT.rename('plate_worms')
+
+def getWormContours(ROI_image, thresh):
+    #get the border of the ROI mask, this will be used to filter for valid worms
+    ROI_valid = (ROI_image != 0).astype(np.uint8)
+    _, ROI_border_ind, _ =  cv2.findContours(ROI_valid, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)  
     
+    if len(ROI_border_ind) <= 1: 
+        valid_ind = 0;
+    else:
+        #consider the case where there is more than one contour
+        #i.e. the is a neiboring ROI in the square, just keep the largest area
+        ROI_area = [cv2.contourArea(x) for x in ROI_border_ind]
+        valid_ind = np.argmax(ROI_area);
+        ROI_valid = np.zeros_like(ROI_valid);
+        ROI_valid = cv2.drawContours(ROI_valid, ROI_border_ind, valid_ind, 1, -1)
+        ROI_image = ROI_image*ROI_valid
+    
+    #the indexes of the maskborder
+    #if len(ROI_border_ind)==1 and ROI_border_ind[0].shape[0] > 1: 
+    #ROI_border_ind = np.squeeze(ROI_border_ind[valid_ind])
+    #ROI_border_ind = (ROI_border_ind[:,1],ROI_border_ind[:,0])
+    #else:
+    #    continue
+
+    #a median filter sharps edges
+    ROI_image = cv2.medianBlur(ROI_image, 3);
+    #get binary image, and clean it using morphological closing
+    ROI_mask = ((ROI_image<thresh) & (ROI_image != 0)).astype(np.uint8)
+    ROI_mask = cv2.morphologyEx(ROI_mask, cv2.MORPH_CLOSE,np.ones((3,3)))
+    #ROI_mask = cv2.erode(ROI_mask, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2,2)), iterations=2)
+    
+    #get worms, assuming each contour in the ROI is a worm
+    [_, ROI_worms, hierarchy]= cv2.findContours(ROI_mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)           
+    #if is_single_worm: ROI_worms, hierarchy = filterLargestArea(ROI_worms, hierarchy)
+
+    return ROI_worms, hierarchy
+
+def getWormFeatures(worm_cnt, ROI_image, ROI_bbox, current_frame, thresh, min_area):
+    SEGWORM_ID_DEFAULT = -1; #default value for the column segworm_id
+
+    area = float(cv2.contourArea(worm_cnt))
+    if area < min_area:
+        return None #area too small to be a worm
+    
+    worm_bbox = cv2.boundingRect(worm_cnt) 
+    
+    #find use the best rotated bounding box, the fitEllipse function produces bad results quite often
+    #this method is better to obtain an estimate of the worm length than eccentricity
+    (CMx,CMy),(L, W),angle = cv2.minAreaRect(worm_cnt)
+    if W > L: L,W = W,L;   #switch if width is larger than length
+    quirkiness = sqrt(1-W**2/L**2)
+
+    hull = cv2.convexHull(worm_cnt) #for the solidity
+    solidity = area/cv2.contourArea(hull);
+    perimeter = float(cv2.arcLength(worm_cnt,True))
+    compactness = area/(4*np.pi*perimeter**2)
+    
+    #calculate the mean intensity of the worm
+    worm_mask = np.zeros(ROI_image.shape, dtype = np.uint8);
+    cv2.drawContours(worm_mask, [worm_cnt], 0, 255, -1)
+    intensity_mean, intensity_std = cv2.meanStdDev(ROI_image, mask = worm_mask)
+    
+    #calculate hu moments, they are scale and rotation invariant
+    hu_moments = cv2.HuMoments(cv2.moments(worm_cnt))
+    
+    #save everything into the the proper output format
+    mask_feat = (current_frame, 
+          CMx + ROI_bbox[0], CMy + ROI_bbox[1], 
+          area, perimeter, L, W, 
+          quirkiness, compactness, angle, solidity, 
+          intensity_mean[0,0], intensity_std[0,0], thresh,
+          ROI_bbox[0] + worm_bbox[0], ROI_bbox[0] + worm_bbox[0] + worm_bbox[2],
+          ROI_bbox[1] + worm_bbox[1], ROI_bbox[1] + worm_bbox[1] + worm_bbox[3],
+          SEGWORM_ID_DEFAULT, *hu_moments)
+
+    return mask_feat
+
+def joinConsecutiveFrames(index_list_prev, coord, coord_prev, area, area_prev, tot_worms, max_allowed_dist, area_ratio_lim):
+    #TODO probably it is better to convert the whole getWormTrajectories function into a class for clearity 
+    if coord_prev.size != 0:
+        costMatrix = cdist(coord_prev, coord); #calculate the cost matrix
+        #costMatrix[costMatrix>MA] = 1e10 #eliminate things that are farther 
+        assigment = linear_assignment(costMatrix) #use the hungarian algorithm
+        
+        index_list = np.zeros(coord.shape[0], dtype=np.int);
+        
+        #Final assigment. Only allow assigments within a maximum allowed distance, and an area ratio
+        for row, column in assigment:
+            if costMatrix[row,column] < max_allowed_dist:
+                area_ratio = area[column]/area_prev[row];
+                
+                if area_ratio>area_ratio_lim[0] and area_ratio<area_ratio_lim[1]:
+                    index_list[column] = index_list_prev[row];
+                    
+        #add a new index if no assigment was found
+        unmatched = index_list==0
+        vv = np.arange(1,np.sum(unmatched)+1) + tot_worms
+        if vv.size>0:
+            tot_worms = vv[-1]
+            index_list[unmatched] = vv
+    else:
+        #initialize worm indexes
+        index_list = tot_worms + np.arange(1, len(area) + 1);
+        tot_worms = index_list[-1]
+        #speed = n_new_worms*[None]
+
+    return index_list, tot_worms
+
+
 def getWormTrajectories(masked_image_file, trajectories_file, initial_frame = 0, last_frame = -1, \
 min_area = 25, min_length = 5, max_allowed_dist = 20, \
 area_ratio_lim = (0.5, 2), buffer_size = 25):
+#, is_single_worm = False):
     '''
     #read images from 'masked_image_file', and save the linked trajectories and their features into 'trajectories_file'
     #use the first 'total_frames' number of frames, if it is equal -1, use all the frames in 'masked_image_file'
@@ -110,8 +248,9 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
     min_length -- min size of the bounding box in the ROI of the compressed image
     max_allowed_dist -- maximum allowed distance between to consecutive trajectories
     area_ratio_lim -- allowed range between the area ratio of consecutive frames 
+    is_single_worm -- filter
+
     ''' 
-    
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
     
     with tables.File(masked_image_file, 'r') as mask_fid, \
@@ -119,10 +258,9 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
     
         mask_dataset = mask_fid.get_node("/mask")
         
-        SEGWORM_ID_DEFAULT = -1; #default value for the column segworm_id
         feature_table = feature_fid.create_table('/', "plate_worms", 
                                                  plate_worms, "Worm feature List",
-                                                 filters = tables.Filters(complevel=5, complib='zlib', shuffle=True))
+                                                 filters = table_filters)
         
         #flag used to determine if the function finished correctly
         feature_table._v_attrs['has_finished'] = 0
@@ -151,6 +289,8 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
             [_, ROIs, hierarchy]= cv2.findContours(main_mask, \
             cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
             
+            #if is_single_worm: ROIs, hierarchy = filterLargestArea(ROIs, hierarchy)
+                
             buff_feature_table = []
             buff_last = []
            
@@ -195,130 +335,34 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
                     #calculate figures for each image in the buffer
                     ROI_image = ROI_buffer[buff_ind,:,:]
                     
-                    #get the border of the ROI mask, this will be used to filter for valid worms
-                    ROI_valid = (ROI_image != 0).astype(np.uint8)
-                    _, ROI_border_ind, _ =  cv2.findContours(ROI_valid, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)  
-                    
-                    if len(ROI_border_ind) <= 1: 
-                        valid_ind = 0;
-                    else:
-                        #consider the case where there is more than one contour
-                        #i.e. the is a neiboring ROI in the square, just keep the largest area
-                        ROI_area = [cv2.contourArea(x) for x in ROI_border_ind]
-                        valid_ind = np.argmax(ROI_area);
-                        ROI_valid = np.zeros_like(ROI_valid);
-                        ROI_valid = cv2.drawContours(ROI_valid, ROI_border_ind, valid_ind, 1, -1)
-                        ROI_image = ROI_image*ROI_valid
-                    
-                    #the indexes of the maskborder
-                    #if len(ROI_border_ind)==1 and ROI_border_ind[0].shape[0] > 1: 
-                    #ROI_border_ind = np.squeeze(ROI_border_ind[valid_ind])
-                    #ROI_border_ind = (ROI_border_ind[:,1],ROI_border_ind[:,0])
-                    #else:
-                    #    continue
-                
-                    #a median filter sharps edges
-                    ROI_image = cv2.medianBlur(ROI_image, 3);
-                    #get binary image, and clean it using morphological closing
-                    ROI_mask = ((ROI_image<thresh) & (ROI_image != 0)).astype(np.uint8)
-                    ROI_mask = cv2.morphologyEx(ROI_mask, cv2.MORPH_CLOSE,np.ones((3,3)))
-                    #ROI_mask = cv2.erode(ROI_mask, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2,2)), iterations=2)
-        
-                    
-                    #get worms, assuming each contour in the ROI is a worm
-                    [_, ROI_worms, hierarchy]= cv2.findContours(ROI_mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)           
-                    
+                    #get the contour of possible worms
+                    ROI_worms, hierarchy = getWormContours(ROI_image, thresh)
+
                     mask_feature_list = [];
                     
+                    current_frame = frame_number + buff_ind
                     for worm_ind, worm_cnt in enumerate(ROI_worms):
-                        
-                        #obtain freatures for each worm
-                        
                         #ignore contours from holes
                         if hierarchy[0][worm_ind][3] != -1:
                             continue
-                
-                        area = float(cv2.contourArea(worm_cnt))
-                        if area < min_area:
-                            continue #area too small to be a worm
                         
-                        #check if the worm touches the ROI contour, if it does it is likely to be garbage
-                        worm_mask = np.zeros(ROI_image.shape, dtype = np.uint8);
-                        cv2.drawContours(worm_mask, ROI_worms, worm_ind, 255, -1)
-                        #if np.any(worm_mask[ROI_border_ind]):
-                        #    continue
+                        #obtain freatures for each worm
+                        mask_feat = getWormFeatures(worm_cnt, ROI_image, ROI_bbox, current_frame, thresh, min_area)
     
-                        worm_bbox = cv2.boundingRect(worm_cnt) 
-                        
-                        #find use the best rotated bounding box, the fitEllipse function produces bad results quite often
-                        #this method is better to obtain an estimate of the worm length than eccentricity
-                        (CMx,CMy),(L, W),angle = cv2.minAreaRect(worm_cnt)
-                        if W > L: L,W = W,L;   #switch if width is larger than length
-                        quirkiness = sqrt(1-W**2/L**2)
-                        
-                        #the best way I found to get the eccentricity is from the image moments
-                        #moments  = cv2.moments(worm_cnt)
-                        #a1 = (moments['mu20']+moments['mu02'])/2
-                        #a2 = np.sqrt(4*moments['mu11']**2+(moments['mu20']-moments['mu02'])**2)/2
-                        #ma, MA = a1-a2,  a1+a2 #this is wrong, even getting the sqrt root gives a large value
-                        #eccentricity = np.sqrt(1-ma/MA)
-                        #CMx = moments['m10']/moments['m00']
-                        #CMy = moments['m01']/moments['m00']
-                        #angle = (180 / np.pi)*np.arctan2(2*moments['mu11'], (moments['mu20']-moments['mu02']))/2
-                        
-                        hull = cv2.convexHull(worm_cnt) #for the solidity
-                        solidity = area/cv2.contourArea(hull);
-                        perimeter = float(cv2.arcLength(worm_cnt,True))
-                        compactness = area/(4*np.pi*perimeter**2)
-                        
-                        #calculate the mean intensity of the worm
-                        intensity_mean, intensity_std = cv2.meanStdDev(ROI_image, mask = worm_mask)
-                        
-                        #calculate hu moments, they are scale and rotation invariant
-                        hu_moments = cv2.HuMoments(cv2.moments(worm_cnt))
-                        
                         #append worm features.
-                        mask_feature_list.append((frame_number+ buff_ind, 
-                                                  CMx + ROI_bbox[0], CMy + ROI_bbox[1], 
-                                                  area, perimeter, L, W, 
-                                                  quirkiness, compactness, angle, solidity, 
-                                                  intensity_mean[0,0], intensity_std[0,0], thresh,
-                                                  ROI_bbox[0] + worm_bbox[0], ROI_bbox[0] + worm_bbox[0] + worm_bbox[2],
-                                                  ROI_bbox[1] + worm_bbox[1], ROI_bbox[1] + worm_bbox[1] + worm_bbox[3],
-                                                  SEGWORM_ID_DEFAULT, *hu_moments)) 
+                        if mask_feat is not None:
+                            mask_feature_list.append(mask_feat) 
+
                     
                     if len(mask_feature_list)>0:
                         mask_feature_list = list(zip(*mask_feature_list))
+                        
                         coord = np.array(mask_feature_list[1:3]).T
                         area = np.array(mask_feature_list[3]).T.astype(np.float)
-                        if coord_prev.size!=0:
-                            costMatrix = cdist(coord_prev, coord); #calculate the cost matrix
-                            #costMatrix[costMatrix>MA] = 1e10 #eliminate things that are farther 
-                            assigment = linear_assignment(costMatrix) #use the hungarian algorithm
-                            
-                            index_list = np.zeros(coord.shape[0], dtype=np.int);
-                            
-                            #Final assigment. Only allow assigments within a maximum allowed distance, and an area ratio
-                            for row, column in assigment:
-                                if costMatrix[row,column] < max_allowed_dist:
-                                    area_ratio = area[column]/area_prev[row];
-                                    
-                                    if area_ratio>area_ratio_lim[0] and area_ratio<area_ratio_lim[1]:
-                                        index_list[column] = index_list_prev[row];
-                                        
-                            #add a new index if no assigment was found
-                            unmatched = index_list==0
-                            vv = np.arange(1,np.sum(unmatched)+1) + tot_worms
-                            if vv.size>0:
-                                tot_worms = vv[-1]
-                                index_list[unmatched] = vv
-                        else:
-                            #initialize worm indexes
-                            n_new_worms = len(mask_feature_list[0])
-                            index_list = tot_worms + np.arange(1, n_new_worms+1);
-                            tot_worms = index_list[-1]
-                            #speed = n_new_worms*[None]
-                            
+                        
+                        index_list, tot_worms = joinConsecutiveFrames(index_list_prev, coord, coord_prev, area, area_prev, tot_worms, max_allowed_dist, area_ratio_lim)
+                        #if is_single_worm: index_list, tot_worms = [1], 1
+
                         #append the new feature list to the pytable
                         mask_feature_list = list(zip(*([tuple(index_list), 
                                                    tuple(len(index_list)*[-1])] + 
@@ -366,9 +410,41 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
     
         #flag used to determine if the function finished correctly
         feature_table._v_attrs['has_finished'] = 1
-        
+    
+    
+    #if is_single_worm: correctIndSigleWorm(trajectories_file)
+
     print(base_name + ' ' + progress_str);
     sys.stdout.flush()
+
+def correctSingleWormCase(trajectories_file):
+    '''
+    Only keep the object with the largest area when cosider the case of individual worms.
+    '''
+    with pd.HDFStore(trajectories_file, 'r') as traj_fid:
+        plate_worms = traj_fid['/plate_worms']
+    
+    tot_frames = plate_worms['frame_number'].max() + 1
+    
+    groupsbyframe = plate_worms[['frame_number', 'area']].groupby('frame_number')
+    
+    valid_rows = np.full(tot_frames, np.nan)
+    
+    for ii, frame_data in groupsbyframe:
+        valid_rows[ii] = frame_data['area'].argmax()
+        
+    valid_rows = valid_rows[~np.isnan(valid_rows)]
+
+    plate_worms = plate_worms.ix[valid_rows]
+    plate_worms['worm_index'] = np.array(1, dtype=np.int32)
+    
+    with tables.File(trajectories_file, "r+") as traj_fid:
+        table_filters = tables.Filters(complevel=5, complib='zlib', shuffle=True, fletcher32=True)
+        newT = traj_fid.create_table('/', 'plate_worms_t', 
+                                        obj = plate_worms.to_records(index=False), 
+                                        filters=table_filters)
+        traj_fid.remove_node('/', 'plate_worms')
+        newT.rename('plate_worms')
 
 def joinTrajectories(trajectories_file, min_track_size = 50, \
 max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
@@ -463,7 +539,7 @@ max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
 
 def plotLongTrajectories(trajectories_file, plot_file = '', \
 number_trajectories = 20, plot_limits = (2048,2048), index_str = 'worm_index_joined'):
-
+    #DEPRECATED
     if not plot_file:
         plot_file = trajectories_file.rsplit('.')[0] + '.pdf'
     

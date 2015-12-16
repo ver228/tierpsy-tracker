@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QApplication
 if __name__ == '__main__':
 	app = QApplication(sys.argv)
 	
-	default_videos_dir = '/Users/ajaver/Desktop/SingleWormData/Worm_Videos/03-03-11/'#'/Volumes/behavgenom$/Camille/Worm_Videos/Camille_12102015_1530_1730/'
+	default_videos_dir = '/Users/ajaver/Desktop/Videos/copied_from_pc207-13/Videos/'#'/Volumes/behavgenom$/Camille/Worm_Videos/Camille_12102015_1530_1730/'
 	
 	ui = getMaskParams_GUI(default_videos_dir = default_videos_dir, scripts_dir = os.path.dirname(os.path.realpath(__file__)))
 	ui.show()

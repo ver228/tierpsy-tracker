@@ -57,7 +57,7 @@ class HDF5videoViewer_GUI(QMainWindow):
     def imSldReleased(self):
         self.ui.imageSlider.setCursor(Qt.OpenHandCursor)
         if self.image_group != -1:
-            self.frame_number = round((self.tot_frames-1)*self.ui.imageSlider.value()/100)
+            self.frame_number = int(round((self.tot_frames-1)*self.ui.imageSlider.value()/100))
             self.updateImage()
     
     #frame spin box

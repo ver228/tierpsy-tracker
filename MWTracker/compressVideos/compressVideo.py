@@ -209,10 +209,6 @@ expected_frames = 15000, mask_param = DEFAULT_MASK_PARAM):
             
             frame_number += 1;
             
-            #import matplotlib.pylab as plt
-            #plt.figure()
-            #plt.imshow(image)
-            
             #Resize mask array every 1000 frames (doing this every frame does not impact much the performance)
             if mask_dataset.shape[0] <= frame_number + 1:
                 mask_dataset.resize(frame_number + 1000, axis=0); 

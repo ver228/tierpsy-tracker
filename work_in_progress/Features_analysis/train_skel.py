@@ -10,6 +10,8 @@ import numpy as np
 import matplotlib.pylab as plt
 from sklearn.cross_validation import train_test_split
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC, LinearSVC
+
 from sklearn.metrics import classification_report
 
 
@@ -37,11 +39,12 @@ def get_traj_file(traj_file, skel_file):
     
     plate_worms.dropna(how = 'any', inplace=True)
     return plate_worms
+    
+
 traj_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/Results/CSTCTest_Ch1_18112015_005619_trajectories.hdf5'
 skel_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/Results/CSTCTest_Ch1_18112015_005619_skeletons.hdf5'
 
 plate_worms = get_traj_file(traj_file, skel_file)
-
 
 #NOTES: 
 # 'area', 'perimeter', 'box_length', 'box_width' are in pixel, a better generalization will be to use microns
@@ -57,15 +60,23 @@ y = plate_worms['has_skeleton']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
 max_feat = int(round(np.sqrt(X_train.shape[1])))
-clf = RandomForestClassifier(n_estimators = 20, max_features = max_feat, n_jobs=8)
-clf = clf.fit(X_train, y_train)
 
+print('calculating classifier...')
+clf = RandomForestClassifier(n_estimators = 20, max_features = max_feat, n_jobs=8)
+#clf = SVC(kernel='rbf', C=1)
+#clf = LinearSVC(C=1.0, class_weight=None, dual=True, fit_intercept=True,
+#     intercept_scaling=1, loss='squared_hinge', max_iter=1000,
+#     multi_class='ovr', penalty='l2', random_state=None, tol=0.0001,
+#     verbose=1)
+
+clf = clf.fit(X_train, y_train)
+print('Getting predictions...')
+#%%
 y_pred = clf.predict(X_test)
 
-conf_mat = classification_report(y_pred, y_test)
-print(conf_mat)
-
-print([x for y, x in sorted(zip(clf.feature_importances_, col_pred))])
+dd = classification_report(y_pred, y_test)
+print(dd)
+#print([x for y, x in sorted(zip(clf.feature_importances_, col_pred))])
 
 
 traj_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/Results/CSTCTest_Ch1_18112015_075624_trajectories.hdf5'

@@ -91,7 +91,7 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_
         last_frame = np.max(t);
         worms_frame_range[worm_index] = (first_frame, last_frame)
         
-        tnew = np.arange(first_frame, last_frame+1);
+        tnew = np.arange(first_frame, last_frame+1, dtype=np.int32);
         if len(tnew) <= displacement_smooth_win:
             continue
         

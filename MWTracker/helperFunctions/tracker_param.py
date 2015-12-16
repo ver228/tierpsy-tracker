@@ -21,7 +21,7 @@ class tracker_param:
              expected_frames = 90000, fps = 25, fps_filter = 0, compression_buff = 25, roi_size = -1, 
              bad_seg_thresh = 0.5, save_bad_worms = True, 
              thresh_block_size = 61, min_displacement = 0, resampling_N = 49, 
-             has_timestamp = True, dilation_size = 9):
+             has_timestamp = True, dilation_size = 9, is_single_worm = False):
         '''
         min_area - minimum area in pixels allowed
         max_area - maximum area in pixels allowed
@@ -75,9 +75,9 @@ class tracker_param:
         min_track_lenght = max(1, fps_filter/5)
         max_allowed_dist = max(1, fps)
         
-        self.get_trajectories_param = {'initial_frame' : 0, 'last_frame': -1,
+        self.trajectories_param = {'initial_frame' : 0, 'last_frame': -1,
                               'min_area':min_area, 'min_length':min_track_lenght, 'max_allowed_dist':max_allowed_dist, 
-                              'area_ratio_lim': (0.5, 2), 'buffer_size': compression_buff}
+                              'area_ratio_lim': (0.5, 2), 'buffer_size': compression_buff}#, 'is_single_worm' : is_single_worm}
         
         #joinTrajectories
         min_track_size = max(1, fps_filter*2)
@@ -89,7 +89,7 @@ class tracker_param:
                                'threshold_smooth_win' : fps_filter*20 + 1, 'roi_size' : roi_size}
         
         #trajectories2Skeletons
-        self.get_skeletons_param = {'resampling_N' : resampling_N,
+        self.skeletons_param = {'resampling_N' : resampling_N,
                                'min_mask_area' : min_area, 'smoothed_traj_param' : self.smoothed_traj_param}
         
         #correctHeadTail

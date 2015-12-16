@@ -115,7 +115,11 @@ class WormFromTable(NormalizedWorm):
         #get the skeletons_id and frame_number in case they were not given by the user
         with pd.HDFStore(file_name, 'r') as ske_file_id:
             trajectories_data = ske_file_id['/trajectories_data']
-            good = trajectories_data['worm_index_N']==worm_index
+
+            if 'worm_index_N' in trajectories_data:
+                good = trajectories_data['worm_index_N']==worm_index
+            else:
+                good = trajectories_data['worm_index_joined']==worm_index
             
             #if a time_range is given only consider frames within the time range 
             if len(time_range) == 2:
@@ -123,12 +127,15 @@ class WormFromTable(NormalizedWorm):
                 & (trajectories_data['frame_number']<=time_range[1])
                 
             
-            trajectories_data = trajectories_data.loc[good, ['skeleton_id', 'frame_number', 'has_skeleton']]
+            trajectories_data = trajectories_data.loc[good]
             
             skeleton_id = trajectories_data['skeleton_id'].values
             frame_number = trajectories_data['frame_number'].values
             frame_code = trajectories_data['has_skeleton'].values
             
+            if 'auto_label' in trajectories_data:
+                self.label = trajectories_data['auto_label']
+
             del trajectories_data         
         
         
@@ -179,6 +186,13 @@ class WormFromTable(NormalizedWorm):
             except:
                 self.area = calWormArea(self.ventral_contour, self.dorsal_contour)
 
+            #reduce the number of valid skeletons if they were already labelled/filter
+            self.removeInvSkel()
+
+            #calculate the number of valid skeletons
+            self.n_valid_skel = np.sum(~np.isnan(self.length))
+
+
             #assertions to check the data has the proper dimensions
             assert self.frame_number.shape[0] == self.n_frames
             assert self.skeleton_id.shape[0] == self.n_frames
@@ -210,6 +224,17 @@ class WormFromTable(NormalizedWorm):
             if isOpenWorm:
                 self.changeAxis()
     
+    def removeInvSkel(self, GOOD_SKE = 4):
+        if hasattr(self, 'label'):
+            bad = (self.label != GOOD_SKE).values
+
+            for field in ['skeleton', 'ventral_contour', 'dorsal_contour', 'widths', 'angles', 'length', 'area']:
+                A = getattr(self, field)
+                A[bad] = np.nan
+                setattr(self, field, A)
+
+        
+
     def changeAxis(self):
         for field in ['skeleton', 'ventral_contour', 'dorsal_contour', 'widths', 'angles']:
             A = getattr(self, field)

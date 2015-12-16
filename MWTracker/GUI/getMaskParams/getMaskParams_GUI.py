@@ -16,6 +16,16 @@ from MWTracker.compressVideos.compressVideo import getROIMask, selectVideoReader
 from MWTracker.helperFunctions.compressVideoWorkerL import compressVideoWorkerL
 from MWTracker.helperFunctions.getTrajectoriesWorkerL import getTrajectoriesWorkerL
 
+def list2cmd(cmd):
+	for ii, dd in enumerate(cmd):
+		if ii >= 2 and not dd[0] == '-':
+		    dd = '"' + dd + '"'
+
+		if ii == 0:
+		    cmd_str = dd
+		else:
+		    cmd_str += ' ' +  dd
+	return cmd_str	  
 
 class getMaskParams_GUI(QMainWindow):
 	def __init__(self, default_videos_dir = '', scripts_dir = ''):
@@ -193,7 +203,7 @@ class getMaskParams_GUI(QMainWindow):
 		'thresh_block_size' : self.ui.spinBox_block_size.value(),
 		'thresh_C' : self.ui.spinBox_thresh_C.value(),
 		'dilation_size' : self.ui.spinBox_dilation_size.value(),
-		'has_timestamp':self.ui.checkBox_hasTimestamp.isChecked(),
+		'has_timestamp' : self.ui.checkBox_hasTimestamp.isChecked()
 		}
 		
 		mask = getROIMask(self.Imin.copy(), **self.mask_param)
@@ -229,6 +239,8 @@ class getMaskParams_GUI(QMainWindow):
 		self.mask_param['fps'] = self.ui.spinBox_fps.value()
 		self.mask_param['resampling_N'] = self.ui.spinBox_skelSeg.value()
 		self.mask_param['compression_buff'] = self.ui.spinBox_buff_size.value()
+		#self.mask_param['is_single_worm'] = self.ui.checkBox_isSingleWorm.isChecked()
+		
 		self.close()
 
 		#self.json_file = self.video_file.rpartition('.')[0] + '.json'
@@ -240,11 +252,20 @@ class getMaskParams_GUI(QMainWindow):
 		self.masked_image_file = self.mask_files_dir + base_name + '.hdf5'
 
 
-		arg_compress = [self.script_compress, self.video_file, self.mask_files_dir, self.mask_files_dir, self.json_file]
-		self.cmd_compress = self.list2cmd(arg_compress)
+		arg_compress = ['python3', self.script_compress, self.video_file, self.mask_files_dir]
+		for arg_str in ['json_file']:
+			if getattr(self, arg_str):
+				arg_compress += ['--' + arg_str, getattr(self, arg_str)]
+
+		print(arg_compress)
+		self.cmd_compress = list2cmd(arg_compress)
 		
-		arg_track = [self.script_track, self.masked_image_file, self.results_dir, self.mask_files_dir, self.results_dir, self.json_file]
-		self.cmd_track = self.list2cmd(arg_track)
+		arg_track = ['python3', self.script_track, self.masked_image_file, self.results_dir]
+		for arg_str in ['json_file']:
+			if getattr(self, arg_str):
+				arg_compress += ['--' + arg_str, getattr(self, arg_str)]
+		
+		self.cmd_track = list2cmd(arg_track)
 
 		print(self.cmd_compress)
 		os.system(self.cmd_compress)
@@ -255,13 +276,7 @@ class getMaskParams_GUI(QMainWindow):
 		#masked_image_file = compressVideoWorkerL(self.video_file, self.mask_files_dir, param_file = self.json_file)
 		#getTrajectoriesWorkerL(masked_image_file, self.results_dir, param_file = self.json_file)
 
-	def list2cmd(self, arglist):
-		cmd = ''
-		for arg in arglist:
-			cmd += '"' + arg + '" '
-
-		cmd = ' '.join(['python3', cmd])
-		return cmd
+	      
 
 	def read_json(self):
 
@@ -289,7 +304,7 @@ class getMaskParams_GUI(QMainWindow):
 				self.ui.spinBox_skelSeg.setValue(self.mask_param['resampling_N'])
 			if 'compression_buff' in self.mask_param.keys():
 				self.ui.spinBox_buff_size.setValue(self.mask_param['compression_buff'])
-			
+				
 
 if __name__ == '__main__':
 	app = QApplication(sys.argv)

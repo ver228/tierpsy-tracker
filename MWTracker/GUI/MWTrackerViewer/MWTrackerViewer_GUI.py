@@ -36,12 +36,12 @@ class MWTrackerViewer_GUI(QMainWindow):
 		self.frame_data = -1
 		self.h5path = self.ui.comboBox_h5path.itemText(0)
 		
-		self.wlab = {'U':0, 'WORM':1, 'WORMS':2, 'BAD':3}
+		self.wlab = {'U':0, 'WORM':1, 'WORMS':2, 'BAD':3, 'GOOD_SKE':4}
 		#self.ui.comboBox_labels.clear()
 		#for lab in ('Undefined', 'Single Worm', 'Worm Cluster', 'Bad'):
 		#	self.ui.comboBox_labels.addItem(lab)
 
-		self.wlabC = {self.wlab['U']:Qt.white, self.wlab['WORM']:Qt.green, self.wlab['WORMS']:Qt.blue, self.wlab['BAD']:Qt.darkRed}
+		self.wlabC = {self.wlab['U']:Qt.white, self.wlab['WORM']:Qt.green, self.wlab['WORMS']:Qt.blue, self.wlab['BAD']:Qt.darkRed, self.wlab['GOOD_SKE']:Qt.darkCyan}
 		
 		#self.videos_dir = '/Volumes/behavgenom$/Andre/shige-oda/MaskedVideos/'
 		#self.videos_dir = "/Users/ajaver/Google Drive/MWTracker_Example/MaskedVideos/"
@@ -72,6 +72,8 @@ class MWTrackerViewer_GUI(QMainWindow):
 		self.ui.checkBox_ROI1.stateChanged.connect(partial(self.updateROIcanvasN, 1))
 		self.ui.checkBox_ROI2.stateChanged.connect(partial(self.updateROIcanvasN, 2))
 		self.ui.checkBox_showLabel.stateChanged.connect(self.updateImage)
+		
+		self.ui.comboBox_labelType.currentIndexChanged.connect(self.updateImage)
 
 		self.ui.pushButton_h5groups.clicked.connect(self.updateGroupNames)
 
@@ -154,12 +156,17 @@ class MWTrackerViewer_GUI(QMainWindow):
 		y = event.pos().y() 
 		
 		if isinstance(self.frame_data, pd.DataFrame):
+			print((self.frame_data))
+			print(len(self.frame_data))
+			if len(self.frame_data) == 0:
+				return
+
 			x /= self.img_w_ratio
 			y /= self.img_h_ratio
-
 			R = (x-self.frame_data['coord_x'])**2 + (y-self.frame_data['coord_y'])**2
-			
+
 			ind = R.idxmin()
+
 			good_row = self.frame_data.loc[ind]
 			if np.sqrt(R.loc[ind]) < good_row['roi_size']:
 				worm_ind = int(good_row['worm_index_N'])
@@ -510,15 +517,21 @@ class MWTrackerViewer_GUI(QMainWindow):
 			except KeyError:
 				self.frame_data = -1
 
-			if isinstance(self.frame_data, pd.DataFrame) and self.ui.checkBox_showLabel.isChecked():
+			label_type = 'worm_label' if self.ui.comboBox_labelType.currentIndex() == 0 else 'auto_label'
+			if isinstance(self.frame_data, pd.DataFrame) and \
+			self.ui.checkBox_showLabel.isChecked() and label_type in self.frame_data:
 				
 				painter = QPainter()
 				painter.begin(image)
 				for row_id, row_data in self.frame_data.iterrows():
-					x = int(row_data['coord_x']*self.img_h_ratio)
-					y = int(row_data['coord_y']*self.img_w_ratio)
-					
-					c = self.wlabC[int(row_data['worm_label'])]
+					x = row_data['coord_x']*self.img_h_ratio
+					y = row_data['coord_y']*self.img_w_ratio
+					if not (x == x) or  not (y == y): #check if the coordinates are nan
+						continue
+
+					x = int(x)
+					y = int(y)
+					c = self.wlabC[int(row_data[label_type])]
 					
 					painter.setPen(c)
 					painter.setFont(QFont('Decorative', 10))
@@ -587,10 +600,14 @@ class MWTrackerViewer_GUI(QMainWindow):
 			wormCanvas.clear()
 			return
 
+		if np.isnan(roi_data['coord_x']) or np.isnan(roi_data['coord_y']):
+			return #invalid coordinate, nothing to do here
+
 		worm_roi, roi_corner = getWormROI(self.original_image, roi_data['coord_x'], roi_data['coord_y'], roi_data['roi_size'])
 		worm_roi = np.ascontiguousarray(worm_roi)
 		
 		#worm_roi = cv2.cvtColor(worm_img, cv2.COLOR_GRAY2RGB);
+
 		worm_img = QImage(worm_roi.data, worm_roi.shape[0], worm_roi.shape[1], worm_roi.strides[0], QImage.Format_Indexed8)
 		worm_img = worm_img.scaled(canvas_size,canvas_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 

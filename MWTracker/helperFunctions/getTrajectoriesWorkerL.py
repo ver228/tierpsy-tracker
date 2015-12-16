@@ -9,7 +9,7 @@ import tables
 
 from .. import config_param
 
-from ..trackWorms.getWormTrajectories import getWormTrajectories, joinTrajectories
+from ..trackWorms.getWormTrajectories import getWormTrajectories, joinTrajectories, correctSingleWormCase
 from ..trackWorms.getDrawTrajectories import drawTrajectoriesVideo
 from ..trackWorms.getSkeletonsTables import trajectories2Skeletons, writeIndividualMovies
 from ..trackWorms.checkHeadOrientation import correctHeadTail
@@ -28,6 +28,9 @@ checkpoint_label = {}
 for key in checkpoint:
     checkpoint_label[checkpoint[key]] = key
 
+def print_flush(pstr):
+        print(pstr)
+        sys.stdout.flush()
 
 def getStartingPoint(masked_image_file, results_dir):    
     '''determine for where to start. This is useful to check if the previous analysis was 
@@ -94,15 +97,25 @@ def constructNames(masked_image_file, results_dir):
     
     return output
 
-def getTrajectoriesWorkerL(masked_image_file, results_dir, param_file ='', overwrite = False, start_point = -1):
+
+
+
+def getTrajectoriesWorkerL(masked_image_file, results_dir, param_file ='', overwrite = False, 
+    start_point = -1, end_point = checkpoint['END'], is_single_worm = False):
     
     base_name, trajectories_file, skeletons_file, features_file, feat_ind_file = constructNames(masked_image_file, results_dir)
     print(trajectories_file, skeletons_file, features_file, feat_ind_file)
+
     #if starting point is not given, calculate it again
     if overwrite:
         start_point = checkpoint['TRAJ_CREATE']
     elif start_point < 0:
         start_point = getStartingPoint(masked_image_file, results_dir)
+
+    #if start_point is larger than end_point there is nothing else to do 
+    if start_point > end_point:
+        print_flush(base_name + ' Finished in ' + checkpoint_label[end_point])
+        return
 
     if start_point < checkpoint['FEAT_CREATE']:
         #check if the file with the masked images exists
@@ -120,38 +133,34 @@ def getTrajectoriesWorkerL(masked_image_file, results_dir, param_file ='', overw
     #get function parameters
     param = tracker_param(param_file)
     
+    execThisPoint = lambda current_point : (checkpoint[current_point] >= start_point ) &  (checkpoint[current_point] <= end_point)
     
 
-    print(base_name + ' Starting checkpoint: ' + checkpoint_label[start_point])
-    sys.stdout.flush()
-
+    print_flush(base_name + ' Starting checkpoint: ' + checkpoint_label[start_point])
     #get trajectory data
-    if start_point <= checkpoint['TRAJ_CREATE']:
-        getWormTrajectories(masked_image_file, trajectories_file, **param.get_trajectories_param)
-    
-    if start_point <= checkpoint['TRAJ_JOIN']:        
+    if execThisPoint('TRAJ_CREATE'):
+        getWormTrajectories(masked_image_file, trajectories_file, **param.trajectories_param)
+        if is_single_worm: correctSingleWormCase(trajectories_file)
+
+    if execThisPoint('TRAJ_JOIN'):        
         joinTrajectories(trajectories_file, **param.join_traj_param)
 
-    return
-
     #get skeletons data    
-    if start_point <= checkpoint['SKE_CREATE']:
-        trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file, **param.get_skeletons_param)
+    if execThisPoint('SKE_CREATE'):
+        trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file, **param.skeletons_param)
 
-    if start_point <= checkpoint['SKE_ORIENT']:
+    if execThisPoint('SKE_ORIENT'):
         correctHeadTail(skeletons_file, **param.head_tail_param)
     
-    if start_point <= checkpoint['FEAT_CREATE']:
+    if execThisPoint('FEAT_CREATE'):
         #extract features
         getWormFeatures(skeletons_file, features_file, **param.features_param)
 
-    if start_point <= checkpoint['FEAT_IND']:
+    if execThisPoint('FEAT_IND'):
         #extract individual features if the worms are labeled
         featFromLabSkel(skeletons_file, feat_ind_file, param.fps)
 
     
-    print(base_name + ' Finished')
-    sys.stdout.flush()
-
+    print_flush(base_name + ' Finished')
     
     
