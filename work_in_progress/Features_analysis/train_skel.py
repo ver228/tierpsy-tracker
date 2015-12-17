@@ -82,7 +82,6 @@ print(dd)
 traj_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/Results/CSTCTest_Ch1_18112015_075624_trajectories.hdf5'
 skel_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/Results/CSTCTest_Ch1_18112015_075624_skeletons.hdf5'
 
-
 plate_worms = get_traj_file(traj_file, skel_file)
 X_true = plate_worms[col_pred]
 y_true = plate_worms['has_skeleton']

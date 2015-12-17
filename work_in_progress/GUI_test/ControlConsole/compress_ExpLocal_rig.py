@@ -27,7 +27,8 @@ def checkMaskPrefix(fdir):
 	return os.path.abspath(fdir)
 
 
-def getCompCommands(video_dir_root, mask_dir_root, tmp_dir_root, json_file = '', video_ext = '.mjpg',
+def getCompCommands(video_dir_root, mask_dir_root, tmp_dir_root, json_file = '', \
+	video_ext = '.mjpg', is_single_worm = False, \
 	script_abs_path = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/MWTracker_GUI/compressSingleLocal.py'):
 	
 	assert os.path.exists(video_dir_root)
@@ -59,13 +60,15 @@ def getCompCommands(video_dir_root, mask_dir_root, tmp_dir_root, json_file = '',
 				for arg in ['tmp_mask_dir', 'json_file']:
 					if eval(arg): cmd += ['--' + arg, eval(arg)]
 
+				if is_single_worm: cmd.append('--is_single_worm')
+
 				cmd_list_compress.append(cmd)
 
 	return cmd_list_compress
 
 
 
-def main(video_dir_root, mask_dir_root, tmp_dir_root, json_file, video_ext, script_abs_path, max_num_process, refresh_time):
+def main(video_dir_root, mask_dir_root, tmp_dir_root, json_file, video_ext, script_abs_path, max_num_process, refresh_time, is_single_worm):
 	
 	cmd_list_compress = getCompCommands(video_dir_root, mask_dir_root, tmp_dir_root, json_file, video_ext, script_abs_path)
 	#cmd_list_compress = cmd_list_compress
@@ -92,6 +95,7 @@ if __name__ == '__main__':
 		help='Temporary directory where files are going to be stored')
 	
 	parser.add_argument('--video_ext', default='*.mjpg', help='Extention used to find the valid video files video_dir_root')
+	parser.add_argument('--is_single_worm', action='store_true', help = 'This flag indicates if the video corresponds to the single worm case.')
 
 	parser.add_argument('--max_num_process', default=6, type=int, help='Max number of process to be executed in parallel.')
 	parser.add_argument('--refresh_time', default=10, type=float, help='Refresh time in seconds of the process screen.')

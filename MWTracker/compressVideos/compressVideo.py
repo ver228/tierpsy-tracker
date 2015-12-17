@@ -45,10 +45,10 @@ def getROIMask(image,  min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEF
     #find good contours: between max_area and min_area, and do not touch the image border
     goodIndex = []
     for ii, contour in enumerate(contours):
-        if np.all(contour!=1) and np.all(contour[:,:,0] !=  IM_LIMX)\
-        and np.all(contour[:,:,1] != IM_LIMY):
+        if not np.any(contour ==1) and not np.any(contour[:,:,0] ==  IM_LIMY)\
+        and not np.any(contour[:,:,1] == IM_LIMX):
             area = cv2.contourArea(contour)
-            if (area>=min_area) and (area<=max_area):
+            if (area >= min_area) and (area <= max_area):
                 goodIndex.append(ii)
     
     #typically there are more bad contours therefore it is cheaper to draw only the valid contours

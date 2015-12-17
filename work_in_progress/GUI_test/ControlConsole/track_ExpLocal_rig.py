@@ -69,7 +69,6 @@ def getTrackCommands(mask_dir_root, results_dir_root, tmp_dir_root='', json_file
 def getResultsDir(mask_dir_root):
 	#construct the results dir on base of the mask_dir_root
 	subdir_list = mask_dir_root.split(os.sep)
-	
 
 	for ii in range(len(subdir_list))[::-1]:
 		if subdir_list[ii] == 'MaskedVideos':

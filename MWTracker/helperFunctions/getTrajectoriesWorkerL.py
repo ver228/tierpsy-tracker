@@ -97,9 +97,6 @@ def constructNames(masked_image_file, results_dir):
     
     return output
 
-
-
-
 def getTrajectoriesWorkerL(masked_image_file, results_dir, param_file ='', overwrite = False, 
     start_point = -1, end_point = checkpoint['END'], is_single_worm = False):
     

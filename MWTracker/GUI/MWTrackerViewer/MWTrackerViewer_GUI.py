@@ -156,8 +156,6 @@ class MWTrackerViewer_GUI(QMainWindow):
 		y = event.pos().y() 
 		
 		if isinstance(self.frame_data, pd.DataFrame):
-			print((self.frame_data))
-			print(len(self.frame_data))
 			if len(self.frame_data) == 0:
 				return
 
