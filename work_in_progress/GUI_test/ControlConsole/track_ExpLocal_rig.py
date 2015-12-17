@@ -86,8 +86,9 @@ def main(mask_dir_root, tmp_dir_root, json_file, script_abs_path, max_num_proces
 
 	results_dir_root = getResultsDir(mask_dir_root)
 	
-	cmd_list_track = getTrackCommands(mask_dir_root, results_dir_root, tmp_dir_root, json_file = json_file, 
-		script_abs_path = script_abs_path, end_point=end_point, is_single_worm=is_single_worm)
+	cmd_list_track = getTrackCommands(mask_dir_root = mask_dir_root, results_dir_root = results_dir_root, 
+		tmp_dir_root = tmp_dir_root, json_file = json_file, 
+		script_abs_path = script_abs_path, end_point = end_point, is_single_worm = is_single_worm)
 	#cmd_list_track = cmd_list_track[0:1]
 	
 	#display commands to be executed

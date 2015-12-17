@@ -37,6 +37,7 @@ def getCompCommands(video_dir_root, mask_dir_root, tmp_dir_root, json_file = '',
 	mask_dir_root = checkMaskPrefix(mask_dir_root)
 	tmp_dir_root = checkMaskPrefix(tmp_dir_root) if tmp_dir_root else mask_dir_root
 	
+	print('A')
 	cmd_list_compress = []
 	for dpath, dnames, fnames in os.walk(video_dir_root):
 		for fname in fnames:
@@ -69,8 +70,11 @@ def getCompCommands(video_dir_root, mask_dir_root, tmp_dir_root, json_file = '',
 
 
 def main(video_dir_root, mask_dir_root, tmp_dir_root, json_file, video_ext, script_abs_path, max_num_process, refresh_time, is_single_worm):
-	
-	cmd_list_compress = getCompCommands(video_dir_root, mask_dir_root, tmp_dir_root, json_file, video_ext, script_abs_path)
+
+	cmd_list_compress = getCompCommands(video_dir_root = video_dir_root, 
+		mask_dir_root = mask_dir_root, tmp_dir_root = tmp_dir_root, 
+		json_file = json_file, video_ext = video_ext, is_single_worm = is_single_worm, 
+		script_abs_path = script_abs_path)
 	#cmd_list_compress = cmd_list_compress
 	#display commands to be executed
 	print_cmd_list(cmd_list_compress)
@@ -103,6 +107,7 @@ if __name__ == '__main__':
 
 	main(**vars(args))
 	
+
 
 	
 	
