@@ -43,7 +43,7 @@ def compressVideoWorkerL(video_file, mask_dir, param_file = '', is_single_worm =
     except:
         has_finished = 0 
 
-    if has_finished == 2:
+    if has_finished == 2 or (has_finished == 1 and not is_single_worm):
         print_flush('File alread exists: %s. If you want to calculate the mask again delete the existing file.' % masked_image_file)
         return
     
@@ -52,9 +52,11 @@ def compressVideoWorkerL(video_file, mask_dir, param_file = '', is_single_worm =
     if has_finished < 1:    
         compressVideo(video_file, masked_image_file, **param.compress_vid_param)
     
+
     if has_finished < 2:
         #store the additional information for the case of single worm
-        if is_single_worm: storeAdditionalDataSW(video_file, masked_image_file)
+        if is_single_worm: 
+            storeAdditionalDataSW(video_file, masked_image_file)
 
     time_str = str(datetime.timedelta(seconds=round(time.time()-initial_time)))
     progress_str = 'Processing Done. Total time = %s' % time_str

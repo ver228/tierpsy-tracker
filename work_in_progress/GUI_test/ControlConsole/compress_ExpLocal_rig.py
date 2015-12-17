@@ -75,12 +75,12 @@ def main(video_dir_root, mask_dir_root, tmp_dir_root, json_file, video_ext, scri
 		mask_dir_root = mask_dir_root, tmp_dir_root = tmp_dir_root, 
 		json_file = json_file, video_ext = video_ext, is_single_worm = is_single_worm, 
 		script_abs_path = script_abs_path)
-	#cmd_list_compress = cmd_list_compress
+	cmd_list_compress = cmd_list_compress[0:10]
 	#display commands to be executed
 	print_cmd_list(cmd_list_compress)
 
 	#run all the commands
-	runMultiCMD(cmd_list_compress, max_num_process = max_num_process, refresh_time = refresh_time)
+	#runMultiCMD(cmd_list_compress, max_num_process = max_num_process, refresh_time = refresh_time)
 
 
 if __name__ == '__main__':
