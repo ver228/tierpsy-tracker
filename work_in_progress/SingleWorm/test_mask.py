@@ -15,7 +15,9 @@ sys.path.append('/Users/ajaver/Documents/GitHub/Multiworm_Tracking/')
 from MWTracker.trackWorms.getSkeletonsTables import getSmoothTrajectories
 from MWTracker.compressVideos.compressVideo import getROIMask
 
-videos_file = '/Users/ajaver/Desktop/Videos/copied_from_pc207-13/Videos/135 CB4852 on food L_2011_03_09__15_51_36___1___8.avi'
+#videos_file = '/Users/ajaver/Desktop/Videos/copied_from_pc207-13/Videos/135 CB4852 on food L_2011_03_09__15_51_36___1___8.avi'
+videos_file = '/Users/ajaver/Desktop/Videos/Check_Align_samples/Videos/npr-2 (ok419)IV on food R_2010_01_25__15_29_03___4___10.avi'
+
 assert os.path.exists(videos_file)
 
 full_file = videos_file[:-4] + '_full.hdf5'
@@ -44,7 +46,7 @@ DEFAULT_MASK_PARAM = {'min_area':100, 'max_area':5000,
 'has_timestamp':False, 'thresh_block_size':61, 'thresh_C':15, 
 'dilation_size': 1}
 
-ind = 14733
+ind = 7261
 with tables.File(full_file, 'r') as full_fid:
     img = full_fid.get_node('/', 'full')[ind]
     
@@ -68,11 +70,9 @@ for thresh_C in range(N, N+1):
     goodIndex = []
     for ii, contour in enumerate(contours):
         area = cv2.contourArea(contour)
-        print(ii, area)
-        
         if not np.any(contour ==1) and not np.any(contour[:,:,0] ==  IM_LIMY)\
-        and not np.any(contour[:,:,1] == IM_LIMX): #and hierarchy[0][ii][2] == -1:
-            if (area >= min_area) and (area <= max_area):
+            and not np.any(contour[:,:,1] == IM_LIMX) and hierarchy[0][ii][2] == -1:
+    
                 goodIndex.append(ii)
     
     mask = np.zeros(img.shape, dtype=img.dtype)

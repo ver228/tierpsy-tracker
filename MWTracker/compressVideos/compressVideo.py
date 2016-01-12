@@ -16,12 +16,14 @@ from .readVideoHDF5 import readVideoHDF5
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
 
-DEFAULT_MASK_PARAM = {'min_area':100, 'max_area':5000, 'has_timestamp':True, 'thresh_block_size':61, 'thresh_C':15, 'dilation_size': 9}
+DEFAULT_MASK_PARAM = {'min_area':100, 'max_area':5000, 'has_timestamp':True, 
+'thresh_block_size':61, 'thresh_C':15, 'dilation_size': 9, 'keep_border_data': False}
 
 
 def getROIMask(image,  min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEFAULT_MASK_PARAM['max_area'], 
     has_timestamp = DEFAULT_MASK_PARAM['has_timestamp'], thresh_block_size = DEFAULT_MASK_PARAM['thresh_block_size'], 
-    thresh_C = DEFAULT_MASK_PARAM['thresh_C'], dilation_size = DEFAULT_MASK_PARAM['dilation_size']):
+    thresh_C = DEFAULT_MASK_PARAM['thresh_C'], dilation_size = DEFAULT_MASK_PARAM['dilation_size'], 
+    keep_border_data = DEFAULT_MASK_PARAM['keep_border_data']):
     '''
     Calculate a binary mask to mark areas where it is possible to find worms.
     Objects with less than min_area or more than max_area pixels are rejected.
@@ -45,8 +47,16 @@ def getROIMask(image,  min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEF
     #find good contours: between max_area and min_area, and do not touch the image border
     goodIndex = []
     for ii, contour in enumerate(contours):
-        if not np.any(contour ==1) and not np.any(contour[:,:,0] ==  IM_LIMY)\
-        and not np.any(contour[:,:,1] == IM_LIMX):
+
+        if not keep_border_data:
+            #eliminate blobs that touch a border
+            keep = not np.any(contour ==1) and \
+            not np.any(contour[:,:,0] ==  IM_LIMY)\
+            and not np.any(contour[:,:,1] == IM_LIMX)
+        else:
+            keep = True
+
+        if keep:
             area = cv2.contourArea(contour)
             if (area >= min_area) and (area <= max_area):
                 goodIndex.append(ii)

@@ -7,6 +7,12 @@ Created on Tue Jun  9 11:51:28 2015
 
 import time, datetime
 
+def tictoc():
+    tic = time.time()
+    def toc():
+        print('Elapse time %f' %  (time.time()-tic))
+    return toc
+
 class timeCounterStr:
     def __init__(self, task_str):
         self.initial_time = time.time();

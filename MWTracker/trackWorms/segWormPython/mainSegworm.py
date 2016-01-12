@@ -8,6 +8,7 @@ Created on Wed May 20 12:46:20 2015
 import cv2
 import numpy as np
 from scipy.interpolate import interp1d
+from scipy.signal import savgol_filter
 
 from .linearSkeleton import linearSkeleton
 from .getHeadTail import getHeadTail, rollHead2FirstIndex
@@ -16,9 +17,22 @@ from .cleanWorm import circSmooth, extremaPeaksCircDist
 
 #wrappers around C functions
 from .cythonFiles.circCurvature import circCurvature
-from .cythonFiles.curvspace import curvspace
 
-def contour2Skeleton(contour, resampling_N=50):
+#from .cythonFiles.curvspace import curvspace
+# def resample_old(skeleton, cnt_side1, cnt_side2, cnt_widths):
+#     #resample data
+#     skeleton, ske_len = curvspace(skeleton, resampling_N)
+#     cnt_side1, cnt_side1_len = curvspace(cnt_side1, resampling_N)
+#     cnt_side2, cnt_side2_len = curvspace(cnt_side2, resampling_N)
+    
+#     f = interp1d(np.arange(cnt_widths.size), cnt_widths)
+#     x = np.linspace(0, cnt_widths.size-1, resampling_N)
+#     cnt_widths = f(x);
+    
+#     return skeleton, ske_len, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths
+
+
+def contour2Skeleton(contour):
     #contour must be a Nx2 numpy array
     assert type(contour) == np.ndarray and contour.ndim == 2 and contour.shape[1] ==2
     
@@ -102,7 +116,7 @@ def contour2Skeleton(contour, resampling_N=50):
     #% Compute the contour's local low-frequency curvature minima.
     minima_low_freq, minima_low_freq_ind = \
     extremaPeaksCircDist(-1, cnt_ang_low_freq, edge_len_low_freq, cnt_chain_code_len);
-#%%
+
     #% Compute the worm's skeleton.
     skeleton, cnt_widths = linearSkeleton(head_ind, tail_ind, minima_low_freq, minima_low_freq_ind, \
         maxima_low_freq, maxima_low_freq_ind, contour.copy(), worm_seg_length, cnt_chain_code_len);
@@ -197,8 +211,71 @@ def orientWorm(skeleton, prev_skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt
     
     return skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths, np.abs(signed_area)
 
+def resample_curve(curve, resampling_N = 49, widths = np.zeros(0)):
 
-def getSkeleton(worm_mask, prev_skeleton = np.zeros(0), resampling_N=50, min_mask_area = 50):
+    '''Resample curve to have resampling_N equidistant segments'''
+    
+    #calculate the cumulative length for each segment in the curve
+    dx = np.diff(curve[:,0])
+    dy = np.diff(curve[:,1])
+    dr = np.sqrt(dx*dx + dy*dy)
+    
+    lengths = np.cumsum(dr)
+    lengths = np.hstack((0, lengths)) #add the first point
+    tot_length = lengths[-1]
+
+    fx = interp1d(lengths, curve[:,0])
+    fy = interp1d(lengths, curve[:,1])
+
+    subLengths = np.linspace(0+np.finfo(float).eps, tot_length, resampling_N)
+    #I add the epsilon because otherwise the interpolation will produce nan for zero       
+    
+    resampled_curve = np.zeros((resampling_N,2))
+    resampled_curve[:,0] = fx(subLengths)
+    resampled_curve[:,1] = fy(subLengths)
+    
+    if widths.size > 0:
+        fw = interp1d(lengths, widths)
+        widths = fw(subLengths)
+
+    return resampled_curve, tot_length, widths
+
+
+
+def smooth_curve(curve, window = 5, pol_degree = 3):
+    '''smooth curves using the savgol_filter'''
+    
+    if curve.shape[0] < window:
+        #nothing to do here return an empty array
+        return np.full_like(curve, np.nan)
+
+    #consider the case of one (widths) or two dimensions (skeletons, contours)
+    if curve.ndim == 1:
+        smoothed_curve =  savgol_filter(curve, window, pol_degree)
+    else:
+        smoothed_curve = np.zeros_like(curve)
+        for nn in range(curve.ndim):
+            smoothed_curve[:,nn] = savgol_filter(curve[:,nn], window, pol_degree)
+
+    return smoothed_curve
+
+def resampleAll(skeleton, cnt_side1, cnt_side2, cnt_widths, resampling_N):
+    '''I am only resample for the moment'''
+    #resample data
+    skeleton, ske_len, cnt_widths = resample_curve(skeleton, resampling_N, cnt_widths)
+    cnt_side1, cnt_side1_len, _ = resample_curve(cnt_side1, resampling_N)
+    cnt_side2, cnt_side2_len, _ = resample_curve(cnt_side2, resampling_N)
+    
+    #skeleton = smooth_curve(skeleton)
+    #cnt_widths = smooth_curve(cnt_widths)
+    #cnt_side1 = smooth_curve(cnt_side1)
+    #cnt_side2 = smooth_curve(cnt_side2)
+    
+    return skeleton, ske_len, cnt_side1, cnt_side1_len, \
+    cnt_side2, cnt_side2_len, cnt_widths
+
+
+def getSkeleton(worm_mask, prev_skeleton = np.zeros(0), resampling_N = 50, min_mask_area = 50):
     
     n_output_param = 8 #number of expected output parameters
     
@@ -214,19 +291,14 @@ def getSkeleton(worm_mask, prev_skeleton = np.zeros(0), resampling_N=50, min_mas
     assert type(contour) == np.ndarray and contour.ndim == 2 and contour.shape[1] ==2
     
     skeleton, cnt_side1, cnt_side2, cnt_widths, err_msg = \
-    contour2Skeleton(contour, resampling_N)
+    contour2Skeleton(contour)
     
     if skeleton.size == 0:
         return n_output_param*[np.zeros(0)]
     
-    #resample data
-    skeleton, ske_len = curvspace(skeleton, resampling_N)
-    cnt_side1, cnt_side1_len = curvspace(cnt_side1, resampling_N)
-    cnt_side2, cnt_side2_len = curvspace(cnt_side2, resampling_N)
-    
-    f = interp1d(np.arange(cnt_widths.size), cnt_widths)
-    x = np.linspace(0,cnt_widths.size-1, resampling_N)
-    cnt_widths = f(x);
+    #resample curves
+    skeleton, ske_len, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths = \
+    resampleAll(skeleton, cnt_side1, cnt_side2, cnt_widths, resampling_N)
     
     #orient skeleton with respect to the previous skeleton
     skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths, cnt_area = \

@@ -200,6 +200,9 @@ class Ui_MainWindow(object):
         self.spinBox_dilation_size.setObjectName("spinBox_dilation_size")
         self.gridLayout_3.addWidget(self.spinBox_dilation_size, 0, 1, 1, 1)
         self.gridLayout.addLayout(self.gridLayout_3, 15, 0, 4, 2)
+        self.checkBox_keepBorderData = QtWidgets.QCheckBox(self.centralWidget)
+        self.checkBox_keepBorderData.setObjectName("checkBox_keepBorderData")
+        self.gridLayout.addWidget(self.checkBox_keepBorderData, 9, 1, 1, 1)
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtWidgets.QMenuBar(MainWindow)
         self.menuBar.setGeometry(QtCore.QRect(0, 0, 1161, 22))
@@ -232,4 +235,5 @@ class Ui_MainWindow(object):
         self.label_skelSeg.setText(_translate("MainWindow", "Skeleton Segments"))
         self.label_fps.setText(_translate("MainWindow", "FPS"))
         self.label_5.setText(_translate("MainWindow", "Frames to average"))
+        self.checkBox_keepBorderData.setText(_translate("MainWindow", "keep border data?"))
 

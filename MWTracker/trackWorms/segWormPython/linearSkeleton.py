@@ -321,7 +321,7 @@ maxima_low_freq, maxima_low_freq_ind, contour, worm_seg_length, chain_code_len):
     #assert np.all(skeleton[-1]==contour[tail_ind])
     
     #% Clean up the rough skeleton.
-    skeleton, cnt_widths = cleanSkeleton(skeleton, cnt_widths, worm_seg_length);
+    #skeleton, cnt_widths = cleanSkeleton(skeleton, cnt_widths, worm_seg_length);
     #assert np.all(skeleton[0]==contour[head_ind])
     #assert np.all(skeleton[-1]==contour[tail_ind])
     

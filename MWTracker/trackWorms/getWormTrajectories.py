@@ -84,15 +84,21 @@ def getWormThreshold(pix_valid):
         #seems to have two slopes, one for the background and one for the worm
         #The slope correspondign to the worm pixel is calculated, and the threshold
         #set when it deviates too much from the real distribution
+
+        #smooth the histogram to find a better threshold
+        pix_hist = np.convolve(pix_hist, np.ones(3), 'same')
         cumhist = np.cumsum(pix_hist);
-        xx_t = np.arange((otsu_thresh-2),(otsu_thresh+3));
+        #xx_t = np.arange((otsu_thresh-2),(otsu_thresh+3));
+        #yy_t = cumhist[xx_t]
+        #pp = np.polyfit(xx_t, yy_t, 1)
         
-        yy_t = cumhist[xx_t]
-        pp = np.polyfit(xx_t, yy_t, 1)
         xx = np.arange(otsu_thresh, cumhist.size)
-        yy = np.polyval(pp, xx)
+        #yy = np.polyval(pp, xx)
         try:
-            thresh = np.where((cumhist[xx]-yy)/yy>0.020)[0][0] + otsu_thresh
+            #thresh = np.where((cumhist[xx]-yy)/yy>0.020)[0][0] + otsu_thresh
+            #get the histogram point just before there is a two percent increment in area
+            #thresh = np.where(pix_hist[xx]/cumhist[xx]>0.020)[0][0] + otsu_thresh - thresh_shift
+            thresh = np.where((hist_ratio[3:]-hist_ratio[:-3])>0)[0][0] + otsu_thresh
         except:
             thresh = np.argmin(pix_hist[otsu_thresh:largest_peak]) + otsu_thresh;
     else:
@@ -153,7 +159,7 @@ def getWormContours(ROI_image, thresh):
     #    continue
 
     #a median filter sharps edges
-    ROI_image = cv2.medianBlur(ROI_image, 3);
+    #ROI_image = cv2.medianBlur(ROI_image, 3);
     #get binary image, and clean it using morphological closing
     ROI_mask = ((ROI_image<thresh) & (ROI_image != 0)).astype(np.uint8)
     ROI_mask = cv2.morphologyEx(ROI_mask, cv2.MORPH_CLOSE,np.ones((3,3)))
@@ -303,10 +309,14 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
                 
                 #select ROI for all buffer slides.
                 ROI_buffer = image_buffer[:,ROI_bbox[1]:(ROI_bbox[1]+ROI_bbox[3]),ROI_bbox[0]:(ROI_bbox[0]+ROI_bbox[2])];            
-                
+                ROI_buffer_med = np.zeros_like(ROI_buffer)
+                for ii in range(ROI_buffer.shape[0]): 
+                    ROI_buffer_med[ii] = cv2.medianBlur(ROI_buffer[ii], 3);
+                    #make a close operation to make the worm and the background smoother
+
                 #calculate threshold using the nonzero pixels. 
                 #Using the buffer instead of a single image, improves the threshold calculation, since better statistics are recoverd
-                pix_valid = ROI_buffer[ROI_buffer!=0]
+                pix_valid = ROI_buffer_med[ROI_buffer_med!=0]
                 if pix_valid.size==0: 
                     continue
                 #caculate threshold
@@ -333,10 +343,9 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
                 
                 for buff_ind in range(buff_tot):
                     #calculate figures for each image in the buffer
-                    ROI_image = ROI_buffer[buff_ind,:,:]
                     
                     #get the contour of possible worms
-                    ROI_worms, hierarchy = getWormContours(ROI_image, thresh)
+                    ROI_worms, hierarchy = getWormContours(ROI_buffer_med[buff_ind,:,:], thresh)
 
                     mask_feature_list = [];
                     
@@ -347,7 +356,7 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
                             continue
                         
                         #obtain freatures for each worm
-                        mask_feat = getWormFeatures(worm_cnt, ROI_image, ROI_bbox, current_frame, thresh, min_area)
+                        mask_feat = getWormFeatures(worm_cnt, ROI_buffer[buff_ind,:,:], ROI_bbox, current_frame, thresh, min_area)
     
                         #append worm features.
                         if mask_feat is not None:

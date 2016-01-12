@@ -64,8 +64,7 @@ class getMaskParams_GUI(QMainWindow):
 		self.ui.spinBox_buff_size.valueChanged.connect(self.updateBuffSize)
 
 		self.ui.checkBox_hasTimestamp.stateChanged.connect(self.updateMask)
-
-					
+		self.ui.checkBox_keepBorderData.stateChanged.connect(self.updateMask)
 
 		self.ui.lineEdit_mask.setText(self.mask_files_dir)
 		self.ui.lineEdit_results.setText(self.results_dir)
@@ -103,7 +102,7 @@ class getMaskParams_GUI(QMainWindow):
 				
 				self.ui.lineEdit_video.setText(self.video_file)
 				self.vid, self.im_width, self.im_height, self.reader_type = selectVideoReader(video_file)
-
+				print(self.reader_type)
 				if self.im_width == 0 or self.im_height == 0:
 					 QMessageBox.critical(self, 'Cannot read video file.', "Cannot read video file. Try another file",
 					QMessageBox.Ok)
@@ -203,7 +202,8 @@ class getMaskParams_GUI(QMainWindow):
 		'thresh_block_size' : self.ui.spinBox_block_size.value(),
 		'thresh_C' : self.ui.spinBox_thresh_C.value(),
 		'dilation_size' : self.ui.spinBox_dilation_size.value(),
-		'has_timestamp' : self.ui.checkBox_hasTimestamp.isChecked()
+		'has_timestamp' : self.ui.checkBox_hasTimestamp.isChecked(),
+		'keep_border_data' : self.ui.checkBox_keepBorderData.isChecked()
 		}
 		
 		mask = getROIMask(self.Imin.copy(), **self.mask_param)
@@ -297,6 +297,8 @@ class getMaskParams_GUI(QMainWindow):
 			
 			if 'has_timestamp' in self.mask_param.keys():
 				self.ui.checkBox_hasTimestamp.setCheckState(self.mask_param['has_timestamp'])
+			if 'keep_border_data' in self.mask_param.keys():
+				self.ui.checkBox_keepBorderData.setCheckState(self.mask_param['keep_border_data'])
 			
 			if 'fps' in self.mask_param.keys():
 				self.ui.spinBox_fps.setValue(self.mask_param['fps'])
@@ -304,6 +306,7 @@ class getMaskParams_GUI(QMainWindow):
 				self.ui.spinBox_skelSeg.setValue(self.mask_param['resampling_N'])
 			if 'compression_buff' in self.mask_param.keys():
 				self.ui.spinBox_buff_size.setValue(self.mask_param['compression_buff'])
+
 				
 
 if __name__ == '__main__':

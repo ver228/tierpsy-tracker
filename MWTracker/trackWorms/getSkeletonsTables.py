@@ -31,11 +31,12 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_
     Smooth trajectories and thresholds created by getWormTrajectories. 
     If min_displacement is specified there is the option to filter immobile particles, typically spurious.
     '''
+    print('a', threshold_smooth_win)
     #read that frame an select trajectories that were considered valid by join_trajectories
     with pd.HDFStore(trajectories_file, 'r') as table_fid:
         df = table_fid['/plate_worms'][['worm_index_joined', 'frame_number', \
         'coord_x', 'coord_y','threshold', 'bounding_box_xmax', 'bounding_box_xmin',\
-        'bounding_box_ymax' , 'bounding_box_ymin']]
+        'bounding_box_ymax' , 'bounding_box_ymin', 'area']]
         
         df =  df[df['worm_index_joined'] > 0]
     
@@ -73,7 +74,7 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_
     ('worm_index_joined', np.int32), \
     ('plate_worm_id', np.int32), ('skeleton_id', np.int32), \
     ('coord_x', np.float32), ('coord_y', np.float32), ('threshold', np.float32), 
-    ('has_skeleton', np.uint8), ('roi_size', np.float32)])
+    ('has_skeleton', np.uint8), ('roi_size', np.float32), ('area', np.float32)])
 
     #store the maximum and minimum frame of each worm
     worms_frame_range = {}
@@ -86,7 +87,8 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_
         y = worm_data['coord_y'].values
         t = worm_data['frame_number'].values
         thresh = worm_data['threshold'].values
-        
+        area = worm_data['area'].values
+
         first_frame = np.min(t);
         last_frame = np.max(t);
         worms_frame_range[worm_index] = (first_frame, last_frame)
@@ -109,6 +111,9 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_
         fthresh = interp1d(t, thresh)
         threshnew = median_filter(fthresh(tnew), threshold_smooth_win);
         
+        farea = interp1d(t, area)
+        areanew = median_filter(farea(tnew), displacement_smooth_win);
+        
         #skeleton_id useful to organize the data in the other tables (skeletons, contours, etc)
         new_total = tot_rows + xnew.size
         skeleton_id = np.arange(tot_rows, new_total, dtype = np.int32);
@@ -128,6 +133,8 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_
         trajectories_df['skeleton_id'][skeleton_id] = skeleton_id
         trajectories_df['has_skeleton'][skeleton_id] = False
         trajectories_df['roi_size'][skeleton_id] = roi_range[worm_index]
+        
+        trajectories_df['area'][skeleton_id] = areanew
         
     assert tot_rows == tot_rows_ini
     
@@ -172,12 +179,16 @@ def getWormMask(worm_img, threshold):
     
     #make the worm more uniform. This is important to get smoother contours.
     worm_img = cv2.medianBlur(worm_img, 3);
-    
+    #make a close operation to make the worm and the background smoother
+    #strel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5,5))
+    #worm_img = cv2.morphologyEx(worm_img, cv2.MORPH_CLOSE, strel)
+
     #compute the thresholded mask
     worm_mask = ((worm_img < threshold) & (worm_img!=0)).astype(np.uint8)
     
     #smooth mask by morphological closing
-    worm_mask = cv2.morphologyEx(worm_mask, cv2.MORPH_CLOSE,np.ones((3,3)))
+    strel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5,5))
+    worm_mask = cv2.morphologyEx(worm_mask, cv2.MORPH_CLOSE, strel)
 
     return worm_mask
 
@@ -262,10 +273,12 @@ create_single_movies = False, resampling_N = 49, min_mask_area = 50, smoothed_tr
                 if not worm_index in prev_skeleton:
                     prev_skeleton[worm_index] = np.zeros(0)
                 
+                #only consider areas of at least half the size of the expected blob
+                worm_area_min = row_data['area']/2 
+
                 #get skeletons
-                
                 skeleton, ske_len, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths, cnt_area = \
-                getSkeleton(worm_mask, prev_skeleton[worm_index], resampling_N, min_mask_area)
+                getSkeleton(worm_mask, prev_skeleton[worm_index], resampling_N, worm_area_min)
                                 
                 if skeleton.size>0:
                     prev_skeleton[worm_index] = skeleton.copy()

@@ -73,7 +73,8 @@ def getWormFeaturesLab(skeletons_file, features_file, worm_indexes, fps = 25, ti
 
         #features group
         group_features = features_fid.create_group('/', 'features')
-
+        tot_rows = 0
+            
         #Calculate features for each worm trajectory      
         tot_worms = len(worm_indexes)        
         for ind, worm_index  in enumerate(worm_indexes):
@@ -143,6 +144,7 @@ def getWormFeaturesLab(skeletons_file, features_file, worm_indexes, fps = 25, ti
             
             table_motion.flush()
             del motion_data
+            tot_rows += 1
             
         assert tot_worms == tot_rows
         

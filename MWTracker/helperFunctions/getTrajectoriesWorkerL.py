@@ -14,7 +14,7 @@ from ..trackWorms.getDrawTrajectories import drawTrajectoriesVideo
 from ..trackWorms.getSkeletonsTables import trajectories2Skeletons, writeIndividualMovies
 from ..trackWorms.checkHeadOrientation import correctHeadTail
 
-from ..featuresAnalysis.obtainFeatures import getWormFeatures
+from ..featuresAnalysis.getFilteredFeats import getFilteredFeats#getWormFeatures
 from ..featuresAnalysis.obtainFeatures_N import featFromLabSkel
 
 from ..helperFunctions.tracker_param import tracker_param
@@ -151,7 +151,8 @@ def getTrajectoriesWorkerL(masked_image_file, results_dir, param_file ='', overw
     
     if execThisPoint('FEAT_CREATE'):
         #extract features
-        getWormFeatures(skeletons_file, features_file, **param.features_param)
+        getFilteredFeats(skeletons_file, features_file, **param.features_param)
+        #getWormFeatures(skeletons_file, features_file, **param.features_param)
 
     if execThisPoint('FEAT_IND'):
         #extract individual features if the worms are labeled

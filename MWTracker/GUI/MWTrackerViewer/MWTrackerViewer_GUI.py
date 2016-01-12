@@ -19,7 +19,9 @@ from MWTracker.trackWorms.segWormPython.mainSegworm import binaryMask2Contour
 from MWTracker.featuresAnalysis.obtainFeatures_N import getWormFeaturesLab
 
 class MWTrackerViewer_GUI(QMainWindow):
-	def __init__(self):
+	def __init__(self, argv):
+		self.vfilename = '' if len(argv)<=1 else argv[1]
+		
 		super().__init__()
 		# Set up the user interface from Designer.
 		self.ui = Ui_ImageViewer()
@@ -112,6 +114,10 @@ class MWTrackerViewer_GUI(QMainWindow):
 		# SET UP RECURRING EVENTS
 		self.timer = QTimer()
 		self.timer.timeout.connect(self.getNextImage)
+
+		if self.vfilename: self.updateVideoFile()
+		
+
 	
 	def makeEditableROI1(self, state):
 		self.ui.comboBox_ROI1.setEditable(state)

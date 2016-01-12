@@ -21,7 +21,7 @@ class tracker_param:
              expected_frames = 90000, fps = 25, fps_filter = 0, compression_buff = 25, roi_size = -1, 
              bad_seg_thresh = 0.5, save_bad_worms = True, 
              thresh_block_size = 61, min_displacement = 0, resampling_N = 49, 
-             has_timestamp = True, dilation_size = 9, is_single_worm = False):
+             has_timestamp = True, dilation_size = 9, is_single_worm = False, keep_border_data = False):
         '''
         min_area - minimum area in pixels allowed
         max_area - maximum area in pixels allowed
@@ -65,7 +65,8 @@ class tracker_param:
 
         #getROIMask
         self.mask_param = {'min_area': min_area*2, 'max_area': max_area, 'has_timestamp': has_timestamp, 
-        'thresh_block_size':thresh_block_size, 'thresh_C':thresh_C, 'dilation_size':dilation_size}
+        'thresh_block_size':thresh_block_size, 'thresh_C':thresh_C, 'dilation_size':dilation_size, 
+        'keep_border_data':keep_border_data}
         
         #compressVideo
         self.compress_vid_param =  {'buffer_size' : compression_buff, 'save_full_interval' : 200*fps, 
@@ -85,8 +86,8 @@ class tracker_param:
         self.join_traj_param = {'min_track_size': min_track_size, 'max_time_gap' : max_time_gap, 'area_ratio_lim': (0.67, 1.5)}
         
         #getSmoothTrajectories
-        self.smoothed_traj_param = {'min_displacement' : min_displacement, 'displacement_smooth_win': fps_filter*4 + 1, 
-                               'threshold_smooth_win' : fps_filter*20 + 1, 'roi_size' : roi_size}
+        self.smoothed_traj_param = {'min_displacement' : min_displacement, 'displacement_smooth_win': fps*4 + 1, 
+                               'threshold_smooth_win' : fps*20 + 1, 'roi_size' : roi_size}
         
         #trajectories2Skeletons
         self.skeletons_param = {'resampling_N' : resampling_N,
@@ -100,4 +101,4 @@ class tracker_param:
         #self.ind_mov_param = {'fps' : fps, 'bad_seg_thresh' : bad_seg_thresh, 'save_bad_worms': save_bad_worms}
         
         #getWormFeatures
-        self.features_param = {'bad_seg_thresh' : bad_seg_thresh, 'fps' : fps}
+        self.features_param = {'min_num_skel' : 4*fps, 'bad_seg_thresh' : 0.8, 'min_dist' : 5, 'fps': fps}

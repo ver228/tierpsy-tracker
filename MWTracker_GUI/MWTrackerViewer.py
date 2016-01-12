@@ -8,7 +8,8 @@ from PyQt5.QtWidgets import QApplication
 if __name__ == '__main__':
 	app = QApplication(sys.argv)
 	
-	ui = MWTrackerViewer_GUI()
+	
+	ui = MWTrackerViewer_GUI(sys.argv)
 	ui.show()
 	app.exec_()
 	#sys.exit()

@@ -37,7 +37,6 @@ def getCompCommands(video_dir_root, mask_dir_root, tmp_dir_root, json_file = '',
 	mask_dir_root = checkMaskPrefix(mask_dir_root)
 	tmp_dir_root = checkMaskPrefix(tmp_dir_root) if tmp_dir_root else mask_dir_root
 	
-	print('A')
 	cmd_list_compress = []
 	for dpath, dnames, fnames in os.walk(video_dir_root):
 		for fname in fnames:
