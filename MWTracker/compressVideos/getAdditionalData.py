@@ -130,19 +130,29 @@ def storeStageData(stage_file, masked_image_file):
     
     return csv_dict
 
+def getAdditionalFiles(video_file):
+    assert(os.path.exists(video_file))
+    base_name = video_file.rsplit('.')[0]
+    info_file =  base_name + '.info.xml'
+    stage_file = base_name + '.log.csv'
+    
+    #throw and exception if the additional files do not exists 
+    if not (os.path.exists(info_file) and os.path.exists(stage_file)):
+        raise Exception('Additional files (info.xml - log.csv) do not exists.')
+
+    return info_file, stage_file
+
 #%% main function to store the additional data
 def storeAdditionalDataSW(video_file, masked_image_file):
     assert(os.path.exists(video_file))
     assert(os.path.exists(masked_image_file))
     
-    info_file =  video_file.rsplit('.')[0] + '.info.xml'
-    stage_file = video_file.rsplit('.')[0] + '.log.csv'
-    
-    assert(os.path.exists(info_file))
+    info_file, stage_file = getAdditionalFiles(video_file)
+
+    assert(os.path.exists(video_file))
     assert(os.path.exists(stage_file))
-    
-    
-        
+
+    #store data
     storeXMLInfo(info_file, masked_image_file)
     storeStageData(stage_file, masked_image_file)
     

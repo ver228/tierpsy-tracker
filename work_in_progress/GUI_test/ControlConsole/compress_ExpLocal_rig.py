@@ -28,7 +28,7 @@ def checkMaskPrefix(fdir):
 
 
 def getCompCommands(video_dir_root, mask_dir_root, tmp_dir_root, json_file = '', \
-	video_ext = '.mjpg', is_single_worm = False, \
+	pattern_include = '*.mjpg', pattern_exclude = '', is_single_worm = False, \
 	script_abs_path = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/MWTracker_GUI/compressSingleLocal.py'):
 	
 	assert os.path.exists(video_dir_root)
@@ -40,7 +40,7 @@ def getCompCommands(video_dir_root, mask_dir_root, tmp_dir_root, json_file = '',
 	cmd_list_compress = []
 	for dpath, dnames, fnames in os.walk(video_dir_root):
 		for fname in fnames:
-			if fnmatch.fnmatch(fname, video_ext):
+			if fnmatch.fnmatch(fname, pattern_include) and not fnmatch.fnmatch(fname, pattern_exclude):
 				video_file = os.path.abspath(os.path.join(dpath, fname))
 				assert(os.path.exists(video_file))
 
@@ -68,12 +68,12 @@ def getCompCommands(video_dir_root, mask_dir_root, tmp_dir_root, json_file = '',
 
 
 
-def main(video_dir_root, mask_dir_root, tmp_dir_root, json_file, video_ext, script_abs_path, max_num_process, refresh_time, is_single_worm):
+def main(video_dir_root, mask_dir_root, tmp_dir_root, json_file, pattern_include, pattern_exclude, script_abs_path, max_num_process, refresh_time, is_single_worm):
 
 	cmd_list_compress = getCompCommands(video_dir_root = video_dir_root, 
 		mask_dir_root = mask_dir_root, tmp_dir_root = tmp_dir_root, 
-		json_file = json_file, video_ext = video_ext, is_single_worm = is_single_worm, 
-		script_abs_path = script_abs_path)
+		json_file = json_file, pattern_include = pattern_include, pattern_exclude = pattern_exclude, 
+		is_single_worm = is_single_worm, script_abs_path = script_abs_path)
 	cmd_list_compress = cmd_list_compress
 	#display commands to be executed
 	print_cmd_list(cmd_list_compress)
@@ -97,7 +97,8 @@ if __name__ == '__main__':
 	parser.add_argument('--tmp_dir_root', default=os.path.join(os.path.expanduser("~"), 'Tmp'), \
 		help='Temporary directory where files are going to be stored')
 	
-	parser.add_argument('--video_ext', default='*.mjpg', help='Extention used to find the valid video files video_dir_root')
+	parser.add_argument('--pattern_include', default = '*.mjpg', help = 'Pattern used to find the valid video files in video_dir_root')
+	parser.add_argument('--pattern_exclude', default = '', help = 'Pattern used to exclude files in video_dir_root')
 	parser.add_argument('--is_single_worm', action='store_true', help = 'This flag indicates if the video corresponds to the single worm case.')
 
 	parser.add_argument('--max_num_process', default=6, type=int, help='Max number of process to be executed in parallel.')

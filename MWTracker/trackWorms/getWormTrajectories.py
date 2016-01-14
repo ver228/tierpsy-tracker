@@ -15,6 +15,7 @@ Created on Thu Feb  5 16:08:07 2015
 import numpy as np
 import pandas as pd
 import tables
+import pandas as pd
 from math import sqrt
 import cv2
 from skimage.filters import threshold_otsu
@@ -63,15 +64,11 @@ class plate_worms(tables.IsDescription):
     hu5 = tables.Float32Col(pos=26)
     hu6 = tables.Float32Col(pos=27)
 
-
 def getWormThreshold(pix_valid):
     #calculate otsu_threshold as lower limit. Otsu understimate the threshold.
     try:
         otsu_thresh = threshold_otsu(pix_valid)
     except:
-       #print(type(pix_valid))
-       #print(pix_valid.size)
-       #print(pix_valid)
        return np.nan
     
     #calculate the histogram
@@ -80,24 +77,15 @@ def getWormThreshold(pix_valid):
     #the higher limit is the most frequent value in the distribution (background)
     largest_peak = np.argmax(pix_hist)
     if otsu_thresh < largest_peak and otsu_thresh+2 < len(pix_hist)-1:
-        #this method is base on the fact that the cumulative distribution 
-        #seems to have two slopes, one for the background and one for the worm
-        #The slope correspondign to the worm pixel is calculated, and the threshold
-        #set when it deviates too much from the real distribution
-
         #smooth the histogram to find a better threshold
         pix_hist = np.convolve(pix_hist, np.ones(3), 'same')
         cumhist = np.cumsum(pix_hist);
-        #xx_t = np.arange((otsu_thresh-2),(otsu_thresh+3));
-        #yy_t = cumhist[xx_t]
-        #pp = np.polyfit(xx_t, yy_t, 1)
         
         xx = np.arange(otsu_thresh, cumhist.size)
-        #yy = np.polyval(pp, xx)
         try:
-            #thresh = np.where((cumhist[xx]-yy)/yy>0.020)[0][0] + otsu_thresh
-            #get the histogram point just before there is a two percent increment in area
-            #thresh = np.where(pix_hist[xx]/cumhist[xx]>0.020)[0][0] + otsu_thresh - thresh_shift
+            #the threshold is calculated as the pixel level where there would be 
+            #larger increase in the object area.
+            hist_ratio = pix_hist[xx]/cumhist[xx]
             thresh = np.where((hist_ratio[3:]-hist_ratio[:-3])>0)[0][0] + otsu_thresh
         except:
             thresh = np.argmin(pix_hist[otsu_thresh:largest_peak]) + otsu_thresh;
@@ -264,6 +252,24 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
     
         mask_dataset = mask_fid.get_node("/mask")
         
+        try:
+            dd = [(row['best_effort_timestamp'],  row['best_effort_timestamp_time'])
+                for row in mask_fid.get_node('/video_metadata/')]
+            timestamp, timestamp_time = list(zip(*dd))
+            del dd
+        except:
+            raise
+            N = mask_dataset.shape[0]
+            timestamp = np.full(N, np.nan)
+            timestamp_time = np.full(N, np.nan)
+
+        feature_fid.create_group('/', 'timestamp')
+        feature_fid.create_carray('/timestamp', 'raw', obj = np.asarray(timestamp))
+        feature_fid.create_carray('/timestamp', 'time', obj = np.asarray(timestamp_time))
+
+
+
+
         feature_table = feature_fid.create_table('/', "plate_worms", 
                                                  plate_worms, "Worm feature List",
                                                  filters = table_filters)

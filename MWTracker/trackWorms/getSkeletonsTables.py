@@ -40,6 +40,10 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_
         
         df =  df[df['worm_index_joined'] > 0]
     
+    with tables.File(trajectories_file, 'r') as fid:
+        timestamp_raw = fid.get_node('/timestamp/raw')[:]
+        timestamp_time = fid.get_node('/timestamp/time')[:]
+
     tracks_data = df.groupby('worm_index_joined').aggregate(['max', 'min', 'count'])
     
     #filter for trajectories that move too little (static objects)
@@ -74,7 +78,8 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_
     ('worm_index_joined', np.int32), \
     ('plate_worm_id', np.int32), ('skeleton_id', np.int32), \
     ('coord_x', np.float32), ('coord_y', np.float32), ('threshold', np.float32), 
-    ('has_skeleton', np.uint8), ('roi_size', np.float32), ('area', np.float32)])
+    ('has_skeleton', np.uint8), ('roi_size', np.float32), ('area', np.float32), 
+    ('timestamp_raw', np.float32), ('timestamp_time', np.float32)])
 
     #store the maximum and minimum frame of each worm
     worms_frame_range = {}
@@ -88,6 +93,7 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_
         t = worm_data['frame_number'].values
         thresh = worm_data['threshold'].values
         area = worm_data['area'].values
+
 
         first_frame = np.min(t);
         last_frame = np.max(t);
@@ -127,7 +133,12 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_
         trajectories_df['worm_index_joined'][skeleton_id] = worm_index
         trajectories_df['coord_x'][skeleton_id] = xnew
         trajectories_df['coord_y'][skeleton_id] = ynew
-        trajectories_df['frame_number'][skeleton_id] = np.arange(first_frame, last_frame+1, dtype=np.int32)
+
+        frame_number = np.arange(first_frame, last_frame+1, dtype=np.int32)
+        trajectories_df['frame_number'][skeleton_id] = frame_number
+        trajectories_df['timestamp_raw'][skeleton_id] = timestamp_raw[frame_number]
+        trajectories_df['timestamp_time'][skeleton_id] = timestamp_time[frame_number]
+
         trajectories_df['threshold'][skeleton_id] = threshnew
         trajectories_df['plate_worm_id'][skeleton_id] = plate_worm_id
         trajectories_df['skeleton_id'][skeleton_id] = skeleton_id
@@ -136,6 +147,7 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_
         
         trajectories_df['area'][skeleton_id] = areanew
         
+
     assert tot_rows == tot_rows_ini
     
     return trajectories_df, worms_frame_range, tot_rows

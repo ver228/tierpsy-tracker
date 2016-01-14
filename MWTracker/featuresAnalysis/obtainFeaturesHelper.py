@@ -131,6 +131,13 @@ class WormFromTable(NormalizedWorm):
             
             skeleton_id = trajectories_data['skeleton_id'].values
             frame_number = trajectories_data['frame_number'].values
+            
+            if 'timestamp_raw' in trajectories_data:
+                timestamp = trajectories_data['timestamp_raw'].values.astype(np.int)
+            else:
+                timestamp = frame_number
+
+
             frame_code = trajectories_data['has_skeleton'].values
             
             if 'auto_label' in trajectories_data:
@@ -142,8 +149,9 @@ class WormFromTable(NormalizedWorm):
         self.file_name = file_name;
         self.worm_index = worm_index
 
-        self.first_frame = np.min(frame_number)
-        self.last_frame = np.max(frame_number)
+        #use real frames
+        self.first_frame = np.min(timestamp)
+        self.last_frame = np.max(timestamp)
         self.n_frames = self.last_frame - self.first_frame +1;
         
         with tables.File(file_name, 'r') as ske_file_id:
@@ -159,8 +167,9 @@ class WormFromTable(NormalizedWorm):
             self.widths = np.full((tot_frames,n_ske_points), np.nan)
     
             self.frame_number = np.full(tot_frames, -1, np.int32)
-
-            ind_ff = frame_number - self.first_frame
+            
+            ind_ff = timestamp - self.first_frame
+            
             self.frame_number[ind_ff] = frame_number
             
             self.skeleton_id = np.full(tot_frames, -1, np.int32)

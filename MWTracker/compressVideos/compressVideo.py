@@ -12,13 +12,13 @@ import sys
 
 from .readVideoffmpeg import readVideoffmpeg
 from .readVideoHDF5 import readVideoHDF5
+from .extractMetaData import storeMetaData
 #from .imageDifferenceMask import imageDifferenceMask
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
 
 DEFAULT_MASK_PARAM = {'min_area':100, 'max_area':5000, 'has_timestamp':True, 
 'thresh_block_size':61, 'thresh_C':15, 'dilation_size': 9, 'keep_border_data': False}
-
 
 def getROIMask(image,  min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEFAULT_MASK_PARAM['max_area'], 
     has_timestamp = DEFAULT_MASK_PARAM['has_timestamp'], thresh_block_size = DEFAULT_MASK_PARAM['thresh_block_size'], 
@@ -79,7 +79,6 @@ def getROIMask(image,  min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEF
 
     return mask
 
-
 READER_TYPE = {'OPENCV':0, 'FFMPEG_CMD':1, 'HDF5':2};
 def selectVideoReader(video_file):
     #open video to read
@@ -114,10 +113,8 @@ def selectVideoReader(video_file):
 
     return vid, im_width, im_height, reader_type
 
-
 def compressVideo(video_file, masked_image_file, buffer_size = 25, \
-save_full_interval = 5000, max_frame = 1e32, 
-expected_frames = 15000, mask_param = DEFAULT_MASK_PARAM):
+save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
 
     '''
     Compressed video in "video_file" by selecting ROI and making the rest of 
@@ -135,10 +132,19 @@ expected_frames = 15000, mask_param = DEFAULT_MASK_PARAM):
      status_queue -- queue were the status is sended. Only used in multiprocessing case 
      base_name -- 
     '''
-    
+
     #processes identifier.
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
-    
+
+    #delete any previous  if it existed
+    with h5py.File(masked_image_file, "w") as mask_fid: pass
+
+    #extract and store video metadata using ffprobe
+    print(base_name + ' Extracting video metadata...')
+    sys.stdout.flush()
+
+    expected_frames = storeMetaData(video_file, masked_image_file)
+
     #select the video reader class according to the file type. 
     vid, im_width, im_height, reader_type = selectVideoReader(video_file)
     
@@ -146,7 +152,7 @@ expected_frames = 15000, mask_param = DEFAULT_MASK_PARAM):
         raise(RuntimeError('Cannot read the video file correctly. Dimensions w=%i h=%i' % (im_width, im_height)))
 
     #open hdf5 to store the processed data
-    with h5py.File(masked_image_file, "w") as mask_fid:
+    with h5py.File(masked_image_file, "r+") as mask_fid:
         #open node to store the compressed (masked) data
         mask_dataset = mask_fid.create_dataset("/mask", (expected_frames, im_height,im_width), 
                                         dtype = "u1", maxshape = (None, im_height,im_width), 

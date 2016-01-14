@@ -17,8 +17,7 @@ class tracker_param:
             self.get_param()
         
     
-    def get_param(self, min_area = 50, max_area = 1e10, thresh_C = 15, 
-             expected_frames = 90000, fps = 25, fps_filter = 0, compression_buff = 25, roi_size = -1, 
+    def get_param(self, min_area = 50, max_area = 1e10, thresh_C = 15,  fps = 25, fps_filter = 0, compression_buff = 25, roi_size = -1, 
              bad_seg_thresh = 0.5, save_bad_worms = True, 
              thresh_block_size = 61, min_displacement = 0, resampling_N = 49, 
              has_timestamp = True, dilation_size = 9, is_single_worm = False, keep_border_data = False):
@@ -29,7 +28,6 @@ class tracker_param:
         thresh_block_size - block size used by the adaptative thresholding
         has_timestamp = keep the pixels in the top left corner that correspond to the video timestamp (used only in our setup)
         
-        expected_frames - expected number of frames in the video
         fps - frame rate
         fps_filter - frame per second used to calcular filters for trajectories. As default it will have the same value as fps. Set to zero to eliminate filtering.
         roi_size - region of interest size (pixels) used for the skeletonization and individual worm videos. 
@@ -52,7 +50,6 @@ class tracker_param:
         self.min_area = min_area
         self.max_area = max_area
         self.thresh_C = thresh_C
-        self.expected_frames = expected_frames
         self.fps = fps
         self.fps_filter = fps_filter
         self.bad_seg_thresh = bad_seg_thresh
@@ -64,20 +61,19 @@ class tracker_param:
         self.compression_buff = compression_buff
 
         #getROIMask
-        self.mask_param = {'min_area': min_area*2, 'max_area': max_area, 'has_timestamp': has_timestamp, 
+        self.mask_param = {'min_area': min_area, 'max_area': max_area, 'has_timestamp': has_timestamp, 
         'thresh_block_size':thresh_block_size, 'thresh_C':thresh_C, 'dilation_size':dilation_size, 
         'keep_border_data':keep_border_data}
         
         #compressVideo
         self.compress_vid_param =  {'buffer_size' : compression_buff, 'save_full_interval' : 200*fps, 
-                               'max_frame' : 1e32, 
-                               'expected_frames':expected_frames, 'mask_param':self.mask_param}
+                               'max_frame' : 1e32, 'mask_param':self.mask_param}
         #getWormTrajectories
         min_track_lenght = max(1, fps_filter/5)
         max_allowed_dist = max(1, fps)
         
         self.trajectories_param = {'initial_frame' : 0, 'last_frame': -1,
-                              'min_area':min_area, 'min_length':min_track_lenght, 'max_allowed_dist':max_allowed_dist, 
+                              'min_area': min_area/2, 'min_length':min_track_lenght, 'max_allowed_dist':max_allowed_dist, 
                               'area_ratio_lim': (0.5, 2), 'buffer_size': compression_buff}#, 'is_single_worm' : is_single_worm}
         
         #joinTrajectories
@@ -91,7 +87,7 @@ class tracker_param:
         
         #trajectories2Skeletons
         self.skeletons_param = {'resampling_N' : resampling_N,
-                               'min_mask_area' : min_area, 'smoothed_traj_param' : self.smoothed_traj_param}
+                               'min_mask_area' : min_area/2, 'smoothed_traj_param' : self.smoothed_traj_param}
         
         #correctHeadTail
         self.head_tail_param = {'max_gap_allowed' : fps//2, 'window_std' : fps, 'segment4angle' : round(resampling_N/10), 

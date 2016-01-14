@@ -103,8 +103,8 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
             
             #initialize worm object, and extract data from skeletons file
             worm = WormFromTable()
-            worm.fromFile(skeletons_file, worm_index, fps = 25, isOpenWorm=False)
-            worm.changeAxis()
+            worm.fromFile(skeletons_file, worm_index, fps = 25, isOpenWorm = True)
+            
             if np.all(np.isnan(worm.length)):
                 tot_worms = tot_worms - 1
                 continue
