@@ -33,7 +33,7 @@ class timeCounterStr:
     def getTimeStr(self):
         return  str(datetime.timedelta(seconds = round(time.time()-self.initial_time)))
 
-DEFAULT_MASK_PARAM = {'min_area':100, 'max_area':5000, 'has_timestamp':True, 
+DEFAULT_MASK_PARAM = {'min_area':50, 'max_area':1e10, 'has_timestamp':True, 
 'thresh_block_size':61, 'thresh_C':15, 'dilation_size': 9, 'keep_border_data': False}
 
 def getROIMask(image,  min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEFAULT_MASK_PARAM['max_area'], 
