@@ -22,8 +22,8 @@ from collections import OrderedDict
 #from .. import config_param as param
 #sys.path.append(movement_validation_dir)
 from MWTracker import config_param #import the movement_validation directory
-from movement_validation import NormalizedWorm, VideoInfo
-from movement_validation.statistics import specifications
+from open_worm_analysis_toolbox import NormalizedWorm, VideoInfo
+from open_worm_analysis_toolbox.statistics import specifications
 
 np.seterr(invalid='ignore')
 
@@ -132,9 +132,14 @@ class WormFromTable(NormalizedWorm):
             skeleton_id = trajectories_data['skeleton_id'].values
             frame_number = trajectories_data['frame_number'].values
             
-            if 'timestamp_raw' in trajectories_data:
-                timestamp = trajectories_data['timestamp_raw'].values.astype(np.int)
-            else:
+            #try to read timestamp_raw if it contains invalid values use the frame_number as timestamp
+            try:
+                timestamp = trajectories_data['timestamp_raw'].values
+                if np.any(np.isnan(timestamp)): 
+                    raise
+                else:
+                    timestamp = timestamp.astype(np.int)
+            except:
                 timestamp = frame_number
 
 

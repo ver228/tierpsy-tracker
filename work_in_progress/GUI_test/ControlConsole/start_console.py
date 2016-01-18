@@ -42,6 +42,9 @@ class start_process():
 
     def close(self):
         if self.pid.poll() != 0:
+            #print errors details if there was any
+            self.output[-1] += 'ERROR: \n'
+            self.output[-1] += cmdlist2str(self.cmd) + '\n'
             self.output[-1] += self.pid.stderr.read().decode("utf-8")
             self.pid.stderr.flush()
         
@@ -100,17 +103,23 @@ def runMultiCMD(cmd_list, max_num_process = 3, refresh_time = 10):
                     
         print('%%%%%%%%%%')
 
+def cmdlist2str(cmdlist):
+    #change the format from the list accepted by Popen to a text string accepted by the terminal 
+    for ii, dd in enumerate(cmdlist):
+        if ii >= 2 and not dd[0] == '-':
+            dd = "'" + dd + "'"
+
+        if ii == 0:
+            cmd_str = dd
+        else:
+            cmd_str += ' ' +  dd
+    return cmd_str
+
 def print_cmd_list(cmd_list_compress):
+    #print all the commands to be processed 
     if cmd_list_compress: 
         for cmd in cmd_list_compress: 
-            for ii, dd in enumerate(cmd):
-                if ii >= 2 and not dd[0] == '-':
-                    dd = '"' + dd + '"'
-
-                if ii == 0:
-                    cmd_str = dd
-                else:
-                    cmd_str += ' ' +  dd
+            cmd_str = cmdlist2str(cmd)
             print(cmd_str)
 
     print(len(cmd_list_compress))

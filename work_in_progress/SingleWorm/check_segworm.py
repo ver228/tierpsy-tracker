@@ -38,7 +38,6 @@ n_sample = 49
 current_frame = 250
 
 
-
 time1 = 0
 time2 = 0
 with h5py.File(file_mask, 'r') as fid:

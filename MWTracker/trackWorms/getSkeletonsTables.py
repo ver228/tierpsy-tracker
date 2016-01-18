@@ -31,7 +31,7 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_
     Smooth trajectories and thresholds created by getWormTrajectories. 
     If min_displacement is specified there is the option to filter immobile particles, typically spurious.
     '''
-    print('a', threshold_smooth_win)
+    
     #read that frame an select trajectories that were considered valid by join_trajectories
     with pd.HDFStore(trajectories_file, 'r') as table_fid:
         df = table_fid['/plate_worms'][['worm_index_joined', 'frame_number', \
@@ -43,6 +43,11 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_
     with tables.File(trajectories_file, 'r') as fid:
         timestamp_raw = fid.get_node('/timestamp/raw')[:]
         timestamp_time = fid.get_node('/timestamp/time')[:]
+
+    if len(timestamp_raw) < df['frame_number'].max():
+        raise Exception('bad %i, %i' % len(timestamp_raw), df['frame_number'].max(), trajectories_file)
+        
+
 
     tracks_data = df.groupby('worm_index_joined').aggregate(['max', 'min', 'count'])
     

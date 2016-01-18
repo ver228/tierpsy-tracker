@@ -16,9 +16,11 @@ import warnings
 from sklearn.covariance import EllipticEnvelope, MinCovDet
 np.seterr(invalid='ignore') 
 
-from .obtainFeatures import getWormFeatures
+#from .obtainFeatures import getWormFeatures
 
-worm_partitions = {'neck': (8, 16),
+#need to be adjusted to deal with more segments
+worm_partitions = {
+                'neck': (8, 16),
                 'midbody':  (16, 33),
                 'hips':  (33, 41),
                 # refinements of ['head']
@@ -26,7 +28,8 @@ worm_partitions = {'neck': (8, 16),
                 'head_base': (4, 8),    # ""
                 # refinements of ['tail']
                 'tail_base': (40, 45),
-                'tail_tip': (45, 49)}
+                'tail_tip': (45, 49)
+                }
 
 wlab = {'U':0, 'WORM':1, 'WORMS':2, 'BAD':3, 'GOOD_SKE':4}
 
@@ -105,13 +108,21 @@ def nodes2Array(skel_file, valid_index = np.zeros(0)):
         return X
 
 def calculate_widths(skel_file):
-    with tables.File(skel_file, 'r+') as fid:
-        if any(not '/' + name_width_fun(part) in fid for part in worm_partitions):
+    #add the mean widths for each partition to the file if they were not present
+   with tables.File(skel_file, 'r+') as fid:
+        if not '/width_median' or \
+        any(not '/' + name_width_fun(part) in fid for part in worm_partitions):
             widths = fid.get_node('/contour_width')[:]
             tot_rows = widths.shape[0]
             
             table_filters = tables.Filters(complevel=5, complib='zlib', shuffle=True, fletcher32=True)
             
+            widths_median = np.median(widths, axis=1)
+            fid.create_carray('/', 'width_median', obj = widths_median, \
+                                atom = tables.Float32Atom(dflt = np.nan), \
+                                filters = table_filters);
+            
+            #calculate the mean value for each segment
             for part in worm_partitions:
                 pp = worm_partitions[part]
                 widths_mean = np.mean(widths[:, pp[0]:pp[1]], axis=1)
@@ -122,21 +133,16 @@ def calculate_widths(skel_file):
                                         filters = table_filters);
 
 def labelValidSkeletons(skel_file, valid_index, trajectories_data, fit_contamination = 0.05):
-    
-
     #calculate valid widths if they were not used
     calculate_widths(skel_file)
     
     #calculate classifier for the outliers    
-    X4fit = nodes2Array(skel_file, valid_index)
-    
-    #TODO here the is a problem with singular covariance matrices that i need to figure out how to solve
+    X4fit = nodes2Array(skel_file, valid_index)        
     clf = EllipticEnvelope(contamination = fit_contamination)
     clf.fit(X4fit)
     
     #calculate outliers using the fitted classifier
     X = nodes2Array(skel_file) #use all the indexes
-    
     y_pred = clf.decision_function(X).ravel() #less than zero would be an outlier
 
     #labeled rows of valid individual skeletons as GOOD_SKE
@@ -172,11 +178,17 @@ def getFrameStats(feat_file):
             feat_fid.create_table(frame_stats_group, stat, \
             obj = plate_stats.to_records(), filters = table_filters)
 
-def getFilteredFeats(skel_file, feat_file, fps = 25, min_num_skel = 100, bad_seg_thresh = 0.8, min_dist = 5, fit_contamination = 0.05):
+def getFilteredFeats(skel_file, feat_file, fps = 25, min_num_skel = 100, bad_seg_thresh = 0.8, min_dist = 5):
     #get valid rows using the trajectory displacement and the skeletonization success
     valid_index, trajectories_data = getValidIndexes(skel_file, \
-    min_num_skel = min_num_skel, bad_seg_thresh = bad_seg_thresh, min_dist = min_dist)
-    labelValidSkeletons(skel_file, valid_index, trajectories_data, fit_contamination = fit_contamination)
-    getWormFeatures(skel_file, feat_file, bad_seg_thresh = bad_seg_thresh*0.6, fps = fps)
-    getFrameStats(feat_file)
+    min_num_skel = 100, bad_seg_thresh = 0.8, min_dist = 5)
+    
+    labelValidSkeletons(skel_file, valid_index, trajectories_data)
+    #getWormFeatures(skel_file, feat_file, bad_seg_thresh = bad_seg_thresh*0.6, fps = fps)
+    #getFrameStats(feat_file)
 
+if __name__ == '__main__':
+    skel_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/Results/CSTCTest_Ch6_17112015_205616_skeletons.hdf5'
+    skel_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/Results/CSTCTest_Ch6_17112015_205616_skeletons.hdf5'
+    valid_index, trajectories_data = getValidIndexes(skel_file)
+    getFilteredFeats(skel_file, '')

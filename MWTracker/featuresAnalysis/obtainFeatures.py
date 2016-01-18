@@ -19,13 +19,13 @@ from collections import OrderedDict
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
 
-from movement_validation import NormalizedWorm
-from movement_validation import WormFeatures, VideoInfo
-from movement_validation.statistics import specifications
+from open_worm_analysis_toolbox import NormalizedWorm
+from open_worm_analysis_toolbox import WormFeatures, VideoInfo
+from open_worm_analysis_toolbox.statistics import specifications
 
 from MWTracker.featuresAnalysis.obtainFeaturesHelper import wormStatsClass, WormFromTable
 
-def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 25):
+def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 25, min_num_skel = 25):
 
     #useful to display progress 
     base_name = skeletons_file.rpartition('.')[0].rpartition(os.sep)[-1]
@@ -48,7 +48,7 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
     dum = indexes_data.groupby('worm_index_joined').agg({'has_skeleton':['mean', 'sum']})
     skeleton_fracc = dum['has_skeleton']['mean']
     skeleton_tot = dum['has_skeleton']['sum']
-    valid_worm_index = skeleton_fracc[(skeleton_fracc>=bad_seg_thresh) & (skeleton_tot>=fps)].index
+    valid_worm_index = skeleton_fracc[(skeleton_fracc >= bad_seg_thresh) & (skeleton_tot>=min_num_skel)].index
     
     #remove the bad worms, we do not care about them
     indexes_data = indexes_data[indexes_data['worm_index_joined'].isin(valid_worm_index)]

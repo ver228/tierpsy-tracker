@@ -14,7 +14,6 @@ import argparse
 
 def checkMaskPrefix(fdir):
 	#check if the root dir has a subfolder MaskedVideos otherwise add it to the end
-
 	N = sum('MaskedVideos' == part for part in fdir.split(os.sep))
 
 	if N > 1: 

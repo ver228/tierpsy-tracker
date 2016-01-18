@@ -11,6 +11,23 @@ import sys
 from start_console import runMultiCMD, print_cmd_list
 import argparse
 import h5py
+import tables
+
+def isBadFile(masked_image_file):
+	try:
+		with tables.File(masked_image_file, 'r') as mask_fid:
+			mask_node = mask_fid.get_node('/mask')
+			if mask_node._v_attrs['has_finished'] < 1: 
+				raise
+			if mask_node.shape[0] == 0:
+				raise
+			if mask_node.shape[0] != len(mask_fid.get_node('/video_metadata')):
+				#print(mask_node.shape[0], len(mask_fid.get_node('/video_metadata')))
+				raise
+			return 0
+	except:
+		return 1
+
 
 def getTrackCommands(mask_dir_root, results_dir_root, tmp_dir_root='', json_file = '', end_point = '', is_single_worm = False,
 	script_abs_path = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/MWTracker_GUI/trackSingleLocal.py',
@@ -26,11 +43,12 @@ def getTrackCommands(mask_dir_root, results_dir_root, tmp_dir_root='', json_file
 				masked_image_file = os.path.abspath(os.path.join(dpath, fname))
 				assert(os.path.exists(masked_image_file))
 
-				try:
-					with h5py.File(masked_image_file, 'r') as mask_fid:
-						if mask_fid['/mask'].attrs['has_finished'] < 1: raise
-				except:
+				if isBadFile(masked_image_file):
+					print('BAD', masked_image_file)
 					continue
+					#import stat
+					#os.chflags(masked_image_file, not stat.UF_IMMUTABLE)
+					#os.remove(masked_image_file)
 
 				subdir_path = dpath.replace(mask_dir_root, '')
 				if subdir_path and subdir_path[0] == os.sep: 

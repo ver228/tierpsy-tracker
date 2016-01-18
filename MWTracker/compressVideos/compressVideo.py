@@ -283,7 +283,8 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
                 progress_str = progressTime.getStr(frame_number)
                 print(base_name + ' ' + progress_str);
                 sys.stdout.flush()
-            
+        
+
         #once we finished to read the whole video, we need to make sure that the hdf5 array sizes are correct.
         if mask_dataset.shape[0] != frame_number:
             mask_dataset.resize(frame_number, axis=0);
@@ -292,6 +293,9 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
         if full_dataset.shape[0] != full_frame_number:
             full_dataset.resize(full_frame_number, axis=0);
         
+        if expected_frames != frame_number:
+            raise Exception('Expected and total number of frames do not match. Expected: %i, Total: %i', expected_frames, frame_number)
+
         #attribute to indicate the program finished correctly
         mask_dataset.attrs['has_finished'] = 1
             

@@ -95,34 +95,6 @@ def getWormThreshold(pix_valid):
         
     return thresh
 
-
-# def filterLargestArea(contours, hierarchy):
-#     ii = np.argmax([cv2.contourArea(x) for x in contours])
-#     contours = [contours[ii]]
-#     #print(hierarchy, len(hierarchy), type(hierarchy))
-#     #print('c', type(contours), len(contours))
-#     hierarchy = [[hierarchy[0][ii]]]
-#     return contours, hierarchy
-
-# def correctIndSigleWorm(trajectories_file):
-#     #dirty solution in pandas but very easy to implement
-#     with pd.HDFStore(trajectories_file, 'r') as traj_fid:
-#         plate_worms = traj_fid['/plate_worms']
-        
-#         #check that there is only one blob per frame
-#         assert all(plate_worms['frame_number'].value_counts()<=1)
-
-#         #make all the indexes equal
-#         plate_worms['worm_index'] = np.asarray(1, dtype=np.int32)
-
-#     with tables.File(trajectories_file, 'r+') as traj_fid:
-#         #open with tables in order to save the corrected table
-#         newT = traj_fid.create_table('/', 'plate_worms_t', 
-#                                        obj = plate_worms.to_records(index=False), 
-#                                        filters = table_filters)
-#         traj_fid.remove_node('/', 'plate_worms')
-#         newT.rename('plate_worms')
-
 def getWormContours(ROI_image, thresh):
     #get the border of the ROI mask, this will be used to filter for valid worms
     ROI_valid = (ROI_image != 0).astype(np.uint8)
@@ -245,8 +217,22 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
     is_single_worm -- filter
 
     ''' 
-    base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
+
+    #check that the mask file is correct
+    if not os.path.exists(masked_image_file):
+        raise Exception('HDF5 Masked Image file does not exists.')
     
+    with tables.File(masked_image_file, 'r') as mask_fid:
+        mask_dataset = mask_fid.get_node("/mask")
+        if not mask_dataset._v_attrs['has_finished'] >= 1:
+            raise Exception('HDF5 Masked Image was not finished correctly.')
+        if mask_dataset.shape[0] == 0:
+            raise Exception('Empty set in masked image file. Nothing to do here.')
+            
+    #intialize variables
+    base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
+    progress_str = '####'
+
     with tables.File(masked_image_file, 'r') as mask_fid, \
     tables.open_file(trajectories_file, mode = 'w') as feature_fid:
     
@@ -258,7 +244,6 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
             timestamp, timestamp_time = list(zip(*dd))
             del dd
         except:
-            raise
             N = mask_dataset.shape[0]
             timestamp = np.full(N, np.nan)
             timestamp_time = np.full(N, np.nan)
@@ -266,9 +251,6 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
         feature_fid.create_group('/', 'timestamp')
         feature_fid.create_carray('/timestamp', 'raw', obj = np.asarray(timestamp))
         feature_fid.create_carray('/timestamp', 'time', obj = np.asarray(timestamp_time))
-
-
-
 
         feature_table = feature_fid.create_table('/', "plate_worms", 
                                                  plate_worms, "Worm feature List",
@@ -458,10 +440,98 @@ def correctSingleWormCase(trajectories_file):
         newT = traj_fid.create_table('/', 'plate_worms_t', 
                                         obj = plate_worms.to_records(index=False), 
                                         filters=table_filters)
+        newT._v_attrs['has_finished'] = 1
         traj_fid.remove_node('/', 'plate_worms')
         newT.rename('plate_worms')
 
 def joinTrajectories(trajectories_file, min_track_size = 50, \
+max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
+    '''
+    area_ratio_lim -- allowed range between the area ratio of consecutive frames 
+    min_track_size -- minimum tracksize accepted
+    max_time_gap -- time gap between joined trajectories
+    '''
+    
+    #check the previous step finished correctly
+    with tables.open_file(trajectories_file, mode = 'r') as fid:
+        traj_table = fid.get_node('/plate_worms')
+        assert traj_table._v_attrs['has_finished'] >= 1
+
+    #%% get the first and last rows for each trajectory. Pandas is easier of manipulate than tables.
+    with pd.HDFStore(trajectories_file, 'r') as fid:
+        df = fid['plate_worms'][['worm_index', 'frame_number', 'coord_x', 'coord_y', 'area', 'box_length']]
+
+    #select the first and last frame_number for each separate trajectory
+    tracks_data = df[['worm_index', 'frame_number']]
+    tracks_data = tracks_data.groupby('worm_index')
+    tracks_data = tracks_data.aggregate({'frame_number': [np.argmin, np.argmax, 'count']})
+
+    #filter data only to include trajectories larger than min_track_size
+    tracks_data = tracks_data[tracks_data['frame_number']['count']>=min_track_size]
+    valid_indexes = tracks_data.index
+
+    #select the corresponding first and last rows of each trajectory
+    first_rows = df.ix[tracks_data['frame_number']['argmin'].values]
+    last_rows = df.ix[tracks_data['frame_number']['argmax'].values]
+    #let's use the particle id as index instead of the row number
+    last_rows.index = tracks_data['frame_number'].index 
+    first_rows.index = tracks_data['frame_number'].index
+
+    #%% look for trajectories that could be join together in a small time gap
+    join_frames = []
+    for curr_index in valid_indexes:
+        #the possible connected trajectories must have started after the end of the current trajectories, 
+        #within a timegap given by max_time_gap
+        possible_rows = first_rows[ \
+                (first_rows['frame_number'] > last_rows['frame_number'][curr_index]) &
+                (first_rows['frame_number'] < last_rows['frame_number'][curr_index] + max_time_gap)]
+        
+        #the area change must be smaller than the one given by area_ratio_lim
+        #it is better to use the last point change of area because we are considered changes near that occur near time
+        areaR = last_rows['area'][curr_index]/possible_rows['area'];
+        possible_rows = possible_rows[(areaR > area_ratio_lim[0]) & (areaR < area_ratio_lim[1])]
+        
+        #not valid rows left
+        if len(possible_rows) == 0: continue
+            
+        R = np.sqrt( (possible_rows['coord_x']  - last_rows['coord_x'][curr_index]) ** 2 + \
+                    (possible_rows['coord_y']  - last_rows['coord_x'][curr_index]) ** 2)
+        
+        indmin = np.argmin(R)
+        #only join trajectories that move at most one worm body
+        if R[indmin] <= last_rows['box_length'][curr_index]:
+            #print(curr_index, indmin)
+            join_frames.append((indmin, curr_index))
+
+    relations_dict = dict(join_frames)
+    
+    #%%
+    #update worm_index_joined field 
+    with tables.open_file(trajectories_file, mode = 'r+') as fid:
+        plate_worms = fid.get_node('/plate_worms')
+        
+        #read the worm_index column, this is the index order that have to be conserved in the worm_index_joined column
+        worm_index = plate_worms.col('worm_index')
+        worm_index_joined = np.full_like(worm_index, -1)
+        
+        for ind in valid_indexes:
+            #seach in the dictionary for the first index in the joined trajectory group
+            ind_joined = ind;
+            while ind_joined in relations_dict:
+                ind_joined = relations_dict[ind_joined]
+            
+            #replace the previous index for the root index
+            worm_index_joined[worm_index == ind] = ind_joined
+        
+        #add the result the column worm_index_joined
+        plate_worms.modify_column(colname = 'worm_index_joined', column = worm_index_joined)
+        
+        #flag the join data as finished
+        plate_worms._v_attrs['has_finished'] = 2
+        fid.flush()
+
+
+def joinTrajectories_old(trajectories_file, min_track_size = 50, \
 max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
     '''
     area_ratio_lim -- allowed range between the area ratio of consecutive frames 
@@ -494,6 +564,7 @@ max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
             max_row = (); #empty tuple
             min_row = ();
 
+            #get the first and last row for each index
             for dd in feature_table.where('worm_index == %i'% ii):
                 if dd['frame_number'] < min_frame:
                     min_frame = dd['frame_number']
