@@ -14,7 +14,7 @@ from helperExpLocalChecked import checkTrackFiles, exploreDirs
 
 def main(mask_dir_root, tmp_dir_root, json_file, script_abs_path, \
 	pattern_include, pattern_exclude, \
-	max_num_process, refresh_time, end_point, is_single_worm, only_summary):
+	max_num_process, refresh_time, end_point, is_single_worm, only_summary, no_filter):
 
 	ctf = checkTrackFiles(mask_dir_root, tmp_dir_root = tmp_dir_root, \
 		is_single_worm = is_single_worm, json_file = json_file, end_point = end_point, \
@@ -24,20 +24,27 @@ def main(mask_dir_root, tmp_dir_root, json_file, script_abs_path, \
 	pattern_exclude = [pattern_exclude] + ctf.invalid_ext
 	valid_files = exploreDirs(mask_dir_root, pattern_include = pattern_include, pattern_exclude = pattern_exclude)
 	
-	ctf.filterFiles(valid_files)
+	if not no_filter:
+		ctf.filterFiles(valid_files)
+	else:
+		ctf.filtered_files['SOURCE_GOOD'] = valid_files
 	
 	#print summary
 	print('Total number of files that match the pattern search: %i' % len(valid_files))
-	print('Files to be proccesed : %i' % len(ctf.filtered_files['SOURCE_GOOD']))
-	print('Invalid source files: %i' % len(ctf.filtered_files['SOURCE_BAD']))
-	print('Files that were succesfully finished: %i' % len(ctf.filtered_files['FINISHED_GOOD']))
-	print('Invalid finished files: %i' % len(ctf.filtered_files['FINISHED_BAD']))
+	
+	if not no_filter:
+		print('Files to be proccesed : %i' % len(ctf.filtered_files['SOURCE_GOOD']))
+		print('Invalid source files: %i' % len(ctf.filtered_files['SOURCE_BAD']))
+		print('Files that were succesfully finished: %i' % len(ctf.filtered_files['FINISHED_GOOD']))
+		print('Invalid finished files: %i' % len(ctf.filtered_files['FINISHED_BAD']))
 
 	if not only_summary:
 		cmd_list = ctf.getCMDlist()
 		#run all the commands
 		print_cmd_list(cmd_list)
 		runMultiCMD(cmd_list, max_num_process = max_num_process, refresh_time = refresh_time)
+
+	
 
 
 if __name__ == '__main__':
@@ -64,6 +71,8 @@ if __name__ == '__main__':
 	parser.add_argument('--pattern_exclude', default = '', help = 'Pattern used to exclude files in video_dir_root')
 	
 	parser.add_argument('--only_summary', action='store_true', help='Use this flag if you only want to print a summary of the files in the directory.')
+	
+	parser.add_argument('--no_filter', action='store_true', help='Use this flag if you only want to print a summary of the files in the directory.')
 	
 	args = parser.parse_args()
 
