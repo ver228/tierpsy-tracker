@@ -16,6 +16,7 @@ import argparse
 
 sys.path.append('/Users/ajaver/Documents/GitHub/Multiworm_Tracking/')
 from MWTracker.helperFunctions.getTrajectoriesWorkerL import getStartingPoint, checkpoint
+from MWTracker.helperFunctions.timeCounterStr import timeCounterStr
 
 def exploreDirs(root_dir, pattern_include = '*', pattern_exclude = ''):
 	root_dir = os.path.abspath(root_dir)
@@ -101,11 +102,18 @@ class checkVideoFiles:
 		#intialize filtered files lists
 		self.filtered_files = {key : [] for key in self.filtered_files_fields}
 		
-		for video_file in valid_files:
+		progress_timer = timeCounterStr('');
+		for ii, video_file in enumerate(valid_files):
 			label, proccesed_file = self.checkIndFile(video_file)
 			assert label in self.filtered_files_fields
 
 			self.filtered_files[label].append(proccesed_file)
+
+			if (ii % 10) == 0:
+				print('Checking file %i of %i. Total time: %s' % (ii+1, len(valid_files), progress_timer.getTimeStr()))
+		
+		print('Finished to check files. Total time elapsed %s' % progress_timer.getTimeStr())
+
 
 	@staticmethod
 	def checkMaskPrefix(fdir):

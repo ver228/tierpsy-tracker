@@ -11,30 +11,6 @@ import argparse
 from start_console import runMultiCMD, print_cmd_list
 from helperExpLocalChecked import checkTrackFiles, exploreDirs
 
-def getTrackCommands(mask_dir_root, results_dir_root, tmp_dir_root='', json_file = '', end_point = '', is_single_worm = False,
-	script_abs_path = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/MWTracker_GUI/trackSingleLocal.py',
-	invalid_ext = ['_skeletons', '_trajectories', '_features', '_feat_ind']):
-	
-	mask_dir_root = os.path.abspath(mask_dir_root)
-	#if masked_movies_dir[-1] != os.sep: masked_movies_dir += os.sep #add the path separator at the end the main directory 
-
-	cmd_list_track = []
-	for dpath, dnames, fnames in os.walk(mask_dir_root):
-		for fname in fnames:
-			if fname.endswith('.hdf5') and not any(fname.endswith(ff + '.hdf5') for ff in invalid_ext):
-				masked_image_file = os.path.abspath(os.path.join(dpath, fname))
-				assert(os.path.exists(masked_image_file))
-
-				if isBadFile(masked_image_file):
-					print('BAD', masked_image_file)
-					continue
-					#import stat
-					#os.chflags(masked_image_file, not stat.UF_IMMUTABLE)
-					#os.remove(masked_image_file)
-
-	return cmd_list_track
-	
-
 
 def main(mask_dir_root, tmp_dir_root, json_file, script_abs_path, \
 	pattern_include, pattern_exclude, \
