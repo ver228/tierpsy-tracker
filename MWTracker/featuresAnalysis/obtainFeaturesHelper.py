@@ -296,9 +296,10 @@ class wormStatsClass():
         if is_motion:
             #if the the feature is motion type we can subdivide in Foward, Paused or Backward motion
             assert motion_mode.size == data.size
-            motion_types['foward'] = 1;
-            motion_types['paused'] = 0;
-            motion_types['backward'] = -1;
+            
+            motion_types['foward'] = motion_mode == 1;
+            motion_types['paused'] = motion_mode == 0;
+            motion_types['backward'] = motion_mode == -1;
         
         
         for key in motion_types:
@@ -306,7 +307,7 @@ class wormStatsClass():
                 valid = ~np.isnan(data)
                 sub_name = name
             else:
-                valid = motion_mode == motion_types[key]
+                valid = motion_types[key]
                 sub_name = name + '_' + key
                 
             stats[sub_name] = stat_func(data[valid]);
@@ -315,6 +316,13 @@ class wormStatsClass():
                 stats[sub_name + '_abs'] = stat_func(np.abs(data[valid]))
                 stats[sub_name + '_neg'] = stat_func(data[data<0 & valid])
                 stats[sub_name + '_pos'] = stat_func(data[data>0 & valid])
+
+    def getFieldData(self, worm_features, spec):
+        data = worm_features
+        for field in spec.feature_field.split('.'):
+            data = getattr(data, field)
+        return data
+
 
     def getWormStats(self, worm_features, stat_func = np.mean):
         ''' Calculate the statistics of an object worm features, subdividing data
@@ -329,19 +337,25 @@ class wormStatsClass():
         
         #motion type stats
         motion_mode = worm_features.locomotion.motion_mode;
+
         for spec in self.specs_motion:
             feature = self.spec2tableName[spec.name]
-            tmp_data = spec.get_data(worm_features)
+            #import pdb
+            #pdb.set_trace()
+            tmp_data = self.getFieldData(worm_features, spec) 
+            #spec.get_data(worm_features)
             self.featureStat(stat_func, tmp_data, feature, spec.is_signed, True, motion_mode, stats=self.stats)
         
         for spec in self.specs_events:
             feature = self.spec2tableName[spec.name]
-            tmp_data = spec.get_data(worm_features)
+            tmp_data = self.getFieldData(worm_features, spec) 
+            #tmp_data = spec.get_data(worm_features)
             self.featureStat(stat_func, tmp_data, feature, spec.is_signed, False, stats=self.stats)
         
         for spec in self.specs4table:
             feature = self.spec2tableName[spec.name]
-            tmp_data = spec.get_data(worm_features)
+            #tmp_data = spec.get_data(worm_features)
+            tmp_data = self.getFieldData(worm_features, spec) 
             self.stats[feature] = tmp_data
         
         return self.stats

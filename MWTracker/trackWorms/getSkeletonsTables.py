@@ -223,7 +223,7 @@ create_single_movies = False, resampling_N = 49, min_mask_area = 50, smoothed_tr
     #Note that data is sorted by worm index. This speed up access for access individual worm data.
     trajectories_df, worms_frame_range, tot_rows = \
     getSmoothTrajectories(trajectories_file, **smoothed_traj_param)
-    
+    if tot_rows == 0: tot_rows = 1; #this is to initialize the arrays to one row, pytables do not accept empty arrays as initializers of carrays
     
     #pytables saving format is more convenient...
     with tables.File(skeletons_file, "w") as ske_file_id:

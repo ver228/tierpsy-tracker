@@ -159,7 +159,6 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
             sys.stdout.flush()
             sys.stderr.flush()
         
-
         #create and save a table containing the averaged worm feature for each worm
         tot_rows = len(all_stats)
         assert tot_worms == tot_rows

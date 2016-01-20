@@ -174,9 +174,10 @@ def getFrameStats(feat_file):
 
 def getFilteredFeats(skel_file, feat_file, fps = 25, min_num_skel = 100, bad_seg_thresh = 0.8, min_dist = 5, fit_contamination = 0.05):
     #get valid rows using the trajectory displacement and the skeletonization success
-    valid_index, trajectories_data = getValidIndexes(skel_file, \
-    min_num_skel = min_num_skel, bad_seg_thresh = bad_seg_thresh, min_dist = min_dist)
-    labelValidSkeletons(skel_file, valid_index, trajectories_data, fit_contamination = fit_contamination)
+    
+    #valid_index, trajectories_data = getValidIndexes(skel_file, \
+    #min_num_skel = min_num_skel, bad_seg_thresh = bad_seg_thresh, min_dist = min_dist)
+    #labelValidSkeletons(skel_file, valid_index, trajectories_data, fit_contamination = fit_contamination)
     getWormFeatures(skel_file, feat_file, bad_seg_thresh = bad_seg_thresh*0.6, fps = fps)
     getFrameStats(feat_file)
 

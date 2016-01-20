@@ -59,7 +59,6 @@ def timestr2sec(timestr):
 
 def getHeader(data):
     assert data    
-    
     #find header (it is not always the first line)
     for ii, line in enumerate(data):
         if line[0] == 'Real Time':
@@ -77,11 +76,13 @@ def getHeader(data):
 
 def data2dict(header, data):
     assert data
+
+    print(len(dd) for dd in data)
+
     ## save data into a dictionary
     csv_dict = {}
     for ii, col_data in enumerate(zip(*data)):
         csv_dict[header[ii]] = col_data
-    
     
     ## Check the data is correct
     assert all(x == 'STAGE' for x in csv_dict['Location Type'])
@@ -132,7 +133,7 @@ def storeStageData(stage_file, masked_image_file):
 
 def getAdditionalFiles(video_file):
     assert(os.path.exists(video_file))
-    base_name = video_file.rsplit('.')[0]
+    base_name = os.path.splitext(video_file)[0]
     info_file =  base_name + '.info.xml'
     stage_file = base_name + '.log.csv'
     

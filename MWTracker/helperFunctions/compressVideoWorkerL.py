@@ -34,6 +34,9 @@ def compressVideoWorkerL(video_file, mask_dir, param_file = '', is_single_worm =
         #try to get the has_finished flag, if this fails the file is likely to be corrupted so we can start over again
         with h5py.File(masked_image_file, "r") as mask_fid:
             has_finished = mask_fid['/mask'].attrs['has_finished']
+
+            if is_single_worm and not all(dd in mask_fid for dd in ['stage_data', 'xml_info']):
+                has_finished = 0
     except:
         has_finished = 0 
 
