@@ -424,7 +424,7 @@ def correctSingleWormCase(trajectories_file):
     #emtpy table nothing to do here
     if len(plate_worms) == 0: return
 
-    tot_frames = plate_worms['frame_number'].max()
+    tot_frames = plate_worms['frame_number'].max() + 1
     
     groupsbyframe = plate_worms[['frame_number', 'area']].groupby('frame_number')
     
