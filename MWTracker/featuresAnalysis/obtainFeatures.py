@@ -41,8 +41,6 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
         with tables.File(skeletons_file, 'r') as ske_file_id:
             #this is slow but faster than having to recalculate all the skeletons
             indexes_data['has_skeleton'] = ~np.isnan(ske_file_id.get_node('/skeleton_length'))
-            
-    #%%
     
     #get the fraction of worms that were skeletonized per trajectory
     dum = indexes_data.groupby('worm_index_joined').agg({'has_skeleton':['mean', 'sum']})
@@ -180,7 +178,6 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
         sys.stdout.flush()
         
 if __name__ == "__main__":
-    
 #    base_name = 'Capture_Ch3_12052015_194303'
 #    mask_dir = '/Users/ajaver/Desktop/Gecko_compressed/Masked_Videos/20150512/'
 #    results_dir = '/Users/ajaver/Desktop/Gecko_compressed/Results/20150512/'    

@@ -11,6 +11,7 @@ import tables
 import pandas as pd
 import numpy as np
 from math import floor, ceil
+import csv
 
 import warnings
 warnings.filterwarnings('ignore', '.*empty slice*',)
@@ -24,7 +25,7 @@ from collections import OrderedDict
 from MWTracker import config_param #import the movement_validation directory
 from open_worm_analysis_toolbox import NormalizedWorm, VideoInfo
 from open_worm_analysis_toolbox.statistics import specifications
-
+#from open_worm_analysis_toolbox.features.worm_features import WormFeatures, WormFeaturesDos
 np.seterr(invalid='ignore')
 
 def calWormAngles(x,y, segment_size):
@@ -144,9 +145,11 @@ class WormFromTable(NormalizedWorm):
 
 
             frame_code = trajectories_data['has_skeleton'].values
-            
+       
             if 'auto_label' in trajectories_data:
-                self.label = trajectories_data['auto_label']
+                worm_label = trajectories_data['auto_label'][skeleton_id]
+            else:
+                worm_label = np.zeros(0)
 
             del trajectories_data         
         
@@ -159,6 +162,8 @@ class WormFromTable(NormalizedWorm):
         self.last_frame = np.max(timestamp)
         self.n_frames = self.last_frame - self.first_frame +1;
         
+
+
         with tables.File(file_name, 'r') as ske_file_id:
             n_ske_points =  ske_file_id.get_node('/skeleton').shape[1]
             self.n_segments = n_ske_points
@@ -170,7 +175,7 @@ class WormFromTable(NormalizedWorm):
             self.dorsal_contour = np.full((tot_frames, n_ske_points,2), np.nan)
             self.length = np.full(tot_frames, np.nan)
             self.widths = np.full((tot_frames,n_ske_points), np.nan)
-    
+
             self.frame_number = np.full(tot_frames, -1, np.int32)
             
             ind_ff = timestamp - self.first_frame
@@ -192,6 +197,11 @@ class WormFromTable(NormalizedWorm):
             self.length[ind_ff] = ske_file_id.get_node('/skeleton_length')[skeleton_id]*pix2mum
             self.widths[ind_ff] = ske_file_id.get_node('/contour_width')[skeleton_id,:]*pix2mum
             
+            #add label if they exists
+            if worm_label.shape[0] > 0:
+                self.label = np.full(tot_frames, 0, np.int)
+                self.label[ind_ff] = worm_label[skeleton_id]
+
             self.angles, meanAngles_all = calWormAnglesAll(self.skeleton)
 
             #if the area field exists read it otherwise calculated
@@ -240,7 +250,7 @@ class WormFromTable(NormalizedWorm):
     
     def removeInvSkel(self, GOOD_SKE = 4):
         if hasattr(self, 'label'):
-            bad = (self.label != GOOD_SKE).values
+            bad = (self.label != GOOD_SKE)
 
             for field in ['skeleton', 'ventral_contour', 'dorsal_contour', 'widths', 'angles', 'length', 'area']:
                 A = getattr(self, field)
@@ -264,36 +274,17 @@ class WormFromTable(NormalizedWorm):
 class wormStatsClass():
     def __init__(self):
         '''get the info for each feature chategory'''
-        specs_simple = specifications.SimpleSpecs.specs_factory()
-        specs_event = specifications.EventSpecs.specs_factory()
-        self.specs_motion = specifications.MovementSpecs.specs_factory()
-    
-        #create a new category for events where data corresponds to variable size numpy arrays
-        self.specs_events = specs_simple + [x for x in specs_event \
-        if not x.sub_field in ['time_ratio', 'data_ratio', 'frequency']]
         
-        #create a category for data whose output is a float number that goes in the final feature tables
-        self.specs4table =  [x for x in specs_event \
-        if x.sub_field in ['time_ratio', 'data_ratio', 'frequency']]
-        
-        #condition the names given in spec to a more pytables friendly format.
-        #remove spaces, and special punctuation marks, and remplace '/' by Ratio
-        
-        self.spec2tableName = {} #used to translate the spec name into the table name
-        for spec in self.specs_events + self.specs_motion + self.specs4table:
-            feature = spec.name.split(' (')[0].replace(' ', '_').replace('.', '').replace('-', '_')
-            if '/' in feature:
-                feature = feature.replace('/', '_') + '_ratio'
-            self.spec2tableName[spec.name] = feature.lower()
-        
-    def featureStat(self, stat_func, data, name, is_signed, is_motion, motion_mode = np.zeros(0), stats={}):
+        self.features_info = pd.read_csv('features_names.csv', index_col=0)
+
+    def featureStat(self, stat_func, data, name, is_signed, is_time_series, motion_mode = np.zeros(0), stats={}):
         # I prefer to keep this function quite independend and pass the stats and moition_mode argument 
         #rather than save those values in the class
         if data is None:
             data = np.zeros(0)
         
         motion_types = {'all':np.nan};
-        if is_motion:
+        if is_time_series:
             #if the the feature is motion type we can subdivide in Foward, Paused or Backward motion
             assert motion_mode.size == data.size
             
@@ -317,12 +308,11 @@ class wormStatsClass():
                 stats[sub_name + '_neg'] = stat_func(data[data<0 & valid])
                 stats[sub_name + '_pos'] = stat_func(data[data>0 & valid])
 
-    def getFieldData(self, worm_features, spec):
+    def getFieldData(worm_features, name):
         data = worm_features
-        for field in spec.feature_field.split('.'):
+        for field in name.split('.'):
             data = getattr(data, field)
         return data
-
 
     def getWormStats(self, worm_features, stat_func = np.mean):
         ''' Calculate the statistics of an object worm features, subdividing data
@@ -336,26 +326,20 @@ class wormStatsClass():
         self.stats = OrderedDict()
         
         #motion type stats
-        motion_mode = worm_features.locomotion.motion_mode;
+        #motion_mode = worm_features.locomotion.motion_mode;
+        motion_mode = worm_features._temp_features['locomotion.motion_mode'].value
 
-        for spec in self.specs_motion:
-            feature = self.spec2tableName[spec.name]
-            #import pdb
-            #pdb.set_trace()
-            tmp_data = self.getFieldData(worm_features, spec) 
-            #spec.get_data(worm_features)
-            self.featureStat(stat_func, tmp_data, feature, spec.is_signed, True, motion_mode, stats=self.stats)
-        
-        for spec in self.specs_events:
-            feature = self.spec2tableName[spec.name]
-            tmp_data = self.getFieldData(worm_features, spec) 
-            #tmp_data = spec.get_data(worm_features)
-            self.featureStat(stat_func, tmp_data, feature, spec.is_signed, False, stats=self.stats)
-        
-        for spec in self.specs4table:
-            feature = self.spec2tableName[spec.name]
-            #tmp_data = spec.get_data(worm_features)
-            tmp_data = self.getFieldData(worm_features, spec) 
-            self.stats[feature] = tmp_data
-        
-        return self.stats
+        for feat_name, feat_props in self.features_info.iterrows():
+            feat_obj = feat_props['feat_name_obj']
+            tmp_data = worm_features.features[feat_obj].value
+            
+            if tmp_data is None:
+                self.stats[feat_name] = np.nan
+
+            elif isinstance(tmp_data, (int, float)):
+                self.stats[feat_name] = tmp_data
+
+            else:
+                self.featureStat(stat_func, tmp_data, feat_name, \
+                    feat_props['is_signed'], feat_props['is_time_series'], \
+                    motion_mode, stats=self.stats)

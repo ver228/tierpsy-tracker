@@ -421,7 +421,10 @@ def correctSingleWormCase(trajectories_file):
     with pd.HDFStore(trajectories_file, 'r') as traj_fid:
         plate_worms = traj_fid['/plate_worms']
     
-    tot_frames = plate_worms['frame_number'].max() + 1
+    #emtpy table nothing to do here
+    if len(plate_worms) == 0: return
+
+    tot_frames = plate_worms['frame_number'].max()
     
     groupsbyframe = plate_worms[['frame_number', 'area']].groupby('frame_number')
     

@@ -45,7 +45,7 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_
         timestamp_time = fid.get_node('/timestamp/time')[:]
 
     if len(timestamp_raw) < df['frame_number'].max():
-        raise Exception('bad %i, %i' % len(timestamp_raw), df['frame_number'].max(), trajectories_file)
+        raise Exception('bad %i, %i. \nFile: %s' % (len(timestamp_raw), df['frame_number'].max(), trajectories_file))
         
 
 
