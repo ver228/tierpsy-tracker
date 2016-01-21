@@ -28,6 +28,9 @@ from open_worm_analysis_toolbox.statistics import specifications
 #from open_worm_analysis_toolbox.features.worm_features import WormFeatures, WormFeaturesDos
 np.seterr(invalid='ignore')
 
+
+WLAB = {'U':0, 'WORM':1, 'WORMS':2, 'BAD':3, 'GOOD_SKE':4}
+
 def calWormAngles(x,y, segment_size):
     '''
     Get the skeleton angles from its x, y coordinates
@@ -275,7 +278,27 @@ class wormStatsClass():
     def __init__(self):
         '''get the info for each feature chategory'''
         
-        self.features_info = pd.read_csv('features_names.csv', index_col=0)
+        feat_names_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'features_names.csv')
+        self.features_info = pd.read_csv(feat_names_file, index_col=0)
+        self.builtFeatAvgNames()
+
+    def builtFeatAvgNames(self):
+        feat_avg_names = ['worm_index', 'n_frames', 'n_valid_skel']
+        for feat_name, feat_info in self.features_info.iterrows():
+            
+            motion_types = ['']
+            if feat_info['is_time_series']: 
+                motion_types += ['_foward', '_paused', '_backward']
+            
+            for mtype in motion_types:
+                sub_name = feat_name + mtype;
+                feat_avg_names += [sub_name]
+                if feat_info['is_signed']:
+                    for atype in ['_abs', '_neg', '_pos']:
+                        feat_avg_names += [sub_name + atype]
+        
+        self.feat_avg_names = feat_avg_names   
+
 
     def featureStat(self, stat_func, data, name, is_signed, is_time_series, motion_mode = np.zeros(0), stats={}):
         # I prefer to keep this function quite independend and pass the stats and moition_mode argument 
@@ -323,7 +346,7 @@ class wormStatsClass():
             Return the feature list as an ordered dictionary. 
         '''
         #initialize the stats dictionary
-        self.stats = OrderedDict()
+        feat_stats = OrderedDict()
         
         #motion type stats
         #motion_mode = worm_features.locomotion.motion_mode;
@@ -334,12 +357,53 @@ class wormStatsClass():
             tmp_data = worm_features.features[feat_obj].value
             
             if tmp_data is None:
-                self.stats[feat_name] = np.nan
+                feat_stats[feat_name] = np.nan
 
             elif isinstance(tmp_data, (int, float)):
-                self.stats[feat_name] = tmp_data
+                feat_stats[feat_name] = tmp_data
 
             else:
                 self.featureStat(stat_func, tmp_data, feat_name, \
                     feat_props['is_signed'], feat_props['is_time_series'], \
-                    motion_mode, stats=self.stats)
+                    motion_mode, stats=feat_stats)
+        return feat_stats
+
+def getValidIndexes(skel_file, min_num_skel = 100, bad_seg_thresh = 0.8, min_dist = 5):
+    #min_num_skel - ignore trajectories that do not have at least this number of skeletons
+    #min_dist - minimum distance explored by the blob to be consider a real worm 
+    with pd.HDFStore(skel_file, 'r') as table_fid:
+        trajectories_data = table_fid['/trajectories_data']
+        trajectories_data =  trajectories_data[trajectories_data['worm_index_joined'] > 0]
+        
+        if len(trajectories_data['worm_index_joined'].unique()) == 1:
+            good_skel_row = trajectories_data['skeleton_id'][trajectories_data.has_skeleton.values.astype(np.bool)].values
+            return (trajectories_data, np.array([1]), good_skel_row)
+        
+        #get the fraction of worms that were skeletonized per trajectory
+        how2agg = {'has_skeleton':['mean', 'sum'], 'coord_x':['max', 'min', 'count'],
+                   'coord_y':['max', 'min']}
+        tracks_data = trajectories_data.groupby('worm_index_joined').agg(how2agg)
+        
+        delX = tracks_data['coord_x']['max'] - tracks_data['coord_x']['min']
+        delY = tracks_data['coord_y']['max'] - tracks_data['coord_y']['min']
+        
+        max_avg_dist = np.sqrt(delX*delX + delY*delY)#/tracks_data['coord_x']['count']
+        
+        skeleton_fracc = tracks_data['has_skeleton']['mean']
+        skeleton_tot = tracks_data['has_skeleton']['sum']
+        
+        good_worm = (skeleton_fracc>=bad_seg_thresh) & (skeleton_tot>=min_num_skel)
+        good_worm = good_worm & (max_avg_dist>min_dist)
+        
+        good_traj_index = good_worm[good_worm].index
+
+        good_row = (trajectories_data.worm_index_joined.isin(good_traj_index)) \
+        & (trajectories_data.has_skeleton.values.astype(np.bool))
+        
+        trajectories_data['auto_label'] = WLAB['U']
+        trajectories_data.loc[good_row, 'auto_label'] = WLAB['WORM']
+        
+        good_skel_row = trajectories_data.loc[good_row, 'skeleton_id'].values
+        
+        return (trajectories_data, good_traj_index, good_skel_row)
+

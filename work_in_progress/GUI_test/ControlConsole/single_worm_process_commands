@@ -4,4 +4,4 @@ python3 compressExpLocalChecked.py /Volumes/behavgenom_archive\$/thecus/nas207-1
 
 python3 trackExpLocalChecked.py /Volumes/behavgenom_archive\$/MaskedVideos/nas207-1/experimentBackup --is_single_worm --end_point SKE_ORIENT
 
-python3 trackExpLocalChecked.py /Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos --is_single_worm --end_point SKE_ORIENT
+python3 trackExpLocalChecked.py /Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos - -tmp_dir 

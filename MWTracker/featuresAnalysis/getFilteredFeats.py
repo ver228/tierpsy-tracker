@@ -16,7 +16,8 @@ import warnings
 from sklearn.covariance import EllipticEnvelope, MinCovDet
 np.seterr(invalid='ignore') 
 
-from .obtainFeatures import getWormFeatures
+from MWTracker.featuresAnalysis.obtainFeatures import getWormFeatures
+from MWTracker.featuresAnalysis.obtainFeaturesHelper import getValidIndexes, WLAB
 
 worm_partitions = {'neck': (8, 16),
                 'midbody':  (16, 33),
@@ -28,7 +29,6 @@ worm_partitions = {'neck': (8, 16),
                 'tail_base': (40, 45),
                 'tail_tip': (45, 49)}
 
-wlab = {'U':0, 'WORM':1, 'WORMS':2, 'BAD':3, 'GOOD_SKE':4}
 
 name_width_fun = lambda part: 'width_' + part
 
@@ -40,44 +40,6 @@ def saveLabelData(skel_file, trajectories_data):
         ske_file_id.remove_node('/', 'trajectories_data')
         newT.rename('trajectories_data')
     
-
-def getValidIndexes(skel_file, min_num_skel = 100, bad_seg_thresh = 0.8, min_dist = 5):
-    #min_num_skel - ignore trajectories that do not have at least this number of skeletons
-    #min_dist - minimum distance explored by the blob to be consider a real worm 
-
-    with pd.HDFStore(skel_file, 'r') as table_fid:
-        trajectories_data = table_fid['/trajectories_data']
-        trajectories_data =  trajectories_data[trajectories_data['worm_index_joined'] > 0]
-        
-        if len(trajectories_data['worm_index_joined'].unique()) == 1:
-            good_skel_row = trajectories_data['skeleton_id'][trajectories_data.has_skeleton.values.astype(np.bool)].values
-            return good_skel_row, trajectories_data
-        
-        #get the fraction of worms that were skeletonized per trajectory
-        how2agg = {'has_skeleton':['mean', 'sum'], 'coord_x':['max', 'min', 'count'],
-                   'coord_y':['max', 'min']}
-        tracks_data = trajectories_data.groupby('worm_index_joined').agg(how2agg)
-        
-        delX = tracks_data['coord_x']['max'] - tracks_data['coord_x']['min']
-        delY = tracks_data['coord_y']['max'] - tracks_data['coord_y']['min']
-        
-        max_avg_dist = np.sqrt(delX*delX + delY*delY)#/tracks_data['coord_x']['count']
-        
-        skeleton_fracc = tracks_data['has_skeleton']['mean']
-        skeleton_tot = tracks_data['has_skeleton']['sum']
-        
-        good_worm = (skeleton_fracc>=bad_seg_thresh) & (skeleton_tot>=min_num_skel)
-        good_worm = good_worm & (max_avg_dist>min_dist)
-        
-        good_row = (trajectories_data.worm_index_joined.isin(good_worm[good_worm].index)) \
-        & (trajectories_data.has_skeleton.values.astype(np.bool))
-        
-        trajectories_data['auto_label'] = wlab['U']
-        trajectories_data.loc[good_row, 'auto_label'] = wlab['WORM']
-        
-        good_skel_row = trajectories_data.loc[good_row, 'skeleton_id'].values
-    
-        return good_skel_row, trajectories_data
 
 def read_field(fid, field, valid_index):
     data = fid.get_node(field)[:]
@@ -121,14 +83,14 @@ def calculate_widths(skel_file):
                                         atom = tables.Float32Atom(dflt = np.nan), \
                                         filters = table_filters);
 
-def labelValidSkeletons(skel_file, valid_index, trajectories_data, fit_contamination = 0.05):
+def labelValidSkeletons(skel_file, good_skel_row, trajectories_data, fit_contamination = 0.05):
     
 
     #calculate valid widths if they were not used
     calculate_widths(skel_file)
     
     #calculate classifier for the outliers    
-    X4fit = nodes2Array(skel_file, valid_index)
+    X4fit = nodes2Array(skel_file, good_skel_row)
     
     #TODO here the is a problem with singular covariance matrices that i need to figure out how to solve
     clf = EllipticEnvelope(contamination = fit_contamination)
@@ -140,7 +102,7 @@ def labelValidSkeletons(skel_file, valid_index, trajectories_data, fit_contamina
     y_pred = clf.decision_function(X).ravel() #less than zero would be an outlier
 
     #labeled rows of valid individual skeletons as GOOD_SKE
-    trajectories_data['auto_label'] = ((y_pred>0).astype(np.int))*wlab['GOOD_SKE'] #+ wlab['BAD']*np.isnan(y_prev)
+    trajectories_data['auto_label'] = ((y_pred>0).astype(np.int))*WLAB['GOOD_SKE'] #+ wlab['BAD']*np.isnan(y_prev)
     saveLabelData(skel_file, trajectories_data)
 
 def getFrameStats(feat_file):
@@ -152,12 +114,12 @@ def getFrameStats(feat_file):
     warnings.simplefilter("ignore")
             
     with pd.HDFStore(feat_file) as feat_fid:
-        features_motion = feat_fid['/features_motion']            
+        features_timeseries = feat_fid['/features_timeseries']            
     
-    if len(features_motion['worm_index'].unique()) == 1:
+    if len(features_timeseries['worm_index'].unique()) == 1:
         return #nothing to do here
     
-    groupbyframe = features_motion.groupby('frame_number')
+    groupbyframe = features_timeseries.groupby('frame_number')
         
     with warnings.catch_warnings(), tables.File(feat_file, 'r+') as feat_fid:
         if '/frame_stats' in feat_fid:
@@ -175,9 +137,11 @@ def getFrameStats(feat_file):
 def getFilteredFeats(skel_file, feat_file, fps = 25, min_num_skel = 100, bad_seg_thresh = 0.8, min_dist = 5, fit_contamination = 0.05):
     #get valid rows using the trajectory displacement and the skeletonization success
     
-    #valid_index, trajectories_data = getValidIndexes(skel_file, \
-    #min_num_skel = min_num_skel, bad_seg_thresh = bad_seg_thresh, min_dist = min_dist)
-    #labelValidSkeletons(skel_file, valid_index, trajectories_data, fit_contamination = fit_contamination)
+    trajectories_data, _, good_skel_row = getValidIndexes(skel_file, \
+    min_num_skel = min_num_skel, bad_seg_thresh = bad_seg_thresh, min_dist = min_dist)
+    
+    labelValidSkeletons(skel_file, good_skel_row, trajectories_data, fit_contamination = fit_contamination)
+    
     getWormFeatures(skel_file, feat_file, bad_seg_thresh = bad_seg_thresh*0.6, fps = fps)
     getFrameStats(feat_file)
 

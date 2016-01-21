@@ -86,6 +86,10 @@ from MWTracker.featuresAnalysis.obtainFeaturesHelper import wormStatsClass
 wStats = wormStatsClass()
 wStats.getWormStats(worm_features)
 #%%
+from MWTracker.featuresAnalysis.obtainFeaturesHelper
+getWormFeatures(skeletons_file, 'test.hdf5')
+
+
 #'locomotion.motion_mode'
 
 #for key in worm_features._temp_features:
