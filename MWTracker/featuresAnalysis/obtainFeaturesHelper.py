@@ -12,6 +12,7 @@ import pandas as pd
 import numpy as np
 from math import floor, ceil
 import csv
+from scipy.signal import savgol_filter
 
 import warnings
 warnings.filterwarnings('ignore', '.*empty slice*',)
@@ -40,8 +41,17 @@ def calWormAngles(x,y, segment_size):
     
     dx = x[segment_size:]-x[:-segment_size]
     dy = y[segment_size:]-y[:-segment_size]
+    
+    pad_down = np.floor(segment_size/2)
+    pad_up = np.ceil(segment_size/2)
+    
+    #pad the rest of the array with delta of one segment 
+    #dx = np.hstack((np.diff(x[0:pad_down]), dx, np.diff(x[-pad_up:])))
+    #dy = np.hstack((np.diff(y[0:pad_down]), dy, np.diff(y[-pad_up:])))
+
     #dx = np.diff(x);
     #dy = np.diff(y);
+    
     angles = np.arctan2(dx,dy)
     dAngles = np.diff(angles)
     
@@ -68,13 +78,14 @@ def calWormAngles(x,y, segment_size):
     meanAngle = np.mean(angles);
     angles = angles - meanAngle;
     
+    angles = np.hstack((np.full(pad_down, np.nan), angles, np.full(pad_up, np.nan)))
     return (angles, meanAngle)
 
-def calWormAnglesAll(skeleton, segment_size=5):
+def calWormAnglesAll(skeleton, segment_size = 5):
     '''calculate the angles of each of the skeletons'''
 
-    segment_half = segment_size/2
-    ang_pad =  (floor(segment_half),ceil(segment_half))
+    #segment_half = segment_size/2
+    #ang_pad =  (floor(segment_half),ceil(segment_half))
     
     meanAngles_all = np.zeros(skeleton.shape[0])    
     angles_all = np.full((skeleton.shape[0], skeleton.shape[1]), np.nan)
@@ -82,11 +93,13 @@ def calWormAnglesAll(skeleton, segment_size=5):
         if skeleton[ss,0,0] == np.nan:
             continue #skip if skeleton is invalid
 
-        angles_all[ss,ang_pad[0]:-ang_pad[1]],meanAngles_all[ss] = \
+        angles_all[ss,:],meanAngles_all[ss] = \
         calWormAngles(skeleton[ss,:,0],skeleton[ss,:,1], segment_size=segment_size)
     
+        #angles_all[ss,ang_pad[0]:-ang_pad[1]],meanAngles_all[ss] = \
+        #calWormAngles(skeleton[ss,:,0],skeleton[ss,:,1], segment_size=segment_size)
+    
     return angles_all, meanAngles_all
-
 
 def calWormArea(cnt_side1, cnt_side2):
     '''calculate the contour area using the shoelace method'''
@@ -97,6 +110,29 @@ def calWormArea(cnt_side1, cnt_side2):
     return np.abs(signed_area)/2
 
 
+def smoothCurve(curve, window = 5, pol_degree = 3):
+    '''smooth curves using the savgol_filter'''
+    
+    if curve.shape[0] < window:
+        #nothing to do here return an empty array
+        return np.full_like(curve, np.nan)
+
+    #consider the case of one (widths) or two dimensions (skeletons, contours)
+    if curve.ndim == 1:
+        smoothed_curve =  savgol_filter(curve, window, pol_degree)
+    else:
+        smoothed_curve = np.zeros_like(curve)
+        for nn in range(curve.ndim):
+            smoothed_curve[:,nn] = savgol_filter(curve[:,nn], window, pol_degree)
+
+    return smoothed_curve
+
+def smoothCurvesAll(curves, window = 5, pol_degree = 3):
+    for ii in range(curves.shape[0]):
+        if not np.any(np.isnan(curves[ii])):
+            curves[ii] = smoothCurve(curves[ii], window = window, pol_degree = pol_degree)
+    return curves
+
 class WormFromTable(NormalizedWorm):
     """
     Encapsulates the notion of a worm's elementary measurements, scaled
@@ -104,163 +140,175 @@ class WormFromTable(NormalizedWorm):
     In the future it might become a method of NormalizedWorm, 
     but for the moment let's test it as a separate identity
     """
-    def __init__(self, other=None):
-        """
-        Populates an empty normalized worm.
-        If other is specified, this becomes a copy constructor.
-        
-        """
+    def __init__(self, file_name, worm_index, fps = 25, use_auto_label = True, use_manual_join = False,
+        is_openworm = False, pix2mum = 1, smooth_window = -1, POL_DEGREE_DFLT = 3):
+        #Populates an empty normalized worm.
         NormalizedWorm.__init__(self)
     
-    def fromFile(self, file_name, worm_index, fps = 25, isOpenWorm = False, pix2mum = 1, time_range = []):
+        self.POL_DEGREE_DFLT = POL_DEGREE_DFLT #savitzky-golay filter polynomial order default
+        #save the input parameters
+        self.file_name = file_name
+        self.worm_index = worm_index
+        self.fps = fps
+        self.pix2mum = pix2mum
+        self.is_openworm = is_openworm
+        self.use_auto_label = use_auto_label
+        self.use_manual_join = use_manual_join
+        self.smooth_window = smooth_window #set to less than POL_DEGREE_DFLT to eliminate smoothing
         
-        assert len(time_range) == 0 or len(time_range) == 2
+        #smooth window must be an odd number larger than the polynomial degree (savitzky-golay filter requirement)
+        if self.smooth_window >= self.POL_DEGREE_DFLT and self.smooth_window % 2 == 0: 
+            self.smooth_window += 1
+
+        skeleton_id, timestamp = self.getTrajDataTable()
         
-        #get the skeletons_id and frame_number in case they were not given by the user
+        
+        self.readSkeletonsData(skeleton_id, timestamp)        
+        
+        #smooth data if required
+        if self.smooth_window > self.POL_DEGREE_DFLT:
+            print('smoothing...')
+            self.skeleton = smoothCurvesAll(self.skeleton, window = self.smooth_window)
+            self.widths = smoothCurvesAll(self.widths, window = self.smooth_window)
+
+        #calculate angles
+        self.angles, meanAngles_all = calWormAnglesAll(self.skeleton, segment_size = 1)
+
+        #if the area field exists read it otherwise calculated
+        if not hasattr(self, 'area'):
+            self.area = calWormArea(self.ventral_contour, self.dorsal_contour)
+
+        #calculate the number of valid skeletons
+        self.n_valid_skel = np.sum(~np.isnan(self.length))
+
+        #assert the dimenssions of the read data are correct
+        self.assertDataDim()
+
+        #check the axis dimensions to make it compatible with openworm
+        if self.is_openworm: self.changeAxis()
+
+    def getTrajDataTable(self):
+        '''
+        Get the relevant info from the trajectory_data table. skeleton_id, timestamp.
+        '''
+        #intialize just to make clear the relevant variables for this function
+        file_name, worm_index, use_auto_label, use_manual_join = \
+        self.file_name, self.worm_index, self.use_auto_label, self.use_manual_join
+
         with pd.HDFStore(file_name, 'r') as ske_file_id:
             trajectories_data = ske_file_id['/trajectories_data']
 
-            if 'worm_index_N' in trajectories_data:
-                good = trajectories_data['worm_index_N']==worm_index
+            if use_manual_join:
+                assert 'worm_index_N' in trajectories_data
+                good = trajectories_data['worm_index_N'] == worm_index
             else:
-                good = trajectories_data['worm_index_joined']==worm_index
-            
-            #if a time_range is given only consider frames within the time range 
-            if len(time_range) == 2:
-                good = good & (trajectories_data['frame_number']>=time_range[0]) \
-                & (trajectories_data['frame_number']<=time_range[1])
-                
+                good = trajectories_data['worm_index_joined'] == worm_index
             
             trajectories_data = trajectories_data.loc[good]
             
             skeleton_id = trajectories_data['skeleton_id'].values
-            frame_number = trajectories_data['frame_number'].values
             
-            #try to read timestamp_raw if it contains invalid values use the frame_number as timestamp
+            #try to read timestamp_raw if it does not exists of it contains invalid values use the frame_number as timestamp
             try:
                 timestamp = trajectories_data['timestamp_raw'].values
-                if np.any(np.isnan(timestamp)): 
+                if np.any(np.isnan(timestamp)) or np.any(np.diff(timestamp == 0)): 
                     raise
                 else:
                     timestamp = timestamp.astype(np.int)
             except:
-                timestamp = frame_number
+                timestamp = trajectories_data['frame_number'].values
 
 
-            frame_code = trajectories_data['has_skeleton'].values
-       
-            if 'auto_label' in trajectories_data:
-                worm_label = trajectories_data['auto_label'][skeleton_id]
-            else:
-                worm_label = np.zeros(0)
-
-            del trajectories_data         
+            good_skeletons = trajectories_data['has_skeleton'].values == 1
+            
+            if use_auto_label:
+                assert 'auto_label' in trajectories_data
+                #only keep skeletons that where labeled as good skeletons in the autolabel step
+                good_skeletons &= trajectories_data['auto_label'].values == WLAB['GOOD_SKE']
+            
+            skeleton_id = skeleton_id[good_skeletons]
+            timestamp = timestamp[good_skeletons]
+            
+            #import pdb
+            #pdb.set_trace()
         
-        
-        self.file_name = file_name;
-        self.worm_index = worm_index
+            return skeleton_id, timestamp
 
-        #use real frames
+    def readSkeletonsData(self, skeleton_id, timestamp):
+        
+        #use real frames to define the size of the object arrays
         self.first_frame = np.min(timestamp)
         self.last_frame = np.max(timestamp)
         self.n_frames = self.last_frame - self.first_frame +1;
         
-
-
-        with tables.File(file_name, 'r') as ske_file_id:
-            n_ske_points =  ske_file_id.get_node('/skeleton').shape[1]
-            self.n_segments = n_ske_points
-            
-            tot_frames = self.n_frames
-
-            self.skeleton = np.full((tot_frames, n_ske_points,2), np.nan)
-            self.ventral_contour = np.full((tot_frames, n_ske_points,2), np.nan)
-            self.dorsal_contour = np.full((tot_frames, n_ske_points,2), np.nan)
-            self.length = np.full(tot_frames, np.nan)
-            self.widths = np.full((tot_frames,n_ske_points), np.nan)
-
-            self.frame_number = np.full(tot_frames, -1, np.int32)
-            
-            ind_ff = timestamp - self.first_frame
-            
-            self.frame_number[ind_ff] = frame_number
-            
-            self.skeleton_id = np.full(tot_frames, -1, np.int32)
-            self.skeleton_id[ind_ff] = skeleton_id
-
-            #video info, for the moment we intialize it with the fps
-            self.video_info = VideoInfo('', fps)  
-            #flag as segmented flags should be marked by the has_skeletons column
-            self.video_info.frame_code = np.zeros(tot_frames, np.int32)
-            self.video_info.frame_code[ind_ff] = frame_code
-
-            self.skeleton[ind_ff] = ske_file_id.get_node('/skeleton')[skeleton_id,:,:]*pix2mum
-            self.ventral_contour[ind_ff] = ske_file_id.get_node('/contour_side1')[skeleton_id,:,:]*pix2mum
-            self.dorsal_contour[ind_ff] = ske_file_id.get_node('/contour_side2')[skeleton_id,:,:]*pix2mum
-            self.length[ind_ff] = ske_file_id.get_node('/skeleton_length')[skeleton_id]*pix2mum
-            self.widths[ind_ff] = ske_file_id.get_node('/contour_width')[skeleton_id,:]*pix2mum
-            
-            #add label if they exists
-            if worm_label.shape[0] > 0:
-                self.label = np.full(tot_frames, 0, np.int)
-                self.label[ind_ff] = worm_label[skeleton_id]
-
-            self.angles, meanAngles_all = calWormAnglesAll(self.skeleton)
-
-            #if the area field exists read it otherwise calculated
-            try: 
-                self.length = file_id.get_node('/skeleton_area')[ini:end+1] 
-            except:
-                self.area = calWormArea(self.ventral_contour, self.dorsal_contour)
-
-            #reduce the number of valid skeletons if they were already labelled/filter
-            self.removeInvSkel()
-
-            #calculate the number of valid skeletons
-            self.n_valid_skel = np.sum(~np.isnan(self.length))
-
-
-            #assertions to check the data has the proper dimensions
-            assert self.frame_number.shape[0] == self.n_frames
-            assert self.skeleton_id.shape[0] == self.n_frames
-            assert self.video_info.frame_code.shape[0] == self.n_frames
-            
-            assert self.skeleton.shape[0] == self.n_frames
-            assert self.ventral_contour.shape[0] == self.n_frames
-            assert self.dorsal_contour.shape[0] == self.n_frames
-            assert self.length.shape[0] == self.n_frames
-            assert self.widths.shape[0] == self.n_frames
-            
-            assert self.angles.shape[0] == self.n_frames
-            assert self.area.shape[0] == self.n_frames
-            
-            
-            assert self.skeleton.shape[2] == 2
-            assert self.ventral_contour.shape[2] == 2
-            assert self.dorsal_contour.shape[2] == 2
-            
-            assert self.ventral_contour.shape[1] == self.n_segments            
-            assert self.dorsal_contour.shape[1] == self.n_segments
-            assert self.widths.shape[1] == self.n_segments
-            
-            assert self.length.ndim == 1
-            
-            assert self.angles.shape[1] == self.n_segments
-            
-            #check the axis dimensions to make it compatible with openworm
-            if isOpenWorm:
-                self.changeAxis()
-    
-    def removeInvSkel(self, GOOD_SKE = 4):
-        if hasattr(self, 'label'):
-            bad = (self.label != GOOD_SKE)
-
-            for field in ['skeleton', 'ventral_contour', 'dorsal_contour', 'widths', 'angles', 'length', 'area']:
-                A = getattr(self, field)
-                A[bad] = np.nan
-                setattr(self, field, A)
-
+        #get the apropiate index in the object array
+        ind_ff = timestamp - self.first_frame 
         
+        #get the number of segments from the normalized skeleton
+        with tables.File(self.file_name, 'r') as ske_file_id:
+            self.n_segments =  ske_file_id.get_node('/skeleton').shape[1]
+
+        #add the data from the skeleton_id's and timestamps used
+        self.timestamp = np.full(self.n_frames, -1, np.int32)
+        self.skeleton_id = np.full(self.n_frames, -1, np.int32)
+        self.timestamp[ind_ff] = timestamp
+        self.skeleton_id[ind_ff] = skeleton_id
+        
+        #video info, for the moment we intialize it with the fps
+        self.video_info = VideoInfo('', self.fps)
+        
+        #flag as segmented flags should be marked by the has_skeletons column
+        self.video_info.frame_code = np.zeros(self.n_frames, np.int32)
+        self.video_info.frame_code[ind_ff] = 1
+        
+        #initialize the rest of the arrays
+        self.skeleton = np.full((self.n_frames, self.n_segments,2), np.nan)
+        self.ventral_contour = np.full((self.n_frames, self.n_segments,2), np.nan)
+        self.dorsal_contour = np.full((self.n_frames, self.n_segments,2), np.nan)
+        self.length = np.full(self.n_frames, np.nan)
+        self.widths = np.full((self.n_frames, self.n_segments), np.nan)
+        
+        
+        #read data from the skeletons table
+        with tables.File(self.file_name, 'r') as ske_file_id:
+            
+            self.skeleton[ind_ff] = ske_file_id.get_node('/skeleton')[skeleton_id,:,:]*self.pix2mum
+            self.ventral_contour[ind_ff] = ske_file_id.get_node('/contour_side1')[skeleton_id,:,:]*self.pix2mum
+            self.dorsal_contour[ind_ff] = ske_file_id.get_node('/contour_side2')[skeleton_id,:,:]*self.pix2mum
+            self.length[ind_ff] = ske_file_id.get_node('/skeleton_length')[skeleton_id]*self.pix2mum
+            self.widths[ind_ff] = ske_file_id.get_node('/contour_width')[skeleton_id,:]*self.pix2mum
+
+            if '/skeleton_area' in ske_file_id: #if the area field exists read it from the file 
+                self.area = np.full(self.n_frames, np.nan)
+                self.area[ind_ff] = ske_file_id.get_node('/skeleton_area')[skeleton_id]*(self.pix2mum**2)
+
+    def assertDataDim(self):
+        #assertions to check the data has the proper dimensions
+        #assert self.frame_number.shape[0] == self.n_frames
+        assert self.timestamp.shape[0] == self.n_frames
+        assert self.skeleton_id.shape[0] == self.n_frames
+        assert self.video_info.frame_code.shape[0] == self.n_frames
+        
+        assert self.skeleton.shape[0] == self.n_frames
+        assert self.ventral_contour.shape[0] == self.n_frames
+        assert self.dorsal_contour.shape[0] == self.n_frames
+        assert self.length.shape[0] == self.n_frames
+        assert self.widths.shape[0] == self.n_frames
+        
+        assert self.angles.shape[0] == self.n_frames
+        assert self.area.shape[0] == self.n_frames
+        
+        assert self.skeleton.shape[2] == 2
+        assert self.ventral_contour.shape[2] == 2
+        assert self.dorsal_contour.shape[2] == 2
+        
+        assert self.ventral_contour.shape[1] == self.n_segments            
+        assert self.dorsal_contour.shape[1] == self.n_segments
+        assert self.widths.shape[1] == self.n_segments
+        
+        assert self.length.ndim == 1
+        
+        assert self.angles.shape[1] == self.n_segments
 
     def changeAxis(self):
         for field in ['skeleton', 'ventral_contour', 'dorsal_contour', 'widths', 'angles']:
@@ -272,7 +320,7 @@ class WormFromTable(NormalizedWorm):
             #finally copy it back to the field
             setattr(self, field, A)
             
-            assert getattr(self, field).shape[0] == self.n_segments
+            #assert getattr(self, field).shape[0] == self.n_segments
 
 class wormStatsClass():
     def __init__(self):
@@ -373,37 +421,35 @@ def getValidIndexes(skel_file, min_num_skel = 100, bad_seg_thresh = 0.8, min_dis
     #min_dist - minimum distance explored by the blob to be consider a real worm 
     with pd.HDFStore(skel_file, 'r') as table_fid:
         trajectories_data = table_fid['/trajectories_data']
-        trajectories_data =  trajectories_data[trajectories_data['worm_index_joined'] > 0]
-        
-        if len(trajectories_data['worm_index_joined'].unique()) == 1:
-            good_skel_row = trajectories_data['skeleton_id'][trajectories_data.has_skeleton.values.astype(np.bool)].values
-            return (trajectories_data, np.array([1]), good_skel_row)
-        
-        #get the fraction of worms that were skeletonized per trajectory
-        how2agg = {'has_skeleton':['mean', 'sum'], 'coord_x':['max', 'min', 'count'],
-                   'coord_y':['max', 'min']}
-        tracks_data = trajectories_data.groupby('worm_index_joined').agg(how2agg)
-        
-        delX = tracks_data['coord_x']['max'] - tracks_data['coord_x']['min']
-        delY = tracks_data['coord_y']['max'] - tracks_data['coord_y']['min']
-        
-        max_avg_dist = np.sqrt(delX*delX + delY*delY)#/tracks_data['coord_x']['count']
-        
-        skeleton_fracc = tracks_data['has_skeleton']['mean']
-        skeleton_tot = tracks_data['has_skeleton']['sum']
-        
-        good_worm = (skeleton_fracc>=bad_seg_thresh) & (skeleton_tot>=min_num_skel)
-        good_worm = good_worm & (max_avg_dist>min_dist)
-        
-        good_traj_index = good_worm[good_worm].index
 
-        good_row = (trajectories_data.worm_index_joined.isin(good_traj_index)) \
-        & (trajectories_data.has_skeleton.values.astype(np.bool))
-        
-        trajectories_data['auto_label'] = WLAB['U']
-        trajectories_data.loc[good_row, 'auto_label'] = WLAB['WORM']
-        
-        good_skel_row = trajectories_data.loc[good_row, 'skeleton_id'].values
-        
-        return (trajectories_data, good_traj_index, good_skel_row)
+    trajectories_data =  trajectories_data[trajectories_data['worm_index_joined'] > 0]
+    
+    if len(trajectories_data['worm_index_joined'].unique()) == 1:
+        good_skel_row = trajectories_data['skeleton_id'][trajectories_data.has_skeleton.values.astype(np.bool)].values
+        return (trajectories_data, np.array([1]), good_skel_row)
+    
+    #get the fraction of worms that were skeletonized per trajectory
+    how2agg = {'has_skeleton':['mean', 'sum'], 'coord_x':['max', 'min', 'count'],
+               'coord_y':['max', 'min']}
+    tracks_data = trajectories_data.groupby('worm_index_joined').agg(how2agg)
+    
+    delX = tracks_data['coord_x']['max'] - tracks_data['coord_x']['min']
+    delY = tracks_data['coord_y']['max'] - tracks_data['coord_y']['min']
+    
+    max_avg_dist = np.sqrt(delX*delX + delY*delY)#/tracks_data['coord_x']['count']
+    
+    skeleton_fracc = tracks_data['has_skeleton']['mean']
+    skeleton_tot = tracks_data['has_skeleton']['sum']
+    
+    good_worm = (skeleton_fracc>=bad_seg_thresh) & (skeleton_tot>=min_num_skel)
+    good_worm = good_worm & (max_avg_dist>min_dist)
+    
+    good_traj_index = good_worm[good_worm].index
+
+    good_row = (trajectories_data.worm_index_joined.isin(good_traj_index)) \
+    & (trajectories_data.has_skeleton.values.astype(np.bool))
+    
+    good_skel_row = trajectories_data.loc[good_row, 'skeleton_id'].values
+    assert np.all(good_skel_row == trajectories_data[good_row].index)
+    return (good_traj_index, good_skel_row)
 

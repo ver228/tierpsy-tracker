@@ -56,8 +56,7 @@ class checkVideoFiles:
 	def __init__(self, video_dir_root, mask_dir_root, \
 		tmp_dir_root = '', \
 		is_single_worm = False, json_file = '', \
-		script_abs_path = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/MWTracker_GUI/compressSingleLocal.py'\
-		):
+		script_abs_path = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/MWTracker_GUI/compressSingleLocal.py'):
 		
 		#checkings before accepting the data
 		video_dir_root = os.path.abspath(video_dir_root)
@@ -70,7 +69,9 @@ class checkVideoFiles:
 		self.json_file = json_file
 		self.script_abs_path = script_abs_path
 		self.is_single_worm = is_single_worm
-
+		self.not_auto_label = not_auto_label
+		self.use_manual_join = use_manual_join
+		
 		#Let's look look for a MaskedVideos subdirectory, otherwise we add it at the end of the root dir
 		self.mask_dir_root = self.checkMaskPrefix(mask_dir_root)
 		#If tmp_dir_root is empty let's use the mask_dir_root as our source
@@ -87,15 +88,15 @@ class checkVideoFiles:
 		
 		if os.path.exists(masked_image_file):
 			if not self.isBadMask(masked_image_file):
-				return 'FINISHED_GOOD' , (source_file, finished_files)
+				return 'FINISHED_GOOD' , (video_file, masked_image_file)
 			else:
-				return 'FINISHED_BAD', (source_file, finished_files)
+				return 'FINISHED_BAD', (video_file, masked_image_file)
 		
 		else:
-			if self.is_single_worm and not self.hasAdditionalFiles(source_file):
-				return 'SOURCE_BAD', source_file
+			if self.is_single_worm and not self.hasAdditionalFiles(video_file):
+				return 'SOURCE_BAD', video_file
 		
-		return 'SOURCE_GOOD', source_file
+		return 'SOURCE_GOOD', video_file
 
 
 	def filterFiles(self, valid_files):
@@ -155,7 +156,7 @@ class checkVideoFiles:
 			if tmp_val: cmd += ['--' + arg, tmp_val]
 		
 		if self.is_single_worm: cmd.append('--is_single_worm')
-		
+
 		return cmd
 
 	def cleanPrevious(self):
@@ -207,7 +208,8 @@ class checkVideoFiles:
 class checkTrackFiles(checkVideoFiles):
 	def __init__(self, mask_dir_root, tmp_dir_root = '', \
 		is_single_worm = False, json_file = '', end_point = '', \
-		script_abs_path = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/MWTracker_GUI/trackSingleLocal.py',
+		script_abs_path = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/MWTracker_GUI/trackSingleLocal.py', \
+		not_auto_label = False, use_manual_join = False
 		):
 		
 		#checkings before accepting the data
@@ -223,7 +225,9 @@ class checkTrackFiles(checkVideoFiles):
 		self.json_file = json_file
 		self.script_abs_path = script_abs_path
 		self.is_single_worm = is_single_worm
-
+		self.not_auto_label = not_auto_label
+		self.use_manual_join = use_manual_join
+		
 		self.end_point_N = checkpoint['END'] if not end_point else checkpoint[end_point]
 		self.end_point = end_point
 
@@ -278,8 +282,9 @@ class checkTrackFiles(checkVideoFiles):
 			if tmp_val: cmd += ['--' + arg, tmp_val]
 		
 
-		if self.is_single_worm: cmd.append('--is_single_worm')
-		
+		for arg in ['is_single_worm', 'not_auto_label', 'use_manual_join']:
+			if getattr(self, arg): cmd.append('--' + arg)
+
 		return cmd
 	
 	def checkIndFile(self, masked_image_file):

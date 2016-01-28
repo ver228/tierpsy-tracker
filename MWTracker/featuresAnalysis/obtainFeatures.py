@@ -23,15 +23,18 @@ from open_worm_analysis_toolbox import NormalizedWorm
 from open_worm_analysis_toolbox import WormFeaturesDos, VideoInfo
 from open_worm_analysis_toolbox.statistics import specifications
 
-from MWTracker.featuresAnalysis.obtainFeaturesHelper import wormStatsClass, WormFromTable, getValidIndexes
+from MWTracker.featuresAnalysis.obtainFeaturesHelper import wormStatsClass, WormFromTable, getValidIndexes, WLAB
 
-def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 25, min_num_skel = 25):
+def getWormFeatures(skeletons_file, features_file, good_traj_index, \
+    use_auto_label = True, use_manual_join = False):
+    
+    #we should get fps and pix2num values from the skeleton file (but first I need to store them there)
+    pix2mum = 1
+    fps = 25
+
+    
     #useful to display progress 
     base_name = skeletons_file.rpartition('.')[0].rpartition(os.sep)[-1]
-    
-    #get trajectories that have a valid number/fraction of skeletons
-    _, good_traj_index, _ =  getValidIndexes(skeletons_file, min_num_skel = min_num_skel, \
-        bad_seg_thresh = bad_seg_thresh, min_dist = 0)
     
     #get total number of valid worms and break if it is zero
     tot_worms = len(good_traj_index)
@@ -54,7 +57,7 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
         feat_events = wStats.features_info[wStats.features_info['is_time_series']==0].index.values;
         
         header_timeseries = {'worm_index':tables.Int32Col(pos=0),\
-        'frame_number':tables.Int32Col(pos=1),\
+        'timestamp':tables.Int32Col(pos=1),\
         'motion_modes':tables.Float32Col(pos=2)}
         for ii, feat in enumerate(feat_timeseries):
             header_timeseries[feat] = tables.Float32Col(pos=ii+2)
@@ -63,10 +66,10 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
         
         #start to calculate features for each worm trajectory      
         for ind, worm_index  in enumerate(good_traj_index):
-            
             #initialize worm object, and extract data from skeletons file
-            worm = WormFromTable()
-            worm.fromFile(skeletons_file, worm_index, fps = 25, isOpenWorm = True)
+            worm = WormFromTable(skeletons_file, worm_index, \
+                use_auto_label = use_auto_label, use_manual_join = use_manual_join, \
+                pix2mum = pix2mum, fps = fps, smooth_window = 5, is_openworm = True)
             
             if np.all(np.isnan(worm.length)):
                 tot_worms = tot_worms - 1
@@ -87,7 +90,7 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
             all_stats.append(worm_stats)
             #save the timeseries data as a general table
             timeseries_data = [[]]*len(header_timeseries)
-            timeseries_data[header_timeseries['frame_number']._v_pos] = worm.frame_number
+            timeseries_data[header_timeseries['timestamp']._v_pos] = worm.timestamp
             timeseries_data[header_timeseries['worm_index']._v_pos] = np.full(worm.n_frames, worm.worm_index, dtype=np.int64)
             timeseries_data[header_timeseries['motion_modes']._v_pos] = worm_features._temp_features['locomotion.motion_mode'].value
             
@@ -104,7 +107,7 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
             #save events data as a subgroup for the worm
             worm_node = features_fid.create_group(group_events, 'worm_%i' % worm_index )
             worm_node._v_attrs['worm_index'] = worm_index
-            worm_node._v_attrs['frame_range'] = (worm.frame_number[0], worm.frame_number[-1])
+            worm_node._v_attrs['frame_range'] = (worm.timestamp[0], worm.timestamp[-1])
             worm_node._v_attrs['n_valid_skel'] = worm.n_valid_skel
             
             for feat in feat_events:
@@ -143,4 +146,28 @@ def getWormFeatures(skeletons_file, features_file, bad_seg_thresh = 0.5, fps = 2
         
         print(base_name + ' Feature extraction finished: ' + progress_timer.getTimeStr())
         sys.stdout.flush()
-        
+    
+def getWormFeaturesFilt(skel_file, feat_file, use_auto_label, use_manual_join, feat_filt_param = []):
+    assert (use_auto_label or use_manual_join) or feat_filt_param
+
+    if use_manual_join:
+        with pd.HDFStore(skel_file, 'r') as table_fid:
+            trajectories_data = table_fid['/trajectories_data']
+        #select tables that were manually labeled as worms
+        good = trajectories_data['worm_label'] == WLAB['WORM']
+        good_traj_index = trajectories_data.loc[good, 'worm_index_N'].unique()
+    elif use_auto_label:
+        #select data that was labeld in FEAT_FILTER
+        with pd.HDFStore(skel_file, 'r') as table_fid:
+            trajectories_data = table_fid['/trajectories_data']
+        good = trajectories_data['auto_label'] == WLAB['GOOD_SKE']
+        good_traj_index = trajectories_data.loc[good, 'worm_index_joined'].unique()
+    
+    else:
+        #otherwise filter using the parameters in feat_filt_param
+        dd = {x : feat_filt_param[x] for x in ['min_num_skel', 'bad_seg_thresh', 'min_dist']}
+        good_traj_index = getValidIndexes(skel_file, **dd)
+
+    #calculate features
+    getWormFeatures(skel_file, feat_file, good_traj_index, \
+            use_auto_label = use_auto_label, use_manual_join = use_manual_join)

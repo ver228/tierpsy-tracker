@@ -14,17 +14,18 @@ from helperExpLocalChecked import checkTrackFiles, exploreDirs
 
 def main(mask_dir_root, tmp_dir_root, json_file, script_abs_path, \
 	pattern_include, pattern_exclude, \
-	max_num_process, refresh_time, end_point, is_single_worm, only_summary, no_filter):
+	max_num_process, refresh_time, end_point, is_single_worm, 
+	only_summary, no_prev_check, use_manual_join, not_auto_label):
 
 	ctf = checkTrackFiles(mask_dir_root, tmp_dir_root = tmp_dir_root, \
 		is_single_worm = is_single_worm, json_file = json_file, end_point = end_point, \
-		script_abs_path = script_abs_path)
+		script_abs_path = script_abs_path, use_manual_join= use_manual_join, not_auto_label = not_auto_label)
 	
 	
 	pattern_exclude = [pattern_exclude] + ctf.invalid_ext
 	valid_files = exploreDirs(mask_dir_root, pattern_include = pattern_include, pattern_exclude = pattern_exclude)
 	
-	if not no_filter:
+	if not no_prev_check:
 		ctf.filterFiles(valid_files)
 	else:
 		ctf.filtered_files['SOURCE_GOOD'] = valid_files
@@ -32,7 +33,7 @@ def main(mask_dir_root, tmp_dir_root, json_file, script_abs_path, \
 	#print summary
 	print('Total number of files that match the pattern search: %i' % len(valid_files))
 	
-	if not no_filter:
+	if not no_prev_check:
 		print('Files to be proccesed : %i' % len(ctf.filtered_files['SOURCE_GOOD']))
 		print('Invalid source files: %i' % len(ctf.filtered_files['SOURCE_BAD']))
 		print('Files that were succesfully finished: %i' % len(ctf.filtered_files['FINISHED_GOOD']))
@@ -72,7 +73,10 @@ if __name__ == '__main__':
 	
 	parser.add_argument('--only_summary', action='store_true', help='Use this flag if you only want to print a summary of the files in the directory.')
 	
-	parser.add_argument('--no_filter', action='store_true', help='Use this flag if you only want to print a summary of the files in the directory.')
+	parser.add_argument('--no_prev_check', action='store_true', help='Use this flag to do not check the files for completion before starting the process.')
+	
+	parser.add_argument('--use_manual_join', action='store_true', help = 'Use this flag to calculate features on manually joined data.')
+	parser.add_argument('--not_auto_label', action='store_true', help = 'Use this flag to do NOT filter valid skeletons using the movie robust averages.')
 	
 	args = parser.parse_args()
 

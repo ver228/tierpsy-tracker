@@ -14,7 +14,6 @@ sys.path.append('..')
 from MWTracker.helperFunctions.parallelProcHelper import runMultiSubproc
 
 
-
 home = os.path.expanduser("~")
 tmp_masked_root = home + os.sep + 'Tmp' + os.sep +  'MaskedVideos' + os.sep
 tmp_results_root = home + os.sep + 'Tmp' + os.sep + 'Results' + os.sep

@@ -31,7 +31,7 @@ def copyFilesLocal(files2copy):
 		for files in files2copy:
 			file_name, destination = files
 			
-			if not os.path.exists(file_name): continue
+			#if not os.path.exists(file_name): continue
 			
 			assert(os.path.exists(destination))
 
@@ -41,7 +41,8 @@ def copyFilesLocal(files2copy):
 				shutil.copy(file_name, destination)
 
 class trackLocal:
-	def __init__(self, masked_image_file, results_dir, tmp_mask_dir='', tmp_results_dir='', json_file ='', end_point = 'END', is_single_worm=''):
+	def __init__(self, masked_image_file, results_dir, tmp_mask_dir='', tmp_results_dir='', json_file ='', end_point = 'END', is_single_worm='', 
+		not_auto_label = False, use_manual_join = False):
 		
 		self.masked_image_file = masked_image_file
 		self.results_dir = results_dir
@@ -49,9 +50,10 @@ class trackLocal:
 		self.assign_tmp_dir(tmp_mask_dir, tmp_results_dir)
 		self.end_point = checkpoint[end_point]
 		
-		#probably i shouldn't assign this variables to the object
 		self.json_file = json_file 
 		self.is_single_worm = is_single_worm
+		self.use_auto_label = not not_auto_label
+		self.use_manual_join = use_manual_join
 
 		assert(os.path.exists(masked_image_file))
 
@@ -61,7 +63,8 @@ class trackLocal:
 
 		#start the analysis
 		getTrajectoriesWorkerL(self.tmp_mask_file, self.tmp_results_dir, param_file = self.json_file, 
-			start_point = self.analysis_start_point, end_point = self.end_point, is_single_worm = self.is_single_worm)
+			start_point = self.analysis_start_point, end_point = self.end_point, is_single_worm = self.is_single_worm,
+			use_auto_label = self.use_auto_label, use_manual_join = self.use_manual_join)
 
 		self.copyFilesToFinal()
 		self.cleanTmpFiles()
@@ -137,10 +140,11 @@ class trackLocal:
 
 				files2copy += [(self.masked_image_file, self.tmp_mask_dir)]
 
-		#copy the necessary files (maybe we can create a daemon later)
+		
 		copyFilesLocal(files2copy)
 	
 	def copyFilesToFinal(self):
+		#copy the necessary files (maybe we can create a daemon later)
 		isPoint2Copy = lambda point2check : (self.final_start_point <= checkpoint[point2check]) &  (self.end_point >= checkpoint[point2check])
 
 		files2copy = []
@@ -148,11 +152,12 @@ class trackLocal:
 		print(self.base_name + " Copying result files into the final directory.")
 		if isPoint2Copy('TRAJ_JOIN'):
 			files2copy += [(self.trajectories_tmp, self.results_dir)]
-		if isPoint2Copy('SKE_ORIENT'):
+		if isPoint2Copy('SKE_FILT'):
 			files2copy += [(self.skeletons_tmp, self.results_dir)]
 		if isPoint2Copy('FEAT_CREATE'):
 			files2copy += [(self.features_tmp, self.results_dir)]
-		if isPoint2Copy('FEAT_IND'):
+
+		if isPoint2Copy('FEAT_CREATE_MANUAL') and self.use_manual_join:
 			files2copy += [(self.feat_ind_tmp, self.results_dir)]
 
 		copyFilesLocal(files2copy)
@@ -192,6 +197,9 @@ if __name__ == '__main__':
 	parser.add_argument('--json_file', default='', help='File (.json) containing the tracking parameters.')
 	parser.add_argument('--end_point', default='END', choices = checkpoint, help='End point of the analysis.')
 	parser.add_argument('--is_single_worm', action='store_true', help = 'This flag indicates if the video corresponds to the single worm case.')
+	parser.add_argument('--use_manual_join', action='store_true', help = '.')
+	parser.add_argument('--not_auto_label', action='store_true', help = '.')
+	
 	args = parser.parse_args()
 	
 	trackLocal(**vars(args))

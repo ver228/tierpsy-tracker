@@ -97,4 +97,5 @@ class tracker_param:
         #self.ind_mov_param = {'fps' : fps, 'bad_seg_thresh' : bad_seg_thresh, 'save_bad_worms': save_bad_worms}
         
         #getWormFeatures
-        self.features_param = {'min_num_skel' : 4*fps, 'bad_seg_thresh' : 0.8, 'min_dist' : 5, 'fps': fps}
+        self.feat_filt_param = {'min_num_skel' : 4*fps, 'bad_seg_thresh' : 0.8, 'min_dist' : 5, 'fit_contamination' : 0.05}
+

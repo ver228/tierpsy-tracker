@@ -16,8 +16,12 @@ import warnings
 from sklearn.covariance import EllipticEnvelope, MinCovDet
 np.seterr(invalid='ignore') 
 
+import warnings
+warnings.filterwarnings('ignore', '.*det > previous_det*',)
+
+
 from MWTracker.featuresAnalysis.obtainFeatures import getWormFeatures
-from MWTracker.featuresAnalysis.obtainFeaturesHelper import getValidIndexes, WLAB
+from MWTracker.featuresAnalysis.obtainFeaturesHelper import getValidIndexes, WLAB, calWormArea
 
 worm_partitions = {'neck': (8, 16),
                 'midbody':  (16, 33),
@@ -52,6 +56,7 @@ def nodes2Array(skel_file, valid_index = np.zeros(0)):
     ['/' + name_width_fun(part) for part in worm_partitions]
 
     with tables.File(skel_file, 'r') as fid:
+        print(skel_file)
         assert all(node in fid for node in nodes4fit)
 
         if len(valid_index) == 0:
@@ -69,6 +74,7 @@ def nodes2Array(skel_file, valid_index = np.zeros(0)):
 def calculate_widths(skel_file):
     with tables.File(skel_file, 'r+') as fid:
         if any(not '/' + name_width_fun(part) in fid for part in worm_partitions):
+            print('Calculating width subsets...')
             widths = fid.get_node('/contour_width')[:]
             tot_rows = widths.shape[0]
             
@@ -83,11 +89,46 @@ def calculate_widths(skel_file):
                                         atom = tables.Float32Atom(dflt = np.nan), \
                                         filters = table_filters);
 
-def labelValidSkeletons(skel_file, good_skel_row, trajectories_data, fit_contamination = 0.05):
-    
+def calculate_areas(skel_file):
 
-    #calculate valid widths if they were not used
-    calculate_widths(skel_file)
+    with tables.File(skel_file, 'r+') as fid:
+        #i am using an auxiliar field in case the function is interrupted before finisihing
+        if '/contour_area_AUX' in fid: fid.remove_node('/', 'contour_area_AUX')
+        if '/contour_area' in fid: return
+        print('Calculating countour areas...')
+        #get the idea of valid skeletons    
+        skeleton_length = fid.get_node('/skeleton_length')[:]
+        has_skeleton = fid.get_node('/trajectories_data').col('has_skeleton')
+        skeleton_id = fid.get_node('/trajectories_data').col('skeleton_id')
+        
+        skeleton_id = skeleton_id[has_skeleton==1]
+        tot_rows = len(has_skeleton) #total number of rows in the arrays
+        
+        #remove node area if it existed before
+        #if '/contour_area' in fid: fid.remove_node('/', 'contour_area')
+        
+        #intiailize area arreay
+        table_filters = tables.Filters(complevel=5, complib='zlib', shuffle=True, fletcher32=True)
+        contour_area = fid.create_carray('/', "contour_area_AUX", \
+        tables.Float32Atom(dflt = np.nan), (tot_rows,), filters = table_filters);
+        
+        cnt_side1 = fid.get_node('/contour_side1')
+        cnt_side2 = fid.get_node('/contour_side2')
+            
+        for skel_id in skeleton_id:
+            contour = np.hstack((cnt_side1[skel_id], cnt_side2[skel_id][::-1,:]))
+            signed_area = np.sum(contour[:-1,0]*contour[1:,1]-contour[1:,0]*contour[:-1,1])
+            contour_area[skel_id] =  np.abs(signed_area)/2
+
+        contour_area.rename('contour_area') #now we can use the real name
+        fid.flush()
+
+def labelValidSkeletons(skel_file, good_skel_row, fit_contamination = 0.05):
+    with pd.HDFStore(skel_file, 'r') as table_fid:
+        trajectories_data = table_fid['/trajectories_data']
+
+    trajectories_data['auto_label'] = WLAB['U']
+    trajectories_data.loc[good_skel_row, 'auto_label'] = WLAB['WORM']
     
     #calculate classifier for the outliers    
     X4fit = nodes2Array(skel_file, good_skel_row)
@@ -134,14 +175,33 @@ def getFrameStats(feat_file):
             feat_fid.create_table(frame_stats_group, stat, \
             obj = plate_stats.to_records(), filters = table_filters)
 
-def getFilteredFeats(skel_file, feat_file, fps = 25, min_num_skel = 100, bad_seg_thresh = 0.8, min_dist = 5, fit_contamination = 0.05):
-    #get valid rows using the trajectory displacement and the skeletonization success
+def getFilteredFeats(skel_file, use_auto_label, min_num_skel = 100, bad_seg_thresh = 0.8, 
+    min_dist = 5, fit_contamination = 0.05):
+    #calculate valid widths and areas if they were not calculated before
+    calculate_widths(skel_file)
+    calculate_areas(skel_file)
+
+    if use_auto_label:
+        #get valid rows using the trajectory displacement and the skeletonization success
+        good_traj_index , good_skel_row = getValidIndexes(skel_file, \
+        min_num_skel = min_num_skel, bad_seg_thresh = bad_seg_thresh, min_dist = min_dist)
+        
+        labelValidSkeletons(skel_file, good_skel_row, fit_contamination = fit_contamination)
     
-    trajectories_data, _, good_skel_row = getValidIndexes(skel_file, \
-    min_num_skel = min_num_skel, bad_seg_thresh = bad_seg_thresh, min_dist = min_dist)
     
-    labelValidSkeletons(skel_file, good_skel_row, trajectories_data, fit_contamination = fit_contamination)
-    
-    getWormFeatures(skel_file, feat_file, bad_seg_thresh = bad_seg_thresh*0.6, fps = fps)
-    getFrameStats(feat_file)
+    with tables.File(skel_file, "r+") as ske_file_id:
+        skeleton_table = ske_file_id.get_node('/skeleton')
+
+        #save input parameters
+        skeleton_table._v_attrs['min_num_skel'] = min_num_skel
+        skeleton_table._v_attrs['bad_seg_thresh'] = bad_seg_thresh
+        skeleton_table._v_attrs['min_dist'] = min_dist
+        skeleton_table._v_attrs['fit_contamination'] = fit_contamination
+
+        #label as finished
+        skeleton_table._v_attrs['has_finished'] = 3
+        
+
+
+
 

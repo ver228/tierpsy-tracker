@@ -14,14 +14,15 @@ from ..trackWorms.getDrawTrajectories import drawTrajectoriesVideo
 from ..trackWorms.getSkeletonsTables import trajectories2Skeletons, writeIndividualMovies
 from ..trackWorms.checkHeadOrientation import correctHeadTail
 
-from ..featuresAnalysis.getFilteredFeats import getFilteredFeats, getWormFeatures
-from ..featuresAnalysis.obtainFeatures_N import featFromLabSkel
+from ..featuresAnalysis.getFilteredFeats import getFilteredFeats
+from ..featuresAnalysis.obtainFeatures import getWormFeaturesFilt
 
 from ..helperFunctions.tracker_param import tracker_param
 
 
+
 checkpoint = {'TRAJ_CREATE':0, 'TRAJ_JOIN':1, 'TRAJ_VID':2, 
-'SKE_CREATE':3, 'SKE_ORIENT':4, 'FEAT_CREATE':5, 'FEAT_IND': 6,
+'SKE_CREATE':3, 'SKE_ORIENT':4, 'SKE_FILT':5, 'FEAT_CREATE':6, 'FEAT_CREATE_MANUAL': 7,
  'END':1e6} 
 
 checkpoint_label = {}
@@ -56,6 +57,8 @@ def getStartingPoint(masked_image_file, results_dir):
                 return checkpoint['SKE_CREATE'];
             elif skeleton_table._v_attrs['has_finished'] == 1:
                 return checkpoint['SKE_ORIENT'];
+            elif skeleton_table._v_attrs['has_finished'] == 2:
+                return checkpoint['SKE_FILT'];
     except:
         #if there is any problem while reading the file, create it again
         return checkpoint['SKE_CREATE'];
@@ -75,12 +78,12 @@ def getStartingPoint(masked_image_file, results_dir):
         with tables.File(feat_ind_file, "r") as feat_file_id:
             features_table = feat_file_id.get_node('/features_means')
             if features_table._v_attrs['has_finished'] == 0:
-                return checkpoint['FEAT_IND'];
+                return checkpoint['FEAT_CREATE_MANUAL'];
     except:
         #if there is any problem while reading the file, create it again
         with tables.File(skeletons_file, 'r') as ske_file_id:
             if 'worm_label' in ske_file_id.get_node('/trajectories_data').colnames:
-                return checkpoint['FEAT_IND'];
+                return checkpoint['FEAT_CREATE_MANUAL'];
 
         
     return checkpoint['END'];
@@ -91,17 +94,18 @@ def constructNames(masked_image_file, results_dir):
 
     output = [base_name]
     
-    ext2add = ['trajectories', 'skeletons', 'features', 'feat_ind']
+    ext2add = ['trajectories', 'skeletons', 'features', 'feat_manual']
     for ext in ext2add:
         output += [os.path.abspath(os.path.join(results_dir, base_name + '_' + ext + '.hdf5'))]
     
     return output
 
 def getTrajectoriesWorkerL(masked_image_file, results_dir, param_file ='', overwrite = False, 
-    start_point = -1, end_point = checkpoint['END'], is_single_worm = False):
+    start_point = -1, end_point = checkpoint['END'], is_single_worm = False, 
+    use_auto_label = True, use_manual_join = False):
     
-    base_name, trajectories_file, skeletons_file, features_file, feat_ind_file = constructNames(masked_image_file, results_dir)
-    print(trajectories_file, skeletons_file, features_file, feat_ind_file)
+    base_name, trajectories_file, skeletons_file, features_file, feat_manual_file = constructNames(masked_image_file, results_dir)
+    print(trajectories_file, skeletons_file, features_file, feat_manual_file)
 
     #if starting point is not given, calculate it again
     if overwrite:
@@ -149,20 +153,21 @@ def getTrajectoriesWorkerL(masked_image_file, results_dir, param_file ='', overw
     if execThisPoint('SKE_ORIENT'):
         correctHeadTail(skeletons_file, **param.head_tail_param)
     
+    if is_single_worm:
+        #we need to force parameters to obtain the correct features
+        use_manual_join = False
+        use_auto_label = False
+        param.head_tail_param['min_dist'] = 0
+
+    if execThisPoint('SKE_FILT'):
+        getFilteredFeats(skeletons_file, use_auto_label, **param.feat_filt_param)
+    
+    #get features
     if execThisPoint('FEAT_CREATE'):
-        #extract features
-        if is_single_worm:
-            #don't filter, only calculate features
-            del param.features_param['min_dist']
-            getWormFeatures(skeletons_file, features_file, **param.features_param)
-        else:
-            getFilteredFeats(skeletons_file, features_file, **param.features_param)
-        #
-
-    if execThisPoint('FEAT_IND'):
-        #extract individual features if the worms are labeled
-        featFromLabSkel(skeletons_file, feat_ind_file, param.fps)
-
+        getWormFeaturesFilt(skeletons_file, features_file, use_auto_label, False, param.feat_filt_param)
+    
+    if execThisPoint('FEAT_CREATE_MANUAL') and use_manual_join:
+        getWormFeaturesFilt(skeletons_file, feat_manual_file, use_auto_label, True)
     
     print_flush(base_name + ' Finished')
     
