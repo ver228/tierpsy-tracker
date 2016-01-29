@@ -156,12 +156,16 @@ class trackLocal:
 		files2copy = []
 		#get files to copy
 		print(self.base_name + " Copying result files into the final directory.")
+		
 		if isFile2Copy('TRAJ'):
 			files2copy += [(self.trajectories_tmp, self.results_dir)]
+		
 		if isFile2Copy('SKE'):
-			isFile2Copy += [(self.skeletons_tmp, self.results_dir)]
-		if isPoint2Copy('FEAT_CREATE'):
+			files2copy += [(self.skeletons_tmp, self.results_dir)]
+
+		if isFile2Copy('FEAT_CREATE'):
 			files2copy += [(self.features_tmp, self.results_dir)]
+		
 		if isFile2Copy('FEAT_MANUAL_CREATE') and self.use_manual_join:
 			files2copy += [(self.feat_ind_tmp, self.results_dir)]
 
