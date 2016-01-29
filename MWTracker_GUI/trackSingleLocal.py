@@ -42,7 +42,8 @@ def copyFilesLocal(files2copy):
 				shutil.copy(file_name, destination)
 
 class trackLocal:
-	def __init__(self, masked_image_file, results_dir, tmp_mask_dir='', tmp_results_dir='', json_file ='', end_point = 'END', is_single_worm='', 
+	def __init__(self, masked_image_file, results_dir, tmp_mask_dir='', tmp_results_dir='', 
+		json_file ='', end_point = 'END', is_single_worm='', 
 		not_auto_label = False, use_manual_join = False):
 		
 		self.masked_image_file = masked_image_file
@@ -108,7 +109,8 @@ class trackLocal:
 		self.tmp_start_point = getStartingPoint(self.tmp_mask_file, self.tmp_results_dir) #starting point calculated from the files in the temporal directory
 		self.analysis_start_point = max(self.final_start_point, self.tmp_start_point) #starting point for the analysis
 		
-		print_flush(self.base_name + ' Starting checkpoint: ' + checkpoint_label[self.analysis_start_point])
+		if self.analysis_start_point <= self.end_point:
+			print_flush(self.base_name + ' Starting checkpoint: ' + checkpoint_label[self.analysis_start_point])
 	
 
 	def copyFilesFromFinal(self):
@@ -119,14 +121,8 @@ class trackLocal:
 		
 		#find what files we need to copy from the final destination if the analysis is going to resume from a later point
 		files2copy = []
-		if self.tmp_start_point < self.final_start_point:
-			#copy files from an incomplete analysis files.
-			if self.final_start_point > checkpoint['TRAJ_CREATE']: #and final_start_point <= checkpoint['SKE_CREATE']:
-				files2copy += [(self.trajectories_file, self.tmp_results_dir)]
-			if self.final_start_point > checkpoint['SKE_CREATE']:
-				files2copy += [(self.skeletons_file, self.tmp_results_dir)]
 		
-		if self.analysis_start_point < checkpoint['FEAT_CREATE']: 
+		if self.analysis_start_point <= checkpoint['SKE_CREATE']: 
 			#we do not need the mask to calculate the features
 			try:
 				#check if there is already a finished/readable temporary mask file in current directory otherwise copy the 
@@ -141,6 +137,12 @@ class trackLocal:
 
 				files2copy += [(self.masked_image_file, self.tmp_mask_dir)]
 
+		if self.tmp_start_point < self.final_start_point:
+			#copy files from an incomplete analysis files.
+			if self.final_start_point > checkpoint['TRAJ_CREATE']: #and final_start_point <= checkpoint['SKE_CREATE']:
+				files2copy += [(self.trajectories_file, self.tmp_results_dir)]
+			if self.final_start_point > checkpoint['SKE_CREATE']:
+				files2copy += [(self.skeletons_file, self.tmp_results_dir)]
 		
 		copyFilesLocal(files2copy)
 	
@@ -148,7 +150,7 @@ class trackLocal:
 		
 		def isFile2Copy(str_point):
 		    valid_range = sorted([checkpoint[x] for x in checkpoint if str_point in x])
-		    range_intersect = set(valid_range) & set(range(self.final_start_point, self.end_point+1))
+		    range_intersect = set(valid_range) & set(range(first_point, last_point+1))
 		    return len(set(range_intersect))>0
 
 		files2copy = []
@@ -157,8 +159,8 @@ class trackLocal:
 		if isFile2Copy('TRAJ'):
 			files2copy += [(self.trajectories_tmp, self.results_dir)]
 		if isFile2Copy('SKE'):
-			files2copy += [(self.skeletons_tmp, self.results_dir)]
-		if isFile2Copy('FEAT_CREATE'):
+			isFile2Copy += [(self.skeletons_tmp, self.results_dir)]
+		if isPoint2Copy('FEAT_CREATE'):
 			files2copy += [(self.features_tmp, self.results_dir)]
 		if isFile2Copy('FEAT_MANUAL_CREATE') and self.use_manual_join:
 			files2copy += [(self.feat_ind_tmp, self.results_dir)]

@@ -73,21 +73,51 @@ def nodes2Array(skel_file, valid_index = np.zeros(0)):
 
 def calculate_widths(skel_file):
     with tables.File(skel_file, 'r+') as fid:
-        if any(not '/' + name_width_fun(part) in fid for part in worm_partitions):
-            print('Calculating width subsets...')
-            widths = fid.get_node('/contour_width')[:]
-            tot_rows = widths.shape[0]
-            
-            table_filters = tables.Filters(complevel=5, complib='zlib', shuffle=True, fletcher32=True)
-            
+        #i am using an auxiliar field in case the function is interrupted before finisihing
+        for part in worm_partitions:
+            aux_name = name_width_fun(part) + '_AUX'
+            if '/' + aux_name in fid: fid.remove_node('/', aux_name)
+        
+        if all('/' + name_width_fun(part) in fid for part in worm_partitions): return
+
+    
+    #get the list of valid indexes with skeletons in the table
+    skeleton_id, tot_rows = getSkelRows(skel_file)
+
+    #calculate the widhts
+    with tables.File(skel_file, 'r+') as fid:
+        widths = fid.get_node('/contour_width')
+        tot_rows = widths.shape[0]
+        
+        table_filters = tables.Filters(complevel=5, complib='zlib', shuffle=True, fletcher32=True)
+        widths_means = {}
+        
+        for part in worm_partitions:
+            widths_means[part] = fid.create_carray('/', name_width_fun(part) + '_AUX', \
+                                    tables.Float32Atom(dflt = np.nan), (tot_rows,), filters = table_filters)
+
+        for skel_id in skeleton_id:
+            skel_width = widths[skel_id]
             for part in worm_partitions:
                 pp = worm_partitions[part]
-                widths_mean = np.mean(widths[:, pp[0]:pp[1]], axis=1)
-                
-                #fid.remove_node('/', name_width(part))
-                fid.create_carray('/', name_width_fun(part), obj = widths_mean, \
-                                        atom = tables.Float32Atom(dflt = np.nan), \
-                                        filters = table_filters);
+                widths_means[part][skel_id] = np.mean(skel_width[pp[0]:pp[1]])
+
+        for part in worm_partitions:        
+            widths_means[part].rename(name_width_fun(part)) #now we can use the real name
+
+
+def getSkelRows(skel_file):
+    with tables.File(skel_file, 'r') as fid:
+        #get the idea of valid skeletons    
+        skeleton_length = fid.get_node('/skeleton_length')[:]
+        has_skeleton = fid.get_node('/trajectories_data').col('has_skeleton')
+        skeleton_id = fid.get_node('/trajectories_data').col('skeleton_id')
+        
+        skeleton_id = skeleton_id[has_skeleton==1]
+        tot_rows = len(has_skeleton) #total number of rows in the arrays
+
+    return skeleton_id, tot_rows
+
 
 def calculate_areas(skel_file):
 
@@ -96,16 +126,12 @@ def calculate_areas(skel_file):
         if '/contour_area_AUX' in fid: fid.remove_node('/', 'contour_area_AUX')
         if '/contour_area' in fid: return
         print('Calculating countour areas...')
-        #get the idea of valid skeletons    
-        skeleton_length = fid.get_node('/skeleton_length')[:]
-        has_skeleton = fid.get_node('/trajectories_data').col('has_skeleton')
-        skeleton_id = fid.get_node('/trajectories_data').col('skeleton_id')
-        
-        skeleton_id = skeleton_id[has_skeleton==1]
-        tot_rows = len(has_skeleton) #total number of rows in the arrays
-        
-        #remove node area if it existed before
-        #if '/contour_area' in fid: fid.remove_node('/', 'contour_area')
+    
+    #get the list of valid indexes with skeletons in the table
+    skeleton_id, tot_rows = getSkelRows(skel_file)
+    
+    #calculate areas
+    with tables.File(skel_file, 'r+') as fid:
         
         #intiailize area arreay
         table_filters = tables.Filters(complevel=5, complib='zlib', shuffle=True, fletcher32=True)

@@ -136,6 +136,7 @@ def getTrajectoriesWorkerL(masked_image_file, results_dir, param_file ='', overw
     
 
     print_flush(base_name + ' Starting checkpoint: ' + checkpoint_label[start_point])
+    
     #get trajectory data
     if execThisPoint('TRAJ_CREATE'):
         getWormTrajectories(masked_image_file, trajectories_file, **param.trajectories_param)
