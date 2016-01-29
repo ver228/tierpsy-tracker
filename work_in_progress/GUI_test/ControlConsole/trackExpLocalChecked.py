@@ -62,7 +62,7 @@ if __name__ == '__main__':
 	
 	parser.add_argument('--is_single_worm', action='store_true', help = 'This flag indicates if the video corresponds to the single worm case.')
 
-	checkpoint_list = ['TRAJ_CREATE', 'TRAJ_JOIN', 'TRAJ_VID', 'SKE_CREATE', 'SKE_ORIENT', 'FEAT_CREATE', 'FEAT_IND', 'END']
+	checkpoint_list = ['TRAJ_CREATE', 'TRAJ_JOIN', 'TRAJ_VID', 'SKE_CREATE', 'SKE_ORIENT', 'SKE_FILT', 'FEAT_CREATE', 'FEAT_IND', 'END']
 	parser.add_argument('--end_point', default='END', choices = checkpoint_list, help='End point of the analysis.')
 	
 	parser.add_argument('--max_num_process', default = 6, type = int, help = 'Max number of process to be executed in parallel.')

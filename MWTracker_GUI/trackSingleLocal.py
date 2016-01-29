@@ -28,6 +28,7 @@ def print_flush(msg):
 
 
 def copyFilesLocal(files2copy):
+	#copy the necessary files (maybe we can create a daemon later)
 		for files in files2copy:
 			file_name, destination = files
 			
@@ -144,20 +145,22 @@ class trackLocal:
 		copyFilesLocal(files2copy)
 	
 	def copyFilesToFinal(self):
-		#copy the necessary files (maybe we can create a daemon later)
-		isPoint2Copy = lambda point2check : (self.final_start_point <= checkpoint[point2check]) &  (self.end_point >= checkpoint[point2check])
+		
+		def isFile2Copy(str_point):
+		    valid_range = sorted([checkpoint[x] for x in checkpoint if str_point in x])
+		    range_intersect = set(valid_range) & set(range(first_point, last_point+1))
+		    return len(set(range_intersect))>0
 
 		files2copy = []
 		#get files to copy
 		print(self.base_name + " Copying result files into the final directory.")
-		if isPoint2Copy('TRAJ_JOIN'):
+		if isFile2Copy('TRAJ'):
 			files2copy += [(self.trajectories_tmp, self.results_dir)]
-		if isPoint2Copy('SKE_FILT'):
-			files2copy += [(self.skeletons_tmp, self.results_dir)]
+		if isFile2Copy('SKE'):
+			isFile2Copy += [(self.skeletons_tmp, self.results_dir)]
 		if isPoint2Copy('FEAT_CREATE'):
 			files2copy += [(self.features_tmp, self.results_dir)]
-
-		if isPoint2Copy('FEAT_CREATE_MANUAL') and self.use_manual_join:
+		if isFile2Copy('FEAT_MANUAL_CREATE') and self.use_manual_join:
 			files2copy += [(self.feat_ind_tmp, self.results_dir)]
 
 		copyFilesLocal(files2copy)
@@ -177,6 +180,9 @@ class trackLocal:
 
 		if self.end_point >= checkpoint['FEAT_CREATE']:
 			assert os.path.exists(self.features_file)
+
+		if self.end_point >= checkpoint['FEAT_MANUAL_CREATE'] and self.use_manual_join:
+			assert os.path.exists(self.feat_ind_file)
 
 
 		#delete the results temporary files

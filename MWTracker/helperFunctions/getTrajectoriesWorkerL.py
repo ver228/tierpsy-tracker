@@ -20,14 +20,12 @@ from ..featuresAnalysis.obtainFeatures import getWormFeaturesFilt
 from ..helperFunctions.tracker_param import tracker_param
 
 
+from collections import OrderedDict
 
-checkpoint = {'TRAJ_CREATE':0, 'TRAJ_JOIN':1, 'TRAJ_VID':2, 
-'SKE_CREATE':3, 'SKE_ORIENT':4, 'SKE_FILT':5, 'FEAT_CREATE':6, 'FEAT_CREATE_MANUAL': 7,
- 'END':1e6} 
-
-checkpoint_label = {}
-for key in checkpoint:
-    checkpoint_label[checkpoint[key]] = key
+#the order of the list is very important, and reflects the order where is step is done
+checkpoint_label = ['TRAJ_CREATE', 'TRAJ_JOIN', 'SKE_CREATE', 'SKE_ORIENT', 'SKE_FILT', 
+'FEAT_CREATE','FEAT_MANUAL_CREATE', 'END']
+checkpoint = {ii:x for x,ii in enumerate(checkpoint_label)}
 
 def print_flush(pstr):
         print(pstr)
@@ -78,12 +76,12 @@ def getStartingPoint(masked_image_file, results_dir):
         with tables.File(feat_ind_file, "r") as feat_file_id:
             features_table = feat_file_id.get_node('/features_means')
             if features_table._v_attrs['has_finished'] == 0:
-                return checkpoint['FEAT_CREATE_MANUAL'];
+                return checkpoint['FEAT_MANUAL_CREATE'];
     except:
         #if there is any problem while reading the file, create it again
         with tables.File(skeletons_file, 'r') as ske_file_id:
             if 'worm_label' in ske_file_id.get_node('/trajectories_data').colnames:
-                return checkpoint['FEAT_CREATE_MANUAL'];
+                return checkpoint['FEAT_MANUAL_CREATE'];
 
         
     return checkpoint['END'];
@@ -166,7 +164,7 @@ def getTrajectoriesWorkerL(masked_image_file, results_dir, param_file ='', overw
     if execThisPoint('FEAT_CREATE'):
         getWormFeaturesFilt(skeletons_file, features_file, use_auto_label, False, param.feat_filt_param)
     
-    if execThisPoint('FEAT_CREATE_MANUAL') and use_manual_join:
+    if execThisPoint('FEAT_MANUAL_CREATE') and use_manual_join:
         getWormFeaturesFilt(skeletons_file, feat_manual_file, use_auto_label, True)
     
     print_flush(base_name + ' Finished')
