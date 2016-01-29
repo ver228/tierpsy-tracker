@@ -150,7 +150,7 @@ class trackLocal:
 		
 		def isFile2Copy(str_point):
 		    valid_range = sorted([checkpoint[x] for x in checkpoint if str_point in x])
-		    range_intersect = set(valid_range) & set(range(first_point, last_point+1))
+		    range_intersect = set(valid_range) & set(range(self.final_start_point, self.end_point+1))
 		    return len(set(range_intersect))>0
 
 		files2copy = []
