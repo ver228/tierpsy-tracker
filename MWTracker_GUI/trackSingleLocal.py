@@ -148,7 +148,7 @@ class trackLocal:
 		
 		def isFile2Copy(str_point):
 		    valid_range = sorted([checkpoint[x] for x in checkpoint if str_point in x])
-		    range_intersect = set(valid_range) & set(range(first_point, last_point+1))
+		    range_intersect = set(valid_range) & set(range(self.final_start_point, self.end_point+1))
 		    return len(set(range_intersect))>0
 
 		files2copy = []
@@ -157,8 +157,8 @@ class trackLocal:
 		if isFile2Copy('TRAJ'):
 			files2copy += [(self.trajectories_tmp, self.results_dir)]
 		if isFile2Copy('SKE'):
-			isFile2Copy += [(self.skeletons_tmp, self.results_dir)]
-		if isPoint2Copy('FEAT_CREATE'):
+			files2copy += [(self.skeletons_tmp, self.results_dir)]
+		if isFile2Copy('FEAT_CREATE'):
 			files2copy += [(self.features_tmp, self.results_dir)]
 		if isFile2Copy('FEAT_MANUAL_CREATE') and self.use_manual_join:
 			files2copy += [(self.feat_ind_tmp, self.results_dir)]
