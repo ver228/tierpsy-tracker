@@ -123,13 +123,13 @@ def calculateWidths(skel_file):
                 widths_means[part][skel_id] = np.mean(skel_width[pp[0]:pp[1]])
 
             if ii % 25000 == 0:
-                dd = " Calculating mean widths... Skeleton %i of %i done." % (ii, len(skeleton_id))
+                dd = " Calculating mean widths: skeleton %i of %i done." % (ii, len(skeleton_id))
                 print_flush(base_name + dd + ' Total time:' + progress_timer.getTimeStr())
                 
 
         for part in worm_partitions:        
-            widths_meansd[part].rename(name_width_fun(part)) #now we can use the real name
-        print_flush(base_name + 'Calculating mean widths... Finished. Total time :' + progress_timer.getTimeStr())
+            widths_means[part].rename(name_width_fun(part)) #now we can use the real name
+        print_flush(base_name + 'Calculating mean widths. Finished. Total time :' + progress_timer.getTimeStr())
 
 def calculateAreas(skel_file):
 
@@ -140,7 +140,7 @@ def calculateAreas(skel_file):
         
     base_name = getBaseName(skel_file)
     progress_timer = timeCounterStr('');
-    print_flush('Calculating countour areas...')
+    print_flush(base_name + ' Calculating countour areas...')
 
     #get the list of valid indexes with skeletons in the table
     skeleton_id, tot_rows = getSkelRows(skel_file)
@@ -156,53 +156,53 @@ def calculateAreas(skel_file):
         cnt_side1 = fid.get_node('/contour_side1')
         cnt_side2 = fid.get_node('/contour_side2')
             
-        for skel_id in enumerate(skeleton_id):
+        for ii, skel_id in enumerate(skeleton_id):
             contour = np.hstack((cnt_side1[skel_id], cnt_side2[skel_id][::-1,:]))
             signed_area = np.sum(contour[:-1,0]*contour[1:,1]-contour[1:,0]*contour[:-1,1])
             contour_area[skel_id] =  np.abs(signed_area)/2
 
             if ii % 25000 == 0:
-                dd = " Calculating countour areas... Skeleton %i of %i done." % (ii, (ii, len(skeleton_id)))
+                dd = " Calculating countour areas: skeleton %i of %i done." % (ii, len(skeleton_id))
                 print_flush(base_name + dd + ' Total time:' + progress_timer.getTimeStr())
             
 
         contour_area.rename('contour_area') #now we can use the real name
         fid.flush()
-        print_flush(base_name + 'Calculating countour area... Finished. Total time :' + progress_timer.getTimeStr())
+        print_flush(base_name + ' Calculating countour area. Finished. Total time :' + progress_timer.getTimeStr())
 
 
 def labelValidSkeletons(skel_file, good_skel_row, fit_contamination = 0.05):
     base_name = getBaseName(skel_file)
     progress_timer = timeCounterStr('');
     
-    print_flush(base_name + 'Filter Skeletons: Starting...')
+    print_flush(base_name + ' Filter Skeletons: Starting...')
     with pd.HDFStore(skel_file, 'r') as table_fid:
         trajectories_data = table_fid['/trajectories_data']
 
     trajectories_data['auto_label'] = WLAB['U']
     trajectories_data.loc[good_skel_row, 'auto_label'] = WLAB['WORM']
     
-    print_flush(base_name + 'Filter Skeletons: Reading features for outlier identification...')
+    print_flush(base_name + ' Filter Skeletons: Reading features for outlier identification.')
     #calculate classifier for the outliers    
     X4fit = nodes2Array(skel_file, good_skel_row)
     
-    print_flush(base_name + 'Filter Skeletons: Fitting elliptic envelope... Total time:' + progress_timer.getTimeStr())
+    print_flush(base_name + ' Filter Skeletons: Fitting elliptic envelope. Total time:' + progress_timer.getTimeStr())
     #TODO here the is a problem with singular covariance matrices that i need to figure out how to solve
     clf = EllipticEnvelope(contamination = fit_contamination)
     clf.fit(X4fit)
     
-    print_flush(base_name + 'Filter Skeletons: Calculating outliers... Total time:' + progress_timer.getTimeStr())
+    print_flush(base_name + ' Filter Skeletons: Calculating outliers. Total time:' + progress_timer.getTimeStr())
     #calculate outliers using the fitted classifier
     X = nodes2Array(skel_file) #use all the indexes
     
     y_pred = clf.decision_function(X).ravel() #less than zero would be an outlier
 
-    print_flush(base_name + 'Filter Skeletons: Labeling valid skeletons... Total time:' + progress_timer.getTimeStr())
+    print_flush(base_name + ' Filter Skeletons: Labeling valid skeletons. Total time:' + progress_timer.getTimeStr())
     #labeled rows of valid individual skeletons as GOOD_SKE
     trajectories_data['auto_label'] = ((y_pred>0).astype(np.int))*WLAB['GOOD_SKE'] #+ wlab['BAD']*np.isnan(y_prev)
     saveLabelData(skel_file, trajectories_data)
 
-    print_flush(base_name + 'Filter Skeletons: Finished. Total time:' + progress_timer.getTimeStr())
+    print_flush(base_name + ' Filter Skeletons: Finished. Total time:' + progress_timer.getTimeStr())
 
 def getFrameStats(feat_file):
     

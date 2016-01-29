@@ -18,6 +18,7 @@ tables.parameters.MAX_COLUMNS = 1024 #(http://www.pytables.org/usersguide/parame
 from collections import OrderedDict
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
+from ..helperFunctions.miscFun import print_flush
 
 from open_worm_analysis_toolbox import NormalizedWorm
 from open_worm_analysis_toolbox import WormFeaturesDos, VideoInfo
@@ -31,6 +32,7 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, \
     #we should get fps and pix2num values from the skeleton file (but first I need to store them there)
     pix2mum = 1
     fps = 25
+
     
     #useful to display progress 
     base_name = skeletons_file.rpartition('.')[0].rpartition(os.sep)[-1]
@@ -120,11 +122,8 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, \
                                     obj = tmp_data, filters=filters_tables)
 
             dd = " Extracting features. Worm %i of %i done." % (len(all_stats), tot_worms)
-            dd = base_name + dd + ' Total time:' + progress_timer.getTimeStr()
-            print(dd)
-            sys.stdout.flush()
-            sys.stderr.flush()
-        
+            print_flush(base_name + dd + ' Total time:' + progress_timer.getTimeStr())
+            
         #create and save a table containing the averaged worm feature for each worm
         tot_rows = len(all_stats)
         assert tot_worms == tot_rows
@@ -143,12 +142,11 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, \
             
         feat_mean._v_attrs['has_finished'] = 1
         
-        print(base_name + ' Feature extraction finished: ' + progress_timer.getTimeStr())
-        sys.stdout.flush()
-    
+        print_flush(base_name + ' Feature extraction finished: ' + progress_timer.getTimeStr())
+        
 def getWormFeaturesFilt(skel_file, feat_file, use_auto_label, use_manual_join, feat_filt_param = []):
     assert (use_auto_label or use_manual_join) or feat_filt_param
-
+    
     if use_manual_join:
         with pd.HDFStore(skel_file, 'r') as table_fid:
             trajectories_data = table_fid['/trajectories_data']
