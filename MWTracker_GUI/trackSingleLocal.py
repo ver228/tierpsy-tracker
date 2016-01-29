@@ -18,13 +18,10 @@ sys.path.append(MWTracker_dir)
 
 
 from MWTracker.helperFunctions.getTrajectoriesWorkerL import getTrajectoriesWorkerL, getStartingPoint, checkpoint, checkpoint_label, constructNames
-
+from MWTracker.helperFunctions.miscFun import print_flush
 
 from MWTracker.featuresAnalysis.obtainFeatures_N import getWormFeaturesLab
 
-def print_flush(msg):
-	print(msg)
-	sys.stdout.flush()
 
 
 def copyFilesLocal(files2copy):

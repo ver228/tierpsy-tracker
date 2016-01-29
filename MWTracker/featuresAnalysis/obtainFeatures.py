@@ -31,7 +31,6 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, \
     #we should get fps and pix2num values from the skeleton file (but first I need to store them there)
     pix2mum = 1
     fps = 25
-
     
     #useful to display progress 
     base_name = skeletons_file.rpartition('.')[0].rpartition(os.sep)[-1]

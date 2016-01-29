@@ -12,6 +12,10 @@ import matplotlib.pylab as plt
 import time
 import glob
 import warnings
+import os
+
+from ..helperFunctions.timeCounterStr import timeCounterStr
+from ..helperFunctions.miscFun import print_flush
 
 from sklearn.covariance import EllipticEnvelope, MinCovDet
 np.seterr(invalid='ignore') 
@@ -22,6 +26,8 @@ warnings.filterwarnings('ignore', '.*det > previous_det*',)
 
 from MWTracker.featuresAnalysis.obtainFeatures import getWormFeatures
 from MWTracker.featuresAnalysis.obtainFeaturesHelper import getValidIndexes, WLAB, calWormArea
+
+getBaseName = lambda skel_file : skel_file.rpartition(os.sep)[-1].replace('_skeletons.hdf5', '')
 
 worm_partitions = {'neck': (8, 16),
                 'midbody':  (16, 33),
@@ -56,7 +62,6 @@ def nodes2Array(skel_file, valid_index = np.zeros(0)):
     ['/' + name_width_fun(part) for part in worm_partitions]
 
     with tables.File(skel_file, 'r') as fid:
-        print(skel_file)
         assert all(node in fid for node in nodes4fit)
 
         if len(valid_index) == 0:
@@ -71,7 +76,19 @@ def nodes2Array(skel_file, valid_index = np.zeros(0)):
         
         return X
 
-def calculate_widths(skel_file):
+def getSkelRows(skel_file):
+    with tables.File(skel_file, 'r') as fid:
+        #get the idea of valid skeletons    
+        skeleton_length = fid.get_node('/skeleton_length')[:]
+        has_skeleton = fid.get_node('/trajectories_data').col('has_skeleton')
+        skeleton_id = fid.get_node('/trajectories_data').col('skeleton_id')
+        
+        skeleton_id = skeleton_id[has_skeleton==1]
+        tot_rows = len(has_skeleton) #total number of rows in the arrays
+
+    return skeleton_id, tot_rows
+
+def calculateWidths(skel_file):
     with tables.File(skel_file, 'r+') as fid:
         #i am using an auxiliar field in case the function is interrupted before finisihing
         for part in worm_partitions:
@@ -80,6 +97,9 @@ def calculate_widths(skel_file):
         
         if all('/' + name_width_fun(part) in fid for part in worm_partitions): return
 
+    
+    base_name = getBaseName(skel_file)
+    progress_timer = timeCounterStr('');
     
     #get the list of valid indexes with skeletons in the table
     skeleton_id, tot_rows = getSkelRows(skel_file)
@@ -96,37 +116,32 @@ def calculate_widths(skel_file):
             widths_means[part] = fid.create_carray('/', name_width_fun(part) + '_AUX', \
                                     tables.Float32Atom(dflt = np.nan), (tot_rows,), filters = table_filters)
 
-        for skel_id in skeleton_id:
+        for ii, skel_id in enumerate(skeleton_id):
             skel_width = widths[skel_id]
             for part in worm_partitions:
                 pp = worm_partitions[part]
                 widths_means[part][skel_id] = np.mean(skel_width[pp[0]:pp[1]])
 
+            if ii % 25000 == 0:
+                dd = " Calculating mean widths... Skeleton %i of %i done." % (ii, len(skeleton_id))
+                print_flush(base_name + dd + ' Total time:' + progress_timer.getTimeStr())
+                
+
         for part in worm_partitions:        
-            widths_means[part].rename(name_width_fun(part)) #now we can use the real name
+            widths_meansd[part].rename(name_width_fun(part)) #now we can use the real name
+        print_flush(base_name + 'Calculating mean widths... Finished. Total time :' + progress_timer.getTimeStr())
 
-
-def getSkelRows(skel_file):
-    with tables.File(skel_file, 'r') as fid:
-        #get the idea of valid skeletons    
-        skeleton_length = fid.get_node('/skeleton_length')[:]
-        has_skeleton = fid.get_node('/trajectories_data').col('has_skeleton')
-        skeleton_id = fid.get_node('/trajectories_data').col('skeleton_id')
-        
-        skeleton_id = skeleton_id[has_skeleton==1]
-        tot_rows = len(has_skeleton) #total number of rows in the arrays
-
-    return skeleton_id, tot_rows
-
-
-def calculate_areas(skel_file):
+def calculateAreas(skel_file):
 
     with tables.File(skel_file, 'r+') as fid:
         #i am using an auxiliar field in case the function is interrupted before finisihing
         if '/contour_area_AUX' in fid: fid.remove_node('/', 'contour_area_AUX')
         if '/contour_area' in fid: return
-        print('Calculating countour areas...')
-    
+        
+    base_name = getBaseName(skel_file)
+    progress_timer = timeCounterStr('');
+    print_flush('Calculating countour areas...')
+
     #get the list of valid indexes with skeletons in the table
     skeleton_id, tot_rows = getSkelRows(skel_file)
     
@@ -141,36 +156,53 @@ def calculate_areas(skel_file):
         cnt_side1 = fid.get_node('/contour_side1')
         cnt_side2 = fid.get_node('/contour_side2')
             
-        for skel_id in skeleton_id:
+        for skel_id in enumerate(skeleton_id):
             contour = np.hstack((cnt_side1[skel_id], cnt_side2[skel_id][::-1,:]))
             signed_area = np.sum(contour[:-1,0]*contour[1:,1]-contour[1:,0]*contour[:-1,1])
             contour_area[skel_id] =  np.abs(signed_area)/2
 
+            if ii % 25000 == 0:
+                dd = " Calculating countour areas... Skeleton %i of %i done." % (ii, (ii, len(skeleton_id)))
+                print_flush(base_name + dd + ' Total time:' + progress_timer.getTimeStr())
+            
+
         contour_area.rename('contour_area') #now we can use the real name
         fid.flush()
+        print_flush(base_name + 'Calculating countour area... Finished. Total time :' + progress_timer.getTimeStr())
+
 
 def labelValidSkeletons(skel_file, good_skel_row, fit_contamination = 0.05):
+    base_name = getBaseName(skel_file)
+    progress_timer = timeCounterStr('');
+    
+    print_flush(base_name + 'Filter Skeletons: Starting...')
     with pd.HDFStore(skel_file, 'r') as table_fid:
         trajectories_data = table_fid['/trajectories_data']
 
     trajectories_data['auto_label'] = WLAB['U']
     trajectories_data.loc[good_skel_row, 'auto_label'] = WLAB['WORM']
     
+    print_flush(base_name + 'Filter Skeletons: Reading features for outlier identification...')
     #calculate classifier for the outliers    
     X4fit = nodes2Array(skel_file, good_skel_row)
     
+    print_flush(base_name + 'Filter Skeletons: Fitting elliptic envelope... Total time:' + progress_timer.getTimeStr())
     #TODO here the is a problem with singular covariance matrices that i need to figure out how to solve
     clf = EllipticEnvelope(contamination = fit_contamination)
     clf.fit(X4fit)
     
+    print_flush(base_name + 'Filter Skeletons: Calculating outliers... Total time:' + progress_timer.getTimeStr())
     #calculate outliers using the fitted classifier
     X = nodes2Array(skel_file) #use all the indexes
     
     y_pred = clf.decision_function(X).ravel() #less than zero would be an outlier
 
+    print_flush(base_name + 'Filter Skeletons: Labeling valid skeletons... Total time:' + progress_timer.getTimeStr())
     #labeled rows of valid individual skeletons as GOOD_SKE
     trajectories_data['auto_label'] = ((y_pred>0).astype(np.int))*WLAB['GOOD_SKE'] #+ wlab['BAD']*np.isnan(y_prev)
     saveLabelData(skel_file, trajectories_data)
+
+    print_flush(base_name + 'Filter Skeletons: Finished. Total time:' + progress_timer.getTimeStr())
 
 def getFrameStats(feat_file):
     
@@ -204,8 +236,8 @@ def getFrameStats(feat_file):
 def getFilteredFeats(skel_file, use_auto_label, min_num_skel = 100, bad_seg_thresh = 0.8, 
     min_dist = 5, fit_contamination = 0.05):
     #calculate valid widths and areas if they were not calculated before
-    calculate_widths(skel_file)
-    calculate_areas(skel_file)
+    calculateWidths(skel_file)
+    calculateAreas(skel_file)
 
     if use_auto_label:
         #get valid rows using the trajectory displacement and the skeletonization success
