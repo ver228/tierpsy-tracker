@@ -56,6 +56,7 @@ class checkVideoFiles:
 	def __init__(self, video_dir_root, mask_dir_root, \
 		tmp_dir_root = '', \
 		is_single_worm = False, json_file = '', \
+		not_auto_label = False, use_manual_join = False,\
 		script_abs_path = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/MWTracker_GUI/compressSingleLocal.py'):
 		
 		#checkings before accepting the data
