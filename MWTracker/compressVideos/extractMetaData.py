@@ -33,7 +33,8 @@ def ffprobeMetadata(video_file):
     
     dat = json.loads(buff.decode('utf-8'))    
     if not dat:
-        raise Exception(buff_err)
+        print(buff_err)
+        return video_metadata = np.zeros(0)
     
     video_metadata = OrderedDict()
     for field in dat['frames'][0].keys():
@@ -53,6 +54,9 @@ def storeMetaData(video_file, masked_image_file):
 
     video_metadata = ffprobeMetadata(video_file)
     expected_frames = len(video_metadata)
+
+    if expected_frames == 0: #nothing to do here
+        return expected_frames
 
     with tables.File(masked_image_file, 'r+') as mask_fid:
         if '/video_metadata' in mask_fid: mask_fid.remove_node('/', 'video_metadata')
