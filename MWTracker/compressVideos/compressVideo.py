@@ -294,12 +294,7 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
         if full_dataset.shape[0] != full_frame_number:
             full_dataset.resize(full_frame_number, axis=0);
         
-        if expected_frames != frame_number:
-            #there is a missmatch between the frame number and timestamp. 
-            #Let's try to correct the timestamp, and assert this time it worked.
-            timestamp, timestamp_time = getTimestamp(masked_image_file)
-            assert ~np.any(np.isnan(timestamp)) and timestamp.size == frame_number
-            
+
         #attribute to indicate the program finished correctly
         mask_dataset.attrs['has_finished'] = 1
             
@@ -316,11 +311,17 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
         mask_fid.create_dataset("/vid_frame_pos", data = np.asarray(vid_frame_pos));
         mask_fid.create_dataset("/vid_time_pos", data = np.asarray(vid_time_pos));
 
+        #there is a missmatch between the frame number and timestamp. 
+        #Let's try to correct the timestamp, and assert this time it worked.
+        #if expected_frames == 0, means that the metadata was not processed by ffprobe
+        if expected_frames != frame_number and expected_frames !=0:
+            timestamp, timestamp_time = getTimestamp(masked_image_file)
+            assert ~np.any(np.isnan(timestamp)) and timestamp.size == frame_number
+        
 
-        #close the hdf5 files
-        mask_fid.close()
-        print(base_name + ' Compressed video done.');
-        sys.stdout.flush()
+
+    print(base_name + ' Compressed video done.');
+    sys.stdout.flush()
 
 if __name__ == '__main__':
     video_file = '/Users/ajaver/Desktop/Gecko_compressed/Raw_Video/Capture_Ch1_11052015_195105.mjpg'
