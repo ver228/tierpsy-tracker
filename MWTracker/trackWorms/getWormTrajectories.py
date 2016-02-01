@@ -25,7 +25,7 @@ from sklearn.utils.linear_assignment_ import linear_assignment #hungarian algori
 from scipy.spatial.distance import cdist
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
-
+from ..compressVideos.extractMetaData import storeMetaData, getTimestamp
 
 table_filters = tables.Filters(complevel=5, complib='zlib', shuffle=True)
     
@@ -202,7 +202,6 @@ def joinConsecutiveFrames(index_list_prev, coord, coord_prev, area, area_prev, t
 
     return index_list, tot_worms
 
-
 def getWormTrajectories(masked_image_file, trajectories_file, initial_frame = 0, last_frame = -1, \
 min_area = 25, min_length = 5, max_allowed_dist = 20, \
 area_ratio_lim = (0.5, 2), buffer_size = 25):
@@ -233,25 +232,21 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
     progress_str = '####'
 
+    
+    #read timestamps from the masked_image_file 
+    timestamp, timestamp_time = getTimestamp(masked_image_file)
+
     with tables.File(masked_image_file, 'r') as mask_fid, \
     tables.open_file(trajectories_file, mode = 'w') as feature_fid:
-    
         mask_dataset = mask_fid.get_node("/mask")
-        
-        try:
-            dd = [(row['best_effort_timestamp'],  row['best_effort_timestamp_time'])
-                for row in mask_fid.get_node('/video_metadata/')]
-            timestamp, timestamp_time = list(zip(*dd))
-            del dd
-        except:
-            N = mask_dataset.shape[0]
-            timestamp = np.full(N, np.nan)
-            timestamp_time = np.full(N, np.nan)
+        assert mask_dataset.shape[0] == timestamp.size
 
+        #initialize
         feature_fid.create_group('/', 'timestamp')
         feature_fid.create_carray('/timestamp', 'raw', obj = np.asarray(timestamp))
         feature_fid.create_carray('/timestamp', 'time', obj = np.asarray(timestamp_time))
 
+        
         feature_table = feature_fid.create_table('/', "plate_worms", 
                                                  plate_worms, "Worm feature List",
                                                  filters = table_filters)
@@ -533,7 +528,7 @@ max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
         plate_worms._v_attrs['has_finished'] = 2
         fid.flush()
 
-
+#DEPRECATED
 def joinTrajectories_old(trajectories_file, min_track_size = 50, \
 max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
     '''
@@ -625,7 +620,7 @@ max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
         feature_table._v_attrs['has_finished'] = 2
         feature_fid.flush()
 
-
+#DEPRECATED
 def plotLongTrajectories(trajectories_file, plot_file = '', \
 number_trajectories = 20, plot_limits = (2048,2048), index_str = 'worm_index_joined'):
     #DEPRECATED

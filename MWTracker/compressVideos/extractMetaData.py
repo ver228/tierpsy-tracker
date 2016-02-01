@@ -60,6 +60,63 @@ def storeMetaData(video_file, masked_image_file):
     
     return expected_frames
 
+
+def correctTimestamp(best_effort_timestamp, best_effort_timestamp_time):
+    #delta from the best effort indexes
+    xx = np.diff(best_effort_timestamp);
+    good_N = xx != 0    
+    delta_x = np.median(xx[good_N])
+    
+    #delta from the best effort times
+    xx_t = np.diff(best_effort_timestamp_time)
+    good_Nt = xx_t != 0
+    delta_t = np.median(xx_t[good_Nt])
+    
+    #test that the zero delta from the index and time are the same
+    assert np.all(good_N == good_Nt)
+    
+    #check that the normalization factors make sense
+    xx_N = np.round(xx/delta_x).astype(np.int)
+    assert np.all(xx_N == np.round(xx_t/delta_t).astype(np.int))
+    
+    
+    #get the indexes with a valid frame
+    timestamp = np.arange(1,len(xx_N)+1) #add one to consider compensate for the np.diff
+    timestamp = timestamp[good_N] + xx_N[good_N]-1
+    timestamp = np.hstack((0,timestamp))
+    
+    
+    timestamp_time = timestamp*delta_t
+    
+    return timestamp, timestamp_time
+
+
+def getTimestamp(masked_image_file):
+    with tables.File(masked_image_file, 'r') as mask_fid:
+        #get the total number of frames previously processed
+        tot_frames = mask_fid.get_node("/mask").shape[0]
+        
+        if '/video_metadata' in mask_fid:
+            #try to read data from video_metadata
+            dd = [(row['best_effort_timestamp'],  row['best_effort_timestamp_time'])
+                for row in mask_fid.get_node('/video_metadata/')]
+            
+            timestamp, timestamp_time = list(zip(*dd))
+            timestamp = np.asarray(timestamp)
+            timestamp_time = np.asarray(timestamp_time)
+
+            assert timestamp.size == timestamp_time.size
+            if timestamp.size != tot_frames:
+                timestamp, timestamp_time = correctTimestamp(timestamp, timestamp_time)
+
+        else:
+            timestamp = np.full(tot_frames, np.nan)
+            timestamp_time = np.full(tot_frames, np.nan)
+
+        assert timestamp.size == timestamp_time.size
+        return timestamp, timestamp_time
+
+
 if __name__ == '__main__':
     video_file = "/Users/ajaver/Desktop/Videos/Check_Align_samples/Videos/npr-13 (tm1504)V on food L_2010_01_25__11_56_02___4___2.avi"
     masked_file = "/Users/ajaver/Desktop/Videos/Check_Align_samples/MaskedVideos/npr-13 (tm1504)V on food L_2010_01_25__11_56_02___4___2.hdf5"

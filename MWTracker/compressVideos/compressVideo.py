@@ -12,7 +12,7 @@ import sys
 
 from .readVideoffmpeg import readVideoffmpeg
 from .readVideoHDF5 import readVideoHDF5
-from .extractMetaData import storeMetaData
+from .extractMetaData import storeMetaData, getTimestamp
 #from .imageDifferenceMask import imageDifferenceMask
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
@@ -235,6 +235,7 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
             if mask_dataset.shape[0] <= frame_number + 1:
                 mask_dataset.resize(frame_number + 1000, axis=0); 
                 #im_diff_set.resize(frame_number + 1000, axis=0); 
+
             #Add a full frame every save_full_interval
             if frame_number % save_full_interval == 1:
                 if full_dataset.shape[0] <= full_frame_number:
@@ -294,8 +295,11 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
             full_dataset.resize(full_frame_number, axis=0);
         
         if expected_frames != frame_number:
-            raise Exception('Expected and total number of frames do not match. Expected: %i, Total: %i', expected_frames, frame_number)
-
+            #there is a missmatch between the frame number and timestamp. 
+            #Let's try to correct the timestamp, and assert this time it worked.
+            timestamp, timestamp_time = getTimestamp(masked_image_file)
+            assert (not np.any(np.isnan(timestamp)) and timestamp.size == frame_number
+            
         #attribute to indicate the program finished correctly
         mask_dataset.attrs['has_finished'] = 1
             
