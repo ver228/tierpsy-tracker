@@ -298,7 +298,7 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
             #there is a missmatch between the frame number and timestamp. 
             #Let's try to correct the timestamp, and assert this time it worked.
             timestamp, timestamp_time = getTimestamp(masked_image_file)
-            assert (not np.any(np.isnan(timestamp)) and timestamp.size == frame_number
+            assert ~np.any(np.isnan(timestamp)) and timestamp.size == frame_number
             
         #attribute to indicate the program finished correctly
         mask_dataset.attrs['has_finished'] = 1
