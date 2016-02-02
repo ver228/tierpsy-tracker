@@ -44,8 +44,8 @@ def main(video_file, mask_dir, tmp_mask_dir='', json_file='', is_single_worm = F
 			try:
 				with h5py.File(tmp_mask_file, "r") as mask_fid:
 					if mask_fid['/mask'].attrs['has_finished'] < 2:
-						raise
-			except:
+						raise ValueError("Mask has not been finished. We'll try to process it again.")
+			except ValueError:
 				#start to calculate the mask from raw video
 				print_flush(base_name + " Creating temporal masked file.")
 				compressVideoWorkerL(video_file, tmp_mask_dir, json_file, is_single_worm)

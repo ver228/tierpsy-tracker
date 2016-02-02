@@ -316,7 +316,7 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
     
     #attribute to indicate the program finished correctly
     with h5py.File(masked_image_file, "r+") as mask_fid:
-        mask_dataset.attrs['has_finished'] = 1
+        mask_fid.attrs['has_finished'] = 1
         
 
     print(base_name + ' Compressed video done.');
