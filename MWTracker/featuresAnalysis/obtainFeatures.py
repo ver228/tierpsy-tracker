@@ -51,7 +51,7 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, \
     
     with tables.File(features_file, 'w') as features_fid:
 
-        group_events = features_fid.create_group('/', 'features_events')
+        group_feat_events = features_fid.create_group('/', 'features_events')
         
         #initialize timeseries table. All the features here are a numpy array having the same length as the worm trajectory
         feat_timeseries = wStats.features_info[wStats.features_info['is_time_series']==1].index.values;
@@ -80,9 +80,9 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, \
                 continue
             
             #save data as a subgroup for each worm
-            worm_node = features_fid.create_group(group_features, 'worm_%i' % worm_index )
+            worm_node = features_fid.create_group(group_feat_events, 'worm_%i' % worm_index )
             worm_node._v_attrs['worm_index'] = worm_index
-            worm_node._v_attrs['frame_range'] = (worm.frame_number[0], worm.frame_number[-1])
+            worm_node._v_attrs['frame_range'] = (worm.timestamp[0], worm.timestamp[-1])
 
             #save skeleton
             features_fid.create_carray(worm_node, 'skeletons', \
