@@ -199,9 +199,12 @@ class checkVideoFiles:
 					raise
 				if mask_node.shape[0] == 0:
 					raise
-				if '/video_metadata' in mask_fid and \
-				mask_node.shape[0] != len(mask_fid.get_node('/video_metadata')):
-					raise
+				
+				#length can vary. I need to use getTimestamp instead, but it is too cumbersome at this moment
+				#if '/video_metadata' in mask_fid and \
+				#mask_node.shape[0] != len(mask_fid.get_node('/video_metadata')):
+				#	raise
+				
 				return 0
 		except:
 			return 1
