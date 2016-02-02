@@ -162,7 +162,6 @@ class WormFromTable(NormalizedWorm):
 
         skeleton_id, timestamp = self.getTrajDataTable()
         
-        
         self.readSkeletonsData(skeleton_id, timestamp)        
         
         #smooth data if required
@@ -218,20 +217,20 @@ class WormFromTable(NormalizedWorm):
             except:
                 timestamp = trajectories_data['frame_number'].values
 
-
-            good_skeletons = trajectories_data['has_skeleton'].values == 1
+            #we need to use .values to use the & operator
+            good_skeletons = (trajectories_data['has_skeleton'] == 1).values
             
             if use_auto_label:
                 assert 'auto_label' in trajectories_data
                 #only keep skeletons that where labeled as good skeletons in the autolabel step
-                good_skeletons &= trajectories_data['auto_label'].values == WLAB['GOOD_SKE']
+                good_skeletons &= (trajectories_data['auto_label'] == WLAB['GOOD_SKE']).values
             
             skeleton_id = skeleton_id[good_skeletons]
             timestamp = timestamp[good_skeletons]
             
             #import pdb
             #pdb.set_trace()
-        
+
             return skeleton_id, timestamp
 
     def readSkeletonsData(self, skeleton_id, timestamp):

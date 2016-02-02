@@ -34,8 +34,7 @@ def copyFilesLocal(files2copy):
 			assert(os.path.exists(destination))
 
 			if os.path.abspath(os.path.dirname(file_name)) != os.path.abspath(destination):
-				print('Copying %s to %s' % (file_name, destination))
-				sys.stdout.flush()
+				print_flush('Copying %s to %s' % (file_name, destination))
 				shutil.copy(file_name, destination)
 
 class trackLocal:

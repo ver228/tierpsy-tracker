@@ -67,7 +67,8 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, \
         
         #start to calculate features for each worm trajectory      
         for ind, worm_index  in enumerate(good_traj_index):
-            #if ind <23: continue
+            #if ind <7: continue
+            
             #initialize worm object, and extract data from skeletons file
             worm = WormFromTable(skeletons_file, worm_index, \
                 use_auto_label = use_auto_label, use_manual_join = use_manual_join, \
@@ -148,29 +149,30 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, \
 def getWormFeaturesFilt(skel_file, feat_file, use_auto_label, use_manual_join, feat_filt_param):
     assert (use_auto_label or use_manual_join) or feat_filt_param
 
-    if use_manual_join:
-        with pd.HDFStore(skel_file, 'r') as table_fid:
-            trajectories_data = table_fid['/trajectories_data']
-        #select tables that were manually labeled as worms
-        good = trajectories_data['worm_label'] == WLAB['WORM']
-        good_traj_index = trajectories_data.loc[good, 'worm_index_N'].unique()
-    elif use_auto_label:
-        #select data that was labeld in FEAT_FILTER
-        with pd.HDFStore(skel_file, 'r') as table_fid:
-            trajectories_data = table_fid['/trajectories_data']
-        good = trajectories_data['auto_label'] == WLAB['GOOD_SKE']
-        good_traj_index = trajectories_data.loc[good, 'worm_index_joined'].unique()
-
-        N = trajectories_data.groupby('worm_index_joined').agg({'has_skeleton':np.sum})
-        N = N.loc[good_traj_index]
-        good_traj_index = N[N>feat_filt_param['min_num_skel']].index
-        print(good_traj_index, N[N>feat_filt_param['min_num_skel']])
-    
-    else:
-        #otherwise filter using the parameters in feat_filt_param
+    if not (use_manual_join or use_auto_label):
+        #filter using the parameters in feat_filt_param
         dd = {x : feat_filt_param[x] for x in ['min_num_skel', 'bad_seg_thresh', 'min_dist']}
         good_traj_index = getValidIndexes(skel_file, **dd)
 
+    else:
+        with pd.HDFStore(skel_file, 'r') as table_fid:
+            trajectories_data = table_fid['/trajectories_data']
+        
+        if use_manual_join:
+            #select tables that were manually labeled as worms
+            good = trajectories_data['worm_label'] == WLAB['WORM']
+            trajectories_data = trajectories_data[good]
+
+        if use_auto_label:
+            #select data that was labeld in FEAT_FILTER
+            good = trajectories_data['auto_label'] == WLAB['GOOD_SKE']
+            trajectories_data = trajectories_data[good]
+        
+        N = trajectories_data.groupby('worm_index_joined').agg({'has_skeleton':np.nansum})
+        N = N[N>feat_filt_param['min_num_skel']].dropna()
+        
+        good_traj_index = N.index
+        
     #calculate features
     getWormFeatures(skel_file, feat_file, good_traj_index, \
             use_auto_label = use_auto_label, use_manual_join = use_manual_join)

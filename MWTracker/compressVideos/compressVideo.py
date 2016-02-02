@@ -285,7 +285,6 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
                 print(base_name + ' ' + progress_str);
                 sys.stdout.flush()
         
-
         #once we finished to read the whole video, we need to make sure that the hdf5 array sizes are correct.
         if mask_dataset.shape[0] != frame_number:
             mask_dataset.resize(frame_number, axis=0);
@@ -307,16 +306,17 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
         mask_fid.create_dataset("/vid_frame_pos", data = np.asarray(vid_frame_pos));
         mask_fid.create_dataset("/vid_time_pos", data = np.asarray(vid_time_pos));
 
-    #there is a missmatch between the frame number and timestamp. 
-    #Let's try to correct the timestamp, and assert this time it worked.
-    #if expected_frames == 0, means that the metadata was not processed by ffprobe
+
+    #TEST that there is no missmatch between the frame number and timestamp. If expected_frames == 0, 
+    #means that the metadata was not processed by ffprobe
     if expected_frames != frame_number and expected_frames !=0:
+        #Let's try to correct the timestamp, and assert if it worked.
         timestamp, timestamp_time = getTimestamp(masked_image_file)
         assert ~np.any(np.isnan(timestamp)) and timestamp.size == frame_number
     
     #attribute to indicate the program finished correctly
     with h5py.File(masked_image_file, "r+") as mask_fid:
-        mask_fid['/mask'].attrs['has_finished'] = 1
+        mask_dataset.attrs['has_finished'] = 1
         
 
     print(base_name + ' Compressed video done.');

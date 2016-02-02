@@ -34,7 +34,7 @@ def ffprobeMetadata(video_file):
     dat = json.loads(buff.decode('utf-8'))    
     if not dat:
         print(buff_err)
-        return np.zeros(0)
+        return video_metadata = np.zeros(0)
     
     video_metadata = OrderedDict()
     for field in dat['frames'][0].keys():
@@ -97,7 +97,7 @@ def correctTimestamp(best_effort_timestamp, best_effort_timestamp_time):
 
 def getTimestamp(masked_image_file):
     with tables.File(masked_image_file, 'r') as mask_fid:
-        #get the total number of frames previously processed
+        #get the total number of frmes previously processed
         tot_frames = mask_fid.get_node("/mask").shape[0]
         
         if '/video_metadata' in mask_fid:

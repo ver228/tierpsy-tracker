@@ -105,6 +105,18 @@ def getTrajectoriesWorkerL(masked_image_file, results_dir, param_file ='', overw
     base_name, trajectories_file, skeletons_file, features_file, feat_manual_file = constructNames(masked_image_file, results_dir)
     print(trajectories_file, skeletons_file, features_file, feat_manual_file)
 
+    if start_point <= checkpoint['SKE_CREATE']:
+        #check if the file with the masked images exists
+        assert os.path.exists(masked_image_file)
+    
+    if results_dir[-1] != os.sep:
+        results_dir += os.sep
+    if not os.path.exists(results_dir):
+        try:
+            os.makedirs(results_dir)
+        except:
+            pass
+
     #if starting point is not given, calculate it again
     if overwrite:
         start_point = checkpoint['TRAJ_CREATE']
@@ -116,17 +128,7 @@ def getTrajectoriesWorkerL(masked_image_file, results_dir, param_file ='', overw
         print_flush(base_name + ' Finished in ' + checkpoint_label[end_point])
         return
 
-    if start_point < checkpoint['FEAT_CREATE']:
-        #check if the file with the masked images exists
-        assert os.path.exists(masked_image_file)
     
-    if results_dir[-1] != os.sep:
-        results_dir += os.sep
-    if not os.path.exists(results_dir):
-        try:
-            os.makedirs(results_dir)
-        except:
-            pass
     
     #%%
     #get function parameters
