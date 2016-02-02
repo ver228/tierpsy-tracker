@@ -36,12 +36,19 @@ def ffprobeMetadata(video_file):
         print(buff_err)
         return np.zeros(0)
     
+    #use the first frame as reference
+    frame_fields = list(dat['frames'][0].keys())
+    
+    #consider data where the best_effort_timestamp was not calculated
+    valid_frames = [x for x in dat['frames'] if all(ff in x for ff in frame_fields)]
+    
+    #store data into numpy arrays
     video_metadata = OrderedDict()
-    for field in dat['frames'][0].keys():
-        video_metadata[field] = [frame[field] for frame in dat['frames']]
+    for field in frame_fields:
+        video_metadata[field] = [frame[field] for frame in valid_frames]
         try: #if possible convert the data into float
             video_metadata[field] = [float(dd) for dd in video_metadata[field]]
-        except:
+        except ValueError:
             #pytables does not support unicode strings (python3)
             video_metadata[field] = [bytes(dd, 'utf-8') for dd in video_metadata[field]]
         video_metadata[field] = np.asarray(video_metadata[field])
@@ -68,12 +75,12 @@ def storeMetaData(video_file, masked_image_file):
 def correctTimestamp(best_effort_timestamp, best_effort_timestamp_time):
     #delta from the best effort indexes
     xx = np.diff(best_effort_timestamp);
-    good_N = xx != 0    
+    good_N = (xx != 0) #& ~np.isnan(xx)    
     delta_x = np.median(xx[good_N])
     
     #delta from the best effort times
     xx_t = np.diff(best_effort_timestamp_time)
-    good_Nt = xx_t != 0
+    good_Nt = xx_t != 0 #& ~np.isnan(xx)
     delta_t = np.median(xx_t[good_Nt])
     
     #test that the zero delta from the index and time are the same
