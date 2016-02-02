@@ -17,6 +17,7 @@ import argparse
 sys.path.append('/Users/ajaver/Documents/GitHub/Multiworm_Tracking/')
 from MWTracker.helperFunctions.getTrajectoriesWorkerL import getStartingPoint, checkpoint
 from MWTracker.helperFunctions.timeCounterStr import timeCounterStr
+from MWTracker.compressVideos.getAdditionalData import getAdditionalFiles
 
 def exploreDirs(root_dir, pattern_include = '*', pattern_exclude = ''):
 	root_dir = os.path.abspath(root_dir)
@@ -185,11 +186,12 @@ class checkVideoFiles:
 
 	@staticmethod
 	def hasAdditionalFiles(video_file):
-		base_name = os.path.splitext(video_file)[0]
-		info_file =  base_name + '.info.xml'
-		stage_file = base_name + '.log.csv'
-		return (os.path.exists(info_file) and os.path.exists(stage_file))
-
+		try:
+			#this function will throw and error if the .info.xml or .log.csv are not found
+			getAdditionalFiles(video_file)
+			return True
+		except FileNotFoundError:
+			return False
 	@staticmethod
 	def isBadMask(masked_image_file):
 		try:

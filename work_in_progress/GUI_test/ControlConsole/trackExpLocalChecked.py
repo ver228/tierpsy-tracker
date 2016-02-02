@@ -21,7 +21,6 @@ def main(mask_dir_root, tmp_dir_root, json_file, script_abs_path, \
 		is_single_worm = is_single_worm, json_file = json_file, end_point = end_point, \
 		script_abs_path = script_abs_path, use_manual_join= use_manual_join, not_auto_label = not_auto_label)
 	
-	
 	pattern_exclude = [pattern_exclude] + ctf.invalid_ext
 	valid_files = exploreDirs(mask_dir_root, pattern_include = pattern_include, pattern_exclude = pattern_exclude)
 	
@@ -44,8 +43,6 @@ def main(mask_dir_root, tmp_dir_root, json_file, script_abs_path, \
 		#run all the commands
 		print_cmd_list(cmd_list)
 		runMultiCMD(cmd_list, max_num_process = max_num_process, refresh_time = refresh_time)
-
-	
 
 
 if __name__ == '__main__':

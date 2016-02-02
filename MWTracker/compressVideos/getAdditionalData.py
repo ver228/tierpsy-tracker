@@ -131,15 +131,23 @@ def storeStageData(stage_file, masked_image_file):
     
     return csv_dict
 
+def insertDirectory(original_file, dir2add):
+    dd = os.path.split(original_file);
+    return os.path.join(dd[0], dir2add, dd[1])
+
 def getAdditionalFiles(video_file):
     assert(os.path.exists(video_file))
     base_name = os.path.splitext(video_file)[0]
     info_file =  base_name + '.info.xml'
     stage_file = base_name + '.log.csv'
     
-    #throw and exception if the additional files do not exists 
     if not (os.path.exists(info_file) and os.path.exists(stage_file)):
-        raise Exception('Additional files (info.xml - log.csv) do not exists.')
+        #try to add the .data to look in hidden dirs
+        info_file = insertDirectory(info_file, '.data')
+        stage_file = insertDirectory(stage_file, '.data')
+        if not (os.path.exists(info_file) and os.path.exists(stage_file)):
+            #throw and exception if the additional files do not exists 
+            raise FileNotFoundError('Additional files (info.xml - log.csv) do not exists.')
 
     return info_file, stage_file
 
