@@ -72,13 +72,25 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, \
             #initialize worm object, and extract data from skeletons file
             worm = WormFromTable(skeletons_file, worm_index, \
                 use_auto_label = use_auto_label, use_manual_join = use_manual_join, \
-                pix2mum = pix2mum, fps = fps, smooth_window = 5, is_openworm = True)
+                pix2mum = pix2mum, fps = fps, smooth_window = 5)
             
+            #check that the worm data is not only nan's
             if np.all(np.isnan(worm.length)):
                 tot_worms = tot_worms - 1
                 continue
             
-            # Generate the OpenWorm movement validation repo version of the features
+            #save data as a subgroup for each worm
+            worm_node = features_fid.create_group(group_features, 'worm_%i' % worm_index )
+            worm_node._v_attrs['worm_index'] = worm_index
+            worm_node._v_attrs['frame_range'] = (worm.frame_number[0], worm.frame_number[-1])
+
+            #save skeleton
+            features_fid.create_carray(worm_node, 'skeletons', \
+                                    obj = worm.skeleton, filters = filters_tables)
+            
+            #IMPORTANT change axis to an openworm format before calculating features
+            worm.changeAxis()
+            #OpenWorm feature calculation
             worm_features = WormFeaturesDos(worm)
 
             #get the average for each worm feature
@@ -86,11 +98,21 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, \
             worm_stats['n_frames'] = worm.n_frames
             worm_stats['worm_index'] = worm_index
             worm_stats['n_valid_skel'] = worm.n_valid_skel
-            
             for feat in ['n_valid_skel', 'n_frames', 'worm_index']:
                 worm_stats.move_to_end(feat, last=False)
-            
             all_stats.append(worm_stats)
+            
+            #save event features in each worm node
+            for feat in feat_events:
+                feat_obj = wStats.features_info.loc[feat, 'feat_name_obj']
+                tmp_data = worm_features.features[feat_obj].value
+                
+                if isinstance(tmp_data, (float, int)): tmp_data = np.array([tmp_data])
+                if tmp_data is None or tmp_data.size == 0: tmp_data = np.array([np.nan])
+                
+                table_tmp = features_fid.create_carray(worm_node, feat, \
+                                    obj = tmp_data, filters = filters_tables)
+
             #save the timeseries data as a general table
             timeseries_data = [[]]*len(header_timeseries)
             timeseries_data[header_timeseries['timestamp']._v_pos] = worm.timestamp
@@ -107,29 +129,15 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, \
             table_timeseries.flush()
             del timeseries_data
             
-            #save events data as a subgroup for the worm
-            worm_node = features_fid.create_group(group_events, 'worm_%i' % worm_index )
-            worm_node._v_attrs['worm_index'] = worm_index
-            worm_node._v_attrs['frame_range'] = (worm.timestamp[0], worm.timestamp[-1])
-            worm_node._v_attrs['n_valid_skel'] = worm.n_valid_skel
-            
-            for feat in feat_events:
-                feat_obj = wStats.features_info.loc[feat, 'feat_name_obj']
-                tmp_data = worm_features.features[feat_obj].value
-                
-                if isinstance(tmp_data, (float, int)): tmp_data = np.array([tmp_data])
-                if tmp_data is None or tmp_data.size == 0: tmp_data = np.array([np.nan])
-                
-                table_tmp = features_fid.create_carray(worm_node, feat, \
-                                    obj = tmp_data, filters=filters_tables)
-
+            #report progress
             dd = " Extracting features. Worm %i of %i done." % (len(all_stats), tot_worms)
             print_flush(base_name + dd + ' Total time:' + progress_timer.getTimeStr())
-            
-        #create and save a table containing the averaged worm feature for each worm
+        
+        #assert data make sense    
         tot_rows = len(all_stats)
         assert tot_worms == tot_rows
-        
+
+        #create and save a table containing the averaged worm feature for each worm
         if tot_rows > 0:
             dtype = [(x, np.float32) for x in wStats.feat_avg_names]
             mean_features_df = np.recarray(tot_rows, dtype = dtype);
@@ -141,9 +149,9 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, \
         else:
             #if no valid worms were selected create an empty table with only one column
             feat_mean = features_fid.create_table('/', 'features_means', {'worm_index' : tables.Int32Col(pos=0)}, filters=filters_tables)
-            
-        feat_mean._v_attrs['has_finished'] = 1
         
+        #flag and report a success finish
+        feat_mean._v_attrs['has_finished'] = 1
         print_flush(base_name + ' Feature extraction finished: ' + progress_timer.getTimeStr())
         
 def getWormFeaturesFilt(skel_file, feat_file, use_auto_label, use_manual_join, feat_filt_param):
