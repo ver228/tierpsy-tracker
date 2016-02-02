@@ -25,13 +25,17 @@ from scipy.interpolate import interp1d
 from ..helperFunctions.timeCounterStr import timeCounterStr
 from .segWormPython.mainSegworm import getSkeleton
 
-def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_win = 101, 
+def getSmoothTrajectories(trajectories_file, roi_size = -1, min_track_size = 100,
+    displacement_smooth_win = 101, 
     min_displacement = 0, threshold_smooth_win = 501):
     '''
     Smooth trajectories and thresholds created by getWormTrajectories. 
     If min_displacement is specified there is the option to filter immobile particles, typically spurious.
     '''
     
+    #a track size less than 2 will break the interp_1 function
+    if min_track_size < 2: min_track_size = 2
+
     #read that frame an select trajectories that were considered valid by join_trajectories
     with pd.HDFStore(trajectories_file, 'r') as table_fid:
         df = table_fid['/plate_worms'][['worm_index_joined', 'frame_number', \
@@ -46,8 +50,6 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_
 
     if len(timestamp_raw) < df['frame_number'].max():
         raise Exception('bad %i, %i. \nFile: %s' % (len(timestamp_raw), df['frame_number'].max(), trajectories_file))
-        
-
 
     tracks_data = df.groupby('worm_index_joined').aggregate(['max', 'min', 'count'])
     
@@ -61,9 +63,8 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_
     
     #get the total length of the tracks, this is more accurate than using count since parts of the track could have got lost for a few frames
     track_lenghts = (tracks_data['frame_number']['max'] - tracks_data['frame_number']['min']+1)
-    tot_rows_ini = track_lenghts[track_lenghts>displacement_smooth_win].sum()
+    tot_rows_ini = track_lenghts[track_lenghts>min_track_size].sum()
     del track_lenghts
-
 
     #add the possibility to have variable size ROI
     if roi_size <= 0:
@@ -105,7 +106,8 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_
         worms_frame_range[worm_index] = (first_frame, last_frame)
         
         tnew = np.arange(first_frame, last_frame+1, dtype=np.int32);
-        if len(tnew) <= displacement_smooth_win:
+        
+        if len(tnew) <= min_track_size:
             continue
         
         #iterpolate missing points in the trajectory and smooth data using the savitzky golay filter
@@ -114,16 +116,20 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, displacement_smooth_
         xnew = fx(tnew)
         ynew = fy(tnew)
 
-        if displacement_smooth_win > 3:
+        farea = interp1d(t, area)
+        areanew = farea(tnew)
+        
+        fthresh = interp1d(t, thresh)
+        threshnew = fthresh(tnew)
+
+        if len(tnew) > displacement_smooth_win and displacement_smooth_win > 3:
             xnew = savgol_filter(xnew, displacement_smooth_win, 3);
             ynew = savgol_filter(ynew, displacement_smooth_win, 3);
+            areanew = median_filter(areanew, displacement_smooth_win);
         
         #smooth the threshold (the worm intensity shouldn't change abruptly along the trajectory)
-        fthresh = interp1d(t, thresh)
-        threshnew = median_filter(fthresh(tnew), threshold_smooth_win);
-        
-        farea = interp1d(t, area)
-        areanew = median_filter(farea(tnew), displacement_smooth_win);
+        if len(tnew) > threshold_smooth_win:
+            threshnew = median_filter(threshnew, threshold_smooth_win);
         
         #skeleton_id useful to organize the data in the other tables (skeletons, contours, etc)
         new_total = tot_rows + xnew.size

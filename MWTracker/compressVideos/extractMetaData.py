@@ -34,7 +34,7 @@ def ffprobeMetadata(video_file):
     dat = json.loads(buff.decode('utf-8'))    
     if not dat:
         print(buff_err)
-        return video_metadata = np.zeros(0)
+        return np.zeros(0)
     
     video_metadata = OrderedDict()
     for field in dat['frames'][0].keys():

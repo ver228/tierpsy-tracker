@@ -43,8 +43,8 @@ class tracker_param:
         if not isinstance(fps, int):
             fps = int(fps)
         
-        if fps_filter < 0:
-            fps_filter = fps;
+        #if fps_filter < 0:
+        #    fps_filter = fps;
 
         #backup the input parameters
         self.min_area = min_area
@@ -82,8 +82,8 @@ class tracker_param:
         self.join_traj_param = {'min_track_size': min_track_size, 'max_time_gap' : max_time_gap, 'area_ratio_lim': (0.67, 1.5)}
         
         #getSmoothTrajectories
-        self.smoothed_traj_param = {'min_displacement' : min_displacement, 'displacement_smooth_win': fps*4 + 1, 
-                               'threshold_smooth_win' : fps*20 + 1, 'roi_size' : roi_size}
+        self.smoothed_traj_param = {'min_track_size' : min_track_size, 'min_displacement' : min_displacement, 
+        'displacement_smooth_win': fps*4 + 1, 'threshold_smooth_win' : fps*20 + 1, 'roi_size' : roi_size}
         
         #trajectories2Skeletons
         self.skeletons_param = {'resampling_N' : resampling_N,
@@ -99,3 +99,4 @@ class tracker_param:
         #getWormFeatures
         self.feat_filt_param = {'min_num_skel' : 4*fps, 'bad_seg_thresh' : 0.8, 'min_dist' : 5, 'fit_contamination' : 0.05}
 
+        print(self.smoothed_traj_param)
