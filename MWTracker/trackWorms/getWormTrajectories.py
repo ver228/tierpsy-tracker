@@ -239,7 +239,12 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
     with tables.File(masked_image_file, 'r') as mask_fid, \
     tables.open_file(trajectories_file, mode = 'w') as feature_fid:
         mask_dataset = mask_fid.get_node("/mask")
-        assert mask_dataset.shape[0] == timestamp.size
+        if mask_dataset.shape[0] > timestamp.size:
+             #pad with nan the extra space
+             N = mask_dataset.shape[0] - timestamp.size
+             timestamp = np.hstack((timestamp, np.full(N, np.nan)))
+             timestamp_time = np.hstack((timestamp_time, np.full(N, np.nan)))
+             assert mask_dataset.shape[0] == timestamp.size
 
         #initialize
         feature_fid.create_group('/', 'timestamp')

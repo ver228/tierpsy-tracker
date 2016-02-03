@@ -12,7 +12,7 @@ import sys
 
 from .readVideoffmpeg import readVideoffmpeg
 from .readVideoHDF5 import readVideoHDF5
-from .extractMetaData import storeMetaData, getTimestamp
+from .extractMetaData import storeMetaData, correctTimestamp
 #from .imageDifferenceMask import imageDifferenceMask
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
@@ -221,70 +221,82 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
                 vid_time_pos.append(vid.get(cv2.CAP_PROP_POS_MSEC))
 
             ret, image = vid.read() #get video frame, stop program when no frame is retrive (end of file)
-            if ret == 0:
-                break
-            
-            #opencv can give an artificial rgb image. Let's get it back to gray scale.
-            if image.ndim==3:
-                image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-            
-            #increase frame number
-            frame_number += 1;
-            
-            #Resize mask array every 1000 frames (doing this every frame does not impact much the performance)
-            if mask_dataset.shape[0] <= frame_number + 1:
-                mask_dataset.resize(frame_number + 1000, axis=0); 
-                #im_diff_set.resize(frame_number + 1000, axis=0); 
+            if ret != 0:
+                #opencv can give an artificial rgb image. Let's get it back to gray scale.
+                if image.ndim==3:
+                    image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+                
+                #increase frame number
+                frame_number += 1;
+                
+                #Resize mask array every 1000 frames (doing this every frame does not impact much the performance)
+                if mask_dataset.shape[0] <= frame_number + 1:
+                    mask_dataset.resize(frame_number + 1000, axis=0); 
 
-            #Add a full frame every save_full_interval
-            if frame_number % save_full_interval == 1:
-                if full_dataset.shape[0] <= full_frame_number:
-                    full_dataset.resize(full_frame_number+1, axis=0); 
-                    assert(frame_number//save_full_interval == full_frame_number) #just to be sure that the index we are saving in is what we what we are expecting
-                full_dataset[full_frame_number,:,:] = image.copy()
-                full_frame_number += 1;
+                #Add a full frame every save_full_interval
+                if frame_number % save_full_interval == 1:
+                    if full_dataset.shape[0] <= full_frame_number:
+                        full_dataset.resize(full_frame_number+1, axis=0); 
+                        #just to be sure that the index we are saving in is what we what we are expecting
+                        assert(frame_number//save_full_interval == full_frame_number) 
+                    
+                    full_dataset[full_frame_number,:,:] = image.copy()
+                    full_frame_number += 1;
 
-            
-            ind_buff = (frame_number-1) % buffer_size #buffer index
-            
-            #initialize the buffer when the index correspond to 0
-            if ind_buff == 0:
-                Ibuff = np.zeros((buffer_size, im_height, im_width), dtype = np.uint8)
+                #buffer index
+                ind_buff = (frame_number-1) % buffer_size 
+                
+                #initialize the buffer when the index correspond to 0
+                if ind_buff == 0:
+                    Ibuff = np.zeros((buffer_size, im_height, im_width), dtype = np.uint8)
 
-            #add image to the buffer
-            Ibuff[ind_buff, :, :] = image.copy()
+                #add image to the buffer
+                Ibuff[ind_buff, :, :] = image.copy()
             
-            if ind_buff == buffer_size-1:
-                #calculate the mask only when the buffer is full
+            else:
+                #sometimes the last image is all zeros, control for this case
+                if np.all(Ibuff[ind_buff]==0):
+                    frame_number -= 1
+                    ind_buff -= 1
+
+                #close the buffer
+                Ibuff = Ibuff[:ind_buff+1]
+
+            if ind_buff == buffer_size-1 or ret == 0:
+                #calculate the mask only when the buffer is full or there are no more frames left
                 mask = getROIMask(np.min(Ibuff, axis=0), **mask_param)
                 
                 #mask all the images in the buffer
                 Ibuff *= mask
                 
                 #add buffer to the hdf5 file
-                mask_dataset[(frame_number-buffer_size):frame_number,:,:] = Ibuff
-                
-                
-                #calculate difference between image (it's usefull to indentified corrupted frames)
-                #if mask_param['has_timestamp']:
-                #    #remove timestamp before calculation
-                #    Ibuff[:,0:15,0:479] = 0; 
-                #for ii in range(Ibuff.shape[0]):
-                #    if image_prev.shape and ii == 0:
-                #        dd = imageDifferenceMask(Ibuff[ii,:,:],image_prev)
-                #    else:
-                #        dd = imageDifferenceMask(Ibuff[ii,:,:],Ibuff[ii-1,:,:])
-                #    
-                #    im_diff_set[frame_number-buffer_size+ii] = dd
-                    
-                #image_prev = Ibuff[-1,:,:].copy();  
+                mask_dataset[(frame_number-Ibuff.shape[0]):frame_number,:,:] = Ibuff
+            
+
 
             if frame_number%500 == 0:
                 #calculate the progress and put it in a string
                 progress_str = progressTime.getStr(frame_number)
                 print(base_name + ' ' + progress_str);
                 sys.stdout.flush()
+            
+            #finish process
+            if ret == 0: break
+
+
+        #TEST that there is no missmatch between the frame number and timestamp. If expected_frames == 0, 
+        #means that the metadata was not processed by ffprobe
+        if expected_frames != frame_number and expected_frames !=0:
+            best_effort_timestamp = mask_fid['/video_metadata']['best_effort_timestamp']
+            best_effort_timestamp_time = mask_fid['/video_metadata']['best_effort_timestamp_time']
+            timestamp, timestamp_time = correctTimestamp(best_effort_timestamp, best_effort_timestamp_time)
+
+            #import pdb
+            #pdb.set_trace()
+
+            assert ~np.any(np.isnan(timestamp)) and np.abs(timestamp.size - frame_number) <= 1
         
+
         #once we finished to read the whole video, we need to make sure that the hdf5 array sizes are correct.
         if mask_dataset.shape[0] != frame_number:
             mask_dataset.resize(frame_number, axis=0);
@@ -306,17 +318,16 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
         mask_fid.create_dataset("/vid_frame_pos", data = np.asarray(vid_frame_pos));
         mask_fid.create_dataset("/vid_time_pos", data = np.asarray(vid_time_pos));
 
+        with h5py.File(masked_image_file, "r+") as mask_fid:
+                mask_fid['/mask'].attrs['has_finished'] = 1
 
-    #TEST that there is no missmatch between the frame number and timestamp. If expected_frames == 0, 
-    #means that the metadata was not processed by ffprobe
-    if expected_frames != frame_number and expected_frames !=0:
-        #Let's try to correct the timestamp, and assert if it worked.
-        timestamp, timestamp_time = getTimestamp(masked_image_file)
-        assert ~np.any(np.isnan(timestamp)) and timestamp.size == frame_number
+    
+    
+        
     
     #attribute to indicate the program finished correctly
     with h5py.File(masked_image_file, "r+") as mask_fid:
-        mask_fid.attrs['has_finished'] = 1
+        mask_fid['/mask'].attrs['has_finished'] = 1
         
 
     print(base_name + ' Compressed video done.');
