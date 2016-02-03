@@ -262,13 +262,12 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
                 #close the buffer
                 Ibuff = Ibuff[:ind_buff+1]
 
+            #mask buffer and save data into the hdf5 file
             if ind_buff == buffer_size-1 or ret == 0:
                 #calculate the mask only when the buffer is full or there are no more frames left
                 mask = getROIMask(np.min(Ibuff, axis=0), **mask_param)
-                
                 #mask all the images in the buffer
                 Ibuff *= mask
-                
                 #add buffer to the hdf5 file
                 mask_dataset[(frame_number-Ibuff.shape[0]):frame_number,:,:] = Ibuff
             
@@ -290,12 +289,8 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
             best_effort_timestamp = mask_fid['/video_metadata']['best_effort_timestamp']
             best_effort_timestamp_time = mask_fid['/video_metadata']['best_effort_timestamp_time']
             timestamp, timestamp_time = correctTimestamp(best_effort_timestamp, best_effort_timestamp_time)
-
-            #import pdb
-            #pdb.set_trace()
-
-            assert ~np.any(np.isnan(timestamp)) and np.abs(timestamp.size - frame_number) <= 1
-        
+            
+            
 
         #once we finished to read the whole video, we need to make sure that the hdf5 array sizes are correct.
         if mask_dataset.shape[0] != frame_number:
