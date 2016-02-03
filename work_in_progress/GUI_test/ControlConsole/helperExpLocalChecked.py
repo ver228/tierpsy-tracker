@@ -195,7 +195,7 @@ class checkVideoFiles:
 	@staticmethod
 	def isBadMask(masked_image_file):
 		try:
-			with tables.File(masked_image_file, 'r+') as mask_fid:
+			with tables.File(masked_image_file, 'r') as mask_fid:
 				mask_node = mask_fid.get_node('/mask')
 				if mask_node._v_attrs['has_finished'] < 1: 
 					raise ValueError
@@ -208,7 +208,7 @@ class checkVideoFiles:
 				#	raise
 				
 				return 0
-		except (OSError, ValueError):
+		except (tables.exceptions.HDF5ExtError, ValueError):
 			return 1
 
 class checkTrackFiles(checkVideoFiles):
