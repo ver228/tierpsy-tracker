@@ -195,12 +195,12 @@ class checkVideoFiles:
 	@staticmethod
 	def isBadMask(masked_image_file):
 		try:
-			with tables.File(masked_image_file, 'r') as mask_fid:
+			with tables.File(masked_image_file, 'r+') as mask_fid:
 				mask_node = mask_fid.get_node('/mask')
 				if mask_node._v_attrs['has_finished'] < 1: 
-					raise
+					raise ValueError
 				if mask_node.shape[0] == 0:
-					raise
+					raise ValueError
 				
 				#length can vary. I need to use getTimestamp instead, but it is too cumbersome at this moment
 				#if '/video_metadata' in mask_fid and \
@@ -208,7 +208,7 @@ class checkVideoFiles:
 				#	raise
 				
 				return 0
-		except:
+		except (OSError, ValueError):
 			return 1
 
 class checkTrackFiles(checkVideoFiles):
