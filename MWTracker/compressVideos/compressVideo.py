@@ -290,6 +290,7 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
             best_effort_timestamp_time = mask_fid['/video_metadata']['best_effort_timestamp_time']
             timestamp, timestamp_time = correctTimestamp(best_effort_timestamp, best_effort_timestamp_time)
             
+            assert ~np.any(np.isnan(timestamp)) and np.abs(timestamp.size - frame_number) <= 1
             
 
         #once we finished to read the whole video, we need to make sure that the hdf5 array sizes are correct.
@@ -316,8 +317,6 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
         with h5py.File(masked_image_file, "r+") as mask_fid:
                 mask_fid['/mask'].attrs['has_finished'] = 1
 
-    
-    
         
     
     #attribute to indicate the program finished correctly
