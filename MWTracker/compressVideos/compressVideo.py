@@ -263,7 +263,7 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
                 Ibuff = Ibuff[:ind_buff+1]
 
             #mask buffer and save data into the hdf5 file
-            if ind_buff == buffer_size-1 or ret == 0:
+            if (ind_buff == buffer_size-1 or ret == 0) and Ibuff.size > 0:
                 #calculate the mask only when the buffer is full or there are no more frames left
                 mask = getROIMask(np.min(Ibuff, axis=0), **mask_param)
                 #mask all the images in the buffer
