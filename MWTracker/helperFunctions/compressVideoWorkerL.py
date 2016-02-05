@@ -36,7 +36,9 @@ def compressVideoWorkerL(video_file, mask_dir, param_file = '', is_single_worm =
             has_finished = mask_fid['/mask'].attrs['has_finished']
 
             if is_single_worm and not all(dd in mask_fid for dd in ['stage_data', 'xml_info']):
-                has_finished = 0
+                #if a single_worm file does not have the stage_data or xml_info there is something really bad, 
+                #let's recalculate everything again
+                has_finished = 0 
     except:
         has_finished = 0 
 
@@ -44,7 +46,7 @@ def compressVideoWorkerL(video_file, mask_dir, param_file = '', is_single_worm =
         print_flush('File alread exists: %s. If you want to calculate the mask again delete the existing file.' % masked_image_file)
         return
     else:
-        initial_time = time.time();
+        initial_time = time.time()
 
         #check if the video file exists
         assert os.path.exists(video_file)

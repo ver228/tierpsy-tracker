@@ -98,6 +98,7 @@ def constructNames(masked_image_file, results_dir):
     
     return output
 
+
 def getTrajectoriesWorkerL(masked_image_file, results_dir, param_file ='', overwrite = False, 
     start_point = -1, end_point = checkpoint['END'], is_single_worm = False, 
     use_auto_label = True, use_manual_join = False):
@@ -114,7 +115,7 @@ def getTrajectoriesWorkerL(masked_image_file, results_dir, param_file ='', overw
     if not os.path.exists(results_dir):
         try:
             os.makedirs(results_dir)
-        except:
+        except FileExistsError:
             pass
 
     #if starting point is not given, calculate it again
@@ -128,24 +129,23 @@ def getTrajectoriesWorkerL(masked_image_file, results_dir, param_file ='', overw
         print_flush(base_name + ' Finished in ' + checkpoint_label[end_point])
         return
 
-    
-    
     #%%
     #get function parameters
     param = tracker_param(param_file)
     
     execThisPoint = lambda current_point : (checkpoint[current_point] >= start_point ) &  (checkpoint[current_point] <= end_point)
-    
 
     print_flush(base_name + ' Starting checkpoint: ' + checkpoint_label[start_point])
     
     #get trajectory data
     if execThisPoint('TRAJ_CREATE'):
         getWormTrajectories(masked_image_file, trajectories_file, **param.trajectories_param)
-        if is_single_worm: correctSingleWormCase(trajectories_file)
-
-    if execThisPoint('TRAJ_JOIN'):        
-        joinTrajectories(trajectories_file, **param.join_traj_param)
+        
+    if execThisPoint('TRAJ_JOIN'):
+        if is_single_worm: 
+            correctSingleWormCase(trajectories_file)
+        else:
+            joinTrajectories(trajectories_file, **param.join_traj_param)
 
     #get skeletons data    
     if execThisPoint('SKE_CREATE'):

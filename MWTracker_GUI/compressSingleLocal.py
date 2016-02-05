@@ -43,9 +43,13 @@ def main(video_file, mask_dir, tmp_mask_dir='', json_file='', is_single_worm = F
 			#check if a finished temporal mask exists. The processes was interrupted during copying.
 			try:
 				with h5py.File(tmp_mask_file, "r") as mask_fid:
-					if mask_fid['/mask'].attrs['has_finished'] < 2:
-						raise ValueError("Mask has not been finished. We'll try to process it again.")
-			except (OSError, KeyError, ValueError):
+					MAX_CONTROL_FLAG = 2
+					is_calculate_mask =  (mask_fid['/mask'].attrs['has_finished'] < MAX_CONTROL_FLAG)
+			except (OSError, KeyError):
+					is_calculate_mask = True
+				
+
+			if is_calculate_mask:
 				#start to calculate the mask from raw video
 				print_flush(base_name + " Creating temporal masked file.")
 				compressVideoWorkerL(video_file, tmp_mask_dir, json_file, is_single_worm)

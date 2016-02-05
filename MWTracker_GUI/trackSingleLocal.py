@@ -16,13 +16,10 @@ with open(os.path.join(curr_script_dir, 'MWTracker_dir.txt'), 'r') as f:
     MWTracker_dir = f.readline()
 sys.path.append(MWTracker_dir)
 
-
 from MWTracker.helperFunctions.getTrajectoriesWorkerL import getTrajectoriesWorkerL, getStartingPoint, checkpoint, checkpoint_label, constructNames
 from MWTracker.helperFunctions.miscFun import print_flush
 
 from MWTracker.featuresAnalysis.obtainFeatures_N import getWormFeaturesLab
-
-
 
 def copyFilesLocal(files2copy):
 	#copy the necessary files (maybe we can create a daemon later)
