@@ -11,6 +11,8 @@ import shutil
 import h5py
 import pandas as pd
 import argparse
+import subprocess
+
 curr_script_dir = os.path.dirname(os.path.realpath(__file__))
 with open(os.path.join(curr_script_dir, 'MWTracker_dir.txt'), 'r') as f:
     MWTracker_dir = f.readline()
@@ -37,7 +39,7 @@ def copyFilesLocal(files2copy):
 class trackLocal:
 	def __init__(self, masked_image_file, results_dir, tmp_mask_dir='', tmp_results_dir='', 
 		json_file ='', end_point = 'END', is_single_worm='', 
-		not_auto_label = False, use_manual_join = False):
+		not_auto_label = False, use_manual_join = False, cmd_original=''):
 		
 		self.masked_image_file = masked_image_file
 		self.results_dir = results_dir
@@ -49,6 +51,7 @@ class trackLocal:
 		self.is_single_worm = is_single_worm
 		self.use_auto_label = not not_auto_label
 		self.use_manual_join = use_manual_join
+		self.cmd_original = cmd_original
 
 		assert(os.path.exists(masked_image_file))
 
@@ -56,11 +59,14 @@ class trackLocal:
 		self.getStartPoints()
 		self.copyFilesFromFinal()
 
-		#start the analysis
-		getTrajectoriesWorkerL(self.tmp_mask_file, self.tmp_results_dir, param_file = self.json_file, 
-			start_point = self.analysis_start_point, end_point = self.end_point, is_single_worm = self.is_single_worm,
-			use_auto_label = self.use_auto_label, use_manual_join = self.use_manual_join)
 
+		#start the analysis
+		print(getTrajectoriesWorkerL)
+		getTrajectoriesWorkerL(self.tmp_mask_file, self.tmp_results_dir, json_file = self.json_file, 
+			start_point = self.analysis_start_point, end_point = self.end_point, is_single_worm = self.is_single_worm,
+			use_auto_label = self.use_auto_label, use_manual_join = self.use_manual_join, cmd_original=self.cmd_original)
+
+		
 		self.copyFilesToFinal()
 		self.cleanTmpFiles()
 
@@ -107,7 +113,7 @@ class trackLocal:
 	
 
 	def copyFilesFromFinal(self):
-		if self.final_start_point == checkpoint['END']:
+		if (self.final_start_point == checkpoint['END']) or self.final_start_point > self.end_point:
 			#If the program has finished there is nothing to do here.
 			print_flush('%s The files from completed results analysis were found in %s. Remove them if you want to recalculated them again.' % (self.base_name, self.results_dir))
 			sys.exit(0)
@@ -207,9 +213,8 @@ if __name__ == '__main__':
 	
 	args = parser.parse_args()
 	
-	trackLocal(**vars(args))
+	trackLocal(**vars(args), cmd_original = subprocess.list2cmdline(sys.argv))
 
 	
-
 
 

@@ -124,9 +124,8 @@ class checkVideoFiles:
 		N = sum('MaskedVideos' == part for part in fdir.split(os.sep))
 
 		if N > 1: 
-			print('ERROR: Only one subdirectory is allowed to be named "MaskedVideos"')
-			raise
-
+			raise ValueError('Only one subdirectory is allowed to be named "MaskedVideos"')
+			
 		if N == 0:
 			fdir =  os.path.join(fdir, 'MaskedVideos')
 		return os.path.abspath(fdir)
@@ -298,7 +297,7 @@ class checkTrackFiles(checkVideoFiles):
 		results_dir = getDstDir(mask_dir, self.mask_dir_root, self.results_dir_root)
 		start_point = getStartingPoint(masked_image_file, results_dir)
 
-		if start_point >= self.end_point_N:
+		if start_point > self.end_point_N:
 			return 'FINISHED_GOOD' , (masked_image_file, results_dir)
 		
 		elif self.isBadMask(masked_image_file):

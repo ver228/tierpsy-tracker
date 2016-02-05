@@ -8,8 +8,6 @@ Created on Tue Jul  7 11:29:01 2015
 import os
 import sys
 
-
-
 # absolute path for the movement validation repository
 movement_validation_dir = ''
 

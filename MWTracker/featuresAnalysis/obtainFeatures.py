@@ -154,16 +154,16 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, \
         feat_mean._v_attrs['has_finished'] = 1
         print_flush(base_name + ' Feature extraction finished: ' + progress_timer.getTimeStr())
         
-def getWormFeaturesFilt(skel_file, feat_file, use_auto_label, use_manual_join, feat_filt_param):
+def getWormFeaturesFilt(skeletons_file, features_file, use_auto_label, use_manual_join, feat_filt_param):
     assert (use_auto_label or use_manual_join) or feat_filt_param
 
     if not (use_manual_join or use_auto_label):
         #filter using the parameters in feat_filt_param
         dd = {x : feat_filt_param[x] for x in ['min_num_skel', 'bad_seg_thresh', 'min_dist']}
-        good_traj_index = getValidIndexes(skel_file, **dd)
+        good_traj_index = getValidIndexes(skeletons_file, **dd)
 
     else:
-        with pd.HDFStore(skel_file, 'r') as table_fid:
+        with pd.HDFStore(skeletons_file, 'r') as table_fid:
             trajectories_data = table_fid['/trajectories_data']
         
         if use_manual_join:
@@ -182,5 +182,5 @@ def getWormFeaturesFilt(skel_file, feat_file, use_auto_label, use_manual_join, f
         good_traj_index = N.index
         
     #calculate features
-    getWormFeatures(skel_file, feat_file, good_traj_index, \
+    getWormFeatures(skeletons_file, features_file, good_traj_index, \
             use_auto_label = use_auto_label, use_manual_join = use_manual_join)

@@ -99,4 +99,3 @@ class tracker_param:
         #getWormFeatures
         self.feat_filt_param = {'min_num_skel' : 4*fps, 'bad_seg_thresh' : 0.8, 'min_dist' : 5, 'fit_contamination' : 0.05}
 
-        print(self.smoothed_traj_param)

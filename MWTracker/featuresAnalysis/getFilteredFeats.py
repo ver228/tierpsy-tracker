@@ -27,7 +27,7 @@ warnings.filterwarnings('ignore', '.*det > previous_det*',)
 from MWTracker.featuresAnalysis.obtainFeatures import getWormFeatures
 from MWTracker.featuresAnalysis.obtainFeaturesHelper import getValidIndexes, WLAB, calWormArea
 
-getBaseName = lambda skel_file : skel_file.rpartition(os.sep)[-1].replace('_skeletons.hdf5', '')
+getBaseName = lambda skeletons_file : skeletons_file.rpartition(os.sep)[-1].replace('_skeletons.hdf5', '')
 
 worm_partitions = {'neck': (8, 16),
                 'midbody':  (16, 33),
@@ -42,42 +42,44 @@ worm_partitions = {'neck': (8, 16),
 
 name_width_fun = lambda part: 'width_' + part
 
-def saveLabelData(skel_file, trajectories_data):
+def saveLabelData(skeletons_file, trajectories_data):
     trajectories_recarray = trajectories_data.to_records(index=False)
-    with tables.File(skel_file, "r+") as ske_file_id:
+    with tables.File(skeletons_file, "r+") as ske_file_id:
         table_filters = tables.Filters(complevel=5, complib='zlib', shuffle=True, fletcher32=True)
         newT = ske_file_id.create_table('/', 'trajectories_data_d', obj = trajectories_recarray, filters=table_filters)
         ske_file_id.remove_node('/', 'trajectories_data')
         newT.rename('trajectories_data')
     
 
-def read_field(fid, field, valid_index):
+def readField(fid, field, valid_index):
     data = fid.get_node(field)[:]
     data = data[valid_index]
     return data
 
-def nodes2Array(skel_file, valid_index = np.zeros(0)):
+def nodes2Array(skeletons_file, valid_index = -1):
 
     nodes4fit = ['/skeleton_length', '/contour_area'] + \
     ['/' + name_width_fun(part) for part in worm_partitions]
 
-    with tables.File(skel_file, 'r') as fid:
+    with tables.File(skeletons_file, 'r') as fid:
         assert all(node in fid for node in nodes4fit)
-
-        if len(valid_index) == 0:
+        
+        if isinstance(valid_index, (float,int)) and valid_index <0:
             valid_index = np.arange(fid.get_node(nodes4fit[0]).shape[0])
-            
+
         n_samples = len(valid_index)
         n_features = len(nodes4fit)
         
         X = np.zeros((n_samples, n_features))
-        for ii, node in enumerate(nodes4fit):
-            X[:,ii] = read_field(fid, node, valid_index)
-        
+
+        if valid_index.size > 0:
+            for ii, node in enumerate(nodes4fit):
+                X[:,ii] = readField(fid, node, valid_index)
+            
         return X
 
-def getSkelRows(skel_file):
-    with tables.File(skel_file, 'r') as fid:
+def getSkelRows(skeletons_file):
+    with tables.File(skeletons_file, 'r') as fid:
         #get the idea of valid skeletons    
         skeleton_length = fid.get_node('/skeleton_length')[:]
         has_skeleton = fid.get_node('/trajectories_data').col('has_skeleton')
@@ -88,8 +90,8 @@ def getSkelRows(skel_file):
 
     return skeleton_id, tot_rows
 
-def calculateWidths(skel_file):
-    with tables.File(skel_file, 'r+') as fid:
+def calculateWidths(skeletons_file):
+    with tables.File(skeletons_file, 'r+') as fid:
         #i am using an auxiliar field in case the function is interrupted before finisihing
         for part in worm_partitions:
             aux_name = name_width_fun(part) + '_AUX'
@@ -98,14 +100,14 @@ def calculateWidths(skel_file):
         if all('/' + name_width_fun(part) in fid for part in worm_partitions): return
 
     
-    base_name = getBaseName(skel_file)
+    base_name = getBaseName(skeletons_file)
     progress_timer = timeCounterStr('');
     
     #get the list of valid indexes with skeletons in the table
-    skeleton_id, tot_rows = getSkelRows(skel_file)
+    skeleton_id, tot_rows = getSkelRows(skeletons_file)
 
     #calculate the widhts
-    with tables.File(skel_file, 'r+') as fid:
+    with tables.File(skeletons_file, 'r+') as fid:
         widths = fid.get_node('/contour_width')
         tot_rows = widths.shape[0]
         
@@ -131,22 +133,22 @@ def calculateWidths(skel_file):
             widths_means[part].rename(name_width_fun(part)) #now we can use the real name
         print_flush(base_name + 'Calculating mean widths. Finished. Total time :' + progress_timer.getTimeStr())
 
-def calculateAreas(skel_file):
+def calculateAreas(skeletons_file):
 
-    with tables.File(skel_file, 'r+') as fid:
+    with tables.File(skeletons_file, 'r+') as fid:
         #i am using an auxiliar field in case the function is interrupted before finisihing
         if '/contour_area_AUX' in fid: fid.remove_node('/', 'contour_area_AUX')
         if '/contour_area' in fid: return
         
-    base_name = getBaseName(skel_file)
+    base_name = getBaseName(skeletons_file)
     progress_timer = timeCounterStr('');
     print_flush(base_name + ' Calculating countour areas...')
 
     #get the list of valid indexes with skeletons in the table
-    skeleton_id, tot_rows = getSkelRows(skel_file)
+    skeleton_id, tot_rows = getSkelRows(skeletons_file)
     
     #calculate areas
-    with tables.File(skel_file, 'r+') as fid:
+    with tables.File(skeletons_file, 'r+') as fid:
         
         #intiailize area arreay
         table_filters = tables.Filters(complevel=5, complib='zlib', shuffle=True, fletcher32=True)
@@ -171,36 +173,42 @@ def calculateAreas(skel_file):
         print_flush(base_name + ' Calculating countour area. Finished. Total time :' + progress_timer.getTimeStr())
 
 
-def labelValidSkeletons(skel_file, good_skel_row, fit_contamination = 0.05):
-    base_name = getBaseName(skel_file)
+def labelValidSkeletons(skeletons_file, good_skel_row, fit_contamination = 0.05):
+    base_name = getBaseName(skeletons_file)
     progress_timer = timeCounterStr('');
     
     print_flush(base_name + ' Filter Skeletons: Starting...')
-    with pd.HDFStore(skel_file, 'r') as table_fid:
+    with pd.HDFStore(skeletons_file, 'r') as table_fid:
         trajectories_data = table_fid['/trajectories_data']
 
     trajectories_data['auto_label'] = WLAB['U']
-    trajectories_data.loc[good_skel_row, 'auto_label'] = WLAB['WORM']
+    #trajectories_data.loc[good_skel_row, 'auto_label'] = WLAB['WORM']
     
-    print_flush(base_name + ' Filter Skeletons: Reading features for outlier identification.')
-    #calculate classifier for the outliers    
-    X4fit = nodes2Array(skel_file, good_skel_row)
-    
-    print_flush(base_name + ' Filter Skeletons: Fitting elliptic envelope. Total time:' + progress_timer.getTimeStr())
-    #TODO here the is a problem with singular covariance matrices that i need to figure out how to solve
-    clf = EllipticEnvelope(contamination = fit_contamination)
-    clf.fit(X4fit)
-    
-    print_flush(base_name + ' Filter Skeletons: Calculating outliers. Total time:' + progress_timer.getTimeStr())
-    #calculate outliers using the fitted classifier
-    X = nodes2Array(skel_file) #use all the indexes
-    
-    y_pred = clf.decision_function(X).ravel() #less than zero would be an outlier
+    if good_skel_row.size > 0:
+        #nothing to do if there are not valid skeletons left. 
+        
+        print_flush(base_name + ' Filter Skeletons: Reading features for outlier identification.')
+        #calculate classifier for the outliers    
+        X4fit = nodes2Array(skeletons_file, good_skel_row)
+        assert not np.any(np.isnan(X4fit))
+        
+        #%%
+        print_flush(base_name + ' Filter Skeletons: Fitting elliptic envelope. Total time:' + progress_timer.getTimeStr())
+        #TODO here the is a problem with singular covariance matrices that i need to figure out how to solve
+        clf = EllipticEnvelope(contamination = fit_contamination)
+        clf.fit(X4fit)
+        
+        print_flush(base_name + ' Filter Skeletons: Calculating outliers. Total time:' + progress_timer.getTimeStr())
+        #calculate outliers using the fitted classifier
+        X = nodes2Array(skeletons_file) #use all the indexes
+        y_pred = clf.decision_function(X).ravel() #less than zero would be an outlier
 
-    print_flush(base_name + ' Filter Skeletons: Labeling valid skeletons. Total time:' + progress_timer.getTimeStr())
-    #labeled rows of valid individual skeletons as GOOD_SKE
-    trajectories_data['auto_label'] = ((y_pred>0).astype(np.int))*WLAB['GOOD_SKE'] #+ wlab['BAD']*np.isnan(y_prev)
-    saveLabelData(skel_file, trajectories_data)
+        print_flush(base_name + ' Filter Skeletons: Labeling valid skeletons. Total time:' + progress_timer.getTimeStr())
+        #labeled rows of valid individual skeletons as GOOD_SKE
+        trajectories_data['auto_label'] = ((y_pred>0).astype(np.int))*WLAB['GOOD_SKE'] #+ wlab['BAD']*np.isnan(y_prev)
+    
+    #Save the new auto_label column
+    saveLabelData(skeletons_file, trajectories_data)
 
     print_flush(base_name + ' Filter Skeletons: Finished. Total time:' + progress_timer.getTimeStr())
 
@@ -233,29 +241,21 @@ def getFrameStats(feat_file):
             feat_fid.create_table(frame_stats_group, stat, \
             obj = plate_stats.to_records(), filters = table_filters)
 
-def getFilteredFeats(skel_file, use_auto_label, min_num_skel = 100, bad_seg_thresh = 0.8, 
+def getFilteredFeats(skeletons_file, use_auto_label, min_num_skel = 100, bad_seg_thresh = 0.8, 
     min_dist = 5, fit_contamination = 0.05):
     #calculate valid widths and areas if they were not calculated before
-    calculateWidths(skel_file)
-    calculateAreas(skel_file)
+    calculateWidths(skeletons_file)
+    calculateAreas(skeletons_file)
 
     if use_auto_label:
         #get valid rows using the trajectory displacement and the skeletonization success
-        good_traj_index , good_skel_row = getValidIndexes(skel_file, \
+        good_traj_index , good_skel_row = getValidIndexes(skeletons_file, \
         min_num_skel = min_num_skel, bad_seg_thresh = bad_seg_thresh, min_dist = min_dist)
         
-        labelValidSkeletons(skel_file, good_skel_row, fit_contamination = fit_contamination)
-    
-    
-    with tables.File(skel_file, "r+") as ske_file_id:
+        labelValidSkeletons(skeletons_file, good_skel_row, fit_contamination = fit_contamination)
+
+    with tables.File(skeletons_file, "r+") as ske_file_id:
         skeleton_table = ske_file_id.get_node('/skeleton')
-
-        #save input parameters
-        skeleton_table._v_attrs['min_num_skel'] = min_num_skel
-        skeleton_table._v_attrs['bad_seg_thresh'] = bad_seg_thresh
-        skeleton_table._v_attrs['min_dist'] = min_dist
-        skeleton_table._v_attrs['fit_contamination'] = fit_contamination
-
         #label as finished
         skeleton_table._v_attrs['has_finished'] = 3
         

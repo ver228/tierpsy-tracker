@@ -46,6 +46,7 @@ pip3 install scikit-image
 pip3 install tifffile
 pip3 install seaborn
 pip3 install xlrd
+pip3 install gitpython
 
 #install pyqt5 for the GUI
 brew uninstall --force sip

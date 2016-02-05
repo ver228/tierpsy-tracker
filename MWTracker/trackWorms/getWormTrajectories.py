@@ -533,6 +533,13 @@ max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
         plate_worms._v_attrs['has_finished'] = 2
         fid.flush()
 
+def correctTrajectories(trajectories_file, is_single_worm, join_traj_param):
+    if is_single_worm: 
+        correctSingleWormCase(trajectories_file)
+    else:
+        joinTrajectories(trajectories_file, **join_traj_param)
+
+
 #DEPRECATED
 def joinTrajectories_old(trajectories_file, min_track_size = 50, \
 max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):

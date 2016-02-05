@@ -136,6 +136,7 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
         > dilation_size -- size of the structure element to dilate the mask
         > keep_border_data -- (bool) if false it will reject any blob that touches the image border 
     '''
+
     #processes identifier.
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
 
@@ -322,7 +323,8 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
     #attribute to indicate the program finished correctly
     with h5py.File(masked_image_file, "r+") as mask_fid:
         mask_fid['/mask'].attrs['has_finished'] = 1
-        
+    
+    
 
     print(base_name + ' Compressed video done.');
     sys.stdout.flush()

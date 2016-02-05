@@ -14,12 +14,17 @@ from ..compressVideos.compressVideo import compressVideo
 from ..compressVideos.getAdditionalData import storeAdditionalDataSW, getAdditionalFiles
 
 from ..helperFunctions.tracker_param import tracker_param
+from ..helperFunctions.trackProvenance import getGitCommitHash, execThisPoint
+from ..helperFunctions.miscFun import print_flush
 
-def print_flush(fstr):
-    print(fstr)
-    sys.stdout.flush()
 
-def compressVideoWorkerL(video_file, mask_dir, param_file = '', is_single_worm = False): 
+def compressVideoWProv(video_file, masked_image_file, compress_vid_param, cmd_original):
+    #compress video the provenance tracking functions
+    commits_hash = getGitCommitHash()
+    argkws = {**{'video_file':video_file, 'masked_image_file':masked_image_file}, **compress_vid_param}
+    execThisPoint('COMPRESS', compressVideo, argkws, masked_image_file, commits_hash, cmd_original)
+
+def compressVideoWorkerL(video_file, mask_dir, param_file = '', is_single_worm = False, cmd_original=''): 
     
     if mask_dir[-1] != os.sep: mask_dir += os.sep
 
@@ -50,15 +55,15 @@ def compressVideoWorkerL(video_file, mask_dir, param_file = '', is_single_worm =
 
         #check if the video file exists
         assert os.path.exists(video_file)
-        
-        #This function will throw an exception if the additional files do not exists
-        if is_single_worm: getAdditionalFiles(video_file)
-        
         #create the mask path if it does not exist
         if not os.path.exists(mask_dir): os.makedirs(mask_dir)
         
-        compressVideo(video_file, masked_image_file, **param.compress_vid_param)
+        #This function will throw an exception if the additional files do not exists, before attempting to calculate anything
+        if is_single_worm: getAdditionalFiles(video_file)
         
+        #compress video the provenance tracking functions
+        compressVideoWProv(video_file, masked_image_file, param.compress_vid_param, cmd_original)
+
         #get the store the additional data for the single worm case. It needs that the 
         #masked_image_file has been created.
         if is_single_worm: storeAdditionalDataSW(video_file, masked_image_file)

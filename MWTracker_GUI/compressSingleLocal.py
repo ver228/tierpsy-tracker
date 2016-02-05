@@ -9,6 +9,7 @@ import sys
 import h5py
 import shutil
 import argparse
+import subprocess
 
 curr_script_dir = os.path.dirname(os.path.realpath(__file__))
 with open(os.path.join(curr_script_dir, 'MWTracker_dir.txt'), 'r') as f:
@@ -22,7 +23,7 @@ def print_flush(fstr):
     print(fstr)
     sys.stdout.flush()
 
-def main(video_file, mask_dir, tmp_mask_dir='', json_file='', is_single_worm = False): 
+def main(video_file, mask_dir, tmp_mask_dir='', json_file='', is_single_worm = False, cmd_original=''): 
 	try:
 		if not tmp_mask_dir: tmp_mask_dir = mask_dir
 		if mask_dir[-1] != os.sep: mask_dir += os.sep 
@@ -75,7 +76,7 @@ def main(video_file, mask_dir, tmp_mask_dir='', json_file='', is_single_worm = F
 			os.chflags(masked_image_file, not stat.UF_IMMUTABLE)
 			
 			#The file finished to be processed but the additional data was not stored. We can do this remotely. 
-			compressVideoWorkerL(video_file, mask_dir, json_file, is_single_worm)
+			compressVideoWorkerL(video_file, mask_dir, json_file, is_single_worm, cmd_original)
 
 			os.chflags(masked_image_file, stat.UF_IMMUTABLE)
 
@@ -94,5 +95,5 @@ if __name__ == "__main__":
 	parser.add_argument('--is_single_worm', action='store_true', help = 'This flag indicates if the video corresponds to the single worm case.')
 	args = parser.parse_args()
 
-	main(**vars(args))
+	main(**vars(args), cmd_original = subprocess.list2cmdline(sys.argv))
 
