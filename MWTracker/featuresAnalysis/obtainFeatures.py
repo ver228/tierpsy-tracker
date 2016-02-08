@@ -160,8 +160,8 @@ def getWormFeaturesFilt(skeletons_file, features_file, use_auto_label, use_manua
     if not (use_manual_join or use_auto_label):
         #filter using the parameters in feat_filt_param
         dd = {x : feat_filt_param[x] for x in ['min_num_skel', 'bad_seg_thresh', 'min_dist']}
-        good_traj_index = getValidIndexes(skeletons_file, **dd)
-
+        good_traj_index, _ = getValidIndexes(skeletons_file, **dd)
+        
     else:
         with pd.HDFStore(skeletons_file, 'r') as table_fid:
             trajectories_data = table_fid['/trajectories_data']
