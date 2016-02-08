@@ -91,13 +91,13 @@ class checkVideoFiles:
 		masked_image_file = self.getMaskName(video_file, mask_dir)
 		
 		if os.path.exists(masked_image_file):
-			if not self.checkBadMask(masked_image_file):
-				return 'FINISHED_GOOD' , (video_file, masked_image_file)
-			else:
+			if self.checkBadMask(masked_image_file):
 				return 'FINISHED_BAD', (video_file, masked_image_file)
+			else:
+				return 'FINISHED_GOOD' , (video_file, masked_image_file)
 		
 		else:
-			if not self.checkBadVideo(video_file, self.is_single_worm):
+			if self.checkBadVideo(video_file, self.is_single_worm):
 				return 'SOURCE_BAD', video_file
 			else:
 				return 'SOURCE_GOOD', video_file
@@ -187,20 +187,24 @@ class checkVideoFiles:
 
 	@staticmethod
 	def checkBadVideo(video_file, is_single_worm):
+		#print(video_file)
 		vid, im_width, im_height, reader_type = selectVideoReader(video_file)
-		vid.release()
+		#do not use vid.release(), if there is a corrupt video in can cause an infinite loop
+
+		#print(vid, im_width, im_height, reader_type)
 		if im_width == 0 or im_height == 0:
+		#	print('BAD!!')
 			#corrupt file, cannot read the size
-			return 1
+			return True
 		elif is_single_worm: 
 			#check for the additional files in the case of single worm
 			try:
 			#this function will throw and error if the .info.xml or .log.csv are not found
-				getAdditionalFiles(video_file)
+				info_file, stage_file = getAdditionalFiles(video_file)
+			except (IOError, FileNotFoundError):
 				return True
-			except FileNotFoundError:
-				return False
 
+		return False
 	
 	
 	@staticmethod

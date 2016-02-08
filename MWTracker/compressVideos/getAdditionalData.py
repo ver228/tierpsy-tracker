@@ -135,17 +135,20 @@ def insertDirectory(original_file, dir2add):
     dd = os.path.split(original_file);
     return os.path.join(dd[0], dir2add, dd[1])
 
+def isValidFile(file_name):
+    return os.path.exists(file_name) and (os.stat(file_name).st_size > 0)
+
 def getAdditionalFiles(video_file):
     assert(os.path.exists(video_file))
     base_name = os.path.splitext(video_file)[0]
     info_file =  base_name + '.info.xml'
     stage_file = base_name + '.log.csv'
     
-    if not (os.path.exists(info_file) and os.path.exists(stage_file)):
+    if not isValidFile(info_file) or not isValidFile(stage_file):
         #try to add the .data to look in hidden dirs
         info_file = insertDirectory(info_file, '.data')
         stage_file = insertDirectory(stage_file, '.data')
-        if not (os.path.exists(info_file) and os.path.exists(stage_file)):
+        if not isValidFile(info_file) or not isValidFile(stage_file):
             #throw and exception if the additional files do not exists 
             raise FileNotFoundError('Additional files (info.xml - log.csv) do not exists.')
 
