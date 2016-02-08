@@ -1,4 +1,4 @@
-python3 compressExpLocalChecked.py /Volumes/behavgenom_archive\$/thecus/nas207-1/experimentBackup /Volumes/behavgenom_archive\$/MaskedVideos/nas207-1/experimentBackup --pattern_include '*.avi' --pattern_exclude '*swimming*' --json /Users/ajaver/Desktop/Videos/JSON_singleworm/on_food.json --is_single_worm --only_summary
+python3 compressExpLocalChecked.py /Volumes/behavgenom_archive\$/thecus/nas207-1/experimentBackup /Volumes/behavgenom_archive\$/MaskedVideos/nas207-1/experimentBackup --pattern_include '*.avi' --pattern_exclude '*swimming*' --json /Users/ajaver/Desktop/JSON_singleworm/on_food.json --is_single_worm --only_summary
 
 python3 compressExpLocalChecked.py /Volumes/behavgenom_archive\$/thecus/nas207-1/experimentBackup /Volumes/behavgenom_archive\$/MaskedVideos/nas207-1/experimentBackup  --pattern_include '*swimming*.avi' --json /Users/ajaver/Desktop/Videos/JSON_singleworm/swimming.json --is_single_worm --only_summary
 

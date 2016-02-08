@@ -200,11 +200,21 @@ class checkVideoFiles:
 					raise ValueError
 				if mask_node.shape[0] == 0:
 					raise ValueError
-				
-				#length can vary. I need to use getTimestamp instead, but it is too cumbersome at this moment
-				#if '/video_metadata' in mask_fid and \
-				#mask_node.shape[0] != len(mask_fid.get_node('/video_metadata')):
-				#	raise
+			
+				#if we have metadata from ffprobe test that there is no missmatch between the frame number and timestamp.
+				#if '/video_metadata' in mask_fid:
+				#	mask_N_frames = mask_node.shape[0]
+				#	timestamp_N_frames = len(mask_fid.get_node('/video_metadata')['best_effort_timestamp'])
+
+				#	if mask_N_frames != timestamp_N_frames:
+						#if the timestamp and the mask length do not match we aim to correct the timestamp
+				#		best_effort_timestamp_time = mask_fid.get_node('/video_metadata')['best_effort_timestamp_time']
+				#		best_effort_timestamp = mask_fid.get_node('/video_metadata')['best_effort_timestamp']
+				#		timestamp, timestamp_time = correctTimestamp(best_effort_timestamp, best_effort_timestamp_time)
+
+				#		#we tolerate up to 1 frame of difference
+				#		if np.abs(timestamp.size - frame_number) <= 1: 
+				#			raise ValueError #raise error
 				
 				return 0
 		except (tables.exceptions.HDF5ExtError, ValueError):

@@ -18,9 +18,9 @@ class tracker_param:
         
     
     def get_param(self, min_area = 50, max_area = 1e10, thresh_C = 15,  fps = 25, fps_filter = 0, compression_buff = 25, roi_size = -1, 
-             bad_seg_thresh = 0.5, save_bad_worms = True, 
-             thresh_block_size = 61, min_displacement = 0, resampling_N = 49, 
-             has_timestamp = True, dilation_size = 9, is_single_worm = False, keep_border_data = False):
+            thresh_block_size = 61,  resampling_N = 49, 
+             has_timestamp = True, dilation_size = 9, is_single_worm = False, keep_border_data = False,
+             bad_seg_thresh = 0.8, min_displacement = 0, fit_contamination = 0.05):
         '''
         min_area - minimum area in pixels allowed
         max_area - maximum area in pixels allowed
@@ -35,7 +35,6 @@ class tracker_param:
         
         min_displacement - minimum total displacement of a trajectory to be included in the analysis
         bad_seg_thresh - minimum fraction of succesfully skeletonized frames in a worm trajectory to be considered valid
-        save_bad_worms - make videos for the bad worm trajectories (under skeletonized)
         
         resampling_N = number of segments used to renormalize the worm skeleton and contours
         '''
@@ -53,7 +52,6 @@ class tracker_param:
         self.fps = fps
         self.fps_filter = fps_filter
         self.bad_seg_thresh = bad_seg_thresh
-        self.save_bad_worms = save_bad_worms
         self.thresh_block_size = thresh_block_size
         self.min_displacement = min_displacement
         self.resampling_N = resampling_N
@@ -97,5 +95,5 @@ class tracker_param:
         #self.ind_mov_param = {'fps' : fps, 'bad_seg_thresh' : bad_seg_thresh, 'save_bad_worms': save_bad_worms}
         
         #getWormFeatures
-        self.feat_filt_param = {'min_num_skel' : 4*fps, 'bad_seg_thresh' : 0.8, 'min_dist' : 5, 'fit_contamination' : 0.05}
+        self.feat_filt_param = {'min_num_skel' : 4*fps, 'bad_seg_thresh' : bad_seg_thresh, 'min_dist' : min_displacement, 'fit_contamination' : fit_contamination}
 
