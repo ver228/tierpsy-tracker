@@ -307,7 +307,7 @@ class checkTrackFiles(checkVideoFiles):
 		results_dir = getDstDir(mask_dir, self.mask_dir_root, self.results_dir_root)
 		start_point = getStartingPoint(masked_image_file, results_dir)
 
-		if start_point > self.end_point_N:
+		if start_point > self.end_point_N or start_point == checkpoint['END']:
 			return 'FINISHED_GOOD' , (masked_image_file, results_dir)
 		
 		elif self.isBadMask(masked_image_file):

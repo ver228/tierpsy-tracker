@@ -284,14 +284,6 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
             if ret == 0: break
 
 
-        #TEST that there is no missmatch between the frame number and timestamp. If expected_frames == 0, 
-        #means that the metadata was not processed by ffprobe
-        if expected_frames != frame_number and expected_frames !=0:
-            best_effort_timestamp = mask_fid['/video_metadata']['best_effort_timestamp']
-            best_effort_timestamp_time = mask_fid['/video_metadata']['best_effort_timestamp_time']
-            timestamp, timestamp_time = correctTimestamp(best_effort_timestamp, best_effort_timestamp_time)
-            
-            assert ~np.any(np.isnan(timestamp)) and np.abs(timestamp.size - frame_number) <= 1
             
 
         #once we finished to read the whole video, we need to make sure that the hdf5 array sizes are correct.

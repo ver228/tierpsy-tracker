@@ -74,6 +74,9 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, \
                 use_auto_label = use_auto_label, use_manual_join = use_manual_join, \
                 pix2mum = pix2mum, fps = fps, smooth_window = 5)
             
+            #import pdb
+            #pdb.set_trace()
+
             #check that the worm data is not only nan's
             if np.all(np.isnan(worm.length)):
                 tot_worms = tot_worms - 1
