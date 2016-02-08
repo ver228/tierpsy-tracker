@@ -12,7 +12,7 @@ import sys
 
 from .readVideoffmpeg import readVideoffmpeg
 from .readVideoHDF5 import readVideoHDF5
-from .extractMetaData import storeMetaData, correctTimestamp
+from .extractMetaData import storeMetaData
 #from .imageDifferenceMask import imageDifferenceMask
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
@@ -272,8 +272,6 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
                 #add buffer to the hdf5 file
                 mask_dataset[(frame_number-Ibuff.shape[0]):frame_number,:,:] = Ibuff
             
-
-
             if frame_number%500 == 0:
                 #calculate the progress and put it in a string
                 progress_str = progressTime.getStr(frame_number)
@@ -282,9 +280,6 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
             
             #finish process
             if ret == 0: break
-
-
-            
 
         #once we finished to read the whole video, we need to make sure that the hdf5 array sizes are correct.
         if mask_dataset.shape[0] != frame_number:

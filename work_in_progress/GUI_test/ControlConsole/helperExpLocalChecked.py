@@ -18,6 +18,8 @@ sys.path.append('/Users/ajaver/Documents/GitHub/Multiworm_Tracking/')
 from MWTracker.helperFunctions.getTrajectoriesWorkerL import getStartingPoint, checkpoint
 from MWTracker.helperFunctions.timeCounterStr import timeCounterStr
 from MWTracker.compressVideos.getAdditionalData import getAdditionalFiles
+from MWTracker.compressVideos.extractMetaData import correctTimestamp
+from MWTracker.compressVideos.compressVideo import selectVideoReader
 
 def exploreDirs(root_dir, pattern_include = '*', pattern_exclude = ''):
 	root_dir = os.path.abspath(root_dir)
@@ -89,16 +91,16 @@ class checkVideoFiles:
 		masked_image_file = self.getMaskName(video_file, mask_dir)
 		
 		if os.path.exists(masked_image_file):
-			if not self.isBadMask(masked_image_file):
+			if not self.checkBadMask(masked_image_file):
 				return 'FINISHED_GOOD' , (video_file, masked_image_file)
 			else:
 				return 'FINISHED_BAD', (video_file, masked_image_file)
 		
 		else:
-			if self.is_single_worm and not self.hasAdditionalFiles(video_file):
+			if not self.checkBadVideo(video_file, self.is_single_worm):
 				return 'SOURCE_BAD', video_file
-		
-		return 'SOURCE_GOOD', video_file
+			else:
+				return 'SOURCE_GOOD', video_file
 
 
 	def filterFiles(self, valid_files):
@@ -184,15 +186,26 @@ class checkVideoFiles:
 		return masked_image_file
 
 	@staticmethod
-	def hasAdditionalFiles(video_file):
-		try:
+	def checkBadVideo(video_file, is_single_worm):
+		vid, im_width, im_height, reader_type = selectVideoReader(video_file)
+		vid.release()
+		if im_width == 0 or im_height == 0:
+			#corrupt file, cannot read the size
+			return 1
+		elif is_single_worm: 
+			#check for the additional files in the case of single worm
+			try:
 			#this function will throw and error if the .info.xml or .log.csv are not found
-			getAdditionalFiles(video_file)
-			return True
-		except FileNotFoundError:
-			return False
+				getAdditionalFiles(video_file)
+				return True
+			except FileNotFoundError:
+				return False
+
+	
+	
 	@staticmethod
-	def isBadMask(masked_image_file):
+	def checkBadMask(masked_image_file):
+		#test if the file finished correctly
 		try:
 			with tables.File(masked_image_file, 'r') as mask_fid:
 				mask_node = mask_fid.get_node('/mask')
@@ -200,25 +213,31 @@ class checkVideoFiles:
 					raise ValueError
 				if mask_node.shape[0] == 0:
 					raise ValueError
-			
-				#if we have metadata from ffprobe test that there is no missmatch between the frame number and timestamp.
-				#if '/video_metadata' in mask_fid:
-				#	mask_N_frames = mask_node.shape[0]
-				#	timestamp_N_frames = len(mask_fid.get_node('/video_metadata')['best_effort_timestamp'])
-
-				#	if mask_N_frames != timestamp_N_frames:
-						#if the timestamp and the mask length do not match we aim to correct the timestamp
-				#		best_effort_timestamp_time = mask_fid.get_node('/video_metadata')['best_effort_timestamp_time']
-				#		best_effort_timestamp = mask_fid.get_node('/video_metadata')['best_effort_timestamp']
-				#		timestamp, timestamp_time = correctTimestamp(best_effort_timestamp, best_effort_timestamp_time)
-
-				#		#we tolerate up to 1 frame of difference
-				#		if np.abs(timestamp.size - frame_number) <= 1: 
-				#			raise ValueError #raise error
-				
-				return 0
-		except (tables.exceptions.HDF5ExtError, ValueError):
+		except (tables.exceptions.HDF5ExtError, tables.exceptions.NoSuchNodeError, ValueError):
 			return 1
+
+		#test if the file timestamp length exists or is correct
+		try:
+			with tables.File(masked_image_file, 'r') as mask_fid:
+				#if we have metadata from ffprobe test that there is no missmatch between the frame number and timestamp.
+				mask_N_frames = mask_fid.get_node('/mask').shape[0]
+				timestamp_N_frames = len(mask_fid.get_node('/video_metadata')) #size of the table
+				if mask_N_frames != timestamp_N_frames:
+					#if the timestamp and the mask length do not match we aim to correct the timestamp
+					best_effort_timestamp_time = mask_fid.get_node('/video_metadata').col('best_effort_timestamp_time')
+					best_effort_timestamp = mask_fid.get_node('/video_metadata').col('best_effort_timestamp')
+					timestamp, timestamp_time = correctTimestamp(best_effort_timestamp, best_effort_timestamp_time)
+
+					#print('!!!! %i %i' % (timestamp.size, mask_N_frames))
+					#we tolerate up to 1 frame of difference
+					if abs(timestamp.size - mask_N_frames) > 1: 
+						raise ValueError #raise error
+		except (tables.exceptions.HDF5ExtError, tables.exceptions.NoSuchNodeError, ValueError):
+			return 2
+
+		#no problems with the file
+		return 0
+		
 
 class checkTrackFiles(checkVideoFiles):
 	def __init__(self, mask_dir_root, tmp_dir_root = '', \
@@ -310,7 +329,7 @@ class checkTrackFiles(checkVideoFiles):
 		if start_point > self.end_point_N or start_point == checkpoint['END']:
 			return 'FINISHED_GOOD' , (masked_image_file, results_dir)
 		
-		elif self.isBadMask(masked_image_file):
+		elif self.checkBadMask(masked_image_file):
 			return 'SOURCE_BAD', masked_image_file
 
 		return 'SOURCE_GOOD', masked_image_file
