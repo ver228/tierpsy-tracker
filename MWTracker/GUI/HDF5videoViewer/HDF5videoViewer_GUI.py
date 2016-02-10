@@ -111,7 +111,7 @@ class HDF5videoViewer_GUI(QMainWindow):
         
         self.label_height = self.ui.imageCanvas.height()
         self.label_width = self.ui.imageCanvas.width()
-        
+
         self.original_image = self.image_group[self.frame_number,:,:];
         
         #equalize and cast if it is not uint8
@@ -120,14 +120,18 @@ class HDF5videoViewer_GUI(QMainWindow):
             bot = np.min(self.original_image)
 
             self.original_image = (self.original_image-bot)*255./(top-bot)
-
             self.original_image = np.round(self.original_image).astype(np.uint8)
             #print(self.original_image)
-        image = QImage(self.original_image.data, 
-            self.image_height, self.image_width, self.original_image.strides[0], QImage.Format_Indexed8)
-        image = image.scaled(self.label_width, self.label_height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         
-        self.ui.imageCanvas.setPixmap(QPixmap.fromImage(image));
+        image = QImage(self.original_image.data, 
+            self.image_width, self.image_height, self.original_image.strides[0], QImage.Format_Indexed8)
+        
+        #image = image.scaled(self.label_width, self.label_height, Qt.KeepAspectRatio)#, Qt.SmoothTransformation)
+        print(image)
+
+        pixmap = QPixmap.fromImage(image)
+        pixmap = pixmap.scaled(self.label_width, self.label_height, Qt.KeepAspectRatio)
+        self.ui.imageCanvas.setPixmap(pixmap);
         
         progress = round(100*self.frame_number/self.tot_frames)
         if progress != self.ui.imageSlider.value():
@@ -201,8 +205,8 @@ class HDF5videoViewer_GUI(QMainWindow):
                     QMessageBox.Ok)
 
         self.tot_frames = self.image_group.shape[0]
-        self.image_height = self.image_group.shape[2]
-        self.image_width = self.image_group.shape[1]
+        self.image_height = self.image_group.shape[1]
+        self.image_width = self.image_group.shape[2]
             
         self.ui.spinBox_frame.setMaximum(self.tot_frames-1)
 

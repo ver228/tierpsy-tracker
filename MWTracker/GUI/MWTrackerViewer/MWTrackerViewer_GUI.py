@@ -510,7 +510,7 @@ class MWTrackerViewer_GUI(QMainWindow):
 		image = QImage(self.original_image.data, 
 			self.image_width, self.image_height, self.original_image.strides[0], QImage.Format_Indexed8)
 		image = image.convertToFormat(QImage.Format_RGB32, Qt.AutoColor)
-		image = image.scaled(self.label_width, self.label_height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+		image = image.scaled(self.label_width, self.label_height, Qt.KeepAspectRatio)#, Qt.SmoothTransformation)
 		
 		self.img_h_ratio = image.height()/self.image_height;
 		self.img_w_ratio = image.width()/self.image_width;
@@ -613,8 +613,10 @@ class MWTrackerViewer_GUI(QMainWindow):
 		#worm_roi = cv2.cvtColor(worm_img, cv2.COLOR_GRAY2RGB);
 
 		worm_img = QImage(worm_roi.data, worm_roi.shape[0], worm_roi.shape[1], worm_roi.strides[0], QImage.Format_Indexed8)
-		worm_img = worm_img.scaled(canvas_size,canvas_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+		worm_img = worm_img.convertToFormat(QImage.Format_RGB32, Qt.AutoColor)
 
+		worm_img = worm_img.scaled(canvas_size,canvas_size, Qt.KeepAspectRatio)#, Qt.SmoothTransformation)
+		
 		if isDrawSkel:
 			if roi_data['has_skeleton']:
 				c_ratio = canvas_size/roi_data['roi_size'];
@@ -657,8 +659,9 @@ class MWTrackerViewer_GUI(QMainWindow):
 
 				worm_mask = QImage(worm_mask.data, worm_mask.shape[0], 
 					worm_mask.shape[1], worm_mask.strides[0], QImage.Format_Indexed8)
+				worm_mask = worm_mask.convertToFormat(QImage.Format_RGB32, Qt.AutoColor)
 				worm_mask = worm_mask.scaled(canvas_size,canvas_size, 
-					Qt.KeepAspectRatio, Qt.SmoothTransformation)
+					Qt.KeepAspectRatio)#, Qt.SmoothTransformation)
 				worm_mask = QPixmap.fromImage(worm_mask)
 
 				worm_mask = worm_mask.createMaskFromColor(Qt.black)
@@ -667,7 +670,6 @@ class MWTrackerViewer_GUI(QMainWindow):
 				p.drawPixmap(worm_img.rect(), worm_mask, worm_mask.rect())
 				p.end()
 
-		
 		
 		pixmap = QPixmap.fromImage(worm_img)
 		wormCanvas.setPixmap(pixmap);
