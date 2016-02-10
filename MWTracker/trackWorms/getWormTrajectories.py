@@ -421,7 +421,7 @@ def correctTrajectories(trajectories_file, is_single_worm, join_traj_param):
         joinTrajectories(trajectories_file, **join_traj_param)
 
     with tables.File(trajectories_file, "r+") as traj_fid:
-        traj_fid['/plate_worms']._v_attrs['has_finished'] = 2
+        traj_fid.get_node('/plate_worms')._v_attrs['has_finished'] = 2
         fid.flush()
 
 
