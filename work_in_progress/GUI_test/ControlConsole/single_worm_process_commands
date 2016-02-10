@@ -20,7 +20,6 @@ python3 compressExpLocalChecked.py /Volumes/behavgenom_archive\$/thecus/nas207-3
 python3 compressExpLocalChecked.py /Volumes/behavgenom_archive\$/thecus/nas207-3/Data/from\ pc207-8/ /Volumes/behavgenom_archive\$/MaskedVideos/nas207-3/Data/from\ pc207-8/  --pattern_include '*swimming*.avi' --json /Users/ajaver/Desktop/JSON_singleworm/swimming.json --is_single_worm
 
 
-
 python3 trackExpLocalChecked.py /Volumes/behavgenom_archive\$/MaskedVideos/nas207-1/experimentBackup --is_single_worm --end_point SKE_ORIENT --max_num_process 12
 
 python3 trackExpLocalChecked.py /Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos --tmp_dir ''
