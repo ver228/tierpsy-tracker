@@ -137,7 +137,7 @@ class getTrajectoriesWorkerL():
             #we need to force parameters to obtain the correct features
             self.use_manual_join = False
             self.use_auto_label = False
-            self.param.head_tail_param['min_dist'] = 0
+            #self.param.head_tail_param['min_dist'] = 0
 
         #derive the inputs, functions, and output requires for each point in the analysis
         self.getPointsParameters()
@@ -208,6 +208,8 @@ class getTrajectoriesWorkerL():
             if not self.use_manual_join and current_point == 'FEAT_MANUAL_CREATE': continue
             if current_point == 'END': break
 
+            print(current_point, self.points_parameters[current_point]['func'])
+            print(self.points_parameters[current_point]['argkws'])
             execThisPoint(current_point, **self.points_parameters[current_point], 
                 commit_hash=self.commit_hash, cmd_original=self.cmd_original)
             

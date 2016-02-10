@@ -103,18 +103,45 @@ def getStraightenWormInt(worm_img, skeleton, half_width):
     grid_y = skeleton[:,1] + r_ind[:, np.newaxis]*np.sin(perp_angles);
     
     
+    mid_c = width_resampling//2 #middle index
+    #print(grid_x.shape)
+    
+    #check if the grid orientation is correct    
+    #%% x1y2 + x2y3 + x3y1 - x2y1 - x3y2 - x1y3
+    def triangSignedArea(xx,yy): 
+        return xx[0]*yy[1] + xx[1]*yy[2] + xx[2]*yy[0] - yy[0]*xx[1] - yy[1]*xx[2] - yy[2]*xx[0]
+    
+    A = []
+    xx = (grid_x[-1,0], grid_x[0,0], grid_x[mid_c,1])
+    yy = (grid_y[-1,0], grid_y[0,0], grid_y[mid_c,1])
+    
+    A.append(triangSignedArea(xx,yy))
+    
+    for ii in range(1,grid_x.shape[1]):
+        xx = (grid_x[0,ii], grid_x[-1,ii], grid_x[mid_c,ii-1])
+        yy = (grid_y[0,ii], grid_y[-1,ii], grid_y[mid_c,ii-1])
+        
+        A.append(triangSignedArea(xx,yy))
+    
+    assert (all(a<0 for a in A))
+    #signed_area = np.sum(contour[:, :-1,0]*contour[:, 1:,1]-contour[:, 1:,0]*contour[:, :-1,1], axis=1)
+    
+    
+    
+    
     f = RectBivariateSpline(np.arange(worm_img.shape[0]), np.arange(worm_img.shape[1]), worm_img)
     straighten_worm =  f.ev(grid_y, grid_x) #return interpolated intensity map
     
-    return straighten_worm #return interpolated intensity map
+    return straighten_worm, grid_x, grid_y #return interpolated intensity map
 
 
 if __name__ == '__main__':
     #base directory
+    #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch5_17112015_205616.hdf5'
     masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_18112015_075624.hdf5'
-    skeletons_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/Results/CSTCTest_Ch1_18112015_075624_skeletons.hdf5'
-    intensities_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/Results/CSTCTest_Ch1_18112015_075624_intensities.hdf5'
-
+    skeletons_file = masked_image_file.replace('MaskedVideos', 'Results')[:-5] + '_skeletons.hdf5'
+    intensities_file = skeletons_file.replace('_skeletons', '_intensities')
+    
     #MAKE VIDEOStho
     roi_size = 128
     width_resampling = 15
@@ -150,7 +177,7 @@ if __name__ == '__main__':
     
     #test, only with a single index and less time
     #trajectories_data = trajectories_data[trajectories_data['worm_index_joined'] == 2]
-    #trajectories_data = trajectories_data[trajectories_data['frame_number'] < 100]
+    #trajectories_data = trajectories_data[trajectories_data['frame_number'] < 10]
     
     
     tot_rows = len(trajectories_data)
@@ -209,7 +236,7 @@ if __name__ == '__main__':
                 assert not np.isnan(skeleton[0,0])
                 
                 skel_smooth = smoothSkeletons(skeleton, length_resampling = length_resampling, smooth_win = smooth_win, pol_degree = pol_degree)
-                straighten_worm = getStraightenWormInt(worm_img, skel_smooth, half_width)
+                straighten_worm,grid_x, grid_y = getStraightenWormInt(worm_img, skel_smooth, half_width)
                 
                 #straighten_worm = getStraightenWormInt(worm_img, skeleton, half_width = half_widths[worm_index], \
                 #width_resampling = width_resampling, length_resampling = length_resampling)
@@ -219,4 +246,8 @@ if __name__ == '__main__':
             if frame % 500 == 0:
                 progress_str = progressTime.getStr(frame)
                 print('' + ' ' + progress_str);   
-        
+#%%
+with tables.File(intensities_file, "r+") as int_file_id:
+    straighten_worm = int_file_id.get_node('/straighten_worm_intensity')[0]
+    plt.imshow(straighten_worm, interpolation='none', cmap='gray')
+    plt.grid('off')

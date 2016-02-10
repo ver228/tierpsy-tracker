@@ -425,30 +425,32 @@ def getValidIndexes(skel_file, min_num_skel = 100, bad_seg_thresh = 0.8, min_dis
     
     if len(trajectories_data['worm_index_joined'].unique()) == 1:
         good_skel_row = trajectories_data['skeleton_id'][trajectories_data.has_skeleton.values.astype(np.bool)].values
-        return (trajectories_data, np.array([1]), good_skel_row)
+        return (np.array([1]), good_skel_row)
     
-    #get the fraction of worms that were skeletonized per trajectory
-    how2agg = {'has_skeleton':['mean', 'sum'], 'coord_x':['max', 'min', 'count'],
-               'coord_y':['max', 'min']}
-    tracks_data = trajectories_data.groupby('worm_index_joined').agg(how2agg)
-    
-    delX = tracks_data['coord_x']['max'] - tracks_data['coord_x']['min']
-    delY = tracks_data['coord_y']['max'] - tracks_data['coord_y']['min']
-    
-    max_avg_dist = np.sqrt(delX*delX + delY*delY)#/tracks_data['coord_x']['count']
-    
-    skeleton_fracc = tracks_data['has_skeleton']['mean']
-    skeleton_tot = tracks_data['has_skeleton']['sum']
-    
-    good_worm = (skeleton_fracc>=bad_seg_thresh) & (skeleton_tot>=min_num_skel)
-    good_worm = good_worm & (max_avg_dist>min_dist)
-    
-    good_traj_index = good_worm[good_worm].index
+    else:
+        #get the fraction of worms that were skeletonized per trajectory
+        how2agg = {'has_skeleton':['mean', 'sum'], 'coord_x':['max', 'min', 'count'],
+                   'coord_y':['max', 'min']}
+        tracks_data = trajectories_data.groupby('worm_index_joined').agg(how2agg)
+        
+        delX = tracks_data['coord_x']['max'] - tracks_data['coord_x']['min']
+        delY = tracks_data['coord_y']['max'] - tracks_data['coord_y']['min']
+        
+        max_avg_dist = np.sqrt(delX*delX + delY*delY)#/tracks_data['coord_x']['count']
+        
+        skeleton_fracc = tracks_data['has_skeleton']['mean']
+        skeleton_tot = tracks_data['has_skeleton']['sum']
+        
+        good_worm = (skeleton_fracc>=bad_seg_thresh) & (skeleton_tot>=min_num_skel)
+        good_worm = good_worm & (max_avg_dist>min_dist)
+        
+        good_traj_index = good_worm[good_worm].index
 
-    good_row = (trajectories_data.worm_index_joined.isin(good_traj_index)) \
-    & (trajectories_data.has_skeleton.values.astype(np.bool))
-    
-    good_skel_row = trajectories_data.loc[good_row, 'skeleton_id'].values
-    assert np.all(good_skel_row == trajectories_data[good_row].index)
-    return (good_traj_index, good_skel_row)
+        good_row = (trajectories_data.worm_index_joined.isin(good_traj_index)) \
+        & (trajectories_data.has_skeleton.values.astype(np.bool))
+        
+        good_skel_row = trajectories_data.loc[good_row, 'skeleton_id'].values
+        assert np.all(good_skel_row == trajectories_data[good_row].index)
+        
+        return (good_traj_index, good_skel_row)
 

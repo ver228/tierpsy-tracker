@@ -414,6 +414,17 @@ area_ratio_lim = (0.5, 2), buffer_size = 25):
     print(base_name + ' ' + progress_str);
     sys.stdout.flush()
 
+def correctTrajectories(trajectories_file, is_single_worm, join_traj_param):
+    if is_single_worm: 
+        correctSingleWormCase(trajectories_file)
+    else:
+        joinTrajectories(trajectories_file, **join_traj_param)
+
+    with tables.File(trajectories_file, "r+") as traj_fid:
+        traj_fid['/plate_worms']._v_attrs['has_finished'] = 2
+        fid.flush()
+
+
 def correctSingleWormCase(trajectories_file):
     '''
     Only keep the object with the largest area when cosider the case of individual worms.
@@ -435,18 +446,20 @@ def correctSingleWormCase(trajectories_file):
         
     valid_rows = valid_rows[~np.isnan(valid_rows)]
 
-    plate_worms = plate_worms.ix[valid_rows]
-    plate_worms['worm_index'] = np.array(1, dtype=np.int32)
-    
+    #plate_worms = plate_worms.ix[valid_rows]
+    plate_worms['worm_index_joined'] = np.array(-1, dtype=np.int32) #np.array(1, dtype=np.int32)
+    plate_worms.loc[valid_rows, 'worm_index_joined'] = 1
+
     with tables.File(trajectories_file, "r+") as traj_fid:
         table_filters = tables.Filters(complevel=5, complib='zlib', shuffle=True, fletcher32=True)
         newT = traj_fid.create_table('/', 'plate_worms_t', 
                                         obj = plate_worms.to_records(index=False), 
                                         filters=table_filters)
-        newT._v_attrs['has_finished'] = 1
+        newT._v_attrs['has_finished'] = 2
         traj_fid.remove_node('/', 'plate_worms')
         newT.rename('plate_worms')
 
+        
 def joinTrajectories(trajectories_file, min_track_size = 50, \
 max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
     '''
@@ -533,11 +546,7 @@ max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
         plate_worms._v_attrs['has_finished'] = 2
         fid.flush()
 
-def correctTrajectories(trajectories_file, is_single_worm, join_traj_param):
-    if is_single_worm: 
-        correctSingleWormCase(trajectories_file)
-    else:
-        joinTrajectories(trajectories_file, **join_traj_param)
+
 
 
 #DEPRECATED
