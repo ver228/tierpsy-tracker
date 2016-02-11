@@ -1,6 +1,7 @@
 MAX_NUM_PROCESS=6
 
-for SET_N in 8 9 10
+for SET_N in 8 9 10 13 14 15 16
+
 do
 python3 compressExpLocalChecked.py \
 /Volumes/behavgenom_archive\$/thecus/nas207-3/Data/from\ pc207-$SET_N/ \
