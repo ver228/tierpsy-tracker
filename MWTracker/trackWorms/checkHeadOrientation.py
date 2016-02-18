@@ -58,7 +58,7 @@ def calculateHeadTailAng(skeletons, segment4angle, good):
     angles_tail[good], _ = getAnglesDelta(dx,dy)
     return angles_head, angles_tail
 
-def getBlocksIDs(invalid, max_gap_allowed = 10):
+def getBlocksIDs(invalid, max_gap_allowed):
     
     '''The skeleton array is divided in blocks of contingous skeletons with 
     a gap between unskeletonized frames less than max_gap_allowed'''
@@ -69,7 +69,7 @@ def getBlocksIDs(invalid, max_gap_allowed = 10):
     block_ind = np.zeros_like(good_ind)
     block_ind[0] = 1;
     for ii, delT in enumerate(delTs):
-        if delT <= max_gap_allowed:
+        if delT < max_gap_allowed:
             block_ind[ii+1] = block_ind[ii];
         else:
             block_ind[ii+1] = block_ind[ii]+1;
@@ -155,7 +155,7 @@ def correctHeadTail(skeletons_file, max_gap_allowed = 10, window_std = 25, \
         worm_data = WormClass(skeletons_file, worm_index, \
                     rows_range = (row_range['min'],row_range['max']))
         
-        if np.any(~np.isnan(worm_data.skeleton_length)):
+        if not np.all(np.isnan(worm_data.skeleton_length)):
             is_switched_skel, roll_std = isWormHTSwitched(worm_data.skeleton, \
             segment4angle = segment4angle, max_gap_allowed = max_gap_allowed, \
             window_std = window_std, min_block_size=min_block_size)

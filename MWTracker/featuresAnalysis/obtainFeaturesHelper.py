@@ -23,7 +23,6 @@ from collections import OrderedDict
 #add movement_validation path
 #from .. import config_param as param
 #sys.path.append(movement_validation_dir)
-from MWTracker import config_param #import the movement_validation directory
 from open_worm_analysis_toolbox import NormalizedWorm, VideoInfo
 from open_worm_analysis_toolbox.statistics import specifications
 #from open_worm_analysis_toolbox.features.worm_features import WormFeatures, WormFeaturesDos

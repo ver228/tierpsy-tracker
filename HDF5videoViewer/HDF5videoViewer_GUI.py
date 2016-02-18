@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 from PyQt5.QtCore import QDir, QTimer, Qt
 from PyQt5.QtGui import QPixmap, QImage
-from MWTracker.GUI.HDF5videoViewer.HDF5videoViewer_ui import Ui_ImageViewer
+from HDF5videoViewer_ui import Ui_ImageViewer
 
 import tables
 import os

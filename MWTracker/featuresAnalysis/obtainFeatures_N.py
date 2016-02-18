@@ -18,10 +18,9 @@ from collections import OrderedDict
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
 
-from MWTracker import config_param
+from MWTracker.featuresAnalysis.obtainFeaturesHelper import wormStatsClass, WormFromTable
 from open_worm_analysis_toolbox import WormFeatures, FeatureProcessingOptions
 
-from MWTracker.featuresAnalysis.obtainFeaturesHelper import wormStatsClass, WormFromTable
 
 # -*- coding: utf-8 -*-
 """

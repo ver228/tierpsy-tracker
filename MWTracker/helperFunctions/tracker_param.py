@@ -17,10 +17,11 @@ class tracker_param:
             self.get_param()
         
     
-    def get_param(self, min_area = 50, max_area = 1e10, thresh_C = 15,  fps = 25, fps_filter = 0, compression_buff = 25, roi_size = -1, 
-            thresh_block_size = 61,  resampling_N = 49, 
-             has_timestamp = True, dilation_size = 9, is_single_worm = False, keep_border_data = False,
-             bad_seg_thresh = 0.8, min_displacement = 0, fit_contamination = 0.05):
+    def get_param(self, min_area = 50, max_area = 1e10, thresh_C = 15,  has_timestamp = True, 
+            dilation_size = 9, compression_buff = 25, keep_border_data = False, roi_size = -1, 
+            thresh_block_size = 61, fps = 25, fps_filter = 0, threshold_factor = 1.,
+            resampling_N = 49,  max_gap_allowed_block = -1, is_single_worm = False, 
+            bad_seg_thresh = 0.8, min_displacement = 0, fit_contamination = 0.05):
         '''
         min_area - minimum area in pixels allowed
         max_area - maximum area in pixels allowed
@@ -72,7 +73,7 @@ class tracker_param:
         
         self.trajectories_param = {'initial_frame' : 0, 'last_frame': -1,
                               'min_area': min_area/2, 'min_length':min_track_lenght, 'max_allowed_dist':max_allowed_dist, 
-                              'area_ratio_lim': (0.5, 2), 'buffer_size': compression_buff}#, 'is_single_worm' : is_single_worm}
+                              'area_ratio_lim': (0.5, 2), 'buffer_size': compression_buff, 'threshold_factor' : threshold_factor}
         
         #joinTrajectories
         min_track_size = max(1, fps_filter*2)
@@ -88,7 +89,8 @@ class tracker_param:
                                'min_mask_area' : min_area/2, 'smoothed_traj_param' : self.smoothed_traj_param}
         
         #correctHeadTail
-        self.head_tail_param = {'max_gap_allowed' : fps//2, 'window_std' : fps, 'segment4angle' : round(resampling_N/10), 
+        if max_gap_allowed_block <0: fps//2
+        self.head_tail_param = {'max_gap_allowed' : max_gap_allowed_block, 'window_std' : fps, 'segment4angle' : round(resampling_N/10), 
                            'min_block_size' : fps*10}
         
         #writeIndividualMovies. Deprecated

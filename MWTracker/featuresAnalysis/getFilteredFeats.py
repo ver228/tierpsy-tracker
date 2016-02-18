@@ -131,7 +131,7 @@ def calculateWidths(skeletons_file):
 
         for part in worm_partitions:        
             widths_means[part].rename(name_width_fun(part)) #now we can use the real name
-        print_flush(base_name + 'Calculating mean widths. Finished. Total time :' + progress_timer.getTimeStr())
+        print_flush(base_name + ' Calculating mean widths. Finished. Total time :' + progress_timer.getTimeStr())
 
 def calculateAreas(skeletons_file):
 

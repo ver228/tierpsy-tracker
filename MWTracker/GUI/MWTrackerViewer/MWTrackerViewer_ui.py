@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'imageviewer.ui'
 #
-# Created by: PyQt5 UI code generator 5.5
+# Created by: PyQt5 UI code generator 5.5.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_ImageViewer(object):
     def setupUi(self, ImageViewer):
         ImageViewer.setObjectName("ImageViewer")
-        ImageViewer.resize(1327, 802)
+        ImageViewer.resize(1407, 802)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -45,7 +45,7 @@ class Ui_ImageViewer(object):
         self.pushButton_ROI1_RW.setObjectName("pushButton_ROI1_RW")
         self.gridLayout_3.addWidget(self.pushButton_ROI1_RW, 1, 7, 1, 1)
         self.comboBox_ROI2 = QtWidgets.QComboBox(self.centralWidget)
-        self.comboBox_ROI2.setEditable(False)
+        self.comboBox_ROI2.setEditable(True)
         self.comboBox_ROI2.setObjectName("comboBox_ROI2")
         self.gridLayout_3.addWidget(self.comboBox_ROI2, 4, 5, 1, 1)
         self.checkBox_ROI2 = QtWidgets.QCheckBox(self.centralWidget)
@@ -269,7 +269,7 @@ class Ui_ImageViewer(object):
         self.gridLayout_4.addLayout(self.gridLayout, 1, 1, 1, 1)
         ImageViewer.setCentralWidget(self.centralWidget)
         self.menuBar = QtWidgets.QMenuBar(ImageViewer)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 1327, 22))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 1407, 22))
         self.menuBar.setObjectName("menuBar")
         ImageViewer.setMenuBar(self.menuBar)
         self.mainToolBar = QtWidgets.QToolBar(ImageViewer)

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1327</width>
+    <width>1407</width>
     <height>802</height>
    </rect>
   </property>
@@ -61,7 +61,7 @@
       <item row="4" column="5">
        <widget class="QComboBox" name="comboBox_ROI2">
         <property name="editable">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -536,7 +536,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1327</width>
+     <width>1407</width>
      <height>22</height>
     </rect>
    </property>

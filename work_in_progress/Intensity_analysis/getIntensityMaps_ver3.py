@@ -74,13 +74,6 @@ def getStraightenWormInt(worm_img, skeleton, half_width, width_resampling):
     assert half_width>0 or cnt_widths.size>0
     assert not np.any(np.isnan(skeleton))
     
-    #if ang_smooth_win%2 == 1: ang_smooth_win += 1; 
-    
-    #assert np.max(skelX) < worm_img.shape[0]
-    #assert np.max(skelY) < worm_img.shape[1]
-    #assert np.min(skelY) >= 0
-    #assert np.min(skelY) >= 0
-    
     dX = np.diff(skeleton[:,0])
     dY = np.diff(skeleton[:,1])
     
@@ -102,33 +95,6 @@ def getStraightenWormInt(worm_img, skeleton, half_width, width_resampling):
     grid_x = skeleton[:,0] + r_ind[:, np.newaxis]*np.cos(perp_angles);
     grid_y = skeleton[:,1] + r_ind[:, np.newaxis]*np.sin(perp_angles);
     
-    
-    mid_c = width_resampling//2 #middle index
-    #print(grid_x.shape)
-    
-    #check if the grid orientation is correct    
-    #%% x1y2 + x2y3 + x3y1 - x2y1 - x3y2 - x1y3
-    def triangSignedArea(xx,yy): 
-        return xx[0]*yy[1] + xx[1]*yy[2] + xx[2]*yy[0] - yy[0]*xx[1] - yy[1]*xx[2] - yy[2]*xx[0]
-    
-    A = []
-    xx = (grid_x[-1,0], grid_x[0,0], grid_x[mid_c,1])
-    yy = (grid_y[-1,0], grid_y[0,0], grid_y[mid_c,1])
-    
-    A.append(triangSignedArea(xx,yy))
-    
-    for ii in range(1,grid_x.shape[1]):
-        xx = (grid_x[0,ii], grid_x[-1,ii], grid_x[mid_c,ii-1])
-        yy = (grid_y[0,ii], grid_y[-1,ii], grid_y[mid_c,ii-1])
-        
-        A.append(triangSignedArea(xx,yy))
-    
-    assert (all(a<0 for a in A))
-    #signed_area = np.sum(contour[:, :-1,0]*contour[:, 1:,1]-contour[:, 1:,0]*contour[:, :-1,1], axis=1)
-    
-    
-    
-    
     f = RectBivariateSpline(np.arange(worm_img.shape[0]), np.arange(worm_img.shape[1]), worm_img)
     straighten_worm =  f.ev(grid_y, grid_x) #return interpolated intensity map
     
@@ -136,25 +102,24 @@ def getStraightenWormInt(worm_img, skeleton, half_width, width_resampling):
 
 def getIntensityMaps(masked_image_file, skeletons_file, intensities_file, 
                      width_resampling = 15, length_resampling = 131, min_num_skel = 100,
-                     smooth_win = 11, pol_degree = 3, width_average_win= 7):
+                     smooth_win = 11, pol_degree = 3, width_percentage = 0.5):
     
     if length_resampling % 2 == 0: length_resampling += 1
-    if width_resampling % 2 == 0: width_resampling += 1
-    if width_average_win % 2 == 0: width_average_win += 1
-    
-    assert width_average_win <= width_resampling
+    if width_resampling % 2 == 0: width_resampling += 1    
+    #if width_average_win % 2 == 0: width_average_win += 1
+    #assert width_average_win <= width_resampling
     assert smooth_win > pol_degree
     assert min_num_skel > 0
     
-    mid_w = width_resampling//2
-    win_w = width_average_win//2
-    width_win_ind = (mid_w-win_w, mid_w + win_w + 1) #add plus one to use the correct numpy indexing
-    
-    #width_resampling//2
+    #mid_w = width_resampling//2
+    #win_w = width_average_win//2
+    #width_win_ind = (mid_w-win_w, mid_w + win_w + 1) #add plus one to use the correct numpy indexing
     
     table_filters = tables.Filters(complevel=5, complib='zlib', 
                                    shuffle=True, fletcher32=True)
 
+
+    #might be better to a complete table with the int_map_id in the skeletons_file, and maybe a copy in intensities_file
     with pd.HDFStore(skeletons_file, 'r') as fid:
         trajectories_data = fid['/trajectories_data']
         if 'auto_label' in trajectories_data:
@@ -169,9 +134,8 @@ def getIntensityMaps(masked_image_file, skeletons_file, intensities_file,
         else:
             trajectories_data = trajectories_data[trajectories_data['has_skeleton']==1]
         
-        #trajectories_data = trajectories_data[trajectories_data['frame_number']>1750]
-        #trajectories_data = trajectories_data[trajectories_data['frame_number']<1920]
-        #trajectories_data = trajectories_data[trajectories_data['worm_index_joined'] == 16]
+        #trajectories_data = trajectories_data[trajectories_data['frame_number']<500]
+       
        
        
     trajectories_data['int_map_id'] = np.arange(len(trajectories_data))
@@ -195,25 +159,19 @@ def getIntensityMaps(masked_image_file, skeletons_file, intensities_file,
         skel_width_tab = ske_file_id.get_node('/width_midbody')
         
 
-        
         #create array to save the intensities
         filters = tables.Filters(complevel=5, complib='zlib', shuffle=True)
         
         worm_int_avg_tab = int_file_id.create_carray("/", "straighten_worm_intensity_median", \
-                                   tables.Float16Atom(dflt=np.nan), \
+                                   tables.Float32Atom(dflt=np.nan), \
                                    (tot_rows, length_resampling), \
                                     chunkshape = (1, length_resampling),\
                                     filters = filters);
-        worm_int_avg_tab.attrs['width_win_ind'] = width_win_ind
-        
-        worm_int_tab = int_file_id.create_carray("/", "straighten_worm_intensity", \
-                                   tables.Float16Atom(dflt=np.nan), \
-                                   (tot_rows, length_resampling,width_resampling), \
-                                    chunkshape = (1, length_resampling,width_resampling),\
+        worm_int_std_tab = int_file_id.create_carray("/", "worm_intensity_std", \
+                                   tables.Float32Atom(dflt=np.nan), \
+                                   (tot_rows,),\
                                     filters = filters);
-        
-        #xx = np.median(dd[mm:mm+num_min_skel, :, 5:11], axis=(0,2))
-
+                                    
         progressTime = timeCounterStr('Obtaining intensity maps.');
         
         for frame, frame_data in trajectories_data.groupby('frame_number'):
@@ -226,7 +184,7 @@ def getIntensityMaps(masked_image_file, skeletons_file, intensities_file,
                 worm_img, roi_corner = getWormROI(img, row_data['coord_x'], row_data['coord_y'], row_data['roi_size'])
                 
                 skeleton = skel_tab[skeleton_id,:,:]-roi_corner
-                half_width = skel_width_tab[skeleton_id]/2
+                half_width = (width_percentage*skel_width_tab[skeleton_id])/2
                 
                 assert not np.isnan(skeleton[0,0])
                 
@@ -234,35 +192,23 @@ def getIntensityMaps(masked_image_file, skeletons_file, intensities_file,
                 straighten_worm,grid_x, grid_y = getStraightenWormInt(worm_img, skel_smooth, half_width=half_width, width_resampling=width_resampling)
                 
                 #if you use the mean it is better to do not use float16
-                int_avg = np.median(straighten_worm[width_win_ind[0]:width_win_ind[1],:], axis = 0)
-                
-                #straighten_worm = getStraightenWormInt(worm_img, skeleton, half_width = half_widths[worm_index], \
-                #width_resampling = width_resampling, length_resampling = length_resampling)
-                #skel_smooth_tab[int_map_id] = skel_smooth             
-                worm_int_tab[int_map_id]  = straighten_worm.T
+                #int_avg = np.median(straighten_worm[width_win_ind[0]:width_win_ind[1],:], axis = 0)
+                int_avg = np.median(straighten_worm, axis = 0)
                 worm_int_avg_tab[int_map_id] = int_avg
-            
-            
-#            if frame % 10 == 0:
-#                #return skeleton, straighten_worm
-#                plt.figure()
-#                plt.plot(skeleton[:,0], skeleton[:,1], '-o')
-#                plt.plot(skeleton[0,0], skeleton[0,1], 'sr')
-#                
-#                plt.figure()
-#                plt.imshow(straighten_worm.T, cmap = 'gray', interpolation='none')
-#                plt.grid('off')
-#                
+                worm_int_std_tab[int_map_id] = np.std(straighten_worm)
+                
             if frame % 500 == 0:
                 progress_str = progressTime.getStr(frame)
                 print('' + ' ' + progress_str);
 
-    return trajectories_data
 if __name__ == '__main__':
     #base directory
-    #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch5_17112015_205616.hdf5'
     #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_17112015_205616.hdf5'
-    masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_18112015_075624.hdf5'
+    #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch2_17112015_205616.hdf5'
+    #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch3_17112015_205616.hdf5'
+    masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch5_17112015_205616.hdf5'
+    #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch6_17112015_205616.hdf5'
+    #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_18112015_075624.hdf5'
     #masked_image_file = '/Users/ajaver/Desktop/Videos/04-03-11/MaskedVideos/575 JU440 swimming_2011_03_04__13_16_37__8.hdf5'    
     #masked_image_file = '/Users/ajaver/Desktop/Videos/04-03-11/MaskedVideos/575 JU440 on food Rz_2011_03_04__12_55_53__7.hdf5'    
     
@@ -273,9 +219,10 @@ if __name__ == '__main__':
     dd = np.asarray([131, 15, 7])#*2+1    
     argkws = {'width_resampling':dd[1], 'length_resampling':dd[0], 'min_num_skel':100,
                      'smooth_win':dd[2], 'pol_degree':3}
-    trajectories_data = getIntensityMaps(masked_image_file, skeletons_file, intensities_file, **argkws)
-    
-    #%%
+    getIntensityMaps(masked_image_file, skeletons_file, intensities_file, **argkws)
     
     
+    
+    
+
 

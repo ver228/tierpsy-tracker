@@ -131,6 +131,7 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, min_track_size = 100
         if len(tnew) > threshold_smooth_win:
             threshnew = median_filter(threshnew, threshold_smooth_win);
         
+
         #skeleton_id useful to organize the data in the other tables (skeletons, contours, etc)
         new_total = tot_rows + xnew.size
         skeleton_id = np.arange(tot_rows, new_total, dtype = np.int32);

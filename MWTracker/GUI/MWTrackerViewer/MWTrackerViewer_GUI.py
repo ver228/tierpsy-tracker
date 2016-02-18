@@ -539,8 +539,9 @@ class MWTrackerViewer_GUI(QMainWindow):
 					
 					painter.setPen(c)
 					painter.setFont(QFont('Decorative', 10))
-				
-					painter.drawText(x, y, str(int(row_data['worm_index_N'])))
+					
+					painter.drawText(x, y, str(int(row_data['worm_index_joined'])))
+					#painter.drawText(x, y, str(int(row_data['worm_index_N'])))
 
 					bb = row_data['roi_size']*self.img_w_ratio
 					painter.drawRect(x-bb/2, y-bb/2, bb, bb);
