@@ -91,9 +91,12 @@ class trackLocal:
 			self.tmp_mask_dir = os.path.split(self.masked_image_file)[0]
 
 	def getFileNames(self):
-		self.base_name, self.trajectories_file, self.skeletons_file, self.features_file, self.feat_ind_file = constructNames(self.masked_image_file, self.results_dir)
+		self.base_name, self.trajectories_file, self.skeletons_file, \
+		self.features_file, self.feat_ind_file, self.intensities_file = \
+		constructNames(self.masked_image_file, self.results_dir)
 		self.tmp_mask_file = self.tmp_mask_dir + os.sep + self.base_name + '.hdf5'
-		_, self.trajectories_tmp, self.skeletons_tmp, self.features_tmp, self.feat_ind_tmp = constructNames(self.tmp_mask_file, self.tmp_results_dir)
+		_, self.trajectories_tmp, self.skeletons_tmp, self.features_tmp, self.feat_ind_tmp, self.intensties_tmp = \
+		 constructNames(self.tmp_mask_file, self.tmp_results_dir)
 
 		#create temporary directories if they do not exists	
 		if not os.path.exists(self.tmp_mask_dir): os.makedirs(self.tmp_mask_dir)
@@ -121,7 +124,7 @@ class trackLocal:
 		#find what files we need to copy from the final destination if the analysis is going to resume from a later point
 		files2copy = []
 		
-		if self.analysis_start_point <= checkpoint['SKE_CREATE']: 
+		if self.analysis_start_point <= checkpoint['INT_PROFILE']: 
 			#we do not need the mask to calculate the features
 			try:
 				#check if there is already a finished/readable temporary mask file in current directory otherwise copy the 
@@ -142,30 +145,38 @@ class trackLocal:
 				files2copy += [(self.trajectories_file, self.tmp_results_dir)]
 			if self.final_start_point > checkpoint['SKE_CREATE']:
 				files2copy += [(self.skeletons_file, self.tmp_results_dir)]
+			if self.final_start_point > checkpoint['INT_PROFILE']:
+				files2copy += [(self.intensities_file, self.tmp_results_dir)]
 		
 		copyFilesLocal(files2copy)
 	
 	def copyFilesToFinal(self):
 		
-		def isFile2Copy(str_point):
-		    valid_range = sorted([checkpoint[x] for x in checkpoint if str_point in x])
-		    range_intersect = set(valid_range) & set(range(self.final_start_point, self.end_point+1))
-		    return len(set(range_intersect))>0
+		#def isFile2Copy(str_point):
+		#    valid_range = sorted([checkpoint[x] for x in checkpoint if str_point in x])
+		#    range_intersect = set(valid_range) & set(range(self.final_start_point, self.end_point+1))
+		#    return len(set(range_intersect))>0
+
+		def wasProccesed(str_point): 
+			return self.final_start_point > checkpoint[str_point] >=  self.end_point
 
 		files2copy = []
 		#get files to copy
 		print(self.base_name + " Copying result files into the final directory.")
 		
-		if isFile2Copy('TRAJ'):
+		if any(wasProccesed(x) for x in ['TRAJ_CREATE', 'TRAJ_JOIN']):
 			files2copy += [(self.trajectories_tmp, self.results_dir)]
 		
-		if isFile2Copy('SKE'):
+		if any(wasProccesed(x) for x in ['SKE_CREATE', 'SKE_ORIENT', 'SKE_FILT', 'INT_SKE_ORIENT']):
 			files2copy += [(self.skeletons_tmp, self.results_dir)]
 
-		if isFile2Copy('FEAT_CREATE'):
+		if wasProccesed('INT_PROFILE'):
+			files2copy += [(self.intensities_tmp, self.results_dir)]
+		
+		if wasProccesed('FEAT_CREATE'):
 			files2copy += [(self.features_tmp, self.results_dir)]
 		
-		if isFile2Copy('FEAT_MANUAL_CREATE') and self.use_manual_join:
+		if wasProccesed('FEAT_MANUAL_CREATE') and self.use_manual_join:
 			files2copy += [(self.feat_ind_tmp, self.results_dir)]
 
 		copyFilesLocal(files2copy)
@@ -183,6 +194,9 @@ class trackLocal:
 		if self.end_point >= checkpoint['SKE_CREATE']:
 			assert os.path.exists(self.skeletons_file)
 
+		if self.end_point >= checkpoint['INT_PROFILE']:
+			assert os.path.exists(self.intensities_file)
+
 		if self.end_point >= checkpoint['FEAT_CREATE']:
 			assert os.path.exists(self.features_file)
 
@@ -194,6 +208,7 @@ class trackLocal:
 		if os.path.abspath(self.tmp_results_dir) != os.path.abspath(self.results_dir):
 			if os.path.exists(self.trajectories_tmp): os.remove(self.trajectories_tmp)
 			if os.path.exists(self.skeletons_tmp): os.remove(self.skeletons_tmp)
+			if os.path.exists(self.intensities_tmp): os.remove(self.intensities_tmp)
 			if os.path.exists(self.features_tmp): os.remove(self.features_tmp)
 			if os.path.exists(self.feat_ind_tmp): os.remove(self.feat_ind_tmp)
 

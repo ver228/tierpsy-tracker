@@ -12,6 +12,8 @@ import os, sys
 import tables
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
+from ..helperFunctions.miscFun import print_flush
+
 from .WormClass import WormClass
 
 def getAnglesDelta(dx,dy):
@@ -145,9 +147,9 @@ def correctHeadTail(skeletons_file, max_gap_allowed = 10, window_std = 25, \
     progress_timer = timeCounterStr('');
     for ii, dat in enumerate(rows_indexes.iterrows()):
         if ii % 10 == 0:
-            dd = " Correcting Head-Tail worm %i of %i." % (ii+1, len(rows_indexes))
+            dd = " Correcting Head-Tail using worm movement. Worm %i of %i." % (ii+1, len(rows_indexes))
             dd = base_name + dd + ' Total time:' + progress_timer.getTimeStr()
-            print(dd)
+            print_flush(dd)
             sys.stdout.flush()
         
         worm_index, row_range = dat        
@@ -158,15 +160,14 @@ def correctHeadTail(skeletons_file, max_gap_allowed = 10, window_std = 25, \
         if not np.all(np.isnan(worm_data.skeleton_length)):
             is_switched_skel, roll_std = isWormHTSwitched(worm_data.skeleton, \
             segment4angle = segment4angle, max_gap_allowed = max_gap_allowed, \
-            window_std = window_std, min_block_size=min_block_size)
+            window_std = window_std, min_block_size = min_block_size)
             
             worm_data.switchHeadTail(is_switched_skel)
         
         worm_data.writeData()
         #%%
-    print('Head-Tail correction finished:' + progress_timer.getTimeStr())
-    sys.stdout.flush()
-
+    print_flush('Head-Tail correction using worm movement finished:' + progress_timer.getTimeStr())
+    
     with tables.File(skeletons_file, "r+") as ske_file_id:
         #Mark a succesful termination
         ske_file_id.get_node('/skeleton')._v_attrs['has_finished'] = 2;

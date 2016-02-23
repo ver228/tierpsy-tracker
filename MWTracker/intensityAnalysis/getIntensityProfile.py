@@ -14,14 +14,15 @@ from scipy.interpolate import interp1d
 import os
 import matplotlib.pylab as plt
 
-import sys
-sys.path.append('/Users/ajaver/Documents/GitHub/Multiworm_Tracking')
-from MWTracker.featuresAnalysis.obtainFeaturesHelper import WLAB, smoothCurve, calWormAngles
+#import sys
+#sys.path.append('/Users/ajaver/Documents/GitHub/Multiworm_Tracking')
 
-
+from MWTracker.featuresAnalysis.obtainFeaturesHelper import WLAB
+from MWTracker.featuresAnalysis.getFilteredFeats import saveModifiedTrajData
 from MWTracker.trackWorms.getSkeletonsTables import getWormROI
 from MWTracker.helperFunctions.timeCounterStr import timeCounterStr
-from MWTracker.trackWorms.segWormPython.cythonFiles.curvspace import curvspace
+from MWTracker.helperFunctions.miscFun import print_flush
+
 
 def smoothSkeletons(skeleton, length_resampling = 131, smooth_win = 11, pol_degree = 3):
     xx = savgol_filter(skeleton[:,0], smooth_win, pol_degree)
@@ -39,22 +40,6 @@ def smoothSkeletons(skeleton, length_resampling = 131, smooth_win = 11, pol_degr
     skel_new = np.vstack((xx_new, yy_new)).T
     return skel_new
 
-#%%
-def angleSmoothed(x, y, window_size):
-    #given a series of x and y coordinates over time, calculates the angle
-    #between each tangent vector over a given window making up the skeleton
-    #and the x-axis.
-    #arrays to build up and export
-    dX = x[:-window_size] - x[window_size:];
-    dY = y[:-window_size] - y[window_size:];
-    
-    #calculate angles
-    skel_angles = np.arctan2(dY, dX)
-    
-    
-    #%repeat final angle to make array the same length as skelX and skelY
-    skel_angles = np.lib.pad(skel_angles, (window_size//2, window_size//2), 'edge')
-    return skel_angles;
 
 
 def getStraightenWormInt(worm_img, skeleton, half_width, width_resampling):
@@ -71,8 +56,10 @@ def getStraightenWormInt(worm_img, skeleton, half_width, width_resampling):
             A large value will over smooth the skeleton, therefore not capturing the correct shape.
         
     '''
+
     assert half_width>0 or cnt_widths.size>0
     assert not np.any(np.isnan(skeleton))
+    
     
     dX = np.diff(skeleton[:,0])
     dY = np.diff(skeleton[:,1])
@@ -95,58 +82,93 @@ def getStraightenWormInt(worm_img, skeleton, half_width, width_resampling):
     grid_x = skeleton[:,0] + r_ind[:, np.newaxis]*np.cos(perp_angles);
     grid_y = skeleton[:,1] + r_ind[:, np.newaxis]*np.sin(perp_angles);
     
+    #interpolated the intensity map
     f = RectBivariateSpline(np.arange(worm_img.shape[0]), np.arange(worm_img.shape[1]), worm_img)
-    straighten_worm =  f.ev(grid_y, grid_x) #return interpolated intensity map
+    straighten_worm =  f.ev(grid_y, grid_x) 
     
-    return straighten_worm, grid_x, grid_y #return interpolated intensity map
+    return straighten_worm, grid_x, grid_y 
 
-def getIntensityMaps(masked_image_file, skeletons_file, intensities_file, 
-                     width_resampling = 15, length_resampling = 131, min_num_skel = 100,
-                     smooth_win = 11, pol_degree = 3, width_percentage = 0.5):
+
+def getWidthWinLimits(width_resampling, width_percentage):
+    #let's calculate the window along the minor axis of the skeleton to be average, as a percentage of the total interpolated width 
+    width_average_win = int(width_resampling * width_percentage)
+    if width_average_win % 2 == 0: width_average_win += 1    
+    mid_w = width_resampling//2
+    win_w = width_average_win//2
+    #add plus one to use the correct numpy indexing
+    return (mid_w-win_w, mid_w + win_w + 1) 
+
+def setIntMapIndexes(skeletons_file, min_num_skel):
+    #get index of valid skeletons. Let's use pandas because it is easier to process.
+    with pd.HDFStore(skeletons_file, 'r') as fid:
+        trajectories_data = fid['/trajectories_data']
+        
+        if 'auto_label' in trajectories_data:
+            #select rows with only valid filtered skeletons
+            good = trajectories_data['auto_label'] == WLAB['GOOD_SKE'];
+        else:
+            #or that at least have an skeleton 
+            good = trajectories_data['has_skeleton']==1
+            
+        trajectories_data_valid = trajectories_data[good]
+            
+        #select trajectories that have at least min_num_skel valid skeletons
+        N = trajectories_data_valid.groupby('worm_index_joined').agg({'has_skeleton':np.nansum})
+        N = N[N>min_num_skel].dropna()
+        good = trajectories_data_valid['worm_index_joined'].isin(N.index)
+        trajectories_data_valid = trajectories_data_valid.loc[good]
+        
+    #assing indexes to the new rows
+    tot_valid_rows = len(trajectories_data_valid)
+    trajectories_data['int_map_id'] = -1
+    trajectories_data.loc[trajectories_data_valid.index, 'int_map_id'] = np.arange(tot_valid_rows)
     
-    if length_resampling % 2 == 0: length_resampling += 1
-    if width_resampling % 2 == 0: width_resampling += 1    
-    #if width_average_win % 2 == 0: width_average_win += 1
-    #assert width_average_win <= width_resampling
+    #let's save this data into the skeletons file
+    saveModifiedTrajData(skeletons_file, trajectories_data)
+    
+    #get the valid trajectories with the correct index. There is probably a faster way to do this, but this is less prone to errors.
+    trajectories_data_valid = trajectories_data[trajectories_data['int_map_id'] != -1]
+
+    #return the reduced version with only valid rows    
+    return trajectories_data_valid      
+    
+    
+
+
+def getIntensityProfile(masked_image_file, skeletons_file, intensities_file, 
+                     width_resampling = 15, length_resampling = 131, min_num_skel = 100,
+                     smooth_win = 11, pol_degree = 3, width_percentage = 0.5, save_int_maps = False):
+    
     assert smooth_win > pol_degree
     assert min_num_skel > 0
+    assert 0 < width_percentage < 1
     
-    #mid_w = width_resampling//2
-    #win_w = width_average_win//2
-    #width_win_ind = (mid_w-win_w, mid_w + win_w + 1) #add plus one to use the correct numpy indexing
+    #we want to use symetrical distance centered in the skeleton
+    if length_resampling % 2 == 0: length_resampling += 1
+    if width_resampling % 2 == 0: width_resampling += 1
     
+    #get the limits to be averaged from the intensity map
+    if save_int_maps:
+        width_win_ind = getWidthWinLimits(width_resampling, width_percentage)
+    else:
+        width_win_ind = (0, width_resampling)
+    
+    #filters for the tables structures
     table_filters = tables.Filters(complevel=5, complib='zlib', 
                                    shuffle=True, fletcher32=True)
 
 
-    #might be better to a complete table with the int_map_id in the skeletons_file, and maybe a copy in intensities_file
-    with pd.HDFStore(skeletons_file, 'r') as fid:
-        trajectories_data = fid['/trajectories_data']
-        if 'auto_label' in trajectories_data:
-            good = trajectories_data['auto_label'] == WLAB['GOOD_SKE'];
-            trajectories_data = trajectories_data[good]
-    
-            N = trajectories_data.groupby('worm_index_joined').agg({'has_skeleton':np.nansum})
-            N = N[N>min_num_skel].dropna()
-    
-            good = trajectories_data['worm_index_joined'].isin(N.index)
-            trajectories_data = trajectories_data.loc[good]
-        else:
-            trajectories_data = trajectories_data[trajectories_data['has_skeleton']==1]
-        
-        #trajectories_data = trajectories_data[trajectories_data['frame_number']<500]
-       
-       
-       
-    trajectories_data['int_map_id'] = np.arange(len(trajectories_data))
-    
-    tot_rows = len(trajectories_data)
-        
-    #let's save this data into the intensities file
-    with tables.File(intensities_file, 'w') as fid:
-        fid.create_table('/', 'trajectories_data', \
-            obj = trajectories_data.to_records(index=False), filters=table_filters)
+    #Get a reduced version of the trajectories_data table with only the valid skeletons. 
+    #The rows of this new table are going to be saved into skeletons_file
+    trajectories_data_valid = setIntMapIndexes(skeletons_file, min_num_skel)
 
+    tot_rows = len(trajectories_data_valid);
+    
+    #let's save this new table into the intensities file
+    with tables.File(intensities_file, 'w') as fid:
+        fid.create_table('/', 'trajectories_data_valid', \
+            obj = trajectories_data_valid.to_records(index=False), filters=table_filters)
+    
     with tables.File(masked_image_file, 'r')  as mask_fid, \
          tables.File(skeletons_file, 'r') as ske_file_id, \
          tables.File(intensities_file, "r+") as int_file_id:
@@ -158,56 +180,64 @@ def getIntensityMaps(masked_image_file, skeletons_file, intensities_file,
         skel_tab = ske_file_id.get_node('/skeleton')
         skel_width_tab = ske_file_id.get_node('/width_midbody')
         
-
-        #create array to save the intensities
         filters = tables.Filters(complevel=5, complib='zlib', shuffle=True)
         
+        #we are using Float16 to save space, I am assuing the intensities are between uint8
         worm_int_avg_tab = int_file_id.create_carray("/", "straighten_worm_intensity_median", \
-                                   tables.Float32Atom(dflt=np.nan), \
+                                   tables.Float16Atom(dflt=np.nan), \
                                    (tot_rows, length_resampling), \
                                     chunkshape = (1, length_resampling),\
-                                    filters = filters);
-        #worm_int_std_tab = int_file_id.create_carray("/", "worm_intensity_std", \
-        #                           tables.Float32Atom(dflt=np.nan), \
-        #                           (tot_rows,),\
-        #                            filters = filters);
-                                    
-        progressTime = timeCounterStr('Obtaining intensity maps.');
+                                    filters = table_filters);
         
-        for frame, frame_data in trajectories_data.groupby('frame_number'):
+        worm_int_avg_tab._v_attrs['has_finished'] = 0;
+        worm_int_avg_tab.attrs['width_win_ind'] = width_win_ind
+        
+        if save_int_maps:
+            worm_int_tab = int_file_id.create_carray("/", "straighten_worm_intensity", \
+                                   tables.Float16Atom(dflt=np.nan), \
+                                   (tot_rows, length_resampling,width_resampling), \
+                                    chunkshape = (1, length_resampling,width_resampling),\
+                                    filters = table_filters);
+        
+        
+        progressTime = timeCounterStr('Obtaining intensity maps.');        
+        for frame, frame_data in trajectories_data_valid.groupby('frame_number'):
             img = mask_dataset[frame,:,:]
             for ii, row_data in frame_data.iterrows():
                 skeleton_id = int(row_data['skeleton_id'])
                 worm_index = int(row_data['worm_index_joined'])
                 int_map_id = int(row_data['int_map_id'])
                 
+                #read ROI and skeleton, and put them in the same coordinates map
                 worm_img, roi_corner = getWormROI(img, row_data['coord_x'], row_data['coord_y'], row_data['roi_size'])
-                
                 skeleton = skel_tab[skeleton_id,:,:]-roi_corner
-                half_width = (width_percentage*skel_width_tab[skeleton_id])/2
+
+                half_width = skel_width_tab[skeleton_id]/2
                 
                 assert not np.isnan(skeleton[0,0])
                 
                 skel_smooth = smoothSkeletons(skeleton, length_resampling = length_resampling, smooth_win = smooth_win, pol_degree = pol_degree)
-                straighten_worm,grid_x, grid_y = getStraightenWormInt(worm_img, skel_smooth, half_width=half_width, width_resampling=width_resampling)
+                straighten_worm, grid_x, grid_y = getStraightenWormInt(worm_img, skel_smooth, half_width=half_width, width_resampling=width_resampling)
                 
                 #if you use the mean it is better to do not use float16
-                #int_avg = np.median(straighten_worm[width_win_ind[0]:width_win_ind[1],:], axis = 0)
-                int_avg = np.median(straighten_worm, axis = 0)
-                worm_int_avg_tab[int_map_id] = int_avg
-                #worm_int_std_tab[int_map_id] = np.std(straighten_worm)
+                int_avg = np.median(straighten_worm[width_win_ind[0]:width_win_ind[1],:], axis = 0)
                 
+                worm_int_avg_tab[int_map_id] = int_avg
+                
+                #only save the full map if it is specified by the user
+                if save_int_maps: 
+                    worm_int_tab[int_map_id]  = straighten_worm.T
+        
             if frame % 500 == 0:
                 progress_str = progressTime.getStr(frame)
-                print('' + ' ' + progress_str);
+                print_flush('' + ' ' + progress_str);
+        
+        worm_int_avg_tab._v_attrs['has_finished'] = 1;
 
 if __name__ == '__main__':
     #base directory
-    #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_17112015_205616.hdf5'
-    #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch2_17112015_205616.hdf5'
-    #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch3_17112015_205616.hdf5'
-    masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch5_17112015_205616.hdf5'
-    #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch6_17112015_205616.hdf5'
+    #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch5_17112015_205616.hdf5'
+    masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch3_17112015_205616.hdf5'
     #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_18112015_075624.hdf5'
     #masked_image_file = '/Users/ajaver/Desktop/Videos/04-03-11/MaskedVideos/575 JU440 swimming_2011_03_04__13_16_37__8.hdf5'    
     #masked_image_file = '/Users/ajaver/Desktop/Videos/04-03-11/MaskedVideos/575 JU440 on food Rz_2011_03_04__12_55_53__7.hdf5'    
@@ -219,10 +249,9 @@ if __name__ == '__main__':
     dd = np.asarray([131, 15, 7])#*2+1    
     argkws = {'width_resampling':dd[1], 'length_resampling':dd[0], 'min_num_skel':100,
                      'smooth_win':dd[2], 'pol_degree':3}
-    getIntensityMaps(masked_image_file, skeletons_file, intensities_file, **argkws)
+    getIntensityProfile(masked_image_file, skeletons_file, intensities_file, **argkws)
+    
+    #%%
     
     
-    
-    
-
 

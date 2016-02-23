@@ -42,7 +42,7 @@ worm_partitions = {'neck': (8, 16),
 
 name_width_fun = lambda part: 'width_' + part
 
-def saveLabelData(skeletons_file, trajectories_data):
+def saveModifiedTrajData(skeletons_file, trajectories_data):
     trajectories_recarray = trajectories_data.to_records(index=False)
     with tables.File(skeletons_file, "r+") as ske_file_id:
         table_filters = tables.Filters(complevel=5, complib='zlib', shuffle=True, fletcher32=True)
@@ -208,7 +208,7 @@ def labelValidSkeletons(skeletons_file, good_skel_row, fit_contamination = 0.05)
         trajectories_data['auto_label'] = ((y_pred>0).astype(np.int))*WLAB['GOOD_SKE'] #+ wlab['BAD']*np.isnan(y_prev)
     
     #Save the new auto_label column
-    saveLabelData(skeletons_file, trajectories_data)
+    saveModifiedTrajData(skeletons_file, trajectories_data)
 
     print_flush(base_name + ' Filter Skeletons: Finished. Total time:' + progress_timer.getTimeStr())
 

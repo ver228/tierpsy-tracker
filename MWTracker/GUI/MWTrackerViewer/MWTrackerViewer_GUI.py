@@ -540,8 +540,8 @@ class MWTrackerViewer_GUI(QMainWindow):
 					painter.setPen(c)
 					painter.setFont(QFont('Decorative', 10))
 					
-					painter.drawText(x, y, str(int(row_data['worm_index_joined'])))
-					#painter.drawText(x, y, str(int(row_data['worm_index_N'])))
+					#painter.drawText(x, y, str(int(row_data['worm_index_joined'])))
+					painter.drawText(x, y, str(int(row_data['worm_index_N'])))
 
 					bb = row_data['roi_size']*self.img_w_ratio
 					painter.drawRect(x-bb/2, y-bb/2, bb, bb);
@@ -630,8 +630,15 @@ class MWTrackerViewer_GUI(QMainWindow):
 					for p in dat:
 						qPlg[tt].append(QPointF(*p))
 				
-				self.skel_colors = {'skeleton':(27, 158, 119 ), 
-				'contour_side1':(217, 95, 2), 'contour_side2':(231, 41, 138)}
+				if self.ui.comboBox_labelType.currentIndex() == 1 and roi_data['auto_label'] == 0:
+					self.skel_colors = {'skeleton':(102, 0, 0 ), 
+					'contour_side1':(102, 0, 0 ), 'contour_side2':(102, 0, 0 )}
+
+				else:
+					self.skel_colors = {'skeleton':(27, 158, 119 ), 
+					'contour_side1':(217, 95, 2), 'contour_side2':(231, 41, 138)}
+
+
 				
 				pen = QPen()
 				pen.setWidth(2)

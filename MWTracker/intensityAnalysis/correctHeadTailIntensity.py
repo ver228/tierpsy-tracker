@@ -13,8 +13,8 @@ import collections
 from scipy.ndimage.filters import median_filter, minimum_filter, maximum_filter
 import os
 
-import sys
-sys.path.append('/Users/ajaver/Documents/GitHub/Multiworm_Tracking')
+#import sys
+#sys.path.append('/Users/ajaver/Documents/GitHub/Multiworm_Tracking')
 from MWTracker.helperFunctions.miscFun import print_flush
 from MWTracker.helperFunctions.timeCounterStr import timeCounterStr
 
@@ -263,16 +263,20 @@ def correctHeadTailIntensity(skeletons_file, intensities_file, smooth_W = 5,
     base_name = skeletons_file.rpartition('.')[0].rpartition(os.sep)[-1].rpartition('_')[0]
     progress_timer = timeCounterStr('');
     
-    for worm_n, (ind, trajectories_worm) in enumerate(grouped_trajectories):
-        if worm_n % 10 == 0:
-            dd = " Correcting Head-Tail using intensity profiles. Worm %i of %i." % (worm_n+1, tot_worms)
+    
+    bad_worms = [] #worms with not enough difference between the normal and inverted median intensity profile
+    switched_blocks = [] #data from the blocks that were switched
+    
+    for index_n, (worm_index, trajectories_worm) in enumerate(grouped_trajectories):
+        if index_n % 10 == 0:
+            dd = " Correcting Head-Tail using intensity profiles. Worm %i of %i." % (index_n+1, tot_worms)
             dd = base_name + dd + ' Total time:' + progress_timer.getTimeStr()
             print_flush(dd)
         
         good = trajectories_worm['int_map_id']>0;
         int_map_id = trajectories_worm.loc[good, 'int_map_id'].values
         int_skeleton_id = trajectories_worm.loc[good, 'skeleton_id'].values
-        
+        int_frame_number = trajectories_worm.loc[good, 'frame_number'].values
         #only analyze data that contains at least  min_block_size intensity profiles     
         if int_map_id.size < min_block_size:
             continue
@@ -303,6 +307,7 @@ def correctHeadTailIntensity(skeletons_file, intensities_file, smooth_W = 5,
         #I am assuming that most of the images will have a correct head tail orientation 
         #and the robust estimates will give us a good representation of the noise levels     
         if np.median(diff_inv) - medabsdev(diff_inv) < np.median(diff_ori) + medabsdev(diff_ori):
+            bad_worms.append(worm_index)
             continue
         
         #%%
@@ -347,15 +352,42 @@ def correctHeadTailIntensity(skeletons_file, intensities_file, smooth_W = 5,
         #finally switch all the data to correct for the wrong orientation in each group
         switchBlocks(skel_group, skeletons_file, int_group, intensities_file)
         
+        #store data from the groups that were switched        
         
+        for ini, fin in blocks2correct:
+            switched_blocks.append((worm_index, int_frame_number[ini], int_frame_number[fin]))
+            
+    #label the process as finished and store the indexes of the switched worms
+    with tables.File(skeletons_file, 'r+') as fid:
+        if not '/Intensity_Analysis' in fid:
+            fid.create_group('/', 'Intensity_Analysis')
         
-    print_flush('Head-Tail correction using intensity profiles finished:' + progress_timer.getTimeStr())
+        if '/Intensity_Analysis/Bad_Worms' in fid:
+            fid.remove_node('/Intensity_Analysis/Bad_Worms')
+        if '/Intensity_Analysis/Switched_Head_Tail' in fid:
+            fid.remove_node('/Intensity_Analysis/Switched_Head_Tail')
+        
+        if bad_worms:
+            fid.create_array('/Intensity_Analysis', 'Bad_Worms', np.array(bad_worms))
+        
+        if switched_blocks:
+            #to rec array
+            switched_blocks = np.array(switched_blocks, \
+            dtype = [('worm_index',np.int), ('ini_frame',np.int), ('last_frame',np.int)])
+            fid.create_table('/Intensity_Analysis', 'Switched_Head_Tail', switched_blocks)
+    
+        
+        fid.get_node('/skeleton')._v_attrs['has_finished'] = 4
+        
+    print_flush('Head-Tail correction using intensity profiles finished: ' + progress_timer.getTimeStr())
+    
+    #return bad_worms, switched_blocks
     
 if __name__ == '__main__':
 
     #%%
-    masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_18112015_075624.hdf5'
-    #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch2_17112015_205616.hdf5'
+    #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_18112015_075624.hdf5'
+    masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch2_17112015_205616.hdf5'
     #masked_image_file = '/Users/ajaver/Desktop/Videos/04-03-11/MaskedVideos/575 JU440 swimming_2011_03_04__13_16_37__8.hdf5'    
     #masked_image_file = '/Users/ajaver/Desktop/Videos/04-03-11/MaskedVideos/575 JU440 on food Rz_2011_03_04__12_55_53__7.hdf5'    
     

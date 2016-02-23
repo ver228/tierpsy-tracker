@@ -12,6 +12,9 @@ from ..trackWorms.getDrawTrajectories import drawTrajectoriesVideo
 from ..trackWorms.getSkeletonsTables import trajectories2Skeletons, writeIndividualMovies
 from ..trackWorms.checkHeadOrientation import correctHeadTail
 
+from ..intensityAnalysis.getIntensityProfile import getIntensityProfile
+from ..intensityAnalysis.correctHeadTailIntensity import correctHeadTailIntensity
+
 from ..featuresAnalysis.getFilteredFeats import getFilteredFeats
 from ..featuresAnalysis.obtainFeatures import getWormFeaturesFilt
 
@@ -25,6 +28,7 @@ from collections import OrderedDict
 
 #the order of the list is very IMPORTANT, and reflects the order where is step is done
 checkpoint_label = ['TRAJ_CREATE', 'TRAJ_JOIN', 'SKE_CREATE', 'SKE_ORIENT', 'SKE_FILT', 
+'INT_PROFILE', 'INT_SKE_ORIENT', 
 'FEAT_CREATE','FEAT_MANUAL_CREATE', 'END']
 checkpoint = {ii:x for x,ii in enumerate(checkpoint_label)}
 
@@ -33,8 +37,10 @@ def getStartingPoint(masked_image_file, results_dir):
     '''determine for where to start. This is useful to check if the previous analysis was 
     completely succesfully, or if it was interrupted restarted from the last succesful step'''
     
-    base_name, trajectories_file, skeletons_file, features_file, feat_ind_file = constructNames(masked_image_file, results_dir)
+    base_name, trajectories_file, skeletons_file, features_file, \
+    feat_ind_file, intensities_file = constructNames(masked_image_file, results_dir)
 
+    accepted_errors = (tables.exceptions.HDF5ExtError, tables.exceptions.NoSuchNodeError, KeyError, IOError)
     try:
         with tables.open_file(trajectories_file, mode = 'r') as traj_fid:
              trajectories = traj_fid.get_node('/plate_worms')
@@ -42,7 +48,7 @@ def getStartingPoint(masked_image_file, results_dir):
                  return checkpoint['TRAJ_CREATE'];
              elif trajectories._v_attrs['has_finished'] == 1:
                  return checkpoint['TRAJ_JOIN'];
-    except:
+    except accepted_errors:
         #if there is any problem while reading the file, create it again
         return checkpoint['TRAJ_CREATE'];
 
@@ -55,10 +61,23 @@ def getStartingPoint(masked_image_file, results_dir):
                 return checkpoint['SKE_ORIENT'];
             elif skeleton_table._v_attrs['has_finished'] == 2:
                 return checkpoint['SKE_FILT'];
-    except:
+    except accepted_errors:
         #if there is any problem while reading the file, create it again
         return checkpoint['SKE_CREATE'];
     
+    try:
+        with tables.File(intensities_file, "r") as fid:
+            int_med = fid.get_node('/straighten_worm_intensity_median')
+            if int_med._v_attrs['has_finished'] < 1:
+                return checkpoint['INT_PROFILE'];
+    except accepted_errors:   
+        return checkpoint['INT_PROFILE'];
+
+    #at this point the skeleton file must exists so we only check for the correct level in the skeleton file
+    with tables.File(skeletons_file, "r") as ske_file_id:
+        skeleton_table = ske_file_id.get_node('/skeleton')
+        if skeleton_table._v_attrs['has_finished'] == 3:
+            return checkpoint['INT_SKE_ORIENT'];
 
     try:
         with tables.File(features_file, "r") as feat_file_id:
@@ -66,16 +85,17 @@ def getStartingPoint(masked_image_file, results_dir):
             if features_table._v_attrs['has_finished'] == 0:
                 return checkpoint['FEAT_CREATE'];
 
-    except:
+    except  accepted_errors:
         #if there is any problem while reading the file, create it again
         return checkpoint['FEAT_CREATE'];
     
+
     try:
         with tables.File(feat_ind_file, "r") as feat_file_id:
             features_table = feat_file_id.get_node('/features_means')
             if features_table._v_attrs['has_finished'] == 0:
                 return checkpoint['FEAT_MANUAL_CREATE'];
-    except:
+    except  accepted_errors:
         #if there is any problem while reading the file, create it again
         with tables.File(skeletons_file, 'r') as ske_file_id:
             if 'worm_label' in ske_file_id.get_node('/trajectories_data').colnames:
@@ -90,7 +110,7 @@ def constructNames(masked_image_file, results_dir):
 
     output = [base_name]
     
-    ext2add = ['trajectories', 'skeletons', 'features', 'feat_manual']
+    ext2add = ['trajectories', 'skeletons', 'features', 'feat_manual', 'intensities']
     for ext in ext2add:
         output += [os.path.abspath(os.path.join(results_dir, base_name + '_' + ext + '.hdf5'))]
     
@@ -108,7 +128,8 @@ class getTrajectoriesWorkerL():
         #derivate output_file names from the input_file and output_dir
         self.masked_image_file = masked_image_file
         self.results_dir = results_dir
-        self.base_name, self.trajectories_file, self.skeletons_file, self.features_file, self.feat_manual_file = \
+        self.base_name, self.trajectories_file, self.skeletons_file, self.features_file, \
+        self.feat_manual_file, self.intensities_file = \
         constructNames(self.masked_image_file, self.results_dir)
         
 
@@ -175,6 +196,18 @@ class getTrajectoriesWorkerL():
             'func':getFilteredFeats,
             'argkws':{**{'skeletons_file':self.skeletons_file, 'use_auto_label':self.use_auto_label}, 
                          **self.param.feat_filt_param},
+            'output_file':self.skeletons_file
+            },
+        'INT_PROFILE': {
+            'func':getIntensityProfile, 
+            'argkws':{**{'masked_image_file':self.masked_image_file , 'skeletons_file':self.skeletons_file, 
+            'intensities_file':self.intensities_file}, **self.param.int_profile_param},
+            'output_file':self.intensities_file
+            },
+        'INT_SKE_ORIENT': {
+            'func':correctHeadTailIntensity, 
+            'argkws':{**{'skeletons_file':self.skeletons_file, 'intensities_file':self.intensities_file}, 
+            **self.param.head_tail_int_param},
             'output_file':self.skeletons_file
             },
         'FEAT_CREATE': {

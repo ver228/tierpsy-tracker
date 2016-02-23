@@ -91,10 +91,11 @@ class checkVideoFiles:
 		masked_image_file = self.getMaskName(video_file, mask_dir)
 		
 		if os.path.exists(masked_image_file):
-			if self.checkBadMask(masked_image_file):
-				return 'FINISHED_BAD', (video_file, masked_image_file)
-			else:
+			if not self.checkBadMask(masked_image_file):# and not self.checkBadTimeStamp(masked_image_file)
 				return 'FINISHED_GOOD' , (video_file, masked_image_file)
+			else:
+				return 'FINISHED_BAD', (video_file, masked_image_file)
+				
 		
 		else:
 			if self.checkBadVideo(video_file, self.is_single_worm):
@@ -220,6 +221,10 @@ class checkVideoFiles:
 		except (tables.exceptions.HDF5ExtError, tables.exceptions.NoSuchNodeError, ValueError):
 			return 1
 
+		#no problems with the file
+		return 0
+
+	def checkBadTimeStamp(masked_image_file):
 		#test if the file timestamp length exists or is correct
 		try:
 			with tables.File(masked_image_file, 'r') as mask_fid:
@@ -238,8 +243,6 @@ class checkVideoFiles:
 						raise ValueError #raise error
 		except (tables.exceptions.HDF5ExtError, tables.exceptions.NoSuchNodeError, ValueError):
 			return 2
-
-		#no problems with the file
 		return 0
 		
 
@@ -333,11 +336,11 @@ class checkTrackFiles(checkVideoFiles):
 		if start_point > self.end_point_N or start_point == checkpoint['END']:
 			return 'FINISHED_GOOD' , (masked_image_file, results_dir)
 		
-		elif self.checkBadMask(masked_image_file):
+		elif not self.checkBadMask(masked_image_file):# and not self.checkBadTimeStamp(masked_image_file)
+			return 'SOURCE_GOOD', masked_image_file
+		else:
 			return 'SOURCE_BAD', masked_image_file
 
-		return 'SOURCE_GOOD', masked_image_file
-	
 	
 	
     
