@@ -11,6 +11,8 @@ import argparse
 from start_console import runMultiCMD, print_cmd_list
 from helperExpLocalChecked import checkTrackFiles, exploreDirs
 
+sys.path.append('/Users/ajaver/Documents/GitHub/Multiworm_Tracking/')
+from MWTracker.helperFunctions.getTrajectoriesWorkerL import checkpoint_label
 
 def main(mask_dir_root, tmp_dir_root, json_file, script_abs_path, \
 	pattern_include, pattern_exclude, \
@@ -59,8 +61,7 @@ if __name__ == '__main__':
 	
 	parser.add_argument('--is_single_worm', action='store_true', help = 'This flag indicates if the video corresponds to the single worm case.')
 
-	checkpoint_list = ['TRAJ_CREATE', 'TRAJ_JOIN', 'TRAJ_VID', 'SKE_CREATE', 'SKE_ORIENT', 'SKE_FILT', 'FEAT_CREATE', 'FEAT_IND', 'END']
-	parser.add_argument('--end_point', default='END', choices = checkpoint_list, help='End point of the analysis.')
+	parser.add_argument('--end_point', default='END', choices = checkpoint_label, help='End point of the analysis.')
 	
 	parser.add_argument('--max_num_process', default = 6, type = int, help = 'Max number of process to be executed in parallel.')
 	parser.add_argument('--refresh_time', default = 10, type = float, help = 'Refresh time in seconds of the process screen.')
