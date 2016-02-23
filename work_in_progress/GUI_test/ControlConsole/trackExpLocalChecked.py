@@ -11,6 +11,7 @@ import argparse
 from start_console import runMultiCMD, print_cmd_list
 from helperExpLocalChecked import checkTrackFiles, exploreDirs
 
+import sys
 sys.path.append('/Users/ajaver/Documents/GitHub/Multiworm_Tracking/')
 from MWTracker.helperFunctions.getTrajectoriesWorkerL import checkpoint_label
 
