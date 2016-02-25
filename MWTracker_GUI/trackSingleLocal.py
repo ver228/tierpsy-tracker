@@ -104,7 +104,8 @@ class trackLocal:
 		self.features_file, self.feat_ind_file, self.intensities_file = \
 		constructNames(self.masked_image_file, self.results_dir)
 		self.tmp_mask_file = self.tmp_mask_dir + os.sep + self.base_name + '.hdf5'
-		_, self.trajectories_tmp, self.skeletons_tmp, self.features_tmp, self.feat_ind_tmp, self.intensties_tmp = \
+		
+		_, self.trajectories_tmp, self.skeletons_tmp, self.features_tmp, self.feat_ind_tmp, self.intensities_tmp = \
 		 constructNames(self.tmp_mask_file, self.tmp_results_dir)
 
 		#create temporary directories if they do not exists	
@@ -171,7 +172,7 @@ class trackLocal:
 		#    return len(set(range_intersect))>0
 
 		def wasProccesed(str_point): 
-			return self.final_start_point > checkpoint[str_point] >=  self.end_point
+			return checkpoint[str_point] >= self.final_start_point and  checkpoint[str_point] <=  self.end_point
 
 		files2copy = []
 		#get files to copy
