@@ -198,9 +198,10 @@ def getIntensityProfile(masked_image_file, skeletons_file, intensities_file,
                                    (tot_rows, length_resampling,width_resampling), \
                                     chunkshape = (1, length_resampling,width_resampling),\
                                     filters = table_filters);
-        
-        
+        #variables used to report progress
+        base_name = skeletons_file.rpartition('.')[0].rpartition(os.sep)[-1].rpartition('_')[0]
         progressTime = timeCounterStr('Obtaining intensity maps.');        
+        
         for frame, frame_data in trajectories_data_valid.groupby('frame_number'):
             img = mask_dataset[frame,:,:]
             for ii, row_data in frame_data.iterrows():
@@ -230,7 +231,7 @@ def getIntensityProfile(masked_image_file, skeletons_file, intensities_file,
         
             if frame % 500 == 0:
                 progress_str = progressTime.getStr(frame)
-                print_flush('' + ' ' + progress_str);
+                print_flush(base_name + ' ' + progress_str);
         
         worm_int_avg_tab._v_attrs['has_finished'] = 1;
 

@@ -106,4 +106,4 @@ class tracker_param:
                      'smooth_win' : 11, 'pol_degree' : 3, 'width_percentage' : 0.5, 'save_int_maps' : False}
         
         self.head_tail_int_param = {'smooth_W' : round(fps/5), 'gap_size' : 0, 'min_block_size' : round(fps/5*2), 
-        'local_avg_win' : fps, 'min_frac_in' : 0.95}
+        'local_avg_win' : fps, 'min_frac_in' : 0.85}

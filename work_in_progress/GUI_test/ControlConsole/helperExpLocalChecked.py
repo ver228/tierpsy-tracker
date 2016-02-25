@@ -248,7 +248,7 @@ class checkVideoFiles:
 
 class checkTrackFiles(checkVideoFiles):
 	def __init__(self, mask_dir_root, tmp_dir_root = '', \
-		is_single_worm = False, json_file = '', end_point = '', \
+		is_single_worm = False, json_file = '', force_start_point='', end_point = '', \
 		script_abs_path = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/MWTracker_GUI/trackSingleLocal.py', \
 		not_auto_label = False, use_manual_join = False
 		):
@@ -269,6 +269,7 @@ class checkTrackFiles(checkVideoFiles):
 		self.not_auto_label = not_auto_label
 		self.use_manual_join = use_manual_join
 		
+		self.force_start_point = force_start_point
 		self.end_point_N = checkpoint['END'] if not end_point else checkpoint[end_point]
 		self.end_point = end_point
 
@@ -317,8 +318,9 @@ class checkTrackFiles(checkVideoFiles):
 		
 		json_file = self.json_file
 		end_point = self.end_point
+		force_start_point = self.force_start_point
 		#add the optional arguments if they are present
-		for arg in ['tmp_mask_dir', 'tmp_results_dir', 'json_file', 'end_point']:
+		for arg in ['tmp_mask_dir', 'tmp_results_dir', 'json_file', 'end_point', 'force_start_point']:
 			tmp_val = eval(arg)
 			if tmp_val: cmd += ['--' + arg, tmp_val]
 		
@@ -333,7 +335,8 @@ class checkTrackFiles(checkVideoFiles):
 		results_dir = getDstDir(mask_dir, self.mask_dir_root, self.results_dir_root)
 		start_point = getStartingPoint(masked_image_file, results_dir)
 
-		if start_point > self.end_point_N or start_point == checkpoint['END']:
+		#check that the file finished correctly and that there is no force_start_point specified
+		if (start_point > self.end_point_N or start_point == checkpoint['END']) and not self.force_start_point:
 			return 'FINISHED_GOOD' , (masked_image_file, results_dir)
 		
 		elif not self.checkBadMask(masked_image_file):# and not self.checkBadTimeStamp(masked_image_file)

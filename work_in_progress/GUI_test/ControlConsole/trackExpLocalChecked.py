@@ -17,11 +17,11 @@ from MWTracker.helperFunctions.getTrajectoriesWorkerL import checkpoint_label
 
 def main(mask_dir_root, tmp_dir_root, json_file, script_abs_path, \
 	pattern_include, pattern_exclude, \
-	max_num_process, refresh_time, end_point, is_single_worm, 
+	max_num_process, refresh_time, force_start_point, end_point, is_single_worm, 
 	only_summary, no_prev_check, use_manual_join, not_auto_label):
 
 	ctf = checkTrackFiles(mask_dir_root, tmp_dir_root = tmp_dir_root, \
-		is_single_worm = is_single_worm, json_file = json_file, end_point = end_point, \
+		is_single_worm = is_single_worm, json_file = json_file, force_start_point = force_start_point, end_point = end_point, \
 		script_abs_path = script_abs_path, use_manual_join= use_manual_join, not_auto_label = not_auto_label)
 	
 	pattern_exclude = [pattern_exclude] + ctf.invalid_ext
@@ -62,6 +62,7 @@ if __name__ == '__main__':
 	
 	parser.add_argument('--is_single_worm', action='store_true', help = 'This flag indicates if the video corresponds to the single worm case.')
 
+	parser.add_argument('--force_start_point', default='', choices = checkpoint_label, help = 'Force the program to start at a specific point in the analysis.')
 	parser.add_argument('--end_point', default='END', choices = checkpoint_label, help='End point of the analysis.')
 	
 	parser.add_argument('--max_num_process', default = 6, type = int, help = 'Max number of process to be executed in parallel.')

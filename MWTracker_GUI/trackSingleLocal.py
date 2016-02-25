@@ -38,7 +38,7 @@ def copyFilesLocal(files2copy):
 
 class trackLocal:
 	def __init__(self, masked_image_file, results_dir, tmp_mask_dir='', tmp_results_dir='', 
-		json_file ='', end_point = 'END', is_single_worm='', 
+		json_file ='', force_start_point = '', end_point = 'END', is_single_worm='', 
 		not_auto_label = False, use_manual_join = False, cmd_original=''):
 		
 		self.masked_image_file = masked_image_file
@@ -47,21 +47,30 @@ class trackLocal:
 		self.assign_tmp_dir(tmp_mask_dir, tmp_results_dir)
 		self.end_point = checkpoint[end_point]
 		
+		
 		self.json_file = json_file 
 		self.is_single_worm = is_single_worm
 		self.use_auto_label = not not_auto_label
 		self.use_manual_join = use_manual_join
 		self.cmd_original = cmd_original
+		self.force_start_point_str = force_start_point
 
 		assert(os.path.exists(masked_image_file))
 
 		self.getFileNames()
-		self.getStartPoints()
+		
+
+		#get the correct starting point 
+		self.getStartPoints() 
+		
+		
+		
 		self.copyFilesFromFinal()
 
 
 		#start the analysis
 		print(getTrajectoriesWorkerL)
+		print(self.analysis_start_point)
 		getTrajectoriesWorkerL(self.tmp_mask_file, self.tmp_results_dir, json_file = self.json_file, 
 			start_point = self.analysis_start_point, end_point = self.end_point, is_single_worm = self.is_single_worm,
 			use_auto_label = self.use_auto_label, use_manual_join = self.use_manual_join, cmd_original=self.cmd_original)
@@ -111,12 +120,16 @@ class trackLocal:
 		self.tmp_start_point = getStartingPoint(self.tmp_mask_file, self.tmp_results_dir) #starting point calculated from the files in the temporal directory
 		self.analysis_start_point = max(self.final_start_point, self.tmp_start_point) #starting point for the analysis
 		
+		if self.force_start_point_str:
+			self.analysis_start_point = min(self.analysis_start_point, checkpoint[self.force_start_point_str])
+		
 		if self.analysis_start_point <= self.end_point:
 			print_flush(self.base_name + ' Starting checkpoint: ' + checkpoint_label[self.analysis_start_point])
 	
 
 	def copyFilesFromFinal(self):
-		if (self.final_start_point == checkpoint['END']) or self.final_start_point > self.end_point:
+		#check that the program didn't finished and that not forced start point was not specified
+		if ((self.final_start_point == checkpoint['END']) or self.final_start_point > self.end_point)  and not self.force_start_point_str:
 			#If the program has finished there is nothing to do here.
 			print_flush('%s The files from completed results analysis were found in %s. Remove them if you want to recalculated them again.' % (self.base_name, self.results_dir))
 			sys.exit(0)
@@ -221,7 +234,8 @@ if __name__ == '__main__':
 	parser.add_argument('--tmp_mask_dir', default='', help='Temporary directory where the masked file is stored')
 	parser.add_argument('--tmp_results_dir', default='', help='temporary directory where the results are stored')
 	parser.add_argument('--json_file', default='', help='File (.json) containing the tracking parameters.')
-	parser.add_argument('--end_point', default='END', choices = checkpoint, help='End point of the analysis.')
+	parser.add_argument('--force_start_point', default='', choices = checkpoint_label, help = 'Force the program to start at a specific point in the analysis.')
+	parser.add_argument('--end_point', default='END', choices = checkpoint_label, help='End point of the analysis.')
 	parser.add_argument('--is_single_worm', action='store_true', help = 'This flag indicates if the video corresponds to the single worm case.')
 	parser.add_argument('--use_manual_join', action='store_true', help = '.')
 	parser.add_argument('--not_auto_label', action='store_true', help = '.')

@@ -142,7 +142,7 @@ def correctHeadTail(skeletons_file, max_gap_allowed = 10, window_std = 25, \
     with tables.File(skeletons_file, "r") as ske_file_id:
         skeleton_table = ske_file_id.get_node('/skeleton')
         if 'has_finished' in dir(skeleton_table._v_attrs):
-            assert skeleton_table._v_attrs['has_finished'] == 1
+            assert skeleton_table._v_attrs['has_finished'] >= 1
     
     progress_timer = timeCounterStr('');
     for ii, dat in enumerate(rows_indexes.iterrows()):

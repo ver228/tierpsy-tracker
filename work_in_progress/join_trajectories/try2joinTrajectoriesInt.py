@@ -35,6 +35,8 @@ if __name__ == '__main__':
         #at this point the int_map_id with the intensity maps indexes must exist in the table
         assert 'int_map_id' in trajectories_data
     
+    trajectories_data = trajectories_data[trajectories_data['int_map_id']>0]
+    
     grouped_trajectories = trajectories_data.groupby('worm_index_joined')
 
     tot_worms = len(grouped_trajectories)
@@ -49,10 +51,10 @@ if __name__ == '__main__':
             dd = base_name + dd + ' Total time:' + progress_timer.getTimeStr()
             print(dd)
         
-        good = trajectories_worm['int_map_id']>0;
-        int_map_id = trajectories_worm.loc[good, 'int_map_id'].values
-        first_frame = trajectories_worm.loc[good, 'frame_number'].min()
-        last_frame = trajectories_worm.loc[good, 'frame_number'].max()
+        
+        int_map_id = trajectories_worm['int_map_id'].values
+        first_frame = trajectories_worm['frame_number'].min()
+        last_frame = trajectories_worm['frame_number'].max()
         
         #only analyze data that contains at least  min_block_size intensity profiles     
         if int_map_id.size < min_block_size:
@@ -73,7 +75,15 @@ if __name__ == '__main__':
         'int_map_id' : int_map_id, 'frame_med_int' : frame_med_int, 
         'frame_range' : (first_frame,last_frame)}
     
-        
+    #%% get valid indexes
+    traj_groups = {}
+    joined_indexes = {}
+    dd = trajectories_data[trajectories_data['worm_label']==1]
+    grouped_trajectories_N = dd.groupby('worm_index_N')
+    for index_n, (worm_index, trajectories_worm) in enumerate(grouped_trajectories_N):
+        joined_indexes[worm_index] = trajectories_worm['worm_index_joined'].unique()
+        for wi in joined_indexes[worm_index]:
+            traj_groups[wi] = worm_index
 #%%
     best_match1 = []
     best_match2 = []
@@ -84,6 +94,11 @@ if __name__ == '__main__':
     prob_data = {}    
     
     valid_worm_index = list(valid_data.keys())    
+    valid_worm_order = {x:n for n,x in enumerate(valid_worm_index)}
+    tot_valid_worms = len(valid_worm_index)
+    
+    prob_mat = np.full((tot_valid_worms, tot_valid_worms), np.nan)    
+    prob_mat2 = np.full((tot_valid_worms, tot_valid_worms), np.nan)    
     
     for worm_index in valid_data:
         
@@ -116,20 +131,26 @@ if __name__ == '__main__':
         worm_int_profile -= frame_med_int[:, np.newaxis]
         #%%
         DD = worm_int_profile[:,:,np.newaxis] - other_worm_profile[np.newaxis,:,:]        
-        DD = np.mean(np.abs(DD), axis=1)
+        DD = np.mean(np.abs(DD), axis = (0,1))
         
         DD_inv = worm_int_profile[:,:,np.newaxis] - other_worm_profile[np.newaxis,::-1,:]        
-        DD_inv = np.mean(np.abs(DD_inv), axis=1)
+        DD_inv = np.mean(np.abs(DD_inv), axis = (0,1))
         
         DD = np.min((DD, DD_inv), axis=0)
         
+        wi1 = valid_worm_order[worm_index]
+        for ii, x in enumerate(other_worms_ind):
+            wi2 = valid_worm_order[x]
+            prob_mat[wi1,wi2] = DD[ii]
+        
         DD = np.exp(-DD)
-        worm_prob = DD/np.sum(DD, axis=1)[:,np.newaxis]
-        worm_prob = np.sum(worm_prob, axis=0)/worm_prob.shape[0]
+        worm_prob = DD/np.sum(DD)#, axis=1)[:,np.newaxis]
+        
+        #worm_prob = np.sum(worm_prob, axis=0)/worm_prob.shape[0]
         #best_index = np.argmin(DD, axis=1)
         #worm_prob = np.bincount(best_index)/len(best_index)
         
-                
+        
         #%%
         
         DD = other_worm_profile - median_profile[:, np.newaxis]
@@ -139,30 +160,38 @@ if __name__ == '__main__':
         DD_inv = np.mean(np.abs(DD_inv), axis=0)
         DD = np.min((DD, DD_inv), axis=0)
         
+        
+        wi1 = valid_worm_order[worm_index]
+        for ii, x in enumerate(other_worms_ind):
+            wi2 = valid_worm_order[x]
+            prob_mat2[wi1,wi2] = DD[ii]
+        
         #best_inv = np.argmin((DD, DD_inv), axis=0)
         
         DD = np.exp(-DD)
         worm_prob2 = DD/np.sum(DD)    
-        
         #%%
-        plt.figure()
-        plt.subplot(1,2,1)
-        plt.plot(valid_data[worm_index]['median_profile'], 'k')
-        best1 = np.argsort(worm_prob)[:-4:-1]
-        for x in best1:
-            plt.plot(other_worm_profile[:,x], label=other_worms_ind[x])
-        
-        plt.legend(loc=4)
-        plt.title(worm_index)
-        
-        plt.subplot(1,2,2)
-        plt.plot(valid_data[worm_index]['median_profile'], 'k')
-        best1 = np.argsort(worm_prob2)[:-4:-1]
-        for x in best1:
-            plt.plot(other_worm_profile[:,x], label=other_worms_ind[x])
-        
-        plt.legend(loc=4)
-        plt.title(worm_index)
+        if True:
+            dd = joined_indexes[traj_groups[worm_index]]
+            title_str = '%i: %s' % (worm_index, str(dd))
+            plt.figure()
+            plt.subplot(1,2,1)
+            plt.plot(valid_data[worm_index]['median_profile'], 'k')
+            best1 = np.argsort(worm_prob)[:-4:-1]
+            for x in best1:
+                plt.plot(other_worm_profile[:,x], label=other_worms_ind[x])
+            
+            plt.legend(loc=4)
+            plt.title(title_str)
+            
+            plt.subplot(1,2,2)
+            plt.plot(valid_data[worm_index]['median_profile'], 'k')
+            best1 = np.argsort(worm_prob2)[:-4:-1]
+            for x in best1:
+                plt.plot(other_worm_profile[:,x], label=other_worms_ind[x])
+            
+            plt.legend(loc=4)
+            plt.title(title_str)
         
         
         #%%
@@ -177,8 +206,39 @@ if __name__ == '__main__':
         ii = np.argmax(worm_prob2)                
         best_match2.append((worm_index, other_worms_ind[ii], worm_prob2[ii]))
         #%%
-    dd = trajectories_data[trajectories_data['worm_label']==1]
-    grouped_trajectories = dd.groupby('worm_index_N')
-    for index_n, (worm_index, trajectories_worm) in enumerate(grouped_trajectories):
-        joined_indexes = trajectories_worm['worm_index_joined'].unique()
-        print(joined_indexes)
+    
+    #%%
+    good = ~np.isnan(prob_mat)
+    DD = np.exp(-prob_mat[good])
+    prob_mat[good] = DD/np.sum(DD)
+    
+    good = ~np.isnan(prob_mat2)
+    DD = np.exp(-prob_mat2[good])
+    prob_mat2[good] = DD/np.sum(DD)
+    
+    plt.figure()
+    plt.plot(np.sort(prob_mat[~np.isnan(prob_mat)]), '.')
+    plt.plot(np.sort(prob_mat2[~np.isnan(prob_mat2)]), '.')
+    #%%
+    worm_index = 3
+    prob_data[worm_index]
+    worm_prob2 = prob_data[worm_index]['worm_prob2']
+    other_worms_ind = prob_data[worm_index]['other_worms_ind']
+#%%
+from sklearn.cluster import k_means
+    
+tot_prof = len(valid_data)
+
+median_profiles = np.zeros((2*tot_prof, length_resampling))
+for ii, worm_index in enumerate(valid_data.keys()):
+    median_profiles[2*ii, :] = valid_data[worm_index]['median_profile']
+    median_profiles[2*ii+1, :] = valid_data[worm_index]['median_profile'][::-1] #consider the case that there are wrong head tail assigments
+    
+#%%
+
+centroid, label, inertia = k_means(median_profiles, 16)
+plt.figure()
+for ii in range(16):
+    plt.plot(centroid[ii])
+    
+    

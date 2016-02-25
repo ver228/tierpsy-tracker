@@ -33,10 +33,6 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, \
     pix2mum = 1
     fps = 25
 
-    
-    #useful to display progress 
-    base_name = skeletons_file.rpartition('.')[0].rpartition(os.sep)[-1]
-    
     #get total number of valid worms and break if it is zero
     tot_worms = len(good_traj_index)
 
@@ -44,8 +40,11 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, \
     wStats = wormStatsClass()
     #list to save trajectories mean features
     all_stats = []
-    #function to calculate the progress time
+    
+    #function to calculate the progress time. Useful to display progress 
+    base_name = skeletons_file.rpartition('.')[0].rpartition(os.sep)[-1].rpartition('_')[0]
     progress_timer = timeCounterStr('');
+    
     #filter used for each fo the tables
     filters_tables = tables.Filters(complevel = 5, complib='zlib', shuffle=True)
     
