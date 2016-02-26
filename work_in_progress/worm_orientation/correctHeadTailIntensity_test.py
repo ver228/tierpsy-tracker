@@ -153,7 +153,7 @@ def checkLocalVariation(worm_int_profile, groups, local_avg_win = 10):
     
     return corr_groups
 
-def removeBadSkelBlocks(groups, int_skeleton_id, trajectories_worm, min_frac_in):
+def removeBadSkelBlocks(groups, int_skeleton_id, trajectories_worm, min_frac_in, gap_size):
     if len(groups) == 0:
         return groups #nothing to do here
     
@@ -169,12 +169,20 @@ def removeBadSkelBlocks(groups, int_skeleton_id, trajectories_worm, min_frac_in)
     #create globs according if consecutive frames have an skeleton map (if the have valid filtered  skeletons)
     good = (trajectories_worm['int_map_id']>0).values          
     has_skel_group = createBlocks(good, min_block_size = 0)
+
+    #get the gaps before fussion groups
+    is_gap = np.full(len(trajectories_worm), True, np.bool)
+    for kk, gg in enumerate(has_skel_group):
+        is_gap[gg[0]:gg[1]+1] = False
+    
+    #fuse skeletons blocks to be more stringent with the selection
+    has_skel_group = _fuseOverlapingGroups(has_skel_group, gap_size = gap_size)
     
     #to test for overlaps let's created a vector with the labeled groups            
     has_blocks_flags = np.full(len(trajectories_worm), -1, np.int)
     for kk, gg in enumerate(has_skel_group):
         has_blocks_flags[gg[0]:gg[1]+1] = kk
-    
+    has_blocks_flags[is_gap] = -1 #remove labels from the gaps
     #%%
     #total number of skeletons for each group
     blocks_sizes = collections.Counter(has_blocks_flags)
@@ -191,6 +199,7 @@ def removeBadSkelBlocks(groups, int_skeleton_id, trajectories_worm, min_frac_in)
     
     #only keep groups that has at least blocks_in_frac skeletons inside the block
     corr_skel_group = [has_skel_group[x] for x in blocks_in_frac if blocks_in_frac[x] >= min_frac_in]
+    #print(corr_skel_group)
     
     #shift the index to match the general trajectories_table
     corr_skel_group = [(x+first_skel,y+first_skel) for x,y in corr_skel_group]
@@ -202,6 +211,7 @@ def removeBadSkelBlocks(groups, int_skeleton_id, trajectories_worm, min_frac_in)
     if len(corr_groups) > 1: 
         corr_groups = _fuseOverlapingGroups(corr_groups, gap_size = 1)        
     
+    #print(corr_groups)
     return corr_groups
 
 #def removeBadSkelBlocks(skel_group, trajectories_worm):
@@ -391,8 +401,8 @@ def dat_switch_swap(X,Y, r_range):
 if __name__ == '__main__':
 
     #%%
-    masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_18112015_075624.hdf5'
-    #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_17112015_205616.hdf5'
+    #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_18112015_075624.hdf5'
+    masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch6_17112015_205616.hdf5'
     #masked_image_file = '/Users/ajaver/Desktop/Videos/04-03-11/MaskedVideos/575 JU440 swimming_2011_03_04__13_16_37__8.hdf5'    
     #masked_image_file = '/Users/ajaver/Desktop/Videos/04-03-11/MaskedVideos/575 JU440 on food Rz_2011_03_04__12_55_53__7.hdf5'    
     
@@ -422,13 +432,15 @@ if __name__ == '__main__':
     #ind2check =  [2157]#[190, 2523]#[16, 190, 812]#190, 901, 2945, 2919, 2665, 2494, 2470, 2432, 2217, 2102, 1293, 832, 268, 152]
     #ind2check = [1970]#[2918, 2494, 2037, 1970, 1235, 832, 788, 731, 599]
     #ind2check = [2999, 2157, 1699, 1214, 717, 303, 9, 6]    
-    ind2check = [6]    
+    #ind2check = [128]    
+    #ind2check = [2139, 1824, 1491, 1029, 728, 708, 361, 128, 6] 
     for ind, trajectories_worm in trajectories_data.groupby('worm_index_joined'):
-        if not ind in ind2check: continue 
+        #if not ind in ind2check: continue 
         #if ind < 433: continue    
         #if ind > 3: break
         
-        print(ind, len(trajectories_worm))        
+        print(ind, len(trajectories_worm))
+        
         good = trajectories_worm['int_map_id']>0;
         
         int_map_id = trajectories_worm.loc[good, 'int_map_id']
@@ -478,9 +490,13 @@ if __name__ == '__main__':
         #    continue
         
         #%%
-        if np.median(diff_inv) - medabsdev(diff_inv)/2 < np.median(diff_ori) + medabsdev(diff_ori)/2:
-            print('AAA')            
-            continue
+        #print(np.median(np.abs(diff_inv-diff_ori)), medabsdev(diff_inv), medabsdev(diff_ori))
+        #if np.median(diff_inv) - medabsdev(diff_inv)/2 < np.median(diff_ori) + medabsdev(diff_ori)/2:
+        #if np.median(np.abs(diff_inv-diff_ori)) < (medabsdev(diff_inv) + medabsdev(diff_ori))/2:
+        #    print('AAA')            
+        #   continue
+            
+        
         
 #%%
         #smooth data, it is easier for identification
@@ -500,14 +516,14 @@ if __name__ == '__main__':
         if not groups: continue
         #refine groups using the original diferences
         bad_orientation = diff_ori>diff_inv
-        groups = correctBlock(groups, bad_orientation, gap_size)
+        groups = correctBlock(groups, bad_orientation, gap_size=0)
         #%%
         
         #correct for contingous groups        
-        corr_groups = removeBadSkelBlocks(groups, int_skeleton_id, trajectories_worm, min_frac_in)       
+        corr_groups = removeBadSkelBlocks(groups, int_skeleton_id, trajectories_worm, min_frac_in, gap_size=10)       
         #%%     
         #filter groups to check if there is really a better local match is the block is inverted 
-        corr_groups = checkLocalVariation(worm_avg, groups, local_avg_win = local_avg_win)
+        corr_groups = checkLocalVariation(worm_avg, corr_groups, local_avg_win = local_avg_win)
         
         groups = corr_groups  
         #redefine the skel limits using the final groups
@@ -562,7 +578,7 @@ if __name__ == '__main__':
                 plt.xlim((ini-100, fin+100)) 
         
         #%% switch block
-        break
+        #break
         continue
         with tables.File(skeletons_file, 'r+') as fid:
             contour_side1 = fid.get_node('/contour_side1')

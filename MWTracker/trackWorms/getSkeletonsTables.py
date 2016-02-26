@@ -182,11 +182,11 @@ def getWormROI(img, CMx, CMy, roi_size = 128):
     range_x = round(CMx) + roi_range
     range_y = round(CMy) + roi_range
     
-    if range_x[0]<0: range_x -= range_x[0]
-    if range_y[0]<0: range_y -= range_y[0]
-    
-    if range_x[1]>img.shape[1]: range_x += img.shape[1]-range_x[1]-1
-    if range_y[1]>img.shape[0]: range_y += img.shape[0]-range_y[1]-1
+    if range_x[0]<0: range_x[0] = 0#range_x -= 
+    if range_y[0]<0: range_y[0] = 0#range_y -= range_y[0]
+    #%%
+    if range_x[1]>img.shape[1]: range_x[1] = img.shape[1]#range_x += img.shape[1]-range_x[1]-1
+    if range_y[1]>img.shape[0]: range_y[1] = img.shape[0]#range_y += img.shape[0]-range_y[1]-1
     worm_img = img[range_y[0]:range_y[1], range_x[0]:range_x[1]]
     
     roi_corner = np.array([range_x[0]-1, range_y[0]-1])
@@ -329,6 +329,7 @@ create_single_movies = False, resampling_N = 49, min_mask_area = 50, smoothed_tr
         #Mark a succesful termination
         skel_arrays['skeleton']._v_attrs['has_finished'] = 1;
 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #drawWormContour and writeIndividualMovies are used to create individual worm movies.
 def drawWormContour(worm_img, worm_mask, skeleton, cnt_side1, cnt_side2, \

@@ -595,7 +595,6 @@ class MWTrackerViewer_GUI(QMainWindow):
 		for ind in self.frame_data['worm_index_N'].data:
 			comboBox_ROI.addItem(str(ind))
 		
-		canvas_size = min(wormCanvas.height(),wormCanvas.width())
 		
 		#extract individual worm ROI
 		good = self.frame_data['worm_index_N'] == worm_index_roi
@@ -609,23 +608,37 @@ class MWTrackerViewer_GUI(QMainWindow):
 			return #invalid coordinate, nothing to do here
 
 		worm_roi, roi_corner = getWormROI(self.original_image, roi_data['coord_x'], roi_data['coord_y'], roi_data['roi_size'])
-		worm_roi = np.ascontiguousarray(worm_roi)
+		roi_corner = roi_corner+1
+		#worm_roi, roi_corner = self.original_image, np.zeros(2)
+
+		roi_ori_size = worm_roi.shape
 		
+		worm_roi = np.ascontiguousarray(worm_roi)
 		#worm_roi = cv2.cvtColor(worm_img, cv2.COLOR_GRAY2RGB);
 
-		worm_img = QImage(worm_roi.data, worm_roi.shape[0], worm_roi.shape[1], worm_roi.strides[0], QImage.Format_Indexed8)
+		worm_img = QImage(worm_roi.data, worm_roi.shape[1], worm_roi.shape[0], worm_roi.strides[0], QImage.Format_Indexed8)
 		worm_img = worm_img.convertToFormat(QImage.Format_RGB32, Qt.AutoColor)
 
+		
+		canvas_size = min(wormCanvas.height(),wormCanvas.width())
 		worm_img = worm_img.scaled(canvas_size,canvas_size, Qt.KeepAspectRatio)#, Qt.SmoothTransformation)
+		
 		
 		if isDrawSkel:
 			if roi_data['has_skeleton']:
-				c_ratio = canvas_size/roi_data['roi_size'];
+				c_ratio_y = worm_img.width()/roi_ori_size[1];
+				c_ratio_x = worm_img.height()/roi_ori_size[0];
+				
 				skel_id = int(roi_data['skeleton_id'])
 
 				qPlg = {}
+				
 				for tt in ['skeleton', 'contour_side1', 'contour_side2']:
-					dat = (self.skel_dat[tt][skel_id] - roi_corner)*c_ratio
+					dat = self.skel_dat[tt][skel_id];
+					dat[:,0] = (dat[:,0]-roi_corner[0])*c_ratio_x
+					dat[:,1] = (dat[:,1]-roi_corner[1])*c_ratio_y
+					
+					#dat = (self.skel_dat[tt][skel_id] - 0)*c_ratio
 					qPlg[tt] = QPolygonF()
 					for p in dat:
 						qPlg[tt].append(QPointF(*p))
@@ -655,7 +668,7 @@ class MWTrackerViewer_GUI(QMainWindow):
 				painter.setBrush(Qt.white)
 				painter.setPen(pen)
 			
-				radius = 1.5*c_ratio
+				radius = 3#*c_ratio_x
 				painter.drawEllipse(qPlg['skeleton'][0], radius, radius)
 
 				painter.end()
@@ -665,8 +678,8 @@ class MWTrackerViewer_GUI(QMainWindow):
 				worm_mask = np.zeros_like(worm_mask)
 				cv2.drawContours(worm_mask, [worm_cnt.astype(np.int32)], 0, 1, -1)
 
-				worm_mask = QImage(worm_mask.data, worm_mask.shape[0], 
-					worm_mask.shape[1], worm_mask.strides[0], QImage.Format_Indexed8)
+				worm_mask = QImage(worm_mask.data, worm_mask.shape[1], 
+					worm_mask.shape[0], worm_mask.strides[0], QImage.Format_Indexed8)
 				worm_mask = worm_mask.convertToFormat(QImage.Format_RGB32, Qt.AutoColor)
 				worm_mask = worm_mask.scaled(canvas_size,canvas_size, 
 					Qt.KeepAspectRatio)#, Qt.SmoothTransformation)

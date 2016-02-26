@@ -72,7 +72,7 @@ def _fuseOverlapingGroups(corr_groups, gap_size=0):
 
         return corr_groups_f
 
-def correctBlock(groups, new_flag_vec, gap_size):
+def correctBlock(groups, new_flag_vec, gap_size=0):
     if len(groups) == 0:
         return groups #nothing to do here
         
@@ -153,7 +153,7 @@ def checkLocalVariation(worm_int_profile, groups, local_avg_win = 10):
     
     return corr_groups
 
-def removeBadSkelBlocks(groups, int_skeleton_id, trajectories_worm, min_frac_in):
+def removeBadSkelBlocks(groups, int_skeleton_id, trajectories_worm, min_frac_in, gap_size):
     if len(groups) == 0:
         return groups #nothing to do here
     
@@ -170,12 +170,22 @@ def removeBadSkelBlocks(groups, int_skeleton_id, trajectories_worm, min_frac_in)
     good = (trajectories_worm['int_map_id']>0).values          
     has_skel_group = createBlocks(good, min_block_size = 0)
     
+    #get the gaps before fussing groups
+    is_gap = np.full(len(trajectories_worm), True, np.bool)
+    for kk, gg in enumerate(has_skel_group):
+        is_gap[gg[0]:gg[1]+1] = False
+    
+    #fuse skeletons blocks to be more stringent with the selection
+    has_skel_group = _fuseOverlapingGroups(has_skel_group, gap_size = gap_size)
+    
     #to test for overlaps let's created a vector with the labeled groups            
     has_blocks_flags = np.full(len(trajectories_worm), -1, np.int)
     for kk, gg in enumerate(has_skel_group):
         has_blocks_flags[gg[0]:gg[1]+1] = kk
     
-    #%%
+    #remove labels from the gaps
+    has_blocks_flags[is_gap] = -1 
+    
     #total number of skeletons for each group
     blocks_sizes = collections.Counter(has_blocks_flags)
     
@@ -327,13 +337,13 @@ def correctHeadTailIntensity(skeletons_file, intensities_file, smooth_W = 5,
         #... and inverting the orientation
         diff_inv = np.sum(np.abs(med_int[::-1]-worm_int_profile), axis = 1)
         
-        #%%
+        #%% DEPRECATED, it
         #check if signal noise will allow us to distinguish between the two signals
         #I am assuming that most of the images will have a correct head tail orientation 
         #and the robust estimates will give us a good representation of the noise levels     
-        if np.median(diff_inv) - medabsdev(diff_inv)/2 < np.median(diff_ori) + medabsdev(diff_ori)/2:
-            bad_worms.append(worm_index)
-            continue
+        #if np.median(diff_inv) - medabsdev(diff_inv)/2 < np.median(diff_ori) + medabsdev(diff_ori)/2:
+        #    bad_worms.append(worm_index)
+        #    continue
         
         #%%
         #smooth data, it is easier for identification
@@ -356,13 +366,13 @@ def correctHeadTailIntensity(skeletons_file, intensities_file, smooth_W = 5,
 
         #let's refine blocks limits using the original unsmoothed differences
         bad_orientation = diff_ori>diff_inv
-        blocks2correct = correctBlock(blocks2correct, bad_orientation, gap_size)
+        blocks2correct = correctBlock(blocks2correct, bad_orientation, gap_size=0)
         
         
         #let's correct the blocks inversion boundaries by checking that they do not
         #travers a group of contigous skeletons. I am assuming that head tail errors
         #only can occur when we miss an skeleton.        
-        blocks2correct = removeBadSkelBlocks(blocks2correct, int_skeleton_id, trajectories_worm, min_frac_in)
+        blocks2correct = removeBadSkelBlocks(blocks2correct, int_skeleton_id, trajectories_worm, min_frac_in, gap_size=gap_size)
         
         #Check in the boundaries between blocks if there is really a better local match if the block is inverted 
         blocks2correct = checkLocalVariation(worm_int_profile, blocks2correct, local_avg_win)
