@@ -16,6 +16,13 @@ def storeXMLInfo(info_file, masked_image_file):
     with open(info_file, 'r') as fid:
         xml_info = fid.read()
     
+    #if it is empty the xml create a node and exit
+    if not xml_info:
+        with tables.File(masked_image_file, 'r+') as fid:
+            fid.create_array('/', 'xml_info', obj = bytes('', 'utf-8'))
+            return
+
+    #read the xml and exit
     root = ET.fromstring(xml_info)
     
     x_microns = float(root.findall('./info/stage/steps/equivalent/microns/x')[0].text)
@@ -38,26 +45,37 @@ def storeXMLInfo(info_file, masked_image_file):
         masks_node.attrs['pixels2microns_x'] = pixels2microns_x
         masks_node.attrs['pixels2microns_y'] = pixels2microns_y
     
-    
-def walkXML(curr_node, params = [], curr_path = ''):
-    '''
-    Return the structure of a ElementTree into a directory list. 
-    I am not really using this function but it is cool.
-    '''
-    curr_path += '/' + curr_node.tag
-    if len(curr_node) == 0:
-        param.append((curr_path, curr_node.text))
-        return params
-
-    for node in curr_node:
-        walkXML(node, params, curr_path)
 
 #%% Read/Store the CSV file with the stage positions
-def timestr2sec(timestr):
+def storeStageData(stage_file, masked_image_file):
+    ## read motor data from csv
+    with open(stage_file) as fid:
+        reader = csv.reader(fid)
+        data = [line for line in reader]
+    
+    #if it is empty the xml create a node and exit
+    if not data:
+        with tables.File(masked_image_file, 'r+') as fid:
+            dtype = [('real_time', int), ('stage_time', int), ('stage_x', float), ('stage_y', float)]
+            fid.create_table('/', 'stage_data', obj = np.recarray(0, dtype))
+            return
+
+    #filter, check and store the data into a recarray
+    header, data = _getHeader(data)
+    csv_dict =  _data2dict(header, data)
+    stage_recarray = _dict2recarray(csv_dict)
+
+    with tables.File(masked_image_file, 'r+') as mask_fid:
+        if '/stage_data' in mask_fid: mask_fid.remove_node('/', 'stage_data')
+        mask_fid.create_table('/', 'stage_data', obj = stage_recarray)
+    
+    return csv_dict
+
+def _timestr2sec(timestr):
     time_parts = [float(x) for x in timestr.split(':')]
     return sum((60**ii)*part for ii,part in enumerate(time_parts[::-1]))
 
-def getHeader(data):
+def _getHeader(data):
     assert data    
     #find header (it is not always the first line)
     for ii, line in enumerate(data):
@@ -74,10 +92,10 @@ def getHeader(data):
     
     return header, data
 
-def data2dict(header, data):
+def _data2dict(header, data):
+    #read the csv data into a dictionary where each field is the data from a column
+    
     assert data
-
-    print(len(dd) for dd in data)
 
     ## save data into a dictionary
     csv_dict = {}
@@ -94,11 +112,12 @@ def data2dict(header, data):
         del csv_dict[col_name]
     return csv_dict
 
-def dict2recarray(csv_dict):
+def _dict2recarray(csv_dict):
+    #convert the csv data into a recarray compatible with pytables
     dat = OrderedDict()
     
     dat['real_time'] = np.array([bytes(x, 'utf-8') for x in csv_dict['Real Time']])
-    dat['stage_time'] = np.array([timestr2sec(x) for x in csv_dict['Media Time']])
+    dat['stage_time'] = np.array([_timestr2sec(x) for x in csv_dict['Media Time']])
     
     dat['stage_x'] = np.array([float(d) \
     for d in csv_dict['Centroid/Stage/Speed X (microns[/second])']])
@@ -114,45 +133,31 @@ def dict2recarray(csv_dict):
     
     return stage_recarray
 
-def storeStageData(stage_file, masked_image_file):
-    ## read motor data from csv
-    with open(stage_file) as fid:
-        reader = csv.reader(fid)
-        data = [line for line in reader]
-    
-    #filter, check and store the data into a recarray
-    header, data = getHeader(data)
-    csv_dict =  data2dict(header, data)
-    stage_recarray = dict2recarray(csv_dict)
-
-    with tables.File(masked_image_file, 'r+') as mask_fid:
-        if '/stage_data' in mask_fid: mask_fid.remove_node('/', 'stage_data')
-        mask_fid.create_table('/', 'stage_data', obj = stage_recarray)
-    
-    return csv_dict
-
-def insertDirectory(original_file, dir2add):
-    dd = os.path.split(original_file);
-    return os.path.join(dd[0], dir2add, dd[1])
-
-def isValidFile(file_name):
-    return os.path.exists(file_name) and (os.stat(file_name).st_size > 0)
-
 def getAdditionalFiles(video_file):
     assert(os.path.exists(video_file))
     base_name = os.path.splitext(video_file)[0]
     info_file =  base_name + '.info.xml'
     stage_file = base_name + '.log.csv'
     
-    if not isValidFile(info_file) or not isValidFile(stage_file):
-        #try to add the .data to look in hidden dirs
-        info_file = insertDirectory(info_file, '.data')
-        stage_file = insertDirectory(stage_file, '.data')
-        if not isValidFile(info_file) or not isValidFile(stage_file):
-            #throw and exception if the additional files do not exists 
-            raise FileNotFoundError('Additional files (info.xml - log.csv) do not exists.')
+    info_file = _getValidFile(info_file)
+    stage_file = _getValidFile(stage_file)
 
     return info_file, stage_file
+
+def _insertDirectory(original_file, dir2add):
+    dd = os.path.split(original_file);
+    return os.path.join(dd[0], dir2add, dd[1])
+
+def _getValidFile(file_name):
+    if not os.path.exists(file_name):
+        file_name = _insertDirectory(file_name, '.data')
+        if not os.path.exists(file_name):
+            raise FileNotFoundError('Additional %s file do not exists.' % file_name)
+
+    #if (os.stat(file_name).st_size == 0):
+    #    raise IOError('%s is empty' % file_name)
+
+    return file_name
 
 #%% main function to store the additional data
 def storeAdditionalDataSW(video_file, masked_image_file):
@@ -173,6 +178,19 @@ def storeAdditionalDataSW(video_file, masked_image_file):
 
 
 
+#DEPRECATED
+def walkXML(curr_node, params = [], curr_path = ''):
+    '''
+    Return the structure of a ElementTree into a directory list. 
+    I am not really using this function but it is cool.
+    '''
+    curr_path += '/' + curr_node.tag
+    if len(curr_node) == 0:
+        param.append((curr_path, curr_node.text))
+        return params
+
+    for node in curr_node:
+        walkXML(node, params, curr_path)
     
 
 

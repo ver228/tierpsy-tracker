@@ -136,6 +136,9 @@ def contour2Skeleton(contour):
     return (skeleton, cnt_side1, cnt_side2, cnt_widths, '')
 
 def binaryMask2Contour(worm_mask, min_mask_area=50, roi_center_x = -1, roi_center_y = -1, pick_center = True):
+    
+    bad_return = (np.zeros(0), np.nan)
+
     if roi_center_x < 1:
         roi_center_x = (worm_mask.shape[1]-1)/2.
     if roi_center_y < 1:
@@ -149,8 +152,10 @@ def binaryMask2Contour(worm_mask, min_mask_area=50, roi_center_x = -1, roi_cente
     if len(contour) == 1:
         contour = np.squeeze(contour[0], axis=1)
         #filter for small areas
-        if cv2.contourArea(contour) < min_mask_area:
-            contour = np.zeros(0)
+        cnt_area = cv2.contourArea(contour);
+        if cnt_area < min_mask_area:
+            return bad_return
+    
     elif len(contour)>1:
     #clean mask if there is more than one contour
         #select the largest area  object
@@ -159,7 +164,7 @@ def binaryMask2Contour(worm_mask, min_mask_area=50, roi_center_x = -1, roi_cente
         #filter only contours with areas larger than min_mask_area
         cnt_tuple = [(contour[ii], cnt_area) for ii, cnt_area in enumerate(cnt_areas) if cnt_area>=min_mask_area]
         if not cnt_tuple:
-            return np.zeros(0)
+            return bad_return
         contour, cnt_areas = zip(*cnt_tuple)
         
         if pick_center:
@@ -180,9 +185,11 @@ def binaryMask2Contour(worm_mask, min_mask_area=50, roi_center_x = -1, roi_cente
         
         #return the correct contour if there is a valid number
         contour = np.squeeze(contour[valid_ind])
+        cnt_area = cnt_areas[valid_ind]
     else:
-        contour = np.zeros(0)
-    return contour.astype(np.double)
+        return bad_return
+    
+    return contour.astype(np.double), cnt_area
 
 
 def orientWorm(skeleton, prev_skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths):
@@ -280,13 +287,13 @@ def getSkeleton(worm_mask, prev_skeleton = np.zeros(0), resampling_N = 50, min_m
     n_output_param = 8 #number of expected output parameters
     
     if worm_mask.size == 0:
-        return n_output_param*[np.zeros(0)]
+        return (n_output_param-1)*[np.zeros(0)] + [np.nan]
 
-    contour = binaryMask2Contour(worm_mask, min_mask_area=50)
+    contour, cnt_area = binaryMask2Contour(worm_mask, min_mask_area=50)
 
     
     if contour.size == 0:
-        return n_output_param*[np.zeros(0)]
+        return (n_output_param-1)*[np.zeros(0)] + [cnt_area]
     
     assert type(contour) == np.ndarray and contour.ndim == 2 and contour.shape[1] ==2
     
@@ -294,7 +301,7 @@ def getSkeleton(worm_mask, prev_skeleton = np.zeros(0), resampling_N = 50, min_m
     contour2Skeleton(contour)
     
     if skeleton.size == 0:
-        return n_output_param*[np.zeros(0)]
+        return (n_output_param-1)*[np.zeros(0)] + [cnt_area]
     
     #resample curves
     skeleton, ske_len, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths = \

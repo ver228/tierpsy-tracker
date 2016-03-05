@@ -19,7 +19,7 @@ class tracker_param:
     
     def get_param(self, min_area = 50, max_area = 1e10, thresh_C = 15,  has_timestamp = True, 
             dilation_size = 9, compression_buff = 25, keep_border_data = False, roi_size = -1, 
-            thresh_block_size = 61, fps = 25, fps_filter = 0, threshold_factor = 1.,
+            thresh_block_size = 61, fps = 25, fps_filter = 0, threshold_factor = 1.05,
             resampling_N = 49,  max_gap_allowed_block = 10, is_single_worm = False, 
             bad_seg_thresh = 0.8, min_displacement = 0, fit_contamination = 0.05):
         '''
