@@ -625,7 +625,7 @@ class MWTrackerViewer_GUI(QMainWindow):
 		
 		
 		if isDrawSkel:
-			if roi_data['has_skeleton']:
+			if roi_data['has_skeleton']==1:
 				c_ratio_y = worm_img.width()/roi_ori_size[1];
 				c_ratio_x = worm_img.height()/roi_ori_size[0];
 				
@@ -672,9 +672,9 @@ class MWTrackerViewer_GUI(QMainWindow):
 				painter.drawEllipse(qPlg['skeleton'][0], radius, radius)
 
 				painter.end()
-			else:
+			elif roi_data['has_skeleton']==0:
 				worm_mask = getWormMask(worm_roi, roi_data['threshold'])
-				worm_cnt = binaryMask2Contour(worm_mask)
+				worm_cnt, _ = binaryMask2Contour(worm_mask)
 				worm_mask = np.zeros_like(worm_mask)
 				cv2.drawContours(worm_mask, [worm_cnt.astype(np.int32)], 0, 1, -1)
 

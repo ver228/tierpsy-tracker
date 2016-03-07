@@ -137,8 +137,7 @@ def contour2Skeleton(contour):
 
 def binaryMask2Contour(worm_mask, min_mask_area=50, roi_center_x = -1, roi_center_y = -1, pick_center = True):
     
-    bad_return = (np.zeros(0), np.nan)
-
+    
     if roi_center_x < 1:
         roi_center_x = (worm_mask.shape[1]-1)/2.
     if roi_center_y < 1:
@@ -154,7 +153,7 @@ def binaryMask2Contour(worm_mask, min_mask_area=50, roi_center_x = -1, roi_cente
         #filter for small areas
         cnt_area = cv2.contourArea(contour);
         if cnt_area < min_mask_area:
-            return bad_return
+            return np.zeros(0), cnt_area
     
     elif len(contour)>1:
     #clean mask if there is more than one contour
@@ -164,7 +163,7 @@ def binaryMask2Contour(worm_mask, min_mask_area=50, roi_center_x = -1, roi_cente
         #filter only contours with areas larger than min_mask_area
         cnt_tuple = [(contour[ii], cnt_area) for ii, cnt_area in enumerate(cnt_areas) if cnt_area>=min_mask_area]
         if not cnt_tuple:
-            return bad_return
+            return np.zeros(0), np.nan
         contour, cnt_areas = zip(*cnt_tuple)
         
         if pick_center:
@@ -187,7 +186,7 @@ def binaryMask2Contour(worm_mask, min_mask_area=50, roi_center_x = -1, roi_cente
         contour = np.squeeze(contour[valid_ind])
         cnt_area = cnt_areas[valid_ind]
     else:
-        return bad_return
+        return np.zeros(0), np.nan
     
     return contour.astype(np.double), cnt_area
 

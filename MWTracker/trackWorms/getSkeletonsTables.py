@@ -303,7 +303,10 @@ create_single_movies = False, resampling_N = 49, min_mask_area = 50, smoothed_tr
                 #get skeletons
                 skeleton, ske_len, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths, cnt_area = \
                 getSkeleton(worm_mask, prev_skeleton[worm_index], resampling_N, worm_area_min)
-                                
+                
+                #it should give an area as long as there is a decent contour, even if the skeleton was not calculated
+                skel_arrays['contour_area'][skeleton_id] = cnt_area
+
                 if skeleton.size>0:
                     prev_skeleton[worm_index] = skeleton.copy()
                     
@@ -313,7 +316,6 @@ create_single_movies = False, resampling_N = 49, min_mask_area = 50, smoothed_tr
                     skel_arrays['contour_side2_length'][skeleton_id] = cnt_side2_len
     
                     skel_arrays['contour_width'][skeleton_id, :] = cnt_widths                
-                    skel_arrays['contour_area'][skeleton_id] = cnt_area                
                                         
 
                     #convert into the main image coordinates
@@ -334,9 +336,9 @@ create_single_movies = False, resampling_N = 49, min_mask_area = 50, smoothed_tr
 #drawWormContour and writeIndividualMovies are used to create individual worm movies.
 def drawWormContour(worm_img, worm_mask, skeleton, cnt_side1, cnt_side2, \
 colorpalette = [(119, 158,27 ), (2, 95, 217), (138, 41, 231)]):
-    
     '''
-    Draw the worm contour and skeleton. If the contour is not valid, draw the thresholded mask.
+    Draw the worm contour and skeleton. 
+    If the contour is not valid, draw the thresholded mask.
     '''
     
     assert worm_img.dtype == np.uint8

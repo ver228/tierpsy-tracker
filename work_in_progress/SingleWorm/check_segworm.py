@@ -56,7 +56,7 @@ with h5py.File(file_mask, 'r') as fid:
         
         tic = time.time()        
         
-        contour = binaryMask2Contour(worm_mask, min_mask_area=50)
+        contour,_ = binaryMask2Contour(worm_mask, min_mask_area=50)
         skeleton, cnt_side1, cnt_side2, cnt_widths, err_msg = \
         contour2Skeleton(contour)
         
