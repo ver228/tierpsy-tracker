@@ -14,8 +14,7 @@ from PyQt5.QtGui import QPixmap, QImage, QPainter, QColor, QFont, QPolygonF, QPe
 
 from MWTracker.GUI.MWTrackerViewer.MWTrackerViewer_ui import Ui_ImageViewer
 
-from MWTracker.trackWorms.getSkeletonsTables import getWormROI, getWormMask
-from MWTracker.trackWorms.segWormPython.mainSegworm import binaryMask2Contour
+from MWTracker.trackWorms.getSkeletonsTables import getWormROI, getWormMask, binaryMask2Contour
 from MWTracker.featuresAnalysis.obtainFeatures_N import getWormFeaturesLab
 
 class MWTrackerViewer_GUI(QMainWindow):

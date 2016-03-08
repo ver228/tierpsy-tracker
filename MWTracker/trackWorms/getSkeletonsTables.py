@@ -25,6 +25,7 @@ from scipy.interpolate import interp1d
 from ..helperFunctions.timeCounterStr import timeCounterStr
 from .segWormPython.mainSegworm import getSkeleton
 
+
 def getSmoothTrajectories(trajectories_file, roi_size = -1, min_track_size = 100,
     displacement_smooth_win = 101, 
     min_displacement = 0, threshold_smooth_win = 501):
@@ -85,7 +86,8 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, min_track_size = 100
     ('plate_worm_id', np.int32), ('skeleton_id', np.int32), \
     ('coord_x', np.float32), ('coord_y', np.float32), ('threshold', np.float32), 
     ('has_skeleton', np.uint8), ('roi_size', np.float32), ('area', np.float32), 
-    ('timestamp_raw', np.float32), ('timestamp_time', np.float32)])
+    ('timestamp_raw', np.float32), ('timestamp_time', np.float32),
+    ('cnt_coord_x', np.float32), ('cnt_coord_y', np.float32), ('cnt_area', np.float32)])
 
     #store the maximum and minimum frame of each worm
     worms_frame_range = {}
@@ -159,7 +161,9 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, min_track_size = 100
         
         trajectories_df['area'][skeleton_id] = areanew
         
-
+    trajectories_df['cnt_coord_x'] = np.nan
+    trajectories_df['cnt_coord_y'] = np.nan
+    trajectories_df['cnt_area'] = 0
     assert tot_rows == tot_rows_ini
     
     return trajectories_df, worms_frame_range, tot_rows
@@ -216,6 +220,69 @@ def getWormMask(worm_img, threshold):
 
     return worm_mask
 
+def binaryMask2Contour(worm_mask, min_mask_area=50, roi_center_x = -1, roi_center_y = -1, pick_center = True):    
+    if worm_mask.size == 0:
+        return np.zeros(0), 0 #assest this is not an empty arrays
+
+    #get the center of the mask
+    if roi_center_x < 1:
+        roi_center_x = (worm_mask.shape[1]-1)/2.
+    if roi_center_y < 1:
+        roi_center_y = (worm_mask.shape[0]-1)/2.
+    
+    
+    #select only one contour in the binary mask
+    #get contour
+    _, contour, hierarchy = cv2.findContours(worm_mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    
+    
+    if len(contour) == 1:
+        contour = np.squeeze(contour[0], axis=1)
+        #filter for small areas
+        cnt_area = cv2.contourArea(contour);
+        if cnt_area < min_mask_area:
+            return np.zeros(0), cnt_area
+    
+    elif len(contour)>1:
+    #clean mask if there is more than one contour
+        #select the largest area  object
+        cnt_areas = [cv2.contourArea(cnt) for cnt in contour]
+        
+        #filter only contours with areas larger than min_mask_area and do not consider contour with holes
+        cnt_tuple = [(contour[ii], cnt_area) for ii, cnt_area in enumerate(cnt_areas) 
+        if cnt_area>=min_mask_area and hierarchy[0][ii][3] == -1]
+        
+        #if there are not contour left continue
+        if not cnt_tuple:
+            return np.zeros(0), 0
+
+        #get back the contour areas for filtering
+        contour, cnt_areas = zip(*cnt_tuple)
+        
+        if pick_center:
+            #In the multiworm tracker the worm should be in the center of the ROI
+            min_dist_center = np.inf;
+            valid_ind = -1
+            for ii, cnt in enumerate(contour):
+                #print(cnt.shape)
+                #mm = cv2.moments(cnt)
+                cm_x = np.mean(cnt[:,:,1])#mm['m10']/mm['m00']
+                cm_y = np.mean(cnt[:,:,0])#mm['m01']/mm['m00']
+                dist_center = (cm_x-roi_center_x)**2 + (cm_y-roi_center_y)**2
+                if min_dist_center > dist_center:
+                    min_dist_center = dist_center
+                    valid_ind = ii
+        else:
+            #select the largest area  object
+            valid_ind = np.argmax(cnt_areas)
+        
+        #return the correct contour if there is a valid number
+        contour = np.squeeze(contour[valid_ind])
+        cnt_area = cnt_areas[valid_ind]
+    else:
+        return np.zeros(0), 0
+    
+    return contour.astype(np.double), cnt_area
 
 def trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file, \
 create_single_movies = False, resampling_N = 49, min_mask_area = 50, smoothed_traj_param = {}):    
@@ -236,10 +303,12 @@ create_single_movies = False, resampling_N = 49, min_mask_area = 50, smoothed_tr
     with tables.File(skeletons_file, "w") as ske_file_id:
         ske_file_id.create_table('/', 'trajectories_data', obj = trajectories_df, filters=table_filters)
     
-    
     #...but it is easier to process data with pandas
     with pd.HDFStore(skeletons_file, 'r') as ske_file_id:
         trajectories_df = ske_file_id['/trajectories_data']
+        trajectories_df['area_new'] = np.nan
+        trajectories_df['coord_x_new'] = np.nan
+        trajectories_df['coord_y_new'] = np.nan
     
     #open skeleton file for append and #the compressed videos as read
     with tables.File(skeletons_file, "r+") as ske_file_id, \
@@ -272,10 +341,13 @@ create_single_movies = False, resampling_N = 49, min_mask_area = 50, smoothed_tr
                                         tables.Float32Atom(dflt = np.nan), \
                                         (tot_rows,), filters = table_filters);
 
-
-
         #flags to mark if a frame was skeletonized
         has_skeleton = ske_file_id.get_node('/trajectories_data').cols.has_skeleton
+
+        #get the center of mass coordinates and area of the contour with the corrected threshold
+        cnt_coord_x = ske_file_id.get_node('/trajectories_data').cols.cnt_coord_x
+        cnt_coord_y = ske_file_id.get_node('/trajectories_data').cols.cnt_coord_y
+        cnt_areas = ske_file_id.get_node('/trajectories_data').cols.cnt_area
 
         #flag to mark if this function finished succesfully
         skel_arrays['skeleton']._v_attrs['has_finished'] = 0;
@@ -286,27 +358,32 @@ create_single_movies = False, resampling_N = 49, min_mask_area = 50, smoothed_tr
         #timer
         progressTime = timeCounterStr('Calculation skeletons.');
         for frame, frame_data in trajectories_df.groupby('frame_number'):
-            
             img = mask_dataset[frame,:,:]
             for skeleton_id, row_data in frame_data.iterrows():
                 
                 worm_img, roi_corner = getWormROI(img, row_data['coord_x'], row_data['coord_y'], row_data['roi_size'])
                 worm_mask = getWormMask(worm_img, row_data['threshold'])
                 
+                #only consider areas of at least half the size of the expected blob and that are near the center of the roi
+                worm_cnt, cnt_areas[skeleton_id] = binaryMask2Contour(worm_mask, min_mask_area = row_data['area']/2)
+                
+                if worm_cnt.size == 0:
+                    continue
+
+                #calculate the mask center of mask and store it
+                #mm = cv2.moments(worm_cnt)
+                cnt_coord_y[skeleton_id] = np.mean(worm_cnt[:,1]) + roi_corner[1]
+                cnt_coord_x[skeleton_id] = np.mean(worm_cnt[:,0]) + roi_corner[0]
+                
+                #get the previous worm skeletons to orient them
                 worm_index = row_data['worm_index_joined']
                 if not worm_index in prev_skeleton:
                     prev_skeleton[worm_index] = np.zeros(0)
                 
-                #only consider areas of at least half the size of the expected blob
-                worm_area_min = row_data['area']/2 
-
                 #get skeletons
                 skeleton, ske_len, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths, cnt_area = \
-                getSkeleton(worm_mask, prev_skeleton[worm_index], resampling_N, worm_area_min)
+                getSkeleton(worm_cnt, prev_skeleton[worm_index], resampling_N)
                 
-                #it should give an area as long as there is a decent contour, even if the skeleton was not calculated
-                skel_arrays['contour_area'][skeleton_id] = cnt_area
-
                 if skeleton.size>0:
                     prev_skeleton[worm_index] = skeleton.copy()
                     
@@ -316,20 +393,23 @@ create_single_movies = False, resampling_N = 49, min_mask_area = 50, smoothed_tr
                     skel_arrays['contour_side2_length'][skeleton_id] = cnt_side2_len
     
                     skel_arrays['contour_width'][skeleton_id, :] = cnt_widths                
-                                        
 
                     #convert into the main image coordinates
                     skel_arrays['skeleton'][skeleton_id, :, :] = skeleton + roi_corner
                     skel_arrays['contour_side1'][skeleton_id, :, :] = cnt_side1 + roi_corner
                     skel_arrays['contour_side2'][skeleton_id, :, :] = cnt_side2 + roi_corner
+                    skel_arrays['contour_area'][skeleton_id] = cnt_area
                     
                     has_skeleton[skeleton_id] = True
+            
             if frame % 500 == 0:
                 progress_str = progressTime.getStr(frame)
                 print(base_name + ' ' + progress_str);
                 sys.stdout.flush()
-        #Mark a succesful termination
-        skel_arrays['skeleton']._v_attrs['has_finished'] = 1;
+
+    
+            #Mark a succesful termination
+            skel_arrays['skeleton']._v_attrs['has_finished'] = 1;
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -475,7 +555,7 @@ def writeIndividualMovies(masked_image_file, skeletons_file, video_save_dir,
                 print(base_name + ' ' + progress_str);
                 sys.stdout.flush()
 #%%
-if __name__ == '__main__':  
+if __name__ == '__main__':
     #masked_image_file = '/Users/ajaver/Desktop/Gecko_compressed/Masked_videos/20150512/Capture_Ch3_12052015_194303.hdf5'
     #save_dir = '/Users/ajaver/Desktop/Gecko_compressed/Results/20150512/'    
     

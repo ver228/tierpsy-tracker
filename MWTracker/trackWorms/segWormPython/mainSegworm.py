@@ -135,62 +135,6 @@ def contour2Skeleton(contour):
     
     return (skeleton, cnt_side1, cnt_side2, cnt_widths, '')
 
-def binaryMask2Contour(worm_mask, min_mask_area=50, roi_center_x = -1, roi_center_y = -1, pick_center = True):
-    
-    
-    if roi_center_x < 1:
-        roi_center_x = (worm_mask.shape[1]-1)/2.
-    if roi_center_y < 1:
-        roi_center_y = (worm_mask.shape[0]-1)/2.
-    
-    assert worm_mask.size > 0 #assest this is not an empty arrays
-
-    #select only one contour in the binary mask
-    #get contour
-    _,contour, _ = cv2.findContours(worm_mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-    if len(contour) == 1:
-        contour = np.squeeze(contour[0], axis=1)
-        #filter for small areas
-        cnt_area = cv2.contourArea(contour);
-        if cnt_area < min_mask_area:
-            return np.zeros(0), cnt_area
-    
-    elif len(contour)>1:
-    #clean mask if there is more than one contour
-        #select the largest area  object
-        cnt_areas = [cv2.contourArea(cnt) for cnt in contour]
-        
-        #filter only contours with areas larger than min_mask_area
-        cnt_tuple = [(contour[ii], cnt_area) for ii, cnt_area in enumerate(cnt_areas) if cnt_area>=min_mask_area]
-        if not cnt_tuple:
-            return np.zeros(0), np.nan
-        contour, cnt_areas = zip(*cnt_tuple)
-        
-        if pick_center:
-            #In the multiworm tracker the worm should be in the center of the ROI
-            min_dist_center = np.inf;
-            valid_ind = -1
-            for ii, cnt in enumerate(contour):
-                mm = cv2.moments(cnt)
-                cm_x = mm['m10']/mm['m00']
-                cm_y = mm['m01']/mm['m00']
-                dist_center = (cm_x-roi_center_x)**2 + (cm_y-roi_center_y)**2
-                if min_dist_center > dist_center:
-                    min_dist_center = dist_center
-                    valid_ind = ii
-        else: 
-            #select the largest area  object
-            valid_ind = np.argmax(cnt_areas)
-        
-        #return the correct contour if there is a valid number
-        contour = np.squeeze(contour[valid_ind])
-        cnt_area = cnt_areas[valid_ind]
-    else:
-        return np.zeros(0), np.nan
-    
-    return contour.astype(np.double), cnt_area
-
-
 def orientWorm(skeleton, prev_skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths):
     if skeleton.size == 0:
         return skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths, np.float(0)
@@ -281,26 +225,16 @@ def resampleAll(skeleton, cnt_side1, cnt_side2, cnt_widths, resampling_N):
     cnt_side2, cnt_side2_len, cnt_widths
 
 
-def getSkeleton(worm_mask, prev_skeleton = np.zeros(0), resampling_N = 50, min_mask_area = 50):
+def getSkeleton(worm_cnt, prev_skeleton = np.zeros(0), resampling_N = 50):
     
     n_output_param = 8 #number of expected output parameters
     
-    if worm_mask.size == 0:
-        return (n_output_param-1)*[np.zeros(0)] + [np.nan]
-
-    contour, cnt_area = binaryMask2Contour(worm_mask, min_mask_area=50)
-
+    assert type(worm_cnt) == np.ndarray and worm_cnt.ndim == 2 and worm_cnt.shape[1] ==2
     
-    if contour.size == 0:
-        return (n_output_param-1)*[np.zeros(0)] + [cnt_area]
-    
-    assert type(contour) == np.ndarray and contour.ndim == 2 and contour.shape[1] ==2
-    
-    skeleton, cnt_side1, cnt_side2, cnt_widths, err_msg = \
-    contour2Skeleton(contour)
+    skeleton, cnt_side1, cnt_side2, cnt_widths, err_msg = contour2Skeleton(worm_cnt)
     
     if skeleton.size == 0:
-        return (n_output_param-1)*[np.zeros(0)] + [cnt_area]
+        return (n_output_param)*[np.zeros(0)]
     
     #resample curves
     skeleton, ske_len, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths = \
@@ -311,6 +245,6 @@ def getSkeleton(worm_mask, prev_skeleton = np.zeros(0), resampling_N = 50, min_m
     orientWorm(skeleton, prev_skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths)
     
 
-    output_data =(skeleton, ske_len, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths, cnt_area)
+    output_data = (skeleton, ske_len, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths, cnt_area)
     assert len(output_data) == n_output_param
     return output_data
