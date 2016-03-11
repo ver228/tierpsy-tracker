@@ -120,7 +120,7 @@ def constructNames(masked_image_file, results_dir):
 class getTrajectoriesWorkerL():
     def __init__(self, masked_image_file, results_dir, json_file ='',
     start_point = -1, end_point = checkpoint['END'], is_single_worm = False, 
-    use_auto_label = True, use_manual_join = False, cmd_original=''):
+    use_skel_filter = True, use_manual_join = False, cmd_original=''):
     
         #get repository commit hash numbers (useful to determine what version of the code was executed)
         self.commit_hash = getGitCommitHash()
@@ -151,13 +151,13 @@ class getTrajectoriesWorkerL():
         self.cmd_original = cmd_original
 
         self.use_manual_join = use_manual_join
-        self.use_auto_label = use_auto_label
+        self.use_skel_filter = use_skel_filter
         self.is_single_worm = is_single_worm
         
         if self.is_single_worm:
             #we need to force parameters to obtain the correct features
             self.use_manual_join = False
-            self.use_auto_label = False
+            self.use_skel_filter = False
             #self.param.head_tail_param['min_dist'] = 0
 
         #derive the inputs, functions, and output requires for each point in the analysis
@@ -194,7 +194,7 @@ class getTrajectoriesWorkerL():
             },
         'SKE_FILT': {
             'func':getFilteredFeats,
-            'argkws':{**{'skeletons_file':self.skeletons_file, 'use_auto_label':self.use_auto_label}, 
+            'argkws':{**{'skeletons_file':self.skeletons_file, 'use_skel_filter':self.use_skel_filter}, 
                          **self.param.feat_filt_param},
             'output_file':self.skeletons_file
             },
@@ -213,14 +213,14 @@ class getTrajectoriesWorkerL():
         'FEAT_CREATE': {
             'func':getWormFeaturesFilt,
             'argkws':{'skeletons_file':self.skeletons_file, 'features_file':self.features_file, 
-                'use_auto_label':self.use_auto_label, 'use_manual_join':False, 
+                'use_skel_filter':self.use_skel_filter, 'use_manual_join':False, 
                 'feat_filt_param':self.param.feat_filt_param},
             'output_file':self.features_file
             },
         'FEAT_MANUAL_CREATE': {
             'func':getWormFeaturesFilt,
             'argkws':{'skeletons_file':self.skeletons_file, 'features_file':self.features_file, 
-                'use_auto_label':self.use_auto_label, 'use_manual_join':True, 
+                'use_skel_filter':self.use_skel_filter, 'use_manual_join':True, 
                 'feat_filt_param':self.param.feat_filt_param},
             'output_file':self.features_file
             }

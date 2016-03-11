@@ -39,7 +39,7 @@ def copyFilesLocal(files2copy):
 class trackLocal:
 	def __init__(self, masked_image_file, results_dir, tmp_mask_dir='', tmp_results_dir='', 
 		json_file ='', force_start_point = '', end_point = 'END', is_single_worm='', 
-		not_auto_label = False, use_manual_join = False, cmd_original=''):
+		no_skel_filter = False, use_manual_join = False, cmd_original=''):
 		
 		self.masked_image_file = masked_image_file
 		self.results_dir = results_dir
@@ -50,7 +50,7 @@ class trackLocal:
 		
 		self.json_file = json_file 
 		self.is_single_worm = is_single_worm
-		self.use_auto_label = not not_auto_label
+		self.use_skel_filter = not no_skel_filter
 		self.use_manual_join = use_manual_join
 		self.cmd_original = cmd_original
 		self.force_start_point_str = force_start_point
@@ -73,7 +73,7 @@ class trackLocal:
 		print(self.analysis_start_point)
 		getTrajectoriesWorkerL(self.tmp_mask_file, self.tmp_results_dir, json_file = self.json_file, 
 			start_point = self.analysis_start_point, end_point = self.end_point, is_single_worm = self.is_single_worm,
-			use_auto_label = self.use_auto_label, use_manual_join = self.use_manual_join, cmd_original=self.cmd_original)
+			use_skel_filter = self.use_skel_filter, use_manual_join = self.use_manual_join, cmd_original=self.cmd_original)
 
 		
 		self.copyFilesToFinal()
@@ -239,7 +239,7 @@ if __name__ == '__main__':
 	parser.add_argument('--end_point', default='END', choices = checkpoint_label, help='End point of the analysis.')
 	parser.add_argument('--is_single_worm', action='store_true', help = 'This flag indicates if the video corresponds to the single worm case.')
 	parser.add_argument('--use_manual_join', action='store_true', help = '.')
-	parser.add_argument('--not_auto_label', action='store_true', help = '.')
+	parser.add_argument('--no_skel_filter', action='store_true', help = '.')
 	
 	args = parser.parse_args()
 	

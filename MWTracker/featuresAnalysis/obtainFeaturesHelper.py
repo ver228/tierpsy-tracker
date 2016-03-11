@@ -139,7 +139,7 @@ class WormFromTable(NormalizedWorm):
     In the future it might become a method of NormalizedWorm, 
     but for the moment let's test it as a separate identity
     """
-    def __init__(self, file_name, worm_index, fps = 25, use_auto_label = True, use_manual_join = False,
+    def __init__(self, file_name, worm_index, fps = 25, use_skel_filter = True, use_manual_join = False,
         is_openworm = False, pix2mum = 1, smooth_window = -1, POL_DEGREE_DFLT = 3):
         #Populates an empty normalized worm.
         NormalizedWorm.__init__(self)
@@ -151,7 +151,7 @@ class WormFromTable(NormalizedWorm):
         self.fps = fps
         self.pix2mum = pix2mum
         self.is_openworm = is_openworm
-        self.use_auto_label = use_auto_label
+        self.use_skel_filter = use_skel_filter
         self.use_manual_join = use_manual_join
         self.smooth_window = smooth_window #set to less than POL_DEGREE_DFLT to eliminate smoothing
         
@@ -190,8 +190,8 @@ class WormFromTable(NormalizedWorm):
         Get the relevant info from the trajectory_data table. skeleton_id, timestamp.
         '''
         #intialize just to make clear the relevant variables for this function
-        file_name, worm_index, use_auto_label, use_manual_join = \
-        self.file_name, self.worm_index, self.use_auto_label, self.use_manual_join
+        file_name, worm_index, use_skel_filter, use_manual_join = \
+        self.file_name, self.worm_index, self.use_skel_filter, self.use_manual_join
 
         with pd.HDFStore(file_name, 'r') as ske_file_id:
             trajectories_data = ske_file_id['/trajectories_data']
@@ -219,10 +219,10 @@ class WormFromTable(NormalizedWorm):
             #we need to use .values to use the & operator
             good_skeletons = (trajectories_data['has_skeleton'] == 1).values
             
-            if use_auto_label:
-                assert 'auto_label' in trajectories_data
-                #only keep skeletons that where labeled as good skeletons in the autolabel step
-                good_skeletons &= (trajectories_data['auto_label'] == WLAB['GOOD_SKE']).values
+            if use_skel_filter:
+                assert 'is_good_skel' in trajectories_data
+                #only keep skeletons that where labeled as good skeletons in the filtering step
+                good_skeletons &= (trajectories_data['is_good_skel'] == 1).values
             
             skeleton_id = skeleton_id[good_skeletons]
             timestamp = timestamp[good_skeletons]

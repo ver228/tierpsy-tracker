@@ -72,8 +72,41 @@ def getStartEndTraj(trajectories_data):
     traj_limits = pd.DataFrame(traj_limits, index=traj_limits['worm_index'])
     return traj_limits
 #%%
+class imageRigBuff:
+    #ring buffer class to avoid having to read the same image several times
+    def __init__(self, mask_group, buf_size):
+        
+        self.buf_size = buf_size
+        
+        self.ind = 0
+        self.current_time = 0
+        self.win_size = buf_size//2
+        self.last_frame = mask_group.shape[0]
+        self.mask_group = mask_group
+        
+        #start the buffer
+        self.I_buff = mask_group[:buf_size]
+        
+    def get_buffer(self, next_frame):
+        bot = max(next_frame-self.win_size, self.current_time+self.win_size+1)        
+        top = min(self.last_frame, next_frame + self.win_size)
+        self.current_time = next_frame
+        
+        
+        Idum = self.mask_group[bot:top+1]
+        #print('A', bot, top, Idum.shape)
+                
+        for ii in range(Idum.shape[0]):
+            self.I_buff[self.ind] = Idum[ii]
+            self.ind += 1
+            if self.ind >= self.buf_size:
+                self.ind = 0
+        
+        return self.I_buff
 
 def getIndCnt(img, x, y, roi_size, thresh, max_area):
+    
+    
     worm_img, roi_corner = getWormROI(img, x, y, roi_size)
     worm_mask = getWormMask(worm_img, thresh)
     worm_cnt, _ = binaryMask2Contour(worm_mask, min_mask_area = max_area)
@@ -82,7 +115,7 @@ def getIndCnt(img, x, y, roi_size, thresh, max_area):
     return worm_cnt                 
                     
 
-def extractWormContours(masked_image_file, traj_limits):
+def extractWormContours(masked_image_file, traj_limits, buf_size = 5):
     grouped_t0 = traj_limits.groupby('t0')
     grouped_tf = traj_limits.groupby('tf')
     
@@ -94,11 +127,12 @@ def extractWormContours(masked_image_file, traj_limits):
     
     with tables.File(masked_image_file, 'r') as fid:
         mask_group = fid.get_node('/mask')
-
+        ir = imageRigBuff(mask_group, buf_size)
+        
         for frame_number in np.unique(np.concatenate((uT0,uTf))):
-            img = mask_group[frame_number]
-            
-            
+            #img = mask_group[frame_number]
+            img = ir.get_buffer(frame_number)
+            img = np.min(img, axis=0)
             if frame_number in uT0:
                 dd = grouped_t0.get_group(frame_number)
                 for ff, row in dd.iterrows():
@@ -218,19 +252,10 @@ def selectNearNodes(connect_dict, ratio_dict, time_table, min_intersect = 0.5):
         posible_nodes.append((node1, node2_dat[0]))
     return posible_nodes
 
-def transitiveReduction(g):
-    ''' from http://stackoverflow.com/questions/17078696/im-trying-to-perform-the-transitive-reduction-of-directed-graph-in-python'''
-    for n1 in g.nodes_iter():
-        if g.has_edge(n1, n1):
-            g.remove_edge(n1, n1)
-        for n2 in g.successors(n1):
-            for n3 in g.successors(n2):
-                for n4 in nx.dfs_preorder_nodes(g, n3):
-                    if g.has_edge(n1, n4):
-                        g.remove_edge(n1, n4) 
-
-def cleanRedundantNodes(DG):
-    transitiveReduction(DG)
+#%%
+def cleanRedundantNodes(DG, trajectories_data_f):
+    
+    #join trajectories that only has as parent and child each other. (A->B->C)
     same_nodes = []
     for ind1 in DG.nodes():
         next_nodes = DG.successors(ind1)
@@ -239,34 +264,54 @@ def cleanRedundantNodes(DG):
             if len(pp) == 1 and pp[0] == ind1:
                 same_nodes.append((ind1, next_nodes[0]))
     
+    #create path form this trajectories
     G_redundant = nx.Graph()
     G_redundant.add_nodes_from(set([i for sub in same_nodes for i in sub]))
     G_redundant.add_edges_from(same_nodes)
     
     index2rename = {}
     for subgraph in nx.connected_component_subgraphs(G_redundant):
+        
         nodes2remove = sorted(subgraph.nodes())
         edges2remove = subgraph.edges()
-        first_node = nodes2remove[0]
-        last_node = nodes2remove[-1]
         
-        assert len(subgraph.neighbors(first_node)) == 1
-        assert len(subgraph.neighbors(last_node)) == 1
+        #find the first node
+        first_node = []
+        for x in nodes2remove:
+            pred = DG.predecessors(x)
+            if len(pred) != 1 or not pred in nodes2remove:
+                first_node.append(x)
+        assert len(first_node) == 1
+        first_node = first_node[0]
         
-        nodes2remove = nodes2remove[1:]        
+        #find the last node
+        last_node = []
+        for x in nodes2remove:
+            suc = DG.successors(x)
+            if len(suc) != 1 or not suc in nodes2remove:
+                last_node.append(x)
+        assert len(last_node) == 1
+        last_node = last_node[0]
         
+        #we are only keeping the first node
+        nodes2remove.remove(first_node)
         index2rename[first_node] = nodes2remove
         
+        #connect the edges of the last node with the first no
         edges2add = []
         for ind2 in DG.successors(last_node):
                 edges2add.append((first_node,ind2))
-        
         DG.add_edges_from(edges2add)
         DG.remove_edges_from(edges2remove)
         DG.remove_nodes_from(nodes2remove)
     
-    return DG, index2rename
-
+    for new_index in index2rename:
+        for ind in index2rename[new_index]:
+            row2chg = trajectories_data_f.worm_index_auto.isin(index2rename[new_index])
+            trajectories_data_f.loc[row2chg, 'worm_index_auto'] = new_index
+    
+    return DG, trajectories_data_f
+#%%
 def getTrajGraph(trajectories_data, masked_image_file, max_gap = 25, min_area_intersect = 0.5):
     print('Getting the trajectories starting and ending points.')
     traj_limits = getStartEndTraj(trajectories_data) 
@@ -302,7 +347,8 @@ def getTrajGraph(trajectories_data, masked_image_file, max_gap = 25, min_area_in
             row2chg = trajectories_data.worm_index_auto.isin(index2rename[new_index])
             trajectories_data.loc[row2chg, 'worm_index_auto'] = new_index
     return DG, trajectories_data, traj_limits
-    
+
+
 def getRealWormsIndexes(trajectories_data, n_min_skel = 5, min_frac_skel = 0.25):
     
     N = trajectories_data.groupby('worm_index_auto').agg({'is_good_skel': ['sum', 'count']})
@@ -312,7 +358,7 @@ def getRealWormsIndexes(trajectories_data, n_min_skel = 5, min_frac_skel = 0.25)
     return worm_indexes
 
 def getPossibleClusters(DG, worm_indexes):
-    
+    #%%
     possible_cluster = []
     for node in DG.nodes():
         node_inputs = DG.predecessors(node)
@@ -322,13 +368,28 @@ def getPossibleClusters(DG, worm_indexes):
             any(x in worm_indexes for x in node_outpus)):
             possible_cluster.append(node)
     possible_cluster = set(possible_cluster)
-    
+#%%    
     return possible_cluster
+
+def filterTableByArea(trajectories_data, min_area_limit = 50, n_sigma = 6):
+    area_med = trajectories_data['area'].median()
+    area_mad = (trajectories_data['area']-area_med).abs().median();
     
+    min_area = max(min_area_limit, area_med-n_sigma*area_mad)
+    
+    median_area = trajectories_data.groupby('worm_index_auto').agg({'area':'median'})
+    is_small =  (median_area<min_area).values
+    small_index = median_area[is_small].index.tolist()
+    
+    
+    trajectories_data_f = trajectories_data[~trajectories_data.worm_index_auto.isin(small_index)]    
+    return trajectories_data_f
+
+#%%
 if __name__ == '__main__':
     #base directory
     #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch5_17112015_205616.hdf5'
-    masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_17112015_205616.hdf5'
+    masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch6_17112015_205616.hdf5'
     #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_18112015_075624.hdf5'
     #masked_image_file = '/Users/ajaver/Desktop/Videos/04-03-11/MaskedVideos/575 JU440 swimming_2011_03_04__13_16_37__8.hdf5'    
     #masked_image_file = '/Users/ajaver/Desktop/Videos/04-03-11/MaskedVideos/575 JU440 on food Rz_2011_03_04__12_55_53__7.hdf5'    
@@ -336,106 +397,126 @@ if __name__ == '__main__':
     skeletons_file = masked_image_file.replace('MaskedVideos', 'Results')[:-5] + '_skeletons.hdf5'
     intensities_file = skeletons_file.replace('_skeletons', '_intensities')
     
+    min_area_limit = 50
+    
     #get the trajectories table
     with pd.HDFStore(skeletons_file, 'r') as fid:
         trajectories_data = fid['/trajectories_data']
         trajectories_data['worm_index_auto'] = trajectories_data['worm_index_joined'] 
     
-    DG, trajectories_data, traj_limits = getTrajGraph(trajectories_data, masked_image_file, \
-                                             max_gap = 25, min_area_intersect = 0.5)
+    trajectories_data_f = filterTableByArea(trajectories_data, min_area_limit=min_area_limit, n_sigma = 6)
     
-
-#%%
-    worm_indexes = getRealWormsIndexes(trajectories_data, n_min_skel = 5, min_frac_skel = 0.25)
-    possible_cluster = getPossibleClusters(DG, worm_indexes)
+    del trajectories_data
+    
     #%%
-    
-    candidate2split = possible_cluster & worm_indexes
-    
-    trajdata2split = trajectories_data[trajectories_data['worm_index_auto'].isin(candidate2split)]
-    worm_traj_limits = traj_limits[traj_limits['worm_index'].isin(worm_indexes)]
-    
-    
-    first_frame = trajdata2split['frame_number'].min()
-    last_frame = trajdata2split['frame_number'].max()
-    
-    trajgrouped = trajdata2split.groupby('frame_number')    
-    
-    valid_frames = trajdata2split['frame_number'].unique()
-    break_points = []
-    
+    trajgrouped = trajectories_data_f.groupby('frame_number')    
 
-    for ind_check, row in worm_traj_limits.iterrows():
+    traj_limits = getStartEndTraj(trajectories_data_f) 
+    
+    first_index = traj_limits['t0'].min()
+    last_index = traj_limits['tf'].max()
+
+    break_points = []
+    #check if the trajectories end or the begining intersect the middle of other trajectories    
+    #for ind_check, row2check in traj_limits.loc[436:437].iterrows():
+    for ind_check, row2check in traj_limits.iterrows():
         
-        t_prev = row['t0']-1
-        t_next = row['tf']+1
+        Rsearch = row2check['roi_size']**2
         
-        Rlim = row['roi_size']**2
-        
-        if t_prev in valid_frames:
+        t_prev = row2check['t0']-1
+        try:      
+            
             dat_prev = trajgrouped.get_group(t_prev);
             
-            delX = row['x0'] - dat_prev['coord_x']
-            delY = row['y0'] - dat_prev['coord_y']
-            R = delX*delX + delY*delY
-            dat_prev = dat_prev[R <= Rlim]
+            #only cosider points that are in the middle of another trajectory (do not use start or ending points)
+            possible_ind = dat_prev['worm_index_auto'].values                
+            traj_tt = traj_limits.loc[possible_ind,  'tf']
+                            
+            dat_prev = dat_prev[(traj_tt != t_prev).values]# & (traj_tt['tf'] != t_next)).values]
             
-            if len(dat_prev)>0:
-                for _, rr in dat_prev.iterrows():
-                    ind_split = int(rr['worm_index_auto'])
-                    dat_split = (rr['coord_x'], rr['coord_y'], rr['roi_size'], rr['threshold'], rr['area']/2)
-                    dat_check = (row['x0'], row['y0'], row['roi_size'], row['th0'], row['a0']/2)
-                    
-                    assert t_prev == rr['frame_number']
-                    assert t_prev + 1 == row['t0']
-                    
-                    break_points.append((ind_split, t_prev, dat_split, ind_check, t_prev+1, dat_check))
+            delX = row2check['x0'] - dat_prev['coord_x']
+            delY = row2check['y0'] - dat_prev['coord_y']
+            R = delX*delX + delY*delY
+            dat_prev = dat_prev[R <= Rsearch]
+            for _, rr in dat_prev.iterrows():
+                assert t_prev == rr['frame_number'] == row2check['t0']-1
+                            
+                ind_split = int(rr['worm_index_auto'])
+                dat_split = (rr['coord_x'], rr['coord_y'], rr['roi_size'], rr['threshold'], min_area_limit)#rr['area']/2)
+                dat_check = (row2check['x0'], row2check['y0'], row2check['roi_size'], row2check['th0'], min_area_limit)#row2check['a0']/2)
+                break_points.append(((int(ind_split), int(t_prev), dat_split), \
+                                    (int(ind_check), int(row2check['t0']), dat_check)))      
+        except KeyError:
+             pass
         
-                        
-        if t_next in valid_frames:
+        t_next = row2check['tf']+1
+        try:    
+            
             dat_next = trajgrouped.get_group(t_next);
             
-            delX = row['xf'] - dat_next['coord_x']
-            delY = row['yf'] - dat_next['coord_y']
-            R = delX*delX + delY*delY
-            dat_next = dat_next[R <= Rlim]
+            #only cosider points that are in the middle of another trajectory (do not use start or ending points)
+            possible_ind = dat_next['worm_index_auto'].values                
+            traj_tt = traj_limits.loc[possible_ind,  't0']
+            dat_next = dat_next[(traj_tt != t_next).values]# & (traj_tt['tf'] != t_next)).values]
             
-            if len(dat_next)>0:
-                for _, rr in dat_next.iterrows():
-                    ind_split = int(rr['worm_index_auto'])
-                    dat_split = (rr['coord_x'], rr['coord_y'], rr['roi_size'], rr['threshold'], rr['area']/2)
-                    dat_check = (row['xf'], row['yf'], row['roi_size'], row['thf'], row['af']/2)
-                    
-                    assert t_next == rr['frame_number']
-                    assert t_next - 1 == row['tf']
-                    
-                    break_points.append((ind_split, t_next, dat_split, ind_check, t_next-1, dat_check))
-        #if 949
-        
-    #only search possible break points that occur in the middle of a trajectory
-    traj2split_limits = trajdata2split.groupby('worm_index_auto').aggregate({'frame_number':[np.min, np.max]})
-    traj2split_limits = {x:(row['frame_number']['amin'], row['frame_number']['amax']) 
-                        for x, row in traj2split_limits.iterrows()}
-    break_points = [x for x in break_points if not x[1] in traj2split_limits[x[0]]]      
+            delX = row2check['xf'] - dat_next['coord_x']
+            delY = row2check['yf'] - dat_next['coord_y']
+            R = delX*delX + delY*delY
+            dat_next = dat_next[R <= Rsearch]
+            
+            for _, rr in dat_next.iterrows():
+                assert t_next == rr['frame_number'] == row2check['tf']+1
+                            
+                ind_split = int(rr['worm_index_auto'])
+                dat_split = (rr['coord_x'], rr['coord_y'], rr['roi_size'], rr['threshold'], min_area_limit)#rr['area']/2)
+                dat_check = (row2check['xf'], row2check['yf'], row2check['roi_size'], row2check['thf'], min_area_limit)#row2check['af']/2)
+                break_points.append(((int(ind_split), int(t_next), dat_split), \
+                                    (int(ind_check), int(row2check['tf']), dat_check)))            
+        except KeyError:
+             pass
+
+    print('B', len(break_points))
+    #AA    
+
+#%%
+    indexInFrame = {} 
+    roi_data = {}
+    for dd in break_points:
+        for ind, t, dat in dd:
+            if not t in indexInFrame:
+                indexInFrame[t] = []
+            indexInFrame[t].append(ind)
+            roi_data[ind,t] = dat
+
+#%%
     
-    #WHAT    
-    #%%
-    #break_points = [(1, 21184.0, (1097.2508544921875, 1517.0625, 131.0, 69.0, 744.5), 415, 21183.0, (1059.6776123046875, 1485.4439697265625, 73.0, 69.0, 378.5))]    
-    
-    points2split = []
+    buf_size = 5
+    worm_cnt = OrderedDict() 
     with tables.File(masked_image_file, 'r') as fid:
         mask_group = fid.get_node('/mask')
-
-        for ind_split, t_split, dat_split, ind_check, t_check, dat_check in break_points:
-            img_split = mask_group[int(t_split),:,:]
-            cnt_split = getIndCnt(img_split, *dat_split)
+        ir = imageRigBuff(mask_group, buf_size)
+        
+        for t in sorted(indexInFrame):
+            img = ir.get_buffer(t)
+            img = np.min(img, axis=0)
+            for ind in indexInFrame[t]:
+                worm_cnt[ind, t] = getIndCnt(img, *roi_data[ind, t])
+    
+    
+#%%
+    area_overlap = {}
+    for (ind_split, t_split, dat_split), (ind_check, t_check, dat_check) in break_points:
+        key_tuple = (ind_split, t_split, ind_check, t_check)
+        cnt_split = worm_cnt[ind_split, t_split]
+        cnt_check = worm_cnt[ind_check, t_check]
+        
+        if len(cnt_check) == 0: 
+            area_overlap[key_tuple] = -2#'bad_check'
+        elif len(cnt_split) == 0: 
+            area_overlap[key_tuple] = -1#'bad_split'
             
-            img_check = mask_group[int(t_check),:,:]
-            cnt_check = getIndCnt(img_check, *dat_check)
-            
-            if len(cnt_check) == 0 or len(cnt_split) == 0:
-                continue
-            
+        elif not key_tuple in area_overlap:
+        
             bot = np.minimum(np.amin(cnt_split,0), np.amin(cnt_check, 0))
             top = np.maximum(np.amax(cnt_split,0), np.amax(cnt_check, 0))
             
@@ -453,56 +534,117 @@ if __name__ == '__main__':
             area_intersect = np.sum(mask_check & mask_split)
             area_check = np.sum(mask_check)
             
-            if area_intersect/area_check > 0.5:
-                points2split.append((ind_split, t_split, t_check))
-    #%%    
-    last_index = trajectories_data['worm_index_auto'].max()
+            area_overlap[key_tuple] = area_intersect/area_check
+            
+    points2split = {}
+    for x in area_overlap:
+        if area_overlap[x]>0.5:
+            if not x[0] in points2split: 
+                points2split[x[0]] = []
+            t_split = max(x[1],x[3]);
+            if not t_split in points2split[x[0]]:
+                points2split[x[0]].append(t_split)
     
-    for worm_ind, split_t1, slit_t2 in points2split:
-        new_ind1 = last_index+1
-        new_ind2 = last_index+2
-        last_index =  new_ind2
+    
+    
+    print('S', len(points2split))    
+#%%
+    #def splitTrajectories(trajectories_data_f, points2split):
+    
+    last_index = trajectories_data_f['worm_index_auto'].max()
+    traj_grouped_ind = trajectories_data_f.groupby('worm_index_auto')
+    for worm_ind in points2split:
+        worm_dat = traj_grouped_ind.get_group(worm_ind)
         
-        good = trajectories_data['worm_index_auto'] == worm_ind
-        frames = trajectories_data.loc[good, 'frame_number']
-        frames = frames.sort_values(inplace=False)
+        frames = worm_dat['frame_number']           
         
-        assert abs(split_t1-slit_t2) == 1
+        last_index += 1
+        new_index = pd.Series(last_index, index=frames.index)            
+        for t_split in sorted(points2split[worm_ind]):
+            last_index += 1
+            new_index[frames>=t_split] += 1
+            
+        assert len(np.unique(new_index)) == len(points2split[worm_ind])+1
+        assert np.all(trajectories_data_f.loc[new_index.index, 'worm_index_auto'] == worm_ind)
         
-        #select the split point depending if it was after or before the point. 
-        #Probably there is a cleaner way to do this (and explain it)
-        good = frames >= split_t1 if split_t1 > slit_t2 else frames <= split_t1
-        
-        index1 = frames[good].index
-        index2 = frames[~good].index
-        trajectories_data.ix[index1, 'worm_index_auto'] = new_ind1
-        trajectories_data.ix[index2, 'worm_index_auto'] = new_ind2
+        trajectories_data_f.loc[new_index.index, 'worm_index_auto'] = new_index
+#%%
+#            new_ind1 = last_index + 1
+#            new_ind2 = last_index + 2
+#            last_index =  new_ind2
+#            
+#            worm_dat = traj_grouped_ind.get_group(worm_ind)
+#            
+#            frames = worm_dat['frame_number'].sort_values(inplace=False)
+#            good = frames < split_t
+#            traj1_rows = frames[good].index
+#            traj2_rows = frames[~good].index
+#            
+#            assert np.all(trajectories_data_f.ix[traj1_rows, 'worm_index_auto'] == worm_ind)
+#            assert np.all(trajectories_data_f.ix[traj2_rows, 'worm_index_auto'] == worm_ind)
+#            
+#            trajectories_data_f.loc[traj1_rows, 'worm_index_auto'] = new_ind1
+#            trajectories_data_f.loc[traj2_rows, 'worm_index_auto'] = new_ind2
+    
+    #trajectories_data_f = splitTrajectories(trajectories_data_f, points2split)
+#        #print('L', len(trajectories_data_f))
+#%%
+    max_gap = 25
+    print('Getting the trajectories starting and ending points.')
+    traj_limits = getStartEndTraj(trajectories_data_f) 
+    
+    print('Getting possible connecting point.')
+    connect_before, connect_after = getPossibleConnections(traj_limits, max_gap = 25)
+    
+    print('Extracting worm contours from trajectory limits.')
+    initial_cnt, final_cnt = extractWormContours(masked_image_file, traj_limits)
+
+    print('Looking for overlaping fraction between contours.')
+    after_ratio = getAreaIntersecRatio(connect_after, final_cnt, initial_cnt)
+    before_ratio = getAreaIntersecRatio(connect_before, initial_cnt, final_cnt)
+    
+    
+    
+    #maybe a graph reduction algorithm would work better...
+    #%%
+    print('Getting connections between trajectories.')    
+    edges_after = selectNearNodes(connect_after, after_ratio, traj_limits['t0'], min_intersect = 0.5)
+    edges_before = selectNearNodes(connect_before, before_ratio, -traj_limits['tf'], min_intersect = 0.5)
+    #switch so the lower index is first    
+    edges_before = [(y,x) for x,y in edges_before]
+    
+    #get unique nodes
+    trajectories_edges = set(edges_after+edges_before)
+    #%%
+    #print('Removing redundant connections.')
+    DG=nx.DiGraph()
+    DG.add_nodes_from(traj_limits.index)
+    DG.add_edges_from(trajectories_edges)
+    
+    #remove nodes that bypass earlier childs in the trajectory
+    for n1 in DG.nodes():
+        for n2 in DG.successors(n1):
+             for path in nx.all_simple_paths(DG, source=n1, target=n2, cutoff=5):
+                 if len(path) > 2:
+                     #there is anothr way to arrive to this node we miss an earlier child
+                     DG.remove_edge(n1,n2)
+                     break
+    #%%
+    DG, trajectories_data_f = cleanRedundantNodes(DG, trajectories_data_f)
+    
     
     #%%
-    #rename indexes so we use smaller numbers
+    with pd.HDFStore(skeletons_file, 'r') as fid:
+        trajectories_data = fid['/trajectories_data']
     
-    #create a dictionary to map from old to new indexes  
-    dd = trajectories_data.groupby('worm_index_auto').agg({'frame_number':'min'})
-    dd = dd.to_records()
-    dd.sort(order=['frame_number', 'worm_index_auto'])
-    new_ind_dict = {x:ii+1 for ii,x in enumerate(dd['worm_index_auto'])}
-    
-    #replace the data from the new indexes (pandas replace do not work because the dict and keys values must be different)
-    worm_index_auto = trajectories_data['worm_index_auto'].values
-    worm_index_auto = [new_ind_dict[x] for x in worm_index_auto]
-    trajectories_data['worm_index_auto'] = worm_index_auto
+    trajectories_data['worm_index_auto'] = trajectories_data_f['worm_index_auto']
+    trajectories_data.loc[np.isnan(trajectories_data['worm_index_auto']), 'worm_index_auto'] = -1 
+
 
     #%%
-    #recalculate the trajectories graph. This is slower but easier than having to make the corrections manually.
-    DG, trajectories_data, traj_limits = getTrajGraph(trajectories_data, masked_image_file, \
-                                             max_gap = 25, min_area_intersect = 0.5)
-    
-    
     worm_indexes = getRealWormsIndexes(trajectories_data, n_min_skel = 5, min_frac_skel = 0.25)
     possible_cluster = getPossibleClusters(DG, worm_indexes)
-    
-    
-    #%%    
+
     good_worms = worm_indexes - possible_cluster
     good_clusters = possible_cluster - worm_indexes
 
@@ -511,8 +653,7 @@ if __name__ == '__main__':
         subgraph_nodes = subgraph.nodes()
         if not any(x in worm_indexes for x in subgraph_nodes):
             bad_index += subgraph_nodes
-    
-    
+
     #%%
     trajectories_data['auto_label'] = WLAB['U']
     
@@ -527,4 +668,19 @@ if __name__ == '__main__':
 
     #let's save this data into the skeletons file
     saveModifiedTrajData(skeletons_file, trajectories_data)
-    
+
+
+#%%
+
+#    #create a dictionary to map from old to new indexes  
+#    dd = trajectories_data.groupby('worm_index_auto').agg({'frame_number':'min'})
+#    dd = dd.to_records()
+#    dd.sort(order=['frame_number', 'worm_index_auto'])
+#    new_ind_dict = {x:ii+1 for ii,x in enumerate(dd['worm_index_auto'])}
+#    
+#    #replace the data from the new indexes (pandas replace do not work because the dict and keys values must be different)
+#    worm_index_auto = trajectories_data['worm_index_auto'].values
+#    worm_index_auto = [new_ind_dict[x] for x in worm_index_auto]
+#    trajectories_data['worm_index_auto'] = worm_index_auto
+#%%
+         

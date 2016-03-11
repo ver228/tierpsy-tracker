@@ -18,11 +18,11 @@ from MWTracker.helperFunctions.getTrajectoriesWorkerL import checkpoint_label
 def main(mask_dir_root, tmp_dir_root, json_file, script_abs_path, \
 	pattern_include, pattern_exclude, \
 	max_num_process, refresh_time, force_start_point, end_point, is_single_worm, 
-	only_summary, no_prev_check, use_manual_join, not_auto_label):
+	only_summary, no_prev_check, use_manual_join, no_skel_filter):
 
 	ctf = checkTrackFiles(mask_dir_root, tmp_dir_root = tmp_dir_root, \
 		is_single_worm = is_single_worm, json_file = json_file, force_start_point = force_start_point, end_point = end_point, \
-		script_abs_path = script_abs_path, use_manual_join= use_manual_join, not_auto_label = not_auto_label)
+		script_abs_path = script_abs_path, use_manual_join= use_manual_join, no_skel_filter = no_skel_filter)
 	
 	pattern_exclude = [pattern_exclude] + ctf.invalid_ext
 	valid_files = exploreDirs(mask_dir_root, pattern_include = pattern_include, pattern_exclude = pattern_exclude)
@@ -76,7 +76,7 @@ if __name__ == '__main__':
 	parser.add_argument('--no_prev_check', action='store_true', help='Use this flag to do not check the files for completion before starting the process.')
 	
 	parser.add_argument('--use_manual_join', action='store_true', help = 'Use this flag to calculate features on manually joined data.')
-	parser.add_argument('--not_auto_label', action='store_true', help = 'Use this flag to do NOT filter valid skeletons using the movie robust averages.')
+	parser.add_argument('--no_skel_filter', action='store_true', help = 'Use this flag to do NOT filter valid skeletons using the movie robust averages.')
 	
 	args = parser.parse_args()
 

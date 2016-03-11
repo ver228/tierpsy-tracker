@@ -25,7 +25,7 @@ warnings.filterwarnings('ignore', '.*det > previous_det*',)
 
 
 from MWTracker.featuresAnalysis.obtainFeatures import getWormFeatures
-from MWTracker.featuresAnalysis.obtainFeaturesHelper import getValidIndexes, WLAB, calWormArea
+from MWTracker.featuresAnalysis.obtainFeaturesHelper import getValidIndexes, calWormArea
 
 getBaseName = lambda skeletons_file : skeletons_file.rpartition(os.sep)[-1].replace('_skeletons.hdf5', '')
 
@@ -181,8 +181,7 @@ def labelValidSkeletons(skeletons_file, good_skel_row, fit_contamination = 0.05)
     with pd.HDFStore(skeletons_file, 'r') as table_fid:
         trajectories_data = table_fid['/trajectories_data']
 
-    trajectories_data['auto_label'] = WLAB['U']
-    #trajectories_data.loc[good_skel_row, 'auto_label'] = WLAB['WORM']
+    trajectories_data['is_good_skel'] = trajectories_data['has_skeleton']
     
     if good_skel_row.size > 0:
         #nothing to do if there are not valid skeletons left. 
@@ -205,9 +204,9 @@ def labelValidSkeletons(skeletons_file, good_skel_row, fit_contamination = 0.05)
 
         print_flush(base_name + ' Filter Skeletons: Labeling valid skeletons. Total time:' + progress_timer.getTimeStr())
         #labeled rows of valid individual skeletons as GOOD_SKE
-        trajectories_data['auto_label'] = ((y_pred>0).astype(np.int))*WLAB['GOOD_SKE'] #+ wlab['BAD']*np.isnan(y_prev)
+        trajectories_data['is_good_skel'] = (y_pred>0).astype(np.int)
     
-    #Save the new auto_label column
+    #Save the new is_good_skel column
     saveModifiedTrajData(skeletons_file, trajectories_data)
 
     print_flush(base_name + ' Filter Skeletons: Finished. Total time:' + progress_timer.getTimeStr())
@@ -241,13 +240,13 @@ def getFrameStats(feat_file):
             feat_fid.create_table(frame_stats_group, stat, \
             obj = plate_stats.to_records(), filters = table_filters)
 
-def getFilteredFeats(skeletons_file, use_auto_label, min_num_skel = 100, bad_seg_thresh = 0.8, 
+def getFilteredFeats(skeletons_file, use_skel_filter, min_num_skel = 100, bad_seg_thresh = 0.8, 
     min_dist = 5, fit_contamination = 0.05):
     #calculate valid widths and areas if they were not calculated before
     calculateWidths(skeletons_file)
     calculateAreas(skeletons_file)
 
-    if use_auto_label:
+    if use_skel_filter:
         #get valid rows using the trajectory displacement and the skeletonization success
         good_traj_index , good_skel_row = getValidIndexes(skeletons_file, \
         min_num_skel = min_num_skel, bad_seg_thresh = bad_seg_thresh, min_dist = min_dist)

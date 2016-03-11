@@ -16,7 +16,6 @@ import matplotlib.pylab as plt
 
 import sys
 sys.path.append('/Users/ajaver/Documents/GitHub/Multiworm_Tracking')
-from MWTracker.featuresAnalysis.obtainFeaturesHelper import WLAB
 from MWTracker.featuresAnalysis.getFilteredFeats import saveModifiedTrajData
 
 from MWTracker.trackWorms.getSkeletonsTables import getWormROI
@@ -101,9 +100,9 @@ def setIntMapIndexes(skeletons_file, min_num_skel):
     with pd.HDFStore(skeletons_file, 'r') as fid:
         trajectories_data = fid['/trajectories_data']
         
-        if 'auto_label' in trajectories_data:
+        if 'is_good_skel' in trajectories_data:
             #select rows with only valid filtered skeletons
-            good = trajectories_data['auto_label'] == WLAB['GOOD_SKE'];
+            good = trajectories_data['is_good_skel'] == 1;
         else:
             #or that at least have an skeleton 
             good = trajectories_data['has_skeleton']==1

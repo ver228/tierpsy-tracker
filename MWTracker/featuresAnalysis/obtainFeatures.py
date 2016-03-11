@@ -27,7 +27,7 @@ from open_worm_analysis_toolbox.statistics import specifications
 from MWTracker.featuresAnalysis.obtainFeaturesHelper import wormStatsClass, WormFromTable, getValidIndexes, WLAB
 
 def getWormFeatures(skeletons_file, features_file, good_traj_index, \
-    use_auto_label = True, use_manual_join = False):
+    use_skel_filter = True, use_manual_join = False):
     
     #we should get fps and pix2num values from the skeleton file (but first I need to store them there)
     pix2mum = 1
@@ -70,7 +70,7 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, \
             
             #initialize worm object, and extract data from skeletons file
             worm = WormFromTable(skeletons_file, worm_index, \
-                use_auto_label = use_auto_label, use_manual_join = use_manual_join, \
+                use_skel_filter = use_skel_filter, use_manual_join = use_manual_join, \
                 pix2mum = pix2mum, fps = fps, smooth_window = 5)
             
             #import pdb
@@ -156,10 +156,10 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, \
         feat_mean._v_attrs['has_finished'] = 1
         print_flush(base_name + ' Feature extraction finished: ' + progress_timer.getTimeStr())
         
-def getWormFeaturesFilt(skeletons_file, features_file, use_auto_label, use_manual_join, feat_filt_param):
-    assert (use_auto_label or use_manual_join) or feat_filt_param
+def getWormFeaturesFilt(skeletons_file, features_file, use_skel_filter, use_manual_join, feat_filt_param):
+    assert (use_skel_filter or use_manual_join) or feat_filt_param
 
-    if not (use_manual_join or use_auto_label):
+    if not (use_manual_join or use_skel_filter):
         #filter using the parameters in feat_filt_param
         dd = {x : feat_filt_param[x] for x in ['min_num_skel', 'bad_seg_thresh', 'min_dist']}
         good_traj_index, _ = getValidIndexes(skeletons_file, **dd)
@@ -173,9 +173,9 @@ def getWormFeaturesFilt(skeletons_file, features_file, use_auto_label, use_manua
             good = trajectories_data['worm_label'] == WLAB['WORM']
             trajectories_data = trajectories_data[good]
 
-        if use_auto_label:
+        if use_skel_filter:
             #select data that was labeld in FEAT_FILTER
-            good = trajectories_data['auto_label'] == WLAB['GOOD_SKE']
+            good = trajectories_data['is_good_skel'] == 1
             trajectories_data = trajectories_data[good]
         
         N = trajectories_data.groupby('worm_index_joined').agg({'has_skeleton':np.nansum})
@@ -185,4 +185,4 @@ def getWormFeaturesFilt(skeletons_file, features_file, use_auto_label, use_manua
         
     #calculate features
     getWormFeatures(skeletons_file, features_file, good_traj_index, \
-            use_auto_label = use_auto_label, use_manual_join = use_manual_join)
+            use_skel_filter = use_skel_filter, use_manual_join = use_manual_join)
