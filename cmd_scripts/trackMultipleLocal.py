@@ -8,25 +8,31 @@ Created on Tue Jun  9 15:12:48 2015
 import os
 import argparse
 
-from start_console import runMultiCMD, print_cmd_list
-from helperExpLocalChecked import checkTrackFiles, exploreDirs
+from runMultiCMD import runMultiCMD, print_cmd_list
+from trackSingleLocal import trackLocal_parser
+from helperMultipleLocal import checkTrackFiles, exploreDirs
 
 import sys
-sys.path.append('/Users/ajaver/Documents/GitHub/Multiworm_Tracking/')
-from MWTracker.helperFunctions.getTrajectoriesWorkerL import checkpoint_label
+from trackSingleWorker import checkpoint_label
 
 def main(mask_dir_root, tmp_dir_root, json_file, script_abs_path, \
 	pattern_include, pattern_exclude, \
 	max_num_process, refresh_time, force_start_point, end_point, is_single_worm, 
-	only_summary, no_prev_check, use_manual_join, no_skel_filter):
+	only_summary, no_prev_check, use_manual_join, no_skel_filter, videos_list):
 
 	ctf = checkTrackFiles(mask_dir_root, tmp_dir_root = tmp_dir_root, \
 		is_single_worm = is_single_worm, json_file = json_file, force_start_point = force_start_point, end_point = end_point, \
 		script_abs_path = script_abs_path, use_manual_join= use_manual_join, no_skel_filter = no_skel_filter)
 	
 	pattern_exclude = [pattern_exclude] + ctf.invalid_ext
-	valid_files = exploreDirs(mask_dir_root, pattern_include = pattern_include, pattern_exclude = pattern_exclude)
 	
+
+	if not videos_list:
+		valid_files = exploreDirs(video_dir_root, pattern_include = pattern_include, pattern_exclude = pattern_exclude)
+	else:
+		with open(videos_list, 'r') as fid:
+			valid_files = fid.read().split('\n')
+			
 	if not no_prev_check:
 		ctf.filterFiles(valid_files)
 	else:
@@ -45,14 +51,17 @@ def main(mask_dir_root, tmp_dir_root, json_file, script_abs_path, \
 		cmd_list = ctf.getCMDlist()
 		#run all the commands
 		print_cmd_list(cmd_list)
-		runMultiCMD(cmd_list, max_num_process = max_num_process, refresh_time = refresh_time)
+		runMultiCMD(cmd_list, local_obj=trackLocal_parser, max_num_process = max_num_process, refresh_time = refresh_time)
 
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description = "Track worm's hdf5 files in the local drive using several parallel processes")
 	
-	parser.add_argument('mask_dir_root', help = 'Root directory with the masked worm videos. It must contain only the hdf5 from the previous compression step.')
-	parser.add_argument('--script_abs_path', default = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/MWTracker_GUI/trackSingleLocal.py', \
+	parser.add_argument('mask_dir_root', help = 'Root directory with the masked videos. It must contain only the hdf5 from the previous compression step.')
+	
+	parser.add_argument('--videos_list', default='', help='File containing the full path of the masked videos to be analyzed, otherwise there will be search from video_dir_root using pattern_include and pattern_exclude.')
+	
+	parser.add_argument('--script_abs_path', default = './trackSingleLocal.py', \
 		help='Full path of the script to analyze single files.')
 	
 	parser.add_argument('--json_file', default = '', help='File (.json) containing the tracking parameters.')

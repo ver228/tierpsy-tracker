@@ -8,18 +8,26 @@ Created on Tue Jun  9 15:12:48 2015
 import os
 import argparse
 
-from start_console import runMultiCMD, print_cmd_list
-from helperExpLocalChecked import checkVideoFiles, exploreDirs
+from runMultiCMD import runMultiCMD, print_cmd_list
+from compressSingleLocal import compressLocal_parser
+from helperMultipleLocal import checkVideoFiles, exploreDirs
 
 def main(video_dir_root, mask_dir_root, tmp_dir_root, json_file, \
 	pattern_include, pattern_exclude, script_abs_path, max_num_process, \
-	refresh_time, is_single_worm, only_summary, clean_previous):
+	refresh_time, is_single_worm, only_summary, clean_previous, is_copy_video, videos_list):
 	
 	cvf = checkVideoFiles(video_dir_root, mask_dir_root, tmp_dir_root = tmp_dir_root, \
-		json_file = json_file, script_abs_path = script_abs_path, is_single_worm = is_single_worm)
+		json_file = json_file, script_abs_path = script_abs_path, is_single_worm = is_single_worm, is_copy_video=is_copy_video)
 
-	valid_files = exploreDirs(video_dir_root, pattern_include = pattern_include, pattern_exclude = pattern_exclude)
-	
+
+	if not videos_list:
+		valid_files = exploreDirs(video_dir_root, pattern_include = pattern_include, pattern_exclude = pattern_exclude)
+	else:
+		with open(videos_list, 'r') as fid:
+			valid_files = fid.read().split('\n')
+			print(valid_files)
+
+
 	cvf.filterFiles(valid_files)
 	
 	#delete any previous invalid finished file.
@@ -42,7 +50,8 @@ def main(video_dir_root, mask_dir_root, tmp_dir_root, json_file, \
 		cmd_list = cvf.getCMDlist()
 		#run all the commands
 		print_cmd_list(cmd_list)
-		runMultiCMD(cmd_list, max_num_process = max_num_process, refresh_time = refresh_time)
+		
+		runMultiCMD(cmd_list, local_obj=compressLocal_parser, max_num_process = max_num_process, refresh_time = refresh_time)
 
 
 if __name__ == '__main__':
@@ -51,8 +60,10 @@ if __name__ == '__main__':
 	parser.add_argument('video_dir_root', help='Root directory with the raw videos.')
 	parser.add_argument('mask_dir_root', help='Root directory with the where the masked hdf5 files are going to be saved.')
 	
+	parser.add_argument('--videos_list', default='', help='File containing the full path of the videos to be analyzed, otherwise there will be search from video_dir_root using pattern_include and pattern_exclude.')
+	
 	#name of the scripts used
-	parser.add_argument('--script_abs_path', default='/Users/ajaver/Documents/GitHub/Multiworm_Tracking/MWTracker_GUI/compressSingleLocal.py', \
+	parser.add_argument('--script_abs_path', default='./compressSingleLocal.py', \
 		help='Full path of the script to analyze single files.')
 	
 	parser.add_argument('--json_file', default='', help='File (.json) containing the tracking parameters.')
@@ -69,16 +80,9 @@ if __name__ == '__main__':
 	
 	parser.add_argument('--only_summary', action='store_true', help='Use this flag if you only want to print a summary of the files in the directory.')
 	parser.add_argument('--clean_previous', action='store_true', help='Use this flag if you want to delete invalid proccesed files from previous analysis.')
+	parser.add_argument('--is_copy_video', action='store_true', help = 'The video file would be copied to the temporary directory.')
 				
 
 	args = parser.parse_args()
 
 	main(**vars(args))
-	
-
-
-	
-	
-	
-	
-    

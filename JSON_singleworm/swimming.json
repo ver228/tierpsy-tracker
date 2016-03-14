@@ -1,3 +1,3 @@
 {"thresh_block_size": 61, "thresh_C": 15, "dilation_size": 30, "min_area": 100, 
 "resampling_N": 49, "fps": 30.0, "max_area": 100000, "has_timestamp": false, "keep_border_data": true, 
-"compression_buff": 1, "max_gap_allowed_block":3, "threshold_factor":1.12}
+"compression_buff": 1, "max_gap_allowed_block":3, "threshold_factor":1.10}

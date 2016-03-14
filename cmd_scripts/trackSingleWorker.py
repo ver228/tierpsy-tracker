@@ -6,21 +6,23 @@ Created on Fri Apr  3 01:56:06 2015
 """
 import os, sys
 import tables
+import argparse
+import time, datetime
 
-from ..trackWorms.getWormTrajectories import getWormTrajectories, correctTrajectories
-from ..trackWorms.getDrawTrajectories import drawTrajectoriesVideo
-from ..trackWorms.getSkeletonsTables import trajectories2Skeletons, writeIndividualMovies
-from ..trackWorms.checkHeadOrientation import correctHeadTail
+from MWTracker.trackWorms.getWormTrajectories import getWormTrajectories, correctTrajectories
+from MWTracker.trackWorms.getDrawTrajectories import drawTrajectoriesVideo
+from MWTracker.trackWorms.getSkeletonsTables import trajectories2Skeletons, writeIndividualMovies
+from MWTracker.trackWorms.checkHeadOrientation import correctHeadTail
 
-from ..intensityAnalysis.getIntensityProfile import getIntensityProfile
-from ..intensityAnalysis.correctHeadTailIntensity import correctHeadTailIntensity
+from MWTracker.intensityAnalysis.getIntensityProfile import getIntensityProfile
+from MWTracker.intensityAnalysis.correctHeadTailIntensity import correctHeadTailIntensity
 
-from ..featuresAnalysis.getFilteredFeats import getFilteredFeats
-from ..featuresAnalysis.obtainFeatures import getWormFeaturesFilt
+from MWTracker.featuresAnalysis.getFilteredFeats import getFilteredFeats
+from MWTracker.featuresAnalysis.obtainFeatures import getWormFeaturesFilt
 
-from ..helperFunctions.tracker_param import tracker_param
-from ..helperFunctions.trackProvenance import getGitCommitHash, execThisPoint
-from ..helperFunctions.miscFun import print_flush
+from MWTracker.helperFunctions.tracker_param import tracker_param
+from MWTracker.helperFunctions.trackProvenance import getGitCommitHash, execThisPoint
+from MWTracker.helperFunctions.miscFun import print_flush
 
 from collections import OrderedDict
 
@@ -143,7 +145,6 @@ class getTrajectoriesWorkerL():
         #check if the file with the masked images exists
         if self.start_point <= checkpoint['SKE_CREATE']: assert os.path.exists(masked_image_file)
         
-        
         #get function parameters
         if json_file: assert os.path.exists(json_file)
         
@@ -228,6 +229,8 @@ class getTrajectoriesWorkerL():
 
     
     def execAllPoints(self):
+        initial_time = time.time()
+
         #if start_point is larger than end_point there is nothing else to do 
         if self.start_point > self.end_point: 
             print_flush(self.base_name + ' Finished in ' + checkpoint_label[self.end_point])
@@ -241,11 +244,30 @@ class getTrajectoriesWorkerL():
             if not self.use_manual_join and current_point == 'FEAT_MANUAL_CREATE': continue
             if current_point == 'END': break
 
-            print(current_point, self.points_parameters[current_point]['func'])
-            print(self.points_parameters[current_point]['argkws'])
+            #print(current_point, self.points_parameters[current_point]['func'])
+            #print(self.points_parameters[current_point]['argkws'])
             execThisPoint(current_point, **self.points_parameters[current_point], 
                 commit_hash=self.commit_hash, cmd_original=self.cmd_original)
             
-        print_flush(self.base_name + ' Finished in ' + checkpoint_label[self.end_point])
         
+        time_str = str(datetime.timedelta(seconds=round(time.time()-initial_time)))
+        print_flush('%s  Finished in %s. Total time %s' % (self.base_name, checkpoint_label[self.end_point], time_str))
+        
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Track woms in an individual video hdf5 file.")
+    parser.add_argument('masked_image_file', help = 'hdf5 video file.')
+    parser.add_argument('results_dir', help = 'Directory where results are going to be saved.')
+    parser.add_argument('--json_file', default = '', help='File (.json) containing the tracking parameters.')
+    parser.add_argument('--start_point', type=int, default = -1, help = 'Force the program to start at a specific point in the analysis.')
+    parser.add_argument('--end_point', type=int, default = checkpoint['END'], help='End point of the analysis.')
+    parser.add_argument('--is_single_worm', action='store_true', help = 'This flag indicates if the video corresponds to the single worm case.')
+    parser.add_argument('--use_manual_join', action='store_true', help = 'Use this flag to calculate features on manually joined data.')
+    parser.add_argument('--use_skel_filter', action='store_true', help = 'Flag to filter valid skeletons using the movie robust averages.')
+    parser.add_argument('--cmd_original', default = '', help = 'Internal. Used in provenance tracking.')
     
+    if len(sys.argv)>1: 
+        args = parser.parse_args()
+        getTrajectoriesWorkerL(**vars(args)) 
+        

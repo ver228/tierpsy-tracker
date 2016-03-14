@@ -6,16 +6,11 @@ Created on Tue Jun  9 15:12:48 2015
 """
 
 import os
-import stat
-import glob
 import sys
 import tables
-from start_console import runMultiCMD, print_cmd_list
 import fnmatch
-import argparse
 
-sys.path.append('/Users/ajaver/Documents/GitHub/Multiworm_Tracking/')
-from MWTracker.helperFunctions.getTrajectoriesWorkerL import getStartingPoint, checkpoint
+from trackSingleWorker import getStartingPoint, checkpoint
 from MWTracker.helperFunctions.timeCounterStr import timeCounterStr
 from MWTracker.compressVideos.getAdditionalData import getAdditionalFiles
 from MWTracker.compressVideos.extractMetaData import correctTimestamp
@@ -57,10 +52,10 @@ def getDstDir(source_dir, source_root_dir, dst_root_dir):
 
 class checkVideoFiles:
 	def __init__(self, video_dir_root, mask_dir_root, \
-		tmp_dir_root = '', \
+		tmp_dir_root = '', is_copy_video=False, \
 		is_single_worm = False, json_file = '', \
 		no_skel_filter = False, use_manual_join = False,\
-		script_abs_path = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/MWTracker_GUI/compressSingleLocal.py'):
+		script_abs_path = './compressSingleLocal.py'):
 		
 		#checkings before accepting the data
 		video_dir_root = os.path.abspath(video_dir_root)
@@ -73,6 +68,7 @@ class checkVideoFiles:
 		self.json_file = json_file
 		self.script_abs_path = script_abs_path
 		self.is_single_worm = is_single_worm
+		self.is_copy_video = is_copy_video
 		self.no_skel_filter = no_skel_filter
 		self.use_manual_join = use_manual_join
 		
@@ -160,6 +156,7 @@ class checkVideoFiles:
 			if tmp_val: cmd += ['--' + arg, tmp_val]
 		
 		if self.is_single_worm: cmd.append('--is_single_worm')
+		if self.is_copy_video: cmd.append('--is_copy_video')
 
 		return cmd
 
@@ -218,7 +215,7 @@ class checkVideoFiles:
 					raise ValueError
 				if mask_node.shape[0] == 0:
 					raise ValueError
-		except (tables.exceptions.HDF5ExtError, tables.exceptions.NoSuchNodeError, ValueError):
+		except (tables.exceptions.HDF5ExtError, tables.exceptions.NoSuchNodeError, ValueError, IOError):
 			return 1
 
 		#no problems with the file
@@ -249,7 +246,7 @@ class checkVideoFiles:
 class checkTrackFiles(checkVideoFiles):
 	def __init__(self, mask_dir_root, tmp_dir_root = '', \
 		is_single_worm = False, json_file = '', force_start_point='', end_point = '', \
-		script_abs_path = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/MWTracker_GUI/trackSingleLocal.py', \
+		script_abs_path = './trackSingleLocal.py', \
 		no_skel_filter = False, use_manual_join = False
 		):
 		

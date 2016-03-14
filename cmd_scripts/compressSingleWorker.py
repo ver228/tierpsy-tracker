@@ -5,17 +5,15 @@ Created on Tue Jun  9 12:59:25 2015
 @author: ajaver
 """
 
-import time
-import datetime
-import os
-import sys
+import time, datetime
+import os, sys
 import h5py
-from ..compressVideos.compressVideo import compressVideo
-from ..compressVideos.getAdditionalData import storeAdditionalDataSW, getAdditionalFiles
+from MWTracker.compressVideos.compressVideo import compressVideo
+from MWTracker.compressVideos.getAdditionalData import storeAdditionalDataSW, getAdditionalFiles
 
-from ..helperFunctions.tracker_param import tracker_param
-from ..helperFunctions.trackProvenance import getGitCommitHash, execThisPoint
-from ..helperFunctions.miscFun import print_flush
+from MWTracker.helperFunctions.tracker_param import tracker_param
+from MWTracker.helperFunctions.trackProvenance import getGitCommitHash, execThisPoint
+from MWTracker.helperFunctions.miscFun import print_flush
 
 
 def compressVideoWProv(video_file, masked_image_file, compress_vid_param, cmd_original):
@@ -24,7 +22,7 @@ def compressVideoWProv(video_file, masked_image_file, compress_vid_param, cmd_or
     argkws = {**{'video_file':video_file, 'masked_image_file':masked_image_file}, **compress_vid_param}
     execThisPoint('COMPRESS', compressVideo, argkws, masked_image_file, commits_hash, cmd_original)
 
-def compressVideoWorkerL(video_file, mask_dir, param_file = '', is_single_worm = False, cmd_original=''): 
+def compressSingleWorker(video_file, mask_dir, param_file, is_single_worm, cmd_original): 
     
     if mask_dir[-1] != os.sep: mask_dir += os.sep
 
@@ -73,4 +71,10 @@ def compressVideoWorkerL(video_file, mask_dir, param_file = '', is_single_worm =
     print_flush(base_name + ' ' + progress_str)
     
     return masked_image_file
+
+
+if __name__ == '__main__':
+    if len(sys.argv)==6:
+        compressSingleWorker(*sys.argv[1:])
+    
     

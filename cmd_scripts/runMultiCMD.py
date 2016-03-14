@@ -14,6 +14,19 @@ from threading  import Thread
 from queue import Queue, Empty
 
 
+from io import StringIO
+class CapturingOutput(list):
+    '''modified from http://stackoverflow.com/questions/1218933/can-i-redirect-the-stdout-in-python-into-some-sort-of-string-buffer'''
+    def __enter__(self):
+        self._stdout = sys.stdout
+        sys.stdout = self._stringio = StringIO()
+        return self
+    def __exit__(self, *args):
+        self.extend([x + '\n' for x in self._stringio.getvalue().splitlines()])
+        sys.stdout = self._stdout
+        
+
+
 ON_POSIX = 'posix' in sys.builtin_module_names
 def enqueue_output(out, queue):
     for line in iter(out.readline, b''):
@@ -21,12 +34,21 @@ def enqueue_output(out, queue):
     out.close()
 
 class start_process():
-    def __init__(self, cmd):
-        self.cmd = cmd
+    def __init__(self, cmd, local_obj=''):
+        if local_obj:
+            with CapturingOutput() as output:
+                self.obj_cmd = local_obj(cmd[1:])
+                self.cmd = self.obj_cmd.start()
+            self.output = output
+            #print(output[-1])    
+
+        else:
+            self.obj_cmd = ''
+            self.cmd = cmd
+            self.output = ['Started\n']
         
-        self.pid = sp.Popen(cmd, stdout = sp.PIPE, stderr = sp.PIPE,
+        self.pid = sp.Popen(self.cmd, stdout = sp.PIPE, stderr = sp.PIPE,
                             bufsize = 1, close_fds = ON_POSIX)
-        self.output = ['Started\n']
         self.queue = Queue()
         self.thread = Thread(target = enqueue_output, 
                              args = (self.pid.stdout, self.queue))
@@ -41,18 +63,25 @@ class start_process():
         self.output = self.output[-1:]
 
     def close(self):
+        
         if self.pid.poll() != 0:
+
             #print errors details if there was any
             self.output[-1] += 'ERROR: \n'
             self.output[-1] += cmdlist2str(self.cmd) + '\n'
             self.output[-1] += self.pid.stderr.read().decode("utf-8")
             self.pid.stderr.flush()
         
+        if self.obj_cmd and self.pid.poll() == 0:
+            with CapturingOutput() as output:
+                self.obj_cmd.clean()
+            self.output += output
+            
         self.pid.wait()
         self.pid.stdout.close()
         self.pid.stderr.close()
 
-def runMultiCMD(cmd_list, max_num_process = 3, refresh_time = 10):
+def runMultiCMD(cmd_list, local_obj='', max_num_process = 3, refresh_time = 10):
     '''Start different process using the command is cmd_list'''
     cmd_list = cmd_list[::-1] #since I am using pop to get the next element i need to invert the list to get athe same order
     tot_tasks = len(cmd_list)
@@ -63,11 +92,11 @@ def runMultiCMD(cmd_list, max_num_process = 3, refresh_time = 10):
     finished_tasks = [];
     num_tasks = 0;
     
-    
+    #os.system(['clear','cls'][os.name == 'nt'])
     current_tasks = [];
     for ii in range(max_num_process):
         cmd = cmd_list.pop()
-        current_tasks.append(start_process(cmd))
+        current_tasks.append(start_process(cmd, local_obj))
     
     #keep loop tasks as long as there is any task alive and 
     #the number of tasks stated is less than the total number of tasks
@@ -97,7 +126,7 @@ def runMultiCMD(cmd_list, max_num_process = 3, refresh_time = 10):
         #add new tasks if there is room for them
         while cmd_list and len(next_tasks) < max_num_process:
             cmd = cmd_list.pop()
-            next_tasks.append(start_process(cmd))
+            next_tasks.append(start_process(cmd,local_obj))
         current_tasks = next_tasks
         
                     
