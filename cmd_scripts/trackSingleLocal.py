@@ -73,7 +73,7 @@ class trackLocal:
 	def create_script(self):
 		self.scrip_file_name = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trackSingleWorker.py')
 		
-		cmd = ['python3', self.scrip_file_name] + self.main_input_params[0]
+		cmd = [sys.executable, self.scrip_file_name] + self.main_input_params[0]
 		
 		for x in self.main_input_params[1]:
 			dat = self.main_input_params[1][x]

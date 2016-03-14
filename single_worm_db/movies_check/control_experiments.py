@@ -5,20 +5,20 @@ Created on Tue Mar  1 14:45:16 2016
 @author: ajaver
 """
 
-import pymysql.cursors
+#import pymysql.cursors
 
-# Connect to the database
-connection = pymysql.connect(host='localhost',
-                             user='ajaver',
-                             db='worm_db',
-                             charset='utf8mb4',
-                             cursorclass=pymysql.cursors.DictCursor)
-
-
-with connection.cursor() as cursor:
-    sql = "SELECT * FROM `experiments`"
-    cursor.execute(sql)
-    result = cursor.fetchall()
+## Connect to the database
+#connection = pymysql.connect(host='localhost',
+#                             user='ajaver',
+#                             db='worm_db',
+#                             charset='utf8mb4',
+#                             cursorclass=pymysql.cursors.DictCursor)
+#
+#
+#with connection.cursor() as cursor:
+#    sql = "SELECT * FROM `experiments`"
+#    cursor.execute(sql)
+#    result = cursor.fetchall()
 
 
 
@@ -26,7 +26,6 @@ with connection.cursor() as cursor:
 import os
 from glob import glob
 import sys
-sys.path.append('/Users/ajaver/Documents/GitHub/Multiworm_Tracking')
 from MWTracker.compressVideos.getAdditionalData import getAdditionalFiles
     
 
@@ -183,3 +182,9 @@ if False:
                     print(newname)
 
 #%%
+
+with open('single_worm_movies_filter.txt', 'w') as fid:
+    for fname in full_movie_files:
+        #dname =  dir_dict[fname]
+        #assert len(dname) == 1
+        fid.write(fname + '\n')

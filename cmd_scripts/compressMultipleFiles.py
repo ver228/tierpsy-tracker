@@ -8,9 +8,9 @@ Created on Tue Jun  9 15:12:48 2015
 import os
 import argparse
 
-from runMultiCMD import runMultiCMD, print_cmd_list
+from MWTracker.helperFunctions.runMultiCMD import runMultiCMD, print_cmd_list
 from compressSingleLocal import compressLocal_parser
-from helperMultipleLocal import checkVideoFiles, exploreDirs
+from helperMultipleFiles import checkVideoFiles, exploreDirs
 
 def main(video_dir_root, mask_dir_root, tmp_dir_root, json_file, \
 	pattern_include, pattern_exclude, script_abs_path, max_num_process, \
@@ -25,8 +25,7 @@ def main(video_dir_root, mask_dir_root, tmp_dir_root, json_file, \
 	else:
 		with open(videos_list, 'r') as fid:
 			valid_files = fid.read().split('\n')
-			print(valid_files)
-
+			
 
 	cvf.filterFiles(valid_files)
 	
@@ -63,7 +62,7 @@ if __name__ == '__main__':
 	parser.add_argument('--videos_list', default='', help='File containing the full path of the videos to be analyzed, otherwise there will be search from video_dir_root using pattern_include and pattern_exclude.')
 	
 	#name of the scripts used
-	parser.add_argument('--script_abs_path', default='./compressSingleLocal.py', \
+	parser.add_argument('--script_abs_path', default=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'compressSingleLocal.py'), \
 		help='Full path of the script to analyze single files.')
 	
 	parser.add_argument('--json_file', default='', help='File (.json) containing the tracking parameters.')

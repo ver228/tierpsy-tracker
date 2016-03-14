@@ -8,9 +8,9 @@ Created on Tue Jun  9 15:12:48 2015
 import os
 import argparse
 
-from runMultiCMD import runMultiCMD, print_cmd_list
+from MWTracker.helperFunctions.runMultiCMD import runMultiCMD, print_cmd_list
 from trackSingleLocal import trackLocal_parser
-from helperMultipleLocal import checkTrackFiles, exploreDirs
+from helperMultipleFiles import checkTrackFiles, exploreDirs
 
 import sys
 from trackSingleWorker import checkpoint_label
@@ -28,7 +28,7 @@ def main(mask_dir_root, tmp_dir_root, json_file, script_abs_path, \
 	
 
 	if not videos_list:
-		valid_files = exploreDirs(video_dir_root, pattern_include = pattern_include, pattern_exclude = pattern_exclude)
+		valid_files = exploreDirs(mask_dir_root, pattern_include = pattern_include, pattern_exclude = pattern_exclude)
 	else:
 		with open(videos_list, 'r') as fid:
 			valid_files = fid.read().split('\n')
@@ -61,7 +61,7 @@ if __name__ == '__main__':
 	
 	parser.add_argument('--videos_list', default='', help='File containing the full path of the masked videos to be analyzed, otherwise there will be search from video_dir_root using pattern_include and pattern_exclude.')
 	
-	parser.add_argument('--script_abs_path', default = './trackSingleLocal.py', \
+	parser.add_argument('--script_abs_path', default = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trackSingleLocal.py'), \
 		help='Full path of the script to analyze single files.')
 	
 	parser.add_argument('--json_file', default = '', help='File (.json) containing the tracking parameters.')

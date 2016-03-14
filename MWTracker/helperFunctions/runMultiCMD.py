@@ -24,8 +24,6 @@ class CapturingOutput(list):
     def __exit__(self, *args):
         self.extend([x + '\n' for x in self._stringio.getvalue().splitlines()])
         sys.stdout = self._stdout
-        
-
 
 ON_POSIX = 'posix' in sys.builtin_module_names
 def enqueue_output(out, queue):
@@ -92,7 +90,7 @@ def runMultiCMD(cmd_list, local_obj='', max_num_process = 3, refresh_time = 10):
     finished_tasks = [];
     num_tasks = 0;
     
-    #os.system(['clear','cls'][os.name == 'nt'])
+    
     current_tasks = [];
     for ii in range(max_num_process):
         cmd = cmd_list.pop()
@@ -128,9 +126,10 @@ def runMultiCMD(cmd_list, local_obj='', max_num_process = 3, refresh_time = 10):
             cmd = cmd_list.pop()
             next_tasks.append(start_process(cmd,local_obj))
         current_tasks = next_tasks
-        
-                    
-        print('%%%%%%%%%%')
+
+        print('*************************************************')
+        print('Tasks: %i finished, %i remaining.' % (len(finished_tasks), len(current_tasks) + len(cmd_list)))
+        print('*************************************************')
 
 def cmdlist2str(cmdlist):
     #change the format from the list accepted by Popen to a text string accepted by the terminal 

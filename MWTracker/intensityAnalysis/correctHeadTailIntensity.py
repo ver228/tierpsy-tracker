@@ -14,7 +14,6 @@ from scipy.ndimage.filters import median_filter, minimum_filter, maximum_filter
 import os
 
 import sys
-sys.path.append('/Users/ajaver/Documents/GitHub/Multiworm_Tracking')
 from MWTracker.helperFunctions.miscFun import print_flush
 from MWTracker.helperFunctions.timeCounterStr import timeCounterStr
 
@@ -417,7 +416,6 @@ def correctHeadTailIntensity(skeletons_file, intensities_file, smooth_W = 5,
     #return bad_worms, switched_blocks
     
 if __name__ == '__main__':
-
     #%%
     #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_18112015_075624.hdf5'
     masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_17112015_205616.hdf5'

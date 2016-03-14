@@ -21,7 +21,7 @@ class tracker_param:
             dilation_size = 9, compression_buff = 25, keep_border_data = False, roi_size = -1, 
             thresh_block_size = 61, fps = 25, fps_filter = 0, threshold_factor = 1.05,
             resampling_N = 49,  max_gap_allowed_block = 10, is_single_worm = False, 
-            bad_seg_thresh = 0.8, min_displacement = 0, fit_contamination = 0.05):
+            bad_seg_thresh = 0.8, min_displacement = 0, fit_contamination = 0.05, strel_size = 5):
         '''
         min_area - minimum area in pixels allowed
         max_area - maximum area in pixels allowed
@@ -73,7 +73,8 @@ class tracker_param:
         
         self.trajectories_param = {'initial_frame' : 0, 'last_frame': -1,
                               'min_area': min_area/2, 'min_length':min_track_lenght, 'max_allowed_dist':max_allowed_dist, 
-                              'area_ratio_lim': (0.5, 2), 'buffer_size': compression_buff, 'threshold_factor' : threshold_factor}
+                              'area_ratio_lim': (0.5, 2), 'buffer_size': compression_buff, 'threshold_factor' : threshold_factor,
+                              'strel_size' : (strel_size,strel_size)}
         
         #joinTrajectories
         min_track_size = max(1, fps_filter*2)
@@ -86,7 +87,8 @@ class tracker_param:
         
         #trajectories2Skeletons
         self.skeletons_param = {'resampling_N' : resampling_N,
-                               'min_mask_area' : min_area/2, 'smoothed_traj_param' : self.smoothed_traj_param}
+                               'min_mask_area' : min_area/2, 'smoothed_traj_param' : self.smoothed_traj_param,
+                               'strel_size' : (strel_size,strel_size)}
         
         #correctHeadTail
         if max_gap_allowed_block <0: fps//2

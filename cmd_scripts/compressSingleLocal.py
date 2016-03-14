@@ -81,7 +81,7 @@ class compressLocal:
 
 	def create_script(self):
 		self.scrip_file_name = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'compressSingleWorker.py')
-		cmd = ['python3', self.scrip_file_name] + self.main_input_params
+		cmd = [sys.exectable, self.scrip_file_name] + self.main_input_params
 		#replace bool values by a letter, otherwise one cannot parse them to the command line
 		cmd = [x if not isinstance(x, bool) else 'T' if x else '' for x in cmd]
 		return cmd

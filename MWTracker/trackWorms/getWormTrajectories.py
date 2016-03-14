@@ -87,7 +87,7 @@ def getWormThreshold(pix_valid):
             #larger increase in the object area.
             hist_ratio = pix_hist[xx]/cumhist[xx]
             thresh = np.where((hist_ratio[3:]-hist_ratio[:-3])>0)[0][0] + otsu_thresh
-        except:
+        except IndexError:
             thresh = np.argmin(pix_hist[otsu_thresh:largest_peak]) + otsu_thresh;
     else:
         #if otsu is larger than the maximum peak keep otsu threshold
@@ -95,7 +95,7 @@ def getWormThreshold(pix_valid):
         
     return thresh
 
-def getWormContours(ROI_image, thresh):
+def getWormContours(ROI_image, thresh, strel_size = (5,5)):
     #get the border of the ROI mask, this will be used to filter for valid worms
     ROI_valid = (ROI_image != 0).astype(np.uint8)
     _, ROI_border_ind, _ =  cv2.findContours(ROI_valid, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)  
@@ -122,7 +122,10 @@ def getWormContours(ROI_image, thresh):
     #ROI_image = cv2.medianBlur(ROI_image, 3);
     #get binary image, and clean it using morphological closing
     ROI_mask = ((ROI_image<thresh) & (ROI_image != 0)).astype(np.uint8)
-    ROI_mask = cv2.morphologyEx(ROI_mask, cv2.MORPH_CLOSE,np.ones((3,3)))
+    strel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, strel_size)
+    ROI_mask = cv2.morphologyEx(ROI_mask, cv2.MORPH_CLOSE, strel)
+
+    #ROI_mask = cv2.morphologyEx(ROI_mask, cv2.MORPH_CLOSE,np.ones((5,5)))
     #ROI_mask = cv2.erode(ROI_mask, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2,2)), iterations=2)
     
     #get worms, assuming each contour in the ROI is a worm
@@ -204,7 +207,7 @@ def joinConsecutiveFrames(index_list_prev, coord, coord_prev, area, area_prev, t
 
 def getWormTrajectories(masked_image_file, trajectories_file, initial_frame = 0, last_frame = -1, \
 min_area = 25, min_length = 5, max_allowed_dist = 20, \
-area_ratio_lim = (0.5, 2), buffer_size = 25, threshold_factor = 1.):
+area_ratio_lim = (0.5, 2), buffer_size = 25, threshold_factor = 1., strel_size = (5,5)):
     '''
     #read images from 'masked_image_file', and save the linked trajectories and their features into 'trajectories_file'
     #use the first 'total_frames' number of frames, if it is equal -1, use all the frames in 'masked_image_file'
@@ -332,7 +335,7 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, threshold_factor = 1.):
                     #calculate figures for each image in the buffer
                     
                     #get the contour of possible worms
-                    ROI_worms, hierarchy = getWormContours(ROI_buffer_med[buff_ind,:,:], thresh)
+                    ROI_worms, hierarchy = getWormContours(ROI_buffer_med[buff_ind,:,:], thresh, strel_size)
 
                     mask_feature_list = [];
                     

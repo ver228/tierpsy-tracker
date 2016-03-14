@@ -197,7 +197,9 @@ def getWormROI(img, CMx, CMy, roi_size = 128):
     
     return worm_img, roi_corner
 
-def getWormMask(worm_img, threshold):
+
+
+def getWormMask(worm_img, threshold, strel_size = (5,5)):
     '''
     Calculate worm mask using an specific threshold.
     '''
@@ -215,7 +217,7 @@ def getWormMask(worm_img, threshold):
     worm_mask = ((worm_img < threshold) & (worm_img!=0)).astype(np.uint8)
     
     #smooth mask by morphological closing
-    strel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5,5))
+    strel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, strel_size)
     worm_mask = cv2.morphologyEx(worm_mask, cv2.MORPH_CLOSE, strel)
 
     return worm_mask
@@ -285,7 +287,7 @@ def binaryMask2Contour(worm_mask, min_mask_area=50, roi_center_x = -1, roi_cente
     return contour.astype(np.double), cnt_area
 
 def trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file, \
-create_single_movies = False, resampling_N = 49, min_mask_area = 50, smoothed_traj_param = {}):    
+create_single_movies = False, resampling_N = 49, min_mask_area = 50, strel_size = (5,5), smoothed_traj_param = {}):    
     
     #extract the base name from the masked_image_file. This is used in the progress status.
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
@@ -362,7 +364,7 @@ create_single_movies = False, resampling_N = 49, min_mask_area = 50, smoothed_tr
             for skeleton_id, row_data in frame_data.iterrows():
                 
                 worm_img, roi_corner = getWormROI(img, row_data['coord_x'], row_data['coord_y'], row_data['roi_size'])
-                worm_mask = getWormMask(worm_img, row_data['threshold'])
+                worm_mask = getWormMask(worm_img, row_data['threshold'], strel_size)
                 
                 #only consider areas of at least half the size of the expected blob and that are near the center of the roi
                 worm_cnt, cnt_areas[skeleton_id] = binaryMask2Contour(worm_mask, min_mask_area = row_data['area']/2)

@@ -33,13 +33,6 @@ chmod -R ugo+rx $MW_MAIN_DIR/../open-worm-analysis-toolbox
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 brew install wget cmake python3
 
-#install pyqt5 for the GUI
-#brew uninstall --force sip
-brew install sip --with-python3
-#brew uninstall --force pyqt5
-brew install pyqt5 --with-python3
-#brew uninstall --force pyqt
-brew install pyqt --with-python3
 
 #ffmpeg libraries, I need them to install opencv
 #brew uninstall ffmpeg
@@ -50,6 +43,25 @@ brew install homebrew/science/hdf5
 
 pip3 install --upgrade numpy spyder tables pandas h5py matplotlib scipy scikit-learn \
 scikit-image tifffile seaborn xlrd gitpython
+
+
+#sometimes it is necessary to uninstall pyqt5 before
+#brew uninstall --force sip
+#brew uninstall --force pyqt5
+#brew uninstall --force pyqt
+
+#install pyqt5 for the GUI
+brew install sip --with-python3
+brew install pyqt5 --with-python3
+brew install pyqt --with-python3
+
+#compile cython files
+cd $MW_MAIN_DIR/MWTracker/trackWorms/segWormPython/cythonFiles/
+make
+make clean
+cd $MW_MAIN_DIR
+
+#brew install opencv3 --with-python3
 
 #install opencv
 cd $MW_MAIN_DIR/..
@@ -84,16 +96,6 @@ cmake '"Unix Makefile"' -DBUILD_opencv_python3=ON \
 -DBUILD_opencv_xphoto=OFF \
 .
 done
-
 make -j24
 make install
 
-
-#change permissions so other users can access to the python3 installation
-#sudo chmod -R ugo+rx '/usr/local/'
-
-#compile cython files
-cd $MW_MAIN_DIR/MWTracker/trackWorms/segWormPython/cythonFiles/
-make
-make clean
-cd $MW_MAIN_DIR

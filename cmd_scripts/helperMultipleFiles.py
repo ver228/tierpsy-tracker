@@ -147,7 +147,7 @@ class checkVideoFiles:
 		if not os.path.exists(tmp_mask_dir): os.makedirs(tmp_mask_dir)
 					
 		#create a command line with the required arguments
-		cmd = ['python3', self.script_abs_path, video_file, mask_dir]
+		cmd = [sys.executable, self.script_abs_path, video_file, mask_dir]
 		
 		json_file = self.json_file
 		#add the optional arguments if they are present
@@ -311,7 +311,7 @@ class checkTrackFiles(checkVideoFiles):
 			tmp_mask_dir, tmp_results_dir = '', ''
 					
 		#create a command line with the required arguments
-		cmd = ['python3', self.script_abs_path, masked_image_file, results_dir]
+		cmd = [sys.executable, self.script_abs_path, masked_image_file, results_dir]
 		
 		json_file = self.json_file
 		end_point = self.end_point
