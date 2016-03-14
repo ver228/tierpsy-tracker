@@ -53,12 +53,15 @@ def storeStageData(stage_file, masked_image_file):
         reader = csv.reader(fid)
         data = [line for line in reader]
     
-    #if it is empty the xml create a node and exit
-    if not data:
+    #if the csv lines must be larger than one (a header), othewise it is an empty file
+    if len(data)<=1:
         with tables.File(masked_image_file, 'r+') as fid:
             dtype = [('real_time', int), ('stage_time', int), ('stage_x', float), ('stage_y', float)]
             fid.create_table('/', 'stage_data', obj = np.recarray(0, dtype))
             return
+
+    #import pdb
+    #pdb.set_trace()
 
     #filter, check and store the data into a recarray
     header, data = _getHeader(data)
