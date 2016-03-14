@@ -20,9 +20,7 @@ from collections import OrderedDict
 from ..helperFunctions.timeCounterStr import timeCounterStr
 from ..helperFunctions.miscFun import print_flush
 
-from open_worm_analysis_toolbox import NormalizedWorm
-from open_worm_analysis_toolbox import WormFeaturesDos, VideoInfo
-from open_worm_analysis_toolbox.statistics import specifications
+import open_worm_analysis_toolbox as mv
 
 from MWTracker.featuresAnalysis.obtainFeaturesHelper import wormStatsClass, WormFromTable, getValidIndexes, WLAB
 
@@ -93,7 +91,7 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, \
             #IMPORTANT change axis to an openworm format before calculating features
             worm.changeAxis()
             #OpenWorm feature calculation
-            worm_features = WormFeaturesDos(worm)
+            worm_features = mv.WormFeaturesDos(worm)
 
             #get the average for each worm feature
             worm_stats = wStats.getWormStats(worm_features, np.mean)

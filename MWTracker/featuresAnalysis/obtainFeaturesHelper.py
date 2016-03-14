@@ -19,13 +19,7 @@ warnings.filterwarnings('ignore', '.*empty slice*',)
 tables.parameters.MAX_COLUMNS = 1024 #(http://www.pytables.org/usersguide/parameter_files.html)
 
 from collections import OrderedDict
-
-#add movement_validation path
-#from .. import config_param as param
-#sys.path.append(movement_validation_dir)
-from open_worm_analysis_toolbox import NormalizedWorm, VideoInfo
-from open_worm_analysis_toolbox.statistics import specifications
-#from open_worm_analysis_toolbox.features.worm_features import WormFeatures, WormFeaturesDos
+import open_worm_analysis_toolbox as mv 
 np.seterr(invalid='ignore')
 
 
@@ -132,7 +126,7 @@ def smoothCurvesAll(curves, window = 5, pol_degree = 3):
             curves[ii] = smoothCurve(curves[ii], window = window, pol_degree = pol_degree)
     return curves
 
-class WormFromTable(NormalizedWorm):
+class WormFromTable(mv.NormalizedWorm):
     """
     Encapsulates the notion of a worm's elementary measurements, scaled
     (i.e. "normalized") to 49 points along the length of the worm.
@@ -142,7 +136,7 @@ class WormFromTable(NormalizedWorm):
     def __init__(self, file_name, worm_index, fps = 25, use_skel_filter = True, use_manual_join = False,
         is_openworm = False, pix2mum = 1, smooth_window = -1, POL_DEGREE_DFLT = 3):
         #Populates an empty normalized worm.
-        NormalizedWorm.__init__(self)
+        mv.NormalizedWorm.__init__(self)
     
         self.POL_DEGREE_DFLT = POL_DEGREE_DFLT #savitzky-golay filter polynomial order default
         #save the input parameters
@@ -253,7 +247,7 @@ class WormFromTable(NormalizedWorm):
         self.skeleton_id[ind_ff] = skeleton_id
         
         #video info, for the moment we intialize it with the fps
-        self.video_info = VideoInfo('', self.fps)
+        self.video_info = mv.VideoInfo('', self.fps)
         
         #flag as segmented flags should be marked by the has_skeletons column
         self.video_info.frame_code = np.zeros(self.n_frames, np.int32)
