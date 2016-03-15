@@ -101,6 +101,7 @@ def correctBlock(groups, new_flag_vec, gap_size):
     
 
 def checkLocalVariation(worm_int_profile, groups, local_avg_win = 10):
+    #%%    
     corr_groups = []
     
     groups = sorted(groups)
@@ -151,6 +152,7 @@ def checkLocalVariation(worm_int_profile, groups, local_avg_win = 10):
         if m_dif_inv_left <= m_dif_ori_left and m_dif_inv_right <= m_dif_ori_right:
             corr_groups.append(gg)
     
+#%%    
     return corr_groups
 
 def removeBadSkelBlocks(groups, int_skeleton_id, trajectories_worm, min_frac_in, gap_size):
@@ -402,19 +404,22 @@ if __name__ == '__main__':
 
     #%%
     #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_18112015_075624.hdf5'
-    masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch6_17112015_205616.hdf5'
+    #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch6_17112015_205616.hdf5'
     #masked_image_file = '/Users/ajaver/Desktop/Videos/04-03-11/MaskedVideos/575 JU440 swimming_2011_03_04__13_16_37__8.hdf5'    
     #masked_image_file = '/Users/ajaver/Desktop/Videos/04-03-11/MaskedVideos/575 JU440 on food Rz_2011_03_04__12_55_53__7.hdf5'    
-    
+    #masked_image_file = '/Users/ajaver/Desktop/Videos/single_worm/MaskedVideos/Check_Align_samples/npr-12 (tm1498) on food R_2010_01_25__13_17_33___4___5.hdf5'
+    masked_image_file = '/Users/ajaver/Desktop/Videos/single_worm/MaskedVideos/Teodor/W03B1.2 (ok2433) on food L_2010_04_21__11_50_54__5.hdf5'
     skeletons_file = masked_image_file.replace('MaskedVideos', 'Results')[:-5] + '_skeletons.hdf5'
     intensities_file = skeletons_file.replace('_skeletons', '_intensities')
 
     smooth_W = 5
     min_block_size = 2*smooth_W 
-    local_avg_win = 25#2*smooth_W 
+    local_avg_win = 300#25#2*smooth_W 
     min_frac_in = 0.85
     
     gap_size = 0#local_avg_win #otherwise i cannot really say a local average is valid
+    
+        
     
     with pd.HDFStore(intensities_file, 'r') as fid:
         trajectories_data_int = fid['/trajectories_data_valid']
@@ -457,6 +462,20 @@ if __name__ == '__main__':
             #worm_maps = fid.get_node('/straighten_worm_intensity')[int_map_id,:,:]
             worm_avg = fid.get_node('/straighten_worm_intensity_median')[int_map_id.values,:]
         
+        #%%
+        
+        #this is small window that reduce the values on the head a tail, where a segmentation error or noise can have a very big effect
+        
+        
+        MM = 30        
+        rr = (np.arange(MM)/(MM-1))*0.9 + 0.1
+        damp_factor = np.ones(131);
+        damp_factor[:MM] = rr
+        damp_factor[-MM:] = rr[::-1]
+    
+        #reduce the importance of the head and tail
+        worm_avg *= damp_factor        
+
         #%%
         #normalize intensities for each level    
         #worm_avg -= np.median(worm_avg, axis = 1)
@@ -506,7 +525,12 @@ if __name__ == '__main__':
         #this will increase the distance between the original and the inversion. Therefore it will become more stringent on detection
         diff_orim = minimum_filter(diff_ori_med, smooth_W)    
         diff_invM = maximum_filter(diff_inv_med, smooth_W)   
-                
+        
+        #%%
+        plt.figure()        
+        plt.plot(diff_orim)
+        plt.plot(diff_invM)
+
         
         #%%
         bad_orientationM = diff_orim>diff_invM
@@ -568,7 +592,7 @@ if __name__ == '__main__':
             plt.xlim((-1, len(diff_ori)))    
             #plt.xlim((42303, 43913))
         #%%
-        if False:
+        if True:
             for ini, fin in groups:
                 plt.figure()
                 plt.imshow(worm_avg.T, interpolation='none', cmap='gray')        

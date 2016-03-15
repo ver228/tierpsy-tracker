@@ -89,8 +89,9 @@ class MWTrackerViewerSingle(HDF5videoViewer):
         isDrawSkel = self.ui.checkBox_showLabel.isChecked()
         if isDrawSkel and isinstance(row_data, pd.Series):
             if row_data['has_skeleton'] == 1:
+                #self.drawThreshMask(self.frame_img, self.frame_qimg, row_data, read_center=True)
                 self.drawSkel(self.frame_img, self.frame_qimg, row_data, roi_corner = (0,0))
-            elif row_data['has_skeleton'] == 0:
+            else:
                 self.drawThreshMask(self.frame_img, self.frame_qimg, row_data, read_center=True)
             
         self.pixmap = QPixmap.fromImage(self.frame_qimg)
@@ -145,7 +146,7 @@ class MWTrackerViewerSingle(HDF5videoViewer):
     def drawThreshMask(self, worm_img, worm_qimg, row_data, read_center = True):
         worm_mask = getWormMask(worm_img, row_data['threshold'])
         if read_center:
-            worm_cnt, _ = binaryMask2Contour(worm_mask, roi_center_x = row_data['coord_x'], roi_center_y = row_data['coord_y'])
+            worm_cnt, _ = binaryMask2Contour(worm_mask, roi_center_x = row_data['coord_y'], roi_center_y = row_data['coord_x'])
         else:
             worm_cnt, _ = binaryMask2Contour(worm_mask)
         worm_mask = np.zeros_like(worm_mask)

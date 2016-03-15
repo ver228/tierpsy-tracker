@@ -106,5 +106,5 @@ class tracker_param:
         self.int_profile_param = {'width_resampling' : 15, 'length_resampling' : 131, 'min_num_skel' : min_num_skel,
                      'smooth_win' : 11, 'pol_degree' : 3, 'width_percentage' : 0.5, 'save_int_maps' : False}
         
-        self.head_tail_int_param = {'smooth_W' : round(fps/5), 'gap_size' : max_gap_allowed_block//2, 'min_block_size' : round(fps/5*2), 
-        'local_avg_win' : fps, 'min_frac_in' : 0.85}
+        self.head_tail_int_param = {'smooth_W' : round(fps/5), 'gap_size' : max_gap_allowed_block//2, 'min_block_size' : fps//2, 
+        'local_avg_win' : 10*fps, 'min_frac_in' : 0.85}

@@ -275,6 +275,14 @@ def switchBlocks(skel_group, skeletons_file, int_group, intensities_file):
                 worm_int[ini:fin+1, :, :] = dat[:, ::-1, ::-1]
         fid.flush()
 
+def getDampFactor(length_resampling):
+    #this is small window that reduce the values on the head a tail, where a segmentation error or noise can have a very big effect
+    MM = length_resampling//4
+    rr = (np.arange(MM)/(MM-1))*0.9 + 0.1
+    damp_factor = np.ones(length_resampling);
+    damp_factor[:MM] = rr
+    damp_factor[-MM:] = rr[::-1]
+    return damp_factor
 
 def correctHeadTailIntensity(skeletons_file, intensities_file, smooth_W = 5,
     gap_size = 0, min_block_size = 10, local_avg_win = 25, min_frac_in = 0.85):
@@ -320,6 +328,11 @@ def correctHeadTailIntensity(skeletons_file, intensities_file, smooth_W = 5,
         with tables.File(intensities_file, 'r') as fid:
             worm_int_profile = fid.get_node('/straighten_worm_intensity_median')[int_map_id,:]
         
+
+        #reduce the importance of the head and tail. This parts are typically more noisy
+        damp_factor = getDampFactor(worm_int_profile.shape[1])
+        worm_int_profile *= damp_factor        
+
         #%%
         #normalize intensities of each individual profile    
         for ii in range(worm_int_profile.shape[0]):
