@@ -1,32 +1,40 @@
 import sys
-#from PyQt4.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
-from PyQt4.QtGui import QPixmap, QImage, QApplication, QMainWindow, QFileDialog, QMessageBox
-from PyQt4.QtCore import QDir, QTimer, Qt
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
+from PyQt5.QtCore import QDir, QTimer, Qt
+from PyQt5.QtGui import QPixmap, QImage
+#from PyQt4.QtGui import QPixmap, QImage, QApplication, QMainWindow, QFileDialog, QMessageBox
+#from PyQt4.QtCore import QDir, QTimer, Qt
+
 from MWTracker.GUI.HDF5videoViewer.HDF5videoViewer_ui import Ui_ImageViewer
 
 import tables
 import os
 import numpy as np
 
-class HDF5videoViewer_GUI(QMainWindow):
-    def __init__(self):
+class HDF5videoViewer(QMainWindow):
+    def __init__(self, ui = ''):
         super().__init__()
         
         # Set up the user interface from Designer.
-        self.ui = Ui_ImageViewer()
+        if not ui:
+            self.ui = Ui_ImageViewer()
+        else:
+            self.ui = ui
+
         self.ui.setupUi(self)
 
         self.isPlay = False
         self.fid = -1
         self.image_group = -1
+        self.videos_dir = ''
         #self.videos_dir =  r"/Volumes/behavgenom$/GeckoVideo/Results/20150521_1115/"
-        self.videos_dir =  os.path.expanduser("~") + os.sep + 'Downloads' + os.sep + 'wetransfer-cf3818' + os.sep
+        #self.videos_dir =  os.path.expanduser("~") + os.sep + 'Downloads' + os.sep + 'wetransfer-cf3818' + os.sep
         
-        #self.ui.centralWidget.setChildrenFocusPolicy(Qt.NoFocus)
+        #self.ui.imageCanvas.setFocusPolicy(Qt.ClickFocus)
 
         self.h5path = self.ui.comboBox_h5path.itemText(0)
         
-        self.ui.fileButton.clicked.connect(self.getVideoFile)
+        self.ui.pushButton_video.clicked.connect(self.getVideoFile)
         
         self.ui.playButton.clicked.connect(self.playVideo)
         self.ui.imageSlider.sliderPressed.connect(self.imSldPressed)
@@ -58,11 +66,16 @@ class HDF5videoViewer_GUI(QMainWindow):
         self.ui.imageSlider.setCursor(Qt.OpenHandCursor)
         if self.image_group != -1:
             self.frame_number = int(round((self.tot_frames-1)*self.ui.imageSlider.value()/100))
-            self.updateImage()
+            self.ui.spinBox_frame.setValue(self.frame_number)
+            #self.updateImage()
     
     #frame spin box
     def updateFrameNumber(self):
         self.frame_number = self.ui.spinBox_frame.value()
+        progress = round(100*self.frame_number/self.tot_frames)
+        if progress != self.ui.imageSlider.value():
+            self.ui.imageSlider.setValue(progress)
+        
         self.updateImage()
 
     #fps spin box
@@ -98,41 +111,40 @@ class HDF5videoViewer_GUI(QMainWindow):
     def getNextImage(self):
         self.frame_number += self.frame_step
         if self.frame_number >= self.tot_frames:
+            self.frame_number = self.tot_frames-1
             self.stopPlay()
-            return
-        self.updateImage()
-
+        
+        self.ui.spinBox_frame.setValue(self.frame_number)
+        
     #update image: get the next frame_number, and resize it to fix in the GUI area
     def updateImage(self):
         if self.image_group == -1:
             return
-
-        self.ui.spinBox_frame.setValue(self.frame_number)
         
+        self.readImage()
+
+        self.pixmap = QPixmap.fromImage(self.frame_qimg)
+        self.ui.imageCanvas.setPixmap(self.pixmap);
+    
+    def readImage(self):
         self.label_height = self.ui.imageCanvas.height()
         self.label_width = self.ui.imageCanvas.width()
-        
-        self.original_image = self.image_group[self.frame_number,:,:];
+
+        self.frame_img = self.image_group[self.frame_number,:,:];
         
         #equalize and cast if it is not uint8
-        if self.original_image.dtype != np.uint8:
-            top = np.max(self.original_image)
-            bot = np.min(self.original_image)
+        if self.frame_img.dtype != np.uint8:
+            top = np.max(self.frame_img)
+            bot = np.min(self.frame_img)
 
-            self.original_image = (self.original_image-bot)*255./(top-bot)
-
-            self.original_image = np.round(self.original_image).astype(np.uint8)
-            #print(self.original_image)
-        image = QImage(self.original_image.data, 
-            self.image_height, self.image_width, self.original_image.strides[0], QImage.Format_Indexed8)
-        image = image.scaled(self.label_width, self.label_height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.frame_img = (self.frame_img-bot)*255./(top-bot)
+            self.frame_img = np.round(self.frame_img).astype(np.uint8)
+            
+        self.frame_qimg = QImage(self.frame_img.data, 
+            self.image_width, self.image_height, self.frame_img.strides[0], QImage.Format_Indexed8)
+        self.frame_qimg = self.frame_qimg.convertToFormat(QImage.Format_RGB32, Qt.AutoColor)
+        self.frame_qimg = self.frame_qimg.scaled(self.label_width, self.label_height, Qt.KeepAspectRatio)
         
-        self.ui.imageCanvas.setPixmap(QPixmap.fromImage(image));
-        
-        progress = round(100*self.frame_number/self.tot_frames)
-        if progress != self.ui.imageSlider.value():
-            self.ui.imageSlider.setValue(progress)
-
     #file dialog to the the hdf5 file
     def getVideoFile(self):
         vfilename, _ = QFileDialog.getOpenFileName(self, "Find HDF5 video file", 
@@ -152,7 +164,7 @@ class HDF5videoViewer_GUI(QMainWindow):
                     QMessageBox.Ok)
             return
         
-        self.ui.lineEdit.setText(self.vfilename)
+        self.ui.lineEdit_video.setText(self.vfilename)
         self.videos_dir = self.vfilename.rpartition(os.sep)[0] + os.sep
         self.fid = tables.File(self.vfilename, 'r')
         
@@ -201,8 +213,8 @@ class HDF5videoViewer_GUI(QMainWindow):
                     QMessageBox.Ok)
 
         self.tot_frames = self.image_group.shape[0]
-        self.image_height = self.image_group.shape[2]
-        self.image_width = self.image_group.shape[1]
+        self.image_height = self.image_group.shape[1]
+        self.image_width = self.image_group.shape[2]
             
         self.ui.spinBox_frame.setMaximum(self.tot_frames-1)
 
@@ -221,23 +233,41 @@ class HDF5videoViewer_GUI(QMainWindow):
             self.updateImage()
     
     def keyPressEvent(self, event):
-        #print(event.key())
-        if self.fid == -1:
-            return
+        key = event.key()
+        
+        #Duplicate the frame step size (speed) when pressed  > or .: 
+        if key == 46 or key == 62:
+            self.frame_step *= 2
+            self.ui.spinBox_step.setValue(self.frame_step)
 
-        #Move backwards when < or , are pressed
-        if event.key() == 44 or event.key() == 60:
+        #Half the frame step size (speed) when pressed: < or ,
+        elif key == 44 or key == 60:
+            self.frame_step //=2
+            if self.frame_step<1:
+                self.frame_step = 1
+            self.ui.spinBox_step.setValue(self.frame_step)
+
+        #print(event.key())
+        elif self.fid == -1:
+            return
+            
+        #Move backwards when  are pressed
+        elif key == Qt.Key_Left or key == 39:
             self.frame_number -= self.frame_step
             if self.frame_number<0:
                 self.frame_number = 0
-            self.updateImage()
+            self.ui.spinBox_frame.setValue(self.frame_number)
         
-        #Move forward when  > or . are pressed
-        elif event.key() == 46 or event.key() == 62:
+        #Move forward when  are pressed
+        elif key == Qt.Key_Right or key == 92:
             self.frame_number += self.frame_step
             if self.frame_number >= self.tot_frames:
                 self.frame_number = self.tot_frames-1
-            self.updateImage()
+            self.ui.spinBox_frame.setValue(self.frame_number)
+
+        else:
+            QMainWindow.keyPressEvent(self, event)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

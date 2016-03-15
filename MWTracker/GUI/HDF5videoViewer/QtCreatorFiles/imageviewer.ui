@@ -34,7 +34,7 @@
            <x>0</x>
            <y>0</y>
            <width>572</width>
-           <height>527</height>
+           <height>525</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -64,7 +64,11 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
-         <widget class="QSpinBox" name="spinBox_frame"/>
+         <widget class="QSpinBox" name="spinBox_frame">
+          <property name="maximum">
+           <number>999999999</number>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QLabel" name="label_frame">
@@ -76,7 +80,7 @@
         <item>
          <widget class="QSpinBox" name="spinBox_step">
           <property name="maximum">
-           <number>100000</number>
+           <number>999999999</number>
           </property>
           <property name="value">
            <number>1</number>
@@ -188,14 +192,14 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QLineEdit" name="lineEdit">
+         <widget class="QLineEdit" name="lineEdit_video">
           <property name="text">
            <string/>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="fileButton">
+         <widget class="QPushButton" name="pushButton_video">
           <property name="text">
            <string>Select File</string>
           </property>

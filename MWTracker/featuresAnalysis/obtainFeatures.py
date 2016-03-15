@@ -91,7 +91,7 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, \
             #IMPORTANT change axis to an openworm format before calculating features
             worm.changeAxis()
             #OpenWorm feature calculation
-            worm_features = mv.WormFeaturesDos(worm)
+            worm_features = mv.WormFeatures(worm)
 
             #get the average for each worm feature
             worm_stats = wStats.getWormStats(worm_features, np.mean)
@@ -105,7 +105,7 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, \
             #save event features in each worm node
             for feat in feat_events:
                 feat_obj = wStats.features_info.loc[feat, 'feat_name_obj']
-                tmp_data = worm_features.features[feat_obj].value
+                tmp_data = worm_features._features[feat_obj].value
                 
                 if isinstance(tmp_data, (float, int)): tmp_data = np.array([tmp_data])
                 if tmp_data is None or tmp_data.size == 0: tmp_data = np.array([np.nan])
@@ -117,11 +117,11 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, \
             timeseries_data = [[]]*len(header_timeseries)
             timeseries_data[header_timeseries['timestamp']._v_pos] = worm.timestamp
             timeseries_data[header_timeseries['worm_index']._v_pos] = np.full(worm.n_frames, worm.worm_index, dtype=np.int64)
-            timeseries_data[header_timeseries['motion_modes']._v_pos] = worm_features._temp_features['locomotion.motion_mode'].value
+            timeseries_data[header_timeseries['motion_modes']._v_pos] = worm_features._features['locomotion.motion_mode'].value
             
             for feat in feat_timeseries:
                 feat_obj = wStats.features_info.loc[feat, 'feat_name_obj']
-                tmp_data = worm_features.features[feat_obj].value
+                tmp_data = worm_features._features[feat_obj].value
                 timeseries_data[header_timeseries[feat]._v_pos] = tmp_data
             
             timeseries_data = list(zip(*timeseries_data))

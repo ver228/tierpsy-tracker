@@ -8,14 +8,16 @@ import tables
 from functools import partial
 
 import sys
-from PyQt4.QtCore import QDir, QTimer, Qt, QPointF
-from PyQt4.QtGui import QPixmap, QImage, QPainter, QColor, QFont, QPolygonF, QPen
-from PyQt4.QtGui import QApplication, QMainWindow, QFileDialog, QMessageBox, QFrame
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QFrame
+from PyQt5.QtCore import QDir, QTimer, Qt, QPointF
+from PyQt5.QtGui import QPixmap, QImage, QPainter, QColor, QFont, QPolygonF, QPen
+#from PyQt4.QtCore import QDir, QTimer, Qt, QPointF
+#from PyQt4.QtGui import QPixmap, QImage, QPainter, QColor, QFont, QPolygonF, QPen
+#from PyQt4.QtGui import QApplication, QMainWindow, QFileDialog, QMessageBox, QFrame
 
 from MWTracker.GUI.MWTrackerViewer.MWTrackerViewer_ui import Ui_ImageViewer
 
-from MWTracker.trackWorms.getSkeletonsTables import getWormROI, getWormMask
-from MWTracker.trackWorms.segWormPython.mainSegworm import binaryMask2Contour
+from MWTracker.trackWorms.getSkeletonsTables import getWormROI, getWormMask, binaryMask2Contour
 from MWTracker.featuresAnalysis.obtainFeatures_N import getWormFeaturesLab
 
 class MWTrackerViewer_GUI(QMainWindow):
@@ -52,7 +54,7 @@ class MWTrackerViewer_GUI(QMainWindow):
 		
 		self.results_dir = ''
 		self.skel_file = ''
-
+		self.worm_index_str = 'worm_index_N'
 		
 		self.ui.pushButton_skel.clicked.connect(self.getSkelFile)
 		self.ui.pushButton_video.clicked.connect(self.getVideoFile)
@@ -75,7 +77,8 @@ class MWTrackerViewer_GUI(QMainWindow):
 		self.ui.checkBox_ROI2.stateChanged.connect(partial(self.updateROIcanvasN, 2))
 		self.ui.checkBox_showLabel.stateChanged.connect(self.updateImage)
 		
-		self.ui.comboBox_labelType.currentIndexChanged.connect(self.updateImage)
+		self.ui.comboBox_labelType.currentIndexChanged.connect(self.selectWormIndexType)
+		#self.ui.comboBox_indexType.currentIndexChanged.connect(self.selectWormIndexType)
 
 		self.ui.pushButton_h5groups.clicked.connect(self.updateGroupNames)
 
@@ -94,19 +97,14 @@ class MWTrackerViewer_GUI(QMainWindow):
 
 		self.ui.pushButton_save.clicked.connect(self.saveData)
 
-		self.ui.radioButton_ROI1.toggled.connect(self.makeEditableROI1)
-		self.ui.radioButton_ROI2.toggled.connect(self.makeEditableROI2)
-
+		
 		self.ui.imageCanvas.mousePressEvent = self.getPos
 
-		#self.ui.pushButton_bad.clicked.connect(self.tagAsBad)
-		#self.ui.pushButton_wormS.clicked.connect(self.tagAsWormS)
-		#self.ui.pushButton_worm.clicked.connect(self.tagAsWorm)
-
+		
 		self.ui.pushButton_join.clicked.connect(self.joinTraj)
 		self.ui.pushButton_split.clicked.connect(self.splitTraj)
 		
-		self.ui.pushButton_feats.clicked.connect(self.calcIndFeat)
+		#self.ui.pushButton_feats.clicked.connect(self.calcIndFeat)
 
 		self.updateFPS()
 		self.updateFrameStep()
@@ -116,16 +114,31 @@ class MWTrackerViewer_GUI(QMainWindow):
 		self.timer.timeout.connect(self.getNextImage)
 
 		if self.vfilename: self.updateVideoFile()
-		
+	
+	def selectWormIndexType(self):
+		if self.ui.comboBox_labelType.currentIndex() == 0:
+			self.worm_index_str = 'worm_index_N' 
+			self.ui.pushButton_U.setEnabled(True)
+			self.ui.pushButton_W.setEnabled(True)
+			self.ui.pushButton_WS.setEnabled(True)
+			self.ui.pushButton_B.setEnabled(True)
+			self.ui.pushButton_join.setEnabled(True)
+			self.ui.pushButton_split.setEnabled(True)
+			
+		else:
+			self.worm_index_str = 'worm_index_auto'
+			self.ui.pushButton_U.setEnabled(False)
+			self.ui.pushButton_W.setEnabled(False)
+			self.ui.pushButton_WS.setEnabled(False)
+			self.ui.pushButton_B.setEnabled(False)
+			self.ui.pushButton_join.setEnabled(False)
+			self.ui.pushButton_split.setEnabled(False)
+			
+		self.updateImage()
 
 	
-	def makeEditableROI1(self, state):
-		self.ui.comboBox_ROI1.setEditable(state)
-	def makeEditableROI2(self, state):
-		self.ui.comboBox_ROI2.setEditable(state)
-
-
 	def calcIndFeat(self):
+		return
 		if self.image_group == -1:
 			return
 
@@ -173,31 +186,20 @@ class MWTrackerViewer_GUI(QMainWindow):
 
 			good_row = self.frame_data.loc[ind]
 			if np.sqrt(R.loc[ind]) < good_row['roi_size']:
-				worm_ind = int(good_row['worm_index_N'])
+				worm_ind = int(good_row[self.worm_index_str])
 				
 				if self.ui.radioButton_ROI1.isChecked():
 					self.worm_index_roi1 = worm_ind
 					self.updateROIcanvasN(1)
-					#self.ui.radioButton_ROI2.setChecked(True)
 
 				elif self.ui.radioButton_ROI2.isChecked():
 					self.worm_index_roi2 = worm_ind
 					self.updateROIcanvasN(2)
-					#self.ui.radioButton_ROI1.setChecked(True)
 
-				#if self.ui.checkBox_labelROI.isChecked():
-				#	label_ind = self.ui.comboBox_labels.currentIndex()
-				#	good = self.trajectories_data['worm_index_N'] == worm_ind
-				#	self.trajectories_data.loc[good, 'worm_label'] = label_ind
-				#	self.updateImage()
-				
-				#if self.lastKey == 81: #q
-				#	self.ui.spinBox_join1.setValue(worm_ind)
-				#elif self.lastKey == 87: #w
-				#	self.ui.spinBox_join2.setValue(worm_ind)
 	
 	def tagWorm(self, label_ind):
-
+		if not self.worm_index_str == 'worm_index_N':
+					return
 		if self.ui.radioButton_ROI1.isChecked():
 			worm_ind = self.worm_index_roi1
 		elif self.ui.radioButton_ROI2.isChecked():
@@ -236,6 +238,10 @@ class MWTrackerViewer_GUI(QMainWindow):
 		
 		self.ui.lineEdit_video.setText(self.vfilename)
 		self.videos_dir = self.vfilename.rpartition(os.sep)[0] + os.sep
+		self.fid = h5py.File(self.vfilename, 'r')
+		
+		self.updateImGroup()
+		
 		dum = self.videos_dir.replace('MaskedVideos', 'Results')
 		if os.path.exists(dum):
 			self.results_dir = dum
@@ -245,9 +251,6 @@ class MWTrackerViewer_GUI(QMainWindow):
 				self.skel_file = ''
 			self.ui.lineEdit_skel.setText(self.skel_file)
 
-		self.fid = h5py.File(self.vfilename, 'r')
-		
-		self.updateImGroup()
 		self.updateSkelFile()
 
 	def updateGroupNames(self):
@@ -284,6 +287,7 @@ class MWTrackerViewer_GUI(QMainWindow):
 
 		with pd.HDFStore(self.skel_file, 'r') as ske_file_id:
 			self.trajectories_data = ske_file_id['/trajectories_data']
+			self.traj_time_grouped = self.trajectories_data.groupby('frame_number')
 
 			if not 'worm_index_N' in self.trajectories_data.columns:
 				self.trajectories_data['worm_label'] = self.wlab['U']
@@ -423,7 +427,6 @@ class MWTrackerViewer_GUI(QMainWindow):
 				self.frame_step = 1
 			self.ui.spinBox_step.setValue(self.frame_step)
 
-		#I couldn't make Qt to recognize the key arrows, so I am using <> or ,. instead
 		if self.fid == -1:
 			return
 
@@ -482,7 +485,7 @@ class MWTrackerViewer_GUI(QMainWindow):
 
 		
 		#use 1 for rewind RW or 2 of fast forward
-		good = self.trajectories_data['worm_index_N'] == worm_ind
+		good = self.trajectories_data[self.worm_index_str] == worm_ind
 		frames = self.trajectories_data.loc[good, 'frame_number']
 
 		if frames.size == 0:
@@ -510,21 +513,26 @@ class MWTrackerViewer_GUI(QMainWindow):
 		image = QImage(self.original_image.data, 
 			self.image_width, self.image_height, self.original_image.strides[0], QImage.Format_Indexed8)
 		image = image.convertToFormat(QImage.Format_RGB32, Qt.AutoColor)
-		image = image.scaled(self.label_width, self.label_height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+		image = image.scaled(self.label_width, self.label_height, Qt.KeepAspectRatio)#, Qt.SmoothTransformation)
 		
-		self.img_h_ratio = image.height()/self.image_height;
-		self.img_w_ratio = image.width()/self.image_width;
 		
 		if isinstance(self.trajectories_data, pd.DataFrame): 
 			try:
-				self.frame_data = self.trajectories_data[self.trajectories_data['frame_number'] == self.frame_number]#self.trajectories_data.get_group(self.frame_number)
+				#self.frame_data = self.trajectories_data[self.trajectories_data['frame_number'] == self.frame_number]#self.trajectories_data.get_group(self.frame_number)
+				self.frame_data = self.traj_time_grouped.get_group(self.frame_number)
+				self.frame_data = self.frame_data[self.frame_data[self.worm_index_str] >= 0]
 			except KeyError:
 				self.frame_data = -1
 
+			#label_type = 'worm_label' if self.ui.comboBox_labelType.currentIndex() == 0 else 'auto_label'
 			label_type = 'worm_label' if self.ui.comboBox_labelType.currentIndex() == 0 else 'auto_label'
+			
 			if isinstance(self.frame_data, pd.DataFrame) and \
 			self.ui.checkBox_showLabel.isChecked() and label_type in self.frame_data:
 				
+				self.img_h_ratio = image.height()/self.image_height;
+				self.img_w_ratio = image.width()/self.image_width;
+		
 				painter = QPainter()
 				painter.begin(image)
 				for row_id, row_data in self.frame_data.iterrows():
@@ -539,8 +547,9 @@ class MWTrackerViewer_GUI(QMainWindow):
 					
 					painter.setPen(c)
 					painter.setFont(QFont('Decorative', 10))
-				
-					painter.drawText(x, y, str(int(row_data['worm_index_N'])))
+					
+					#painter.drawText(x, y, str(int(row_data['worm_index_joined'])))
+					painter.drawText(x, y, str(int(row_data[self.worm_index_str])))
 
 					bb = row_data['roi_size']*self.img_w_ratio
 					painter.drawRect(x-bb/2, y-bb/2, bb, bb);
@@ -591,13 +600,12 @@ class MWTrackerViewer_GUI(QMainWindow):
 		comboBox_ROI.clear()
 		comboBox_ROI.addItem(str(worm_index_roi))
 		
-		for ind in self.frame_data['worm_index_N'].data:
+		for ind in self.frame_data[self.worm_index_str].data:
 			comboBox_ROI.addItem(str(ind))
 		
-		canvas_size = min(wormCanvas.height(),wormCanvas.width())
 		
 		#extract individual worm ROI
-		good = self.frame_data['worm_index_N'] == worm_index_roi
+		good = self.frame_data[self.worm_index_str] == worm_index_roi
 		roi_data = self.frame_data.loc[good].squeeze()
 
 		if roi_data.size == 0:
@@ -608,28 +616,48 @@ class MWTrackerViewer_GUI(QMainWindow):
 			return #invalid coordinate, nothing to do here
 
 		worm_roi, roi_corner = getWormROI(self.original_image, roi_data['coord_x'], roi_data['coord_y'], roi_data['roi_size'])
-		worm_roi = np.ascontiguousarray(worm_roi)
+		roi_corner = roi_corner+1
+		#worm_roi, roi_corner = self.original_image, np.zeros(2)
+
+		roi_ori_size = worm_roi.shape
 		
+		worm_roi = np.ascontiguousarray(worm_roi)
 		#worm_roi = cv2.cvtColor(worm_img, cv2.COLOR_GRAY2RGB);
 
-		worm_img = QImage(worm_roi.data, worm_roi.shape[0], worm_roi.shape[1], worm_roi.strides[0], QImage.Format_Indexed8)
-		worm_img = worm_img.scaled(canvas_size,canvas_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+		worm_img = QImage(worm_roi.data, worm_roi.shape[1], worm_roi.shape[0], worm_roi.strides[0], QImage.Format_Indexed8)
+		worm_img = worm_img.convertToFormat(QImage.Format_RGB32, Qt.AutoColor)
 
+		
+		canvas_size = min(wormCanvas.height(),wormCanvas.width())
+		worm_img = worm_img.scaled(canvas_size,canvas_size, Qt.KeepAspectRatio)#, Qt.SmoothTransformation)
+		
+		
 		if isDrawSkel:
-			if roi_data['has_skeleton']:
-				c_ratio = canvas_size/roi_data['roi_size'];
+			if roi_data['has_skeleton']==1:
+				c_ratio_y = worm_img.width()/roi_ori_size[1];
+				c_ratio_x = worm_img.height()/roi_ori_size[0];
+				
 				skel_id = int(roi_data['skeleton_id'])
 
 				qPlg = {}
+				
 				for tt in ['skeleton', 'contour_side1', 'contour_side2']:
-					dat = (self.skel_dat[tt][skel_id] - roi_corner)*c_ratio
+					dat = self.skel_dat[tt][skel_id];
+					dat[:,0] = (dat[:,0]-roi_corner[0])*c_ratio_x
+					dat[:,1] = (dat[:,1]-roi_corner[1])*c_ratio_y
+					
+					#dat = (self.skel_dat[tt][skel_id] - 0)*c_ratio
 					qPlg[tt] = QPolygonF()
 					for p in dat:
 						qPlg[tt].append(QPointF(*p))
 				
-				self.skel_colors = {'skeleton':(27, 158, 119 ), 
-				'contour_side1':(217, 95, 2), 'contour_side2':(231, 41, 138)}
-				
+				if 'is_good_skel' in roi_data and roi_data['is_good_skel'] == 0:
+					self.skel_colors = {'skeleton':(102, 0, 0 ), 
+					'contour_side1':(102, 0, 0 ), 'contour_side2':(102, 0, 0 )}
+				else:
+					self.skel_colors = {'skeleton':(27, 158, 119 ), 
+					'contour_side1':(217, 95, 2), 'contour_side2':(231, 41, 138)}
+
 				pen = QPen()
 				pen.setWidth(2)
 				
@@ -645,20 +673,21 @@ class MWTrackerViewer_GUI(QMainWindow):
 				painter.setBrush(Qt.white)
 				painter.setPen(pen)
 			
-				radius = 1.5*c_ratio
+				radius = 3#*c_ratio_x
 				painter.drawEllipse(qPlg['skeleton'][0], radius, radius)
 
 				painter.end()
-			else:
+			elif roi_data['has_skeleton']==0:
 				worm_mask = getWormMask(worm_roi, roi_data['threshold'])
-				worm_cnt = binaryMask2Contour(worm_mask)
+				worm_cnt, _ = binaryMask2Contour(worm_mask)
 				worm_mask = np.zeros_like(worm_mask)
 				cv2.drawContours(worm_mask, [worm_cnt.astype(np.int32)], 0, 1, -1)
 
-				worm_mask = QImage(worm_mask.data, worm_mask.shape[0], 
-					worm_mask.shape[1], worm_mask.strides[0], QImage.Format_Indexed8)
+				worm_mask = QImage(worm_mask.data, worm_mask.shape[1], 
+					worm_mask.shape[0], worm_mask.strides[0], QImage.Format_Indexed8)
+				worm_mask = worm_mask.convertToFormat(QImage.Format_RGB32, Qt.AutoColor)
 				worm_mask = worm_mask.scaled(canvas_size,canvas_size, 
-					Qt.KeepAspectRatio, Qt.SmoothTransformation)
+					Qt.KeepAspectRatio)#, Qt.SmoothTransformation)
 				worm_mask = QPixmap.fromImage(worm_mask)
 
 				worm_mask = worm_mask.createMaskFromColor(Qt.black)
@@ -668,13 +697,15 @@ class MWTrackerViewer_GUI(QMainWindow):
 				p.end()
 
 		
-		
 		pixmap = QPixmap.fromImage(worm_img)
 		wormCanvas.setPixmap(pixmap);
 	
 	
 
 	def joinTraj(self):
+		if not self.worm_index_str == 'worm_index_N':
+			return
+
 		worm_ind1 = self.worm_index_roi1#self.ui.spinBox_join1.value()
 		worm_ind2 = self.worm_index_roi2#self.ui.spinBox_join2.value()
 		
@@ -725,6 +756,9 @@ class MWTrackerViewer_GUI(QMainWindow):
 
 
 	def splitTraj(self):
+		if not self.worm_index_str == 'worm_index_N':
+			return
+
 		if self.ui.radioButton_ROI1.isChecked():
 			worm_ind = self.worm_index_roi1#self.ui.spinBox_join1.value()
 		elif self.ui.radioButton_ROI2.isChecked():
@@ -742,7 +776,7 @@ class MWTrackerViewer_GUI(QMainWindow):
 
 		good = self.trajectories_data['worm_index_N'] == worm_ind
 		frames = self.trajectories_data.loc[good, 'frame_number']
-		frames = frames.sort(inplace=False)
+		frames = frames.sort_values(inplace=False)
 
 		good = frames<self.frame_number
 		index1 = frames[good].index
@@ -760,7 +794,8 @@ class MWTrackerViewer_GUI(QMainWindow):
 if __name__ == '__main__':
 	app = QApplication(sys.argv)
 	
-	ui = MWTrackerViewer_GUI()
-	ui.show()
 	
-	sys.exit(app.exec_())
+	ui = MWTrackerViewer_GUI(sys.argv)
+	ui.show()
+	app.exec_()
+	sys.exit()

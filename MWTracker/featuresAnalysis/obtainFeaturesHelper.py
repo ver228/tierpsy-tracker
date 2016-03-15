@@ -388,13 +388,16 @@ class wormStatsClass():
         #initialize the stats dictionary
         feat_stats = OrderedDict()
         
+        #import pdb
+        #pdb.set_trace()
+
         #motion type stats
         #motion_mode = worm_features.locomotion.motion_mode;
-        motion_mode = worm_features._temp_features['locomotion.motion_mode'].value
+        motion_mode = worm_features._features['locomotion.motion_mode'].value
 
         for feat_name, feat_props in self.features_info.iterrows():
             feat_obj = feat_props['feat_name_obj']
-            tmp_data = worm_features.features[feat_obj].value
+            tmp_data = worm_features._features[feat_obj].value
             
             if tmp_data is None:
                 feat_stats[feat_name] = np.nan
