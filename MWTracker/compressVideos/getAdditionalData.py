@@ -99,7 +99,8 @@ def _data2dict(header, data):
     #read the csv data into a dictionary where each field is the data from a column
     
     assert data
-
+    #filter any possible croped data
+    data = [x for x in data if len(x) == len(header)]
     ## save data into a dictionary
     csv_dict = {}
     for ii, col_data in enumerate(zip(*data)):
@@ -109,10 +110,12 @@ def _data2dict(header, data):
     assert all(x == 'STAGE' for x in csv_dict['Location Type'])
     del csv_dict['Location Type']
     
-    for col_name in ['MER Min X (microns)', 'MER Min Y (microns)', \
-    'MER Width (microns)', 'MER Height (microns)']:
-        assert all(not x for x in csv_dict[col_name])
-        del csv_dict[col_name]
+    #delete this columns 
+    #for col_name in ['MER Min X (microns)', 'MER Min Y (microns)', \
+    #'MER Width (microns)', 'MER Height (microns)']:
+    #    if col_name in csv_dict
+        #assert all(not x for x in csv_dict[col_name])
+        #del csv_dict[col_name]
     return csv_dict
 
 def _dict2recarray(csv_dict):
