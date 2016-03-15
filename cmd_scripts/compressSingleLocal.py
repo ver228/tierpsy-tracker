@@ -46,6 +46,8 @@ class compressLocal:
 	def start(self):
 		self.start_time = time.time()
 		
+		if not os.path.exists(self.tmp_mask_dir): os.makedirs(self.tmp_mask_dir)
+		
 		self.get_file_names()
 		self.get_start_point()
 
@@ -54,10 +56,19 @@ class compressLocal:
 			print_flush(self.base_name + ' Copying video file to local temporary directory.')
 			shutil.copy(self.video_file, self.tmp_video_file)
 			if self.is_single_worm:
-				dd = self.video_file.rpartition('.')[0]
-				shutil.copy(dd + '.log.csv', self.tmp_mask_dir)
-				shutil.copy(dd + '.info.xml', self.tmp_mask_dir)
-
+				try:
+					dd = self.video_file.rpartition('.')[0]
+					shutil.copy(dd + '.log.csv', self.tmp_mask_dir)
+					shutil.copy(dd + '.info.xml', self.tmp_mask_dir)
+				except FileNotFoundError:
+					try:
+						dd = self.video_file.rpartition('.')[0]
+						dd, base_name = os.path.split(dd)
+						dd = os.path.join(dd, '.data', base_name)
+						shutil.copy(dd + '.log.csv', self.tmp_mask_dir)
+						shutil.copy(dd + '.info.xml', self.tmp_mask_dir)
+					except FileNotFoundError:
+						pass
 
 			
 		#this might be more logically group in main_code, but this operation can and should be do remotely if required

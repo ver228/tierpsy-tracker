@@ -57,7 +57,6 @@ class trackLocal:
 	#we need to group steps into start and clean steps for the multiprocess part
 	def start(self):
 		self.start_time = time.time()
-		
 		self.getFileNames()		
 		#get the correct starting point 
 		self.getStartPoints()
@@ -113,6 +112,12 @@ class trackLocal:
 			#use final destination and tmp_dir
 			self.tmp_results_dir = self.results_dir
 			self.tmp_mask_dir = os.path.split(self.masked_image_file)[0]
+		else:
+			if not os.path.exists(self.tmp_results_dir): 
+				os.makedirs(self.tmp_results_dir)
+			if not os.path.exists(self.tmp_mask_dir): 
+				os.makedirs(self.tmp_mask_dir)
+		
 
 	def getFileNames(self):
 		self.base_name, self.trajectories_file, self.skeletons_file, \
