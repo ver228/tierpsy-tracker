@@ -69,6 +69,7 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, min_track_size = 100
 
     #add the possibility to have variable size ROI
     if roi_size <= 0:
+        #calculate the ROI size as the maximum bounding box size for a given trajectory
         bb_x = df['bounding_box_xmax']-df['bounding_box_xmin']+1;
         bb_y = df['bounding_box_ymax']-df['bounding_box_ymin']+1;
         worm_lim = pd.concat([bb_x, bb_y], axis=1).max(axis=1)

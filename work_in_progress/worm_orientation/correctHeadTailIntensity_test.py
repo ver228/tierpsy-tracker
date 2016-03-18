@@ -408,7 +408,10 @@ if __name__ == '__main__':
     #masked_image_file = '/Users/ajaver/Desktop/Videos/04-03-11/MaskedVideos/575 JU440 swimming_2011_03_04__13_16_37__8.hdf5'    
     #masked_image_file = '/Users/ajaver/Desktop/Videos/04-03-11/MaskedVideos/575 JU440 on food Rz_2011_03_04__12_55_53__7.hdf5'    
     #masked_image_file = '/Users/ajaver/Desktop/Videos/single_worm/MaskedVideos/Check_Align_samples/npr-12 (tm1498) on food R_2010_01_25__13_17_33___4___5.hdf5'
-    masked_image_file = '/Users/ajaver/Desktop/Videos/single_worm/MaskedVideos/Teodor/W03B1.2 (ok2433) on food L_2010_04_21__11_50_54__5.hdf5'
+    #masked_image_file = '/Users/ajaver/Desktop/Videos/single_worm/MaskedVideos/Teodor/W03B1.2 (ok2433) on food L_2010_04_21__11_50_54__5.hdf5'
+    #masked_image_file = '/Users/ajaver/Desktop/Videos/single_worm/swimming/MaskedVideos/135 CB4852 swimming_2011_03_28__12_29_19___1___2.hdf5'
+    masked_image_file = '/Users/ajaver/Desktop/Videos/single_worm/agar2/MaskedVideos/goa-1 on food R_2009_10_30__15_20_35___4___8.hdf5'
+    
     skeletons_file = masked_image_file.replace('MaskedVideos', 'Results')[:-5] + '_skeletons.hdf5'
     intensities_file = skeletons_file.replace('_skeletons', '_intensities')
 

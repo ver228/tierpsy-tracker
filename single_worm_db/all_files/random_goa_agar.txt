@@ -1,0 +1,55 @@
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/Control Experiments/30-10-09/goa-1 on food L_2009_10_30__12_56_10___4___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/29-07-10/1/egl-30 (n686); goa-1 (n1134) on food R_2010_07_29__12_14_52___4___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/25-02-10 segmented on pc220-6/goa-1 (sa734)I on food R_2010_02_25__10_03___3___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/17-09-10/egl-30 (n686); goa-1 (n1134) on food R_2010_09_17__16_25_16___8___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/04-03-10/goa-1 (sa734)I on food R_2010_03_04__10_43___3___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/29-07-10/1/egl-30 (n686); goa-1 (n1134) on food R_2010_07_29__12_13_07___1___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/17-09-10/1/egl-30 (n686); goa-1 (n1134) on food R_2010_09_17__16_24_08___4___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/29-07-10/1/egl-30 (n686); goa-1 (n1134) on food L_2010_07_29__12_16_50__5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/Control Experiments/28-10-09/goa-1 on food L_2009_10_28__11_39_23___4___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 30-07-09/finished/goa-1  (sa734)I on food R_2009_07_15__11_24__5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/03-08-10/1/egl-30 (n686); goa-1 (n1134) on food R_2010_08_03__12_56_57___8___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/03-08-10/1/egl-30 (n686); goa-1 (n1134) on food R_2010_08_03__12_57_28___7___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/17-09-10/egl-30 (n686); goa-1 (n1134) on food R_2010_09_17__16_23_09___2___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 22-07-09/finished/goa-1 (x) on food L_2009_06_02__15_59__17.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/26-02-10 segmented on pc207-18/goa-1 (sa734)I on food L_2010_02_26__11_45_37__10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/Control Experiments/30-10-09/goa-1 on food R_2009_10_30__15_18_35___2___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/26-02-10 segmented on pc220-6/goa-1 (sa734)I on food L_2010_02_26__11_42_38___1___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/Control Experiments/30-10-09/goa-1 on food R_2009_10_30__15_20_35___4___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/Control Experiments/goa-1 on food R_2009_10_28__11_37_12___2___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/04-03-10/goa-1 (sa734)I on food R_2010_03_04__10_42_18___1___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 07-08-09/finished/goa-1 (sa734)I on food R_2009_06_29__16_40__11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/04-03-10/goa-1 (sa734)I on food L_2010_03_04__10_44_32___8___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/26-02-10 segmented on pc207-18/goa-1 (sa734)I on food L_2010_02_26__11_43___3___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 07-08-09/finished/goa-1 (sa734)I on food R_2009_06_29__13_06__3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/03-08-10/1/egl-30 (n686); goa-1 (n1134) on food L_2010_08_03__12_55_44___4___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/03-08-10/1/egl-30 (n686); goa-1 (n1134) on food R_2010_08_03__12_57_32__9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/25-02-10 segmented on pc220-6/goa-1 (sa734)I on food L_2010_02_25__10_02_38___1___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/04-03-10/goa-1 (sa734)I on food R_2010_03_04__10_43_43___4___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/25-02-10 segmented on pc220-6/goa-1 (sa734)I on food L_2010_02_25__10_05_37__2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/04-03-10/goa-1 (sa734)I on food R_2010_03_04__10_45_17__6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/25-02-10 segmented on pc207-18/goa-1 (sa734)I on food R_2010_02_25__10_04_02___4___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/26-02-10 segmented on pc220-6/goa-1 (sa734)I on food R_2010_02_26__11_44_51___8___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/03-08-10/1/egl-30 (n686); goa-1 (n1134) on food L_2010_08_03__12_53_54___1___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/17-09-10/egl-30 (n686); goa-1 (n1134) on food L_2010_09_17__16_25_47__8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 22-07-09/finished/goa-1 (x) on food L_2009_06_02__16_23__19.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/29-07-10/1/egl-30 (n686); goa-1 (n1134) on food L_2010_07_29__12_16_11___8___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/04-03-10/goa-1 (sa734)I on food R_2010_03_04__10_43_09___2___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/17-09-10/egl-30 (n686); goa-1 (n1134) on food L_2010_09_17__16_25_48___7___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/29-07-10/1/egl-30 (n686); goa-1 (n1134) on food L_2010_07_29__12_14_13___2___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 24-07-09/finished/goa-1 (sa734)I on food R_2009_07_08__12_09__6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/25-02-10 segmented on pc207-18/goa-1 (sa734)I on food L_2010_02_25__10_03_28___2___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/17-09-10/1/egl-30 (n686); goa-1 (n1134) on food L_2010_09_17__16_21_59___1___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/03-08-10/1/egl-30 (n686); goa-1 (n1134) on food L_2010_08_03__12_55___3___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/25-02-10/goa-1 (sa734)I on food L_2010_02_25__10_05_11___7___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 22-07-09/finished/goa-1 (x) on food L_2009_06_02__16_08__18.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/29-07-10/1/egl-30 (n686); goa-1 (n1134) on food L_2010_07_29__12_16_43___7___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/25-02-10 segmented on pc207-18/goa-1 (sa734)I on food R_2010_02_25__10_04_50___8___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/26-02-10/1/goa-1 (sa734)I on food R_2010_02_26__11_43_28___2___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/04-03-10/goa-1 (sa734)I on food R_2010_03_04__10_44_53___7___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/29-07-10/1/egl-30 (n686); goa-1 (n1134) on food L_2010_07_29__12_14___3___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/26-02-10/goa-1 (sa734)I on food R_2010_02_26__11_45_12___7___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 24-07-09/finished/goa-1 (sa734)I on food L_2009_07_07__14_19__2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/17-09-10/1/egl-30 (n686); goa-1 (n1134) on food R_2010_09_17__16_23___3___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/03-08-10/1/egl-30 (n686); goa-1 (n1134) on food L_2010_08_03__12_55_01___2___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/26-02-10 segmented on pc220-6/goa-1 (sa734)I on food R_2010_02_26__11_44_02___4___10.hdf5

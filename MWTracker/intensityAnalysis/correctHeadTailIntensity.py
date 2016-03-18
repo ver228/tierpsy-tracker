@@ -166,10 +166,10 @@ def removeBadSkelBlocks(groups, int_skeleton_id, trajectories_worm, min_frac_in,
     int_skel_group = [(x-first_skel,y-first_skel) for x,y in skel_group]
     
     #create globs according if consecutive frames have an skeleton map (if the have valid filtered  skeletons)
-    good = (trajectories_worm['int_map_id']>0).values          
+    good = (trajectories_worm['int_map_id'] != -1).values          
     has_skel_group = createBlocks(good, min_block_size = 0)
     
-    #get the gaps before fussing groups
+    #get the gaps location before fussing groups, otherwise we will over estimate the size of the groups
     is_gap = np.full(len(trajectories_worm), True, np.bool)
     for kk, gg in enumerate(has_skel_group):
         is_gap[gg[0]:gg[1]+1] = False
@@ -315,7 +315,7 @@ def correctHeadTailIntensity(skeletons_file, intensities_file, smooth_W = 5,
             print_flush(dd)
         
 
-        good = trajectories_worm['int_map_id']>0;
+        good = trajectories_worm['int_map_id'] != -1;
         int_map_id = trajectories_worm.loc[good, 'int_map_id'].values
         int_skeleton_id = trajectories_worm.loc[good, 'skeleton_id'].values
         int_frame_number = trajectories_worm.loc[good, 'frame_number'].values
@@ -327,18 +327,14 @@ def correctHeadTailIntensity(skeletons_file, intensities_file, smooth_W = 5,
         #read the worm intensity profiles
         with tables.File(intensities_file, 'r') as fid:
             worm_int_profile = fid.get_node('/straighten_worm_intensity_median')[int_map_id,:]
-        
 
+        #normalize intensities of each individual profile   
+        worm_int_profile -= np.median(worm_int_profile, axis=1)[:, np.newaxis] 
+        
         #reduce the importance of the head and tail. This parts are typically more noisy
         damp_factor = getDampFactor(worm_int_profile.shape[1])
         worm_int_profile *= damp_factor        
 
-        #%%
-        #normalize intensities of each individual profile    
-        for ii in range(worm_int_profile.shape[0]):
-            worm_int_profile[ii,:] -= np.median(worm_int_profile[ii,:])
-            
-        
         #worm median intensity
         med_int = np.median(worm_int_profile, axis=0).astype(np.float)
         
@@ -424,7 +420,7 @@ def correctHeadTailIntensity(skeletons_file, intensities_file, smooth_W = 5,
         
         fid.get_node('/skeleton')._v_attrs['has_finished'] = 4
         
-    print_flush('Head-Tail correction using intensity profiles finished: ' + progress_timer.getTimeStr())
+    print_flush(base_name + ' Head-Tail correction using intensity profiles finished: ' + progress_timer.getTimeStr())
     
     #return bad_worms, switched_blocks
     

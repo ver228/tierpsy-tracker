@@ -57,11 +57,11 @@ def getStartingPoint(masked_image_file, results_dir):
     try:
         with tables.File(skeletons_file, "r") as ske_file_id:
             skeleton_table = ske_file_id.get_node('/skeleton')
-            if skeleton_table._v_attrs['has_finished'] == 0:
+            if skeleton_table._v_attrs['has_finished'] <= 0:
                 return checkpoint['SKE_CREATE'];
-            elif skeleton_table._v_attrs['has_finished'] == 1:
+            elif skeleton_table._v_attrs['has_finished'] <= 1:
                 return checkpoint['SKE_ORIENT'];
-            elif skeleton_table._v_attrs['has_finished'] == 2:
+            elif skeleton_table._v_attrs['has_finished'] <= 2:
                 return checkpoint['SKE_FILT'];
     except accepted_errors:
         #if there is any problem while reading the file, create it again
@@ -78,7 +78,7 @@ def getStartingPoint(masked_image_file, results_dir):
     #at this point the skeleton file must exists so we only check for the correct level in the skeleton file
     with tables.File(skeletons_file, "r") as ske_file_id:
         skeleton_table = ske_file_id.get_node('/skeleton')
-        if skeleton_table._v_attrs['has_finished'] == 3:
+        if skeleton_table._v_attrs['has_finished'] <= 3:
             return checkpoint['INT_SKE_ORIENT'];
 
     try:

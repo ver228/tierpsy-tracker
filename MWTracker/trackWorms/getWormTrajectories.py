@@ -426,6 +426,55 @@ def correctTrajectories(trajectories_file, is_single_worm, join_traj_param):
         traj_fid.get_node('/plate_worms')._v_attrs['has_finished'] = 2
         traj_fid.flush()
 
+def validRowsByArea(plate_worms):
+    #here I am assuming that most of the time the largest area in the frame is a worm. Therefore a very large area is likely to be
+    #noise
+    groupsbyframe = plate_worms.groupby('frame_number')
+    maxAreaPerFrame = groupsbyframe.agg({'area':'max'})
+    med_area = np.median(maxAreaPerFrame)
+    mad_area = np.median(np.abs(maxAreaPerFrame-med_area))
+    min_area = med_area - mad_area*6
+    max_area = med_area + mad_area*6
+
+    plate_worms_f = plate_worms[(plate_worms['area'] > min_area) & (plate_worms['area'] < max_area)]
+    groupsbyframe_f = plate_worms_f.groupby('frame_number')
+
+    #now if there are still a lot of valid blobs we decide by choising the closest blob
+    valid_rows = []
+    tot_frames = plate_worms['frame_number'].max() + 1
+    for frame_number in range(tot_frames):
+        try:
+            current_group_f = groupsbyframe_f.get_group(frame_number)
+            if len(current_group_f) == 1:
+                valid_rows.append(current_group_f.index[0])
+                prev_row = current_group_f.iloc[0]
+                continue
+        except KeyError:
+            try:
+                #in the frames where there are not valid blobs by area we use all the blobs
+                current_group_f = groupsbyframe.get_group(frame_number)
+                if len(current_group_f) == 1:
+                    valid_rows.append(current_group_f.index[0])
+                    prev_row = current_group_f.iloc[0]
+                    continue
+                    
+            except KeyError:
+                #no valid blob nothing to do here
+                continue
+        
+        #pick the closest blob if there are more than one blob to pick
+        if valid_rows:
+            delX = current_group_f['coord_x'] - prev_row['coord_x']
+            delY = current_group_f['coord_y'] - prev_row['coord_y']
+            good_ind = np.argmin(delX*delX + delY*delY)
+            
+        else:
+            good_ind = np.argmax(current_group_f['area'])
+
+        valid_rows.append(good_ind)
+        prev_row = current_group_f.loc[good_ind]
+    
+    return valid_rows
 
 def correctSingleWormCase(trajectories_file):
     '''
@@ -437,18 +486,14 @@ def correctSingleWormCase(trajectories_file):
     #emtpy table nothing to do here
     if len(plate_worms) == 0: return
 
-    tot_frames = plate_worms['frame_number'].max() + 1
-    
-    groupsbyframe = plate_worms[['frame_number', 'area']].groupby('frame_number')
-    
-    valid_rows = np.full(tot_frames, np.nan)
-    
-    for ii, frame_data in groupsbyframe:
-        valid_rows[ii] = frame_data['area'].argmax()
-        
-    valid_rows = valid_rows[~np.isnan(valid_rows)]
-
-    #plate_worms = plate_worms.ix[valid_rows]
+    # tot_frames = plate_worms['frame_number'].max() + 1
+    # groupsbyframe = plate_worms[['frame_number', 'area']].groupby('frame_number')
+    # #valid_list = maxAreaPerFrame[maxAreaPerFrame<= med_area + mad_area*6].index.tolist()
+    # valid_rows = np.full(tot_frames, np.nan)
+    # for ii, frame_data in groupsbyframe:
+    #     valid_rows[ii] = frame_data['area'].argmax()
+    # valid_rows = valid_rows[~np.isnan(valid_rows)]
+    valid_rows = validRowsByArea(plate_worms)
     plate_worms['worm_index_joined'] = np.array(-1, dtype=np.int32) #np.array(1, dtype=np.int32)
     plate_worms.loc[valid_rows, 'worm_index_joined'] = 1
 

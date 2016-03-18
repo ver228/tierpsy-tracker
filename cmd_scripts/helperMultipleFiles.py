@@ -33,7 +33,7 @@ def exploreDirs(root_dir, pattern_include = '*', pattern_exclude = ''):
 				fullfilename = os.path.abspath(os.path.join(dpath, fname))
 				assert os.path.exists(fullfilename)
 				valid_files.append(fullfilename)
-
+	
 	return valid_files
 
 def getDstDir(source_dir, source_root_dir, dst_root_dir):

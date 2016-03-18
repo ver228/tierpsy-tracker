@@ -20,8 +20,9 @@ class tracker_param:
     def get_param(self, min_area = 50, max_area = 1e10, thresh_C = 15,  has_timestamp = True, 
             dilation_size = 9, compression_buff = 25, keep_border_data = False, roi_size = -1, 
             thresh_block_size = 61, fps = 25, fps_filter = 0, threshold_factor = 1.05,
-            resampling_N = 49,  max_gap_allowed_block = 10, is_single_worm = False, 
-            bad_seg_thresh = 0.8, min_displacement = 0, fit_contamination = 0.05, strel_size = 5):
+            resampling_N = 49,  max_gap_allowed_block = 10, max_gap_allowed_block_int = -1, is_single_worm = False, 
+            bad_seg_thresh = 0.8, min_displacement = 0, fit_contamination = 0.05, strel_size = 5,
+            save_int_maps = True, int_avg_width_frac = 0.3, int_width_resampling = 15, int_length_resampling = 131):
         '''
         min_area - minimum area in pixels allowed
         max_area - maximum area in pixels allowed
@@ -83,7 +84,7 @@ class tracker_param:
         
         #getSmoothTrajectories
         self.smoothed_traj_param = {'min_track_size' : min_track_size, 'min_displacement' : min_displacement, 
-        'displacement_smooth_win': fps*4 + 1, 'threshold_smooth_win' : fps*20 + 1, 'roi_size' : roi_size}
+        'displacement_smooth_win': fps + 1, 'threshold_smooth_win' : fps*20 + 1, 'roi_size' : roi_size}
         
         #trajectories2Skeletons
         self.skeletons_param = {'resampling_N' : resampling_N,
@@ -103,8 +104,10 @@ class tracker_param:
         self.feat_filt_param = {'min_num_skel' : min_num_skel, 'bad_seg_thresh' : bad_seg_thresh, 'min_dist' : min_displacement, 'fit_contamination' : fit_contamination}
 
 
-        self.int_profile_param = {'width_resampling' : 15, 'length_resampling' : 131, 'min_num_skel' : min_num_skel,
-                     'smooth_win' : 11, 'pol_degree' : 3, 'width_percentage' : 0.5, 'save_int_maps' : False}
+        self.int_profile_param = {'width_resampling' : int_width_resampling, 'length_resampling' : int_length_resampling, 'min_num_skel' : min_num_skel,
+                     'smooth_win' : 11, 'pol_degree' : 3, 'width_percentage' : int_avg_width_frac, 'save_int_maps' : save_int_maps}
         
-        self.head_tail_int_param = {'smooth_W' : round(fps/5), 'gap_size' : max_gap_allowed_block//2, 'min_block_size' : fps//2, 
+        if max_gap_allowed_block_int < 0:
+            max_gap_allowed_block_int = max_gap_allowed_block/2
+        self.head_tail_int_param = {'smooth_W' : round(fps/5), 'gap_size' : max_gap_allowed_block_int, 'min_block_size' : (2*fps//5), 
         'local_avg_win' : 10*fps, 'min_frac_in' : 0.85}

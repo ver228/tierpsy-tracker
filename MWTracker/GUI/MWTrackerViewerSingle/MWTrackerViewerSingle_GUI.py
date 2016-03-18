@@ -52,8 +52,12 @@ class MWTrackerViewerSingle(HDF5videoViewer):
             self.trajectories_data = -1
             self.traj_time_grouped = -1
             self.skel_dat = {}
-
-        self.updateImage()
+        
+        if self.frame_number == 0:
+            self.updateImage()
+        else:
+            self.ui.spinBox_frame.setValue(0)
+        
 
     def updateVideoFile(self):
         super().updateVideoFile()
@@ -145,10 +149,11 @@ class MWTrackerViewerSingle(HDF5videoViewer):
      
     def drawThreshMask(self, worm_img, worm_qimg, row_data, read_center = True):
         worm_mask = getWormMask(worm_img, row_data['threshold'])
+        min_mask_area = row_data['area']/2
         if read_center:
-            worm_cnt, _ = binaryMask2Contour(worm_mask, roi_center_x = row_data['coord_y'], roi_center_y = row_data['coord_x'])
+            worm_cnt, _ = binaryMask2Contour(worm_mask, roi_center_x = row_data['coord_y'], roi_center_y = row_data['coord_x'], min_mask_area = min_mask_area)
         else:
-            worm_cnt, _ = binaryMask2Contour(worm_mask)
+            worm_cnt, _ = binaryMask2Contour(worm_mask, min_mask_area = min_mask_area)
         worm_mask = np.zeros_like(worm_mask)
         cv2.drawContours(worm_mask, [worm_cnt.astype(np.int32)], 0, 1, -1)
 

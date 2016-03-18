@@ -141,9 +141,12 @@ def orientWorm(skeleton, prev_skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt
     
     #orient head tail with respect to hte previous worm
     if prev_skeleton.size > 0:
-        dist2prev_head = np.sum((skeleton[0:3,:]-prev_skeleton[0:3,:])**2)
-        dist2prev_tail = np.sum((skeleton[0:3,:]-prev_skeleton[-3:,:])**2)
+        #dist2prev_head = np.sum((skeleton[0:3,:]-prev_skeleton[0:3,:])**2)
+        #dist2prev_tail = np.sum((skeleton[0:3,:]-prev_skeleton[-3:,:])**2)
         
+        #if the skeleton is wrongly oriented switching it must decrease the error by a lot.
+        dist2prev_head = np.sum((skeleton-prev_skeleton)**2)
+        dist2prev_tail = np.sum((skeleton-prev_skeleton[::-1,:])**2)
         if dist2prev_head > dist2prev_tail: 
             #the skeleton is switched
             skeleton = skeleton[::-1,:]
