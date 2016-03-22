@@ -85,11 +85,13 @@ class MWTrackerViewerSingle(HDF5videoViewer):
 
     #function that generalized the updating of the ROI
     def updateImage(self):
-        
         self.readImage()
+        self.drawSkelResult()
+        self.pixmap = QPixmap.fromImage(self.frame_qimg)
+        self.ui.imageCanvas.setPixmap(self.pixmap);
 
+    def drawSkelResult(self):
         row_data = self.getRowData()
-
         isDrawSkel = self.ui.checkBox_showLabel.isChecked()
         if isDrawSkel and isinstance(row_data, pd.Series):
             if row_data['has_skeleton'] == 1:
@@ -97,9 +99,8 @@ class MWTrackerViewerSingle(HDF5videoViewer):
                 self.drawSkel(self.frame_img, self.frame_qimg, row_data, roi_corner = (0,0))
             else:
                 self.drawThreshMask(self.frame_img, self.frame_qimg, row_data, read_center=True)
-            
-        self.pixmap = QPixmap.fromImage(self.frame_qimg)
-        self.ui.imageCanvas.setPixmap(self.pixmap);
+        
+
 
     def drawSkel(self, worm_img, worm_qimg, row_data, roi_corner = (0,0)):
         

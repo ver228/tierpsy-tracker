@@ -110,4 +110,4 @@ class tracker_param:
         if max_gap_allowed_block_int < 0:
             max_gap_allowed_block_int = max_gap_allowed_block/2
         self.head_tail_int_param = {'smooth_W' : round(fps/5), 'gap_size' : max_gap_allowed_block_int, 'min_block_size' : (2*fps//5), 
-        'local_avg_win' : 10*fps, 'min_frac_in' : 0.85}
+        'local_avg_win' : 10*fps, 'min_frac_in' : 0.85, 'head_tail_param' : self.head_tail_param}

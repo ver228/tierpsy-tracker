@@ -16,7 +16,7 @@ import os
 import sys
 from MWTracker.helperFunctions.miscFun import print_flush
 from MWTracker.helperFunctions.timeCounterStr import timeCounterStr
-
+from MWTracker.intensityAnalysis.checkFinalOrientation import checkFinalOrientation
 
 def medabsdev(x): return np.median(np.abs(np.median(x)-x))    
 
@@ -284,8 +284,101 @@ def getDampFactor(length_resampling):
     damp_factor[-MM:] = rr[::-1]
     return damp_factor
 
-def correctHeadTailIntensity(skeletons_file, intensities_file, smooth_W = 5,
+def correctHeadTailIntWorm(trajectories_worm, skeletons_file, intensities_file, smooth_W = 5,
     gap_size = 0, min_block_size = 10, local_avg_win = 25, min_frac_in = 0.85):
+    
+    #get data with valid intensity maps (worm int profile)
+    good = trajectories_worm['int_map_id'] != -1;
+    int_map_id = trajectories_worm.loc[good, 'int_map_id'].values
+    int_skeleton_id = trajectories_worm.loc[good, 'skeleton_id'].values
+    int_frame_number = trajectories_worm.loc[good, 'frame_number'].values
+    
+    #only analyze data that contains at least  min_block_size intensity profiles     
+    if int_map_id.size < min_block_size:
+        return []
+    
+        
+    #read the worm intensity profiles
+    with tables.File(intensities_file, 'r') as fid:
+        worm_int_profile = fid.get_node('/straighten_worm_intensity_median')[int_map_id,:]
+
+    #normalize intensities of each individual profile   
+    worm_int_profile -= np.median(worm_int_profile, axis=1)[:, np.newaxis] 
+    
+    
+    #reduce the importance of the head and tail. This parts are typically more noisy
+    damp_factor = getDampFactor(worm_int_profile.shape[1])
+    worm_int_profile *= damp_factor        
+
+    #worm median intensity
+    med_int = np.median(worm_int_profile, axis=0).astype(np.float)
+        
+    #%%
+    #let's check for head tail errors by comparing the
+    #total absolute difference between profiles using the original orientation ...
+    diff_ori = np.sum(np.abs(med_int-worm_int_profile), axis = 1)
+    #... and inverting the orientation
+    diff_inv = np.sum(np.abs(med_int[::-1]-worm_int_profile), axis = 1)
+    
+    #%% DEPRECATED, it
+    #check if signal noise will allow us to distinguish between the two signals
+    #I am assuming that most of the images will have a correct head tail orientation 
+    #and the robust estimates will give us a good representation of the noise levels     
+    #if np.median(diff_inv) - medabsdev(diff_inv)/2 < np.median(diff_ori) + medabsdev(diff_ori)/2:
+    #    bad_worms.append(worm_index)
+    #    continue
+    
+    #%%
+    #smooth data, it is easier for identification
+    diff_ori_med = median_filter(diff_ori,smooth_W)
+    diff_inv_med = median_filter(diff_inv,smooth_W)
+        
+    #this will increase the distance between the original and the inversion. 
+    #Therefore it will become more stringent on detection
+    diff_orim = minimum_filter(diff_ori_med, smooth_W)    
+    diff_invM = maximum_filter(diff_inv_med, smooth_W)   
+            
+    #a segment with a bad head-tail indentification should have a lower 
+    #difference with the median when the profile is inverted.
+    bad_orientationM = diff_orim>diff_invM
+    if np.all(bad_orientationM): 
+        return []
+        
+    #let's create blocks of skeletons with a bad orientation
+    blocks2correct = createBlocks(bad_orientationM, min_block_size)
+    #print(blocks2correct)
+
+    #let's refine blocks limits using the original unsmoothed differences
+    bad_orientation = diff_ori>diff_inv
+    blocks2correct = correctBlock(blocks2correct, bad_orientation, gap_size=0)
+    
+    
+    #let's correct the blocks inversion boundaries by checking that they do not
+    #travers a group of contigous skeletons. I am assuming that head tail errors
+    #only can occur when we miss an skeleton.        
+    blocks2correct = removeBadSkelBlocks(blocks2correct, int_skeleton_id, trajectories_worm, min_frac_in, gap_size=gap_size)
+    
+    #Check in the boundaries between blocks if there is really a better local match if the block is inverted 
+    blocks2correct = checkLocalVariation(worm_int_profile, blocks2correct, local_avg_win)
+    if not blocks2correct: 
+        return []
+    
+    #redefine the limits in the skeleton_file and intensity_file rows using the final blocks boundaries
+    skel_group = [(int_skeleton_id[ini], int_skeleton_id[fin]) for ini, fin in blocks2correct]
+    int_group = [(int_map_id[ini], int_map_id[fin]) for ini, fin in blocks2correct]
+    
+    #finally switch all the data to correct for the wrong orientation in each group
+    switchBlocks(skel_group, skeletons_file, int_group, intensities_file)
+        
+    #store data from the groups that were switched        
+    switched_blocks = []
+    for ini, fin in blocks2correct:
+        switched_blocks.append((int_frame_number[ini], int_frame_number[fin]))
+
+    return switched_blocks
+
+def correctHeadTailIntensity(skeletons_file, intensities_file, smooth_W = 5,
+    gap_size = 0, min_block_size = 10, local_avg_win = 25, min_frac_in = 0.85, head_tail_param = {}):
     
     #get the trajectories table
     with pd.HDFStore(skeletons_file, 'r') as fid:
@@ -314,90 +407,18 @@ def correctHeadTailIntensity(skeletons_file, intensities_file, smooth_W = 5,
             dd = base_name + dd + ' Total time:' + progress_timer.getTimeStr()
             print_flush(dd)
         
+        #correct head tail using the intensity profiles
+        dd = correctHeadTailIntWorm(trajectories_worm, skeletons_file, intensities_file, \
+            smooth_W, gap_size, min_block_size, local_avg_win, min_frac_in)
+        switched_blocks += [(worm_index, t0, tf) for t0, tf in dd] 
+        
+        
+        #check that the final orientation is correct, otherwise switch the whole trajectory
+        p_tot, skel_group, int_group = \
+        checkFinalOrientation(skeletons_file, intensities_file, trajectories_worm, head_tail_param)
+        if p_tot < 0.5:
+                switchBlocks(skel_group, skeletons_file, int_group, intensities_file)
 
-        good = trajectories_worm['int_map_id'] != -1;
-        int_map_id = trajectories_worm.loc[good, 'int_map_id'].values
-        int_skeleton_id = trajectories_worm.loc[good, 'skeleton_id'].values
-        int_frame_number = trajectories_worm.loc[good, 'frame_number'].values
-        #only analyze data that contains at least  min_block_size intensity profiles     
-        if int_map_id.size < min_block_size:
-            continue
-        
-        
-        #read the worm intensity profiles
-        with tables.File(intensities_file, 'r') as fid:
-            worm_int_profile = fid.get_node('/straighten_worm_intensity_median')[int_map_id,:]
-
-        #normalize intensities of each individual profile   
-        worm_int_profile -= np.median(worm_int_profile, axis=1)[:, np.newaxis] 
-        
-        #reduce the importance of the head and tail. This parts are typically more noisy
-        damp_factor = getDampFactor(worm_int_profile.shape[1])
-        worm_int_profile *= damp_factor        
-
-        #worm median intensity
-        med_int = np.median(worm_int_profile, axis=0).astype(np.float)
-        
-        #%%
-        #let's check for head tail errors by comparing the
-        #total absolute difference between profiles using the original orientation ...
-        diff_ori = np.sum(np.abs(med_int-worm_int_profile), axis = 1)
-        #... and inverting the orientation
-        diff_inv = np.sum(np.abs(med_int[::-1]-worm_int_profile), axis = 1)
-        
-        #%% DEPRECATED, it
-        #check if signal noise will allow us to distinguish between the two signals
-        #I am assuming that most of the images will have a correct head tail orientation 
-        #and the robust estimates will give us a good representation of the noise levels     
-        #if np.median(diff_inv) - medabsdev(diff_inv)/2 < np.median(diff_ori) + medabsdev(diff_ori)/2:
-        #    bad_worms.append(worm_index)
-        #    continue
-        
-        #%%
-        #smooth data, it is easier for identification
-        diff_ori_med = median_filter(diff_ori,smooth_W)
-        diff_inv_med = median_filter(diff_inv,smooth_W)
-            
-        #this will increase the distance between the original and the inversion. 
-        #Therefore it will become more stringent on detection
-        diff_orim = minimum_filter(diff_ori_med, smooth_W)    
-        diff_invM = maximum_filter(diff_inv_med, smooth_W)   
-                
-        #a segment with a bad head-tail indentification should have a lower 
-        #difference with the median when the profile is inverted.
-        bad_orientationM = diff_orim>diff_invM
-        if np.all(bad_orientationM): continue
-        
-        #let's create blocks of skeletons with a bad orientation
-        blocks2correct = createBlocks(bad_orientationM, min_block_size)
-        #print(blocks2correct)
-
-        #let's refine blocks limits using the original unsmoothed differences
-        bad_orientation = diff_ori>diff_inv
-        blocks2correct = correctBlock(blocks2correct, bad_orientation, gap_size=0)
-        
-        
-        #let's correct the blocks inversion boundaries by checking that they do not
-        #travers a group of contigous skeletons. I am assuming that head tail errors
-        #only can occur when we miss an skeleton.        
-        blocks2correct = removeBadSkelBlocks(blocks2correct, int_skeleton_id, trajectories_worm, min_frac_in, gap_size=gap_size)
-        
-        #Check in the boundaries between blocks if there is really a better local match if the block is inverted 
-        blocks2correct = checkLocalVariation(worm_int_profile, blocks2correct, local_avg_win)
-        if not blocks2correct: continue
-        
-        #redefine the limits in the skeleton_file and intensity_file rows using the final blocks boundaries
-        skel_group = [(int_skeleton_id[ini], int_skeleton_id[fin]) for ini, fin in blocks2correct]
-        int_group = [(int_map_id[ini], int_map_id[fin]) for ini, fin in blocks2correct]
-        
-        #finally switch all the data to correct for the wrong orientation in each group
-        switchBlocks(skel_group, skeletons_file, int_group, intensities_file)
-        
-        #store data from the groups that were switched        
-        
-        for ini, fin in blocks2correct:
-            switched_blocks.append((worm_index, int_frame_number[ini], int_frame_number[fin]))
-            
     #label the process as finished and store the indexes of the switched worms
     with tables.File(skeletons_file, 'r+') as fid:
         if not '/Intensity_Analysis' in fid:

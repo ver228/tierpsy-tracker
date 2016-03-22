@@ -24,6 +24,7 @@ class MWTrackerViewerChunks(MWTrackerViewerSingle):
 
         self.skel_block = []
         self.skel_block_n = 0
+        self.is_stage_move = []
 
         self.ui.spinBox_skelBlock.valueChanged.connect(self.changeSkelBlock)
 
@@ -52,6 +53,11 @@ class MWTrackerViewerChunks(MWTrackerViewerSingle):
         else:
             self.changeSkelBlock(0)
 
+        with tables.File(self.skel_file, 'r') as fid:
+            if '/stage_vec' in fid:
+                self.is_stage_move = np.isnan(fid.get_node('/stage_vec')[:,0])
+            else:
+                self.is_stage_move = []
     # def findCurrentBlock(self):
     #     ini, fin = self.skel_block[self.skel_block_n]
     #     print(self.skel_block_n, ini, fin)
@@ -65,10 +71,26 @@ class MWTrackerViewerChunks(MWTrackerViewerSingle):
 
     #     return None
 
-    def updateFrameNumber(self):
-        super().updateFrameNumber()
-        #self.findCurrentBlock()
-        #print(self.skel_block_n)
+    def updateImage(self):
+        self.readImage()
+        self.drawSkelResult()
+
+        if len(self.is_stage_move) > 0 and self.is_stage_move[self.frame_number]:
+            painter = QPainter()
+            painter.begin(self.frame_qimg)
+            pen = QPen()
+            pen_width = 3
+            pen.setWidth(pen_width)
+            pen.setColor(Qt.red)
+            painter.setPen(pen)
+
+            
+            painter.drawRect(1, 1, self.frame_qimg.width()-pen_width, self.frame_qimg.height()-pen_width);
+            painter.end()
+            print(1)
+            
+        self.pixmap = QPixmap.fromImage(self.frame_qimg)
+        self.ui.imageCanvas.setPixmap(self.pixmap);
 
     def changeSkelBlock(self, val):
         

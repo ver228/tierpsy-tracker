@@ -12,7 +12,6 @@ import matplotlib.pylab as plt
 import glob, os
 
 from MWTracker.trackWorms.checkHeadOrientation import isWormHTSwitched
-from MWTracker.intensityAnalysis.correctHeadTailIntensity import switchBlocks
 from MWTracker.helperFunctions.timeCounterStr import timeCounterStr
 from MWTracker.helperFunctions.miscFun import print_flush
 
@@ -20,13 +19,20 @@ from MWTracker.helperFunctions.miscFun import print_flush
 def getHeadProbMov(skeletons_file, trajectories_worm, max_gap_allowed = 10, window_std = 25,
                    segment4angle = 5, min_block_size = 250):
     
+    skel_group = (trajectories_worm['skeleton_id'].min(), trajectories_worm['skeleton_id'].max())
+    
     with tables.File(skeletons_file, 'r') as fid:
         good_skeletons = trajectories_worm['int_map_id'].values != -1
         skeletons_id = trajectories_worm['skeleton_id'].values[good_skeletons]
         
+        
         dd = fid.get_node('/skeleton').shape
         skeletons  = np.full((len(good_skeletons), dd[1], dd[2]), np.nan)
-        skeletons[good_skeletons, :, :] = fid.get_node('/skeleton')[skeletons_id, :, :]
+        
+        if len(skeletons_id)>0:
+            skeletons[good_skeletons, :, :] = fid.get_node('/skeleton')[skeletons_id, :, :]
+        else:
+            return np.nan, skel_group
         
     is_switch_skel, roll_std = isWormHTSwitched(skeletons, segment4angle = 5, max_gap_allowed = 10, \
                          window_std = 25, min_block_size=250)
@@ -36,7 +42,6 @@ def getHeadProbMov(skeletons_file, trajectories_worm, max_gap_allowed = 10, wind
     
     p_mov = head_angle/(head_angle + tail_angle)
     
-    skel_group = (np.min(skeletons_id), np.max(skeletons_id))
     return p_mov, skel_group
 
 def searchIntPeaks(median_int, peak_search_limits = [0.054, 0.192, 0.269, 0.346]):
@@ -130,12 +135,12 @@ def checkFinalOrientation(skeletons_file, intensities_file, trajectories_worm, h
     if p_tot != p_tot: 
         p_tot = p_mov
     
-    if p_tot < 0.5:
-        switchBlocks([skel_group], skeletons_file, [int_group], intensities_file)
-    return p_tot
+    return p_tot, [skel_group], [int_group]
     
 
 if __name__ == '__main__':
+    from MWTracker.intensityAnalysis.correctHeadTailIntensity import switchBlocks
+
     check_dir = '/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/'
     
     head_tail_param = {'max_gap_allowed' : 10, 'window_std' : 25, 'segment4angle' : 5, 
@@ -143,7 +148,7 @@ if __name__ == '__main__':
     #peak_search_limits = [0.054, 0.192, 0.269, 0.346]
         
     all_median = []
-    for ff in glob.glob(os.path.join(check_dir, 'goa*')):
+    for ff in glob.glob(os.path.join(check_dir, '*')):
         ff = ff.replace('MaskedVideos', 'Results')
         base_name = os.path.split(ff)[1].rpartition('.')[0]
         print(base_name)
@@ -167,6 +172,10 @@ if __name__ == '__main__':
         print_flush(base_name + " Checking if the final Head-Tail orientation is correct")
         for index_n, (worm_index, trajectories_worm) in enumerate(grouped_trajectories):
             
-            checkFinalOrientation(skeletons_file, intensities_file, trajectories_worm, head_tail_param)
+            p_tot, skel_group, int_group = checkFinalOrientation(skeletons_file, intensities_file, trajectories_worm, head_tail_param)
+            print(p_tot)
             
+            if p_tot < 0.5:
+                switchBlocks(skel_group, skeletons_file, int_group, intensities_file)
+    
             

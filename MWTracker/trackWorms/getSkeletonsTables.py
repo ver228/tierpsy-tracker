@@ -49,6 +49,7 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, min_track_size = 100
         timestamp_raw = fid.get_node('/timestamp/raw')[:]
         timestamp_time = fid.get_node('/timestamp/time')[:]
 
+
     if len(timestamp_raw) < df['frame_number'].max():
         raise Exception('bad %i, %i. \nFile: %s' % (len(timestamp_raw), df['frame_number'].max(), trajectories_file))
 
@@ -167,7 +168,7 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, min_track_size = 100
     trajectories_df['cnt_area'] = 0
     assert tot_rows == tot_rows_ini
     
-    return trajectories_df, worms_frame_range, tot_rows
+    return trajectories_df, worms_frame_range, tot_rows, timestamp_raw, timestamp_time
 
 def getWormROI(img, CMx, CMy, roi_size = 128):
     '''
@@ -298,26 +299,40 @@ create_single_movies = False, resampling_N = 49, min_mask_area = 50, strel_size 
     
     #get trajectories, threshold and indexes from the first part of the tracker.
     #Note that data is sorted by worm index. This speed up access for access individual worm data.
-    trajectories_df, worms_frame_range, tot_rows = \
+    
+    trajectories_df, worms_frame_range, tot_rows, timestamp_raw, timestamp_time = \
     getSmoothTrajectories(trajectories_file, **smoothed_traj_param)
     if tot_rows == 0: tot_rows = 1; #this is to initialize the arrays to one row, pytables do not accept empty arrays as initializers of carrays
     
     #pytables saving format is more convenient...
     with tables.File(skeletons_file, "w") as ske_file_id:
         ske_file_id.create_table('/', 'trajectories_data', obj = trajectories_df, filters=table_filters)
-    
+        
+        #save a copy of the video timestamp data
+        ske_file_id.create_group('/', 'timestamp')
+        ske_file_id.create_carray('/timestamp', 'raw', obj = timestamp_raw)
+        ske_file_id.create_carray('/timestamp', 'time', obj = timestamp_time)
+
+
+
     #...but it is easier to process data with pandas
     with pd.HDFStore(skeletons_file, 'r') as ske_file_id:
         trajectories_df = ske_file_id['/trajectories_data']
         trajectories_df['area_new'] = np.nan
         trajectories_df['coord_x_new'] = np.nan
         trajectories_df['coord_y_new'] = np.nan
+
+
     
     #open skeleton file for append and #the compressed videos as read
     with tables.File(skeletons_file, "r+") as ske_file_id, \
     tables.File(masked_image_file, 'r') as mask_fid:
-        
         mask_dataset = mask_fid.get_node("/mask")
+        
+        dd = ske_file_id.get_node('/trajectories_data')
+        dd._v_attrs['pixels2microns_x'] = mask_dataset._v_attrs['pixels2microns_x'] 
+        dd._v_attrs['pixels2microns_y'] = mask_dataset._v_attrs['pixels2microns_x'] 
+
         
         skel_arrays = {}
         

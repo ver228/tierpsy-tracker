@@ -6,7 +6,7 @@ Created on Tue Mar  1 18:00:09 2016
 """
 
 import os
-def waldir(root_dir):
+def walkdir(root_dir):
     all_files = []
     for dpath, dnames, fnames in os.walk(root_dir):
         for fname in fnames:
@@ -32,8 +32,8 @@ if __name__ == '__main__':
     #dir2keep = '/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-10/laura/analysis/analysis 19-08-09/'
     
     
-    files2keep = waldir(dir2keep)
-    files2del = waldir(dir2del)
+    files2keep = walkdir(dir2keep)
+    files2del = walkdir(dir2del)
     #%%
     files2del2 = [x for x in files2del if '.avi' in x]
     #files2del = [x.replace('.data/', '') for x in files2del if not '/normalized/' in x]
