@@ -110,21 +110,24 @@ def runMultiCMD(cmd_list, local_obj='', max_num_process = 3, refresh_time = 10):
         next_tasks = []
         for task in current_tasks:
             task.read_buff()
-                
+            last_str = task.output[-1]
             if task.pid.poll() is None:
                 #add task to the new list if it hasn't complete
                 next_tasks.append(task)
+                sys.stdout.write(last_str)
             else:
                 #close the task and add its las output to the finished_tasks list
                 task.close()
-                finished_tasks.append(task.output[-1])
-
+                finished_tasks.append(last_str)
+                sys.stdout.write(last_str)
                 #add new task once the previous one was finished
                 if cmd_list and len(next_tasks) < max_num_process:
                     cmd = cmd_list.pop()            
                     next_tasks.append(start_process(cmd,local_obj))
             
-            sys.stdout.write(task.output[-1])
+            
+            
+            
             
         #if there is stlll space add a new tasks.
         while cmd_list and len(next_tasks) < max_num_process:
