@@ -187,8 +187,8 @@ class checkVideoFiles:
 	def checkBadVideo(video_file, is_single_worm):
 		#print(video_file)
 		vid, im_width, im_height, reader_type = selectVideoReader(video_file)
-		#do not use vid.release(), if there is a corrupt video in can cause an infinite loop
-
+		vid.release() # i have problems with corrupt videos that can create infinite loops...
+		
 		#print(vid, im_width, im_height, reader_type)
 		if im_width == 0 or im_height == 0:
 		#	print('BAD!!')
