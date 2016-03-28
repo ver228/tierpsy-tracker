@@ -22,7 +22,7 @@ class tracker_param:
             thresh_block_size = 61, fps = 25, fps_filter = 0, threshold_factor = 1.05,
             resampling_N = 49,  max_gap_allowed_block = 10, max_gap_allowed_block_int = -1, is_single_worm = False, 
             bad_seg_thresh = 0.8, min_displacement = 0, fit_contamination = 0.05, strel_size = 5,
-            save_int_maps = True, int_avg_width_frac = 0.3, int_width_resampling = 15, int_length_resampling = 131):
+            save_int_maps = False, int_avg_width_frac = 0.3, int_width_resampling = 15, int_length_resampling = 131):
         '''
         min_area - minimum area in pixels allowed
         max_area - maximum area in pixels allowed
