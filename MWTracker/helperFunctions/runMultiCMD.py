@@ -66,7 +66,11 @@ class start_process():
 
             #print errors details if there was any
             self.output[-1] += 'ERROR: \n'
-            self.output[-1] += cmdlist2str(self.cmd) + '\n'
+
+            if cmd: 
+                self.output[-1] += cmdlist2str(self.cmd) + '\n'
+            else:
+                self.output[-1] += cmdlist2str(self.obj_cmd) + '\n'
             self.output[-1] += self.pid.stderr.read().decode("utf-8")
             self.pid.stderr.flush()
         
