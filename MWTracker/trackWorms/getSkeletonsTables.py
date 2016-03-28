@@ -333,8 +333,10 @@ create_single_movies = False, resampling_N = 49, min_mask_area = 50, strel_size 
         mask_dataset = mask_fid.get_node("/mask")
         
         dd = ske_file_id.get_node('/trajectories_data')
-        dd._v_attrs['pixels2microns_x'] = mask_dataset._v_attrs['pixels2microns_x'] 
-        dd._v_attrs['pixels2microns_y'] = mask_dataset._v_attrs['pixels2microns_x'] 
+
+        if 'pixels2microns_x' in mask_dataset.__v_attrs:
+            dd._v_attrs['pixels2microns_x'] = mask_dataset._v_attrs['pixels2microns_x'] 
+            dd._v_attrs['pixels2microns_y'] = mask_dataset._v_attrs['pixels2microns_y'] 
 
         
         skel_arrays = {}
