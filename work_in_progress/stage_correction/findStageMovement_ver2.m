@@ -1,6 +1,8 @@
 function [frames, movesI, locations] = ...
     findStageMovement_ver2(frameDiffs, mediaTimes, locations, delayFrames, fps)
 
+%Modified from Segworm. This help is outdated, I'll modified later. AEJ
+
 %FINDSTAGEMOVEMENT Find stage movements in a worm experiment.
 %
 % The algorithm is as follows:

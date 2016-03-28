@@ -19,10 +19,13 @@ for ii = 2:frame_total
     frame_current = h5read(masked_image_file, '/mask', [1,1,ii], [frame_size(1),frame_size(2), 1]);
     
     % calculate the absolute difference between frames
-    %img_abs_diff(ii-timeDiff) = sum(sum(abs( frame_bef - frame_aft)));
+    %img_abs_diff(ii-timeDiff) = sum(sum(abs(double(frame_bef) - double(frame_aft))));
     
-    good = (frame_prev.*frame_current) >0;
-    img_abs_diff(ii-1) = var(single(frame_prev(good)-frame_current(good)));
+    
+    img_abs_diff(ii-1) = imMaskDiffVar(frame_prev,frame_current);
+    %good = (frame_prev>0) & (frame_current>0);
+    %A = var(double(frame_prev(good))-double(frame_current(good)), 1);
+    %assert(abs(A - img_abs_diff(ii-1)) < 1e-2);
     
     %buffer to the previous frame
     frame_prev = frame_current;

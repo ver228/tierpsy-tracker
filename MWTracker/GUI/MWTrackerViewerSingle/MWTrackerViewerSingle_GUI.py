@@ -30,9 +30,13 @@ class MWTrackerViewerSingle(HDF5videoViewer):
         
 
     def getSkelFile(self):
-        self.skel_file, _ = QFileDialog.getOpenFileName(self, 'Select file with the worm skeletons', 
+        selected_file, _ = QFileDialog.getOpenFileName(self, 'Select file with the worm skeletons', 
             self.results_dir,  "Skeletons files (*_skeletons.hdf5);; All files (*)")
         
+        if not os.path.exists(selected_file):
+            return
+
+        self.skel_file = selected_file
         self.ui.lineEdit_skel.setText(self.skel_file)
         if self.fid != -1:
             self.updateSkelFile()

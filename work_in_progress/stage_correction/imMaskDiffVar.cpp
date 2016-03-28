@@ -17,9 +17,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     double tot_valid = 0;
     
     for (size_t i = 0; i<tot_pix; i++){
-        if (image1[i] != 0 && image2[i] != 0)
+        if (image1[i] > 0 && image2[i] > 0)
         {
-            abs_diff = abs(double(image1[i]) - double(image2[i]));
+            abs_diff = double(image1[i]) - double(image2[i]);
             mean_x += abs_diff;
             sum_x2 += abs_diff*abs_diff;
             tot_valid++;

@@ -14,11 +14,13 @@ from scipy.signal import medfilt
 import time
 import os
 
-
-file_mask = ''
+from MWTracker.trackWorms.getSkeletonsTables import getWormMask, binaryMask2Contour
+from MWTracker.trackWorms.segWormPython.cleanWorm import cleanWorm
 
 #file_mask = '/Users/ajaver/Desktop/Videos/03-03-11/MaskedVideos/03-03-11/N2 swimming_2011_03_03__16_36___3___10.hdf5'
-file_mask = '/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/09-07-10/3/egl-17 (e1313)X on food R_2010_07_09__11_43_13___2___4.hdf5'
+#file_mask = '/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/09-07-10/3/egl-17 (e1313)X on food R_2010_07_09__11_43_13___2___4.hdf5'
+#file_mask = '/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/431 JU298 on food L_2011_03_17__12_02_58___2___3.hdf5'
+file_mask = '/Users/ajaver/Desktop/Videos/single_worm/agar_2/MaskedVideos/798 JU258 on food L_2011_03_22__16_26_58___1___12.hdf5'
 
 file_skel = file_mask.replace('MaskedVideos', 'Results').replace('.hdf5', '_skeletons.hdf5')
 file_traj = file_mask.replace('MaskedVideos', 'Results').replace('.hdf5', '_trajectories.hdf5')
@@ -27,88 +29,36 @@ assert(os.path.exists(file_traj))
 assert(os.path.exists(file_skel))
 
 
-#file_mask = '/Users/ajaver/Desktop/Videos/copied_from_pc207-13/MaskedVideos/135 CB4852 on food L_2011_03_09__15_51_36___1___8.hdf5'
-#file_skel = '/Users/ajaver/Desktop/Videos/copied_from_pc207-13/Results/135 CB4852 on food L_2011_03_09__15_51_36___1___8_skeletons.hdf5'
-#file_traj = '/Users/ajaver/Desktop/Videos/copied_from_pc207-13/Results/135 CB4852 on food L_2011_03_09__15_51_36___1___8_trajectories.hdf5'
-
 with pd.HDFStore(file_skel, 'r') as fid:
     trajectories_data = fid['/trajectories_data']
 
-with pd.HDFStore(file_traj, 'r') as fid:
-    plate_worms = fid['/plate_worms']
+#with pd.HDFStore(file_traj, 'r') as fid:
+#    plate_worms = fid['/plate_worms']
 
-current_frame = 1
+current_frame = 261
 with h5py.File(file_mask, 'r') as fid:
     worm_img = fid['/mask'][current_frame]
 
-current_row = trajectories_data[trajectories_data['frame_number'] == current_frame]
-current_row_p = plate_worms[plate_worms['frame_number'] == current_frame]
+row_data = trajectories_data[trajectories_data['frame_number'] == current_frame]
+row_data = row_data.iloc[0]
 
-#win_size = 
+worm_mask = getWormMask(worm_img, row_data['threshold'])
 
-def plot_hist(worm_img):
-    pix_valid = worm_img[worm_img!=0]
-    
-    otsu_thresh = threshold_otsu(pix_valid)
-    
-    pix_hist = np.bincount(pix_valid)  
-    #pix_hist = medfilt(pix_hist, 5)
-    pix_hist = np.convolve(pix_hist, np.ones(5), 'same')    
-    
-    
-    
-    xx = np.arange(otsu_thresh, pix_hist.size)
-    
-    cumhist = np.cumsum(pix_hist)
-    hist_ratio = pix_hist[xx]/cumhist[xx]
-    
-    thresh = np.where(pix_hist[xx]/cumhist[xx]>0.020)[0][0] + otsu_thresh
-    thresh2 = np.where((hist_ratio[3:]-hist_ratio[:-3])>0.02)[0][0] + otsu_thresh
-    
-    plt.plot(hist_ratio[3:]-hist_ratio[:-3])
-    
-    print(otsu_thresh, thresh, thresh2)
-    return thresh2
-
-threshold = current_row['threshold'].values
+min_mask_area = row_data['area']/2
+worm_cnt, _ = binaryMask2Contour(worm_mask, roi_center_x = row_data['coord_y'], roi_center_y = row_data['coord_x'], min_mask_area = min_mask_area)
 
 
-#plt.figure()
-#thresh2 = plot_hist(worm_img)
-thresh2 = current_row['threshold'].values[0]
-N = 5
-#make the worm more uniform. This is important to get smoother contours.
-#worm_img = cv2.medianBlur(worm_img, N);
-
-#plot_hist(worm_img)
-
-#smooth mask by morphological closing
-#worm_mask = cv2.morphologyEx(worm_mask, cv2.MORPH_CLOSE,np.ones((3,3)))
-#%%
-worm_img = cv2.medianBlur(worm_img, 3);
-
-worm_mask = ((worm_img < thresh2) & (worm_img!=0)).astype(np.uint8)
-strel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10,10))
-worm_mask = cv2.morphologyEx(worm_mask, cv2.MORPH_CLOSE, strel)
+worm_cnt_n = cleanWorm(worm_cnt, 49)
+worm_mask_n = np.zeros_like(worm_mask)
+cv2.drawContours(worm_mask_n, [worm_cnt_n.astype(np.int32)], 0, 1, -1)
 
 
 plt.figure()
 plt.imshow(worm_mask, interpolation = 'none', cmap = 'gray')
-#%%
-plt.figure()
-plt.imshow(worm_img, interpolation = 'none', cmap = 'gray')
+plt.grid('off')
 
-#%%
-#plt.figure()
-#plt.plot(trajectories_data['threshold'])
-#%%
-#tic = time.time()
-#for kk in range(1000):
-#    strel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5,5))
-#    cv2.morphologyEx(worm_img, cv2.MORPH_CLOSE, strel)
-#print('erosion', time.time()-tic)
-#
-#tic = time.time()
-#for kk in range(1000):
-#    cv2.medianBlur(worm_img, cv2.MORPH_CLOSE, 3)
-#print('erosion', time.time()-tic)
+plt.figure()
+plt.imshow(worm_mask_n, interpolation = 'none', cmap = 'gray')
+plt.grid('off')
+
+

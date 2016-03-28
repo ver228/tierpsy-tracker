@@ -253,7 +253,6 @@ def connectConnections(conns):
                                 newConnsI += 1;
                                 connected = True;
                             
-                            
                         #% Does connection i intersect j?
                         else:
                             if (conns[i,0] >= conns[j,0] and conns[i,0] <= conns[j,1]) \

@@ -1,24 +1,18 @@
 %function alignStageMotion(masked_image_file,skeletons_file, is_swimming)
 
-main_dir = '/Users/ajaver/Desktop/Videos/single_worm/agar_2/MaskedVideos/';
+main_dir = '/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/';
 results_dir = strrep(main_dir, 'MaskedVideos', 'Results');
 feat_dir = strrep(main_dir, 'MaskedVideos', 'Features');
 
 is_swimming = false;
 
 files = dir(main_dir);
-for iif = 32:numel(files)
+for iif = 20:numel(files)
     file = files(iif);
     
     if ~isempty(regexp(file.name, '\w*.hdf5', 'ONCE'))
         
         clear is_stage_move movesI stage_locations
-        %{
-        fid = H5F.open(skeletons_file,'H5F_ACC_RDWR','H5P_DEFAULT');
-        %is_finished = H5L.exists(fid,'stage_vec','H5P_DEFAULT');
-        H5F.close(fid);
-        %}
-        %if ~is_finished &&
         
         fprintf('%i) %s\n', iif, file.name)
         masked_image_file = fullfile(main_dir, file.name);
@@ -54,32 +48,76 @@ for iif = 32:numel(files)
         mediaTimes = stage_data.stage_time';%*60;
         locations = [stage_data.stage_x , stage_data.stage_y];
         
+        %% Read the scale conversions, we would need this when we want to convert the pixels into microns
+        pixelPerMicronX = 1/h5readatt(masked_image_file, '/mask', 'pixels2microns_x');
+        pixelPerMicronY = 1/h5readatt(masked_image_file, '/mask', 'pixels2microns_y');
+        
+        normScale = sqrt((pixelPerMicronX ^ 2 + pixelPerMicronX ^ 2) / 2);
+        pixelPerMicronScale =  normScale * [sign(pixelPerMicronX) sign(pixelPerMicronY)];
+
+        % Compute the rotation matrix.
+        %rotation = 1;
+        angle = atan(pixelPerMicronY / pixelPerMicronX);
+        if angle > 0
+            angle = pi / 4 - angle;
+        else
+            angle = pi / 4 + angle;
+        end
+        cosAngle = cos(angle);
+        sinAngle = sin(angle);
+        rotation_matrix = [cosAngle, -sinAngle; sinAngle, cosAngle];
+        
         %% calculate the variance of the difference between frames
         % Ev's code uses the full vectors without dropping frames
         frame_diffs_d = getFrameDiffVar(masked_image_file);
+        
         %% The shift makes everything a bit more complicated. I have to remove the first frame, before resizing the array considering the dropping frames.
+        
+        if numel(video_timestamp_ind) > numel(frame_diffs_d) + 1
+            %i can tolerate one frame (two with respect to the frame_diff)
+            %extra at the end of the timestamp
+            video_timestamp_ind = video_timestamp_ind(1:numel(frame_diffs_d)+1);
+        end
+            
         frame_diffs = nan(1, max(video_timestamp_ind)-1);
         dd = video_timestamp_ind-min(video_timestamp_ind);
         dd = dd(dd>0);
+        if numel(frame_diffs_d) ~= numel(dd)
+            continue
+        end
         frame_diffs(dd) = frame_diffs_d;
+        
         %%
         
         try
             clear is_stage_move movesI stage_locations
             [is_stage_move, movesI, stage_locations] = findStageMovement_ver2(frame_diffs, mediaTimes, locations, delay_frames, fps);
-            stage_vec = nan(numel(is_stage_move),2);
-        catch M
+            
+        catch ME
             fprintf('%i) %s\n', iif, file.name)
             disp(ME)
+            
+            is_stage_move = ones(1, numel(frame_diffs)+1);
+            stage_locations = [];
             continue
             
         end
-        %convert output into a vector that can be added to the skeletons file to obtain the real worm displacements
-        for kk = 1:size(stage_locations,1)
-            bot = max(1, movesI(kk,2)+1);
-            top = min(numel(is_stage_move), movesI(kk+1,1)-1);
-            stage_vec(bot:top, 1) = stage_locations(kk,1);
-            stage_vec(bot:top, 2) = stage_locations(kk,2);
+        %%
+        stage_vec = nan(numel(is_stage_move),2);
+        if numel(movesI) == 2 && all(movesI==0)
+            %there was no movements
+            stage_vec(:,1) = stage_locations(1);
+            stage_vec(:,2) = stage_locations(2);
+            
+        else
+            %convert output into a vector that can be added to the skeletons file to obtain the real worm displacements
+            
+            for kk = 1:size(stage_locations,1)
+                bot = max(1, movesI(kk,2)+1);
+                top = min(numel(is_stage_move), movesI(kk+1,1)-1);
+                stage_vec(bot:top, 1) = stage_locations(kk,1);
+                stage_vec(bot:top, 2) = stage_locations(kk,2);
+            end
         end
         
         %the nan values must match the spected video motions
@@ -94,39 +132,53 @@ for iif = 32:numel(files)
         %% change into a format that i can add directly to the skeletons in skeletons_file
         stage_vec_d = stage_vec(video_timestamp_ind, :);
         
-        pixels2microns_x = h5readatt(masked_image_file, '/mask', 'pixels2microns_x');
-        pixels2microns_y = h5readatt(masked_image_file, '/mask', 'pixels2microns_y');
         
-        stage_vec_d(:,1) = stage_vec_d(:,1)*pixels2microns_y;
-        stage_vec_d(:,2) = stage_vec_d(:,2)*pixels2microns_x;
+        %stage_vec_d(:,1) = stage_vec_d(:,1)*pixels2microns_y;
+        %stage_vec_d(:,2) = stage_vec_d(:,2)*pixels2microns_x;
         stage_vec_d = stage_vec_d';
         
         
-        
+        %%
+        %
         %{
         load(features_mat)
         seg_motion = info.video.annotations.frames==2;
-        
-        if (all(seg_motion==is_stage_motion))
+        plot(worm.posture.skeleton.x(:, 1:15:end), worm.posture.skeleton.y(:, 1:15:end))
+        if (all(seg_motion==is_stage_move_d))
             disp('Segworm and this code have the same frame aligment.')
         end
-        
-        plot(worm.posture.skeleton.x(:, 1:15:end), worm.posture.skeleton.y(:, 1:15:end))
-        
+        %}
+        %{
         skeletons = h5read(skeletons_file, '/skeleton');
         
-        skel_x = squeeze(skeletons(1,:,:)) + ones(49,1)*stage_vec_d(1,:);
-        skel_y = squeeze(skeletons(2,:,:)) + ones(49,1)*stage_vec_d(2,:);
+        skeletons_mu = nan(size(skeletons));
+        
+        for kk = 1:size(skeletons_mu,3)
+            pixels = skeletons(:, :, kk)';
+            origin = stage_vec_d(:,kk);
+            % Rotate the pixels.
+            pixels = (rotation_matrix * pixels')';
+
+            % Convert the pixels coordinates to micron locations.
+            microns(:,1) = origin(1) - pixels(:,1) * pixelPerMicronScale(1);
+            microns(:,2) = origin(2) - pixels(:,2) * pixelPerMicronScale(2);
+            skeletons_mu(:,:,kk) = microns';
+        end
+        
+        
+        skel_x = squeeze(skeletons_mu(1,:,:));
+        skel_y = squeeze(skeletons_mu(2,:,:));
         
         figure, hold on
         %plot(worm.posture.skeleton.x(25,:))
         plot(skel_x(25,1:400))
         
         figure
-        plot(skel_x(:, 1:15:end), skel_y(:, 1:15:end))
+        plot(squeeze(skel_x(25,:)))
         
         figure
-        plot(squeeze(skel_x(1,:)))
+        plot(skel_x(:, 1:15:end), skel_y(:, 1:15:end))
+        
         %}
         
         %%
@@ -179,6 +231,8 @@ for iif = 32:numel(files)
         
         h5writeatt(skeletons_file, '/stage_movement', 'fps', fps)
         h5writeatt(skeletons_file, '/stage_movement', 'delay_frames', delay_frames)
+        h5writeatt(skeletons_file , '/stage_movement',  'pixel_per_micron_scale',  pixelPerMicronScale)
+        h5writeatt(skeletons_file , '/stage_movement',  'rotation_matrix',  rotation_matrix)
         
     end
     
