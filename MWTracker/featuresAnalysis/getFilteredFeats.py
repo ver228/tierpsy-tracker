@@ -242,7 +242,6 @@ def getFrameStats(feat_file):
 
 def getFilteredFeats(skeletons_file, use_skel_filter, min_num_skel = 100, bad_seg_thresh = 0.8, 
     min_dist = 5, fit_contamination = 0.05):
-    
     #check if the skeletonization finished succesfully
     with tables.File(skeletons_file, "r") as ske_file_id:
         skeleton_table = ske_file_id.get_node('/skeleton')

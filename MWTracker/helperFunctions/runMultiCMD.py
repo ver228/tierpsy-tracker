@@ -38,6 +38,10 @@ class start_process():
                 self.obj_cmd = local_obj(cmd[1:])
                 self.cmd = self.obj_cmd.start()
             self.output = output
+            
+            #print(self.cmd, type(self.cmd))
+            #import pdb
+            #pdb.set_trace()
             #print(output[-1])    
 
         else:
@@ -63,14 +67,9 @@ class start_process():
     def close(self):
         
         if self.pid.poll() != 0:
-
             #print errors details if there was any
             self.output[-1] += 'ERROR: \n'
-
-            if cmd: 
-                self.output[-1] += cmdlist2str(self.cmd) + '\n'
-            else:
-                self.output[-1] += cmdlist2str(self.obj_cmd) + '\n'
+            self.output[-1] += cmdlist2str(self.cmd) + '\n'
             self.output[-1] += self.pid.stderr.read().decode("utf-8")
             self.pid.stderr.flush()
         
@@ -114,23 +113,19 @@ def runMultiCMD(cmd_list, local_obj='', max_num_process = 3, refresh_time = 10):
         next_tasks = []
         for task in current_tasks:
             task.read_buff()
-            last_str = task.output[-1]
             if task.pid.poll() is None:
                 #add task to the new list if it hasn't complete
                 next_tasks.append(task)
-                sys.stdout.write(last_str)
+                sys.stdout.write(task.output[-1])
             else:
                 #close the task and add its las output to the finished_tasks list
                 task.close()
-                finished_tasks.append(last_str)
-                sys.stdout.write(last_str)
+                sys.stdout.write(task.output[-1])
+                finished_tasks.append(task.output[-1])
                 #add new task once the previous one was finished
                 if cmd_list and len(next_tasks) < max_num_process:
                     cmd = cmd_list.pop()            
                     next_tasks.append(start_process(cmd,local_obj))
-            
-            
-            
             
             
         #if there is stlll space add a new tasks.
@@ -147,7 +142,7 @@ def runMultiCMD(cmd_list, local_obj='', max_num_process = 3, refresh_time = 10):
 def cmdlist2str(cmdlist):
     #change the format from the list accepted by Popen to a text string accepted by the terminal 
     for ii, dd in enumerate(cmdlist):
-        if ii >= 2 and not dd[0] == '-':
+        if ii >= 2 and not dd.startswith('-'):
             dd = "'" + dd + "'"
 
         if ii == 0:
