@@ -37,6 +37,9 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, min_track_size = 100
     #a track size less than 2 will break the interp_1 function
     if min_track_size < 2: min_track_size = 2
 
+    #the filter window must be odd
+    if displacement_smooth_win % 2 == 0: displacement_smooth_win += 1 
+    
     #read that frame an select trajectories that were considered valid by join_trajectories
     with pd.HDFStore(trajectories_file, 'r') as table_fid:
         df = table_fid['/plate_worms'][['worm_index_joined', 'frame_number', \
