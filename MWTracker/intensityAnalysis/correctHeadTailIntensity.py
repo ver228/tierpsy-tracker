@@ -370,7 +370,7 @@ def correctHeadTailIntWorm(trajectories_worm, skeletons_file, intensities_file, 
     #finally switch all the data to correct for the wrong orientation in each group
     switchBlocks(skel_group, skeletons_file, int_group, intensities_file)
         
-    #store data from the groups that were switched        
+    #store data from the groups that were switched
     switched_blocks = []
     for ini, fin in blocks2correct:
         switched_blocks.append((int_frame_number[ini], int_frame_number[fin]))
@@ -410,12 +410,13 @@ def correctHeadTailIntensity(skeletons_file, intensities_file, smooth_W = 5,
         #correct head tail using the intensity profiles
         dd = correctHeadTailIntWorm(trajectories_worm, skeletons_file, intensities_file, \
             smooth_W, gap_size, min_block_size, local_avg_win, min_frac_in)
+        
         switched_blocks += [(worm_index, t0, tf) for t0, tf in dd] 
         
         
         #check that the final orientation is correct, otherwise switch the whole trajectory
         p_tot, skel_group, int_group = \
-        checkFinalOrientation(skeletons_file, intensities_file, trajectories_worm, head_tail_param)
+        checkFinalOrientation(skeletons_file, intensities_file, trajectories_worm, min_block_size, head_tail_param)
         if p_tot < 0.5:
                 switchBlocks(skel_group, skeletons_file, int_group, intensities_file)
 
@@ -425,7 +426,7 @@ def correctHeadTailIntensity(skeletons_file, intensities_file, smooth_W = 5,
             fid.create_group('/', 'Intensity_Analysis')
         
         if '/Intensity_Analysis/Bad_Worms' in fid:
-            fid.remove_node('/Intensity_Analysis/Bad_Worms')
+            fid.remove_node('/Intensity_Analysismin_block_size/Bad_Worms')
         if '/Intensity_Analysis/Switched_Head_Tail' in fid:
             fid.remove_node('/Intensity_Analysis/Switched_Head_Tail')
         
@@ -448,9 +449,10 @@ def correctHeadTailIntensity(skeletons_file, intensities_file, smooth_W = 5,
 if __name__ == '__main__':
     #%%
     #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_18112015_075624.hdf5'
-    masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_17112015_205616.hdf5'
+    #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_17112015_205616.hdf5'
     #masked_image_file = '/Users/ajaver/Desktop/Videos/04-03-11/MaskedVideos/575 JU440 swimming_2011_03_04__13_16_37__8.hdf5'    
     #masked_image_file = '/Users/ajaver/Desktop/Videos/04-03-11/MaskedVideos/575 JU440 on food Rz_2011_03_04__12_55_53__7.hdf5'    
+    masked_image_file = '/Volumes/behavgenom$/GeckoVideo/Curro/MaskedVideos/exp2/Pos2_Ch2_28012016_182629.hdf5'
     
     skeletons_file = masked_image_file.replace('MaskedVideos', 'Results')[:-5] + '_skeletons.hdf5'
     intensities_file = skeletons_file.replace('_skeletons', '_intensities')

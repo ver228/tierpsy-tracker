@@ -68,12 +68,16 @@ def searchIntPeaks(median_int, peak_search_limits = [0.054, 0.192, 0.269, 0.346]
     
     return peaks_ind
     
-def getHeadProvInt(intensities_file, trajectories_worm, peak_search_limits):
+def getHeadProvInt(intensities_file, trajectories_worm, min_block_size, peak_search_limits):
     '''
     Calculate the probability of an intensity profile being in the correct orientation according to the intensity profile    
     '''
     with tables.File(intensities_file, 'r') as fid:
-        int_map_id = trajectories_worm.loc[trajectories_worm['int_map_id']!=-1,'int_map_id']    
+        int_map_id = trajectories_worm.loc[trajectories_worm['int_map_id']!=-1,'int_map_id']
+        if int_map_id.size < min_block_size:
+            #the number of maps is too small let's return nan's nothing to do here
+            return np.nan, np.nan, []
+        
         worm_int = fid.get_node('/straighten_worm_intensity_median')[int_map_id].astype(np.float)
     
     worm_int -= np.median(worm_int, axis=1)[:, np.newaxis]
@@ -113,14 +117,13 @@ def getHeadProvInt(intensities_file, trajectories_worm, peak_search_limits):
     #            plt.plot(xx, median_int[xx], 'o' + strC[ii])
             
     return p_int_top, p_int_bot, int_group
-  
 
-    
-def checkFinalOrientation(skeletons_file, intensities_file, trajectories_worm, head_tail_param):
+def checkFinalOrientation(skeletons_file, intensities_file, trajectories_worm, min_block_size, head_tail_param):
     peak_search_limits = [0.054, 0.192, 0.269, 0.346]
     
-    p_mov, skel_group = getHeadProbMov(skeletons_file, trajectories_worm, **head_tail_param)         
-    p_int_top, p_int_bot, int_group = getHeadProvInt(intensities_file, trajectories_worm, peak_search_limits=peak_search_limits)
+    p_mov, skel_group = getHeadProbMov(skeletons_file, trajectories_worm, **head_tail_param)
+    
+    p_int_top, p_int_bot, int_group = getHeadProvInt(intensities_file, trajectories_worm, min_block_size, peak_search_limits=peak_search_limits)
     
     #The weights I am using will give the p_tot > 0.5 as long as the 
     #std of the head is twice than the tail, if it is less the intensity
