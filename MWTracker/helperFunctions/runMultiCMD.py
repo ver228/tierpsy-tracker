@@ -33,11 +33,13 @@ def enqueue_output(out, queue):
 
 class start_process():
     def __init__(self, cmd, local_obj=''):
+        self.output = ['Started\n']
+            
         if local_obj:
             with CapturingOutput() as output:
                 self.obj_cmd = local_obj(cmd[1:])
                 self.cmd = self.obj_cmd.start()
-            self.output = output
+            self.output += output
             
             #print(self.cmd, type(self.cmd))
             #import pdb

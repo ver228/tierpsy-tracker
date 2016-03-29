@@ -123,7 +123,8 @@ class getTrajectoriesWorkerL():
     def __init__(self, masked_image_file, results_dir, json_file ='',
     start_point = -1, end_point = checkpoint['END'], is_single_worm = False, 
     use_skel_filter = True, use_manual_join = False, cmd_original=''):
-    
+        
+        assert not is_single_worm
         #get repository commit hash numbers (useful to determine what version of the code was executed)
         self.commit_hash = getGitCommitHash()
 

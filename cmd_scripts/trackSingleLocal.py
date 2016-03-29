@@ -30,7 +30,7 @@ def copyFilesLocal(files2copy):
 
 class trackLocal:
 	def __init__(self, masked_image_file, results_dir, tmp_mask_dir='', tmp_results_dir='', 
-		json_file ='', force_start_point = '', end_point = 'END', is_single_worm='', 
+		json_file ='', force_start_point = '', end_point = 'END', is_single_worm=False, 
 		no_skel_filter = False, use_manual_join = False, cmd_original=''):
 		
 		self.masked_image_file = masked_image_file
@@ -76,8 +76,8 @@ class trackLocal:
 		
 		for x in self.main_input_params[1]:
 			dat = self.main_input_params[1][x]
-			if isinstance(dat,bool):
-				cmd.append('--'+x)
+			if isinstance(dat, bool):
+				if dat: cmd.append('--'+x)
 			else:
 				cmd += ['--'+x, str(dat)]
 
