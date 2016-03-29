@@ -117,6 +117,9 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle):
 
 	def updateSkelFile(self):
 		super().updateSkelFile()
+		if not self.skel_file or not isinstance(self.trajectories_data, pd.DataFrame):
+			return
+
 		if not 'worm_index_N' in self.trajectories_data.columns:
 			self.trajectories_data['worm_label'] = self.wlab['U']
 			self.trajectories_data['worm_index_N'] = self.trajectories_data['worm_index_joined']

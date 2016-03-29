@@ -107,7 +107,9 @@ class MWTrackerViewerSingle(HDF5videoViewer):
 
 
     def drawSkel(self, worm_img, worm_qimg, row_data, roi_corner = (0,0)):
-        
+        if not self.skel_file or not isinstance(self.trajectories_data, pd.DataFrame):
+            return
+
         c_ratio_y = worm_qimg.width()/worm_img.shape[1];
         c_ratio_x = worm_qimg.height()/worm_img.shape[0];
         

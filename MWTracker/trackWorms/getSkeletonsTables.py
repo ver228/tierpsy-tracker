@@ -430,9 +430,9 @@ create_single_movies = False, resampling_N = 49, min_mask_area = 50, strel_size 
                 print(base_name + ' ' + progress_str);
                 sys.stdout.flush()
 
-    
-            #Mark a succesful termination
-            skel_arrays['skeleton']._v_attrs['has_finished'] = 1;
+        #FINISH!!!
+        #Mark a succesful termination
+        skel_arrays['skeleton']._v_attrs['has_finished'] = 1;
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

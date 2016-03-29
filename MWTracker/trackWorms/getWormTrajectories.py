@@ -54,7 +54,7 @@ class plate_worms(tables.IsDescription):
     bounding_box_ymin = tables.Int32Col(pos=18)
     bounding_box_ymax = tables.Int32Col(pos=19)
     
-    segworm_id = tables.Int32Col(pos=20);
+    segworm_id = tables.Int32Col(pos=20); #deprecated, probably it would be good to remove it in the future
 
     hu0 = tables.Float32Col(pos=21)
     hu1 = tables.Float32Col(pos=22)

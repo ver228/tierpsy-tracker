@@ -1,26 +1,12 @@
 function [frames, movesI, locations] = ...
     findStageMovement_ver2(frameDiffs, mediaTimes, locations, delayFrames, fps)
 
-%Modified from Segworm. This help is outdated, I'll modified later. AEJ
+%MODIFIED FROM SEGWORM AEJ. This help is outdated, I'll modified later. AEJ
 
 %FINDSTAGEMOVEMENT Find stage movements in a worm experiment.
 %
 % The algorithm is as follows:
 %
-% 1. video2Diff differentiates a video frame by frame and outputs the
-% differential variance. We load these frame differences.
-%
-% 2. The info file contains the tracking delay. This delay represents the
-% minimum time between stage movements and, conversely, the maximum time it
-% takes for a stage movement to complete. If the delay is too small, the
-% stage movements become chaotic. We load the value for the delay.
-%
-% 3. The log file contains the initial stage location at media time 0 as
-% well as the subsequent media times and locations per stage movement. Our
-% algorithm attempts to match the frame differences in the video (see step
-% 1) to the media times in this log file. Therefore, we load these media
-% times and stage locations.
-% 
 % 4. If there are no stage movements, we're done.
 %
 % 5. The log file sometimes contains more than one entry at 0 media time.

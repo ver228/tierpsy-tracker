@@ -22,7 +22,7 @@ main_dir = '/Users/ajaver/Desktop/Videos/single_worm/agar_2/MaskedVideos/'
 files = glob.glob(os.path.join(main_dir, '*.hdf5' ))
 files = sorted(files)
 #%%
-for mask_id, masked_image_file in enumerate(files[0:1]):
+for mask_id, masked_image_file in enumerate(files):
     skeletons_file = masked_image_file.replace('MaskedVideos', 'Results')[:-5] + '_skeletons.hdf5'
     feat_file = masked_image_file.replace('MaskedVideos', 'Features')[:-5] + '_features.mat'
 
