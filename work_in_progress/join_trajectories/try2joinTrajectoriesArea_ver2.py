@@ -389,8 +389,8 @@ def filterTableByArea(trajectories_data, min_area_limit = 50, n_sigma = 6):
 if __name__ == '__main__':
     #base directory
     #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch6_17112015_205616.hdf5'
-    masked_image_file = '/Users/ajaver/Desktop/Videos/Camille_151030/MaskedVideos/CSTCTest_Ch2_30102015_212430.hdf5'    
-    #masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_18112015_075624.hdf5'
+    #masked_image_file = '/Users/ajaver/Desktop/Videos/Camille_151030/MaskedVideos/CSTCTest_Ch2_30102015_212430.hdf5'    
+    masked_image_file = '/Users/ajaver/Desktop/Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_18112015_075624.hdf5'
     #masked_image_file = '/Users/ajaver/Desktop/Videos/04-03-11/MaskedVideos/575 JU440 swimming_2011_03_04__13_16_37__8.hdf5'    
     #masked_image_file = '/Users/ajaver/Desktop/Videos/04-03-11/MaskedVideos/575 JU440 on food Rz_2011_03_04__12_55_53__7.hdf5'    
     

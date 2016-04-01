@@ -124,7 +124,7 @@ class getTrajectoriesWorkerL():
     start_point = -1, end_point = checkpoint['END'], is_single_worm = False, 
     use_skel_filter = True, use_manual_join = False, cmd_original=''):
         
-        assert not is_single_worm
+        #assert not is_single_worm
         #get repository commit hash numbers (useful to determine what version of the code was executed)
         self.commit_hash = getGitCommitHash()
 
@@ -159,7 +159,7 @@ class getTrajectoriesWorkerL():
         if self.is_single_worm:
             #we need to force parameters to obtain the correct features
             self.use_manual_join = False
-            self.use_skel_filter = False
+            #self.use_skel_filter = False
             #self.param.head_tail_param['min_dist'] = 0
 
         #derive the inputs, functions, and output requires for each point in the analysis

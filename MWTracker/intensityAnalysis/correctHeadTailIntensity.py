@@ -243,12 +243,12 @@ def switchBlocks(skel_group, skeletons_file, int_group, intensities_file):
         cnt1_length = fid.get_node('/contour_side1_length')
         cnt2_length = fid.get_node('/contour_side2_length')
         
-        w_head_t = fid.get_node('/width_head_tip')
-        w_head_b = fid.get_node('/width_head_base')
-        w_neck = fid.get_node('/width_neck')
-        w_hips = fid.get_node('/width_hips')
-        w_tail_b = fid.get_node('/width_tail_base')
-        w_tail_t = fid.get_node('/width_tail_tip')
+        # w_head_t = fid.get_node('/width_head_tip')
+        # w_head_b = fid.get_node('/width_head_base')
+        # w_neck = fid.get_node('/width_neck')
+        # w_hips = fid.get_node('/width_hips')
+        # w_tail_b = fid.get_node('/width_tail_base')
+        # w_tail_t = fid.get_node('/width_tail_tip')
             
         for gg in skel_group:
             dat_switch_swap(contour_side1, contour_side2, gg)
@@ -257,9 +257,9 @@ def switchBlocks(skel_group, skeletons_file, int_group, intensities_file):
             dat_switch(contour_width, gg)
             
             dat_swap(cnt1_length, cnt2_length, gg)
-            dat_swap(w_head_t, w_tail_t, gg)
-            dat_swap(w_head_b, w_tail_b, gg)
-            dat_swap(w_hips, w_neck, gg)
+            #dat_swap(w_head_t, w_tail_t, gg)
+            #dat_swap(w_head_b, w_tail_b, gg)
+            #dat_swap(w_hips, w_neck, gg)
         fid.flush()
         
     with tables.File(intensities_file, 'r+') as fid:

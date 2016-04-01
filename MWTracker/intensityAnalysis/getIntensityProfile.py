@@ -161,13 +161,19 @@ def getIntensityProfile(masked_image_file, skeletons_file, intensities_file,
     #The rows of this new table are going to be saved into skeletons_file
     trajectories_data_valid = setIntMapIndexes(skeletons_file, min_num_skel)
 
-    tot_rows = len(trajectories_data_valid);
-    
     #let's save this new table into the intensities file
     with tables.File(intensities_file, 'w') as fid:
         fid.create_table('/', 'trajectories_data_valid', \
             obj = trajectories_data_valid.to_records(index=False), filters=table_filters)
     
+    tot_rows = len(trajectories_data_valid);
+    if tot_rows == 0:
+        with tables.File(intensities_file, "r+") as int_file_id:
+            #nothing to do here let's save empty data and go out
+            worm_int_avg_tab = int_file_id.create_array("/", "straighten_worm_intensity_median", obj=np.zeros(0))
+            worm_int_avg_tab._v_attrs['has_finished'] = 1;
+        return
+
     with tables.File(masked_image_file, 'r')  as mask_fid, \
          tables.File(skeletons_file, 'r') as ske_file_id, \
          tables.File(intensities_file, "r+") as int_file_id:

@@ -153,8 +153,9 @@ class WormFromTable(mv.NormalizedWorm):
         if self.smooth_window >= self.POL_DEGREE_DFLT and self.smooth_window % 2 == 0: 
             self.smooth_window += 1
 
-        skeleton_id, timestamp = self.getTrajDataTable()
-        
+        skeleton_id, timestamp, fps_n = self.getTrajDataTable(self.file_name, self.worm_index, self.use_skel_filter, self.use_manual_join)
+        if ~np.isnan(fps_n): self.fps = fps
+
         self.readSkeletonsData(skeleton_id, timestamp)        
         
         #smooth data if required
@@ -179,14 +180,13 @@ class WormFromTable(mv.NormalizedWorm):
         #check the axis dimensions to make it compatible with openworm
         if self.is_openworm: self.changeAxis()
 
-    def getTrajDataTable(self):
+    
+    def getTrajDataTable(self, file_name, worm_index, use_skel_filter, use_manual_join):
         '''
-        Get the relevant info from the trajectory_data table. skeleton_id, timestamp.
+        Get the relevant info from the trajectory_data table for a single worm. skeleton_id, timestamp.
         '''
         #intialize just to make clear the relevant variables for this function
-        file_name, worm_index, use_skel_filter, use_manual_join = \
-        self.file_name, self.worm_index, self.use_skel_filter, self.use_manual_join
-
+        
         with pd.HDFStore(file_name, 'r') as ske_file_id:
             trajectories_data = ske_file_id['/trajectories_data']
 
@@ -202,13 +202,17 @@ class WormFromTable(mv.NormalizedWorm):
             
             #try to read timestamp_raw if it does not exists of it contains invalid values use the frame_number as timestamp
             try:
-                timestamp = trajectories_data['timestamp_raw'].values
-                if np.any(np.isnan(timestamp)) or np.any(np.diff(timestamp == 0)): 
-                    raise
+                timestamp_raw = trajectories_data['timestamp_raw'].values
+                if np.any(np.isnan(timestamp_raw)) or np.any(np.diff(timestamp_raw == 0)): 
+                    raise ValueError
                 else:
-                    timestamp = timestamp.astype(np.int)
-            except:
-                timestamp = trajectories_data['frame_number'].values
+                    td = np.median(np.diff(trajectories_data['timestamp_raw']))
+                    fps = 1/td
+
+                    timestamp_raw = timestamp_raw.astype(np.int)
+            except (ValueError, KeyError):
+                timestamp_raw = trajectories_data['frame_number'].values
+                fps = np.nan
 
             #we need to use .values to use the & operator
             good_skeletons = (trajectories_data['has_skeleton'] == 1).values
@@ -219,12 +223,12 @@ class WormFromTable(mv.NormalizedWorm):
                 good_skeletons &= (trajectories_data['is_good_skel'] == 1).values
             
             skeleton_id = skeleton_id[good_skeletons]
-            timestamp = timestamp[good_skeletons]
+            timestamp_raw = timestamp_raw[good_skeletons]
             
             #import pdb
             #pdb.set_trace()
 
-            return skeleton_id, timestamp
+            return skeleton_id, timestamp_raw, fps
 
     def readSkeletonsData(self, skeleton_id, timestamp):
         
@@ -332,44 +336,12 @@ class wormStatsClass():
             
             for mtype in motion_types:
                 sub_name = feat_name + mtype;
-                feat_avg_names += [sub_name]
+                feat_avg_names.append(sub_name)
                 if feat_info['is_signed']:
                     for atype in ['_abs', '_neg', '_pos']:
-                        feat_avg_names += [sub_name + atype]
+                        feat_avg_names.append(sub_name + atype)
         
         self.feat_avg_names = feat_avg_names   
-
-
-    def featureStat(self, stat_func, data, name, is_signed, is_time_series, motion_mode = np.zeros(0), stats={}):
-        # I prefer to keep this function quite independend and pass the stats and moition_mode argument 
-        #rather than save those values in the class
-        if data is None:
-            data = np.zeros(0)
-        
-        motion_types = {'all':np.nan};
-        if is_time_series:
-            #if the the feature is motion type we can subdivide in Foward, Paused or Backward motion
-            assert motion_mode.size == data.size
-            
-            motion_types['foward'] = motion_mode == 1;
-            motion_types['paused'] = motion_mode == 0;
-            motion_types['backward'] = motion_mode == -1;
-        
-        
-        for key in motion_types:
-            if key == 'all':
-                valid = ~np.isnan(data)
-                sub_name = name
-            else:
-                valid = motion_types[key]
-                sub_name = name + '_' + key
-                
-            stats[sub_name] = stat_func(data[valid]);
-            if is_signed:
-                # if the feature is signed we can subdivide in positive, negative and absolute 
-                stats[sub_name + '_abs'] = stat_func(np.abs(data[valid]))
-                stats[sub_name + '_neg'] = stat_func(data[data<0 & valid])
-                stats[sub_name + '_pos'] = stat_func(data[data>0 & valid])
 
     def getFieldData(worm_features, name):
         data = worm_features
@@ -406,10 +378,44 @@ class wormStatsClass():
                 feat_stats[feat_name] = tmp_data
 
             else:
-                self.featureStat(stat_func, tmp_data, feat_name, \
+                feat_stats.update(_featureStat(stat_func, tmp_data, feat_name, \
                     feat_props['is_signed'], feat_props['is_time_series'], \
-                    motion_mode, stats=feat_stats)
+                    motion_mode))
         return feat_stats
+
+def _featureStat(stat_func, data, name, is_signed, is_time_series, motion_mode = np.zeros(0)):
+    # I prefer to keep this function quite independend and pass the stats and moition_mode argument 
+    #rather than save those values in the class
+    if data is None:
+        data = np.zeros(0)
+  
+    motion_types = OrderedDict();
+    motion_types['all'] = np.nan
+    #print(is_time_series, type(is_time_series))
+    if is_time_series:
+        #if the the feature is motion type we can subdivide in Foward, Paused or Backward motion
+        assert motion_mode.size == data.size
+        
+        motion_types['foward'] = motion_mode == 1;
+        motion_types['paused'] = motion_mode == 0;
+        motion_types['backward'] = motion_mode == -1;
+    
+    stats = OrderedDict()
+    for key in motion_types:
+        if key == 'all':
+            valid = ~np.isnan(data)
+            sub_name = name
+        else:
+            valid = motion_types[key]
+            sub_name = name + '_' + key
+            
+        stats[sub_name] = stat_func(data[valid]);
+        if is_signed:
+            # if the feature is signed we can subdivide in positive, negative and absolute 
+            stats[sub_name + '_abs'] = stat_func(np.abs(data[valid]))
+            stats[sub_name + '_neg'] = stat_func(data[data<0 & valid])
+            stats[sub_name + '_pos'] = stat_func(data[data>0 & valid])
+    return stats
 
 def getValidIndexes(skel_file, min_num_skel = 100, bad_seg_thresh = 0.8, min_dist = 5):
     #min_num_skel - ignore trajectories that do not have at least this number of skeletons

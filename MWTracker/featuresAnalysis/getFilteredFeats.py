@@ -14,10 +14,12 @@ import glob
 import warnings
 import os
 
+
 from ..helperFunctions.timeCounterStr import timeCounterStr
 from ..helperFunctions.miscFun import print_flush
 
 from sklearn.covariance import EllipticEnvelope, MinCovDet
+from scipy.stats import chi2
 np.seterr(invalid='ignore') 
 
 import warnings
@@ -56,11 +58,7 @@ def readField(fid, field, valid_index):
     data = data[valid_index]
     return data
 
-def nodes2Array(skeletons_file, valid_index = -1):
-
-    nodes4fit = ['/skeleton_length', '/contour_area'] + \
-    ['/' + name_width_fun(part) for part in worm_partitions]
-
+def nodes2Array(skeletons_file, nodes4fit, valid_index = -1):
     with tables.File(skeletons_file, 'r') as fid:
         assert all(node in fid for node in nodes4fit)
         
@@ -173,7 +171,7 @@ def calculateAreas(skeletons_file):
         print_flush(base_name + ' Calculating countour area. Finished. Total time :' + progress_timer.getTimeStr())
 
 
-def labelValidSkeletons(skeletons_file, good_skel_row, fit_contamination = 0.05):
+def labelValidSkeletons_old(skeletons_file, good_skel_row, fit_contamination = 0.05):
     base_name = getBaseName(skeletons_file)
     progress_timer = timeCounterStr('');
     
@@ -188,7 +186,11 @@ def labelValidSkeletons(skeletons_file, good_skel_row, fit_contamination = 0.05)
         
         print_flush(base_name + ' Filter Skeletons: Reading features for outlier identification.')
         #calculate classifier for the outliers    
-        X4fit = nodes2Array(skeletons_file, good_skel_row)
+        
+        nodes4fit = ['/skeleton_length', '/contour_area'] + \
+        ['/' + name_width_fun(part) for part in worm_partitions]
+        
+        X4fit = nodes2Array(skeletons_file, nodes4fit, good_skel_row)
         assert not np.any(np.isnan(X4fit))
         
         #%%
@@ -199,7 +201,7 @@ def labelValidSkeletons(skeletons_file, good_skel_row, fit_contamination = 0.05)
         
         print_flush(base_name + ' Filter Skeletons: Calculating outliers. Total time:' + progress_timer.getTimeStr())
         #calculate outliers using the fitted classifier
-        X = nodes2Array(skeletons_file) #use all the indexes
+        X = nodes2Array(skeletons_file, nodes4fit) #use all the indexes
         y_pred = clf.decision_function(X).ravel() #less than zero would be an outlier
 
         print_flush(base_name + ' Filter Skeletons: Labeling valid skeletons. Total time:' + progress_timer.getTimeStr())
@@ -210,7 +212,6 @@ def labelValidSkeletons(skeletons_file, good_skel_row, fit_contamination = 0.05)
     saveModifiedTrajData(skeletons_file, trajectories_data)
 
     print_flush(base_name + ' Filter Skeletons: Finished. Total time:' + progress_timer.getTimeStr())
-
 def getFrameStats(feat_file):
     
     stats_funs = {'median':np.nanmedian, 'mean':np.nanmean, \
@@ -239,24 +240,110 @@ def getFrameStats(feat_file):
             
             feat_fid.create_table(frame_stats_group, stat, \
             obj = plate_stats.to_records(), filters = table_filters)
+########
+
+def getMahalanobisRobust(dat, critical_alpha = 0.01, good_rows = np.zeros(0)):
+
+    '''Calculate the Mahalanobis distance from the sample vector.'''
+    
+    
+    if good_rows.size == 0:
+        good_rows = np.any(~np.isnan(dat), axis=1);
+    
+    robust_cov = MinCovDet().fit(dat[good_rows])
+    mahalanobis_dist = np.sqrt(robust_cov.mahalanobis(dat))
+    
+    #critial distance of the maholanobis distance using the chi-square distirbution
+    #https://en.wikiversity.org/wiki/Mahalanobis%27_distance
+    #http://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.chi2.html
+    maha_lim = chi2.ppf(1-critical_alpha, dat.shape[1])
+    outliers = mahalanobis_dist>maha_lim
+    
+    return mahalanobis_dist, outliers, maha_lim
+
+def readFeat2Check(skeletons_file, valid_index = -1):
+    nodes4fit = ['/skeleton_length', '/contour_area', '/width_midbody']
+    
+    worm_morph = nodes2Array(skeletons_file, nodes4fit, valid_index)
+    
+    with tables.File(skeletons_file, 'r') as fid:
+        if isinstance(valid_index, (float,int)) and valid_index <0:
+            valid_index = np.arange(fid.get_node(nodes4fit[0]).shape[0])
+
+        cnt_widths = fid.get_node('/contour_width')[valid_index,:]
+
+        head_widths = cnt_widths[:, 1:7]
+        tail_widths = cnt_widths[:, -7:-1]
+
+        #The log(x+1e-1) transform skew the distribution to the right, so the lower values have a higher change to 
+        #be outliers.I do this because a with close to zero is typically an oulier.
+        head_widthsL = np.log(head_widths+1)
+        tail_widthsL = np.log(tail_widths+1)
+
+    return worm_morph, head_widths, tail_widths, head_widthsL, tail_widthsL
+
+def labelValidSkeletons(skeletons_file, good_skel_row, critical_alpha = 0.01):
+    base_name = getBaseName(skeletons_file)
+    progress_timer = timeCounterStr('');
+    
+    print_flush(base_name + ' Filter Skeletons: Starting...')
+    with pd.HDFStore(skeletons_file, 'r') as table_fid:
+        trajectories_data = table_fid['/trajectories_data']
+
+    trajectories_data['is_good_skel'] = trajectories_data['has_skeleton']
+    
+    if good_skel_row.size > 0:
+        #nothing to do if there are not valid skeletons left. 
+        
+        print_flush(base_name + ' Filter Skeletons: Reading features for outlier identification.')
+        #calculate classifier for the outliers    
+
+        feats4fit = readFeat2Check(skeletons_file)
+        
+        print_flush(base_name + ' Filter Skeletons: Calculating outliers. Total time:' + progress_timer.getTimeStr())
+        
+
+        assert all(feats4fit[0].shape[0]==featdat.shape[0] for featdat in feats4fit) #check all the data to fit has the same size in the first axis
+
+        outliers_rob = np.zeros(feats4fit[0].shape[0], np.bool)
+        outliers_flag = np.zeros(feats4fit[0].shape[0], np.int)
+        assert len(feats4fit)<64 #otherwise the outlier flag will not work
+        
+        for out_ind, dat in enumerate(feats4fit):
+            maha, out_d, lim_d = getMahalanobisRobust(dat, critical_alpha, good_skel_row)
+            outliers_rob = outliers_rob | out_d
+
+            #flag the outlier flag by turning on the corresponding bit
+            outliers_flag += (out_d)*(2**out_ind)
+
+        print_flush(base_name + ' Filter Skeletons: Labeling valid skeletons. Total time:' + progress_timer.getTimeStr())
+        
+        #labeled rows of valid individual skeletons as GOOD_SKE
+        trajectories_data['is_good_skel'] &= ~outliers_rob
+        trajectories_data['skel_outliers_flag'] = outliers_flag
+
+    #Save the new is_good_skel column
+    saveModifiedTrajData(skeletons_file, trajectories_data)
+
+    print_flush(base_name + ' Filter Skeletons: Finished. Total time:' + progress_timer.getTimeStr())
 
 def getFilteredFeats(skeletons_file, use_skel_filter, min_num_skel = 100, bad_seg_thresh = 0.8, 
-    min_dist = 5, fit_contamination = 0.05):
+    min_dist = 5, critical_alpha = 0.01):#, fit_contamination = 0.05):
     #check if the skeletonization finished succesfully
     with tables.File(skeletons_file, "r") as ske_file_id:
         skeleton_table = ske_file_id.get_node('/skeleton')
         assert skeleton_table._v_attrs['has_finished'] >= 2
 
     #calculate valid widths and areas if they were not calculated before
-    calculateWidths(skeletons_file)
-    calculateAreas(skeletons_file)
+    #calculateWidths(skeletons_file)
+    #calculateAreas(skeletons_file)
 
     if use_skel_filter:
         #get valid rows using the trajectory displacement and the skeletonization success
         good_traj_index , good_skel_row = getValidIndexes(skeletons_file, \
         min_num_skel = min_num_skel, bad_seg_thresh = bad_seg_thresh, min_dist = min_dist)
-        
-        labelValidSkeletons(skeletons_file, good_skel_row, fit_contamination = fit_contamination)
+
+        labelValidSkeletons(skeletons_file, good_skel_row, critical_alpha = 0.01)#fit_contamination = fit_contamination)
 
     with tables.File(skeletons_file, "r+") as ske_file_id:
         skeleton_table = ske_file_id.get_node('/skeleton')

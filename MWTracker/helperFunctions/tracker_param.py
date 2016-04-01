@@ -21,7 +21,7 @@ class tracker_param:
             dilation_size = 9, compression_buff = 25, keep_border_data = False, roi_size = -1, 
             thresh_block_size = 61, fps = 25, fps_filter = 0, threshold_factor = 1.05,
             resampling_N = 49,  max_gap_allowed_block = 10, max_gap_allowed_block_int = -1, is_single_worm = False, 
-            bad_seg_thresh = 0.8, min_displacement = 0, fit_contamination = 0.05, strel_size = 5,
+            bad_seg_thresh = 0.8, min_displacement = 0, strel_size = 5, min_displacement_filt = 10, critical_alpha = 0.01, #fit_contamination = 0.05, 
             save_int_maps = False, int_avg_width_frac = 0.3, int_width_resampling = 15, int_length_resampling = 131):
         '''
         min_area - minimum area in pixels allowed
@@ -36,6 +36,7 @@ class tracker_param:
         If the value is less than zero, a different size will be estimated for each blob. 
         
         min_displacement - minimum total displacement of a trajectory to be included in the analysis
+        min_displacement_filt - minimum total displacement of a trajectory to be included in calculation of the limit to determine if a skeleton is an outlier
         bad_seg_thresh - minimum fraction of succesfully skeletonized frames in a worm trajectory to be considered valid
         
         resampling_N = number of segments used to renormalize the worm skeleton and contours
@@ -87,7 +88,7 @@ class tracker_param:
         'displacement_smooth_win': fps + 1, 'threshold_smooth_win' : fps*20 + 1, 'roi_size' : roi_size}
         
         #trajectories2Skeletons
-        self.skeletons_param = {'resampling_N' : resampling_N,
+        self.skeletons_param = {'resampling_N' : resampling_N, 'worm_midbody' : (0.33, 0.67), 
                                'min_mask_area' : min_area/2, 'smoothed_traj_param' : self.smoothed_traj_param,
                                'strel_size' : (strel_size,strel_size)}
         
@@ -101,7 +102,7 @@ class tracker_param:
         
         min_num_skel = 4*fps
         #getWormFeatures
-        self.feat_filt_param = {'min_num_skel' : min_num_skel, 'bad_seg_thresh' : bad_seg_thresh, 'min_dist' : min_displacement, 'fit_contamination' : fit_contamination}
+        self.feat_filt_param = {'min_num_skel' : min_num_skel, 'bad_seg_thresh' : bad_seg_thresh, 'min_dist' : min_displacement, 'critical_alpha' : critical_alpha}
 
 
         self.int_profile_param = {'width_resampling' : int_width_resampling, 'length_resampling' : int_length_resampling, 'min_num_skel' : min_num_skel,

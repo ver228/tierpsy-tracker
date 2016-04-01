@@ -292,7 +292,8 @@ def binaryMask2Contour(worm_mask, min_mask_area=50, roi_center_x = -1, roi_cente
     return contour.astype(np.double), cnt_area
 
 def trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file, \
-create_single_movies = False, resampling_N = 49, min_mask_area = 50, strel_size = (5,5), smoothed_traj_param = {}):    
+create_single_movies = False, resampling_N = 49, min_mask_area = 50, 
+strel_size = (5,5), smoothed_traj_param = {}, worm_midbody = (0.35, 0.65)):    
     
     #extract the base name from the masked_image_file. This is used in the progress status.
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
@@ -306,6 +307,7 @@ create_single_movies = False, resampling_N = 49, min_mask_area = 50, strel_size 
     trajectories_df, worms_frame_range, tot_rows, timestamp_raw, timestamp_time = \
     getSmoothTrajectories(trajectories_file, **smoothed_traj_param)
     if tot_rows == 0: tot_rows = 1; #this is to initialize the arrays to one row, pytables do not accept empty arrays as initializers of carrays
+    
     
     #pytables saving format is more convenient...
     with tables.File(skeletons_file, "w") as ske_file_id:
@@ -326,7 +328,7 @@ create_single_movies = False, resampling_N = 49, min_mask_area = 50, strel_size 
         trajectories_df['coord_y_new'] = np.nan
 
 
-    
+
     #open skeleton file for append and #the compressed videos as read
     with tables.File(skeletons_file, "r+") as ske_file_id, \
     tables.File(masked_image_file, 'r') as mask_fid:
@@ -359,6 +361,12 @@ create_single_movies = False, resampling_N = 49, min_mask_area = 50, strel_size 
                                         tables.Float32Atom(dflt=np.nan), \
                                         (tot_rows, resampling_N), filters=table_filters, \
                                         chunkshape = (1, resampling_N));
+        
+        #get the indexes that would be use in the calculation of the worm midbody width
+        midbody_ind = (int(np.floor(worm_midbody[0]*resampling_N)), int(np.ceil(worm_midbody[1])*resampling_N));
+        skel_arrays['width_midbody'] = ske_file_id.create_carray("/", 'width_midbody', \
+                        tables.Float32Atom(dflt=np.nan), (tot_rows,), filters=table_filters)
+    
 
         skel_arrays['contour_area'] = ske_file_id.create_carray('/', "contour_area", \
                                         tables.Float32Atom(dflt = np.nan), \
@@ -416,13 +424,14 @@ create_single_movies = False, resampling_N = 49, min_mask_area = 50, strel_size 
                     skel_arrays['contour_side2_length'][skeleton_id] = cnt_side2_len
     
                     skel_arrays['contour_width'][skeleton_id, :] = cnt_widths                
-
+                    skel_arrays['width_midbody'][skeleton_id] = np.median(cnt_widths[midbody_ind[0]:midbody_ind[1] + 1])
+                    
                     #convert into the main image coordinates
                     skel_arrays['skeleton'][skeleton_id, :, :] = skeleton + roi_corner
                     skel_arrays['contour_side1'][skeleton_id, :, :] = cnt_side1 + roi_corner
                     skel_arrays['contour_side2'][skeleton_id, :, :] = cnt_side2 + roi_corner
                     skel_arrays['contour_area'][skeleton_id] = cnt_area
-                    
+                            
                     has_skeleton[skeleton_id] = True
             
             if frame % 500 == 0:
