@@ -250,9 +250,19 @@ def getMahalanobisRobust(dat, critical_alpha = 0.01, good_rows = np.zeros(0)):
     if good_rows.size == 0:
         good_rows = np.any(~np.isnan(dat), axis=1);
     
-    robust_cov = MinCovDet().fit(dat[good_rows])
-    mahalanobis_dist = np.sqrt(robust_cov.mahalanobis(dat))
-    
+    #import pdb
+    #pdb.set_trace()
+
+    try:
+
+        robust_cov = MinCovDet().fit(dat[good_rows])
+        mahalanobis_dist = np.sqrt(robust_cov.mahalanobis(dat))
+    except ValueError:
+        #this step will fail if the covariance matrix is not singular. This happens if the data is not 
+        #a unimodal symetric distribution. For example there is too many small noisy particles. Therefore
+        #I will take a safe option and return zeros in the mahalanobis distance if this is the case.
+        mahalanobis_dist = np.zeros(dat.shape[0])
+
     #critial distance of the maholanobis distance using the chi-square distirbution
     #https://en.wikiversity.org/wiki/Mahalanobis%27_distance
     #http://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.chi2.html
