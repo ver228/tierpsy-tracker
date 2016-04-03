@@ -4,7 +4,7 @@ from PyQt5.QtCore import QDir, QTimer, Qt, QPointF
 from PyQt5.QtGui import QPixmap, QImage, QPainter, QColor, QFont, QPolygonF, QPen
 
 from MWTracker.GUI.MWTrackerViewerSingle.MWTrackerViewerSingle_ui import Ui_ImageViewer
-from MWTracker.GUI.HDF5videoViewer.HDF5videoViewer_GUI import HDF5videoViewer
+from MWTracker.GUI.HDF5videoViewer.HDF5videoViewer_GUI import HDF5videoViewer_GUI
 from MWTracker.trackWorms.getSkeletonsTables import getWormMask, binaryMask2Contour
 
 import tables, os
@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 import cv2
 
-class MWTrackerViewerSingle(HDF5videoViewer):
+class MWTrackerViewerSingle_GUI(HDF5videoViewer_GUI):
     def __init__(self, ui = ''):
         if not ui:
             super().__init__(Ui_ImageViewer())
@@ -180,7 +180,7 @@ class MWTrackerViewerSingle(HDF5videoViewer):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     
-    ui = MWTrackerViewerSingle()
+    ui = MWTrackerViewerSingle_GUI()
     ui.show()
     
     sys.exit(app.exec_())

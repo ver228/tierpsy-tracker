@@ -11,7 +11,7 @@ import tables
 import os
 import numpy as np
 
-class HDF5videoViewer(QMainWindow):
+class HDF5videoViewer_GUI(QMainWindow):
     def __init__(self, ui = ''):
         super().__init__()
         

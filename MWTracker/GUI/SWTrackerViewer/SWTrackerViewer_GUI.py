@@ -3,8 +3,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox,
 from PyQt5.QtCore import QDir, QTimer, Qt, QPointF
 from PyQt5.QtGui import QPixmap, QImage, QPainter, QColor, QFont, QPolygonF, QPen
 
-from MWTrackerViewerChunks_ui import Ui_ImageViewer
-from MWTracker.GUI.MWTrackerViewerSingle.MWTrackerViewerSingle_GUI import MWTrackerViewerSingle
+from MWTracker.GUI.SWTrackerViewer.SWTrackerViewer_ui import Ui_ImageViewer
+from MWTracker.GUI.MWTrackerViewerSingle.MWTrackerViewerSingle_GUI import MWTrackerViewerSingle_GUI
 from MWTracker.trackWorms.getSkeletonsTables import getWormMask, binaryMask2Contour
 from MWTracker.intensityAnalysis.correctHeadTailIntensity import createBlocks, _fuseOverlapingGroups
 
@@ -15,7 +15,7 @@ import cv2
 import json
 
 
-class MWTrackerViewerChunks(MWTrackerViewerSingle):
+class SWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
     def __init__(self, ui = ''):
         if not ui:
             super().__init__(Ui_ImageViewer())
@@ -127,7 +127,7 @@ class MWTrackerViewerChunks(MWTrackerViewerSingle):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     
-    ui = MWTrackerViewerChunks()
+    ui = SWTrackerViewer_GUI()
     ui.show()
 
     sys.exit(app.exec_())

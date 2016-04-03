@@ -13,12 +13,12 @@ from PyQt5.QtCore import QDir, QTimer, Qt, QPointF
 from PyQt5.QtGui import QPixmap, QImage, QPainter, QColor, QFont, QPolygonF, QPen
 
 from MWTracker.GUI.MWTrackerViewer.MWTrackerViewer_ui import Ui_ImageViewer
-from MWTracker.GUI.MWTrackerViewerSingle.MWTrackerViewerSingle_GUI import MWTrackerViewerSingle
+from MWTracker.GUI.MWTrackerViewerSingle.MWTrackerViewerSingle_GUI import MWTrackerViewerSingle_GUI
 
 from MWTracker.trackWorms.getSkeletonsTables import getWormROI, getWormMask, binaryMask2Contour
 from MWTracker.featuresAnalysis.obtainFeatures import WLAB
 
-class MWTrackerViewer_GUI(MWTrackerViewerSingle):
+class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 	def __init__(self, ui='', argv=''):
 		if not ui:
 			super().__init__(Ui_ImageViewer())
