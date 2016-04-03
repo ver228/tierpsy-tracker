@@ -1,4 +1,6 @@
 function  img_abs_diff = getFrameDiffVar(masked_image_file)
+fprintf('Calculationg variance of the difference between frames %2.2f%%\n', 0)
+
 %% mask information
 mask_info = h5info(masked_image_file, '/mask');
 % size of each frame
@@ -11,9 +13,9 @@ img_abs_diff = zeros(frame_total-1,1);
 
 frame_prev =  h5read(masked_image_file, '/mask', [1,1,1], [frame_size(1),frame_size(2), 1]);
 for ii = 2:frame_total
-    if mod(ii, 100) == 0
+    if mod(ii, 2000) == 0
         %progress
-        fprintf('%2.2f%%\n', (ii+1)/frame_total*100)
+        fprintf('Calculationg variance of the difference between frames %2.2f%%\n', (ii+1)/frame_total*100)
     end
     
     frame_current = h5read(masked_image_file, '/mask', [1,1,ii], [frame_size(1),frame_size(2), 1]);
@@ -30,3 +32,4 @@ for ii = 2:frame_total
     %buffer to the previous frame
     frame_prev = frame_current;
 end
+fprintf('Calculationg variance of the difference between frames %2.2f%%\n', 100)

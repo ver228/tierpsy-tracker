@@ -1,0 +1,50 @@
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/431 JU298 on food L_2011_03_17__12_02_58___2___3.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/798 JU258 on food L_2011_03_30__15_11_50___8___7.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/883 RC301 on food R_2011_03_10__15_49___3___9.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/972 JU345 on food R_2011_03_30__12_39_32___6___4.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/C24G7.1 (ok1822) on food R_2010_03_26__15_54_53___1___13.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/dpy-20 (e1282)IV on food L_2011_08_25__11_23_10___8___1.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/egl- (n693)V on food R_2010_09_16__14_57_56___7___7.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/egl-18 (ok290)IV on food R_2010_07_16__12_27_43___8___7.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/egl-23 (n601)IV on food R_2010_07_23__12_35_17___2___8.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/egl-30 (n686); goa-1 (n1134) on food R_2010_09_17__16_23___3___8.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/egl-47 (n1031)V on food R_2011_02_04__11_44_37___1___4.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/egl-5 (n486)III on food L_2010_05_11__16_09_59___4___13.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/flp-19 (ok2460) on food R_2010_01_20__11_17_06___8___5.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/flp-9 (ok2430) on food R_2011_02_04__11_27_20___2___3.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/goa-1 on food R_2009_10_30__15_20_35___4___8.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/gpa-11 (pk349)II on food L_2010_02_25__11_24_39___8___6.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/gpa-12 (pk322)X on food R_2010_03_04__09_22_05___1___2.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/gpa-16 (ok2349)I on food L_2010_03_11__11_06___3___4.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/gpa-16 (ok2349)X on food L_2010_03_09__12_24_31___2___6.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/gpa-4 (pk381)IV on food R_2010_03_04__10_25_16__5.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/M05B5.6 (tm3092) on food L_2010_03_26__14_34___3___9.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/M124 on food L_2010_05_14__16_52_44___2___18.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/mec-7 (v448) on food L_2010_11_11__11_47_32___2___3.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/N2 1 on food R_2011_06_01__12_21_58___1___2.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/N2 on food L_2009_12_11__12_04_46__1.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/N2 on food L_2011_02_08__11_42_29___7___3.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/N2 on food L_2011_03_24__16_41_19___7___5.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/N2 on food L_2011_04_14__12_07_25__3.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/N2 on food R_2009_09_04__13_16_18__11.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/N2 on food R_2010_03_26__10_14_56___7___1.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/N2 on food R_2010_09_16__11_25_14___2___1.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/N2 on food R_2010_10_15__15_36_54___7___10.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/N2 on food_2009_12_14__10_20_09___2___1.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/N2 on foodL_2010_07_16__10_27_34___7___1.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/nlp-1 (ok1469)X on food L_2010_03_17__12_58_07__9.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/nlp-15 (ok1512) on food R_2010_03_18__10_34_00___4___2.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/npr-13 (tm1504)V on food R_2010_01_25__11_57_02___7___2.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/npr-8 (tm1553)X on food L_2010_01_26__15_37_09___1___10.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/ocr-3 (ok1557) on food L_2010_04_22__11_29_12___4___7.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/ocr-4;2;1 on food L_2010_03_19__11_02_41___8___7.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/pmk-1 (km25) on food R_2010_04_21__11_30_04___7___4.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/sem-4 (ga82)I on food L_2010_07_27__16_23_09___1___12.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/T28138.5 (ok1014)on food L_2010_03_31__12_13___3___5.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/tag-336 (ok1477) on food R_2010_04_08__12_05_58___7___3.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/unc-127 (hs13)V on food L_2010_04_14__10_17_22___1___2.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/unc-16 (e109) on food L_2009_12_10__11_41_33___1___5.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/unc-4 (e120)II  on food L_2011_10_21__11_42_45__5.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/unc-60 (e273)V on food L_2010_04_14__12_40_09__9.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/unc-7 (cb5) on food R_2010_09_10__12_27_57__4.hdf5
+/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/unc-75 (e950)I on food L_2010_09_23__11_55___3___4.hdf5
