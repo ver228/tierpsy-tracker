@@ -40,7 +40,7 @@ def getStartingPoint(masked_image_file, results_dir):
     completely succesfully, or if it was interrupted restarted from the last succesful step'''
     
     base_name, trajectories_file, skeletons_file, features_file, \
-    feat_ind_file, intensities_file = constructNames(masked_image_file, results_dir)
+    feat_manual_file, intensities_file = constructNames(masked_image_file, results_dir)
 
     accepted_errors = (tables.exceptions.HDF5ExtError, tables.exceptions.NoSuchNodeError, KeyError, IOError)
     try:
@@ -93,7 +93,7 @@ def getStartingPoint(masked_image_file, results_dir):
     
 
     try:
-        with tables.File(feat_ind_file, "r") as feat_file_id:
+        with tables.File(feat_manual_file, "r") as feat_file_id:
             features_table = feat_file_id.get_node('/features_means')
             if features_table._v_attrs['has_finished'] == 0:
                 return checkpoint['FEAT_MANUAL_CREATE'];
@@ -221,10 +221,10 @@ class getTrajectoriesWorkerL():
             },
         'FEAT_MANUAL_CREATE': {
             'func':getWormFeaturesFilt,
-            'argkws':{'skeletons_file':self.skeletons_file, 'features_file':self.features_file, 
+            'argkws':{'skeletons_file':self.skeletons_file, 'features_file':self.feat_manual_file, 
                 'use_skel_filter':self.use_skel_filter, 'use_manual_join':True, 
                 'feat_filt_param':self.param.feat_filt_param},
-            'output_file':self.features_file
+            'output_file':self.feat_manual_file
             }
         }
 
