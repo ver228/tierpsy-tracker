@@ -54,8 +54,8 @@ class SWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
             self.changeSkelBlock(0)
 
         with tables.File(self.skel_file, 'r') as fid:
-            if '/stage_vec' in fid:
-                self.is_stage_move = np.isnan(fid.get_node('/stage_vec')[:,0])
+            if '/stage_movement/stage_vec' in fid:
+                self.is_stage_move = np.isnan(fid.get_node('/stage_movement/stage_vec')[:,0])
             else:
                 self.is_stage_move = []
     # def findCurrentBlock(self):

@@ -12,25 +12,29 @@ import matplotlib.pylab as plt
 from scipy.io import loadmat
 import glob
 import os
+import pandas as pd
 
-#44 has a shift...
+delT = 15
 
-delT = 15   
-
-main_dir = '/Users/ajaver/Desktop/Videos/single_worm/agar_2/MaskedVideos/'
+main_dir = '/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/'
 
 files = glob.glob(os.path.join(main_dir, '*.hdf5' ))
 files = sorted(files)
 #%%
-for mask_id, masked_image_file in enumerate(files):
+for mask_id, masked_image_file in enumerate(files[4:]):
     skeletons_file = masked_image_file.replace('MaskedVideos', 'Results')[:-5] + '_skeletons.hdf5'
     feat_file = masked_image_file.replace('MaskedVideos', 'Features')[:-5] + '_features.mat'
 
+    #%%
+    with pd.HDFStore(skeletons_file, 'r') as fid:
+        trajectories_data = fid['/trajectories_data']
     #%%
     with h5py.File(skeletons_file, 'r') as fid:
         if not '/stage_movement/stage_vec' in fid:
             continue
         skeletons_ori = fid['/skeleton'][:]
+        #skeletons_ori[~trajectories_data['is_good_skel'].values, :, :] = np.nan;
+        
         stage_vec = fid['/stage_movement/stage_vec'][:]
         
         timestamp_ind = fid['/timestamp/raw'][:].astype(np.int)
@@ -42,7 +46,7 @@ for mask_id, masked_image_file in enumerate(files):
         pixel_per_micron_scale = fid['/stage_movement'].attrs['pixel_per_micron_scale']
         
         for ind_ori, int_ts in enumerate(timestamp_ind):
-            #%%
+            
             rot_skel = np.dot(skeletons_ori[ind_ori], rotation_matrix)
             scale_skel = rot_skel*pixel_per_micron_scale;
             skeletons[int_ts,:,:]  = scale_skel - stage_vec[ind_ori]

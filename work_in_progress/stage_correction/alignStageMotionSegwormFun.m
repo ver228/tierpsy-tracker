@@ -59,18 +59,6 @@ function alignStageMotionSegwormFun(masked_image_file,skeletons_file)
     delay_time = str2double(delay_str) / 1000;
     delay_frames = ceil(delay_time * fps);
     
-    %% Read the media times and locations from the log file.
-    % (help from segworm findStageMovement)
-    % 3. The log file contains the initial stage location at media time 0 as
-    % well as the subsequent media times and locations per stage movement. Our
-    % algorithm attempts to match the frame differences in the video (see step
-    % 1) to the media times in this log file. Therefore, we load these media
-    % times and stage locations.
-    %from the .log.csv file
-    stage_data = h5read(masked_image_file, '/stage_data');
-    mediaTimes = stage_data.stage_time';
-    locations = [stage_data.stage_x , stage_data.stage_y];
-    
     %% Read the scale conversions, we would need this when we want to convert the pixels into microns
     pixelPerMicronX = 1/h5readatt(masked_image_file, '/mask', 'pixels2microns_x');
     pixelPerMicronY = 1/h5readatt(masked_image_file, '/mask', 'pixels2microns_y');
@@ -90,11 +78,34 @@ function alignStageMotionSegwormFun(masked_image_file,skeletons_file)
     sinAngle = sin(angle);
     rotation_matrix = [cosAngle, -sinAngle; sinAngle, cosAngle];
     
+    %% save appropiated attributes into the hdf5
+    h5writeatt(skeletons_file, '/stage_movement', 'fps', fps)
+    h5writeatt(skeletons_file, '/stage_movement', 'delay_frames', delay_frames)
+    h5writeatt(skeletons_file , '/stage_movement',  'pixel_per_micron_scale',  pixelPerMicronScale)
+    h5writeatt(skeletons_file , '/stage_movement',  'rotation_matrix',  rotation_matrix)
+    
     %% calculate the variance of the difference between frames
     % Ev's code uses the full vectors without dropping frames
     % 1. video2Diff differentiates a video frame by frame and outputs the
     % differential variance. We load these frame differences.
-    frame_diffs_d = getFrameDiffVar(masked_image_file);
+    frame_diffs_d = getFrameDiffVar(masked_image_file)';
+    
+    %Save data
+    h5create(skeletons_file, '/stage_movement/frame_diffs', size(frame_diffs_d), 'Datatype', 'double', ...
+        'Chunksize', size(frame_diffs_d), 'Deflate', 5, 'Fletcher32', true, 'Shuffle', true)
+    h5write(skeletons_file, '/stage_movement/frame_diffs', frame_diffs_d);
+    
+    %% Read the media times and locations from the log file.
+    % (help from segworm findStageMovement)
+    % 3. The log file contains the initial stage location at media time 0 as
+    % well as the subsequent media times and locations per stage movement. Our
+    % algorithm attempts to match the frame differences in the video (see step
+    % 1) to the media times in this log file. Therefore, we load these media
+    % times and stage locations.
+    %from the .log.csv file
+    stage_data = h5read(masked_image_file, '/stage_data');
+    mediaTimes = stage_data.stage_time';
+    locations = [stage_data.stage_x , stage_data.stage_y];
     
     %% The shift makes everything a bit more complicated. I have to remove the first frame, before resizing the array considering the dropping frames.
     
@@ -156,7 +167,6 @@ function alignStageMotionSegwormFun(masked_image_file,skeletons_file)
     
     %% prepare vectors to save into the hdf5 file.
     %Go back to the original movie indexing. I do not want to include the missing frames at this point.
-    frame_diffs_d = frame_diffs_d';
     is_stage_move_d = int8(is_stage_move(video_timestamp_ind))';
     
     
@@ -172,15 +182,7 @@ function alignStageMotionSegwormFun(masked_image_file,skeletons_file)
         'Chunksize', size(is_stage_move_d), 'Deflate', 5, 'Fletcher32', true, 'Shuffle', true)
     h5write(skeletons_file, '/stage_movement/is_stage_move', is_stage_move_d);
     
-    h5create(skeletons_file, '/stage_movement/frame_diffs', size(frame_diffs_d), 'Datatype', 'double', ...
-        'Chunksize', size(frame_diffs_d), 'Deflate', 5, 'Fletcher32', true, 'Shuffle', true)
-    h5write(skeletons_file, '/stage_movement/frame_diffs', frame_diffs_d);
     
     h5writeatt(skeletons_file, '/stage_movement', 'has_finished', uint8(exit_flag))
-    h5writeatt(skeletons_file, '/stage_movement', 'fps', fps)
-    h5writeatt(skeletons_file, '/stage_movement', 'delay_frames', delay_frames)
-    h5writeatt(skeletons_file , '/stage_movement',  'pixel_per_micron_scale',  pixelPerMicronScale)
-    h5writeatt(skeletons_file , '/stage_movement',  'rotation_matrix',  rotation_matrix)
-    
     disp('Finished.')
 end

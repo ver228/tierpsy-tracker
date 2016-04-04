@@ -25,7 +25,8 @@ robust_cov = MinCovDet().fit(datFeats[1][good_skel_row])
 
 #%%
 dat = datFeats[1][good_skel_row]
-for kk in dat.shape[1]:
+for kk in range(dat.shape[1]):
     x = dat[:, kk]
     
+    plt.figure()
     plt.plot(x)

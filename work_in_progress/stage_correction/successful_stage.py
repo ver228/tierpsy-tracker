@@ -10,7 +10,7 @@ import h5py
 import numpy as np
 import matplotlib.pylab as plt
 
-main_dir = '/Users/ajaver/Desktop/Videos/single_worm/agar_goa/MaskedVideos/'
+main_dir = '/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/'
 files = glob.glob(os.path.join(main_dir, '*.hdf5' ))
 files = sorted(files)
 

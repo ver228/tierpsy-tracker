@@ -1,6 +1,4 @@
 function  img_abs_diff = getFrameDiffVar(masked_image_file)
-fprintf('Calculationg variance of the difference between frames %2.2f%%\n', 0)
-
 %% mask information
 mask_info = h5info(masked_image_file, '/mask');
 % size of each frame
@@ -12,6 +10,8 @@ frame_total = mask_info.Dataspace.Size(3);
 img_abs_diff = zeros(frame_total-1,1);
 
 frame_prev =  h5read(masked_image_file, '/mask', [1,1,1], [frame_size(1),frame_size(2), 1]);
+
+fprintf('Calculationg variance of the difference between frames %2.2f%%\n', 0)
 for ii = 2:frame_total
     if mod(ii, 2000) == 0
         %progress
