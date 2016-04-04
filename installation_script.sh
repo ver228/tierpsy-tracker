@@ -22,7 +22,7 @@ rm $MW_MAIN_DIR/ffmpeg_old.zip
 if [ ! -d $OPENWORM_DIR ]
 	git clone https://github.com/openworm/open-worm-analysis-toolbox $OPENWORM_DIR
 else
-	cd $$OPENWORM_DIR
+	cd $OPENWORM_DIR
 	git pull https://github.com/openworm/open-worm-analysis-toolbox
 fi
 #change permissions so other users can access to this
