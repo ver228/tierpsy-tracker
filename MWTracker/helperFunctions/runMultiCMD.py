@@ -51,6 +51,7 @@ class start_process():
             self.cmd = cmd
             self.output = ['Started\n']
         
+        
         self.pid = sp.Popen(self.cmd, stdout = sp.PIPE, stderr = sp.PIPE,
                             bufsize = 1, close_fds = ON_POSIX)
         self.queue = Queue()

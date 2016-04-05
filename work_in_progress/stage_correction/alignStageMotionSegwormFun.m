@@ -11,8 +11,8 @@ function alignStageMotionSegwormFun(masked_image_file,skeletons_file)
             H5L.delete(gid,'is_stage_move','H5P_DEFAULT');
         end
         
-        if H5L.exists(gid,'frame_diff','H5P_DEFAULT')
-            H5L.delete(gid,'frame_diff','H5P_DEFAULT');
+        if H5L.exists(gid,'frame_diffs','H5P_DEFAULT')
+            H5L.delete(gid,'frame_diffs','H5P_DEFAULT');
         end
         H5L.delete(gid,'/stage_movement','H5P_DEFAULT');
         
