@@ -42,7 +42,7 @@ function clone_worm_analysis_toolbox {
 
 }
 
-function install_dependencies_homebrew {
+function install_dependencies {
 	#install homebrew and other software used
 	ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 	brew install wget cmake python3
