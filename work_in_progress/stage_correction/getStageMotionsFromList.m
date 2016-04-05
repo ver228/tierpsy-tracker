@@ -27,3 +27,6 @@ for ind_mask = 1:tot_masks
     
     
 end
+
+
+alignStageMotionSegwormFun('/Users/ajaver/Desktop/Videos/single_worm/agar_2/MaskedVideos/unc-75 (e950)I on food L_2010_09_23__11_55___3___4.hdf5', '/Users/ajaver/Desktop/Videos/single_worm/agar_2/Results/unc-75 (e950)I on food L_2010_09_23__11_55___3___4_skeletons.hdf5');
