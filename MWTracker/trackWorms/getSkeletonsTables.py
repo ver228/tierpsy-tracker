@@ -185,17 +185,18 @@ def getWormROI(img, CMx, CMy, roi_size = 128):
         return np.zeros(0, dtype=np.uint8), np.array([np.nan]*2)
 
     roi_center = int(roi_size)//2
-    roi_range = np.array([-roi_center, roi_center])
+    roi_range = np.round(np.array([-roi_center, roi_center]))
 
     #obtain bounding box from the trajectories
-    range_x = round(CMx) + roi_range
-    range_y = round(CMy) + roi_range
+    range_x = (CMx + roi_range).astype(np.int)
+    range_y = (CMy + roi_range).astype(np.int)
     
     if range_x[0]<0: range_x[0] = 0#range_x -= 
     if range_y[0]<0: range_y[0] = 0#range_y -= range_y[0]
     #%%
     if range_x[1]>img.shape[1]: range_x[1] = img.shape[1]#range_x += img.shape[1]-range_x[1]-1
     if range_y[1]>img.shape[0]: range_y[1] = img.shape[0]#range_y += img.shape[0]-range_y[1]-1
+    
     worm_img = img[range_y[0]:range_y[1], range_x[0]:range_x[1]]
     
     roi_corner = np.array([range_x[0]-1, range_y[0]-1])

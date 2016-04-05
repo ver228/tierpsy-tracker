@@ -23,7 +23,7 @@ import open_worm_analysis_toolbox as mv
 np.seterr(invalid='ignore')
 
 
-WLAB = {'U':0, 'WORM':1, 'WORMS':2, 'BAD':3, 'GOOD_SKE':4}
+
 
 def calWormAngles(x,y, segment_size):
     '''

@@ -8,12 +8,12 @@ import tables
 from functools import partial
 
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QFrame
-from PyQt5.QtCore import QDir, QTimer, Qt, QPointF
-from PyQt5.QtGui import QPixmap, QImage, QPainter, QColor, QFont, QPolygonF, QPen
+from PyQt4.QtGui import QApplication, QMainWindow, QFileDialog, QMessageBox, QFrame
+from PyQt4.QtCore import QDir, QTimer, Qt, QPointF
+from PyQt4.QtGui import QPixmap, QImage, QPainter, QColor, QFont, QPolygonF, QPen
 
-from MWTracker.GUI.MWTrackerViewer.MWTrackerViewer_ui import Ui_ImageViewer
-from MWTracker.GUI.MWTrackerViewerSingle.MWTrackerViewerSingle_GUI import MWTrackerViewerSingle_GUI
+from MWTracker.GUI_Qt4.MWTrackerViewer.MWTrackerViewer_ui import Ui_ImageViewer
+from MWTracker.GUI_Qt4.MWTrackerViewerSingle.MWTrackerViewerSingle_GUI import MWTrackerViewerSingle_GUI
 
 from MWTracker.trackWorms.getSkeletonsTables import getWormROI, getWormMask, binaryMask2Contour
 
