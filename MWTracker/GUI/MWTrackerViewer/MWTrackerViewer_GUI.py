@@ -130,7 +130,7 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 		if self.image_group == -1:
 			return
 
-		super(MWTrackerViewerSingle,self).readImage()
+		super(MWTrackerViewerSingle_GUI,self).readImage()
 		self.img_h_ratio = self.frame_qimg.height()/self.image_height;
 		self.img_w_ratio = self.frame_qimg.width()/self.image_width;
 		
