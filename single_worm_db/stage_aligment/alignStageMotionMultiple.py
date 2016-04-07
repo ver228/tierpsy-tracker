@@ -13,6 +13,7 @@ from queue import Queue, Empty
 import shutil
 import argparse
 import tempfile
+import time, datetime
 
 from MWTracker.helperFunctions.runMultiCMD import runMultiCMD, print_cmd_list
 from MWTracker.helperFunctions.miscFun import print_flush
@@ -22,7 +23,7 @@ from MWTracker.helperFunctions.miscFun import print_flush
 class alignSingleLocal:
     def __init__(self, dat):
         masked_image_file, skeletons_file, tmp_dir, matlab_path = dat
-
+        self.matlab_path = matlab_path
         self.masked_image_file = os.path.abspath(masked_image_file)
         self.skeletons_file = os.path.abspath(skeletons_file)
 
@@ -44,7 +45,7 @@ class alignSingleLocal:
 
 
     def start(self):
-        
+        self.start_time = time.time()
         if os.path.abspath(self.masked_image_tmp) != os.path.abspath(self.masked_image_file):
             print(self.base_name + ' Copying mask file to temporary directory.')
             shutil.copy(self.masked_image_file, self.masked_image_tmp)
@@ -60,7 +61,7 @@ class alignSingleLocal:
 
     def create_script(self):
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        start_cmd = (matlab_path + ' -nojvm -nosplash -nodisplay -nodesktop <').split()
+        start_cmd = (self.matlab_path + ' -nojvm -nosplash -nodisplay -nodesktop <').split()
         
         script_cmd = "addpath('{0}'); " \
         "try, alignStageMotionSegwormFun('{1}', '{2}'); " \
@@ -90,8 +91,9 @@ class alignSingleLocal:
             assert os.path.exists(self.masked_image_file)
             os.remove(self.masked_image_tmp)
 
-        print(self.base_name + ' Finished.')
-
+        time_str = str(datetime.timedelta(seconds=round(time.time()-self.start_time)))
+        print_flush('%s  Finished. Total time %s' % (self.base_name, time_str))
+        
 
 def main(mask_list_file, tmp_dir, max_num_process, refresh_time, reset, matlab_path) :
 
@@ -100,7 +102,7 @@ def main(mask_list_file, tmp_dir, max_num_process, refresh_time, reset, matlab_p
 
     
     with open(mask_list_file, 'r') as fid:
-        mask_files = fid.read().split('\n')
+        mask_files = fid.read().split('\n')[:100]
 
     getSkelF = lambda  x: x.replace('MaskedVideos', 'Results').replace('.hdf5', '_skeletons.hdf5')
     originalFiles = [(x, getSkelF(x)) for x in mask_files if x]
