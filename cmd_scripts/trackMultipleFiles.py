@@ -26,7 +26,6 @@ def main(mask_dir_root, tmp_dir_root, json_file, script_abs_path, \
 	
 	pattern_exclude = [pattern_exclude] + ctf.invalid_ext
 	
-
 	if not videos_list:
 		valid_files = exploreDirs(mask_dir_root, pattern_include = pattern_include, pattern_exclude = pattern_exclude)
 	else:

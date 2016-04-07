@@ -260,13 +260,9 @@ class trackLocal_parser(trackLocal):
 		self.parser.add_argument('--use_manual_join', action='store_true', help = '.')
 		self.parser.add_argument('--no_skel_filter', action='store_true', help = '.')
 
-
 		args = self.parser.parse_args(sys_argv[1:])
 		super(trackLocal_parser, self).__init__(**vars(args), cmd_original = subprocess.list2cmdline(sys_argv))
 		
 if __name__ == '__main__':
 	d = trackLocal_parser(sys.argv)
 	d.exec_all()
-	
-
-
