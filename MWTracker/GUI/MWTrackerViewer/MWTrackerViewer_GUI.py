@@ -16,6 +16,7 @@ from MWTracker.GUI.MWTrackerViewer.MWTrackerViewer_ui import Ui_ImageViewer
 from MWTracker.GUI.MWTrackerViewerSingle.MWTrackerViewerSingle_GUI import MWTrackerViewerSingle_GUI
 
 from MWTracker.trackWorms.getSkeletonsTables import getWormROI, getWormMask, binaryMask2Contour
+from MWTracker.helperFunctions import WLAB
 
 class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 	def __init__(self, ui='', argv=''):
@@ -37,7 +38,7 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 		self.frame_data = -1
 		self.h5path = self.ui.comboBox_h5path.itemText(0)
 		
-		self.wlab = {'U':0, 'WORM':1, 'WORMS':2, 'BAD':3, 'GOOD_SKE':4}
+		self.wlab = WLAB
 		self.wlabC = {self.wlab['U']:Qt.white, self.wlab['WORM']:Qt.green, self.wlab['WORMS']:Qt.blue, self.wlab['BAD']:Qt.darkRed, self.wlab['GOOD_SKE']:Qt.darkCyan}
 		
 		self.videos_dir = r"/Volumes/behavgenom$/GeckoVideo/MaskedVideos/"
