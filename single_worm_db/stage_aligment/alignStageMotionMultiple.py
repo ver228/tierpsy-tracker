@@ -17,6 +17,11 @@ import tempfile
 from MWTracker.helperFunctions.runMultiCMD import runMultiCMD, print_cmd_list
 from MWTracker.helperFunctions.miscFun import print_flush
 
+
+MATLAB_PATH = '/Applications/MATLAB_R2015a.app/bin/matlab'
+if not os.path.exists(MATLAB_PATH):
+    raise FileExistsError('Matlab do not exists. Modify the variable MATLAB_PATH in %s to point to the correct file' % os.path.realpath(__file__))
+
 class alignSingleLocal:
     def __init__(self, dat):
         masked_image_file, skeletons_file, tmp_dir = dat
@@ -58,7 +63,7 @@ class alignSingleLocal:
 
     def create_script(self):
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        start_cmd = '/Applications/MATLAB_R2014b.app/bin/matlab -nojvm -nosplash -nodisplay -nodesktop <'.split()
+        start_cmd = (MATLAB_PATH + ' -nojvm -nosplash -nodisplay -nodesktop <').split()
         
         script_cmd = "addpath('{0}'); " \
         "try, alignStageMotionSegwormFun('{1}', '{2}'); " \
@@ -99,10 +104,20 @@ def main(mask_list_file, tmp_dir, max_num_process, refresh_time, reset) :
     getSkelF = lambda  x: x.replace('MaskedVideos', 'Results').replace('.hdf5', '_skeletons.hdf5')
     originalFiles = [(x, getSkelF(x)) for x in mask_files if x]
     
+    
     files2check = []
-    for mask_file, skel_file in originalFiles:
-        assert os.path.exists(mask_file)
-        assert os.path.exists(skel_file)
+    print('Checking files for processing...')
+    for ii, (mask_file, skel_file) in enumerate(originalFiles):
+        if ii%100 ==0:
+            print('%i out of %i.' % (ii+1, len(originalFiles)))
+        try:
+            if not os.path.exists(mask_file):
+                raise FileExistsError('File does not exists: %s'% mask_file)
+            if not os.path.exists(skel_file):
+                raise FileExistsError('File does not exists: %s'% skel_file)
+        except FileExistsError as er:
+            print(er)
+            continue
 
         with h5py.File(skel_file, 'r+') as fid:
             try:
@@ -119,7 +134,7 @@ def main(mask_list_file, tmp_dir, max_num_process, refresh_time, reset) :
     base_names = [os.path.split(x[1])[1] for x in files2check]
     assert len(base_names) == len(set(base_names))
     
-    print('Files to be processed:', len(files2check))
+    print('Number of files to be processed:', len(files2check))
     runMultiCMD(files2check, local_obj=alignSingleLocal, max_num_process = max_num_process, refresh_time = refresh_time)
 
 
