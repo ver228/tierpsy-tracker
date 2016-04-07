@@ -1,5 +1,1 @@
-python3 ./stage_aligment/alignStageMotionMultiple.py masks_agar_1 --max_num_process 18
-
-
-
-
+python3 ./stage_aligment/alignStageMotionMultiple.py masks_agar_1 --max_num_process 30 --matlab_path /Applications/MATLAB_R2015a.app/bin/matlab

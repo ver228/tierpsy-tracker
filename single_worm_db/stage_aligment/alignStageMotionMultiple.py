@@ -18,13 +18,10 @@ from MWTracker.helperFunctions.runMultiCMD import runMultiCMD, print_cmd_list
 from MWTracker.helperFunctions.miscFun import print_flush
 
 
-MATLAB_PATH = '/Applications/MATLAB_R2015a.app/bin/matlab'
-if not os.path.exists(MATLAB_PATH):
-    raise FileExistsError('Matlab do not exists. Modify the variable MATLAB_PATH in %s to point to the correct file' % os.path.realpath(__file__))
 
 class alignSingleLocal:
     def __init__(self, dat):
-        masked_image_file, skeletons_file, tmp_dir = dat
+        masked_image_file, skeletons_file, tmp_dir, matlab_path = dat
 
         self.masked_image_file = os.path.abspath(masked_image_file)
         self.skeletons_file = os.path.abspath(skeletons_file)
@@ -63,7 +60,7 @@ class alignSingleLocal:
 
     def create_script(self):
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        start_cmd = (MATLAB_PATH + ' -nojvm -nosplash -nodisplay -nodesktop <').split()
+        start_cmd = (matlab_path + ' -nojvm -nosplash -nodisplay -nodesktop <').split()
         
         script_cmd = "addpath('{0}'); " \
         "try, alignStageMotionSegwormFun('{1}', '{2}'); " \
@@ -96,7 +93,11 @@ class alignSingleLocal:
         print(self.base_name + ' Finished.')
 
 
-def main(mask_list_file, tmp_dir, max_num_process, refresh_time, reset) :
+def main(mask_list_file, tmp_dir, max_num_process, refresh_time, reset, matlab_path) :
+
+    if not os.path.exists(matlab_path):
+        raise FileExistsError('Matlab path %s do not exists. Assign a correct path.' % matlab_path)
+
     
     with open(mask_list_file, 'r') as fid:
         mask_files = fid.read().split('\n')
@@ -127,7 +128,7 @@ def main(mask_list_file, tmp_dir, max_num_process, refresh_time, reset) :
                 has_finished = 0;
 
         if has_finished == 0:
-            files2check.append(('', mask_file, skel_file, tmp_dir))
+            files2check.append(('', mask_file, skel_file, tmp_dir, matlab_path))
 
 
     #make sure all the files have unique names, otherwise having the temporary direcotry can cause problems 
@@ -149,7 +150,7 @@ if __name__ == '__main__':
     parser.add_argument('--max_num_process', default = 6, type = int, help = 'Max number of process to be executed in parallel.')
     parser.add_argument('--refresh_time', default = 10, type = float, help = 'Refresh time in seconds of the process screen.')
     parser.add_argument('--reset', action='store_true', help = 'Reset the has_finished flag of all the files to zero.')
-
+    parser.add_argument('--matlab_path', default= '/Applications/MATLAB_R2014b.app/bin/matlab', help = 'Path to the MATLAB excecutable.')
     args = parser.parse_args()
 
     main(**vars(args))
