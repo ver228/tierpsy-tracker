@@ -23,7 +23,7 @@ from ..helperFunctions.miscFun import print_flush
 import open_worm_analysis_toolbox as mv
 
 from MWTracker.featuresAnalysis.obtainFeaturesHelper import wormStatsClass, WormFromTable, getValidIndexes
-from MWTracker.helperFunctions import WLAB
+from MWTracker.helperFunctions.miscFun import WLAB
 
 def getWormFeatures(skeletons_file, features_file, good_traj_index, \
     use_skel_filter = True, use_manual_join = False):

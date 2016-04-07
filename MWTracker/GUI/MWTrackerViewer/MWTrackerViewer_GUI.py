@@ -16,7 +16,7 @@ from MWTracker.GUI.MWTrackerViewer.MWTrackerViewer_ui import Ui_ImageViewer
 from MWTracker.GUI.MWTrackerViewerSingle.MWTrackerViewerSingle_GUI import MWTrackerViewerSingle_GUI
 
 from MWTracker.trackWorms.getSkeletonsTables import getWormROI, getWormMask, binaryMask2Contour
-from MWTracker.helperFunctions import WLAB
+from MWTracker.helperFunctions.miscFun import WLAB
 
 class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 	def __init__(self, ui='', argv=''):
