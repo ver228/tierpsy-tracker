@@ -337,7 +337,7 @@ def labelValidSkeletons(skeletons_file, good_skel_row, critical_alpha = 0.01):
 
     print_flush(base_name + ' Filter Skeletons: Finished. Total time:' + progress_timer.getTimeStr())
 
-def getFilteredFeats(skeletons_file, use_skel_filter, min_num_skel = 100, bad_seg_thresh = 0.8, 
+def getFilteredSkels(skeletons_file, use_skel_filter, min_num_skel = 100, bad_seg_thresh = 0.8, 
     min_dist = 5, critical_alpha = 0.01):#, fit_contamination = 0.05):
     #check if the skeletonization finished succesfully
     with tables.File(skeletons_file, "r") as ske_file_id:

@@ -1,6 +1,0 @@
-setup.py
-MWTracker/__init__.py
-MWTracker.egg-info/PKG-INFO
-MWTracker.egg-info/SOURCES.txt
-MWTracker.egg-info/dependency_links.txt
-MWTracker.egg-info/top_level.txt

@@ -17,7 +17,7 @@ import matplotlib.pylab as plt
 #import sys
 #sys.path.append('/Users/ajaver/Documents/GitHub/Multiworm_Tracking')
 
-from MWTracker.featuresAnalysis.getFilteredFeats import saveModifiedTrajData
+from MWTracker.trackWorms.getFilteredSkels import saveModifiedTrajData
 from MWTracker.trackWorms.getSkeletonsTables import getWormROI
 from MWTracker.helperFunctions.timeCounterStr import timeCounterStr
 from MWTracker.helperFunctions.miscFun import print_flush

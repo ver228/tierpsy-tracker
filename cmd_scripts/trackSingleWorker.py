@@ -13,11 +13,11 @@ from MWTracker.trackWorms.getWormTrajectories import getWormTrajectories, correc
 from MWTracker.trackWorms.getDrawTrajectories import drawTrajectoriesVideo
 from MWTracker.trackWorms.getSkeletonsTables import trajectories2Skeletons, writeIndividualMovies
 from MWTracker.trackWorms.checkHeadOrientation import correctHeadTail
+from MWTracker.trackWorms.getFilteredSkels import getFilteredSkels
 
 from MWTracker.intensityAnalysis.getIntensityProfile import getIntensityProfile
 from MWTracker.intensityAnalysis.correctHeadTailIntensity import correctHeadTailIntensity
 
-from MWTracker.featuresAnalysis.getFilteredFeats import getFilteredFeats
 from MWTracker.featuresAnalysis.obtainFeatures import getWormFeaturesFilt
 
 from MWTracker.helperFunctions.tracker_param import tracker_param
@@ -195,7 +195,7 @@ class getTrajectoriesWorkerL():
             'output_file':self.skeletons_file
             },
         'SKE_FILT': {
-            'func':getFilteredFeats,
+            'func':getFilteredSkels,
             'argkws':{**{'skeletons_file':self.skeletons_file, 'use_skel_filter':self.use_skel_filter}, 
                          **self.param.feat_filt_param},
             'output_file':self.skeletons_file
