@@ -101,20 +101,23 @@ def selectVideoReader(video_file):
     else:
         #use opencv VideoCapture
         vid = cv2.VideoCapture(video_file);
-        im_width= vid.get(cv2.CAP_PROP_FRAME_WIDTH)
-        im_height= vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
+        #im_width= vid.get(cv2.CAP_PROP_FRAME_WIDTH)
+        #im_height= vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
+        
         #sometimes video capture seems to give the wrong dimenssions read the firest image and try again
         ret, image = vid.read() #get video frame, stop program when no frame is retrive (end of file)
         if ret:
             im_height, im_width, _ = image.shape
             vid.release()
             vid = cv2.VideoCapture(video_file);
+        else:
+            raise OSError('Cannot get an image from %s.\n It is likely that either the file name is wrong, the file is corrupt or OpenCV was not installed with ffmpeg support.' % video_file)
         reader_type = READER_TYPE['OPENCV']
 
     return vid, im_width, im_height, reader_type
 
 def compressVideo(video_file, masked_image_file, buffer_size = 25, \
-save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
+save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM, expected_fps = 25):
     '''
     Compresses video by selecting pixels that are likely to have worms on it and making the rest of 
     the image zero. By creating a large amount of redundant data, any lossless compression
@@ -190,7 +193,8 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM):
                                         compression_opts=4,
                                         shuffle=True, fletcher32=True);
         full_dataset.attrs['save_interval'] = save_full_interval
-        
+        full_dataset.attrs['expected_fps'] = expected_fps
+
         #attribute labels to make the group compatible with the standard image definition in hdf5
         full_dataset.attrs["CLASS"] = np.string_("IMAGE")
         full_dataset.attrs["IMAGE_SUBCLASS"] = np.string_("IMAGE_GRAYSCALE")

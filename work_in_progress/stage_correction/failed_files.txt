@@ -1,0 +1,912 @@
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Andre/25-11-10/247 JU438 on food R_2010_11_25__12_12_50___2___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Andre/25-11-10/798 JU258 on food L_2010_11_25__16_15_30___2___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Andre/25-11-10/343 ED3021 on food R_2010_11_25__16_53_32___2___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Andre/25-11-10/814 JU393 on food R_2010_11_25__12_38_46___2___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Andre/08-03-11/300 LSJ1 on food L_2011_03_08__16_28_05___2___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Andre/08-03-11/399 CB4956 on food R_2011_03_08__17_02_24___2___13.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Andre/07-03-11/883 RC301 on food R_2011_03_07__15_57_59___2___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Andre/09-03-11/532 CB4853 swiming_2011_03_09__17_29_11___2___13.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Andre/30-03-11/764 ED3049 on food L_2011_03_30__16_30_19___2___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Andre/17-02-11/343 ED3021 on food R_2011_02_17__13_05_53___2___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Andre/26-11-10/343 ED3021 on food R_2010_11_26__11_34_13___2___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Andre/26-11-10/343 ED3021 on food L_2010_11_26__16_25_15___2___13.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Andre/26-11-10/343 ED3021 on food L_2010_11_26__16_44_22___2___14.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Andre/26-11-10/575 JU440 on food R_2010_11_26__12_06_32___2___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Andre/26-11-10/399 CB4856 on food R_2010_11_26__12_44_38___2___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Andre/26-11-10/507 ED3054 on food L_2010_11_26__10_54_06___2___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Andre/26-11-10/300 LS51 on food R_2010_11_26__15_22_54___2___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Andre/26-11-10/399 CB4856 on food R_2010_11_26__16_04_31___2___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Andre/22-03-11/N2 on food R_2011_03_22__15_32_37___2___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Monika/110602/197 PS 312 2 on N2-L2 L_2011_06_02__13_13_00___2___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Monika/110715/197 PS312 on food R_2011_07_15__16_17_35___2___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Monika/110617/197 PS312 2 on N2-LL2 R_2011_06_17__15_28_21___2___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Monika/110708/N2 2 on food L_2011_07_08__10_41_44___2___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Monika/110708/197 PS312 2 on mec-4-L3 L_2011_07_08__15_23_33___2___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Monika/110616/197 PS312 2 on N2-LL2 L_2011_06_16__15_47_01___2___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-15/Monika/110608/197 PS312 2 on N2-L2 L_2011_06_08__15_20_02___2___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/25-11-10/431 JU298 on food L_2010_11_25__12_52_55__5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/25-11-10/883 RC301 on food L_2010_11_25__12_15_44__3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/25-11-10/507 ED3054 on food L_2010_11_25__17_04_47__7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/08-03-11/300 LSJ1 on food L_2011_03_08__15_20_46__7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/24-03-11/422 ED3017 wimming_2011_03_24__12_33_18__2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/14-04-11/399 CB4856 on food R_2011_04_14__12_42_36__5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/09-03-11/N2 on food R_2011_03_09__12_35_37__5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/30-03-11/N2 on food L_2011_03_30__16_40_18__12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/30-03-11/972 JU345 on food R_2011_03_30__13_17_12__6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/11-04-11/N2 on food_2011_04_11__16_42_38__1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/17-02-11/798 JU258 on food L_2011_02_17__11_39_21__3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/17-02-11/798 JU258 on food L_2011_02_17__13_16_36__8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/26-11-10/798 JU258 on food L_2010_11_26__16_54_56__15.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/26-11-10/798 JU258 on food L_2010_11_26__16_28_04__14.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/26-11-10/N2 on food R_2010_11_26__11_44_13__4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/26-11-10/343 ED302 on food L_2010_11_26__16_13_34__12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/26-11-10/247 JU438 on food L_2010_11_26__11_04_21__2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/26-11-10/343 ED302 on food L_2010_11_26__15_32_02__10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/26-11-10/343 ED302 on food L_2010_11_26__16_14_28__13.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/26-11-10/883 RC301 on food R_2010_11_26__12_16_39__6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/26-11-10/798 JU258 on food L_2010_11_26__12_55_53__8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/29-03-11/N2 on food L_2011_03_29__16_59_20__16.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-9/Andre/29-03-11/N2 on food L_2011_03_29__17_02_16__17.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-13/misc_videos/robyn dvd/AQ2316 on food L_2011_05_25__09_59_00___1___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-13/misc_videos/robyn dvd/AQ2000 on food L_2011_05_19__16_42_00___1___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-13/misc_videos/robyn dvd/AQ2316 on food L_2011_05_11__10_55_58___1___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-13/misc_videos/robyn dvd/1/clh-3 (ok768) on food L_2011_06_07__15_23___3___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-13/misc_videos/robyn dvd/1/AQ1062 on food R_2011_06_14__16_03_57___1___13.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-13/misc_videos/robyn dvd/1/N2 (Robyn) on food L_2011_06_14__16_05___3___13.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-13/misc_videos/robyn dvd/1/egl-42 (n995) on food R_2011_06_07__15_21_24___1___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-13/misc_videos/rb1546/RB1546 on food R_2010_11_18__15_50_37___1___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/copied from pc207-13/misc_videos/rb1546/RB1546 on food R_2010_11_18__15_32_46___1___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/from pc207-12/misc_videos/robyn dvd/AQ2458 on food L_2011_05_25__10_01_09___6___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/from pc207-12/misc_videos/robyn dvd/2/N2 Kate on food R_2011_08_02__10_42_44__1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/from pc207-12/misc_videos/robyn dvd/2/N2 Laura on food L_2011_08_03__09_35_50__1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/from pc207-12/misc_videos/robyn dvd/2/N2 Kate on food L_2011_08_03__09_32_57___6___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/from pc207-12/misc_videos/robyn dvd/2/N2 Kate on food R_2011_08_03__15_44_56__2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/from pc207-12/misc_videos/robyn dvd/1/clh-3 (ok768) on food R_2011_06_07__13_24_29___6___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-18/!worm_videos/from pc207-12/misc_videos/robyn dvd/1/AQ1062 on food R_2011_06_14__16_06_11___6___13.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-12/Andre/22-02-11/N2 swimmng_2011_02_22__12_41_05___6___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-12/Andre/25-11-10/N2 on food L_2010_11_25__12_13_26___6___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-12/Andre/25-11-10/300 LS51 on food R_2010_11_25__17_00_59___6___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-12/Andre/25-11-10/883 RC301 on food L_2010_11_25__12_49_03___6___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-12/Andre/25-11-10/N2 on food L_2010_11_25__12_04_00___6___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-12/Andre/25-11-10/431 JU298 on food_2010_11_25__16_24_05___6___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-12/Andre/08-03-11/247 JU438 on food R_2011_03_08__17_02_58___6___15.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-12/Andre/17-03-11/575 JU440 on food L_2011_03_17__11_50_10___6___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-12/Andre/09-03-11/800 MY 16 on food L_2011_03_09__17_33_08___6___14.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-12/Andre/30-03-11/972 JU345 on food R_2011_03_30__12_39_32___6___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-12/Andre/26-11-10/N2 on food R_2010_11_26__12_13_12___6___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-12/Andre/26-11-10/247 JU438 on food R_2010_11_26__11_16_29___6___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-12/Andre/26-11-10/814 JU393 on food L_2010_11_26__11_00_47___6___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-12/Andre/26-11-10/247 JU438 on food R_2010_11_26__11_40_33___6___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-12/Andre/26-11-10/883 RC301 on food L_2010_11_26__12_52_17___6___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-12/Andre/26-11-10/N2 on food L_2010_11_26__16_51_29___6___14.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-16/Andre/25-11-10/431 JU298 on food R_2010_11_25__17_02_13___7___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-16/Andre/25-11-10/883 RC301 on food L_2010_11_25__16_24_13___7___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-16/Andre/25-11-10/575 JU440 on food L_2010_11_25__12_15_54___7___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-16/Andre/25-11-10/575 JU440 on food L_2010_11_25__11_38_16___7___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-16/Andre/24-02-11/371 JU402 on food R_2011_02_24__16_39_21___7___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-16/Andre/28-03-11/764 ED3049 wimming_2011_03_28__13_09_19___7___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-16/Andre/03-03-11/764 ED3049 swiming_2011_03_03__17_17_14___7___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-16/Andre/03-03-11/431 JU298 on food R_2011_03_03__16_20_09___7___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-16/Andre/03-03-11/883 RC301 on food R_2011_03_03__11_56_25___7___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-16/Andre/17-02-11/N2 on food L_2011_02_17__13_14_42___7___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-16/Andre/26-11-10/798 JU258 on food L_2010_11_26__15_30_01___7___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-16/Andre/26-11-10/798 JU258 on food L_2010_11_26__16_11_34___7___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-16/Andre/26-11-10/N2 on food L_2010_11_26__12_53_44___7___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-16/Andre/26-11-10/300 LS51 on food L_2010_11_26__11_01_48___7___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-16/Andre/26-11-10/247 JU438on food R_2010_11_26__16_53_03___7___14.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-16/Andre/26-11-10/814 JU393 on food L_2010_11_26__11_41_47___7___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-16/Andre/26-11-10/247 JU438 on food L_2010_11_26__12_14_14___7___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-16/Andre/15-03-11/575 JU440 on food R_2011_03_15__15_12_36___7___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-16/Andre/15-03-11/575 JU440 on food R_2011_03_15__15_32_34___7___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/copied from pc207-16/Andre/25-02-11/300 LS51 on food R_2011_02_25__10_53_51___7___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/from pc207-14/Monika/110602/197 PS312 3 on N2-L2 L_2011_06_02__13_59___3___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/from pc207-14/Monika/110701/197 PS312 3 on PS312-J3 R_2011_07_01__11_16___3___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/from pc207-14/Monika/110526/197 PS312 3 on food R_2011_05_26__13_08___3___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/from pc207-14/Monika/110610/197 PS323 3 on N2-LL2 R_2011_06_10__14_12___3___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/from pc207-14/Monika/110629/mec-10 (fm1552) mec-4 (u253) 3 on N2-L3 R_2011_06_29__15_15___3___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/from pc207-14/Monika/110708/197 PS312 3 on mec-4-L3 L_2011_07_08__15_23___3___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/from pc207-14/Monika/110616/197 PS312 3 on food R_2011_06_16__11_16___3___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/from pc207-14/Monika/110609/197 PS312 3 on N2-L3 R_2011_06_09__13_40___3___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/from pc207-14/Monika/110706/197 PS312 3 on mec-10,mec-4-L3 L_2011_07_06__15_33___3___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/from pc207-14/Monika/110624/197 PS312 3 on N2-L2_2011_06_24__11_21___3___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/from pc207-14/Monika/110608/197 PS312 3 on N2-L2 R_2011_06_08__11_28___3___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/from pc207-14/Monika/110608/197 PS312 3 on N2-L2 R_2011_06_08__15_20___3___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/from pc207-8/Monika/110622/197 PS312 4 off food R_2011_06_22__10_32___3___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/from pc207-8/Monika/110715/197 PS312 on food R_2011_07_15__11_08___4___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/from pc207-8/Monika/110609/197 PS312 4 on N2-L3 L_2011_06_09__13_41___3___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/from pc207-8/Monika/110624/197 PS312 4 on N2-L4 R_2011_06_24__11_31___3___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-7/!worm_videos/from pc207-8/Monika/110608/197 PS312 4 on N2-L2 R_2011_06_08__15_20___3___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/25-11-10/399 CB4856 on food R_2010_11_25__12_11_31___1___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/25-11-10/247 JU438 on food R_2010_11_25__12_37_37___1___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/25-11-10/814 JU393 on food R_2010_11_25__16_12_59___1___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/25-11-10/798 JU258 on food R_2010_11_25__16_51_10___1___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/25-11-10/399 CB4856 on food R_2010_11_25__11_56_20___1___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/08-03-11/431 JU298 on food R_2011_03_08__17_00_56___1___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/13-04-11/507 ED3054 on food L_2011_04_13__11_52_27___1___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/17-03-11/575 JU440 on food L_2011_03_17__12_36_22___1___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/14-04-11/575 JU298 on food R_2011_04_14__12_02_44___1___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/30-03-11/N2 on food R_2011_03_30__13_05_30___1___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/30-03-11/N2 on food R_2011_03_30__12_47_26___1___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/30-03-11/135 CB4852 on food L_2011_03_30__16_28_07___1___14.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/11-04-11/N2 on food_2011_04_11__16_38_01___1___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/17-02-11/431 JU298 on food R_2011_02_17__16_59_22___1___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/17-02-11/431 JU298 on food L_2011_02_17__13_03_14___1___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/26-11-10/575 JU440 on food L_2010_11_26__12_42_33___1___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/26-11-10/343 ED3021 on food R_2010_11_26__16_02_05___1___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/26-11-10/399 CB4856 on food R_2010_11_26__15_20_54___1___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/26-11-10/507 ED3054 on food R_2010_11_26__11_31_56___1___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/26-11-10/343 ED3021 on food L_2010_11_26__12_04_13___1___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/26-11-10/507 ED3054 on food R_2010_11_26__16_42_30___1___14.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/26-11-10/798 JU258 on food L_2010_11_26__10_51_42___1___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/29-03-11/N2 on food R_2011_03_29__16_57_44___1___16.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Andre/15-03-11/399 CB4856 on food L_2011_03_15__11_29_07___1___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Monika/110701/197 PS312 1 on mec-4(u253)-L3 R_2011_07_01__15_16_46___1___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Monika/110715/197 PS312 on food L_2011_07_15__11_05_42___1___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Monika/110706/N2 1 on food L_2011_07_06__15_31_10___1___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-13/Monika/110624/197 PS312 1 on N2-L4_2011_06_24__11_33_31___1___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-8/Andre/25-11-10/343 ED3021 on food R_2010_11_25__12_42___3___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-8/Andre/25-11-10/N2 on food L_2010_11_25__16_57___3___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-8/Andre/25-11-10/575 JU440 on food R_2010_11_25__16_18___3___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-8/Andre/24-02-11/422 ED3017 on food R_2011_02_24__16_36___3___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-8/Andre/12-04-11/343 ED3021 on food R_2011_04_12__16_13___3___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-8/Andre/13-04-11/343 ED3021 on food R_2011_04_13__11_39___3___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-8/Andre/13-04-11/343 ED3021 on food R_2011_04_13__11_19___3___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-8/Andre/17-03-11/800 MY16 on food R_2011_03_17__15_53___3___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-8/Andre/30-03-11/N2 on food R_2011_03_30__16_33___3___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-8/Andre/17-02-11/300 LS51 on food L_2011_02_17__13_08___3___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-8/Andre/26-11-10/247 JU438 on food L_2010_11_26__15_25___3___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-8/Andre/26-11-10/814 JU393 on food L_2010_11_26__16_07___3___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-8/Andre/26-11-10/300 LS51 on food R_2010_11_26__12_09___3___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-8/Andre/26-11-10/300 LS51 on food L_2010_11_26__16_48___3___14.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-8/Andre/26-11-10/399 CB4856 on food L_2010_11_26__11_37___3___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-8/Andre/26-11-10/814 JU393 on food L_2010_11_26__12_47___3___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-8/Andre/26-11-10/575 JU440 on food R_2010_11_26__10_57___3___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc207-7/!worm_videos/copied_from_pc207-8/Andre/22-03-11/N2 on food R_2011_03_22__16_28___3___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Andre/22-02-11/655 JU394 on food L_2011_02_22__15_35_25___8___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Andre/25-11-10/343 ED3021 on food R_2010_11_25__12_15_16___8___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Andre/25-11-10/883 RC301 on food R_2010_11_25__17_00_32___8___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Andre/25-11-10/575 JU440 on food L_2010_11_25__12_22_23___8___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Andre/25-11-10/575 JU440 on food L_2010_11_25__12_46_09___8___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Andre/25-11-10/N2 on food L_2010_11_25__16_21_54___8___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Andre/24-03-11/N2 on food R_2011_03_24__16_40_42___8___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Andre/30-03-11/507 ED3054 on food L_2011_03_30__15_46_50___8___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Andre/17-02-11/399 CB4856 on food L_2011_02_17__13_12_29___8___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Andre/26-11-10/N2 on food L_2010_11_26__15_28_18___8___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Andre/26-11-10/399 CB4856 on food L_2010_11_26__10_59_51___8___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Andre/26-11-10/300 LS51 on food R_2010_11_26__11_40_07___8___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Andre/26-11-10/814 ju393 on food l_2010_11_26__12_12_17___8___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Andre/26-11-10/247 JU438 on food R_2010_11_26__12_51_01___8___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Andre/26-11-10/N2 on food L_2010_11_26__16_09_56___8___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Andre/15-03-11/507 ED3054 on food R_2011_03_15__15_30_47___8___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Monika/110622/197 PS312 8 off food R_2011_06_22__12_53_04___8___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Monika/110610/197 PS312 8 on N2-L2 L_2011_06_10__11_23_38___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Monika/110617/197 PS312 8 on N2-LL2 L_2011_06_17__15_31_41___8___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Monika/110620/197 PS312 8 off food L_2011_06_20__14_57_52___8___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Monika/110708/197 PS312 8 on mec-4-L3 R_2011_07_08__15_27_16___8___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Monika/110616/197 PS312 8 on N2-LL2 R_2011_06_16__15_50_58___8___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Monika/110615/N2 8 on food R_2011_06_15__13_10_00___8___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Monika/110615/N2 8 on food L_2011_06_15__10_36_58___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Monika/110624/197 PS312 8 on N2-L4_2011_06_24__11_28_40___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-10/Monika/110608/N2 8 on food L_2011_06_08__15_23_40___8___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-15/misc_videos/rb1546 t2/RB1546 on food L_2010_11_18__13_06_40___2___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-15/misc_videos/robyn dvd/N2 Laura on food L_2011_05_11__10_57_32___2___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-15/misc_videos/robyn dvd/N2 Robyn on food R_2011_05_11__17_02_26___2___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-15/misc_videos/robyn dvd/robyn dvd 2/AQ2458 on food R_2011_06_14__16_05_33___2___14.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-15/misc_videos/robyn dvd/robyn dvd 2/clh-3 (ok768) on food L_2011_06_07__15_23_00___2___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-15/off food tracking/28-04-10/trpa-1 (ok999)off food _2010_04_28__14_49_06___2___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-15/off food tracking/28-04-10/N2 off food L_2010_04_28__10_28_00___2___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-15/off food tracking/28-04-10/trpa-1 (ok999)off food _2010_04_28__14_50_29___2___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-15/off food tracking/28-04-10/ocr-2;4 off food _2010_04_28__15_18_39___2___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-1/experimentBackup/from pc220-6/!worm_videos/from pc207-15/off food tracking/27-04-10/pmk-1 (km25) off food R_2010_04_27__14_52_22___2___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/14-06-11/AQ2458 on food R_2011_06_14__16_08_57__14.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/30-06-11/422 ED3017 on food R_2011_06_30__10_46_48__3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/30-06-11/N2 on food R_2011_06_30__13_23_58__10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/08-03-12/483 AQ2947 on food L_2012_03_08__16_33_28___5___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/08-03-12/gld-1 (op236)I on food R_2012_03_08__13_36_58___5___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/19-02-10 in analysis 22-04-10/acr-18 (ok1285) on food R_2010_02_19__15_05_38__13.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/analysis/19-05-10/2/egl-15 (n484)X on food R_2010_05_19__12_04_53___6___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/analysis/19-05-10/3/N2 on food L_2010_05_19__11_25_52___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/24-02-10 segmented on pc207-18/acr-14 (ok1155) on food L_2010_02_24__09_45_20__1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/23-02-10 segmented on pc207-18/acr-3 (ok2049) on food R_2010_02_23__15_28_44__15.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/15-06-10/2/unc-105 (ok1432) on food R_2010_06_15__12_11_02__5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/08-07-10/4/spe-41 (sy693); hin-5 (e1490) on food L_2010_07_08__15_16_09__9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/old videos/17-09-09/N2 on food L_2009_09_17__16_36_22__6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/old videos/17-09-09/unc-29 (e193)I on food R_2009_09_17__14_49_45__3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/old videos/16-09-09/cat-2 (e112) on food L_2009_09_16__12_46_17__4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/old videos/11-09-09/dop-3 (v5106)X on food L_2009_09_11__11_07_09__1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/old videos/15-09-09/dop-1 (vs101)X on food L_2009_09_15__11_39_38__2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/old videos/15-09-09/N2 on food R_2009_09_15__11_01_51__1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/old videos/09-09-09/N2 on food L4 7th L_2009_09_09__10_46_10__1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/old videos/09-09-09/N2 on food L4 7th L_2009_09_09__14_54_37__4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/old videos/09-09-09/N2 on food L4 8th L_2009_09_09__11_50_13__2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/old videos/04-09-09/N2 on food R_2009_09_04__10_20_59__1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/old videos/10-09-09/N2 on food L_2009_09_10__10_36_53__1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/old videos/10-09-09/N2 on food L_2009_09_10__14_54_14__4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/old videos/10-09-09/N2 on food R_2009_09_10__11_46_21__2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/old videos/10-09-09/N2 on food R_2009_09_10__12_49_24__3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/old videos/10-09-09/N2 on food R_2009_09_10__15_57_08__5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/14-12-09/ser-4 (ok512) on food L_2009_12_14__11_25_51__4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/25-08-11/C11D2.2 (ok1565)IV on food L_2011_08_25__15_03_30__7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/25-03-10 segmented on pc207-18/lov-1 con5221 on food R_2010_03_25__11_55_37__5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/26-03-10 segmented on pc207-18/C24G7.1 (ok1822) on food L_2010_03_26__15_57_58__14.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/26-03-10 segmented on pc207-18/C24G7.4 (ok1237) on food R_2010_03_26__11_55_29__7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/26-03-10 segmented on pc207-18/C46A5.2 (ok1187) on food L_2010_03_26__10_35_29__2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/26-03-10 segmented on pc207-18/ocr-4 (tm2173) on food L_2010_03_26__14_55_22__11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/08-04-10/tag-336 (ok1477) on food R_2010_04_08__12_06_20__3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/13-09-11/unc-38 (e264)I on food R_2011_09_13__16_03_12__10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/N2 control exps/21-10-09/cat-2 on food R_2009_10_21__13_14_31__3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/N2 control exps/29-09-09/finished/N2 on food L_2009_09_29__16_43_01__5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/27-07-10/3/N2 on food L_2010_07_27__10_27_31__1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/27-07-10/3/pkc-1 (nj3) on food L_2010_07_27__13_16_32__7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/04-08-11/ciid2.2 (OK1565)iv on food R_2011_08_04__11_14_17__3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/18-11-09/mod-5 (n822)I on food L_2009_11_18__10_54_22__2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/18-11-09/snf-7 (ok482)III  on food R_2009_11_18__12_53_57__8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/17-11-09/snf-1 (ok790)I on food R_2009_11_17__12_28_48__3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/19-11-09/N2 on food L_2009_11_19__12_49_14__7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/09-12-09/unc-31 (e169) on food L_2009_12_09__11_40_55__1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/09-12-09/unc-80 (e1069)V on food R_2009_12_09__16_38_17__12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/10-12-09/N2 on food L_2009_12_10__10_22_34__1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/13-07-10/egl-13 (n483)X on food R_2010_07_13__12_07_09__6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/13-07-10/N2 on food R_2010_07_13__10_06_08__1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/11-05-10/3/egl-24 (n572)III on food R_2010_05_11__13_05_05__7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/16-12-10/gpa-16 (ok2349) on food L_2010_12_16__14_47_34__4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/14-05-10/1/egl-8 (n488)V on food L_2010_05_14__16_18_04__14.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/14-05-10/2/egl-32 (n155)I on food L_2010_05_14__11_31_37__4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/13-05-10/1/egl-11 (n587)V on food L_2010_05_13__10_56_26__3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/20-07-10/N2_2010_10_19__10_36_08__1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/20-07-10/N2_2010_10_19__10_36_28__2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/20-07-10/1/egl-9 (n586)V on food L_2010_07_20__13_08_26__8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/20-07-10/4/egl-43 (n1079)II on food L_2010_07_20__12_49_53__7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/16-09-10/egl-2 (n693)V on food L_2010_09_16__14_57_54__7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/20-08-10/1/egl-43 (n1079)II on food R_2010_08_20__15_28_01__11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/25-05-11/egl-42 (n995) on food L_2011_05_25__14_48_56__3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/19-08-10/unanalysable worm/unc-86 (e1416)III on food R_2010_08_19__16_27_43__12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/20-05-10/egl-47 (n1081)V on food R_2010_05_20__12_36_43__4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/20-05-10/N2 on food L_2010_05_20__11_16_09__1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/20-05-10/unc-7 (cb5) on food R_2010_05_20__12_56_41__5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/20-09-11/unc-77 (e625)IV on food L_2011_09_20__11_05_28__1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/21-01-10/flp-13 (tm2427) on food L_2010_01_21__12_07_27__4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/21-01-10/flp-17 (ok3587)IV on food L_2010_01_21__12_26_16__5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/21-01-10/flp-20 (ok2964)X on food L_2010_01_21__11_28_25__2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/21-01-10/flp-3 (ok3265) on food R_2010_01_21__16_42_23__10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/19-01-10/flp-18 (dp99)X on food R_2010_01_19__10_46_17__2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/19-01-10/flp-20 (ok2964)X on food L_2010_01_19__10_25_16__1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/19-01-10/flp-3 (ok3265)X on food L_2010_01_19__12_24_34__5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/19-01-10/N2 on food R_2010_01_19__15_48_30__8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/12-01-10/flp-11 (tm2706)X on food L_2010_01_12__11_31_27__3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/12-01-10/flp-16 (ok3085)II on food R_2010_01_12__11_50_41__4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/12-01-10/flp-21 (ok889)V on food R_2010_01_12__12_08_42__5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/12-01-10/flp-25 (gk1016)III on food R_2010_01_12__13_08_47__8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/12-01-10/flp-7 (ok2625)X on food R_2010_01_12__11_04_23__2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/25-02-10 segmented on pc220-6/goa-1 (sa734)I on food L_2010_02_25__10_05_37__2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/25-02-10 segmented on pc220-6/gpa-5 (pk376)X on food L_2010_02_25__13_06_47__11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/22-04-10/ocr-3 (ok1557) on food L_2010_04_22__11_30_56__7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/23-04-10 segmented on pc207-18/trpa-1 (ok999); osm-9 (ky10) on food R_2010_04_23__16_18_52__15.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/09-03-10/gpa-15 (pk477)I on food R_2010_03_09__12_45_21__6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/09-03-10/gpa-16 (ok2349)X on food L_2010_03_09__12_26_47__5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/09-03-10/gpa-17 (ok2334)III on food L_2010_03_09__13_05_06__7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/09-03-10/N2 on food R_2010_03_09__10_45_49__1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/09-03-10/odr-3 (n2150)V on food L_2010_03_09__15_55_25__11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/06-09-11/unc-38 (e264)I on food L_2011_09_06__16_33_36__9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/12-05-11/ins-28 (ok2722) on food R_2011_05_12__11_22_43__3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/07-04-11/N2 Laura on food L_2011_06_07__13_27_15__9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/Larval Tracking Tests/L1-2 Test Video 1cm_2009_11_12__16_09_50__2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/Larval Tracking Tests/L1-2 Test Video 3cm_2009_11_12__16_13_41__3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/Larval Tracking Tests/L1-2 Test Video 4cm_2009_11_12__16_15_26__4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/Larval Tracking Tests/L1-2 Test Video 6cm_2009_11_12__16_17_13__5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/off food tracking/27-04-10/3/N2 off food R_2010_04_27__11_31_17__3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/off food tracking/28-04-10/ocr-3 (ok1557) off food_2010_04_28__11_10_27__3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/18-05-10/M124 on food L_2010_05_18__15_07_37__3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/11-11-10/mec-10 (tm1552) on food L_2010_11_11__13_08_18__8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/15-12-09/ser-2 (pk1357) on food R_2009_12_15__14_46_50__9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/15-12-09/tph-1 superoutcrossed on food R_2009_12_15__11_44_23__4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/02-03-12/N2 male on food L_2012_03_02__16_09_24___5___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/02-03-12/N2 on food R_2012_03_02__16_30_24___5___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/17-03-10/nlp-12 (ok355)IV on food R_2010_03_17__13_16_49__10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/17-03-10/nlp-17 (ok3461)IV on food L_2010_03_17__11_58_49__7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/09-04-10/unc-118 (e2331)X on food L_2010_04_09__11_26_36__3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/09-04-10/unc-2 (ox106) on food R_2010_04_09__16_15_56__13.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/16-04-10/unc-17 (e245) on food R_2010_04_16__14_30_04__10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/10-09-10/finished/unc-7 (cb5) on food L_2010_09_10__16_17_47__12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/15-10-10/N2 on food R_2010_10_15__12_48_02__6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/15-10-10/N2 on food R_2010_10_15__15_36_48__10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/28-01-10/tyra-2 (tm1846)X on food L_2010_01_28__13_00_37__8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/12-03-10/nlp-15 (ok1512)I on food R_2010_03_12__12_26_19__8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/12-03-10/nlp-17 (ok3461)IV on food L_2010_03_12__10_35_16__3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/12-03-10/nlp-18 (ok1557)II on food L_2010_03_12__12_06_41__7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/13-04-10/unc-118 (e2331)X on food R_2010_04_13__12_47_22__8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/21-04-10/trpa-1 (ok999); osm-9 (ky10) on food R_2010_04_21__14_42_18__10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/13-10-11/sma-3 (e491)III on food R_2011_10_13__12_16_04__3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/25-01-10/N2 on food_2010_01_25__11_34_29__1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/25-01-10/npr-1 (ad609)X on food L_2010_01_25__16_10_30__10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/18-03-10 in analysis 22-04-10/nlp-12 (ok335)IV on food R_2010_03_18__15_54_46__11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/26-01-10/npr-1 (ad609)X on food L_2010_01_26__12_46_20__6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-9/Laura/10-03-10/ser-4 on food_2010_03_10__10_04_48__1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/02-08-11/N2 Kate on food L_2011_08_02__16_59___4___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/03-08-11/AQ1062 on food L_2011_08_03__09_32___4___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/04-03-10/goa-1 (sa734)I on food R_2010_03_04__10_43_43___4___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/04-08-11/egl-1 (n487) on food L_2011_08_04__15_41___4___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/04-08-11/N2 on food R_2011_08_04__15_21___4___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/04-11-10/mec-7 (v448) on food L_2010_11_04__12_37___3___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/05-08-10/1/egl-44 (n1080)II on food R_2010_08_05__11_25_57___4___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/05-08-10/2/egl-46 (n1127)V on food L_2010_08_05__11_06_45___4___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/05-08-10/2/unc-43 (e755)IV on food L_2010_08_05__14_25_28___4___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/06-07-10/1/MO5B5.6 (tm3092) on food R_2010_07_06__10_26_54___4___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/06-08-10/1/N2 on food R_2010_08_06__10_55_26___4___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/07-04-11/ins-30 (ok2343)I on food R_2011_06_07__10_39___3___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/07-04-11/ins-35 (ok3297)V on food R_2011_06_07__11_41___3___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/07-05-10/N2 on food L_2010_05_07__10_17_12___4___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/08-02-11/egl-10 (md176)V on food R_2011_02_08__12_36___3___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/08-04-10/Y69H2.2 (ok1522) on food L_2010_04_08__12_24_45___4___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/09-03-10/gpa-16 (ok2349)X on food R_2010_03_09__12_26_29___4___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/09-03-10/odr-3 (n2150) on food R_2010_03_09__15_53_49___4___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/10-03-10/ser-4 on food_2010_03_10__10_03_11___4___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/10-09-10/1/finished/unc-7 (cb5) on food L_2010_09_10__16_16_03___4___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/10-12-09/egl-42 (n995sd) on food L_2009_12_10__11_04_01___4___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/11-03-10/gpc-1 (pk298) on food L_2010_03_11__13_06_13___4___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/11-05-10/3/egl-24 (n572)III on food L_2010_05_11__13_03_17___4___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/11-05-11/egl-50 (n1086) on food R_2011_05_11__10_58___3___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/11-11-10/mec-12 (u76) on food L_2010_11_11__12_04___3___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/11-12-09/unc-8 on food R_2009_12_11__13_07_56___4___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/12-05-11/gl-50 (n1086) on food L_2011_05_12__15_25___3___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/13-04-10/unc-118 (e2331)X on food L_2010_04_13__12_45_38___4___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/13-04-10/unc-127 (hs13)V on food R_2010_04_13__12_24_34___4___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/14-01-10/flp-1 (yn2) on food L_2010_01_14__12_54_33___4___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/14-04-10/unc-17 (e245)IV on food L_2010_04_14__15_19_07___4___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/14-04-10/1/unc-37 (e2621)I on food R_2010_04_14__12_18_53___4___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/14-05-10/2/egl-32 (n155)I on food R_2010_05_14__11_29_50___4___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/14-12-10/odr-3 (n2150) on food R_2010_12_14__12_22___3___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/15-04-10/1/unc-40 (n324)I on food L_2010_04_15__11_30_26___4___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/15-07-10/egl-20 (mu39)IV on food R_2010_07_15__12_29_45___4___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/15-09-11/hcf-1 (ok559)IV on food L_2011_09_15__12_59___4___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/15-09-11/rp-8 (ok291)V on food L_2011_09_15__11_19___4___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/16-04-10/4/unc-105 (ok1432) on food R_2010_04_16__10_37_48___4___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/16-07-10/2/egl-28 (n570)II on food L_2010_07_16__11_45_39___4___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/17-05-11/N2 on food R_2011_05_17__13_15___3___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/17-09-10/1/egl-2 (n693)V on food R_2010_09_17__15_45_56___4___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/17-09-10/1/egl-30 (n686); goa-1 (n1134) on food R_2010_09_17__16_24_08___4___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/18-03-10/nlp-18 (ok1557)II on food R_2010_03_18__11_14_52___4___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/19-01-10/flp-17 (ok3587)IV on food R_2010_01_19__11_04_56___4___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/19-01-10/flp-20 (ok2964)X on food L_2010_01_19__10_23_44___4___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/19-01-10/flp-28 (gk1075)III on food R_2010_01_19__15_23_56___4___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/19-01-10/flp-3 (ok3265)X on food R_2010_01_19__12_23_05___4___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/19-02-10/acr-10 (ok3064) on food L_2010_02_19__12_04_15___4___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/19-02-10/1/acr-6 (ok3117) on food R_2010_02_19__15_22_39___4___15.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/19-03-10/1/trp-2 (sy691) on food L_2010_03_19__11_33_58___4___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/19-05-10 analysed on pc207-14/N2 on food R_2010_05_19__11_24_46___4___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/19-08-10/2/unc-115 (mn481)X on food L_2010_08_19__16_05_20___4___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/19-08-10/2/unc-38 (e264)I on food R_2010_08_19__12_36_03___4___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/19-11-09/snf-4 (ok496)II on food L_2009_11_19__11_08_29___4___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/19-11-09/snf-9 (ok957)IIV on food R_2009_11_19__15_58_48___4___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/20-01-10/flp-3 (ok3265)X on food R_2010_01_20__12_56_46___4___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/20-08-10/1/unc-34 (e566)V on food R_2010_08_20__11_35_51___4___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/20-08-10/2/unc-42 (e270)I on food R_2010_08_20__11_57_37___4___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/21-01-10/N2 on food_2010_01_21__11_01_44___4___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/21-04-10 in analysis 22-04-10/ocr-3 (21537) on food R_2010_04_21__14_18_55___4___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/21-10-10/mec-12 (e1605) on food R_2010_10_21__11_45___3___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/22-01-10/N2 on food R_2010_01_22__10_12_29___4___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/22-01-10/npr-1 (ad609)X on food R_2010_01_22__11_33_42___4___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/22-07-10/gar-2 (ok250)III on food R_2010_07_22__11_21_44___4___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/22-07-10/lin-39 on food L_2010_07_22__12_04_35___4___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/22-07-10/1/cat-4 (e1141)I on food R_2010_07_22__13_06_48___4___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/22-07-10/2/pkc-1 (nj3) on food R_2010_07_22__12_45_44___4___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/23-02-10/acr-10 (ok3064) on food R_2010_02_23__12_14_24___4___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/23-04-10 segmented on pc220-6/ocr-4 (vs137); ocr-2 (9697) on food R_2010_04_23__15_38_32___4___13.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/23-04-10 segmented on pc220-6/W03B1.2 (ok2433) on food R_2010_04_23__14_38_26___4___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/23-09-10/unc-38 (e264)I on food L_2010_09_23__11_36_47___4___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/23-09-10/unc86 (e1416)III on food R_2010_09_23__12_17_13___4___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/24-02-10 segmented on pc220-6/N2 on food R_2010_02_24__09_23_33___4___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/24-09-10/unc-34 (e566)V on food L_2010_09_24__12_37_28___4___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/25-01-10/npr-2 (ok419)IV on food R_2010_01_25__15_29_03___4___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/25-02-10 segmented on pc207-18/gpa-11 (pk349)II on food R_2010_02_25__11_23_51___4___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/25-02-10 segmented on pc207-18/gpa-12 (pk322)X on food R_2010_02_25__11_05_21___4___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/25-02-10 segmented on pc207-18/gpa-13 (pk1270) on food R_2010_02_25__12_44_01___4___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/25-05-11/N2 (Robyn) on food L_2011_05_25__10_01___3___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/25-05-11/N2 Robyn on food L_2011_05_25__14_43___3___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/26-01-10/npr-12 (tm1498)IV on food L_2010_01_26__15_57_25___4___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/26-02-10 segmented on pc220-6/egl-30 (ep271gf) on food R_2010_02_26__09_44_21___4___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/26-02-10 segmented on pc220-6/gpa-10 (pk362)V on food L_2010_02_26__12_44_55___4___13.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/26-02-10 segmented on pc220-6/gpa-11 (pk349)II on food L_2010_02_26__13_04_41___4___14.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/26-02-10 segmented on pc220-6/gpa-3 (pk35)IV on food R_2010_02_26__10_43_58___4___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/26-02-10 segmented on pc220-6/gpa-4 (pk381)IV on food R_2010_02_26__12_26_02___4___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/26-02-10 segmented on pc220-6/gpa-5 (pk376)X on food R_2010_02_26__11_04_14___4___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/26-03-10 segmented on pc220-6/C1B2.6 (ok2353) on food R_2010_03_26__12_14_15___4___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/27-07-10/3/N2 on food R_2010_07_27__10_25_27___4___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/28-01-10/npr-11 (ok594)X on food L_2010_01_28__11_16_00___4___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/28-01-10/npr-7 (ok527)X on food R_2010_01_28__11_34_45___4___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/28-06-11/AQ63 on food R_2011_06_28__11_46___3___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/28-06-11/AQ63 on food R_2011_06_28__12_01___3___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/28-10-10/mec-10 (tm1552) on food L_2010_10_28__12_36___3___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/30-03-10 segmented on pc220-6/C24G7.1 (ok1822) on food L_2010_03_30__12_07_16___4___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/30-03-10 segmented on pc220-6/tag-336 (ok1477) on food L_2010_03_30__14_44_23___4___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/31-03-10 segmented on pc220-6/tag-336 (ok1477) on food R_2010_03_31__12_33_10___4___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/bad videos/18-11-10/mec-10 (tm1552) on food R_2010_11_18__11_23___3___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/bad videos/18-11-10/mec-14 (v55) on food L_2010_11_18__12_37___3___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/bad videos/18-11-10/mec-18 (e228) on food L_2010_11_18__15_55___3___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/bad videos/18-11-10/mec-4 (u253) on food R_2010_11_18__13_09___3___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/bad videos/wet plates/egl-13 (n483)X on food L_2010_07_13__12_05_17___4___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/bad videos/wet plates/egl-14 (n549)X on food R_2010_07_13__11_45_29___4___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/Control Experiments/28-10-09/unc-8 on food L_2009_10_28__12_24_46___4___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/off food tracking/27-04-10/2/N2 off food R_2010_04_27__11_27_58___4___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/off food tracking/27-04-10/4/trp-2 (ok298) off food R_2010_04_27__14_36_06___4___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/off food tracking/28-04-10/ocr-3 (ok1557) off food_2010_04_28__11_08_28___4___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/off food tracking/28-04-10/trpa-1 (ok999)) off food_2010_04_28__14_49_31___4___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/off food tracking/28-04-10/trpa-1 (ok999)) off food_2010_04_28__14_51_06___4___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/off food tracking/30-04-10/ocr-3 (a1537) off food_2010_04_30__12_43_17___4___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/off food tracking/30-04-10/ocr-3 (ok1557) off food_2010_04_30__15_11_31___4___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/off food tracking/30-04-10/trp-2 (ok298) off food_2010_04_30__13_06_16___4___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/old videos/08-10-09/finished/cat-2 (e112) on food L_2009_10_08__15_43_37___4___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/old videos/08-10-09/finished/cat-2 (e112) on food R_2009_10_08__12_21_53___4___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/old videos/08-10-09/finished/cat-2 (e112) on food R_2009_10_08__16_45_05___4___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/old videos/15-09-09/N2 on food R_2009_09_15__11_00_47___4___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/old videos/16-09-09/cat-2 (e112) on food L_2009_09_16__12_47_59___4___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/old videos/16-09-09/dop-3 (vs106)X on food L_2009_09_16__15_33_53___4___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/old videos/16-09-09/N2 on food L_2009_09_16__16_08_58___4___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/old videos/16-09-09/unc-29 (e193)I on food L_2009_09_16__14_56_34___4___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/old videos/17-09-09/dop-2;dop-3 on food R_2009_09_17__15_24_34___4___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/old videos/17-09-09/N2 on food R_2009_09_17__16_35_19___4___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/old videos/17-09-09/unc-29 (e193)I on food L_2009_09_17__14_48_43___4___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/old videos/18-09-09/bas-1 (ad446) on food R_2009_09_18__12_05_56___4___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-8/Laura/worm won't analyse/N2 on food R_2009_11_03__16_38_51___4___13.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/30-06-11/acr-15 (ok1214) on food L_2011_06_30__13_02_50___8___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/19-02-10/acr-10 (ok3064) on food L_2010_02_19__12_05_03___8___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/19-02-10/2/acr-21 (ok1314)III on food R_2010_02_19__09_43_23___8___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/24-02-10 segmented on pc220-6/acr-21 (ok1314)III on food R_2010_02_24__14_44_26___8___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/24-02-10 segmented on pc220-6/acr-6 (ok3117) on food L_2010_02_24__10_26_45___8___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/24-02-10 segmented on pc220-6/N2 on food R_2010_02_24__09_24_23___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/23-02-10 segmented on pc220-6/acr-21 (ok1314)III on food R_2010_02_23__09_55_12___8___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/analysis/analysis 06-08-09/finished/acr-2 (ok1887) on food R_2009_07_24__14_56_16__12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/analysis/analysis 21-09-09/finished/cat-2 (e112) on food R_2009_09_16__12_45_27___8___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/analysis/analysis 21-09-09/finished/dop-1 (sv101)X on food R_2009_09_15__11_38_47___8___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/analysis/analysis 21-09-09/finished/dop-2;dop-3 on food L_2009_09_15__13_10_19___8___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/analysis/analysis 29-07-09/finished/gpa-3 (PK35)Iv on food R_2009_06_12__12_56__14.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/analysis/analysis 29-07-09/finished/gpa-5 (PK376)X on food L_2009_06_12__14_10__15.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/analysis/analysis 04-08-09/finished/gpa-9 (pk438)V on food L_2009_07_14__11_19_42__4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/analysis/analysis 19-08-09/finished/N2 on food L_2009_08_19__11_45___3___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/analysis/analysis 04-09-09/finished/N2 on food L_2009_09_04__11_54_47___4___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/analysis/analysis 04-09-09/finished/N2 on food L_2009_09_04__15_57_52___8___21.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/analysis/analysis 04-09-09/finished/N2 on food R_2009_09_04__16_18_40___4___21.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/analysis/analysis 04-09-09/unfinished/N2 on food L_2009_09_04__12_38_10___8___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/analysis/analysis 09-09-09/N2 on food R_2009_09_04__16_25_56__20.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/02-08-11/AQ2316 on food R_2011_08_02__10_42_52___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/02-08-11/N2 Kate on food R_2011_08_02__17_02_50___8___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/25-05-11/AQ2613 on food L_2011_05_25__10_03_41___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/28-06-11/AQ31 on food R_2011_06_28__12_03_59___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/09-08-11/lon-2 (e678)X on food R_2011_08_09__10_32_46___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/15-06-10/1/del-1 (ok150) on food R_2010_06_15__14_37_39___8___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/14-12-09/bas-1 (ad446) on food L_2009_12_14__13_03_09___8___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/14-12-09/ser-7 (tm1325) on food R_2009_12_14__12_43_59___8___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/15-12-09/bas-1 (ad446) on food L_2009_12_15__11_24_00___8___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/25-03-10 segmented on pc207-18/ocr-4 (tm2173) on food L_2010_03_25__12_15_51___8___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/19-03-10/C24G71 (ok1822) on food L_2010_03_19__09_57_39___8___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/11-08-11/srp-8 (ok291)V on food L_2011_08_11__12_04_11___8___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/19-08-11/ric-19 (ok833) on food L_2011_08_19__11_22_56___8___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/23-07-10/1/egl-23 (ok151)II on food R_2010_07_23__15_36_06___8___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/23-07-10/2/N2 on food R_2010_07_23__10_16_18___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/22-07-10/1/daf-3 (e1376)X on food R_2010_07_22__11_47_01___8___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/22-07-10/2/sup-9 (n180)II on food R_2010_07_22__15_05_38___8___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/27-07-10/1/daf-3 (e1376)X on food R_2010_07_27__11_06_02___8___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/27-07-10/2/lin-39 on food L_2010_07_27__11_46_19___8___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/27-07-10/3/N2 on food R_2010_07_27__10_27_18___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/04-08-11/egl-1 (n487) on food R_2011_08_04__15_44_44___8___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/04-08-11/N2 on food L_2011_08_04__11_14_13___8___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/off food tracking/28-04-10/N2 on food L_2010_04_28__10_33_11___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/off food tracking/27-04-10/N2 off food R_2010_04_27__11_13_50___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/off food tracking/30-04-10/ocr-3 (ok1557) off food_2010_04_30__15_22_43___8___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/off food tracking/30-04-10/ocr-4 (vs137); ocr-2 (9697) off food_2010_04_30__15_34_28___8___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/off food tracking/30-04-10/pmk-1 (km25) off food_2010_04_30__14_57_40___8___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/off food tracking/30-04-10/trp-2 (ok298) off food_2010_04_30__13_08_33___8___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/18-11-09/snf-4 (ok496)II on food L_2009_11_18__13_12_46___8___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/09-12-09/unc-8 on food R_2009_12_09__10_52_05___8___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/10-12-09/egl-42 (n995sd) on food R_2009_12_10__11_04_34___8___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/15-07-10/egl-14 (n549)X on food R_2010_07_15__16_22_09___8___13.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/14-05-10/1/egl-4 (n478)IV on food L_2010_05_14__10_51_05___8___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/14-05-10/1/egl-8 (n488)V on food R_2010_05_14__16_17_22___8___16.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/14-05-10/2/egl-21 9n611)IV on food R_2010_05_14__15_55_41___8___15.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/14-05-10/2/egl-33 (n151)I on food R_2010_05_14__15_36_22___8___14.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/14-05-10/2/M124 on food R_2010_05_14__16_35_52___8___17.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/16-12-10/egl-47 (n1081)V on ood R_2010_12_16__16_09_31___8___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/16-12-10/gpa-16 (ok2349) on ood R_2010_12_16__12_37_28___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/16-12-10/npr-13 (tm1504)V on ood R_2010_12_16__15_47_22___8___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/16-12-10/npr-3 (tm1583)IV on ood R_2010_12_16__15_27_42___8___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/13-05-10/1/egl-19 (n2368)IV on food R_2010_05_13__15_28_45___8___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/17-09-10/unc-38 (e264)I on food R_2010_09_17__11_56_52___8___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/26-02-10 segmented on pc220-6/gpa-4 (pk381)IV on food R_2010_02_26__12_26_50___8___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/04-03-10/egl-30 (ep271gf) on food R_2010_03_04__11_25_07___8___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/04-03-10/gpa-14 (pk347)I on food R_2010_03_04__11_04_20___8___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/05-08-10/1/egl-44 (n1080)II on food R_2010_08_05__11_27_12___8___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/06-08-10/1/egl-46 (n1127)V on food L_2010_08_06__16_01_40___8___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/19-05-11/egl-42 (n995) on food L_2011_05_19__16_46_54___8___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/20-05-10/N2 on food R_2010_05_20__11_15_29___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/20-05-10/unc-7 (cb5) on food R_2010_05_20__13_14_36___8___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/13-09-11/unc-9 (e101) on food R_2011_09_13__13_02_28___8___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/20-09-11/unc-4 (gk705)II on food L_2011_09_20__13_32_23___8___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/20-01-10/flp-19 (ok2460) on food R_2010_01_20__11_17_06___8___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/21-01-10/flp-17 (ok3587)IV on food R_2010_01_21__12_27_34___8___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/21-01-10/flp-28 (gk1075)X on food L_2010_01_21__16_14_28___8___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/21-01-10/N2 on food L_2010_01_21__11_02_30___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/11-01-10/flp-12 (ok2409)X on food L_2010_01_11__12_16_01___8___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/25-02-10 segmented on pc207-18/gpa-1 (pk15) on food R_2010_02_25__12_05_04___8___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/09-03-10/gpa-8 (pk345)V on food R_2010_03_09__11_26_19___8___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/11-03-10/gpa-8 (pk435)V on food L_2010_03_11__10_25_35___8___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/12-05-11/N2 Robyn on food L_2011_05_12__15_28_18___8___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/24-05-11/ins-30 (ok2343)I on food L_2011_05_24__15_23_20___8___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/07-04-11/ins-22 (ok3616) on food R_2011_06_07__13_27_02___8___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/17-05-11/ins-31 (ok3543)III on food R_2011_05_17__11_13_24___8___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/17-05-11/N2 on food R_2011_05_17__10_52_49___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/09-06-11/ins-22 (ok3616) on food R_2011_06_09__11_11_38___8___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/18-05-10/M124 on food L_2010_05_18__11_55_20___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/11-11-10/mec-10 (e1515) on food R_2010_11_11__11_07_25___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/11-05-11/N2 Robyn on food R_2011_05_11__17_05_32___8___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/26-01-10/npr-1 (ad609) on food  R_2010_01_26__12_45_34___8___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/26-01-10/tyra-2 (tm1846)X on food R_2010_01_26__11_06_46___8___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/28-01-10/npr-7 (ok527)X on food R_2010_01_28__11_35_30___8___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/14-04-10/unc-122 (e2520)I on food L_2010_04_14__12_59_31___8___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/14-04-10/unc-127 (hs13)V on food R_2010_04_14__10_19_50___8___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/15-04-10/N2 on food L_2010_04_15__10_09_59___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/16-04-10/4/unc-105 (ok1432) on food L_2010_04_16__10_38_47___8___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/20-04-10/N2 on food L_2010_04_20__09_53_39___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/09-09-10/finished/N2 on food L_2010_09_09__10_07_11___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/09-09-10/finished/unc-7 (cb5) on food L_2010_09_09__12_46_46___8___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/22-01-10/tbh-1 (n3247)X on food  L_2010_01_22__16_10_58___8___13.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/17-03-10/nlp-14 (tm1880)X on food L_2010_03_17__10_55_28___8___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/17-03-10/nlp-3 (ok2688)X on food R_2010_03_17__12_35_55___8___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/18-03-10/nlp-18 (ok1557)II on food R_2010_03_18__11_15_48___8___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/07-05-10/N2 on food R_2010_05_07__10_18_21___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/06-10-11/N2 on food R_2011_10_06__16_02_28___8___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/18-10-11/unc-3 (e151)X on food L_2011_10_18__12_09_30___8___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/25-01-10/npr-3 (tm1583) on food  R_2010_01_25__15_11_06___8___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/25-01-10/npr-7 (ok527)X on food  R_2010_01_25__15_48_18___8___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-10/laura/10-03-10/ser-4 on food_2010_03_10__10_04_01___8___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/19-02-10/4/acr-21 (ok1314)III on food R_2010_02_19__09_41_13___1___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/log_file_naming_issues/flp-28 (gk1075)X on food R_2010_01_20__10_55_12___1___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/03-08-11/AQ1062 on food L_2011_08_03__15_40_19___1___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/03-08-11/N2 Kate on food R_2011_08_03__09_30_31___1___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/15-06-10/2/unc-105 (ok1432) on food R_2010_06_15__12_07_34___1___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/17-12-09/tph-1 superoutcrossed on food L_2009_12_17__16_32_52___1___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/17-12-09/unc-29 (e193)I on food L_2009_12_17__16_12_11___1___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/14-12-09/mod-1 (ok103)V on food L_2009_12_14__15_25_25___1___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/15-12-09/unc-29 (e193) on food L_2009_12_15__11_02_48___1___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/25-03-10 segmented on pc220-6/C45A6.2 (ok1187) on food R_2010_03_25__12_52_44___1___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/30-03-10 segmented on pc220-6/C24G7.4 (ok1237) on food L_2010_03_30__11_45_19___1___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/30-03-10 segmented on pc220-6/T28F2.7 (ok2657) on food L_2010_03_30__12_26_29___1___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/22-09-11/test_2011_09_22__10_11_48___1___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/11-08-11/T14B1.1 (ok1702) on food L_2011_08_11__11_20_00___1___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/Analysis/analysis 21-09-09/finished/dop-1 (vs101)X on food R_2009_09_15__11_37_30___1___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/Analysis/analysis 21-09-09/finished/dop-2 (vs103)V on food R_2009_09_16__11_31_55___1___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/23-07-10/2/N2 on food R_2010_07_23__10_13_19___1___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/23-07-10/2/sup-9 (n180)II on food L_2010_07_23__12_13_47___1___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/27-07-10/1/daf-3 (e1376)X on food L_2010_07_27__11_02_57___1___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/27-07-10/3/N2 on food L_2010_07_27__10_23_35___1___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/18-11-09/snf-11 (ok156)V on food L_2009_11_18__11_53_49___1___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/19-11-09/snf-10 (hc194)V on food L_2009_11_19__16_17_08___1___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/10-12-09/dnc-1 (or404ts) on food R_2009_12_10__15_03_05___1___13.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/10-12-09/unc-10 (ad1117) on food R_2009_12_10__12_02_08___1___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/03-08-10/2/egl-44 (n1080)II on food L_2010_08_03__10_53_39___1___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/16-12-10/npr-3 (tm1583)IV on food R_2010_12_16__12_53_30___1___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/20-07-10/1/egl-31 (n472)I on food R_2010_07_20__10_43_24___1___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/20-07-10/4/N2 on food_2010_07_20__10_23_11___1___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/05-08-10/1/egl-27 (ok151)II on food L_2010_08_05__14_43_17___1___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/26-02-10 segmented on pc220-6/egl-30 (ep271gf) on food L_2010_02_26__09_42_16___1___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/26-02-10 segmented on pc220-6/goa-1 (sa734)I on food L_2010_02_26__11_42_38___1___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/04-03-10/goa-1 (sa734)I on food R_2010_03_04__10_42_18___1___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/04-03-10/gpa-2 (pk16)V on food L_2010_03_04__12_43_29___1___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/19-05-11/egl-42 (n995) on food L_2011_05_19__16_42_00___1___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/11-12-09/egl-42 (n995sd) on food R_2009_12_11__14_55_29___1___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/11-05-11/egl-50 (n1086) on food L_2011_05_11__10_55_58___1___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/11-05-11/N2 laura on food R_2011_05_11__17_00_52___1___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/31-03-10 segmented on pc220-6/T28138.5 (ok1014) on food R_2010_03_31__12_12_53___1___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/31-03-10 segmented on pc220-6/tag-336 (ok1477) on food L_2010_03_31__12_31_43___1___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/20-01-10/flp-3 (oK3265)X on food L_2010_01_20__12_35_43___1___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/21-01-10/flp-20 ok2964) on food R_2010_01_21__17_25_39___1___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/12-01-10/flp-7 (ok2625)X on food L_2010_01_12__11_01_13___1___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/09-04-10 new analysis on A1/spe-41 (sy693); him-5 (e1490) on food L_2010_04_09__12_23_40___1___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/09-04-10 new analysis on A1/unc-79 (e1068)III on food R_2010_04_09__12_42_48___1___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/25-02-10 segmented on pc220-6/gpa-5 (pk376)X on food R_2010_02_25__13_03_51___1___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/23-04-10/2/ocr-4 (vs137); ocr-2 (9697) on food R_2010_04_23__15_37_02___1___13.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/23-04-10/3/trpa-1 (ok999); osm-9 (ky10) on food R_2010_04_23__16_15_40___1___15.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/06-09-11/N2 on food L_2011_09_06__12_07_30___1___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/12-05-11/N2 laura on food R_2011_05_12__15_23_41___1___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/off food tracking/27-04-10/trp-2 (ok298) off food L_2010_04_27__14_33_58___1___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/off food tracking/27-04-10/trp-4 (sy695) off food R_2010_04_27__15_13_28___1___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/off food tracking/28-04-10/ocr-3 (ok1557) off food _2010_04_28__12_30_06___1___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/off food tracking/30-04-10/ocr-3 (a1537)off food_2010_04_30__12_36_20___1___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/off food tracking/30-04-10/ocr-3 (ok1557) off food_2010_04_30__15_06_14___1___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/off food tracking/30-04-10/ocr-4 (vs137); ocr-2 (9697) off food_2010_04_30__15_30_32___1___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/off food tracking/30-04-10/pmk-1 (km25) off food_2010_04_30__14_53_22___1___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/off food tracking/30-04-10/trp-2 (ok298) off food_2010_04_30__13_03_40___1___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/off food tracking/30-04-10/trpa-1 (ok999) off food_2010_04_30__12_24_52___1___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/off food tracking/30-04-10/W03B1.2 (ok2433) off food_2010_04_30__12_54_34___1___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/11-11-10/N2 on food R_2010_11_11__15_32_48___1___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/21-10-10/N2 on food L_2010_10_21__15_04_22___1___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/04-11-10/mec-4 (u253) on food R_2010_11_04__12_54_35___1___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/30-09-10/1/mec-4 (u253) on food L_2010_09_30__11_41_09___1___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/02-03-12/N2 male on food R_2012_03_02__16_03_34___1___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/16-04-10 in analysis 22-04-10/unc-63 (ok1075) on food R_2010_04_16__12_54_42___1___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/15-10-10/N2 on food R_2010_10_15__15_14_08___1___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/09-11-10/N2 on food R_2010_11_09__15_56_19___1___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/21-10-11/N2 on food L_2011_10_21__10_55_37___1___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/22-01-10/npr-1 (ad609)X on food L_2010_01_22__11_32_23___1___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/22-01-10/tag-24 (ok371)X on food L_2010_01_22__15_02_47___1___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/25-01-10/npr-10 (tm1568)X on food  L_2010_01_25__14_22_27___1___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/25-01-10/npr-12 (tm1498)IV on food _2010_01_25__13_16_14___1___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/25-01-10/npr-13 (tm1504)V on food R_2010_01_25__11_54_44___1___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/25-01-10/npr-3 (tm1583)IV on food  L_2010_01_25__15_09_01___1___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/26-01-10/npr-1 (ad609)X on food R_2010_01_26__12_43_30___1___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/26-01-10/tag-24 (ok371)X on food R_2010_01_26__11_25_54___1___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/13-04-10/unc-118 (e2331)X on food L_2010_04_13__12_44_11___1___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-13/Laura/10-03-10 new analysis on A1/Ser-4 on food_2010_03_10__10_01_46___1___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/09-02-12/unc-79 (e1068) nRHO-1 G14V on food L_2012_02_09__11_20_28___7___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/30-06-11/N2 on food R_2011_06_30__10_47_23___7___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/30-06-11/nca-2 (gk5)III on food L_2011_06_30__11_22_23___7___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/24-02-10/2/acr-21 (ok1314)IIIon food R_2010_02_24__14_44_45___7___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/24-02-10/2/acr-9 (ok933)X on food R_2010_02_24__12_25_14___7___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/19-02-10/1/acr-7 (tm863)II on food L_2010_02_19__11_44_48___7___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/23-02-10/1/acr-3 (ok2049) on food L_2010_02_23__15_28_17___7___16.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/19-05-11/AQ2316 on food R_2011_05_19__16_47_36___7___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/15-06-10/1/del-1 (ok150) on food L_2010_06_15__14_38_26___7___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/15-06-10/2/osm-9 (ky10) on food L_2010_06_15__14_57_51___7___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/14-12-09/bas-1 (ad446) on food L_2009_12_14__13_03_26___7___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/14-12-09/ser-4 (ok512) on food R_2009_12_14__11_25_17___7___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/14-12-09/unc-29 (e193)I on food R_2009_12_14__15_10_34___7___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/15-12-09/mod-1 (ok103) on food L_2009_12_15__10_43_27___7___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/25-08-11/C11D2.2 (ok1565)IV on food L_2011_08_25__15_24_47___7___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/31-08-11/C11D2.6 (gk9)IV on food R_2011_08_31__15_12_52___7___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/25-03-10 segmented on pc220-6/C24G7.4 (ok1237) on food R_2010_03_25__11_15_10___7___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/25-03-10 segmented on pc220-6/lov-1 con5221 on food R_2010_03_25__11_55_14___7___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/25-03-10 segmented on pc220-6/T2854.2 (ok289) on food L_2010_03_25__15_46_58___7___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/25-03-10 segmented on pc220-6/Y69H2.2 (ok1522) on food L_2010_03_25__17_07_31___7___14.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/30-03-10/1/C24G7.1 (ok1822) on food _2010_03_30__12_12_05___7___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/30-03-10/3/N2 on food R_2010_03_30__11_26_40___7___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/26-03-10/2/ocr-4 (tm2173) on food L_2010_03_26__14_54_59___7___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/08-04-10/unc-8 rev on food R_2010_04_08__12_47_24___7___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/11-08-11/T27E9.9 (ok2371)III on food R_2011_08_11__11_02_49___7___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/22-07-10/2/tom-1 (ok1285) on food R_2010_07_22__15_27_19___7___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/23-07-10/2/lin-39 on food L_2010_07_23__10_56_18___7___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/04-08-11/egl-1 (n487) on food L_2011_08_04__15_44_56___7___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/25-05-11/clh-3 (ok763) on food R_2011_05_25__10_04_21___7___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/18-11-09/mod-5 (n822)I on food L_2009_11_18__10_53_44___7___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/18-11-09/snf-2 (ok147)I on food R_2009_11_18__15_34_56___7___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/19-08-11/gly-2 (gk204)I on food L_2011_08_19__11_23_39___7___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/19-08-11/N2 on food R_2011_08_19__16_02_54___7___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/03-08-11/egl-1 (n487) on food L_2011_08_03__09_36_30___7___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/04-11-10/egl-9 (n586)V on food L_2010_07_13__11_04_35___7___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/15-07-10/egl-20 (mu39)IV on food R_2010_07_15__12_31_29___7___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/11-05-10/2/egl-10 (md176)V on food R_2010_05_11__16_31_11___7___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/14-05-10/2/egl-32 (n155)I on food R_2010_05_14__11_31_20___7___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/14-05-10/2/M124 on food R_2010_05_14__16_56_43___7___18.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/26-02-10/gpa-11 (pk349)II on food L_2010_02_26__13_05_51___7___14.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/05-03-10/gpc-1 (pk298) on food L_2010_03_05__09_55_49___7___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/05-08-10/1/egl-37 (n742)II on food L_2010_08_05__11_47_42___7___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/05-08-10/1/egl-40 (n606)IV on food L_2010_08_05__12_08_23___7___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/11-12-09/unc-10 (ad1117) on food R_2009_12_11__14_33_42___7___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/19-08-10/1/unc-7 (cb5) on food R_2010_08_19__11_20_41___7___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/20-05-10/unc-7 (cb5) on food R_2010_05_20__11_56_34___7___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/11-05-11/egl-50 (n1086) on food R_2011_05_11__17_06_07___7___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/20-09-11/unc-9 (e101) on food R_2011_09_20__11_43_53___7___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/31-03-10 segmented on pc207-18/N2 on food R_2010_03_31__10_55_48___7___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/13-01-10/flp-11 (tm2706)X on food L_2010_01_13__11_38_13___7___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/14-01-10/flp-1 (yn2) on food R_2010_01_14__12_55_31___7___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/14-01-10/flp-11 (tm2706)X on food R_2010_01_14__13_13_23___7___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/14-01-10/flp-21 (ok889)V on food R_2010_01_14__10_55_21___7___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/19-01-10/flp-3 (ok3265)X on food L_2010_01_19__12_24_05___7___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/21-01-10/flp-19 (ok2460) on food R_2010_01_21__15_57_45___7___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/21-01-10/flp-20 (ok2964) on food R_2010_01_21__17_28_15___7___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/12-01-10/flp-21 (ok889)V on food R_2010_01_12__12_08_12___7___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/09-04-10/unc-127 (hs13)V on food L_2010_04_09__12_06_16___7___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/25-02-10/gpa-1 (pk15) on food L_2010_02_25__12_05_24___7___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/25-02-10/N2 on food R_2010_02_25__09_44_59___7___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/22-04-10 segmented on pc220-6/gon-2 (9362) on food L_2010_04_22__10_50_44___7___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/23-04-10/3/trp-2 (ok298) on food L_2010_04_23__16_00_36___7___14.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/23-04-10/4/trp-4 (sy695) on food R_2010_04_23__11_21_30___7___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/29-04-10/gon-2 (9362) on food R_2010_04_29__11_51_41___7___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/11-03-10/gpa-7 (pk610)IV on food L_2010_03_11__12_27_04___7___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/12-05-11/N2 Robyn on food L_2011_05_12__15_28_57___7___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/17-05-11/ins-28 (ok2722)I on food L_2011_05_17__10_53_29___7___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/off food tracking/27-04-10/trp-4 (sy695) off food R_2010_04_27__15_21_21___7___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/23-02-12/N2 male on food L_2012_02_23__11_40_35___7___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/02-03-12/N2 male on food R_2012_03_02__16_09_43___7___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/15-04-10 in analysis 22-04-10/unc-60 (e273)V on food R_2010_04_15__13_07_20___7___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/22-01-10/tbh-1 (n3247)X on food L_2010_01_22__16_10_06___7___14.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/26-01-10/npr-1 (ad609)X on food R_2010_01_26__12_45_51___7___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/26-01-10/tag-24 (ok371)X on food L_2010_01_26__11_28_15___7___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/28-01-10/npr-7 (ok527)X on food R_2010_01_28__15_04_14___7___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/13-04-10/1/unc-40 (n324)I on food L_2010_04_13__13_05_36___7___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/20-04-10/N2 on food L_2010_04_20__09_54_02___7___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/21-04-10 segmented on pc220-6/N2 on food L_2010_04_21__10_30_18___7___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/21-04-10 segmented on pc220-6/trp-2 (ok298) on food L_2010_04_21__11_09_39___7___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/21-04-10 segmented on pc220-6/trpa-1 (ok999) on food L_2010_04_21__12_29_25___7___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/21-10-11/unc-4 (e120)II on food R_2011_10_21__12_22_28___7___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/03-04-12/N2 on food no wait_2012_04_03__12_18_01___7___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/16-04-10/1/unc-17 (e245) on food R_2010_04_16__14_29_38___7___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/16-04-10/1/unc-17 (e245)IV on food L_2010_04_16__11_20_22___7___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/16-04-10/4/unc-105 (ok1432) on food R_2010_04_16__10_39_10___7___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/16-04-10/2/unc-26 (m2)IV on food L_2010_04_16__11_59_14___7___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/14-04-10 in analysis 22-04-10/unc-76 (e911)V on food R_2010_04_14__11_23_07___7___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/14-04-10 in analysis 22-04-10/unc-76 (e911)V on food R_2010_04_14__11_23_36___7___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/07-05-10/N2 on food R_2010_05_07__10_18_41___7___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/10-09-10/finished/unc-7 (cb5) on food R_2010_09_10__15_37_49___7___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/10-11-11/unc-8 (e151b145) on food R_2011_11_10__11_00_13___7___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-16/Laura/10-03-10/ser-4 on food_2010_03_10__10_04_24___7___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/14-06-11/655 JU394 on food R_2011_06_14__12_54_12___2___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/15-03-12/C11D2.6 (gk9)V on food R_2012_03_15__09_53_18___2___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/23-02-10 segmented on pc220-6/acr-15 (ok1214)V on food R_2010_02_23__09_32_40___2___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/24-02-10 segmented on pc220-6/acr-15 (ok1214)X on food L_2010_02_24__15_43_41___2___16.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/24-02-10 segmented on pc220-6/acr-6 (ok3117) on food L_2010_02_24__10_25_23___2___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/24-02-10 segmented on pc220-6/acr-9 (ok933)X on food R_2010_02_24__12_23_33___2___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/19-05-11/AQ2316 on food L_2011_05_19__16_43_34___2___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/19-05-11/ins-30 (ok2343) on food L_2011_05_19__12_40_50___2___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/08-07-10/1/del-1 (ok150) on food R_2010_07_08__14_54_14___2___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/08-07-10/4/spe-41 (sy693); hin-5 (e1490) on food R_2010_07_08__15_13_37___2___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/17-12-09/N2 on food R_2009_12_17__11_03_13___2___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/17-12-09/ser-1 (ok345) on food R_2009_12_17__11_25_55___2___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/17-12-09/ser-4 (ok512) on food R_2009_12_17__12_03_50___2___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/24-08-11/lon-2 (e678)X on food R_2011_08_24__10_20_43___2___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/25-08-11/C11D2.2 (ok1565)IV on food R_2011_08_25__11_59_02___2___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/04-08-11/C11D2.6 (gk9)IVon food L_2011_08_04__12_09_28___2___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/30-03-10/2/N2 on food R_2010_03_30__11_24_17___2___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/30-03-10/2/unc-8 rev on food _2010_03_30__12_47_47___2___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/25-03-10 segmented on pc207-18/C24G7.4 (ok1237) on food R_2010_03_25__11_13_19___2___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/25-03-10 segmented on pc207-18/lov-1 con5221 on food R_2010_03_25__11_53_25___2___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/26-03-10/trp-2 (sy691) on food R_2010_03_26__15_32_21___2___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/11-08-11/unc-4 (gk705)II on food R_2011_08_11__12_00_40___2___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/13-09-11/srp-8 (ok291)V on food R_2011_09_13__13_38_31___2___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/15-09-11/sng-1 (ok234)X on food R_2011_09_15__12_58_51___2___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/Control Experiments/cat-2 (e1112) on food L_2009_10_28__10_47_41___2___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/Control Experiments/unc-8 on food L_2009_10_28__12_23_54___2___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/Control Experiments/06-11-09/cat-2 on food L_2009_11_07__15_00_50___2___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/Control Experiments/05-11-09/N2 on food L_2009_11_05__11_06_14___2___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/Control Experiments/07-11-09/dop-2 on food L_2009_11_07__13_58_20___2___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/08-10-09 new analysis on A2/finished/cat-2 (e112) on food R_2009_10_08__15_43_05___2___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/08-10-09 new analysis on A2/finished/cat-2 (e112) on food R_2009_10_08__16_44_35___2___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/08-10-09 new analysis on A2/unfinished/cat-2 (e112) on food R_2009_10_08__16_43_56___2___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/N2 control experiments/05-08-09/N2 on food 2hr R_2009_08_05__10_00_23___1___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/N2 control experiments/05-08-09/N2 on food 30 mins R_2009_08_05__13_20_26___1___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/N2 control experiments/09-09-09/N2 on food L4 7th L_2009_09_09__14_52_36___2___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/N2 control experiments/10-09-09/N2 on food L_2009_09_10__12_47_47___2___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/N2 control experiments/01-10-09/finished/N2 on food R_2009_10_01__16_39_36___2___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/29-07-10/1/daf-7 (m62)III on food R_2010_07_29__12_55_18___2___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/17-11-09/snf-5 (ok447)I on food L_2009_11_17__13_01_45___2___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/10-12-09/unc-14 (e57)I on food R_2009_12_10__16_10_36___2___15.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/16-12-10/gpa-16 (ok2349) on food L_2010_12_16__15_44_56___2___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/03-08-11/egl-1 (n487) on food R_2011_08_03__09_32_12___2___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/03-08-11/N2 Kate on food R_2011_08_03__15_42_00___2___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/15-07-10/egl-1 (n487)V on food R_2010_07_15__11_49_01___2___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/15-07-10/egl-31 (n472)I on food L_2010_07_15__14_34_54___2___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/19-05-10 analysed on pc207-14/N2 on food L_2010_05_19__11_24_11___2___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/14-05-10/2/M124 on food L_2010_05_14__16_52_44___2___18.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/14-05-10/2/M124 on food R_2010_05_14__16_34_12___2___17.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/11-05-10/1/egl-7 (n575)III on food L_2010_05_11__17_11_26___2___14.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/13-05-10/2/M124 on food R_2010_05_13__10_34_03___2___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/17-09-10/egl-30 (n686); goa-1 (n1134) on food R_2010_09_17__16_23_09___2___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/23-09-10/egl-2 (n693)V on food R_2010_09_23__11_16_40___2___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/23-09-10/N2 on food L_2010_09_23__10_55_09___2___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/23-09-10/unc-38 (e264)I on food L_2010_09_23__11_36_05___2___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/23-09-10/unc-86 (e1416)III on food L_2010_09_23__12_16_31___2___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/05-08-10/1/egl-40 (n606)IV on food L_2010_08_05__12_05_43___2___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/20-08-10/1/unc-4 (e120)III on food L_2010_08_20__11_15_33___2___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/20-08-10/2/unc-115 (mn481)X on food R_2010_08_20__15_04_44___2___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/20-05-10/egl-47 (n1081)V on food R_2010_05_20__11_34_09___2___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/12-01-10/flp-21 (ok889)V on food L_2010_01_12__12_06_44___2___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/12-01-10/flp-6 (ok3056)V on food R_2010_01_12__12_25_33___2___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/11-01-10/flp-7 (ok2625)X on food L_2010_01_11__11_56_30___2___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/25-02-10 segmented on pc207-18/gpa-1 (pk15) on food L_2010_02_25__12_03_39___2___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/25-02-10 segmented on pc207-18/gpa-11 (pk349)II on food L_2010_02_25__11_23_16___2___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/25-02-10 segmented on pc207-18/gpa-13 (pk1270) on food L_2010_02_25__12_43_28___2___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/25-02-10 segmented on pc207-18/gpa-3 (pk35)IV on food R_2010_02_25__12_23_48___2___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/23-04-10/4/ocr-3 (ok1557) on food R_2010_04_23__12_39_03___2___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/22-04-10/trp-1 (sy691) on food R_2010_04_22__14_39_02___2___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/22-04-10/trpa-1 (ok999) on food L_2010_04_22__14_58_36___2___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/09-03-10 new analysis on A2/gpa-15 (pk477)I on food R_2010_03_09__12_43_12___2___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/09-03-10 new analysis on A2/gpa-8 (pk345)V on food L_2010_03_09__11_24_55___2___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/12-05-11/N2 laura on food R_2011_05_12__15_25_15___2___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/04-11-10/mec-10 (e1515) on food R_2010_11_04__10_35_43___2___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/04-11-10/mec-18 (e228) on food L_2010_11_04__12_55_49___2___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/11-11-10/mec-14 (v55) on food R_2010_11_11__15_54_55___2___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/11-11-10/mec-18 (e228) on food R_2010_11_11__16_35_34___2___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/02-03-12/N2 on food L_2012_03_02__16_05_41___2___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/30-04-10/N2 off food_2010_04_30__11_21_04___2___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/30-04-10/ocr-3 (a1537) off food_2010_04_30__12_38_45___2___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/30-04-10/trp-1 (sy691) off food_2010_04_30__12_03_15___2___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/22-01-10/npr-13 (tm1504)V on food R_2010_01_22__11_53_52___2___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/28-01-10/N2 on food L_2010_01_28__10_33_06___2___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/28-01-10/npr-11 (ok594)X  on food L_2010_01_28__11_13_53___2___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/14-04-10/N2 on food L_2010_04_14__09_57_49___2___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/14-04-10/1/unc-40 (n324)I on food L_2010_04_14__10_58_31___2___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/20-04-10/N2 on food L_2010_04_20__09_52_04___2___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/07-05-10/N2 on food L_2010_05_07__10_16_33___2___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/09-09-10/finished/unc-7 (cb5) on food L_2010_09_09__11_25_44___2___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/15-10-10/N2 on food L_2010_10_15__11_44_56___2___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/15-10-10/N2 on food R_2010_10_15__15_53_34___2___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/28-06-11/N2 on food L_2011_06_28__12_00_31___2___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/13-10-11/unc-8 (e151b145) del-1 (ok150) on food L_2011_10_13__12_32_52___2___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/25-01-10/npr-1 (ad609)X on food L_2010_01_25__16_07_58___2___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/25-01-10/npr-13 (tm1504)V on food L_2010_01_25__11_55_31___2___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/25-01-10/npr-3  (tm1583) on food L_2010_01_25__15_09_48___2___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/26-01-10/npr-3 (tm1583)IV on food R_2010_01_26__14_54_36___2___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/06-10-11/unc-1 (e94)X on food R_2011_10_06__12_11_49___2___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/10-03-10/ser-4 on food_2010_03_10__10_02_37___2___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-15/laura/16-04-10 in analysis 22-04-10/unc-26 (m2)IV on food R_2010_04_16__15_09_30___2___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/08-03-12/N2 no wait on food R_2012_03_08__16_30_17___3___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/23-02-10/2/acr-18 (ok1285) on food R_2010_02_23__12_33___3___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 21-09-09/unfinished/cat-2 (e112) on food R_2009_09_15__15_16___3___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 07-08-09/finished/N2 on food R_2009_06_30__10_06__1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 07-08-09/finished/odr-3 (n2150)V on food R_2009_06_29__16_31__10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 30-07-09/finished/gpa-1 (pk15)V on food R_2009_06_16__13_07__2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 30-07-09/finished/gpa-11 (pk348)II on food L_2009_07_14__14_40__8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 30-07-09/finished/gpa-5 (pk376)X on food R_2009_07_14__16_38__16.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 23-07-09/finished/nlp-1 (ok1469)X on food L_2009_06_05__10_56__2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 23-07-09/finished/nlp-2 (tm1908)X on food R_2009_06_05__11_06__3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 23-07-09/finished/nlp-2 (TM1908)X on food R_2009_06_05__13_30__13.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 21-08-09/finished/N2 on food R_2009_07_30__11_08___3___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 19-08-09/finished/N2 on food_2009_08_19__10_02_12___7___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 04-08-09/finished/nlp-12 (ok355)IV on food L_2009_06_17__13_03__13.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 05-08-09/finished/nlp-12 (ok335)IV on food L_2009_06_18__14_42__13.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 05-08-09/finished/nlp-12 (ok335)IV on food L_2009_06_18__16_16__22.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/Analysis/analysis 05-08-09/finished/nlp-18 (ok1557)II on food L_2009_06_18__12_58__8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/15-06-10/1/del-1 (ok150) on food L_2010_06_15__14_36___3___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/19-05-11/AQ1062 on food R_2011_05_19__16_43___3___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/02-08-11/egl-1 (n487) on food R_2011_08_02__16_59___3___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/14-12-09/ser-5 (tm2654) on food R_2009_12_14__11_42___3___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/15-12-09/ser-5 (tm2654) on food R_2009_12_15__12_43___3___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/25-08-11/C11D2.6 (gk9)IV on food L_2011_08_25__11_59___3___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/26-03-10 segmented on pc207-18/C46A5.2 (ok1187) on food R_2010_03_26__10_33___3___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/26-03-10 segmented on pc207-18/lov-1 con5221 on food L_2010_03_26__15_13___3___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/19-03-10/C24G71 (ok1822) on food L_2010_03_19__09_56___3___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/11-08-11/unc-38 (e264)I on food R_2011_08_11__11_22___3___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/19-08-11/hr-95 (gk836)V on food R_2011_08_19__11_19___3___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/19-08-11/N2 on food R_2011_08_19__13_00___3___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/13-09-11/unc-9 (e101) on food L_2011_09_13__11_20___3___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/22-07-10/1/daf-7 (m62)III on food R_2010_07_22__12_24___3___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/22-07-10/1/gar-2 (ok250)III on food R_2010_07_22__11_21___3___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/17-11-09/snf-8 (ok349)IV on food L_2009_11_17__14_53___3___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/18-1109/snf-8 (ok349)IV on food R_2009_11_18__12_31___3___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/19-11-09/dat-1 (ok157)III on food R_2009_11_19__15_39___3___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/19-11-09/snf-1 (ok790)I on food L_2009_11_19__10_22___3___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/19-11-09/snf-7 (ok482)III on food R_2009_11_19__11_47___3___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/09-12-09 new analysis on A3/unc-108 (n501gf) on food L_2009_12_09__15_36___3___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/09-12-09 new analysis on A3/unc-32 (e189) on food L_2009_12_09__15_57___3___13.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/10-12-09/dnc-1 (or404ts) on food R_2009_12_10__15_03___3___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/03-08-11/egl-1 (n487) on food L_2011_08_03__09_32___3___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/03-08-11/N2 Laura on food R_2011_08_03__15_42___3___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/11-05-10/3/egl-19 (n2368)IV on food L_2010_05_11__15_50___3___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/16-12-10/npr-12 (tm1498)V on food L_2010_12_16__12_55___3___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/13-05-10/1/egl-19 (n2368)IV on food L_2010_05_13__15_25___3___12.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/20-07-10/2/egl-21 (n476)IV on food R_2010_07_20__12_04___3___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/20-07-10/4/egl-36 (n728)X on food R_2010_07_20__11_05___3___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/23-09-10/unc-38 (n264)I on food R_2010_09_23__11_36___3___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/17-09-10/1/egl-30 (n686); goa-1 (n1134) on food R_2010_09_17__16_23___3___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/05-03-10/gpa-10 (pk362)V on food L_2010_03_05__10_13___3___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/05-03-10/gpb-2 (sa603) on food R_2010_03_05__12_34___3___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/07-04-11/egl-42 (n995) on food R_2011_06_07__15_23___3___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/11-05-11/egl-50 (n1086) on food R_2011_05_11__17_02___3___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/11-05-11/N2 Robyn on food L_2011_05_11__10_57___3___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/12-05-11/egl-50 (n1086) on food R_2011_05_12__15_25___3___10.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/28-06-11/egl-8 (n488) on food R_2011_06_28__12_00___3___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/20-09-11/unc-4 (gk705)II on food L_2011_09_20__11_39___3___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/31-03-10 segmented on pc207-18/N2 on food R_2010_03_31__10_54___3___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/20-01-10/flp-18 (dp99)X on food L_2010_01_20__11_36___3___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/09-04-10 new analysis on A3/flr-1 (ut11) on food L_2010_04_09__15_54___3___13.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/25-02-10 segmented on pc220-6/gpa-11 (pk349)II on food L_2010_02_25__11_23___3___6.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/23-04-10/trpa-1 (ok999); osm-9 (ky10) on food R_2010_04_23__16_16___3___15.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/11-11-10/mec-10 (u20) on food L_2010_11_11__15_55___3___9.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/11-11-10/mec-4 (253) on food L_2010_11_11__16_35___3___11.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/01-10-10/snf-6 (eg28)III on food R_2010_10_01__13_03___3___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/14-10-10/mec-18 (e228) on food L_2010_10_14__15_19___3___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/25-05-11/N2 (Laura) on food L_2011_05_25__10_00___3___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/25-05-11/N2 (Laura) on food L_2011_05_25__14_39___3___2.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/23-02-12/N2 male on food L_2012_02_23__12_21_07___3___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/02-03-12/N2 male on food R_2012_03_02__16_06_36___3___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/02-03-12/N2 male on food R_2012_03_02__16_27_32___3___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/off food tracking/27-04-10/2/ocr-3 (a1537) off food R_2010_04_27__12_03___3___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/22-01-10/npr-1 (ad609)X on food L_2010_01_22__11_33___3___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/22-01-10/npr-3 (tm1583)IV on food R_2010_01_22__11_13___3___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/22-01-10/npr-4 (tm1782)X on food L_2010_01_22__10_54___3___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/10-09-10/finished/unc-7 (cb5) on food R_2010_09_10__16_15___3___13.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/25-01-10/npr-3 (tm1583) on food  L_2010_01_25__15_09___3___7.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/07-05-10/N2 on food R_2010_05_07__10_16___3___1.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/09-09-10/finished/unc-7 (cb5) on food L_2010_09_09__10_45___3___3.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/04-11-11/unc-4 (e120)II on food R_2011_11_04__11_07___3___5.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/09-11-11/unc-104 (e1265)III on food L_2011_11_09__11_20___3___4.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/13-04-10/unc-118 (e2331)X on food R_2010_04_13__12_45___3___8.hdf5
+/Volumes/behavgenom_archive$/MaskedVideos/nas207-3/Data/from pc207-14/Laura/10-03-10 new analysis on A3/ser-4 on food_2010_03_10__10_02___3___1.hdf5

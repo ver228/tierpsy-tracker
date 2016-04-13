@@ -1,5 +1,5 @@
-function [worm, errNum, errMsg] = ...
-    segWormBWimgSimpleM(img, frame, bodyScale, verbose, varargin)
+%function [worm, errNum, errMsg] = ...
+%    segWormBWimgSimpleM(img, frame, bodyScale, verbose, varargin)
 %SEGWORM Segment the worm in an image and organize the information in a
 %   structure.
 %
@@ -122,7 +122,7 @@ if isempty(wormPixels)
     end
     return;
 end
-
+%%
 % Find a point on the contour.
 [y, x] = ind2sub(size(img), min(wormPixels));
 
@@ -188,7 +188,7 @@ if size(contour, 1) < cWormSegs
     end
     return;
 end
-
+%%
 % % Code for debugging purposes.
 % cMinY = min(contour(:,1));
 % cMaxY = max(contour(:,1));
@@ -238,7 +238,7 @@ if size(contour, 1) < cWormSegs
     end
     return;
 end
-
+%%
 % Compute the contour's local high/low-frequency curvature.
 % Note: worm body muscles are arranged and innervated as staggered pairs.
 % Therefore, 2 segments have one theoretical degree of freedom (i.e. one

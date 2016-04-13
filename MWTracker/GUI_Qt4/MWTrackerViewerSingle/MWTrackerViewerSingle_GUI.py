@@ -11,6 +11,7 @@ import tables, os
 import numpy as np
 import pandas as pd
 import cv2
+import json
 
 class MWTrackerViewerSingle_GUI(HDF5videoViewer_GUI):
     def __init__(self, ui = ''):
@@ -51,6 +52,20 @@ class MWTrackerViewerSingle_GUI(HDF5videoViewer_GUI):
             with pd.HDFStore(self.skel_file, 'r') as ske_file_id:
                 self.trajectories_data = ske_file_id['/trajectories_data']
                 self.traj_time_grouped = self.trajectories_data.groupby('frame_number')
+
+                #read the size of the structural element used in to calculate the mask
+                if '/provenance_tracking/INT_SKE_ORIENT' in ske_file_id:
+                    prov_str = ske_file_id.get_node('/provenance_tracking/SKE_CREATE').read()
+                    func_arg_str = json.loads(prov_str.decode("utf-8"))['func_arguments']
+                    strel_size = json.loads(func_arg_str)['strel_size']
+                    if isinstance(strel_size, (list, tuple)):
+                        strel_size = strel_size[0]
+
+                    self.strel_size = strel_size
+                else:
+                    #use default
+                    self.strel_size = 5
+
 
         except (IOError, KeyError):
             self.trajectories_data = -1
@@ -99,7 +114,6 @@ class MWTrackerViewerSingle_GUI(HDF5videoViewer_GUI):
         isDrawSkel = self.ui.checkBox_showLabel.isChecked()
         if isDrawSkel and isinstance(row_data, pd.Series):
             if row_data['has_skeleton'] == 1:
-                #self.drawThreshMask(self.frame_img, self.frame_qimg, row_data, read_center=True)
                 self.drawSkel(self.frame_img, self.frame_qimg, row_data, roi_corner = (0,0))
             else:
                 self.drawThreshMask(self.frame_img, self.frame_qimg, row_data, read_center=True)
@@ -155,14 +169,15 @@ class MWTrackerViewerSingle_GUI(HDF5videoViewer_GUI):
         painter.end()
      
     def drawThreshMask(self, worm_img, worm_qimg, row_data, read_center = True):
-        worm_mask = getWormMask(worm_img, row_data['threshold'])
+        
         min_mask_area = row_data['area']/2
-        if read_center:
-            worm_cnt, _ = binaryMask2Contour(worm_mask, roi_center_x = row_data['coord_y'], roi_center_y = row_data['coord_x'], min_mask_area = min_mask_area)
-        else:
-            worm_cnt, _ = binaryMask2Contour(worm_mask, min_mask_area = min_mask_area)
-        worm_mask = np.zeros_like(worm_mask)
-        cv2.drawContours(worm_mask, [worm_cnt.astype(np.int32)], 0, 1, -1)
+        c1, c2 = (row_data['coord_x'], row_data['coord_y']) if read_center else (-1, -1)
+
+        worm_mask, _ , _ = getWormMask(worm_img, row_data['threshold'], strel_size = self.strel_size, \
+            roi_center_x = c1, roi_center_y = c2, min_mask_area = min_mask_area)
+        
+        #worm_mask = np.zeros_like(worm_mask)
+        #cv2.drawContours(worm_mask, [worm_cnt.astype(np.int32)], 0, 1, -1)
 
         worm_mask = QImage(worm_mask.data, worm_mask.shape[1], 
         worm_mask.shape[0], worm_mask.strides[0], QImage.Format_Indexed8)

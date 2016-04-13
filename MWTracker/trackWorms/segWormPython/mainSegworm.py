@@ -234,6 +234,8 @@ def getSkeleton(worm_cnt, prev_skeleton = np.zeros(0), resampling_N = 50):
     
     assert type(worm_cnt) == np.ndarray and worm_cnt.ndim == 2 and worm_cnt.shape[1] ==2
     
+    #make sure the worm contour is float
+    worm_cnt = worm_cnt.astype(np.float32)
     skeleton, cnt_side1, cnt_side2, cnt_widths, err_msg = contour2Skeleton(worm_cnt)
     
     if skeleton.size == 0:

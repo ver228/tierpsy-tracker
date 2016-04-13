@@ -6,6 +6,7 @@ Created on Thu Feb 11 22:01:59 2016
 """
 
 import h5py
+import tables
 import os
 import numpy as np
 import matplotlib.pylab as plt
@@ -18,38 +19,77 @@ delT = 15
 
 main_dir = '/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/'
 
-files = glob.glob(os.path.join(main_dir, '*.hdf5' ))
-files = sorted(files)
-#%%
-for mask_id, masked_image_file in enumerate(files[4:]):
-    skeletons_file = masked_image_file.replace('MaskedVideos', 'Results')[:-5] + '_skeletons.hdf5'
-    feat_file = masked_image_file.replace('MaskedVideos', 'Features')[:-5] + '_features.mat'
+from MWTracker.featuresAnalysis.obtainFeaturesHelper import WormFromTable
+#from MWTracker.featuresAnalysis.obtainFeatures import getMicroPerPixels, getFPS
 
-    #%%
-    with pd.HDFStore(skeletons_file, 'r') as fid:
-        trajectories_data = fid['/trajectories_data']
-    #%%
+
+def getFPS(skeletons_file, fps_expected):
+    #try to infer the fps from the timestamp
+    try:
+        with tables.File(skeletons_file, 'r') as fid:
+            timestamp_time = fid.get_node('/timestamp/time')[:]
+            fps = 1/np.median(np.diff(timestamp_time))
+            if np.isnan(fps): 
+                raise ValueError
+            is_default_timestamp = 0
+    except (tables.exceptions.NoSuchNodeError, IOError, ValueError):
+        fps = fps_expected
+        is_default_timestamp = 1
+    
+    return fps, is_default_timestamp
+
+
+def getMicroPerPixel(skeletons_file):
+    try:
+        with tables.File(skeletons_file, 'r') as fid:
+            return fid.get_node('/stage_movement')._v_attrs['pixel_per_micron_scale']
+    except (tables.exceptions.NoSuchNodeError, IOError, KeyError):
+        #i need to change it to something better, but for the momement let's use 1 as default
+        return 1
+
+def correctSingleWorm(worm, skeletons_file):
     with h5py.File(skeletons_file, 'r') as fid:
         if not '/stage_movement/stage_vec' in fid:
             continue
-        skeletons_ori = fid['/skeleton'][:]
-        #skeletons_ori[~trajectories_data['is_good_skel'].values, :, :] = np.nan;
-        
-        stage_vec = fid['/stage_movement/stage_vec'][:]
-        
+        stage_vec_ori = fid['/stage_movement/stage_vec'][:]
         timestamp_ind = fid['/timestamp/raw'][:].astype(np.int)
-        
-        max_ind = np.max(timestamp_ind)+1
-        skeletons = np.full((max_ind, skeletons_ori.shape[1], skeletons_ori.shape[2]), np.nan)
-        
         rotation_matrix = fid['/stage_movement'].attrs['rotation_matrix']
-        pixel_per_micron_scale = fid['/stage_movement'].attrs['pixel_per_micron_scale']
-        
-        for ind_ori, int_ts in enumerate(timestamp_ind):
-            
-            rot_skel = np.dot(skeletons_ori[ind_ori], rotation_matrix)
-            scale_skel = rot_skel*pixel_per_micron_scale;
-            skeletons[int_ts,:,:]  = scale_skel - stage_vec[ind_ori]
+
+    #adjust the stage_vec to match the timestamps in the skeletons
+    timestamp_ind = timestamp_ind - worm.first_frame
+    good = (timestamp_ind>=0) & (timestamp_ind<=worm.timestamp[-1])
+    
+    timestamp_ind = timestamp_ind[good]
+    stage_vec_ori = stage_vec_ori[good]
+    
+    stage_vec = np.full((worm.timestamp.size,2), np.nan)
+    stage_vec[timestamp_ind, :] = stage_vec_ori
+    
+    tot_skel = worm.skeleton.shape[0]
+    
+    for field in ['skeleton', 'ventral_contour', 'dorsal_contour']:
+        tmp_dat = getattr(worm, field)
+        for ii in range(tot_skel):
+            tmp_dat[ii] = np.dot(tmp_dat[ii], rotation_matrix) - stage_vec[ii]
+        setattr(worm, field, tmp_dat)
+
+
+files = glob.glob(os.path.join(main_dir, '*.hdf5' ))
+files = sorted(files)[:1]
+#%%
+for mask_id, masked_image_file in enumerate(files):
+    skeletons_file = masked_image_file.replace('MaskedVideos', 'Results')[:-5] + '_skeletons.hdf5'
+    feat_file = masked_image_file.replace('MaskedVideos', 'Features')[:-5] + '_features.mat'
+#%%
+    print(mask_id)
+    
+    fps, is_default_timestamp = getFPS(skeletons_file, fps_expected=25)
+    micronsPerPixel = pix2mum = getMicroPerPixel(skeletons_file)
+    worm = WormFromTable(skeletons_file, 1, fps=fps, micronsPerPixel=micronsPerPixel)
+    
+
+    
+    skeletons = worm.skeleton
     #%%
     
     #plt.figure()

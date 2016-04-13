@@ -203,9 +203,77 @@ def getWormROI(img, CMx, CMy, roi_size = 128):
     
     return worm_img, roi_corner
 
+def imFillHoles(im_th):
+    #fill holes from (http://www.learnopencv.com/filling-holes-in-an-image-using-opencv-python-c/)
+    # Copy the thresholded image.
+    im_floodfill = im_th.copy()
+     
+    # Mask used to flood filling.
+    # Notice the size needs to be 2 pixels than the image.
+    h, w = im_th.shape[:2]
+    mask = np.zeros((h+2, w+2), im_th.dtype)
+     
+    # Floodfill from point (0, 0)
+    cv2.floodFill(im_floodfill, mask, (0,0), 255);
+     
+    # Invert floodfilled image
+    im_floodfill_inv = cv2.bitwise_not(im_floodfill)
+     
+    # Combine the two images to get the foreground.
+    im_out = im_th | im_floodfill_inv
+    return im_out
 
+def getWormMask(worm_img, threshold, strel_size = 5, min_mask_area=50, roi_center_x = -1, roi_center_y = -1):
+    '''
+    Calculate worm mask using an specific threshold.
+    '''
 
-def getWormMask(worm_img, threshold, strel_size = (5,5)):
+    if any(x<3 for x in worm_img.shape):
+        return np.zeros_like(worm_img)
+    
+    #structural elements used in the morphological operations
+    #strel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (strel_size,strel_size))
+    
+    #let's make sure the strel is larger than 3 and odd, otherwise it will shift the mask position.
+    strel_size_half = round(strel_size/2)
+    if strel_size_half % 2 == 0:
+        strel_size_half += 1
+    if strel_size_half < 3:
+        strel_size_half = 3
+
+    strel_half = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (strel_size_half,strel_size_half))
+    #strel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (strel_size,strel_size))
+    
+    #make the worm more uniform. This is important to get smoother contours.
+    worm_img = cv2.medianBlur(worm_img, 3);
+    
+    #compute the thresholded mask
+    worm_mask = ((worm_img < threshold) & (worm_img!=0)).astype(np.uint8)
+    
+    #first compute a small closing to join possible fragments of the worm.
+    worm_mask = cv2.morphologyEx(worm_mask, cv2.MORPH_CLOSE, strel_half)
+    
+    #then get the best contour to be the worm
+    worm_cnt, _ = binaryMask2Contour(worm_mask, min_mask_area = min_mask_area, roi_center_x = roi_center_x, roi_center_y = roi_center_y)
+    
+    #create a new mask having only the best contour
+    worm_mask = np.zeros_like(worm_mask)
+    cv2.drawContours(worm_mask, [worm_cnt.astype(np.int32)], 0, 1, -1)
+    
+    #let's do closing with a larger structural element to close any gaps inside the worm.
+    # It is faster to do several iterations rather than use a single larger strel.
+    #worm_mask = cv2.morphologyEx(worm_mask_s, cv2.MORPH_CLOSE, strel, iterations = 1)
+    worm_mask = cv2.morphologyEx(worm_mask, cv2.MORPH_CLOSE, strel_half, iterations = 3)
+ 
+    #finally get the contour from the last element
+    worm_cnt, cnt_area = binaryMask2Contour(worm_mask, min_mask_area = min_mask_area, roi_center_x = roi_center_x, roi_center_y = roi_center_y)
+    
+    worm_mask = np.zeros_like(worm_mask)
+    cv2.drawContours(worm_mask, [worm_cnt.astype(np.int32)], 0, 1, -1)
+    
+    return worm_mask, worm_cnt, cnt_area
+
+def getWormMask_bkp(worm_img, threshold, strel_size = (5,5)):
     '''
     Calculate worm mask using an specific threshold.
     '''
@@ -224,6 +292,7 @@ def getWormMask(worm_img, threshold, strel_size = (5,5)):
     
     #smooth mask by morphological closing
     strel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, strel_size)
+    
     worm_mask = cv2.morphologyEx(worm_mask, cv2.MORPH_CLOSE, strel)
 
     return worm_mask
@@ -242,7 +311,6 @@ def binaryMask2Contour(worm_mask, min_mask_area=50, roi_center_x = -1, roi_cente
     #select only one contour in the binary mask
     #get contour
     _, contour, hierarchy = cv2.findContours(worm_mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-    
     
     if len(contour) == 1:
         contour = np.squeeze(contour[0], axis=1)
@@ -290,11 +358,11 @@ def binaryMask2Contour(worm_mask, min_mask_area=50, roi_center_x = -1, roi_cente
     else:
         return np.zeros(0), 0
     
-    return contour.astype(np.double), cnt_area
+    return contour, cnt_area
 
 def trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file, \
 create_single_movies = False, resampling_N = 49, min_mask_area = 50, 
-strel_size = (5,5), smoothed_traj_param = {}, worm_midbody = (0.35, 0.65)):    
+strel_size = 5, smoothed_traj_param = {}, worm_midbody = (0.35, 0.65)):    
     
     #extract the base name from the masked_image_file. This is used in the progress status.
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
@@ -394,16 +462,18 @@ strel_size = (5,5), smoothed_traj_param = {}, worm_midbody = (0.35, 0.65)):
             for skeleton_id, row_data in frame_data.iterrows():
                 
                 worm_img, roi_corner = getWormROI(img, row_data['coord_x'], row_data['coord_y'], row_data['roi_size'])
-                worm_mask = getWormMask(worm_img, row_data['threshold'], strel_size)
+                worm_mask, worm_cnt, cnt_area = getWormMask(worm_img, row_data['threshold'], strel_size, min_mask_area=row_data['area']/2)
                 
+                
+                #worm_mask = getWormMask(worm_img, row_data['threshold'], strel_size)
                 #only consider areas of at least half the size of the expected blob and that are near the center of the roi
-                worm_cnt, cnt_areas[skeleton_id] = binaryMask2Contour(worm_mask, min_mask_area = row_data['area']/2)
+                #worm_cnt, cnt_areas[skeleton_id] = binaryMask2Contour(worm_mask, min_mask_area = row_data['area']/2)
                 
                 if worm_cnt.size == 0:
                     continue
 
+                cnt_areas[skeleton_id] = cnt_area
                 #calculate the mask center of mask and store it
-                #mm = cv2.moments(worm_cnt)
                 cnt_coord_y[skeleton_id] = np.mean(worm_cnt[:,1]) + roi_corner[1]
                 cnt_coord_x[skeleton_id] = np.mean(worm_cnt[:,0]) + roi_corner[0]
                 

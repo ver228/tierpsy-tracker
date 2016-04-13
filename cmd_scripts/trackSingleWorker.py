@@ -24,6 +24,8 @@ from MWTracker.helperFunctions.tracker_param import tracker_param
 from MWTracker.helperFunctions.trackProvenance import getGitCommitHash, execThisPoint
 from MWTracker.helperFunctions.miscFun import print_flush
 
+from MWTracker.stageAligment.alignStageMotion import alignStageMotion
+
 from collections import OrderedDict
 
 
@@ -90,7 +92,6 @@ def getStartingPoint(masked_image_file, results_dir):
     except  accepted_errors:
         #if there is any problem while reading the file, create it again
         return checkpoint['FEAT_CREATE'];
-    
 
     try:
         with tables.File(feat_manual_file, "r") as feat_file_id:
@@ -215,16 +216,23 @@ class getTrajectoriesWorkerL():
         'FEAT_CREATE': {
             'func':getWormFeaturesFilt,
             'argkws':{'skeletons_file':self.skeletons_file, 'features_file':self.features_file, 
-                'use_skel_filter':self.use_skel_filter, 'use_manual_join':False, 
+                'expected_fps': self.param.expected_fps, 'is_single_worm':self.is_single_worm, 
+                'use_skel_filter':self.use_skel_filter, 'use_manual_join':False,
                 'feat_filt_param':self.param.feat_filt_param},
             'output_file':self.features_file
             },
         'FEAT_MANUAL_CREATE': {
             'func':getWormFeaturesFilt,
-            'argkws':{'skeletons_file':self.skeletons_file, 'features_file':self.feat_manual_file, 
-                'use_skel_filter':self.use_skel_filter, 'use_manual_join':True, 
+            'argkws':{'skeletons_file':self.skeletons_file, 'features_file':self.feat_manual_file,  
+                'expected_fps': self.param.expected_fps, 'is_single_worm':self.is_single_worm, 
+                'use_skel_filter':self.use_skel_filter, 'use_manual_join':True,
                 'feat_filt_param':self.param.feat_filt_param},
             'output_file':self.feat_manual_file
+            },
+        'STAGE_ALIGMENT': {
+            'func':alignStageMotion,
+            'argkws':{'masked_image_file':self.masked_image_file, 'skeletons_file':self.skeletons_file},
+            'output_file':self.skeletons_file
             }
         }
 
@@ -238,11 +246,29 @@ class getTrajectoriesWorkerL():
             return
         
         print_flush(self.base_name + ' Starting checkpoint: ' + checkpoint_label[self.start_point])
+            
 
         for ii in range(self.start_point, self.end_point+1):
             current_point = checkpoint_label[ii]
             
+            if self.is_single_worm and current_point == 'INT_PROFILE': 
+                execThisPoint(current_point, **self.points_parameters['STAGE_ALIGMENT'], 
+                commit_hash=self.commit_hash, cmd_original=self.cmd_original)
+                with tables.File(self.skeletons_file, 'r') as fid:
+                    try:
+                        good_aligment = fid.get_node('/stage_movement')._v_attrs['has_finished'][:]
+                    except (KeyError,IndexError):
+                        good_aligment = 0;
+                    if good_aligment != 1:
+                        #break, bad video we do not need to calculate anything else.
+                        last_check_point = 'STAGE_ALIGMENT'
+                        break
+
             if not self.use_manual_join and current_point == 'FEAT_MANUAL_CREATE': continue
+            
+
+            last_check_point = checkpoint_label[self.end_point]
+
             if current_point == 'END': break
 
             #print(current_point, self.points_parameters[current_point]['func'])
@@ -252,7 +278,7 @@ class getTrajectoriesWorkerL():
             
         
         time_str = str(datetime.timedelta(seconds=round(time.time()-initial_time)))
-        print_flush('%s  Finished in %s. Total time %s' % (self.base_name, checkpoint_label[self.end_point], time_str))
+        print_flush('%s  Finished in %s. Total time %s' % (self.base_name, last_check_point, time_str))
         
 
 

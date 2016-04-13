@@ -58,18 +58,7 @@ class SWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
                 self.is_stage_move = np.isnan(fid.get_node('/stage_movement/stage_vec')[:,0])
             else:
                 self.is_stage_move = []
-    # def findCurrentBlock(self):
-    #     ini, fin = self.skel_block[self.skel_block_n]
-    #     print(self.skel_block_n, ini, fin)
-    #     if self.frame_number < ini and self.skel_block_n > 0:
-    #         self.skel_block_n -= 1
-    #         return self.findCurrentBlock()
 
-    #     if self.frame_number > fin and self.skel_block_n < len(self.skel_block) -1:
-    #         self.skel_block_n += 1
-    #         return self.findCurrentBlock()
-
-    #     return None
 
     def updateImage(self):
         self.readImage()

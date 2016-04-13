@@ -21,8 +21,6 @@ with open('exp1_db.csv') as fid:
         for k in row:
             db_data[k].append(row[k])
 
-
-
 db_data['channel'] = list(map(int, db_data['channel']))
 db_data['fogginess'] = list(map(int, db_data['fogginess']))
 db_data['camera_focus'] = list(map(float, db_data['camera_focus']))

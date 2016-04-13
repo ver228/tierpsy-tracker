@@ -8,6 +8,7 @@ Created on Tue Jun  9 15:12:48 2015
 import os
 import argparse
 
+
 from MWTracker.helperFunctions.runMultiCMD import runMultiCMD, print_cmd_list
 from compressSingleLocal import compressLocal_parser
 from helperMultipleFiles import checkVideoFiles, exploreDirs

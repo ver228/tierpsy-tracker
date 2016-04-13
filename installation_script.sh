@@ -2,6 +2,7 @@
 MW_MAIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 OPENWORM_DIR=$MW_MAIN_DIR/../open-worm-analysis-toolbox
 OPENCV_DIR=$MW_MAIN_DIR/../opencv
+OPENCV_VER=3.1.0
 
 function create_directories {
 	
@@ -36,8 +37,8 @@ function clone_worm_analysis_toolbox {
 	#fi
 	#change permissions so other users can access to this
 	
-	cd $OPENWORM_DIR
-	git checkout 14577fc9c49183bf731a605df687c0739ed56657
+	#cd $OPENWORM_DIR
+	#git checkout 14577fc9c49183bf731a605df687c0739ed56657
 	chmod -R ugo+rx $MW_MAIN_DIR/../open-worm-analysis-toolbox 
 
 }
@@ -49,8 +50,10 @@ function install_dependencies {
 
 
 	#ffmpeg libraries, I need them to install opencv
-	brew install ffmpeg --with-fdk-aac --with-ffplay --with-freetype --with-libass --with-libquvi --with-libvorbis --with-libvpx --with-opus --with-x265
-
+	brew install ffmpeg --with-fdk-aac --with-ffplay --with-freetype --with-libass --with-libquvi \
+	--with-libvorbis --with-libvpx --with-opus --with-x265 --with-openh264 --with-tools --with-fdk-aac
+	
+	
 	#python dependencies
 	brew install homebrew/science/hdf5
 	brew install sip --with-python3 pyqt --with-python3 pyqt5 --with-python3
@@ -71,60 +74,70 @@ function compile_cython_files {
 }
 
 function install_opencv3 {
-	if [ ! -z `python3 -c "import cv2"` ]; then
-		echo 'Installing opencv.'
-		#there is a brew formula for this, but there are more changes this will work.
-		cd $MW_MAIN_DIR/..
+	echo 'Installing opencv.'
+	#there is a brew formula for this, but there are more changes this will work.
+	cd $MW_MAIN_DIR/..
 
-		git clone https://github.com/Itseez/opencv
-		git clone https://github.com/Itseez/opencv_contrib
+	git clone https://github.com/Itseez/opencv
+	#git clone https://github.com/Itseez/opencv_contrib
 
-		cd $MW_MAIN_DIR/../opencv
-		git checkout 3.1.0
+	cd $MW_MAIN_DIR/../opencv
+	git checkout -f $OPENCV_VER
 
-		PY_VER=`python3 -c "import sys; print(sys.version.partition(' ')[0])"`
-		PY_VER_SHORT=`python3 -c "import sys; print('.'.join(sys.version.partition(' ')[0].split('.')[0:2]))"`
+	PY_VER=`python3 -c "import sys; print(sys.version.partition(' ')[0])"`
+	PY_VER_SHORT=`python3 -c "import sys; print('.'.join(sys.version.partition(' ')[0].split('.')[0:2]))"`
 
-		#for some weird reason i have to execute make twice or it does not find the python libraries
-		for i in 1 2
-		do
-		cmake '"Unix Makefile"' -DBUILD_opencv_python3=ON \
-		-DBUILD_opencv_python2=OFF \
-		-DPYTHON_EXECUTABLE=`which python3` \
-		-DPYTHON3_INCLUDE_DIR=/usr/local/Cellar/python3/${PY_VER}/Frameworks/Python.framework/Versions/${PY_VER_SHORT}/include/python${PY_VER_SHORT}m/ \
-		-DPYTHON3_LIBRARY=/usr/local/Cellar/python3/${PY_VER}/Frameworks/Python.framework/Versions/${PY_VER_SHORT}/lib/libpython${PY_VER_SHORT}m.dylib \
-		-DPYTHON3_PACKAGES_PATH=/usr/local/lib/python${PY_VER_SHORT}/site-packages \
-		-DPYTHON3_NUMPY_INCLUDE_DIRS=/usr/local/lib/python${PY_VER_SHORT}/site-packages/numpy/core/include \
-		-DBUILD_TIFF=ON -DBUILD_opencv_java=OFF -DWITH_CUDA=OFF -DENABLE_AVX=ON -DWITH_OPENGL=ON -DWITH_OPENCL=ON \
-		-DWITH_IPP=ON -DWITH_TBB=ON -DWITH_EIGEN=ON -DWITH_V4L=ON -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF \
-		-DWITH_QT=OFF -DINSTALL_PYTHON_EXAMPLES=ON \
-		-D INSTALL_C_EXAMPLES=OFF \
-		-DCMAKE_BUILD_TYPE=RELEASE \
-		-DOPENCV_EXTRA_MODULES_PATH=$MW_MAIN_DIR/../opencv_contrib/modules \
-		-DBUILD_opencv_surface_matching=OFF \
-		-DBUILD_opencv_hdf=OFF \
-		-DBUILD_opencv_xphoto=OFF \
-		.
-		done
-		make -j24
-		make install
-	fi
+	rm -rf build
+	mkdir build
+	cd build
+	#for some weird reason i have to execute make twice or it does not find the python libraries directory
+	for i in 1 2
+	do
+	cmake '"Unix Makefile"' -DBUILD_opencv_python3=ON \
+	-DBUILD_opencv_python2=OFF \
+	-DPYTHON_EXECUTABLE=`which python3` \
+	-DPYTHON3_INCLUDE_DIR=/usr/local/Cellar/python3/${PY_VER}/Frameworks/Python.framework/Versions/${PY_VER_SHORT}/include/python${PY_VER_SHORT}m/ \
+	-DPYTHON3_LIBRARY=/usr/local/Cellar/python3/${PY_VER}/Frameworks/Python.framework/Versions/${PY_VER_SHORT}/lib/libpython${PY_VER_SHORT}m.dylib \
+	-DPYTHON3_PACKAGES_PATH=/usr/local/lib/python${PY_VER_SHORT}/site-packages \
+	-DPYTHON3_NUMPY_INCLUDE_DIRS=/usr/local/lib/python${PY_VER_SHORT}/site-packages/numpy/core/include \
+	-DBUILD_TIFF=ON -DBUILD_opencv_java=OFF -DWITH_CUDA=OFF -DENABLE_AVX=ON -DWITH_OPENGL=ON -DWITH_OPENCL=ON \
+	-DWITH_IPP=ON -DWITH_TBB=ON -DWITH_EIGEN=ON -DWITH_V4L=ON -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF \
+	-DWITH_QT=OFF -DINSTALL_PYTHON_EXAMPLES=ON \
+	-D INSTALL_C_EXAMPLES=OFF \
+	-DCMAKE_BUILD_TYPE=RELEASE \
+	..
+	make clean
+	#-DOPENCV_EXTRA_MODULES_PATH=$MW_MAIN_DIR/../opencv_contrib/modules \
+	#-DBUILD_opencv_surface_matching=OFF \
+	#-DBUILD_opencv_hdf=OFF \
+	#-DBUILD_opencv_xphoto=OFF \
+	#..
+	done
+	make -j24
+	make install
 }
 
 function install_main_modules {
-	cp $MW_MAIN_DIR/setup_openworm.py $OPENWORM_DIR/setup.py
-	mv $OPENWORM_DIR/open_worm_analysis_toolbox/user_config_example.txt $OPENWORM_DIR/open_worm_analysis_toolbox/user_config.py
-	python3 $OPENWORM_DIR/setup.py/$OPENWORM_DIR/setup.py develop
-	python3 $MW_MAIN_DIR/setup.py develop
+	USER_CONFIG=$OPENWORM_DIR/open_worm_analysis_toolbox/user_config.py
+	if [ ! -f $USER_CONFIG ]; then
+		mv $OPENWORM_DIR/open_worm_analysis_toolbox/user_config_example.txt $USER_CONFIG
+	fi
+	cd $OPENWORM_DIR
+	python3 setup.py develop
+
+	cd $MW_MAIN_DIR
+	python3 setup.py develop
 }
 
 #get sudo permissions
-sudo echo "Thanks."
+#sudo echo "Thanks."
 create_directories
 copy_old_ffmpeg
 clone_worm_analysis_toolbox
 install_dependencies
-install_opencv3
+if [ ! $OPENCV_VER -eq `python3 -c "import cv2; print(cv2.__version__)"` ]; then
+	install_opencv3
+fi
 compile_cython_files
 install_main_modules
 

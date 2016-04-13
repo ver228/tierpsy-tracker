@@ -426,7 +426,7 @@ def correctTrajectories(trajectories_file, is_single_worm, join_traj_param):
         traj_fid.get_node('/plate_worms')._v_attrs['has_finished'] = 2
         traj_fid.flush()
 
-def validRowsByArea(plate_worms):
+def _validRowsByArea(plate_worms):
     #here I am assuming that most of the time the largest area in the frame is a worm. Therefore a very large area is likely to be
     #noise
     groupsbyframe = plate_worms.groupby('frame_number')
@@ -436,44 +436,55 @@ def validRowsByArea(plate_worms):
     min_area = med_area - mad_area*6
     max_area = med_area + mad_area*6
 
-    plate_worms_f = plate_worms[(plate_worms['area'] > min_area) & (plate_worms['area'] < max_area)]
-    groupsbyframe_f = plate_worms_f.groupby('frame_number')
+    groupByIndex = plate_worms.groupby('worm_index')
+
+    median_area_by_index = groupByIndex.agg({'area':np.median})
+
+    good = ((median_area_by_index>min_area) & (median_area_by_index<max_area)).values
+    valid_ind = median_area_by_index[good].index;
+
+    plate_worms_f = plate_worms[plate_worms['worm_index'].isin(valid_ind)]
+
+    #median location, it is likely the worm spend more time here since the stage movements tries to get it in the centre of the frame
+    CMx_med = plate_worms_f['coord_x'].median()
+    CMy_med = plate_worms_f['coord_y'].median();
+    L_med = plate_worms_f['box_length'].median();
+
+    #let's use a threshold of movement of at most a quarter of the worm size, otherwise we discard frame.
+    L_th = L_med/4
 
     #now if there are still a lot of valid blobs we decide by choising the closest blob
     valid_rows = []
     tot_frames = plate_worms['frame_number'].max() + 1
+
+    #group by frame
+    groupbyframe_f = plate_worms_f.groupby('frame_number')
+
+    prev_row = -1
     for frame_number in range(tot_frames):
         try:
-            current_group_f = groupsbyframe_f.get_group(frame_number)
-            if len(current_group_f) == 1:
-                valid_rows.append(current_group_f.index[0])
-                prev_row = current_group_f.iloc[0]
-                continue
+            current_group_f = groupbyframe_f.get_group(frame_number)
         except KeyError:
-            try:
-                #in the frames where there are not valid blobs by area we use all the blobs
-                current_group_f = groupsbyframe.get_group(frame_number)
-                if len(current_group_f) == 1:
-                    valid_rows.append(current_group_f.index[0])
-                    prev_row = current_group_f.iloc[0]
-                    continue
-                    
-            except KeyError:
-                #no valid blob nothing to do here
-                continue
+            prev_row = -1
+            #there are not valid index in the current group
+            continue
         
         #pick the closest blob if there are more than one blob to pick
-        if valid_rows:
+        if not isinstance(prev_row, int):
             delX = current_group_f['coord_x'] - prev_row['coord_x']
             delY = current_group_f['coord_y'] - prev_row['coord_y']
-            good_ind = np.argmin(delX*delX + delY*delY)
-            
         else:
-            good_ind = np.argmax(current_group_f['area'])
+            delX = current_group_f['coord_x'] - CMx_med
+            delY = current_group_f['coord_y'] - CMy_med
+        
+        R = np.sqrt(delX*delX + delY*delY)
+        good_ind = np.argmin(R)
+        if R[good_ind] < L_th:
+            valid_rows.append(good_ind)
+            prev_row = current_group_f.loc[good_ind]
+        else:
+            prev_row = -1
 
-        valid_rows.append(good_ind)
-        prev_row = current_group_f.loc[good_ind]
-    
     return valid_rows
 
 def correctSingleWormCase(trajectories_file):
@@ -486,14 +497,8 @@ def correctSingleWormCase(trajectories_file):
     #emtpy table nothing to do here
     if len(plate_worms) == 0: return
 
-    # tot_frames = plate_worms['frame_number'].max() + 1
-    # groupsbyframe = plate_worms[['frame_number', 'area']].groupby('frame_number')
-    # #valid_list = maxAreaPerFrame[maxAreaPerFrame<= med_area + mad_area*6].index.tolist()
-    # valid_rows = np.full(tot_frames, np.nan)
-    # for ii, frame_data in groupsbyframe:
-    #     valid_rows[ii] = frame_data['area'].argmax()
-    # valid_rows = valid_rows[~np.isnan(valid_rows)]
-    valid_rows = validRowsByArea(plate_worms)
+    valid_rows = _validRowsByArea(plate_worms)
+    
     plate_worms['worm_index_joined'] = np.array(-1, dtype=np.int32) #np.array(1, dtype=np.int32)
     plate_worms.loc[valid_rows, 'worm_index_joined'] = 1
 
@@ -506,25 +511,16 @@ def correctSingleWormCase(trajectories_file):
         traj_fid.remove_node('/', 'plate_worms')
         newT.rename('plate_worms')
 
-        
-def joinTrajectories(trajectories_file, min_track_size = 50, \
-max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
+
+def _findNextTraj(df, area_ratio_lim, min_track_size, max_time_gap):
     '''
     area_ratio_lim -- allowed range between the area ratio of consecutive frames 
     min_track_size -- minimum tracksize accepted
     max_time_gap -- time gap between joined trajectories
     '''
-    
-    #check the previous step finished correctly
-    with tables.open_file(trajectories_file, mode = 'r') as fid:
-        traj_table = fid.get_node('/plate_worms')
-        assert traj_table._v_attrs['has_finished'] >= 1
 
-    #%% get the first and last rows for each trajectory. Pandas is easier of manipulate than tables.
-    with pd.HDFStore(trajectories_file, 'r') as fid:
-        df = fid['plate_worms'][['worm_index', 'frame_number', 'coord_x', 'coord_y', 'area', 'box_length']]
-
-    #select the first and last frame_number for each separate trajectory
+    df = df[['worm_index', 'frame_number', 'coord_x', 'coord_y', 'area', 'box_length']]
+     #select the first and last frame_number for each separate trajectory
     tracks_data = df[['worm_index', 'frame_number']]
     tracks_data = tracks_data.groupby('worm_index')
     tracks_data = tracks_data.aggregate({'frame_number': [np.argmin, np.argmax, 'count']})
@@ -567,6 +563,42 @@ max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
             join_frames.append((indmin, curr_index))
 
     relations_dict = dict(join_frames)
+
+    return relations_dict, valid_indexes
+
+def _joinDict2Index(worm_index, relations_dict, valid_indexes):
+    worm_index_joined = np.full_like(worm_index, -1)
+        
+    for ind in valid_indexes:
+        #seach in the dictionary for the first index in the joined trajectory group
+        ind_joined = ind;
+        while ind_joined in relations_dict:
+            ind_joined = relations_dict[ind_joined]
+        
+        #replace the previous index for the root index
+        worm_index_joined[worm_index == ind] = ind_joined
+    
+    return worm_index_joined
+
+
+def joinTrajectories(trajectories_file, min_track_size = 50, \
+max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
+    '''
+    area_ratio_lim -- allowed range between the area ratio of consecutive frames 
+    min_track_size -- minimum tracksize accepted
+    max_time_gap -- time gap between joined trajectories
+    '''
+    
+    #check the previous step finished correctly
+    with tables.open_file(trajectories_file, mode = 'r') as fid:
+        traj_table = fid.get_node('/plate_worms')
+        assert traj_table._v_attrs['has_finished'] >= 1
+
+    #%% get the first and last rows for each trajectory. Pandas is easier of manipulate than tables.
+    with pd.HDFStore(trajectories_file, 'r') as fid:
+        df = fid['plate_worms'][['worm_index', 'frame_number', 'coord_x', 'coord_y', 'area', 'box_length']]
+
+    relations_dict,valid_indexes = _findNextTraj(df, area_ratio_lim, min_track_size, max_time_gap)
     
     #%%
     #update worm_index_joined field 
@@ -575,16 +607,7 @@ max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
         
         #read the worm_index column, this is the index order that have to be conserved in the worm_index_joined column
         worm_index = plate_worms.col('worm_index')
-        worm_index_joined = np.full_like(worm_index, -1)
-        
-        for ind in valid_indexes:
-            #seach in the dictionary for the first index in the joined trajectory group
-            ind_joined = ind;
-            while ind_joined in relations_dict:
-                ind_joined = relations_dict[ind_joined]
-            
-            #replace the previous index for the root index
-            worm_index_joined[worm_index == ind] = ind_joined
+        _worm_index_joined = joinDict2Index(worm_index, relations_dict, valid_indexes)
         
         #add the result the column worm_index_joined
         plate_worms.modify_column(colname = 'worm_index_joined', column = worm_index_joined)
@@ -592,8 +615,6 @@ max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
         #flag the join data as finished
         plate_worms._v_attrs['has_finished'] = 2
         fid.flush()
-
-
 
 
 #DEPRECATED

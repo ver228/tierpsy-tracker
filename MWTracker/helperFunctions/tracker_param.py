@@ -32,7 +32,7 @@ class tracker_param:
         keep_border_data - set it to false if you want to remove any connected component that touches the border.
         
         
-        fps - frame rate
+        fps - expected frame rate
         fps_filter - frame per second used to calcular filters for trajectories. As default it will have the same value as fps. Set to zero to eliminate filtering.
         
         min_displacement - minimum total displacement of a trajectory to be included in the analysis
@@ -45,9 +45,7 @@ class tracker_param:
         if not isinstance(fps, int):
             fps = int(fps)
         
-        #if fps_filter < 0:
-        #    fps_filter = fps;
-
+        self.expected_fps = fps
         
         #getROIMask
         self.mask_param = {'min_area': min_area, 'max_area': max_area, 'has_timestamp': has_timestamp, 
@@ -56,7 +54,7 @@ class tracker_param:
         
         #compressVideo
         self.compress_vid_param =  {'buffer_size' : compression_buff, 'save_full_interval' : 200*fps, 
-                               'max_frame' : 1e32, 'mask_param':self.mask_param}
+                               'max_frame' : 1e32, 'mask_param':self.mask_param, 'expected_fps' : fps}
         #getWormTrajectories
         min_track_lenght = max(1, fps_filter/5)
         max_allowed_dist = max(1, fps)
@@ -78,7 +76,7 @@ class tracker_param:
         #trajectories2Skeletons
         self.skeletons_param = {'resampling_N' : resampling_N, 'worm_midbody' : (0.33, 0.67), 
                                'min_mask_area' : min_area/2, 'smoothed_traj_param' : self.smoothed_traj_param,
-                               'strel_size' : (strel_size,strel_size)}
+                               'strel_size' : strel_size}
         
         #correctHeadTail
         if max_gap_allowed_block <0: fps//2

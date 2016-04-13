@@ -88,7 +88,7 @@ class trackLocal:
 		self.cleanTmpFiles()
 		
 		time_str = str(datetime.timedelta(seconds=round(time.time()-self.start_time)))
-		print_flush('%s  Finished in %s. Total time %s' % (self.base_name, checkpoint_label[self.end_point], time_str))
+		#print_flush('%s  Finished in %s. Total time %s' % (self.base_name, checkpoint_label[self.end_point], time_str))
 		
 	def main_code(self):
 		#start the analysis
@@ -193,7 +193,7 @@ class trackLocal:
 
 		files2copy = []
 		#get files to copy
-		print(self.base_name + " Copying result files into the final directory.")
+		#print_flush(self.base_name + " Copying result files into the final directory.")
 		
 		if any(wasProccesed(x) for x in ['TRAJ_CREATE', 'TRAJ_JOIN']):
 			files2copy += [(self.trajectories_tmp, self.results_dir)]
@@ -213,7 +213,7 @@ class trackLocal:
 		copyFilesLocal(files2copy)
 
 	def cleanTmpFiles(self):
-		print_flush(self.base_name + " Deleting temporary files")
+		#print_flush(self.base_name + " Deleting temporary files")
 		#use the os.path.abspath really compare between paths
 		if os.path.abspath(self.tmp_mask_file) != os.path.abspath(self.masked_image_file):
 			if os.path.exists(self.tmp_mask_file): os.remove(self.tmp_mask_file)
@@ -225,14 +225,16 @@ class trackLocal:
 		if self.end_point >= checkpoint['SKE_CREATE']:
 			assert os.path.exists(self.skeletons_file)
 
-		if self.end_point >= checkpoint['INT_PROFILE']:
-			assert os.path.exists(self.intensities_file)
+		#in the case of single worm if the stage aligment fails the analysis will be interruped before
+		if not self.is_single_worm:
+			if self.end_point >= checkpoint['INT_PROFILE']:
+				assert os.path.exists(self.intensities_file)
 
-		if self.end_point >= checkpoint['FEAT_CREATE']:
-			assert os.path.exists(self.features_file)
+			if self.end_point >= checkpoint['FEAT_CREATE']:
+				assert os.path.exists(self.features_file)
 
-		if self.end_point >= checkpoint['FEAT_MANUAL_CREATE'] and self.use_manual_join:
-			assert os.path.exists(self.feat_ind_file)
+			if self.end_point >= checkpoint['FEAT_MANUAL_CREATE'] and self.use_manual_join:
+				assert os.path.exists(self.feat_ind_file)
 
 
 		#delete the results temporary files
