@@ -22,10 +22,11 @@ main_dir = '/Users/ajaver/Desktop/Videos/single_worm/agar_2/MaskedVideos/'
 from MWTracker.featuresAnalysis.obtainFeaturesHelper import WormFromTable
 from MWTracker.featuresAnalysis.obtainFeatures import getMicronsPerPixel, getFPS
 
-
 files = glob.glob(os.path.join(main_dir, '*.hdf5' ))
 files = sorted(files)
 #%%
+# agar_1 -> 41, 39
+# agar_2 -> 34, 25, 21
 for mask_id in range(len(files)):#[25, 37, 47,48]:
     masked_image_file = files[mask_id]
     skeletons_file = masked_image_file.replace('MaskedVideos', 'Results')[:-5] + '_skeletons.hdf5'

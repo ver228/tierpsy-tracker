@@ -99,7 +99,8 @@ def isWormHTSwitched(skeletons, segment4angle = 5, max_gap_allowed = 10, \
     
     #calculate the rolling std
     ts = pd.DataFrame({'head_angle':angles_head, 'tail_angle':angles_tail})
-    roll_std = pd.rolling_std(ts, window = window_std, min_periods = window_std-max_gap_allowed);
+
+    roll_std = ts.rolling(window = window_std, min_periods = window_std-max_gap_allowed).std();
     
     #determinte if the head in a skeleton has a larger rolling std than the tail
     roll_std["is_head"] = (roll_std['head_angle']>roll_std['tail_angle'])

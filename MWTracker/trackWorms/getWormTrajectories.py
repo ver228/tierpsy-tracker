@@ -457,17 +457,13 @@ def _validRowsByArea(plate_worms):
     valid_rows = []
     tot_frames = plate_worms['frame_number'].max() + 1
 
-    #group by frame
-    groupbyframe_f = plate_worms_f.groupby('frame_number')
-
-    prev_row = -1
-    for frame_number in range(tot_frames):
+    def get_valid_indexes(frame_number, prev_row):    
         try:
             current_group_f = groupbyframe_f.get_group(frame_number)
         except KeyError:
-            prev_row = -1
             #there are not valid index in the current group
-            continue
+            prev_row = -1
+            return prev_row
         
         #pick the closest blob if there are more than one blob to pick
         if not isinstance(prev_row, int):
@@ -480,10 +476,33 @@ def _validRowsByArea(plate_worms):
         R = np.sqrt(delX*delX + delY*delY)
         good_ind = np.argmin(R)
         if R[good_ind] < L_th:
-            valid_rows.append(good_ind)
             prev_row = current_group_f.loc[good_ind]
+            valid_rows.append(good_ind)
         else:
             prev_row = -1
+
+        
+        return prev_row
+
+    #group by frame
+    groupbyframe_f = plate_worms_f.groupby('frame_number')
+
+    prev_row = -1
+    first_frame = tot_frames
+    for frame_number in range(tot_frames):
+        prev_row = get_valid_indexes(frame_number, prev_row) 
+        if not isinstance(prev_row, int) and first_frame > frame_number:
+            first_frame = frame_number
+
+    #if the first_frame is larger than zero it means that it might have lost some data in from the beggining
+    #let's try to search again from opposite direction
+    if frame_number > 0:
+        prev_row = plate_worms_f.loc[np.min(valid_rows)]
+        for frame_number in range(frame_number, -1, -1):
+            prev_row = get_valid_indexes(frame_number, prev_row) 
+
+
+    #valid_rows = list(set(valid_rows))
 
     return valid_rows
 

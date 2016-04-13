@@ -10,10 +10,13 @@ import h5py
 import pandas as pd
 import matplotlib.pylab as plt
 import numpy as np
+from scipy.signal import savgol_filter
 
 from MWTracker.trackWorms.getWormTrajectories import _validRowsByArea, _findNextTraj, _joinDict2Index, correctSingleWormCase
 
-file_mask = '/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/gpa-11 (pk349)II on food L_2010_02_25__11_24_39___8___6.hdf5'
+#file_mask = '/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/gpa-11 (pk349)II on food L_2010_02_25__11_24_39___8___6.hdf5'
+#file_mask = '/Users/ajaver/Desktop/Videos/single_worm/agar_2/MaskedVideos/unc-101 (e1265) on food R_2010_09_24__11_35___3___2.hdf5'
+file_mask = '/Users/ajaver/Desktop/Videos/single_worm/agar_2/MaskedVideos/unc-32 (e189) on food L_2009_12_10__15_44_22___7___14.hdf5'
 
 file_traj = file_mask.replace('MaskedVideos', 'Results').replace('.hdf5', '_trajectories.hdf5')
 assert(os.path.exists(file_mask))
@@ -26,6 +29,11 @@ with pd.HDFStore(file_skel, 'r') as fid:
 
 with pd.HDFStore(file_traj, 'r') as fid:
     plate_worms = fid['/plate_worms']
+
+    if '/provenance_tracking/INT_SKE_ORIENT' in fid:
+        prov_str = fid.get_node('/provenance_tracking/SKE_CREATE').read()
+        func_arg_str = json.loads(prov_str.decode("utf-8"))['func_arguments']
+        params = json.loads(func_arg_str)
 
 
 groupsbyframe = plate_worms.groupby('frame_number')
@@ -50,9 +58,7 @@ mad_area = np.median(np.abs(filtered_areas-med_area))
 min_area = med_area - 3*mad_area
 max_area = med_area + 3*mad_area
 
-
-
-
+#%%
 #track_sizes = plate_worms_f['worm_index'].value_counts();
 #groupByIndex_f = plate_worms_f.groupby('worm_index');
 #for rr in range(10):
@@ -76,12 +82,18 @@ valid_rows = _validRowsByArea(plate_worms)
 #%%
 plt.figure()
 plt.plot(plate_worms_f['frame_number'], plate_worms_f['coord_x'], '.')
+
 xx = plate_worms.loc[valid_rows, 'coord_x'].values
 tt = plate_worms.loc[valid_rows, 'frame_number'].values
-plt.plot(tt, xx, 'r')
+
+ii = np.argsort(tt)
+
+plt.plot(tt[ii], xx[ii], 'r')
 
 df = plate_worms[plate_worms['worm_index_joined']==1]
+
 plt.figure()
+#savgol_filter()
 plt.plot(df['frame_number'], df['coord_x'], 'b')
 plt.plot(trajectories_data['frame_number'], trajectories_data['coord_x'], 'r')
 
