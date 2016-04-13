@@ -626,7 +626,7 @@ max_time_gap = 100, area_ratio_lim = (0.67, 1.5)):
         
         #read the worm_index column, this is the index order that have to be conserved in the worm_index_joined column
         worm_index = plate_worms.col('worm_index')
-        _worm_index_joined = joinDict2Index(worm_index, relations_dict, valid_indexes)
+        worm_index_joined = _joinDict2Index(worm_index, relations_dict, valid_indexes)
         
         #add the result the column worm_index_joined
         plate_worms.modify_column(colname = 'worm_index_joined', column = worm_index_joined)
