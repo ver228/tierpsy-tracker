@@ -3,19 +3,22 @@ import json
 import tables
 from git import Repo
 
-def getGitVersion(main_package):
+def getVersion(main_package):
     git_file = os.path.join((os.sep).join((main_package.__file__).split(os.sep)[0:-2]), '.git')
-    assert os.path.exists(git_file)
-    repo = Repo(git_file)
-    return repo.commit('HEAD').hexsha
+    try:
+        repo = Repo(git_file)
+        return repo.commit('HEAD').hexsha
+    except git.exc.NoSuchPathError:
+        return main_package.__version__
+    
     
 
 def getGitCommitHash():
     import MWTracker
     import open_worm_analysis_toolbox
     
-    commits_hash = {'MWTracker':getGitVersion(MWTracker), 
-    'open_worm_analysis_toolbox':getGitVersion(open_worm_analysis_toolbox)}
+    commits_hash = {'MWTracker':getVersion(MWTracker), 
+    'open_worm_analysis_toolbox':getVersion(open_worm_analysis_toolbox)}
     
     return commits_hash
 
