@@ -5398,3 +5398,1006 @@
 /Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/log_file_naming_issues/flp-28 (gk1075)X on food R_2010_01_20__10_55_12___1___4.avi
 /Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/log_file_naming_issues/nlp-15 (ok1512)I on food L_2010_03_17__10_34_07___1___3.avi
 /Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/log_file_naming_issues/nlp-15 (ok1512)I on food R_2010_03_18__10_32_36___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/log_file_naming_issues/ser-7 (tm1352)X on food R_2009_12_14__12_42_10___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/log_file_naming_issues/T28F2.7 (ok2657) on food L_2010_03_19__09_33_34___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/log_file_naming_issues/tbh-1 (n3247)X on food L_2010_01_28__12_36_19___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/log_file_naming_issues/tbh-1 (n3247)X on food R_2010_01_26__12_05_25___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/log_file_naming_issues/tdc-1(n3419)II on food L_2010_03_09__14_52_44___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-12-10/acr-19 (ad1674) 1on food R_2010_12_14__16_41_42___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-12-10/acr-19 (ad1674) on food R_2010_12_14__15_54_49___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-12-10/egl-11 (n587)V on food L_2010_12_14__12_20_06___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-12-10/egl-47 (n1081)V on food R_2010_12_14__11_39_46___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-12-10/gpa-16 (ok2349) on food L_2010_12_14__15_13_59___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-12-10/N2 on food L_2010_12_14__12_40_07___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-12-10/npr-12 (tm1448)IV on food R_2010_12_14__15_37_10___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-12-10/npr-13 (tm1504)V on food L_2010_12_14__12_02_46___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-02-11/acr-19 (ad1674) on food L_2011_02_04__12_48_54___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-02-11/egl-10 (md176)V on food L_2011_02_04__12_05_28___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-02-11/egl-47 (n1031)V on food R_2011_02_04__11_44_37___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-02-11/flp-9 (ok2430) on food L_2011_02_04__11_06_56___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-02-11/N2 on food R_2011_02_04__12_25_29___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-02-11/npr-12 (tm1498)IV on food L_2011_02_04__13_07_51___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-02-11/odr-3 (n2150) on food R_2011_02_04__11_25_54___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-02-11/unc-98 (su130)X on food L_2011_02_04__10_44_18___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-02-11/unc-98 (su130)X on food L_2011_02_04__14_59_34___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/03-08-11/AQ1062 on food L_2011_08_03__15_40_19___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/03-08-11/N2 Kate on food R_2011_08_03__09_30_31___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/02-08-11/AQ2316 on food R_2011_08_02__16_57_36___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/02-08-11/N2 Kate on food L_2011_08_02__10_37_15___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-08-11/AQ63 on food R_2011_08_09__11_48_46___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-08-11/dpy-20 (e1282)IV on food L_2011_08_09__11_08_04___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-08-11/F54E4.4 (ok2330)X on food R_2011_08_09__11_28_43___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-08-11/lig-4 (ok716)III on food L_2011_08_09__10_27_30___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-08-11/lon-2 (e678)X on food L_2011_08_09__10_49_35___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-08-11/N2 on food R_2011_08_09__12_08_35___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-08-11/rab-3 (cy250) on food R_2011_08_09__12_28_30___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-08-11/unc-18 (e81)X on food L_2011_08_09__12_56_21___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-07-10/1/asic-1 ( ok415) on food R_2010_07_08__11_43_16___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-07-10/1/del-1 (ok150) on food L_2010_07_08__14_53_04___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-07-10/2/M05B5.6 (tm3085) on food R_2010_07_08__12_04_00___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-07-10/2/M05B5.6 (tm3092) on food R_2010_07_08__12_26_11___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-07-10/3/N2 on food L_2010_07_08__10_23_06___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-07-10/3/ocr-4 (vs137); ocr-2 (9447); ocr-1 (ok134) on food R_2010_07_08__10_43_15___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-07-10/4/osm-9 (ky10) on food L_2010_07_08__11_23_23___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-07-10/4/spe-41 (sy693); hin-5 (e1490) on food L_2010_07_08__15_12_33___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-07-10/4/unc-105 (ok1432) on food L_2010_07_08__11_02_41___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-06-10/1/asic-1 (ok415) on food L_2010_06_15__11_25_18___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-06-10/1/del-1 (ok150) on food R_2010_06_15__14_35_03___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-06-10/1/mo5b5.6 (tm3085) on food R_2010_06_15__12_28_50___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-06-10/1/mo5b5.6 (tm3092) on food L_2010_06_15__11_48_35___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-06-10/2/N2 on food R_2010_06_15__10_24_16___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-06-10/2/ocr-4 (vs137); ocr-2 (9447); ocr-1 (ok134) on food R_2010_06_15__10_44_55___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-06-10/2/osm-9 (ky10) on food L_2010_06_15__14_54_50___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-06-10/2/unc-105 (ok1432) on food R_2010_06_15__12_07_34___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-07-10/1/asic-1 (ok415) on food R_2010_07_06__11_04_04___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-07-10/1/del-1 (ok150) on food L_2010_07_06__12_06_10___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-07-10/1/MO5B5.6 (tm3085) on food L_2010_07_06__10_43_23___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-07-10/1/MO5B5.6 (tm3092) on food _2010_07_06__10_25_13___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-07-10/1/N2 on food _2010_07_06__10_02_45___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-07-10/2/ocr-4 (vs137); ocr-2 (9447); ocr-1 (ok134) on food L_2010_07_06__12_26_06___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-07-10/2/osm-9 (ky10) on food L_2010_07_06__11_23_04___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-07-10/2/spe-41 (sy693); hin-5 (e1490) on food R_2010_07_06__14_42_49___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-07-10/2/unc-105 (ok1432) on food L_2010_07_06__11_43_19___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-12-09/bas-1 (ad446)III on food L_2009_12_17__15_51_50___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-12-09/mod-1 (ok103)V on food L_2009_12_17__15_31_16___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-12-09/N2 on food L_2009_12_17__11_02_29___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-12-09/ser-1 (ok345)X on food L_2009_12_17__11_25_13___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-12-09/ser-2 (pk1357)X on food R_2009_12_17__11_44_32___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-12-09/ser-4 (ok512) on food R_2009_12_17__12_03_08___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-12-09/ser-5 (tm2654) on food L_2009_12_17__12_22_31___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-12-09/ser-6 (tm2146)IV on food R_2009_12_17__12_42_17___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-12-09/ser-7 (tm1325)X on food R_2009_12_17__13_02_59___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-12-09/tph-1 superoutcrossed on food L_2009_12_17__16_32_52___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-12-09/unc-29 (e193)I on food L_2009_12_17__16_12_11___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-12-09/bas-1 (ad446)III on food R_2009_12_14__13_01_23___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-12-09/mod-1 (ok103)V on food L_2009_12_14__15_25_25___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-12-09/N2 on food R_2009_12_14__10_20_23___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-12-09/N2 on food_2009_12_14__10_19_26___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-12-09/ser-1 (ok345)X on food R_2009_12_14__10_40_49___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-12-09/ser-2 (pk1357)X on food L_2009_12_14__11_04_02___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-12-09/ser-4 (ok512) on food L_2009_12_14__11_23_01___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-12-09/ser-5 (tm2654) on food L_2009_12_14__11_42_00___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-12-09/ser-6 (tm2146)IV on food L_2009_12_14__12_22_08___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-12-09/tph-1 superoutcrossed on food R_2009_12_14__14_46_59___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-12-09/unc-29 (e193)I on food R_2009_12_14__15_08_29___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-12-09/bas-1 (ad446)III on food R_2009_12_15__11_22_14___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-12-09/mod-1 (ok103)V on food R_2009_12_15__10_41_23___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-12-09/N2 on food R_2009_12_15__10_21_50___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-12-09/ser-1 (ok345)X on food R_2009_12_15__15_07_22___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-12-09/ser-2 (pk1357) on food L_2009_12_15__14_44_10___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-12-09/ser-4 (ok512) on food L_2009_12_15__13_02_38___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-12-09/ser-5 (tm2654) on food R_2009_12_15__12_43_02___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-12-09/ser-6 (tm2146)IV on food R_2009_12_15__12_22_59___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-12-09/ser-7 (tm1325)X on food L_2009_12_15__12_01_30___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-12-09/tph-1 superoutcrossed on food R_2009_12_15__11_41_49___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-12-09/unc-29 (e193) on food L_2009_12_15__11_02_48___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-08-11/C11D2.2 (ok1565)IV on food L_2011_08_25__11_37_19___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-08-11/C11D2.6 (gk9)IV on food R_2011_08_25__11_17_45___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-08-11/dpy-20 (e1282)IV on food R_2011_08_25__12_18_40___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-08-11/gly-2 (gk204)I on food R_2011_08_25__15_55_56___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-08-11/jnk-1 (gk1)IV on food L_2011_08_25__11_57_15___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-08-11/lig-4 (ok716)II on food R_2011_08_25__12_58_05___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-08-11/N2 on food R_2011_08_25__15_18_49___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-08-11/pdl-1 (gk157)II on food R_2011_08_25__12_37_41___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-08-11/rab-3 (cy250) on food R_2011_08_25__14_58_10___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-08-11/ric-19 (ok833) on food R_2011_08_25__15_37_53___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/31-08-11/C11D2.2 (ok1565)IV on food L_2011_08_31__15_27_26___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/31-08-11/C11D2.6 (gk9)IV on food L_2011_08_31__11_27_30___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/31-08-11/gly-2 (gk204)I on food L_2011_08_31__11_47_19___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/31-08-11/jnk-1 (gk1)IV on food R_2011_08_31__12_07_01___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/31-08-11/lig-4 (ok716)II on food L_2011_08_31__15_06_51___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/31-08-11/N2 on food L_2011_08_31__13_15_04___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/31-08-11/nhr-95 (gk836)IV on food R_2011_08_31__12_47_24___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/31-08-11/pdl-1 (gk157)II on food R_2011_08_31__12_27_19___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/31-08-11/rab-3 (cy250) on food L_2011_08_31__15_47_30___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/31-08-11/ric-19 (ok833) on food L_2011_08_31__16_08_20___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/02-09-11/C11D2.6 (gk9)IV on food R_2011_09_02__15_46_50___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/02-09-11/lev-1 (x247) on food L_2011_09_02__15_08_02___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/02-09-11/N2 on food R_2011_09_02__15_26_46___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-03-10 segmented on pc220-6/C1B2.6 (ok2353) on food L_2010_03_25__11_32_27___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-03-10 segmented on pc220-6/C24G7.4 (ok1237) on food L_2010_03_25__11_12_25___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-03-10 segmented on pc220-6/C45A6.2 (ok1187) on food R_2010_03_25__12_52_44___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-03-10 segmented on pc220-6/F23B2.2 (ok1226) on food L_2010_03_25__12_34_18___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-03-10 segmented on pc220-6/JC55 flr-1 (ut11) on food L_2010_03_25__16_03_56___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-03-10 segmented on pc220-6/lov-1 con5221 on food L_2010_03_25__11_52_30___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-03-10 segmented on pc220-6/M05B5.6 (tm3092) on food L_2010_03_25__16_23_46___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-03-10 segmented on pc220-6/N2 on food L_2010_03_25__10_51_58___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-03-10 segmented on pc220-6/ocr-4 (tm2173) on food L_2010_03_25__12_13_28___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-03-10 segmented on pc220-6/ocr-4 (vs137); ocr-2 (9447); ocr-1 (ok134) on food L_2010_03_25__15_22_20___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-03-10 segmented on pc220-6/T2854.2 (ok289) on food L_2010_03_25__15_44_17___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-03-10 segmented on pc220-6/trp-2 (sy691) on food R_2010_03_25__16_45_19___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-03-10 segmented on pc220-6/Y69H2.2 (ok1522) on food L_2010_03_25__17_04_48___1___13.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/30-03-10 segmented on pc220-6/C1B2.6 (ok2353) on food L_2010_03_30__15_49_27___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/30-03-10 segmented on pc220-6/C24G7.1 (ok1822) on food R_2010_03_30__12_05_50___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/30-03-10 segmented on pc220-6/C24G7.4 (ok1237) on food L_2010_03_30__11_45_19___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/30-03-10 segmented on pc220-6/M0585.6 (tm3085) on food R_2010_03_30__15_27_37___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/30-03-10 segmented on pc220-6/N2 on food R_2010_03_30__11_23_25___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/30-03-10 segmented on pc220-6/T28138.5 (ok1014) on food R_2010_03_30__15_05_23___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/30-03-10 segmented on pc220-6/T28F2.7 (ok2657) on food L_2010_03_30__12_26_29___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/30-03-10 segmented on pc220-6/tag-336 (ok1477) on food R_2010_03_30__14_42_57___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/30-03-10 segmented on pc220-6/unc-8 rev on food L_2010_03_30__12_46_54___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-03-10 segmented on pc220-6/C1B2.6 (ok2353) on food R_2010_03_26__12_12_47___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-03-10 segmented on pc220-6/C24G7.1 (ok1822) on food R_2010_03_26__15_54_53___1___13.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-03-10 segmented on pc220-6/C24G7.4 (ok1237) on food R_2010_03_26__11_52_23___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-03-10 segmented on pc220-6/C46A5.2 (ok1187) on food L_2010_03_26__10_32_23___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-03-10 segmented on pc220-6/F23B2.2 (ok1226) on food L_2010_03_26__11_13_35___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-03-10 segmented on pc220-6/lov-1 con5221 on food L_2010_03_26__15_12_35___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-03-10 segmented on pc220-6/M05B5.6 (tm3092) on food L_2010_03_26__14_33_03___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-03-10 segmented on pc220-6/N2 on food R_2010_03_26__10_12_10___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-03-10 segmented on pc220-6/ocr-4 (tm2173) on food L_2010_03_26__14_52_17___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-03-10 segmented on pc220-6/ocr-4 (vs137); ocr-2 (9447); ocr-1 (ok134) on food L_2010_03_26__12_35_50___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-03-10 segmented on pc220-6/T2854.2 (ok289) on food R_2010_03_26__10_54_37___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-03-10 segmented on pc220-6/trp-2 (sy691) on food R_2010_03_26__15_31_28___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-03-10 segmented on pc220-6/Y69H2.2 (ok1522) on food R_2010_03_26__11_32_21___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-03-10/1/C24G7.1 (ok1822) on food L_2010_03_19__09_55_17___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-03-10/1/lov-1 (con5221) on food R_2010_03_19__11_57_54___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-03-10/1/M05B5.6 (tm3092) on food R_2010_03_19__10_13_50___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-03-10/2/N2 on food L_2010_03_19__08_52_44___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-03-10/2/ocr-4 (tm2173) on food L_2010_03_19__10_34_04___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-03-10/3/ocr-4;2;1 on food R_2010_03_19__11_00_23___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-03-10/4/trp-2 (sy691) on food R_2010_03_19__11_32_33___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-03-10/4/unc-8 (rev) on food L_2010_03_19__09_14_05___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-09-11/C38D9.2 (ok1853)V on food L_2011_09_22__13_07_35___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-09-11/lev-1 (x247)IV on food L_2011_09_22__12_07_38___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-09-11/N2 on food L_2011_09_22__11_29_07___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-09-11/R12E2.10 (ok1781)X on food R_2011_09_22__15_58_30___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-09-11/sma-3 (e491)III on food L_2011_09_22__12_28_59___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-09-11/T07D4.1 (ok2575)II on food R_2011_09_22__16_18_14___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-09-11/test_2011_09_22__10_11_48___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-09-11/unc-10 (e102)X on food R_2011_09_22__11_48_55___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-09-11/unc-2 (gk366)X on food R_2011_09_22__13_29_51___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-09-11/unc-76 (e911)V on food R_2011_09_22__12_46_55___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-09-11/unc-77 (e265)IV on food L_2011_09_22__11_06_50___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-09-11/zyg-2 (b244)II on food R_2011_09_22__15_37_32___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-04-10/C46A5.2 (ok1187) on food L_2010_04_08__14_34_29___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-04-10/M0585.6 (tm3085) on food L_2010_04_08__14_55_21___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-04-10/N2 on food L_2010_04_08__11_22_56___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-04-10/T28138.5 (ok1014) on food L_2010_04_08__13_03_15___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-04-10/T2854.2 (ok289) on food L_2010_04_08__11_43_11___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-04-10/tag-336 (ok1477) on food L_2010_04_08__12_03_11___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-04-10/unc-8 rev on food R_2010_04_08__12_44_36___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-04-10/unc-8 rev on food R_2010_04_08__15_13_10___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-04-10/Y69H2.2 (ok1522) on food L_2010_04_08__12_23_16___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-08-11/C52B9.11 (gk596)V on food L_2011_08_11__09_57_03___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-08-11/hcf-1 (ok559)IV on food R_2011_08_11__10_18_01___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-08-11/N2 on food L_2011_08_11__10_56_52___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-08-11/sng-1 (ok234)X on food L_2011_08_11__12_18_25___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-08-11/srp-8 (ok291)V on food R_2011_08_11__12_38_03___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-08-11/T14B1.1 (ok1702) on food L_2011_08_11__11_20_00___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-08-11/T27E9.9 (ok2371)II on food R_2011_08_11__11_58_57___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-08-11/unc-38 (e264)I on food L_2011_08_11__10_37_04___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-08-11/unc-4 (gk705)II on food L_2011_08_11__11_39_29___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-11/C52B9.11 (gk596)V on food L_2011_08_19__11_58_34___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-11/dpy-20 (e1282)IV on food L_2011_08_19__15_56_54___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-11/egl-8 (n488) on food L_2011_08_19__10_57_07___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-11/gly-2 (gk204)I on food L_2011_08_19__13_19_38___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-11/jnk-1 (gk1)IV on food R_2011_08_19__12_38_31___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-11/lig-4 (ok716)I on food L_2011_08_19__15_17_58___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-11/lon-2 (e678)X on food L_2011_08_19__15_38_31___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-11/N2 on food R_2011_08_19__12_18_45___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-11/nca-2 (gk5)III on food R_2011_08_19__11_37_08___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-11/nhr-95 (gk836)V on food R_2011_08_19__10_28_55___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-11/ric-19 (ok883) on food R_2011_08_19__12_58_16___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-11/unc-9 (e101) on food R_2011_08_19__11_17_38___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-09-11/C52B9.11 (gk596)V on food R_2011_09_13__11_37_28___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-09-11/egl-8 (n488) on food L_2011_09_13__16_35_29___1___13.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-09-11/N2 on food R_2011_09_13__11_18_19___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-09-11/R12E2.10 (ok1781)X on food R_2011_09_13__12_17_40___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-09-11/sng-1 (ok234)X on food L_2011_09_13__13_36_40___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-09-11/srp-8 (ok291)V on food L_2011_09_13__13_17_53___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-09-11/T07D4.1 (ok2575)II on food L_2011_09_13__15_37_27___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-09-11/T14B1.1 (ok1702) on food L_2011_09_13__12_37_45___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-09-11/T27E9.9 (ok2371)III on food L_2011_09_13__15_57_42___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-09-11/unc-38 (e264)I on food R_2011_09_13__12_57_08___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-09-11/unc-4 (gk705)II on food L_2011_09_13__11_57_20___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-09-11/unc-9 (e101) on food L_2011_09_13__16_17_44___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/Analysis/analysis 21-09-09/unfinished/cat-2 (e112) on food R_2009_09_15__15_15_40___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/Analysis/analysis 21-09-09/unfinished/cat-2 (e112) on food R_2009_09_16__12_44_09___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/Analysis/analysis 21-09-09/unfinished/dop-1 (vs101)X on food L_2009_09_15__15_53_29___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/Analysis/analysis 21-09-09/unfinished/dop-2;dop-3 on food R_2009_09_15__13_09_01___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/Analysis/analysis 21-09-09/unfinished/dop-3 (vs106)X on food R_2009_09_15__14_34_13___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/Analysis/analysis 21-09-09/finished/dop-1 (vs101)X on food R_2009_09_15__11_37_30___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/Analysis/analysis 21-09-09/finished/dop-2 (vs103)V on food R_2009_09_15__12_21_05___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/Analysis/analysis 21-09-09/finished/dop-2 (vs103)V on food R_2009_09_16__11_31_55___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/Analysis/analysis 21-09-09/finished/N2 on food R_2009_09_15__10_59_43___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/Analysis/analysis 21-09-09/finished/N2 on food R_2009_09_15__16_33_31___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-07-10/1/cat-4 (e1141)I on food L_2010_07_22__13_04_57___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-07-10/1/daf-3 (e1376)X on food L_2010_07_22__11_44_03___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-07-10/1/daf-5 (e1386)II on food R_2010_07_22__14_42_58___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-07-10/1/daf-7 (m62)III on food R_2010_07_22__12_23_14___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-07-10/1/eat-16 (sa6091) on food L_2010_07_22__16_44_47___1___15.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-07-10/1/gar-2 (ok250)III on food R_2010_07_22__11_23_27___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-07-10/2/lin-39 on food L_2010_07_22__12_02_50___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-07-10/2/N2 on food R_2010_07_22__11_03_27___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-07-10/2/pkc-1 (nj3) on food R_2010_07_22__12_43_58___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-07-10/2/sem-4 (ga82)I on food L_2010_07_22__16_24_25___1___14.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-07-10/2/sup-9 (n180)II on food L_2010_07_22__15_02_39___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-07-10/2/syg-1 (ok3640)X on food R_2010_07_22__16_02_19___1___13.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-07-10/2/syg-2 (ky671)X on food R_2010_07_22__15_43_44___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-07-10/2/tom-1 (ok1285) on food L_2010_07_22__15_23_50___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-07-10/1/cat-4 (e1141)I on food L_2010_07_23__10_34_00___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-07-10/1/egl-14 (n549)X on food R_2010_07_23__14_53_46___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-07-10/1/egl-21 (n476)IV on food L_2010_07_23__15_13_03___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-07-10/1/egl-23 (n601)IV on food L_2010_07_23__12_34_10___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-07-10/1/egl-27 (ok151)II on food L_2010_07_23__15_33_07___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-07-10/1/egl-31 (n472)I on food R_2010_07_23__11_13_21___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-07-10/2/egl-36 (n728)X on food L_2010_07_23__12_53_22___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-07-10/2/lin-39 on food L_2010_07_23__10_52_50___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-07-10/2/N2 on food R_2010_07_23__10_13_19___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-07-10/2/sup-9 (n180)II on food L_2010_07_23__12_13_47___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-07-10/2/syg-1 (ok3640)X on food R_2010_07_23__11_32_52___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-07-10/2/syg-2 (ky671)X on food R_2010_07_23__11_53_21___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/27-07-10/1/cat-4 (e1141)I on food R_2010_07_27__16_03_10___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/27-07-10/1/daf-3 (e1376)X on food L_2010_07_27__11_02_57___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/27-07-10/1/daf-5 (e1386)II on food R_2010_07_27__15_45_01___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/27-07-10/2/daf-7 (m62)III on food L_2010_07_27__12_35_36___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/27-07-10/2/gar-2 (ok520)III on food L_2010_07_27__11_23_12___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/27-07-10/2/lin-39 on food L_2010_07_27__11_43_17___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/27-07-10/3/N2 on food L_2010_07_27__10_23_35___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/27-07-10/3/pkc-1 (nj3) on food L_2010_07_27__13_12_56___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/27-07-10/3/sem-4 (ga82)I on food L_2010_07_27__16_23_09___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/27-07-10/4/sup-9 on food R_2010_07_27__15_25_33___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/27-07-10/4/syg-1 (ok3640) on food L_2010_07_27__14_43_06___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/27-07-10/4/syg-2 (ky671)X on food R_2010_07_27__15_03_26___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-08-11/CD112.2 (ok1565)IV on food R_2011_08_24__11_41_04___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-08-11/dpy-20 (e1282)IV on food L_2011_08_24__12_59_56___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-08-11/F54E4.4 (ok2330)X on food R_2011_08_24__11_19_34___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-08-11/lig-4 (ok716)II on food L_2011_08_24__10_39_55___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-08-11/lon-2 (e678)X on food R_2011_08_24__09_57_29___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-08-11/N2 on food R_2011_08_24__11_00_05___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-08-11/nhr-95 (gk836)V on food L_2011_08_24__12_39_56___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-08-11/pdl-1 (gk157)II on food R_2011_08_24__10_18_56___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-08-11/ric-19 (ok883) on food L_2011_08_24__12_02_34___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-08-11/unc-18 (e81)X on food L_2011_08_24__12_22_31___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-09-11/ced-1 (e1735)I on food R_2011_09_15__13_16_42___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-09-11/ftn-2 (ok404)I on food L_2011_09_15__14_03_34___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-09-11/hcf-1 (ok559)IV on food L_2011_09_15__11_57_34___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-09-11/N2 on food L_2011_09_15__11_17_14___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-09-11/rig-6 (gk449)II on food R_2011_09_15__12_57_02___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-09-11/sng-1 (ok234)X on food R_2011_09_15__12_37_27___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-09-11/T27E9.9 (ok2371)III on food L_2011_09_15__12_17_58___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-09-11/unc-38 (e264)I on food R_2011_09_15__11_37_38___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/28-06-11/cf2027 Q40; def-2 (e1570) on food R_2011_06_28__11_58_53___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-08-11/CIID2.2 (ok1565)IV on food R_2011_08_04__12_26_51___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-08-11/CIID2.6 (gk9)IV on food L_2011_08_04__11_48_32___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-08-11/dpy-20 (e1282)IV on food R_2011_08_04__11_09_01___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-08-11/gly-2 (gk204)I on food L_2011_08_04__10_27_59___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-08-11/jnk-1 (gk1)IV on food L_2011_08_04__12_07_46___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-08-11/N2 Laura on food L_2011_08_04__15_38_45___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-08-11/N2 on food L_2011_08_04__13_14_18___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-08-11/nhr-95 (gk836)V on food R_2011_08_04__15_19_07___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-08-11/rab-3 (cy250) on food R_2011_08_04__10_47_37___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-08-11/ric-19 (ok833) on food L_2011_08_04__12_48_48___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/10-02-12/daf-2 (e1370) dauer on food _2012_02_10__09_33_57___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/10-02-12/daf-2 (e1370) dauer on food _2012_02_10__09_34_31___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/10-02-12/N2 male on food X_2012_02_10__12_39_08___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/29-07-10/1/daf-3 (e1376)X on food L_2010_07_29__15_15_20___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/29-07-10/1/daf-5 (e1386)II on food L_2010_07_29__11_13_32___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/29-07-10/1/daf-7 (m62)III on food L_2010_07_29__12_54_11___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/29-07-10/1/eat-16 (sa6091) on food L_2010_07_29__16_17_22___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/29-07-10/1/egl-30 (n686); goa-1 (n1134) on food R_2010_07_29__12_13_07___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/29-07-10/1/gar-2 (ok520)III on food R_2010_07_29__15_34_10___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/29-07-10/2/N2 on food L_2010_07_29__10_53_18___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/29-07-10/2/pkc-1 (nj3) on food L_2010_07_29__12_33_04___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/29-07-10/2/sem-4 (ga82)I on food L_2010_07_29__15_53_29___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/29-07-10/2/sup-9 (n180)II on food R_2010_07_29__11_34_05___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/29-07-10/2/tom-1 (ok1285) on food L_2010_07_29__11_53_41___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/29-07-10/2/unc-116 (e2310)III on food L_2010_07_29__14_55_03___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-11-09/dat-1 (ok157)III on food L_2009_11_17__15_51_14___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-11-09/mod-5 (n822)I on food L_2009_11_17__17_10_26___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-11-09/N2 on food R_2009_11_17__12_00_36___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-11-09/snf-1 (ok790)I on food R_2009_11_17__12_21_01___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-11-09/snf-10 (hc194)V on food L_2009_11_17__16_50_29___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-11-09/snf-11 (ok156)V on food R_2009_11_17__16_10_03___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-11-09/snf-2 (ok147)I on food L_2009_11_17__12_40_50___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-11-09/snf-4 (ok496)II on food R_2009_11_17__14_29_38___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-11-09/snf-5 (ok447)II on food R_2009_11_17__13_01_05___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-11-09/snf-7 (ok482)III on food L_2009_11_17__16_31_09___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-11-09/snf-8 (ok349)IV on food R_2009_11_17__14_53_00___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-11-09/snf-9 (ok957)IV on food R_2009_11_17__15_26_15___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-11-09/dat-1 (ok157)III on food L_2009_11_18__11_34_55___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-11-09/mod-5 (n822)I on food L_2009_11_18__10_51_40___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-11-09/N2 on food R_2009_11_18__10_11_06___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-11-09/snf-1 (ok790)I on food L_2009_11_18__15_53_20___1___13.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-11-09/snf-10 (hc194)V on food R_2009_11_18__11_11_49___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-11-09/snf-11 (ok156)V on food L_2009_11_18__11_53_49___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-11-09/snf-2 (ok147)I on food L_2009_11_18__15_32_58___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-11-09/snf-4 (ok496)II on food L_2009_11_18__13_11_01___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-11-09/snf-5 (ok447)II on food R_2009_11_18__15_09_18___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-11-09/snf-7 (ok482)III on food L_2009_11_18__12_51_14___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-11-09/snf-8 (ok349)IV on food R_2009_11_18__12_31_04___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-11-09/snf-9 (ok957)IV on food L_2009_11_18__12_12_13___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-11-09/dat-1 (ok157)III on food R_2009_11_19__15_38_34___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-11-09/mod-5 (n822)I on food L_2009_11_19__13_09_20___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-11-09/snf-1 (ok790)I on food R_2009_11_19__10_21_10___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-11-09/snf-10 (hc194)V on food L_2009_11_19__16_17_08___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-11-09/snf-11 (ok156)V on food R_2009_11_19__16_35_11___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-11-09/snf-2 (ok147)I on food R_2009_11_19__10_46_41___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-11-09/snf-4 (ok496)II on food R_2009_11_19__11_07_16___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-11-09/snf-5 (ok447)II on food R_2009_11_19__11_25_22___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-11-09/snf-7 (ok482)III on food L_2009_11_19__11_47_08___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-11-09/snf-8 (ok349)IV on food L_2009_11_19__12_04_39___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-11-09/snf-9 (ok957)IV on food R_2009_11_19__15_57_37___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-12-09 new analysis on A1/dnc-1 (or404ts) on food R_2009_12_09__12_35_00___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-12-09 new analysis on A1/egl-50 (n1086) on food R_2009_12_09__12_13_35___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-12-09 new analysis on A1/N2 on food R_2009_12_09__10_30_41___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-12-09 new analysis on A1/unc-10 (ad1117) on food L_2009_12_09__11_15_08___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-12-09 new analysis on A1/unc-108 (n501)I on food L_2009_12_09__14_54_15___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-12-09 new analysis on A1/unc-108 (n501gf) on food L_2009_12_09__15_36_02___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-12-09 new analysis on A1/unc-108 (n777)I on food R_2009_12_09__15_17_16___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-12-09 new analysis on A1/unc-14 (e57)I on food R_2009_12_09__16_17_19___1___14.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-12-09 new analysis on A1/unc-16 (e109) on food L_2009_12_09__11_52_59___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-12-09 new analysis on A1/unc-31 (e169) on food L_2009_12_09__11_33_42___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-12-09 new analysis on A1/unc-32 (e189) on food R_2009_12_09__15_57_03___1___13.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-12-09 new analysis on A1/unc-8 on food L_2009_12_09__10_55_50___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-12-09 new analysis on A1/unc-80 (e1069)V on food L_2009_12_09__16_35_38___1___15.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/10-12-09/dnc-1 (or404ts) on food R_2009_12_10__15_03_05___1___13.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/10-12-09/egl-42 (n995sd) on food R_2009_12_10__11_02_49___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/10-12-09/egl-50 (n1086) on food R_2009_12_10__10_43_18___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/10-12-09/N2 on food L_2009_12_10__10_20_00___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/10-12-09/unc-10 (ad1117) on food R_2009_12_10__12_02_08___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/10-12-09/unc-108 (n501)I on food R_2009_12_10__14_01_56___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/10-12-09/unc-108 (n501gf) on food R_2009_12_10__14_20_43___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/10-12-09/unc-108 (n777)I on food L_2009_12_10__14_41_53___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/10-12-09/unc-14 (e57)I on food L_2009_12_10__16_09_54___1___16.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/10-12-09/unc-16 (e109) on food L_2009_12_10__11_41_33___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/10-12-09/unc-31 (e169) on food R_2009_12_10__12_29_15___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/10-12-09/unc-31 (e169) on food R_2009_12_10__13_29_41___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/10-12-09/unc-32 (e189) on food L_2009_12_10__15_42_19___1___15.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/10-12-09/unc-8 on food R_2009_12_10__11_21_33___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/10-12-09/unc-80 (1069)V on food R_2009_12_10__13_42_50___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/03-08-10/1/eat-16 (sa6091) on food L_2010_08_03__14_44_00___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/03-08-10/1/egl-27 (ok151)II on food L_2010_08_03__12_35_25___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/03-08-10/1/egl-30 (n686); goa-1 (n1134) on food L_2010_08_03__12_53_54___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/03-08-10/1/egl-31 (n472)I on food R_2010_08_03__12_16_34___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/03-08-10/1/egl-37 (n742)II on food R_2010_08_03__10_34_26___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/03-08-10/2/egl-44 (n1080)II on food L_2010_08_03__10_53_39___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/03-08-10/2/egl-46 (n1127)V on food L_2010_08_03__11_14_04___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/03-08-10/2/N2 on food L_2010_08_03__10_13_44___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/03-08-10/2/tom-1 (ok1285) on food R_2010_08_03__11_53_48___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/03-08-10/2/unc-42 (e270)I on food L_2010_08_03__11_34_54___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-07-10/1/egl-1 (n487)V on food R_2010_07_09__11_23_43___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-07-10/1/egl-12 (n602)V on food R_2010_07_09__15_00_58___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-07-10/2/egl-13 (n483)X on food R_2010_07_09__14_42_00___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-07-10/2/egl-14 (n549)X on food L_2010_07_09__12_02_12___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-07-10/3/egl-17 (e1313)X on food R_2010_07_09__11_42_09___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-07-10/3/egl-43 (n1079)II on food R_2010_07_09__11_02_47___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-07-10/4/N2 on food L_2010_07_09__10_43_24___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-07-10/egl-1 (n487)V on food R_2010_07_15__11_47_56___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-07-10/egl-12 (n602)V on food R_2010_07_15__11_07_33___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-07-10/egl-13 (n483)X on food R_2010_07_15__12_07_26___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-07-10/egl-14 (n549)X on food L_2010_07_15__16_19_14___1___14.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-07-10/egl-18 (ok290)IV on food R_2010_07_15__11_28_16___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-07-10/egl-20 (mu39)IV on food L_2010_07_15__12_28_03___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-07-10/egl-21 (n476)IV on food R_2010_07_15__13_10_04___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-07-10/egl-23 (n601)IV on food R_2010_07_15__15_13_59___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-07-10/egl-28 (n570)II on food R_2010_07_15__12_48_08___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-07-10/egl-31v (n472)I on food R_2010_07_15__14_33_48___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-07-10/egl-36 (n728)X on food R_2010_07_15__15_33_41___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-07-10/egl-43 (n1079)II on food L_2010_07_15__15_52_44___1___13.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-07-10/egl-9 (n586)V on food L_2010_07_15__14_55_01___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-07-10/N2 on food R_2010_07_15__10_47_37___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-07-10/1/egl-1 (n487)V on food R_2010_07_16__10_43_19___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-07-10/1/egl-12 (n602)V on food L_2010_07_16__12_05_00___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-07-10/1/egl-13 (n483)X on food L_2010_07_16__11_03_30___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-07-10/1/egl-17 (e1313)X on food R_2010_07_16__13_05_28___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-07-10/1/egl-9 (n586)V on food L_2010_07_16__12_43_03___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-07-10/2/egl-18 (ok290)IV on food L_2010_07_16__12_24_46___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-07-10/2/egl-20 (mu39)IV on food L_2010_07_16__11_23_27___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-07-10/2/egl-28 (n570)II on food L_2010_07_16__11_43_56___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-07-10/2/N2 on food R_2010_07_16__10_24_05___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-05-10/1/egl-10 (md17)V on food  R_2010_05_14__12_48_19___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-05-10/1/egl-15 (n484)X on food  L_2010_05_14__12_28_10___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-05-10/1/egl-19 (n2368)IV on food  L_2010_05_14__11_49_33___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-05-10/1/egl-21 (n611)IV on food  L_2010_05_14__15_53_04___1___14.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-05-10/1/egl-4 (n478)IV on food  L_2010_05_14__10_48_27___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-05-10/1/egl-5 (n486)III on food  R_2010_05_14__15_13_58___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-05-10/1/egl-6 (n592)X on food  R_2010_05_14__12_09_25___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-05-10/1/egl-7 (n575)III on food  L_2010_05_14__11_07_48___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-05-10/1/egl-8 (n488)V on food  R_2010_05_14__16_14_43___1___15.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-05-10/2/egl-24 (n572)III on food  R_2010_05_14__14_33_40___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-05-10/2/egl-32 (n155)I on food  R_2010_05_14__11_28_17___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-05-10/2/egl-33 (n151)I on food  R_2010_05_14__15_33_44___1___13.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-05-10/2/egl-49 (n1107) on food  R_2010_05_14__14_54_38___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-05-10/2/M124 on food  L_2010_05_14__10_27_30___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-05-10/2/M124 on food  l_2010_05_14__16_33_15___1___16.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-05-10/2/M124 on food l_2010_05_14__16_51_46___1___17.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-05-10/2/N2 on food  R_2010_05_14__10_07_38___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-05-10 analysed on pc207-14/egl-10 (md176) on food R_2010_05_19__11_43_02___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-05-10 analysed on pc207-14/egl-15 (n484)X on food L_2010_05_19__12_03_43___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-05-10 analysed on pc207-14/N2 on food R_2010_05_19__11_23_12___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-12-10/egl-10 (md176)V on food R_2010_12_16__15_04_10___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-12-10/egl-11 (n587)V on food L_2010_12_16__15_43_36___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-12-10/egl-47 (n1081)V on food R_2010_12_16__14_43_29___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-12-10/gpa-16 (ok2349) on food R_2010_12_16__15_23_56___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-12-10/N2 on food L_2010_12_16__12_33_30___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-12-10/N2 on food R_2010_12_16__17_33_33___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-12-10/nlp-8 (ok1799)I on food L_2010_12_16__16_05_45___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-12-10/npr-12 (tm1498)IV on food R_2010_12_16__17_14_00___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-12-10/npr-13 (tm1504)V on food R_2010_12_16__13_11_16___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-12-10/npr-3 (tm1583)IV on food R_2010_12_16__12_53_30___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-02-11/egl-10 (md176)V on food R_2011_02_08__11_37_51___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-02-11/egl-47 (n1031)V on food R_2011_02_08__12_58_06___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-02-11/flp-3 (ok3265) on food R_2011_02_08__12_14_55___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-02-11/flp-9 (ok2430) on food L_2011_02_08__10_53_42___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-02-11/flp-9 (ok2430) on food R_2011_02_08__15_19_31___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-02-11/gpa-16 (ok2349) on food R_2011_02_08__11_56_12___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-02-11/N2 on food L_2011_02_08__12_34_39___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/08-02-11/RB1546 off food R_2011_02_08__15_45_46___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-05-10/1/egl-11 (n587)V on food L_2010_05_13__10_53_05___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-05-10/1/egl-19 (n2368)IV on food R_2010_05_13__15_22_36___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-05-10/1/egl-21 (n611)V on food R_2010_05_13__12_33_30___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-05-10/1/egl-4 (n478)IV on food R_2010_05_13__12_53_09___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-05-10/1/egl-5 (n486)III on food L_2010_05_13__11_52_37___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-05-10/1/egl-6 (n592)X on food R_2010_05_13__15_46_35___1___13.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-05-10/1/egl-7 (n575)III on food R_2010_05_13__13_13_20___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-05-10/2/egl-24 (n572)III on food L_2010_05_13__11_13_20___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-05-10/2/egl-32 (n155)I on food R_2010_05_13__15_03_22___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-05-10/2/egl-33 (n151)I on food L_2010_05_13__12_13_00___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-05-10/2/egl-49 (n1107) on food R_2010_05_13__11_32_42___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-05-10/2/MI24 on food l_2010_05_13__10_33_05___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-05-10/2/N2 on food R_2010_05_13__10_12_26___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-07-10/1/egl-14 (n549)X on food R_2010_07_20__14_59_32___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-07-10/1/egl-31 (n472)I on food R_2010_07_20__10_43_24___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-07-10/1/egl-9 (n586)V on food R_2010_07_20__13_04_50___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-07-10/2/egl-17 (e1313)X on food L_2010_07_20__15_33_27___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-07-10/2/egl-18 (ok290)IV on food L_2010_07_20__11_23_32___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-07-10/2/egl-36 (n728)X on food R_2010_07_20__11_04_16___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-07-10/3/egl-20 (mu39)IV on food L_2010_07_20__11_43_21___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-07-10/3/egl-21 (n476)IV on food L_2010_07_20__12_03_29___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-07-10/3/egl-43 (n1079)II on food L_2010_07_20__12_46_20___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-07-10/4/egl-23 (n601)IV on food R_2010_07_20__12_24_56___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-07-10/4/egl-28 (n570)II on food R_2010_07_20__15_56_51___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-07-10/4/N2 on food_2010_07_20__10_23_11___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-09-10/1/egl-2 (n693)V on food L_2010_09_16__14_54_04___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-09-10/1/egl-40 (n606)IV on food R1_2010_09_16__11_43_53___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-09-10/1/egl-43 (n1079)II on food L_2010_09_16__13_03_18___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-09-10/1/N2 on food L_2010_09_16__11_24_02___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-09-10/2/unc-103 (e1597)II on food R_2010_09_16__12_04_40___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-09-10/2/unc-4 (e120)III on food R_2010_09_16__12_44_33___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-09-10/2/unc-43 (e755)IV on food R_2010_09_16__12_24_05___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-09-10/1/egl-2 (n693)V on food L_2010_09_17__15_43_49___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-09-10/1/egl-30 (n686); goa-1 (n1134) on food L_2010_09_17__16_21_59___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-09-10/1/N2 on food R_2010_09_17__11_13_49___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-09-10/1/unc-34 on food R_2010_09_17__12_33_55___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-09-10/1/unc-4 (e120)III on food R_2010_09_17__12_55_39___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-09-10/2/unc-101 (e1265) on food L_2010_09_17__16_04_15___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-09-10/2/unc-38 (e264)I on food R_2010_09_17__11_53_30___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-09-10/2/unc-75 (e950)I on food R_2010_09_17__11_33_43___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-09-10/2/unc-86 (e1416)III on food L_2010_09_17__15_23_23___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-09-10/egl-2 (n693)V on food L_2010_09_23__11_15_29___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-09-10/N2 on food L_2010_09_23__11_10_33___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-09-10/unc-101 (e1265) on food R_2010_09_23__12_34_08___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-09-10/unc-75 (e950)I on food R_2010_09_23__11_53_53___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-09-10/unc-86 (e1416)III on food R_2010_09_23__12_15_19___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/05-08-10/1/egl-27 (ok151)II on food L_2010_08_05__14_43_17___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/05-08-10/1/egl-37 (n742)II on food L_2010_08_05__11_44_04___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/05-08-10/1/egl-40 (n606)IV on food L_2010_08_05__12_04_36___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/05-08-10/1/egl-43 (n1079)II on food R_2010_08_05__13_02_58___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/05-08-10/1/egl-44 (n1080)II on food R_2010_08_05__11_24_06___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/05-08-10/2/egl-46 (n1127)V on food R_2010_08_05__11_04_55___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/05-08-10/2/N2 on food R_2010_08_05__10_43_59___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/05-08-10/2/unc-103 (e1597)III on food L_2010_08_05__12_24_15___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/05-08-10/2/unc-43 (e755)IV on food L_2010_08_05__14_23_32___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/05-08-10/2/unc-98 (su130)X on food R_2010_08_05__12_45_12___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-09-10/egl-27 (ok151)II on food R_2010_09_24__12_54_18___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-09-10/N2 on food R_2010_09_24__11_14_23___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-09-10/unc-101 (e1265) on food L_2010_09_24__11_33_52___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-09-10/unc-115 (mn481)X on food L_2010_09_24__12_15_02___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-09-10/unc-34 (e566)V on food R_2010_09_24__12_35_36___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-09-10/unc-86 (e1416)III on food R_2010_09_24__11_54_11___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-02-10 segmented on pc220-6/egl-30 (ep271gf) on food L_2010_02_26__09_42_16___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-02-10 segmented on pc220-6/goa-1 (sa734)I on food L_2010_02_26__11_42_38___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-02-10 segmented on pc220-6/gpa-1 (pk15)V on food R_2010_02_26__10_02_09___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-02-10 segmented on pc220-6/gpa-10 (pk362)V on food R_2010_02_26__12_43_32___1___13.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-02-10 segmented on pc220-6/gpa-11(pk349)II on food L_2010_02_26__13_03_17___1___14.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-02-10 segmented on pc220-6/gpa-12 (pk322)X on food L_2010_02_26__11_22_20___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-02-10 segmented on pc220-6/gpa-13 (pk1270)V on food L_2010_02_26__12_02_29___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-02-10 segmented on pc220-6/gpa-14 (pk347)I on food L_2010_02_26__09_02_07___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-02-10 segmented on pc220-6/gpa-2 (pk16)V on food L_2010_02_26__10_22_29___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-02-10 segmented on pc220-6/gpa-3 (pk35)IV on food R_2010_02_26__10_42_35___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-02-10 segmented on pc220-6/gpa-4 (pk381)IV on food R_2010_02_26__12_24_39___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-02-10 segmented on pc220-6/gpa-5 (pk376)X on food L_2010_02_26__11_02_50___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-02-10 segmented on pc220-6/gpa-6 (ph480)X on food L_2010_02_26__09_22_16___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/26-02-10 segmented on pc220-6/N2 on food R_2010_02_26__08_42_27___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-03-10/egl-30 (ep271gf) on food L_2010_03_04__11_22_52___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-03-10/goa-1 (sa734)I on food R_2010_03_04__10_42_18___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-03-10/gpa-1 (pk15)V on food L_2010_03_04__12_22_38___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-03-10/gpa-10 (pk362)V on food L_2010_03_04__09_42_13___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-03-10/gpa-11 (pk349)II on food r_2010_03_04__13_01_34___1___13.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-03-10/gpa-12 (pk322)X on food R_2010_03_04__09_22_05___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-03-10/gpa-13 (p1270)V on food L_2010_03_04__10_02_32___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-03-10/gpa-14 (pk347)I on food R_2010_03_04__11_02_05___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-03-10/gpa-2 (pk16)V on food L_2010_03_04__12_43_29___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-03-10/gpa-3 (pk35)IV on food R_2010_03_04__11_42_50___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-03-10/gpa-4 (p381)IV on food R_2010_03_04__10_22_17___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-03-10/gpa-6 (ph480)X on food R_2010_03_04__12_02_55___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-03-10/N2 on food L_2010_03_04__09_00_45___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/05-03-10/egl-30 (ep271gf) on food R_2010_03_05__12_53_58___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/05-03-10/gpa-10 (pk362)V on food R_2010_03_05__10_12_42___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/05-03-10/gpa-15 (pk477)I on food R_2010_03_05__11_53_02___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/05-03-10/gpa-17 (ok2334)III on food R_2010_03_05__12_13_11___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/05-03-10/gpa-5 (pk376)X on food L_2010_03_05__11_34_52___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/05-03-10/gpa-7 (pk610)IV on food L_2010_03_05__10_33_03___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/05-03-10/gpa-8 (ph345)V on food L_2010_03_05__11_12_46___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/05-03-10/gpa-9 (pk438)V on food R_2010_03_05__10_52_25___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/05-03-10/gpb-2 (sa603)I on food L_2010_03_05__12_33_07___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/05-03-10/gpc-1 (pk298)X on food R_2010_03_05__09_53_14___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/05-03-10/N2 on food L_2010_03_05__09_32_55___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/05-03-10/tdc-1 (n3419)II on food L_2010_03_05__13_12_48___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-08-10/1/egl-37 (n742)II on food L_2010_08_06__11_34_32___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-08-10/1/egl-40 (n606)IV on food L_2010_08_06__12_53_57___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-08-10/1/egl-43 (n1079)II on food L_2010_08_06__12_33_42___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-08-10/1/egl-44 (n1080)II on food L_2010_08_06__11_54_14___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-08-10/1/egl-46 (n1127)V on food R_2010_08_06__15_58_37___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-08-10/1/N2 on food L_2010_08_06__10_53_35___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-08-10/2/unc-103 (e1597)II on food R_2010_08_06__15_38_24___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-08-10/2/unc-34 on food L_2010_08_06__13_13_16___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-08-10/2/unc-4 (e120)III on food L_2010_08_06__14_59_39___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-08-10/2/unc-42 (e270)I on food R_2010_08_06__11_14_00___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-08-10/2/unc-43 (e755)IV on food r_2010_08_06__15_19_10___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-08-10/2/unc-86 (e1416)III on food R_2010_08_06__12_13_51___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-08-10/1/egl-37 (n742)II on food L_2010_08_20__10_34_45___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-08-10/1/egl-40 (n606)IV on food R_2010_08_20__10_54_03___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-08-10/1/egl-43 (n1079)II on food R_2010_08_20__15_24_30___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-08-10/1/N2 on food L_2010_08_20__10_13_46___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-08-10/1/unc-34 (e566)V on food L_2010_08_20__11_33_56___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-08-10/1/unc-4 (e120)III on food R1_2010_08_20__11_14_25___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-08-10/2/unc-103 (e1587)V on food L_2010_08_20__13_13_32___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-08-10/2/unc-115 (mn481)X on food R_2010_08_20__15_03_37___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-08-10/2/unc-42 (e270)I on food L_2010_08_20__11_55_47___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-08-10/2/unc-43 (e755)IV on food L_2010_08_20__12_16_28___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-08-10/2/unc-75 (e950)I on food R_2010_08_20__12_35_12___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-08-10/2/unc-98 (su130)X on food R_2010_08_20__12_53_34___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-10/1/egl-40 (n606)IV on food R_2010_08_19__15_28_21___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-10/1/egl-43 (n1079)II on food L_2010_08_19__11_54_00___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-10/1/egl-44 (n1080)II on food L_2010_08_19__15_03_30___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-10/1/N2 on food R_2010_08_19__10_53_45___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-10/1/unc-38 (e264)I on food L_2010_08_19__12_34_15___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-10/1/unc-7 (cb5) on food R_2010_08_19__11_17_02___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-10/2/unc-115 (mn481)X on food R_2010_08_19__16_03_30___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-10/2/unc-42 (e270) on food L_2010_08_19__12_53_05___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-10/2/unc-43 (e755)IV on food R_2010_08_19__15_44_59___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-10/2/unc-86 (e1416)III on food L_2010_08_19__16_24_01___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-08-10/2/unc-98 (su130)X on food L_2010_08_19__12_14_02___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-05-11/egl-42 (n995) on food L_2011_05_19__16_42_00___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-05-11/ins-11 (tm1053)II on food L_2011_05_19__11_57_33___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-05-11/ins-15 (ok3444)II on food R_2011_05_19__15_17_55___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-05-11/ins-16 (ok2919)III on food R_2011_05_19__11_20_26___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-05-11/ins-18 (ok1672)I on food R_2011_05_19__16_19_47___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-05-11/ins-22 (ok3616) on food L_2011_05_19__16_00_01___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-05-11/ins-28 (ok2722)I on food R_2011_05_19__12_39_15___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-05-11/ins-3 (ok2488)II on food R_2011_05_19__15_38_53___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-05-11/ins-30 (ok2343)I on food L_2011_05_19__12_18_29___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-05-11/ins-31 (ok3543)II on food R_2011_05_19__11_39_17___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-05-11/ins-4 (ok3534)II on food R_2011_05_19__12_58_36___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-05-11/N2 on food L_2011_05_19__11_02_08___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-12-09/egl-42 (n995sd) on food R_2009_12_11__14_55_29___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-12-09/egl-50 (n1086) on food R_2009_12_11__15_15_08___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-12-09/N2 on food R_2009_12_11__12_01_09___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-12-09/unc-10 (ad1117) on food L_2009_12_11__14_31_17___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-12-09/unc-108 (n501)I on food L_2009_12_11__15_34_20___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-12-09/unc-108 (n501gf)I on food L_2009_12_11__15_53_15___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-12-09/unc-108 (n777)I on food R_2009_12_11__16_12_29___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-12-09/unc-14 (e57)I on food L_2009_12_11__17_31_22___1___13.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-12-09/unc-16 (e109) on food R_2009_12_11__12_21_06___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-12-09/unc-31 (e169) on food R_2009_12_11__12_41_26___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-12-09/unc-32 (e189) on food L_2009_12_11__16_52_37___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-12-09/unc-8 on food L_2009_12_11__13_06_46___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-05-10/egl-47 (n1081)V on food L_2010_05_20__12_33_21___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-05-10/egl-47 (ni081)V on food R_2010_05_20__11_33_11___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-05-10/N2 on food R_2010_05_20__11_12_48___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-05-10/N2 on food R_2010_05_20__12_13_09___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-05-10/unc-7 (cb5) on food L_2010_05_20__11_53_11___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-05-10/unc-7 (cb5) on food L_2010_05_20__13_11_54___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-05-10/unc-7 (cb5) on food R_2010_05_20__12_53_21___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-05-11/egl-50 (n1086) on food L_2011_05_11__10_55_58___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-05-11/N2 laura on food R_2011_05_11__17_00_52___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-09-11/egl-8 (n488) on food L_2011_09_20__11_18_25___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-09-11/N2 on food L_2011_09_20__13_27_26___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-09-11/sma-3 (e491)III on food R_2011_09_20__11_57_42___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-09-11/sng-1 (ok234)X on food R_2011_09_20__12_58_12___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-09-11/srp-8 (ok291)V on food R_2011_09_20__11_37_44___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-09-11/unc-4 (gk705)II on food R_2011_09_20__15_17_04___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-09-11/unc-77 (e625)IV on food L_2011_09_20__12_39_17___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-09-11/unc-9 (e101) on food L_2011_09_20__12_17_31___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/31-03-10 segmented on pc220-6/F23B2.2 (ok1226) on food L_2010_03_31__11_35_45___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/31-03-10 segmented on pc220-6/flr-1 (ut11) on food L_2010_03_31__11_54_14___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/31-03-10 segmented on pc220-6/N2 on food R_2010_03_31__10_53_03___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/31-03-10 segmented on pc220-6/T28138.5 (ok1014) on food R_2010_03_31__12_12_53___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/31-03-10 segmented on pc220-6/T28F2.7 (ok2657) on food R_2010_03_31__11_13_12___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/31-03-10 segmented on pc220-6/tag-336 (ok1477) on food L_2010_03_31__12_31_43___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-01-10/flp-1 (yn2)IV on food R_2010_01_13__10_53_36___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-01-10/flp-11 (tm2706)X on food R_2010_01_13__11_36_00___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-01-10/flp-12 (ok2409)X on food R_2010_01_13__11_54_51___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-01-10/flp-21 (ok889)V on food L_2010_01_13__12_32_47___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-01-10/flp-6 (ok3056)V on food R_2010_01_13__11_15_56___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-01-10/flp-9 (ok2730)IV on food R_2010_01_13__12_13_41___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/13-01-10/N2 on food R_2010_01_13__10_32_43___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-01-10/flp-1 (yn2)IV on food R_2010_01_15__10_20_23___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-01-10/flp-1 (yn2)IV on food R_2010_01_15__10_40_34___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-01-10/flp-10 (ok2624)IV on food L_2010_01_20__11_57_13___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-01-10/flp-13 (tm2427) on food L_2010_01_20__10_11_48___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-01-10/flp-17 (ok3587)IV on food r_2010_01_20__12_17_52___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-01-10/flp-18 (dp99)X on food R_2010_01_20__11_35_42___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-01-10/flp-19 (ok2460)X on food L_2010_01_20__11_15_07___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-01-10/flp-3 (oK3265)X on food L_2010_01_20__12_35_43___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-01-10/flp-33 (gk1358)IV on food L_2010_01_20__12_55_28___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/20-01-10/N2 on food R_2010_01_20__09_52_15___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/21-01-10/flp-10 (ok2624)IV on food L_2010_01_21__11_46_38___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/21-01-10/flp-13 (tm2427) on food L_2010_01_21__12_04_40___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/21-01-10/flp-17 (ok3587)IV on food L_2010_01_21__12_23_27___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/21-01-10/flp-18 (dp99)X on food R_2010_01_21__13_05_53___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/21-01-10/flp-19 (ok2460)X on food R_2010_01_21__15_53_56___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/21-01-10/flp-20 (ok2964)X on food L_2010_01_21__11_25_38___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/21-01-10/flp-20 ok2964) on food R_2010_01_21__17_25_39___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/21-01-10/flp-28 (gk1075)X on food R_2010_01_21__16_14_58___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/21-01-10/flp-33 (gk1038)I on food R_2010_01_21__17_04_37___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/21-01-10/N2 on food_2010_01_21__11_00_27___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-01-10/flp-10 (ok2624)IV on food R_2010_01_19__14_43_33___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-01-10/flp-13 (tm2427) on food R_2010_01_19__11_22_28___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-01-10/flp-17 (ok3587)IV on food R_2010_01_19__11_03_39___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-01-10/flp-18 (dp99)X on food R_2010_01_19__10_43_30___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-01-10/flp-19 (ok2460)X on food L_2010_01_19__15_02_43___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-01-10/flp-20 (ok2964)X on food L_2010_01_19__10_22_27___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-01-10/flp-28 (gk1075)X on food L_2010_01_19__15_22_38___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-01-10/flp-3 (OK3265)X on food L_2010_01_19__12_21_49___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-01-10/flp-33 (gk1038)I on food L_2010_01_19__12_01_55___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/19-01-10/N2 on food L_2010_01_19__15_45_46___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-01-10/flp-11 (tm2706)X on food L_2010_01_12__11_28_43___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-01-10/flp-12 (ok2409)X on food R_2010_01_12__12_43_36___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-01-10/flp-16 (ok3085) on food R_2010_01_12__11_47_41___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-01-10/flp-21 (ok889)V on food R_2010_01_12__12_05_58___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-01-10/flp-25 (gk1016)III on food L_2010_01_12__13_06_02___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-01-10/flp-6 (ok3056)V on food L_2010_01_12__12_24_47___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-01-10/flp-7 (ok2625)X on food L_2010_01_12__11_01_13___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-01-10/N2 on food R_2010_01_12__10_38_59___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-01-10/flp-11 (tm2706)X on food L_2010_01_14__12_53_17___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-01-10/flp-11 on food L_2010_01_14__13_11_09___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-01-10/flp-16 (ok3085)II on food L_2010_01_14__12_35_54___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-01-10/flp-21 (ok889)V on food L_2010_01_14__10_53_06___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-01-10/flp-25 (gk1016)III on food R_2010_01_14__12_14_22___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-01-10/flp-6 (ok3056)V on food R_2010_01_14__11_34_39___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-01-10/flp-7 (ok2625)X on food L_2010_01_14__11_55_20___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-01-10/flp-9 (ok2730)IV on food L_2010_01_14__11_14_49___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-01-10/N2 on food R_2010_01_14__10_31_13___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-01-10/flp-12 (ok2409)X on food R_2010_01_11__12_14_01___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-01-10/flp-25 (gk1016)III on food L_2010_01_11__12_52_56___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-01-10/flp-7 (ok2625)X on food L_2010_01_11__11_55_38___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-01-10/Lite-1 on food R_2010_01_11__13_13_42___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-01-10/N2 on food R_2010_01_11__11_35_36___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-04-10 new analysis on A1/flr-1 (ut11) on food L_2010_04_09__15_53_02___1___14.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-04-10 new analysis on A1/N2 on food R_2010_04_09__10_22_52___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-04-10 new analysis on A1/spe-41 (sy693); him-5 (e1490) on food L_2010_04_09__12_23_40___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-04-10 new analysis on A1/spe-41 (sy693); him-5 (e1490) on food R_2010_04_09__10_46_02___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-04-10 new analysis on A1/spe-41 (sy693); him-5 (e1490) on food R_2010_04_09__15_33_09___1___13.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-04-10 new analysis on A1/unc-101 (m1)I on food R_2010_04_09__15_13_00___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-04-10 new analysis on A1/unc-105 (ok1432) on food L_2010_04_09__13_01_05___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-04-10 new analysis on A1/unc-118 (e2331)X on food R_2010_04_09__11_23_24___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-04-10 new analysis on A1/unc-127 (hs13)V on food R_2010_04_09__12_03_29___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-04-10 new analysis on A1/unc-2 (ox106) on food R_2010_04_09__16_12_46___1___15.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-04-10 new analysis on A1/unc-37 (2621)I on food R_2010_04_09__11_04_06___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-04-10 new analysis on A1/unc-63 (ok1075) on food L_2010_04_09__11_43_25___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-04-10 new analysis on A1/unc-76 (e911)V on food L_2010_04_09__14_33_04___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-04-10 new analysis on A1/unc-79 (e1068)III on food R_2010_04_09__12_42_48___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-04-10 new analysis on A1/unc-89 (e140)I on food L_2010_04_09__14_53_27___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-02-10 segmented on pc220-6/goa-1 (sa734)I on food L_2010_02_25__10_02_38___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-02-10 segmented on pc220-6/gpa-1 (pk15)V on food R_2010_02_25__12_02_50___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-02-10 segmented on pc220-6/gpa-10 (pk362)V on food L_2010_02_25__10_43_09___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-02-10 segmented on pc220-6/gpa-11 (pk349)II on food l_2010_02_25__11_22_27___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-02-10 segmented on pc220-6/gpa-12 (pk322)X on food R_2010_02_25__11_03_58___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-02-10 segmented on pc220-6/gpa-13 (pk1270)V on food l_2010_02_25__12_42_38___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-02-10 segmented on pc220-6/gpa-14 (pk347)I on food L_2010_02_25__14_58_56___1___13.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-02-10 segmented on pc220-6/gpa-2 (pk16)V on food L_2010_02_25__14_32_57___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-02-10 segmented on pc220-6/gpa-3 (pk35)IV on food R_2010_02_25__12_22_58___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-02-10 segmented on pc220-6/gpa-4 (pk381)IV on food R_2010_02_25__10_23_52___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-02-10 segmented on pc220-6/gpa-5 (pk376)X on food R_2010_02_25__13_03_51___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-02-10 segmented on pc220-6/gpa-6 (ph480)X on food L_2010_02_25__11_42_46___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/25-02-10 segmented on pc220-6/N2 on food L_2010_02_25__09_42_20___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-04-10/gon-2 (9362) on food L_2010_04_22__10_47_38___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-04-10/M05B5.6 (ok3189) on food L_2010_04_22__10_07_04___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-04-10/N2 on food L_2010_04_22__09_27_39___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-04-10/ocr-3 (a1537) on food L_2010_04_22__11_46_54___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-04-10/ocr-3 (ok1557) on food R_2010_04_22__11_27_43___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-04-10/ocr-4 (vs137) on food R_2010_04_22__15_19_00___1___13.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-04-10/ocr-4 (vs137); ocr-2 (9697) on food R_2010_04_22__15_38_54___1___14.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-04-10/pgn-66 (ok1507) on food R_2010_04_22__09_47_58___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-04-10/pmk-1 (km25) on food R_2010_04_22__12_28_31___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-04-10/trp-1 (sy691) on food R_2010_04_22__14_38_06___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-04-10/trp-2 (ok298) on food L_2010_04_22__12_07_50___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-04-10/trp-4 (sy695) on food R_2010_04_22__10_27_09___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-04-10/trpa-1 (ok999) on food L_2010_04_22__14_57_39___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-04-10/trpa-1 (ok999); osm-9 (ky10) on food R_2010_04_22__11_07_25___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/22-04-10/W03B1.2 (ok2433) on food L_2010_04_22__15_59_43___1___15.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-04-10/4/gon-2 (9362) on food L_2010_04_23__10_39_54___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-04-10/4/ocr-4 (vs137) on food L_2010_04_23__15_16_53___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-04-10/4/trp-2 (ok298) on food R_2010_04_23__15_57_44___1___14.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-04-10/1/M05B5.6 (ok3189) on food R_2010_04_23__10_58_58___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-04-10/1/N2 on food_2010_04_23__09_56_54___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-04-10/1/ocr-3 (a1537) on food L_2010_04_23__12_18_35___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-04-10/1/ocr-3 (ok1557) on food R_2010_04_23__12_38_07___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-04-10/2/ocr-4 (vs137); ocr-2 (9697) on food R_2010_04_23__15_37_02___1___13.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-04-10/2/pgn-66 (ok1507) on food L_2010_04_23__10_19_07___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-04-10/2/pmk-1 (km25) on food R_2010_04_23__11_56_26___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-04-10/2/trp-1 (sy691) on food L_2010_04_23__11_37_22___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-04-10/3/trp-4 (sy695) on food R_2010_04_23__11_18_38___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-04-10/3/trpa-1 (ok999) on food R_2010_04_23__14_57_28___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-04-10/3/trpa-1 (ok999); osm-9 (ky10) on food R_2010_04_23__16_15_40___1___15.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/23-04-10/3/W03B1.2 (ok2433) on food L_2010_04_23__14_36_55___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/29-04-10/gon-2 (9362) on food R_2010_04_29__11_48_43___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/29-04-10/M05B5.6 (ok3189) on food L_2010_04_29__11_07_15___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/29-04-10/N2 on food L_2010_04_29__10_47_37___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/29-04-10/pgn-66 (ok1507) on food R_2010_04_29__11_27_34___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/29-04-10/trp-4 (sy695) on food L_2010_04_29__12_07_04___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-03-10 new analysis on A1/gpa-15 (pk477)I on food R_2010_03_09__12_42_21___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-03-10 new analysis on A1/gpa-16 (ok2349)I on food R_2010_03_09__12_23_40___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-03-10 new analysis on A1/gpa-17 (ok2334)III on food L_2010_03_09__13_02_05___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-03-10 new analysis on A1/gpa-5 (pk376)X on food R_2010_03_09__12_04_16___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-03-10 new analysis on A1/gpa-7 (pk610)IV on food R_2010_03_09__11_42_32___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-03-10 new analysis on A1/gpa-8 (pk345)V on food L_2010_03_09__11_24_04___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-03-10 new analysis on A1/gpa-9 (pk438)V on food L_2010_03_09__11_04_43___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-03-10 new analysis on A1/gpb-2 (sa603)I on food L_2010_03_09__15_34_18___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-03-10 new analysis on A1/gpc-1 (pk298)X on food R_2010_03_09__15_12_26___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-03-10 new analysis on A1/N2 on food L_2010_03_09__10_42_47___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-03-10 new analysis on A1/odr-3 (n2150)V on food L_2010_03_09__15_52_23___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-03-10/gpa-16 (ok2349)I on food R_2010_03_11__11_05_07___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-03-10/gpa-17 (ok2334)III on food L_2010_03_11__11_24_09___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-03-10/gpa-5 (pk376)X on food L_2010_03_11__12_06_09___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-03-10/gpa-7 (pk610)IV on food R_2010_03_11__12_24_28___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-03-10/gpa-8 (pk345)V on food R_2010_03_11__10_23_19___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-03-10/gpa-9 (pk438)V on food L_2010_03_11__11_44_32___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-03-10/gpb-2 (sa603)I on food R_2010_03_11__12_43_45___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-03-10/gpc-1 (pk298)X on food L_2010_03_11__13_04_46___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-03-10/N2 on food R_2010_03_11__10_02_37___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-03-10/odr-3 (n2150)V on food R_2010_03_11__16_02_27___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-09-11/hcf-1 (ok559)IV on food R_2011_09_06__12_46_57___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-09-11/N2 on food L_2011_09_06__12_07_30___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-09-11/R12E2.10 (ok1781)X on food L_2011_09_06__12_27_25___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-09-11/sng-1 (ok234)X on food R_2011_09_06__15_47_40___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-09-11/srp-8 (ok291)V on food L_2011_09_06__13_07_38___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-09-11/T07D4.1 (ok2575)II on food R_2011_09_06__16_07_02___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-09-11/T14B1.1 (ok1702) on food L_2011_09_06__11_47_39___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-09-11/unc-10 (e102)X on food R_2011_09_06__13_27_21___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-09-11/unc-38 (e264)I on food R_2011_09_06__16_47_06___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/06-09-11/unc-77 (e625)IV on food R_2011_09_06__16_28_07___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-05-11/ins-11 (tm1053)II on food L_2011_05_24__12_58_27___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-05-11/ins-16 (ok2919)III on food R_2011_05_24__11_59_06___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-05-11/ins-18 (ok1672)I on food L_2011_05_24__12_38_56___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-05-11/ins-25 (ok2773)I on food L_2011_05_24__13_17_00___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-05-11/ins-28 (ok2722)I on food R_2011_05_24__11_40_24___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-05-11/ins-30 (ok2343)I on food L_2011_05_24__12_18_42___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-05-11/ins-31 (ok3543)II on food L_2011_05_24__15_18_37___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/24-05-11/N2 on food L_2011_05_24__11_17_18___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-05-11/ins-11 (tm1053)II on food R_2011_05_12__11_17_53___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-05-11/ins-16 (ok2919)III on food R_2011_05_12__10_57_56___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-05-11/ins-27 (ok2474)I on food R_2011_05_12__12_41_44___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-05-11/ins-28 (ok2722)I on food L_2011_05_12__11_38_56___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-05-11/ins-30 (ok2343)I on food R_2011_05_12__12_17_58___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-05-11/ins-35 (ok3297)V on food R_2011_05_12__11_58_15___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-05-11/ins-4 (ok3534)II on food R_2011_05_12__12_59_51___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-05-11/N2 laura on food R_2011_05_12__15_23_41___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-05-11/N2 on food L_2011_05_12__10_38_25___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/07-04-11/ins-15 (ok3444)II on food R_2011_06_07__11_39_30___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/07-04-11/ins-22 (ok3616) on food L_2011_06_07__11_59_30___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/07-04-11/ins-25 (ok2773)I on food L_2011_06_07__12_39_51___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/07-04-11/ins-27 (ok2474)I on food R_2011_06_07__11_18_04___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/07-04-11/ins-28 (ok2722)I on food R_2011_06_07__12_18_28___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/07-04-11/ins-3 (ok2488)II on food L_2011_06_07__13_03_06___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/07-04-11/Ins-4 (ok3534)II on food R_2011_06_07__10_37_29___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/07-04-11/N2 on food L_2011_06_07__13_22_15___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/07-04-11/N2 on food R_2011_06_07__10_57_18___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-05-11/ins-18 (ok1672)I on food R_2011_05_17__12_50_23___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-05-11/ins-25 (ok2773)I on food R_2011_05_17__10_48_03___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-05-11/ins-27 (ok2722)I on food R_2011_05_17__11_50_25___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-05-11/ins-31 (ok3543)III on food R_2011_05_17__12_30_03___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-05-11/ins-35 (ok3297)V on food R_2011_05_17__11_08_47___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-05-11/ins-4 (ok3534) on food L_2011_05_17__11_28_46___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-05-11/N2 on food R_2011_05_17__12_09_10___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-06-11/ins-22 (ok3616) on food L_2011_06_09__10_46_57___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-06-11/ins-25 (ok2773) on food R_2011_06_09__11_27_04___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-06-11/ins-27 (ok2474)I on food R_2011_06_09__10_27_36___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-06-11/N2 on food R_2011_06_09__11_06_39___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/27-04-10/M05B5.6 (ok3189) off food L_2010_04_27__14_18_25___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/27-04-10/N2 off food R_2010_04_27__11_24_45___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/27-04-10/N2 off food_2010_04_27__11_06_12___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/27-04-10/ocr-3 (a1537) off food L_2010_04_27__11_58_20___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/27-04-10/pgn-66 (ok1507) off food L_2010_04_27__11_42_35___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/27-04-10/pmk-1 (km25) off food R_2010_04_27__14_55_58___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/27-04-10/trp-2 (ok298) off food L_2010_04_27__14_32_45___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/27-04-10/trp-2 (ok298) off food L_2010_04_27__14_33_58___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/27-04-10/trp-4 (sy695) off food R_2010_04_27__15_13_28___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/27-04-10/trp-4 (sy695) off food R_2010_04_27__15_13_35___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/27-04-10/trpa-1 (ok999); osm-9 (ky10) off food R_2010_04_27__15_47_14___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/27-04-10/trpa-1 (ok999); osm-9 (ky10) off food R_2010_04_27__15_48_46___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/28-04-10/N2 off food L_2010_04_28__10_29_34___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/28-04-10/N2 off food L_2010_04_28__10_34_25___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/28-04-10/ocr-2;4 off food _2010_04_28__15_17_25___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/28-04-10/ocr-3 (ok1557) off food _2010_04_28__11_09_12___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/28-04-10/ocr-3 (ok1557) off food _2010_04_28__12_30_06___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/28-04-10/ocr-3 (ok1557) off food _2010_04_28__12_46_30___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/28-04-10/trpa-1 (ok999) off food _2010_04_28__14_45_55___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/28-04-10/trpa-1 (ok999) off food _2010_04_28__14_49_29___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/30-04-10/N2 off food_2010_04_30__11_19_37___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/30-04-10/ocr-3 (a1537)off food_2010_04_30__12_36_20___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/30-04-10/ocr-3 (a1537)off food_2010_04_30__12_36_45___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/30-04-10/ocr-3 (ok1557) off food_2010_04_30__15_06_14___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/30-04-10/ocr-3 (ok1557) off food_2010_04_30__15_17_35___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/30-04-10/ocr-4 (vs137); ocr-2 (9697) off food_2010_04_30__15_30_32___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/30-04-10/pmk-1 (km25) off food_2010_04_30__14_53_22___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/30-04-10/trp-1 (sy691) off food_2010_04_30__12_01_18___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/30-04-10/trp-2 (ok298) off food_2010_04_30__13_03_40___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/30-04-10/trpa-1 (ok999) off food_2010_04_30__12_24_52___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/30-04-10/trpa-1 (ok999); osm-9 (ky10) off food_2010_04_30__11_47_11___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/off food tracking/30-04-10/W03B1.2 (ok2433) off food_2010_04_30__12_54_34___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-05-10/M124 on food L_2010_05_18__11_52_40___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-05-10/M124 on food L_2010_05_18__15_04_17___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-05-10/N2 on food L_2010_05_18__12_13_10___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-05-10/N2 on food R_2010_05_18__15_23_13___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-10-10/mec-10 (e1515) on food L_2010_10_12__12_53_58___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-10-10/mec-10 (tm1552) on food L_2010_10_12__12_34_06___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-10-10/mec-12 (u76) on food L_2010_10_12__15_38_41___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-10-10/mec-14 (v55) on food R_2010_10_12__15_18_04___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-10-10/mec-18 (e228) on food L_2010_10_12__14_36_35___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-10-10/mec-4 (u253) on food R_2010_10_12__14_59_22___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-10-10/N2 on food L_2010_10_12__12_14_00___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-10-10/mec-10 (e1515) on food L_2010_10_14__15_18_34___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-10-10/mec-10 (tm1552) on food L_2010_10_14__16_12_33___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-10-10/mec-12 (u76) on food L_2010_10_14__15_37_02___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-10-10/mec-7 (v448) on food L_2010_10_14__16_36_54___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-10-10/N2 on food L_2010_10_14__14_57_57___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/28-10-10/mec-10 (e1515) on food L_2010_10_28__14_43_53___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/28-10-10/mec-10 (tm1552) on food L_2010_10_28__11_36_03___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/28-10-10/mec-10 (u20) on food R_2010_10_28__11_13_56___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/28-10-10/mec-12 (e1605) on food R_2010_10_28__15_26_35___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/28-10-10/mec-12 (u76) on food R_2010_10_28__12_35_37___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/28-10-10/mec-14 (v55) on food L_2010_10_28__12_55_59___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/28-10-10/mec-4 (u253) on food L_2010_10_28__15_05_13___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/28-10-10/mec-7 (v448) on food L_2010_10_28__12_14_36___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/28-10-10/N2 on food R_2010_10_28__10_54_32___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/28-10-10/snf-6 (eg28)III on food L_2010_10_28__15_49_08___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/28-10-10/snf-6 (eg28)III on food R_2010_10_28__11_54_33___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-11-10/mec-10 (e1515) on food L_2010_11_11__12_24_53___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-11-10/mec-10 (tm1552) on food R_2010_11_11__11_46_17___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-11-10/mec-10 (u20) on food R_2010_11_11__16_34_20___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-11-10/mec-12 (u76) on food L_2010_11_11__13_04_13___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-11-10/mec-14 (v55) on food R_2010_11_11__16_14_52___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-11-10/mec-18 (e228) on food R_2010_11_11__11_03_45___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-11-10/mec-4 (u253) on food R_2010_11_11__11_26_30___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-11-10/mec-7 (v448) on food R_2010_11_11__12_05_33___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-11-10/N2 on food R_2010_11_11__15_32_48___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/11-11-10/snf-6 (eg28)III on food R_2010_11_11__15_53_40___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/21-10-10/mec-10 (e1515) on food R_2010_10_21__12_24_28___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/21-10-10/mec-10 (tm1552) on food L_2010_10_21__12_03_41___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/21-10-10/mec-12 (u76) on food L_2010_10_21__14_43_43___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/21-10-10/mec-14 (v55) on food L_2010_10_21__15_24_09___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/21-10-10/mec-14 (v55) on food R_2010_10_21__11_24_10___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/21-10-10/mec-18 (e228) on food R_2010_10_21__11_43_42___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/21-10-10/mec-7 (v448) on food L_2010_10_21__12_44_48___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/21-10-10/N2 on food L_2010_10_21__11_03_48___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/21-10-10/N2 on food L_2010_10_21__15_04_22___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/21-10-10/snf-6 (eg28)III on food L_2010_10_21__13_04_06___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-11-10/mec-10 (tm1552) on food L_2010_11_04__10_56_46___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-11-10/mec-12 (e1605) on food L_2010_11_04__12_16_10___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-11-10/mec-12 (u76) on food R_2010_11_04__11_37_14___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-11-10/mec-18 (e228) on food L_2010_11_04__12_35_49___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-11-10/mec-4 (u253) on food R_2010_11_04__12_54_35___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-11-10/mec-7 (v448) on food R_2010_11_04__11_55_56___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-11-10/N2 on food L_2010_11_04__10_34_29___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/04-11-10/snf-6 (eg28)III on food L_2010_11_04__11_14_50___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/30-09-10/1/mec-10 (tm1552) on food R_2010_09_30__11_24_59___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/30-09-10/1/mec-12 (e1605) on food L_2010_09_30__12_24_24___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/30-09-10/1/mec-12 (u76) on food L_2010_09_30__13_03_51___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/30-09-10/1/mec-4 (u253) on food L_2010_09_30__11_41_09___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/30-09-10/1/mec-4 (u253) on food L_2010_09_30__11_43_25___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/30-09-10/1/mec-7 (v448) on food R_2010_09_30__12_43_53___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/30-09-10/2/mec-14 (v55) on food R_2010_09_30__12_03_58___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/30-09-10/2/mec-18 (e228) on food R_2010_09_30__10_44_10___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/30-09-10/2/N2 on food L_2010_09_30__10_24_22___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/30-09-10/2/snf-11 (eg28)III on food R_2010_09_30__11_03_47___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/01-10-10/mec-12 (e1605) on food R_2010_10_01__12_23_52___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/01-10-10/mec-12 (u76) on food L_2010_10_01__12_43_25___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/01-10-10/mec-7 (v448) 1on food R_2010_10_01__12_04_04___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/01-10-10/N2 on food R_2010_10_01__11_43_48___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/01-10-10/snf-6 (eg28)III on food R_2010_10_01__13_02_04___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/02-03-12/N2 male on food L_2012_03_02__15_18_57___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/02-03-12/N2 male on food L_2012_03_02__15_40_42___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/02-03-12/N2 male on food R_2012_03_02__16_03_34___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/02-03-12/N2 on food R_2012_03_02__16_24_34___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-03-10/N2 on food L_2010_03_12__09_52_46___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-03-10/nlp-1 (ok1469)X on food L_2010_03_12__11_22_42___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-03-10/nlp-12 (ok335)IV on food R_2010_03_12__10_54_18___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-03-10/nlp-14 (tm1880)X on food R_2010_03_12__13_03_35___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-03-10/nlp-15 (ok1512)I on food L_2010_03_12__12_23_11___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-03-10/nlp-17 (ok3461)IV on food R_2010_03_12__10_32_11___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-03-10/nlp-18 (ok1557)II on food R_2010_03_12__12_03_35___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-03-10/nlp-2 (tm1908)X on food L_2010_03_12__12_43_19___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-03-10/nlp-20 (ok1591)IV on food R_2010_03_12__10_12_07___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-03-10/nlp-3 (ok2688)X on food R_2010_03_12__11_43_36___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/12-03-10/tdc-1 (n3419) on food L_2010_03_12__14_42_54___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-03-10/N2 on food L_2010_03_17__09_52_29___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-03-10/nlp-1 (ok1469)X on food R_2010_03_17__12_55_03___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-03-10/nlp-12 (ok335)IV on food L_2010_03_17__13_13_45___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-03-10/nlp-14 (tm1880)X on food L_2010_03_17__10_53_10___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-03-10/nlp-17 (ok3461)IV on food L_2010_03_17__11_55_44___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-03-10/nlp-18 (ok1557)II on food R_2010_03_17__12_15_09___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-03-10/1/nlp-2 (tm1908)X on food L_2010_03_17__11_12_49___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-03-10/1/nlp-20 (ok1591)IV on food R_2010_03_17__10_12_34___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/17-03-10/1/nlp-8 (ok1799)I on food R_2010_03_17__11_35_07___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-03-10/N2 on food L_2010_03_18__10_12_50___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-03-10/nlp-1 (ok1469)X on food R_2010_03_18__12_14_35___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-03-10/nlp-12 (ok335)IV on food R_2010_03_18__15_51_38___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-03-10/nlp-14 (tm1880)X on food R_2010_03_18__13_11_49___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-03-10/nlp-17 (ok3461)IV on food R_2010_03_18__11_33_26___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-03-10/nlp-18 (ok1557)II on food L_2010_03_18__11_13_27___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-03-10/1/nlp-2 (tm1908)X on food L_2010_03_18__12_53_23___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-03-10/1/nlp-20 (ok1591)IV on food L_2010_03_18__11_53_20___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-03-10/1/nlp-3 (ok2688)X on food R_2010_03_18__12_33_08___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/18-03-10/1/nlp-8 (ok1799)I on food L_2010_03_18__10_54_15___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-04-10/N2 on food L_2010_04_14__09_56_54___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-04-10/unc-1 (e1598)X on food R_2010_04_14__11_57_27___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-04-10/unc-118 (e2331)X on food L_2010_04_14__10_38_14___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-04-10/unc-122 (e2520)I on food R_2010_04_14__12_57_29___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-04-10/unc-127 (hs13)V on food L_2010_04_14__10_17_22___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-04-10/unc-17 (e245)IV on food L_2010_04_14__15_17_09___1___13.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-04-10/unc-2 (ox106) on food R_2010_04_14__15_55_26___1___15.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-04-10/unc-37 (e2621)I on food L_2010_04_14__12_17_25___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-04-10/unc-40 (n324)I on food R_2010_04_14__10_57_37___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-04-10/unc-60 (e273)V on food R_2010_04_14__12_36_58___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-04-10/2/unc-69 (e587) on food L_2010_04_14__14_37_33___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-04-10/1/unc-76 (e911)V on food L_2010_04_14__11_19_59___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-04-10/1/unc-79 (e1068)III on food R_2010_04_14__15_37_15___1___14.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-04-10/1/unc-80 (e1069) on food L_2010_04_14__14_56_45___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/14-04-10/1/unc-89 (e1460)I on food L_2010_04_14__11_38_54___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-04-10 in analysis 22-04-10/N2 on food L_2010_04_15__10_07_32___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-04-10 in analysis 22-04-10/unc-1 (e1598)X on food L_2010_04_15__10_46_51___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-04-10 in analysis 22-04-10/unc-101 (m1)I on food R_2010_04_15__12_27_18___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-04-10 in analysis 22-04-10/unc-105 (ok1432) on food L_2010_04_15__10_27_46___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-04-10 in analysis 22-04-10/unc-122 (e2520)I on food R_2010_04_15__12_08_06___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-04-10 in analysis 22-04-10/unc-40 (n324)I on food L_2010_04_15__11_28_58___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-04-10 in analysis 22-04-10/unc-44 (e1197) on food R_2010_04_15__11_48_05___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-04-10 in analysis 22-04-10/unc-60 (e273)V on food R_2010_04_15__13_04_28___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-04-10 in analysis 22-04-10/unc-69 (e587) on food L_2010_04_15__12_46_32___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/15-04-10 in analysis 22-04-10/unc-98 (st85)I on food R_2010_04_15__11_08_42___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-04-10 in analysis 22-04-10/n2 on food L_2010_04_16__10_16_20___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-04-10 in analysis 22-04-10/unc-105 (ok1432) on food L_2010_04_16__10_36_19___1___2.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-04-10 in analysis 22-04-10/unc-17 (e245) on food L_2010_04_16__14_26_24___1___10.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-04-10 in analysis 22-04-10/unc-17 (e245)IV on food R_2010_04_16__11_17_27___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-04-10 in analysis 22-04-10/unc-26 (m2)IV on food R_2010_04_16__10_57_09___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-04-10 in analysis 22-04-10/unc-26 (m2)IV on food R_2010_04_16__11_56_25___1___6.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-04-10 in analysis 22-04-10/unc-26 (m2)IV on food R_2010_04_16__15_08_34___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-04-10 in analysis 22-04-10/unc-44 (e1197) on food R_2010_04_16__11_37_02___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-04-10 in analysis 22-04-10/unc-44 (e1197) on food R_2010_04_16__14_47_13___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-04-10 in analysis 22-04-10/unc-63 (ok1075) on food R_2010_04_16__12_54_42___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-04-10 in analysis 22-04-10/unc-69 (e587)on food L_2010_04_16__12_17_41___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/16-04-10 in analysis 22-04-10/unc-98 (st85)I on food R_2010_04_16__12_36_51___1___8.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/07-05-10/N2 on food L_2010_05_07__10_15_33___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-09-10/finished/N2 on food L_2010_09_09__10_03_54___1___1.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-09-10/finished/unc-7 (cb5) on food L_2010_09_09__10_43_42___1___3.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-09-10/finished/unc-7 (cb5) on food L_2010_09_09__11_03_54___1___4.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-09-10/1/finished/unc-7 (cb5) on food L_2010_09_09__11_24_34___1___5.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-09-10/1/finished/unc-7 (cb5) on food L_2010_09_09__12_03_34___1___7.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-09-10/1/finished/unc-7 (cb5) on food L_2010_09_09__12_43_28___1___9.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-09-10/1/finished/unc-7 (cb5) on food L_2010_09_09__15_13_36___1___11.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-09-10/1/finished/unc-7 (cb5) on food L_2010_09_09__15_34_40___1___12.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-09-10/2/finished/unc-7 (cb5) on food L_2010_09_09__15_56_16___1___13.avi
+/Volumes/behavgenom_archive$/thecus/nas207-3/Data/from pc207-13/Laura/09-09-10/2/finished/unc-7 (cb5) on food R_2010_09_09__10_24_41___1___2.avi
