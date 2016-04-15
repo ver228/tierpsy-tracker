@@ -128,6 +128,30 @@ def getTimestamp(masked_image_file):
         return timestamp, timestamp_time
 
 
+def readAndSaveTimestamp(masked_image_file, dst_file = ''):
+
+    if not dst_file:
+        dst_file = masked_image_file
+
+    #read timestamps from the masked_image_file 
+    timestamp, timestamp_time = getTimestamp(masked_image_file)
+    with tables.File(masked_image_file, 'r') as mask_fid:
+        tot_frames = mask_fid.get_node("/mask").shape[0]
+
+    if tot_frames > timestamp.size:
+         #pad with nan the extra space
+         N = tot_frames - timestamp.size
+         timestamp = np.hstack((timestamp, np.full(N, np.nan)))
+         timestamp_time = np.hstack((timestamp_time, np.full(N, np.nan)))
+         assert tot_frames == timestamp.size
+
+    #save timestamp into the dst_file
+    with tables.File(dst_file, 'r+') as dst_file:
+        dst_file.create_group('/', 'timestamp')
+        dst_file.create_carray('/timestamp', 'raw', obj = np.asarray(timestamp))
+        dst_file.create_carray('/timestamp', 'time', obj = np.asarray(timestamp_time))
+
+
 if __name__ == '__main__':
     video_file = "/Users/ajaver/Desktop/Videos/Check_Align_samples/Videos/npr-13 (tm1504)V on food L_2010_01_25__11_56_02___4___2.avi"
     masked_file = "/Users/ajaver/Desktop/Videos/Check_Align_samples/MaskedVideos/npr-13 (tm1504)V on food L_2010_01_25__11_56_02___4___2.hdf5"

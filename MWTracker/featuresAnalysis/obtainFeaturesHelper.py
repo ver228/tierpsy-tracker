@@ -131,7 +131,7 @@ class WormFromTable(mv.NormalizedWorm):
     but for the moment let's test it as a separate identity
     """
     def __init__(self, file_name, worm_index, use_skel_filter = True, 
-        use_manual_join = False, micronsPerPixel = 1, fps=25, 
+        worm_index_str = 'worm_index_joined', micronsPerPixel = 1, fps=25, 
         smooth_window = -1, POL_DEGREE_DFLT = 3):
         #Populates an empty normalized worm.
         mv.NormalizedWorm.__init__(self)
@@ -142,7 +142,7 @@ class WormFromTable(mv.NormalizedWorm):
         self.worm_index = worm_index
         self.micronsPerPixel = micronsPerPixel
         self.use_skel_filter = use_skel_filter
-        self.use_manual_join = use_manual_join
+        self.worm_index_str = worm_index_str
         self.smooth_window = smooth_window #set to less than POL_DEGREE_DFLT to eliminate smoothing
         
         #smooth window must be an odd number larger than the polynomial degree (savitzky-golay filter requirement)
@@ -152,7 +152,7 @@ class WormFromTable(mv.NormalizedWorm):
         #video info, for the moment we intialize it with the fps
         self.video_info = mv.VideoInfo('', fps)
         
-        skeleton_id, timestamp = self.getTrajDataTable(self.file_name, self.worm_index, self.use_skel_filter, self.use_manual_join)
+        skeleton_id, timestamp = self.getTrajDataTable(self.file_name, self.worm_index, self.use_skel_filter, self.worm_index_str)
         
         self.readSkeletonsData(skeleton_id, timestamp, self.micronsPerPixel)
         
@@ -171,7 +171,7 @@ class WormFromTable(mv.NormalizedWorm):
         #assert the dimenssions of the read data are correct
         self.assertDataDim()
 
-    def getTrajDataTable(self, file_name, worm_index, use_skel_filter, use_manual_join):
+    def getTrajDataTable(self, file_name, worm_index, use_skel_filter, worm_index_str):
         '''
         Get the relevant info from the trajectory_data table for a single worm. skeleton_id, timestamp.
         '''
@@ -181,11 +181,8 @@ class WormFromTable(mv.NormalizedWorm):
             trajectories_data = ske_file_id['/trajectories_data']
 
             #get the rows of valid skeletons
-            if use_manual_join:
-                assert 'worm_index_N' in trajectories_data
-                good = trajectories_data['worm_index_N'] == worm_index
-            else:
-                good = trajectories_data['worm_index_joined'] == worm_index
+            assert worm_index_str in trajectories_data
+            good = trajectories_data[worm_index_str] == worm_index
             
             trajectories_data = trajectories_data.loc[good]
             

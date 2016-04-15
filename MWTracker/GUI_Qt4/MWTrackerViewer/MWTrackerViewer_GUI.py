@@ -43,7 +43,7 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 		self.videos_dir = r"/Volumes/behavgenom$/GeckoVideo/MaskedVideos/"
 		self.results_dir = ''
 		self.skel_file = ''
-		self.worm_index_type = 'worm_index_N'
+		self.worm_index_type = 'worm_index_manual'
 		self.label_type = 'worm_label'
 
 		self.ui.comboBox_ROI1.activated.connect(self.selectROI1)
@@ -77,7 +77,7 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 		#select between automatic and manual worm indexing and label
 		if self.ui.comboBox_labelType.currentIndex() == 0:
 			self.label_type = 'worm_label'
-			self.worm_index_type = 'worm_index_N' 
+			self.worm_index_type = 'worm_index_manual' 
 			self.ui.pushButton_U.setEnabled(True)
 			self.ui.pushButton_W.setEnabled(True)
 			self.ui.pushButton_WS.setEnabled(True)
@@ -119,9 +119,12 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 		if not self.skel_file or not isinstance(self.trajectories_data, pd.DataFrame):
 			return
 
-		if not 'worm_index_N' in self.trajectories_data.columns:
+		if 'worm_index_N' in self.trajectories_data:
+			self.trajectories_data.rename(columns={'worm_index_N':'worm_index_manual'})
+
+		if not 'worm_index_manual' in self.trajectories_data:
 			self.trajectories_data['worm_label'] = self.wlab['U']
-			self.trajectories_data['worm_index_N'] = self.trajectories_data['worm_index_joined']
+			self.trajectories_data['worm_index_manual'] = self.trajectories_data['worm_index_joined']
 			self.updateImage()
 
 	#update image
@@ -278,7 +281,7 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 				self.updateROIcanvasN(2)
 
 	def tagWorm(self, label_ind):
-		if not self.worm_index_type == 'worm_index_N':
+		if not self.worm_index_type == 'worm_index_manual':
 					return
 		if self.ui.radioButton_ROI1.isChecked():
 			worm_ind = self.worm_index_roi1
@@ -288,12 +291,12 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 		if not isinstance(self.frame_data, pd.DataFrame):
 			return
 
-		if not worm_ind in self.frame_data['worm_index_N'].values:
+		if not worm_ind in self.frame_data['worm_index_manual'].values:
 			QMessageBox.critical(self, 'The selected worm is not in this frame.', 'Select a worm in the current frame to label.',
 					QMessageBox.Ok)
 			return
 
-		good = self.trajectories_data['worm_index_N'] == worm_ind
+		good = self.trajectories_data['worm_index_manual'] == worm_ind
 		self.trajectories_data.loc[good, 'worm_label'] = label_ind
 		self.updateImage()
 
@@ -323,7 +326,7 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 		self.ui.spinBox_frame.setValue(self.frame_number)
 
 	def joinTraj(self):
-		if not self.worm_index_type == 'worm_index_N':
+		if not self.worm_index_type == 'worm_index_manual':
 			return
 
 		worm_ind1 = self.worm_index_roi1#self.ui.spinBox_join1.value()
@@ -334,8 +337,8 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 					QMessageBox.Ok)
 			return
 
-		index1 = (self.trajectories_data['worm_index_N'] == worm_ind1).values
-		index2 = (self.trajectories_data['worm_index_N'] == worm_ind2).values
+		index1 = (self.trajectories_data['worm_index_manual'] == worm_ind1).values
+		index2 = (self.trajectories_data['worm_index_manual'] == worm_ind2).values
 		
 		#if the trajectories do not overlap they shouldn't have frame_number indexes in commun
 		frame_number = self.trajectories_data.loc[index1|index2, 'frame_number']
@@ -346,7 +349,7 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 			return
 
 
-		if not (worm_ind1 in self.frame_data['worm_index_N'].values or worm_ind2 in self.frame_data['worm_index_N'].values):
+		if not (worm_ind1 in self.frame_data['worm_index_manual'].values or worm_ind2 in self.frame_data['worm_index_manual'].values):
 			reply = QMessageBox.question(self, 'Message',
             "The none of the selected worms to join is not in this frame. Are you sure to continue?",
              QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
@@ -360,7 +363,7 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 
 		#join trajectories
 		self.trajectories_data.loc[index2, 'worm_label'] = first_row1['worm_label']
-		self.trajectories_data.loc[index2, 'worm_index_N'] = worm_ind1
+		self.trajectories_data.loc[index2, 'worm_index_manual'] = worm_ind1
 		
 		self.worm_index_roi1 = worm_ind1
 		self.worm_index_roi2 = worm_ind1
@@ -371,7 +374,7 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 
 
 	def splitTraj(self):
-		if not self.worm_index_type == 'worm_index_N':
+		if not self.worm_index_type == 'worm_index_manual':
 			return
 
 		if self.ui.radioButton_ROI1.isChecked():
@@ -379,25 +382,25 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 		elif self.ui.radioButton_ROI2.isChecked():
 			worm_ind = self.worm_index_roi2
 
-		if not worm_ind in self.frame_data['worm_index_N'].data:
+		if not worm_ind in self.frame_data['worm_index_manual'].data:
 			QMessageBox.critical(self, 'Worm index is not in the current frame.', 'Worm index is not in the current frame. Select a valid index.',
 					QMessageBox.Ok)
 			return
 
-		last_index = self.trajectories_data['worm_index_N'].max()
+		last_index = self.trajectories_data['worm_index_manual'].max()
 		
 		new_ind1 = last_index+1
 		new_ind2 = last_index+2
 
-		good = self.trajectories_data['worm_index_N'] == worm_ind
+		good = self.trajectories_data['worm_index_manual'] == worm_ind
 		frames = self.trajectories_data.loc[good, 'frame_number']
 		frames = frames.sort_values(inplace=False)
 
 		good = frames<self.frame_number
 		index1 = frames[good].index
 		index2 = frames[~good].index
-		self.trajectories_data.ix[index1, 'worm_index_N']=new_ind1
-		self.trajectories_data.ix[index2, 'worm_index_N']=new_ind2
+		self.trajectories_data.ix[index1, 'worm_index_manual']=new_ind1
+		self.trajectories_data.ix[index2, 'worm_index_manual']=new_ind2
 		
 		self.worm_index_roi1 = new_ind1
 		self.worm_index_roi2 = new_ind2

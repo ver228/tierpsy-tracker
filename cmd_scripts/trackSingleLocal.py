@@ -88,7 +88,11 @@ class trackLocal:
 		self.cleanTmpFiles()
 		
 		time_str = str(datetime.timedelta(seconds=round(time.time()-self.start_time)))
-		#print_flush('%s  Finished in %s. Total time %s' % (self.base_name, checkpoint_label[self.end_point], time_str))
+		
+		#TODO in the case of single worm the code can be interrupted before finished without throwing an error if the stage was not aligned.
+		#ineed to find a way to comunicate the exist flag of trackSingleWorker
+		if not self.is_single_worm:
+			print_flush('%s  Finished in %s. Total time %s' % (self.base_name, checkpoint_label[self.end_point], time_str))
 		
 	def main_code(self):
 		#start the analysis

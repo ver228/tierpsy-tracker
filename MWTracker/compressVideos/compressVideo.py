@@ -12,7 +12,7 @@ import sys
 
 from .readVideoffmpeg import readVideoffmpeg
 from .readVideoHDF5 import readVideoHDF5
-from .extractMetaData import storeMetaData, getTimestamp
+from .extractMetaData import storeMetaData, readAndSaveTimestamp
 #from .imageDifferenceMask import imageDifferenceMask
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
@@ -213,18 +213,10 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM, ex
         full_frame_number = 0;
         image_prev = np.zeros([]);
         
-        vid_frame_pos = []
-        vid_time_pos = []
-
         #initialize timers
         progressTime = timeCounterStr('Compressing video.');
 
         while frame_number < max_frame:
-            if reader_type == READER_TYPE['OPENCV']:
-                #get the current frame timestamp (opencv might not give the correct value, it is better to use ffprobe)
-                vid_frame_pos.append(int(vid.get(cv2.CAP_PROP_POS_FRAMES)))
-                vid_time_pos.append(vid.get(cv2.CAP_PROP_POS_MSEC))
-
             ret, image = vid.read() #get video frame, stop program when no frame is retrive (end of file)
             if ret != 0:
                 #opencv can give an artificial rgb image. Let's get it back to gray scale.
@@ -296,21 +288,8 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM, ex
         #close the video
         vid.release() 
 
-        #if it is not opencv the timestamp from the vid reader
-        if reader_type != READER_TYPE['OPENCV']:
-            #get the current frame timestamp (opencv might not give the correct value, it is better to use ffprobe)
-            vid_frame_pos = vid.vid_frame_pos
-            vid_time_pos = vid.vid_time_pos
-
-        #save the timestamps into separate arrays
-        mask_fid.create_dataset("/vid_frame_pos", data = np.asarray(vid_frame_pos));
-        mask_fid.create_dataset("/vid_time_pos", data = np.asarray(vid_time_pos));
-
-        with h5py.File(masked_image_file, "r+") as mask_fid:
-                mask_fid['/mask'].attrs['has_finished'] = 1
-
         
-    
+    readAndSaveTimestamp(masked_image_file)
     #attribute to indicate the program finished correctly
     with h5py.File(masked_image_file, "r+") as mask_fid:
         mask_fid['/mask'].attrs['has_finished'] = 1

@@ -4,7 +4,7 @@ SCRIPT_DIR=/Users/ajaver/Documents/GitHub/Multiworm_Tracking/cmd_scripts
 TEST1_DIR="$EXAMPLES_DIR/test_1"
 TEST2_DIR="$EXAMPLES_DIR/test_2"
 TEST3_DIR="$EXAMPLES_DIR/test_3"
-
+TEST4_DIR="$EXAMPLES_DIR/test_4"
 
 function test1 {
 echo "%%%% TEST1 %%%%"
@@ -28,6 +28,13 @@ rm -Rf "$TEST3_DIR/Results"
 python3  "$SCRIPT_DIR/trackMultipleFiles.py" "$TEST3_DIR/MaskedVideos" --json_file "$TEST3_DIR/test3.json"
 }
 
+function test4 {
+echo "%%%% TEST4 %%%%"
+rm "$TEST4_DIR/Results/Capture_Ch1_18062015_140908_feat_manual.hdf5"
+python3  "$SCRIPT_DIR/trackMultipleFiles.py" "$TEST4_DIR/MaskedVideos" --json_file "$TEST3_DIR/test3.json" \
+--use_manual_join
+}
+
 function clean_all {
 rm -Rf "$TEST1_DIR/MaskedVideos"
 rm -Rf "$TEST2_DIR/MaskedVideos"
@@ -35,5 +42,6 @@ rm -Rf "$TEST3_DIR/Results"
 }
 
 #test1
-#test1
-test3
+#test2
+#test3
+test4

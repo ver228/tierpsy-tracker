@@ -157,7 +157,7 @@ def isValidSingleWorm(skeletons_file, good_traj_index):
         return False
 
 def getWormFeatures(skeletons_file, features_file, good_traj_index, expected_fps = 25, \
-    use_skel_filter = True, use_manual_join = False, is_single_worm = False):
+    use_skel_filter = True, worm_index_str = 'worm_index_joined', is_single_worm = False):
 
     if is_single_worm:
         if not isValidSingleWorm(skeletons_file, good_traj_index):
@@ -191,13 +191,14 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, expected_fps
         table_timeseries._v_attrs['micronsPerPixel'] = micronsPerPixel
         table_timeseries._v_attrs['is_default_timestamp'] = is_default_timestamp
         table_timeseries._v_attrs['fps'] = fps
-
+        table_timeseries._v_attrs['worm_index_str'] = worm_index_str
+        
         #start to calculate features for each worm trajectory
         for ind_N, worm_index  in enumerate(good_traj_index):
             #initialize worm object, and extract data from skeletons file
             worm = WormFromTable(skeletons_file, worm_index,
-                use_skel_filter = use_skel_filter, use_manual_join = use_manual_join,
-                micronsPerPixel = micronsPerPixel,fps=fps, smooth_window = 5)
+                use_skel_filter = use_skel_filter, worm_index_str = worm_index_str,
+                micronsPerPixel = micronsPerPixel, fps = fps, smooth_window = 5)
             
             if is_single_worm:
                 assert worm_index == 1 and ind_N == 0
@@ -271,11 +272,16 @@ def getWormFeaturesFilt(skeletons_file, features_file, use_skel_filter, use_manu
             good = trajectories_data['is_good_skel'] == 1
             trajectories_data = trajectories_data[good]
         
-        worm_index_str =  'worm_index_N' if use_manual_join else 'worm_index_joined' 
+        if use_manual_join:
+            worm_index_str = 'worm_index_manual' if 'worm_index_manual' in trajectories_data else 'worm_index_N'
+        else:
+            worm_index_str = 'worm_index_joined'
+        assert worm_index_str in trajectories_data
+
         N = trajectories_data.groupby(worm_index_str).agg({'has_skeleton':np.nansum})
         N = N[N>feat_filt_param['min_num_skel']].dropna()
         good_traj_index = N.index
 
     #calculate features
     getWormFeatures(skeletons_file, features_file, good_traj_index, expected_fps = expected_fps,\
-            use_skel_filter = use_skel_filter, use_manual_join = use_manual_join, is_single_worm = is_single_worm)
+            use_skel_filter = use_skel_filter, worm_index_str = worm_index_str, is_single_worm = is_single_worm)
