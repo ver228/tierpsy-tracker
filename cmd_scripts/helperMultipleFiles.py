@@ -185,23 +185,19 @@ class checkVideoFiles:
 
 	@staticmethod
 	def checkBadVideo(video_file, is_single_worm):
-		#print(video_file)
-		vid, im_width, im_height, reader_type = selectVideoReader(video_file)
-		vid.release() # i have problems with corrupt videos that can create infinite loops...
-		
-		#print(vid, im_width, im_height, reader_type)
-		if im_width == 0 or im_height == 0:
-		#	print('BAD!!')
+		try:
+			vid, im_width, im_height, reader_type = selectVideoReader(video_file)
+			vid.release() # i have problems with corrupt videos that can create infinite loops...
+			if is_single_worm: 
+				#check for the additional files in the case of single worm
+				try:
+				#this function will throw and error if the .info.xml or .log.csv are not found
+					info_file, stage_file = getAdditionalFiles(video_file)
+				except (IOError, FileNotFoundError):
+					return True
+		except OSError:
 			#corrupt file, cannot read the size
 			return True
-		elif is_single_worm: 
-			#check for the additional files in the case of single worm
-			try:
-			#this function will throw and error if the .info.xml or .log.csv are not found
-				info_file, stage_file = getAdditionalFiles(video_file)
-			except (IOError, FileNotFoundError):
-				return True
-
 		return False
 	
 	
