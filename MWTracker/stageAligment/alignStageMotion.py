@@ -17,6 +17,8 @@ def alignStageMotion(masked_image_file, skeletons_file, tmp_dir = os.path.expand
     
     assert os.path.exists(masked_image_file)
     assert os.path.exists(skeletons_file)
+    if not os.path.exists(tmp_dir):
+        os.makedirs(tmp_dir)
 
     base_name = os.path.split(masked_image_file)[1].partition('.hdf5')[0];
     #check if it was finished before

@@ -193,6 +193,15 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, expected_fps
         table_timeseries._v_attrs['fps'] = fps
         table_timeseries._v_attrs['worm_index_str'] = worm_index_str
         
+        #node to save features events
+        group_events = features_fid.create_group('/', 'features_events')
+        
+        #save the skeletons in the same group
+        with tables.File(skeletons_file, 'r') as ske_file_id:
+            skel_shape = ske_file_id.get_node('/skeleton').shape
+        skeletons_array = features_fid.create_earray('/', 'skeletons', shape = (0, skel_shape[1], skel_shape[2]) ,
+                                    atom = tables.Float32Atom(shape=()), filters = filters_tables)
+
         #start to calculate features for each worm trajectory
         for ind_N, worm_index  in enumerate(good_traj_index):
             #initialize worm object, and extract data from skeletons file
@@ -213,26 +222,24 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, expected_fps
             table_timeseries.append(timeseries_data)
             table_timeseries.flush()
             
-
+            #save skeletons
+            skeletons_array.append(skeletons)
+            skeletons_array.flush()
             
             #save event data as a subgroup per worm
-            worm_node = features_fid.create_group('/', 'worm_%i' % worm_index )
+            worm_node = features_fid.create_group(group_events, 'worm_%i' % worm_index )
             worm_node._v_attrs['worm_index'] = worm_index
             worm_node._v_attrs['frame_range'] = (worm.timestamp[0], worm.timestamp[-1])
             
-            worm_feat_events = features_fid.create_group(worm_node, 'features_events')
             for feat in events_data:
                 tmp_data = events_data[feat]
                 #consider the cases where the output is a single number, empty or None
                 if isinstance(tmp_data, (float, int)): tmp_data = np.array([tmp_data])
                 if tmp_data is None or tmp_data.size == 0: tmp_data = np.array([np.nan])
-                features_fid.create_carray(worm_feat_events, feat, \
+                features_fid.create_carray(worm_node, feat, \
                                     obj = tmp_data, filters = filters_tables)
 
-            #save the skeletons in the same group
-            features_fid.create_carray(worm_node, 'skeletons', \
-                                    obj = skeletons, filters = filters_tables)
-
+            
             #store the average for each worm feature
             mean_features_df[ind_N] = worm_stats
             #%%
