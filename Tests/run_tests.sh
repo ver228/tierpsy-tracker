@@ -43,5 +43,5 @@ rm -Rf "$TEST3_DIR/Results"
 
 #test1
 #test2
-#test3
-test4
+test3
+#test4

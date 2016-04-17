@@ -81,15 +81,17 @@ def correctSingleWorm(worm, skeletons_file):
         timestamp_ind = fid.get_node('/timestamp/raw')[:].astype(np.int)
         rotation_matrix = fid.get_node('/stage_movement')._v_attrs['rotation_matrix']
 
+
     #adjust the stage_vec to match the timestamps in the skeletons
-    timestamp_ind = timestamp_ind - worm.first_frame
-    good = (timestamp_ind>=0) & (timestamp_ind<=worm.timestamp[-1])
+    timestamp_ind = timestamp_ind
+    good = (timestamp_ind>=worm.first_frame) & (timestamp_ind<=worm.last_frame)
     
-    timestamp_ind = timestamp_ind[good]
+
+    ind_ff = timestamp_ind[good] - worm.first_frame
     stage_vec_ori = stage_vec_ori[good]
-    
-    stage_vec = np.full((worm.timestamp.size,2), np.nan)
-    stage_vec[timestamp_ind, :] = stage_vec_ori
+
+    stage_vec = np.full((worm.timestamp.size, 2), np.nan)
+    stage_vec[ind_ff, :] = stage_vec_ori
     
     tot_skel = worm.skeleton.shape[0]
     
@@ -212,6 +214,8 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, expected_fps
             if is_single_worm:
                 assert worm_index == 1 and ind_N == 0
                 worm = correctSingleWorm(worm, skeletons_file)
+                if np.all(np.isnan(worm.skeleton[:,0,0])):
+                    return
             
             #calculate features
             timeseries_data, events_data, worm_stats, skeletons = \
@@ -229,7 +233,7 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, expected_fps
             #save event data as a subgroup per worm
             worm_node = features_fid.create_group(group_events, 'worm_%i' % worm_index )
             worm_node._v_attrs['worm_index'] = worm_index
-            worm_node._v_attrs['frame_range'] = (worm.timestamp[0], worm.timestamp[-1])
+            worm_node._v_attrs['frame_range'] = np.array((worm.first_frame, worm.last_frame))
             
             for feat in events_data:
                 tmp_data = events_data[feat]

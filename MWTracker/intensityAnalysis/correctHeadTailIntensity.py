@@ -422,22 +422,22 @@ def correctHeadTailIntensity(skeletons_file, intensities_file, smooth_W = 5,
 
     #label the process as finished and store the indexes of the switched worms
     with tables.File(skeletons_file, 'r+') as fid:
-        if not '/Intensity_Analysis' in fid:
-            fid.create_group('/', 'Intensity_Analysis')
+        if not '/intensity_analysis' in fid:
+            fid.create_group('/', 'intensity_analysis')
         
-        if '/Intensity_Analysis/Bad_Worms' in fid:
-            fid.remove_node('/Intensity_Analysismin_block_size/Bad_Worms')
-        if '/Intensity_Analysis/Switched_Head_Tail' in fid:
-            fid.remove_node('/Intensity_Analysis/Switched_Head_Tail')
+        if '/intensity_analysis/bad_worms' in fid:
+            fid.remove_node('/intensity_analysis/min_block_size/bad_worms')
+        if '/intensity_analysis/switched_head_tail' in fid:
+            fid.remove_node('/intensity_analysis/switched_head_tail')
         
         if bad_worms:
-            fid.create_array('/Intensity_Analysis', 'Bad_Worms', np.array(bad_worms))
+            fid.create_array('/intensity_analysis', 'bad_worms', np.array(bad_worms))
         
         if switched_blocks:
             #to rec array
             switched_blocks = np.array(switched_blocks, \
             dtype = [('worm_index',np.int), ('ini_frame',np.int), ('last_frame',np.int)])
-            fid.create_table('/Intensity_Analysis', 'Switched_Head_Tail', switched_blocks)
+            fid.create_table('/intensity_analysis', 'switched_head_tail', switched_blocks)
     
         
         fid.get_node('/skeleton')._v_attrs['has_finished'] = 4
