@@ -13,6 +13,9 @@ from math import floor, ceil
 
 import warnings
 warnings.filterwarnings('ignore', '.*empty slice*',)
+warnings.filterwarnings('ignore', ".*Falling back to 'gelss' driver.",)
+warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
+
 tables.parameters.MAX_COLUMNS = 1024 #(http://www.pytables.org/usersguide/parameter_files.html)
 
 from collections import OrderedDict
@@ -55,9 +58,10 @@ def getFPS(skeletons_file, expected_fps):
     try:
         with tables.File(skeletons_file, 'r') as fid:
             timestamp_time = fid.get_node('/timestamp/time')[:]
-            fps = 1/np.median(np.diff(timestamp_time))
-            if np.isnan(fps): 
+            if np.all(np.isnan(timestamp_time)): 
                 raise ValueError
+            fps = 1/np.median(np.diff(timestamp_time))
+            
             is_default_timestamp = 0
     except (tables.exceptions.NoSuchNodeError, IOError, ValueError):
         fps = expected_fps

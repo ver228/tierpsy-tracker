@@ -14,8 +14,6 @@ from math import floor, ceil
 import csv
 from scipy.signal import savgol_filter
 
-import warnings
-warnings.filterwarnings('ignore', '.*empty slice*',)
 tables.parameters.MAX_COLUMNS = 1024 #(http://www.pytables.org/usersguide/parameter_files.html)
 
 from collections import OrderedDict
