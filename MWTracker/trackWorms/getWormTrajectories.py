@@ -480,9 +480,9 @@ def _validRowsByArea(plate_worms):
         if not isinstance(prev_row, int) and first_frame > frame_number:
             first_frame = frame_number
 
-    #if the first_frame is larger than zero it means that it might have lost some data in from the beggining
+    #if the first_frame is larger than zero it means that it might have lost some data in from the begining
     #let's try to search again from opposite direction
-    if frame_number > 0:
+    if frame_number > 0 and len(valid_rows)>0:
         prev_row = plate_worms_f.loc[np.min(valid_rows)]
         for frame_number in range(frame_number, -1, -1):
             prev_row = get_valid_indexes(frame_number, prev_row) 
