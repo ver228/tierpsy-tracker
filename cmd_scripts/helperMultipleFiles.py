@@ -71,8 +71,9 @@ class checkVideoFiles:
 			assert os.path.exists(json_file)
 		
 		if tmp_dir_root: 
-			assert os.path.exists(tmp_dir_root)
-			assert os.path.exists(tmp_dir_root)
+			tmp_dir_root = os.path.abspath(tmp_dir_root)
+			if not os.path.exists(tmp_dir_root):
+				os.makedirs(tmp_dir_root)
 		
 		self.video_dir_root = video_dir_root
 		self.json_file = json_file
@@ -266,8 +267,9 @@ class checkTrackFiles(checkVideoFiles):
 			assert os.path.exists(json_file)
 		
 		if tmp_dir_root: 
-			assert os.path.exists(tmp_dir_root)
-			assert os.path.exists(tmp_dir_root)
+			tmp_dir_root = os.path.abspath(tmp_dir_root)
+			if not os.path.exists(tmp_dir_root):
+				os.makedirs(tmp_dir_root)
 
 		
 
