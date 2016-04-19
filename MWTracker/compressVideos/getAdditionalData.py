@@ -107,7 +107,8 @@ def _data2dict(header, data):
         csv_dict[header[ii]] = col_data
     
     ## Check the data is correct
-    assert all(x == 'STAGE' for x in csv_dict['Location Type'])
+    #This is not really a necessary assertion this STAGE flag does not seem useuful.
+    #assert all(x == 'STAGE' for x in csv_dict['Location Type'])
     del csv_dict['Location Type']
     
     #delete this columns 

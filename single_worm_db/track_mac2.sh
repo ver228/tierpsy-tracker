@@ -1,14 +1,13 @@
-python3 ~/Documents/GitHub/Multiworm_Tracking/cmd_scripts/trackMultipleFiles.py \
+python3 ../cmd_scripts/trackMultipleFiles.py \
 /Volumes/behavgenom_archive\$/MaskedVideos \
---json_file ~/Documents/GitHub/Multiworm_Tracking/single_worm_db/JSON_singleworm/swimming.json \
+--json_file ./JSON_singleworm/swimming.json \
 --is_single_worm --max_num_process 21 --end_point INT_SKE_ORIENT \
---videos_list ~/Documents/GitHub/Multiworm_Tracking/single_worm_db/masks_swimming_2
+--videos_list ./files2analyze/masks_swimming_2.txt
 
-python3 ~/Documents/GitHub/Multiworm_Tracking/cmd_scripts/trackMultipleFiles.py \
+python3 ../cmd_scripts/trackMultipleFiles.py \
 /Volumes/behavgenom_archive\$/MaskedVideos \
---json_file ~/Documents/GitHub/Multiworm_Tracking/single_worm_db/JSON_singleworm/on_food.json \
+--json_file ./JSON_singleworm/on_food.json \
 --is_single_worm --max_num_process 21 --end_point INT_SKE_ORIENT \
---videos_list ~/Documents/GitHub/Multiworm_Tracking/single_worm_db/masks_agar_2
-
+--videos_list ./files2analyze/masks_agar_2.txt
 
 
