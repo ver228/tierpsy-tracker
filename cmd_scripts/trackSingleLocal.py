@@ -87,7 +87,7 @@ class trackLocal:
 		self.last_check_point = checkpoint_label[self.end_point];
 		if self.is_single_worm:
 			#in the case of single worm it can exit before due to problems in the stage aligment
-			if isBadStageAligment(self.skeletons_file):
+			if isBadStageAligment(self.skeletons_tmp):
 				self.last_check_point = 'STAGE_ALIGMENT'
 
 
@@ -208,14 +208,16 @@ class trackLocal:
 		if any(wasProccesed(x) for x in ['SKE_CREATE', 'SKE_ORIENT', 'SKE_FILT', 'INT_SKE_ORIENT']):
 			files2copy += [(self.skeletons_tmp, self.results_dir)]
 
-		if wasProccesed('INT_PROFILE') and self.last_check_point != 'STAGE_ALIGMENT':
-			files2copy += [(self.intensities_tmp, self.results_dir)]
-		
-		if wasProccesed('FEAT_CREATE'):
-			files2copy += [(self.features_tmp, self.results_dir)]
-		
-		if wasProccesed('FEAT_MANUAL_CREATE') and self.use_manual_join:
-			files2copy += [(self.feat_ind_tmp, self.results_dir)]
+		#in the case of single worm if the stage aligment fails the analysis will be interruped before
+		if self.last_check_point != 'STAGE_ALIGMENT':
+			if wasProccesed('INT_PROFILE'):
+				files2copy += [(self.intensities_tmp, self.results_dir)]
+			
+			if wasProccesed('FEAT_CREATE'):
+				files2copy += [(self.features_tmp, self.results_dir)]
+			
+			if wasProccesed('FEAT_MANUAL_CREATE') and self.use_manual_join:
+				files2copy += [(self.feat_ind_tmp, self.results_dir)]
 
 		copyFilesLocal(files2copy)
 

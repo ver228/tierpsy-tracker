@@ -90,7 +90,7 @@ def circConv(a, b):
 
 def circSmooth(angles, blurLength):
     if blurLength > 1:
-        blurWin = np.empty(blurLength)
+        blurWin = np.empty(int(blurLength))
         blurWin.fill(1./blurLength);
         return circConv(angles, blurWin);
     else:
