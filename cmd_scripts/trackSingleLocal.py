@@ -12,7 +12,7 @@ import argparse
 import subprocess
 import time, datetime
 
-from trackSingleWorker import getTrajectoriesWorkerL, getStartingPoint, checkpoint, checkpoint_label, constructNames
+from trackSingleWorker import getTrajectoriesWorkerL, getStartingPoint, checkpoint, checkpoint_label, constructNames, isBadStageAligment
 from MWTracker.helperFunctions.miscFun import print_flush
 
 def copyFilesLocal(files2copy):
@@ -61,7 +61,7 @@ class trackLocal:
 		#get the correct starting point 
 		self.getStartPoints()
 		self.copyFilesFromFinal()
-
+		
 		self.main_input_params = [[self.tmp_mask_file, self.tmp_results_dir], \
 		{'json_file' : self.json_file, 'start_point' : self.analysis_start_point, 'end_point' : self.end_point, \
 		'is_single_worm' : self.is_single_worm, 'use_skel_filter' : self.use_skel_filter, \
@@ -84,19 +84,22 @@ class trackLocal:
 		return cmd
 
 	def clean(self):
+		self.last_check_point = checkpoint_label[self.end_point];
+		if self.is_single_worm:
+			#in the case of single worm it can exit before due to problems in the stage aligment
+			if isBadStageAligment(self.skeletons_file):
+				self.last_check_point = 'STAGE_ALIGMENT'
+
+
 		self.copyFilesToFinal()
 		self.cleanTmpFiles()
 		
 		time_str = str(datetime.timedelta(seconds=round(time.time()-self.start_time)))
-		
-		#TODO in the case of single worm the code can be interrupted before finished without throwing an error if the stage was not aligned.
-		#ineed to find a way to comunicate the exist flag of trackSingleWorker
-		if not self.is_single_worm:
-			print_flush('%s  Finished in %s. Total time %s' % (self.base_name, checkpoint_label[self.end_point], time_str))
+
+		print_flush('%s  Finished in %s. Total time %s' % (self.base_name, self.last_check_point, time_str))
 		
 	def main_code(self):
 		#start the analysis
-		print(self.analysis_start_point)
 		getTrajectoriesWorkerL(*self.main_input_params[0] , **self.main_input_params[1])
 
 	def assign_tmp_dir(self, tmp_mask_dir, tmp_results_dir):
@@ -205,7 +208,7 @@ class trackLocal:
 		if any(wasProccesed(x) for x in ['SKE_CREATE', 'SKE_ORIENT', 'SKE_FILT', 'INT_SKE_ORIENT']):
 			files2copy += [(self.skeletons_tmp, self.results_dir)]
 
-		if wasProccesed('INT_PROFILE'):
+		if wasProccesed('INT_PROFILE') and self.last_check_point != 'STAGE_ALIGMENT':
 			files2copy += [(self.intensities_tmp, self.results_dir)]
 		
 		if wasProccesed('FEAT_CREATE'):
@@ -225,12 +228,11 @@ class trackLocal:
 		#this files must exists at this point in the program. Let's check it before deleting anything.
 		
 		assert os.path.exists(self.trajectories_file)
-		
 		if self.end_point >= checkpoint['SKE_CREATE']:
 			assert os.path.exists(self.skeletons_file)
 
 		#in the case of single worm if the stage aligment fails the analysis will be interruped before
-		if not self.is_single_worm:
+		if self.last_check_point != 'STAGE_ALIGMENT':
 			if self.end_point >= checkpoint['INT_PROFILE']:
 				assert os.path.exists(self.intensities_file)
 

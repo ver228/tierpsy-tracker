@@ -20,6 +20,8 @@ def main(mask_dir_root, tmp_dir_root, json_file, script_abs_path, \
 	max_num_process, refresh_time, force_start_point, end_point, is_single_worm, 
 	only_summary, no_prev_check, use_manual_join, no_skel_filter, videos_list):
 
+	#we want to deal with absolute paths
+
 	ctf = checkTrackFiles(mask_dir_root, tmp_dir_root = tmp_dir_root, \
 		is_single_worm = is_single_worm, json_file = json_file, force_start_point = force_start_point, end_point = end_point, \
 		script_abs_path = script_abs_path, use_manual_join= use_manual_join, no_skel_filter = no_skel_filter)

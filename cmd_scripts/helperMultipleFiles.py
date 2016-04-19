@@ -61,9 +61,19 @@ class checkVideoFiles:
 		video_dir_root = os.path.abspath(video_dir_root)
 		assert os.path.exists(video_dir_root)
 		
-		if json_file: assert os.path.exists(json_file)
+		mask_dir_root = os.path.abspath(mask_dir_root)
+		assert os.path.exists(mask_dir_root)
+		
 		assert os.path.exists(script_abs_path)
 
+		if json_file: 
+			json_file = os.path.abspath(json_file)
+			assert os.path.exists(json_file)
+		
+		if tmp_dir_root: 
+			assert os.path.exists(tmp_dir_root)
+			assert os.path.exists(tmp_dir_root)
+		
 		self.video_dir_root = video_dir_root
 		self.json_file = json_file
 		self.script_abs_path = script_abs_path
@@ -249,15 +259,23 @@ class checkTrackFiles(checkVideoFiles):
 		#checkings before accepting the data
 		mask_dir_root = os.path.abspath(mask_dir_root)
 		assert os.path.exists(mask_dir_root)
-		
-		if json_file: assert os.path.exists(json_file)
 		assert os.path.exists(script_abs_path)
+
+		if json_file: 
+			json_file = os.path.abspath(json_file)
+			assert os.path.exists(json_file)
+		
+		if tmp_dir_root: 
+			assert os.path.exists(tmp_dir_root)
+			assert os.path.exists(tmp_dir_root)
+
+		
 
 		self.mask_dir_root = mask_dir_root
 		self.tmp_dir_root = tmp_dir_root
-
 		self.json_file = json_file
 		self.script_abs_path = script_abs_path
+		
 		self.is_single_worm = is_single_worm
 		self.no_skel_filter = no_skel_filter
 		self.use_manual_join = use_manual_join

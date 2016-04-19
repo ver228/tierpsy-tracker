@@ -107,6 +107,15 @@ def getStartingPoint(masked_image_file, results_dir):
         
     return checkpoint['END'];
 
+def isBadStageAligment(skeletons_file):
+    with tables.File(skeletons_file, 'r') as fid:
+        try:
+            good_aligment = fid.get_node('/stage_movement')._v_attrs['has_finished'][:]
+        except (KeyError,IndexError):
+            good_aligment = 0;
+        
+        return good_aligment != 1
+
 
 def constructNames(masked_image_file, results_dir):
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
@@ -254,18 +263,14 @@ class getTrajectoriesWorkerL():
             if self.is_single_worm and current_point == 'INT_PROFILE': 
                 execThisPoint(current_point, **self.points_parameters['STAGE_ALIGMENT'], 
                 commit_hash=self.commit_hash, cmd_original=self.cmd_original)
-                with tables.File(self.skeletons_file, 'r') as fid:
-                    try:
-                        good_aligment = fid.get_node('/stage_movement')._v_attrs['has_finished'][:]
-                    except (KeyError,IndexError):
-                        good_aligment = 0;
-                    if good_aligment != 1:
-                        #break, bad video we do not need to calculate anything else.
-                        last_check_point = 'STAGE_ALIGMENT'
-                        break
+                
+                if isBadStageAligment(self.skeletons_file):
+                    #break, bad video we do not need to calculate anything else.
+                    last_check_point = 'STAGE_ALIGMENT'
+                    break
 
             if not self.use_manual_join and current_point == 'FEAT_MANUAL_CREATE': continue
-            
+                
 
             last_check_point = checkpoint_label[self.end_point]
 
