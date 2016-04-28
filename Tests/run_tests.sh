@@ -1,10 +1,11 @@
-EXAMPLES_DIR="/Users/ajaver/Google Drive/MWTracker_Example"
+EXAMPLES_DIR="/Users/ajaver/Google Drive/MWTracker/Tests"
 SCRIPT_DIR=/Users/ajaver/Documents/GitHub/Multiworm_Tracking/cmd_scripts
 
 TEST1_DIR="$EXAMPLES_DIR/test_1"
 TEST2_DIR="$EXAMPLES_DIR/test_2"
 TEST3_DIR="$EXAMPLES_DIR/test_3"
 TEST4_DIR="$EXAMPLES_DIR/test_4"
+TEST5_DIR="$EXAMPLES_DIR/test_4"
 
 function test1 {
 echo "%%%% TEST1 %%%%"
@@ -35,6 +36,11 @@ python3  "$SCRIPT_DIR/trackMultipleFiles.py" "$TEST4_DIR/MaskedVideos" --json_fi
 --use_manual_join
 }
 
+function test5 {
+echo "%%%% TEST5 %%%%"
+rm -Rf "$TEST5_DIR/Results"
+python3  "$SCRIPT_DIR/trackMultipleFiles.py" "$TEST5_DIR/MaskedVideos"
+}
 function clean_all {
 rm -Rf "$TEST1_DIR/MaskedVideos"
 rm -Rf "$TEST2_DIR/MaskedVideos"
@@ -43,5 +49,6 @@ rm -Rf "$TEST3_DIR/Results"
 
 #test1
 #test2
-test3
+#test3
 #test4
+test5

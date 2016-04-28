@@ -114,7 +114,7 @@ def isBadStageAligment(skeletons_file):
         except (KeyError,IndexError):
             good_aligment = 0;
         
-        return good_aligment != 1
+        return not good_aligment in [1,2]
 
 
 def constructNames(masked_image_file, results_dir):

@@ -135,9 +135,9 @@ def contour2Skeleton(contour):
     
     return (skeleton, cnt_side1, cnt_side2, cnt_widths, '')
 
-def orientWorm(skeleton, prev_skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths):
+def orientWorm(skeleton, prev_skeleton, cnt_side1, cnt_side2, cnt_widths):
     if skeleton.size == 0:
-        return skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths, np.float(0)
+        return skeleton, cnt_side1, cnt_side2, cnt_widths, np.float(0)
     
     #orient head tail with respect to hte previous worm
     if prev_skeleton.size > 0:
@@ -160,9 +160,8 @@ def orientWorm(skeleton, prev_skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt
     signed_area = np.sum(contour[:-1,0]*contour[1:,1]-contour[1:,0]*contour[:-1,1])/2
     if signed_area<0:
         cnt_side1, cnt_side2 = cnt_side2, cnt_side1
-        cnt_side1_len, cnt_side2_len = cnt_side2_len, cnt_side1_len
     
-    return skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths, np.abs(signed_area)
+    return skeleton, cnt_side1, cnt_side2, cnt_widths, np.abs(signed_area)
 
 def resample_curve(curve, resampling_N = 49, widths = np.zeros(0)):
 
@@ -216,21 +215,20 @@ def resampleAll(skeleton, cnt_side1, cnt_side2, cnt_widths, resampling_N):
     '''I am only resample for the moment'''
     #resample data
     skeleton, ske_len, cnt_widths = resample_curve(skeleton, resampling_N, cnt_widths)
-    cnt_side1, cnt_side1_len, _ = resample_curve(cnt_side1, resampling_N)
-    cnt_side2, cnt_side2_len, _ = resample_curve(cnt_side2, resampling_N)
+    cnt_side1, _, _ = resample_curve(cnt_side1, resampling_N)
+    cnt_side2, _, _ = resample_curve(cnt_side2, resampling_N)
     
     #skeleton = smooth_curve(skeleton)
     #cnt_widths = smooth_curve(cnt_widths)
     #cnt_side1 = smooth_curve(cnt_side1)
     #cnt_side2 = smooth_curve(cnt_side2)
     
-    return skeleton, ske_len, cnt_side1, cnt_side1_len, \
-    cnt_side2, cnt_side2_len, cnt_widths
+    return skeleton, ske_len, cnt_side1, cnt_side2, cnt_widths
 
 
 def getSkeleton(worm_cnt, prev_skeleton = np.zeros(0), resampling_N = 50):
     
-    n_output_param = 8 #number of expected output parameters
+    n_output_param = 6 #number of expected output parameters
     
     assert type(worm_cnt) == np.ndarray and worm_cnt.ndim == 2 and worm_cnt.shape[1] ==2
     
@@ -242,14 +240,14 @@ def getSkeleton(worm_cnt, prev_skeleton = np.zeros(0), resampling_N = 50):
         return (n_output_param)*[np.zeros(0)]
     
     #resample curves
-    skeleton, ske_len, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths = \
+    skeleton, ske_len, cnt_side1, cnt_side2, cnt_widths = \
     resampleAll(skeleton, cnt_side1, cnt_side2, cnt_widths, resampling_N)
     
     #orient skeleton with respect to the previous skeleton
-    skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths, cnt_area = \
-    orientWorm(skeleton, prev_skeleton, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths)
+    skeleton, cnt_side1, cnt_side2, cnt_widths, cnt_area = \
+    orientWorm(skeleton, prev_skeleton, cnt_side1, cnt_side2, cnt_widths)
     
 
-    output_data = (skeleton, ske_len, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths, cnt_area)
+    output_data = (skeleton, ske_len, cnt_side1, cnt_side2, cnt_widths, cnt_area)
     assert len(output_data) == n_output_param
     return output_data

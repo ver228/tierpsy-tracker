@@ -483,16 +483,14 @@ strel_size = 5, smoothed_traj_param = {}, worm_midbody = (0.35, 0.65)):
                     prev_skeleton[worm_index] = np.zeros(0)
                 
                 #get skeletons
-                skeleton, ske_len, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths, cnt_area = \
+                skeleton, ske_len, cnt_side1, cnt_side2, cnt_widths, cnt_area = \
                 getSkeleton(worm_cnt, prev_skeleton[worm_index], resampling_N)
                 
                 if skeleton.size>0:
                     prev_skeleton[worm_index] = skeleton.copy()
                     
                     #save segwrom_results
-                    skel_arrays['skeleton_length'][skeleton_id] = ske_len 
-                    skel_arrays['contour_side1_length'][skeleton_id] = cnt_side1_len
-                    skel_arrays['contour_side2_length'][skeleton_id] = cnt_side2_len
+                    skel_arrays['skeleton_length'][skeleton_id] = ske_len
     
                     skel_arrays['contour_width'][skeleton_id, :] = cnt_widths                
                     skel_arrays['width_midbody'][skeleton_id] = np.median(cnt_widths[midbody_ind[0]:midbody_ind[1] + 1])

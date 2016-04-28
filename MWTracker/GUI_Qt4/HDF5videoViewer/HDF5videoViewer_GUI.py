@@ -201,7 +201,7 @@ class HDF5videoViewer_GUI(QMainWindow):
         if not self.h5path in self.fid:
             self.ui.imageCanvas.clear()
             self.image_group == -1
-            QMessageBox.critical(self, 'The groupset path does not exists', "The groupset path does not exists. You must specify a valid groupset path",
+            QMessageBox.critical(self, 'The groupset path does not exist', "The groupset path does not exists. You must specify a valid groupset path",
                     QMessageBox.Ok)
             return
 
