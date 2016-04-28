@@ -12,6 +12,7 @@ import pandas as pd
 import numpy as np
 from math import floor, ceil
 import csv
+import json
 from scipy.signal import savgol_filter
 
 tables.parameters.MAX_COLUMNS = 1024 #(http://www.pytables.org/usersguide/parameter_files.html)
@@ -89,14 +90,60 @@ def calWormAnglesAll(skeleton, segment_size = 5):
     
     return angles_all, meanAngles_all
 
-def calWormArea(cnt_side1, cnt_side2):
-    '''calculate the contour area using the shoelace method'''
+
+def calWormAreaSigned(cnt_side1, cnt_side2):
+    '''calculate the contour area using the shoelace method, the sign indicate the contour orientation.'''
+    assert cnt_side1.shape == cnt_side2.shape
+    if cnt_side1.ndim == 2: 
+    #if it is only two dimenssion (as if in a single skeleton). 
+    #Add an extra dimension to be compatible with the rest of the code
+        cnt_side1 = cnt_side1[np.newaxis,:,:]
+        cnt_side2 = cnt_side2[np.newaxis,:,:]
+
+
     contour = np.hstack((cnt_side1, cnt_side2[:,::-1,:])) 
     signed_area = np.sum(contour[:, :-1,0]*contour[:, 1:,1]-contour[:, 1:,0]*contour[:, :-1,1], axis=1)
-    
     assert signed_area.size == contour.shape[0]
+    return signed_area
+
+def calWormArea(cnt_side1, cnt_side2):
+    '''calculate the contour area using the shoelace method'''
+    signed_area = calWormAreaSigned(cnt_side1, cnt_side2)
     return np.abs(signed_area)/2
 
+def switchCntSingleWorm(skeletons_file):
+    with tables.File(skeletons_file, 'r+') as fid:
+        exp_info_b = fid.get_node('/experiment_info').read()
+        exp_info = json.loads(exp_info_b.decode("utf-8"))
+        
+        if not exp_info['ventral_side'] in ['clockwise', 'anticlockwise']:
+            raise ValueError('"{}" is not a valid value for '
+            'ventral side orientation. Only "clockwise" or "anticlockwise" '
+            'are accepted values'.format(exp_info['ventral_side']))
+
+        has_skeletons = fid.get_node('/trajectories_data').col('has_skeleton')
+        
+        #let's use the first valid skeleton, it seems like a waste to use all the other skeletons.
+        #I checked earlier to make sure the have the same orientation.
+        valid_ind = np.where(has_skeletons)[0][0]
+        
+        cnt_side1 = fid.get_node('/contour_side1')[valid_ind,:,:]
+        cnt_side2 = fid.get_node('/contour_side2')[valid_ind,:,:]
+        A_sign = calWormAreaSigned(cnt_side1, cnt_side2)
+        
+        #if not (np.all(A_sign > 0) or np.all(A_sign < 0)):
+        #    raise ValueError('There is a problem. All the contours should have the same orientation.')
+        
+        #change contours if they do not match the known orientation
+        if (exp_info['ventral_side'] == 'clockwise' and A_sign[0] < 0) or \
+            (exp_info['ventral_side'] == 'anticlockwise' and A_sign[0] > 0):
+            #since here we are changing all the contours, let's just change the name of the datasets
+            side1 = fid.get_node('/contour_side1')
+            side2 = fid.get_node('/contour_side2')
+            
+            side1.rename('contour_side1_bkp')
+            side2.rename('contour_side1')
+            side1.rename('contour_side2')
 
 def smoothCurve(curve, window = 5, pol_degree = 3):
     '''smooth curves using the savgol_filter'''

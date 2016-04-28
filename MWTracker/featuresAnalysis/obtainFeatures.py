@@ -85,7 +85,6 @@ def correctSingleWorm(worm, skeletons_file):
         timestamp_ind = fid.get_node('/timestamp/raw')[:].astype(np.int)
         rotation_matrix = fid.get_node('/stage_movement')._v_attrs['rotation_matrix']
 
-
     #adjust the stage_vec to match the timestamps in the skeletons
     timestamp_ind = timestamp_ind
     good = (timestamp_ind>=worm.first_frame) & (timestamp_ind<=worm.last_frame)
@@ -216,10 +215,16 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, expected_fps
                 micronsPerPixel = micronsPerPixel, fps = fps, smooth_window = 5)
             
             if is_single_worm:
+                with tables.File(skeletons_file, 'r') as skel_fid:
+                    if '/experiment_info' in skel_fid:
+                        dd = skel_fid.get_node('/experiment_info').read()
+                        features_fid.create_array('/', 'experiment_info', obj = dd)
+
                 assert worm_index == 1 and ind_N == 0
                 worm = correctSingleWorm(worm, skeletons_file)
                 if np.all(np.isnan(worm.skeleton[:,0,0])):
                     return
+
             
             #calculate features
             timeseries_data, events_data, worm_stats, skeletons = \

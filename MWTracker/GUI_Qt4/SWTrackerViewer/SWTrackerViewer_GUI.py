@@ -76,7 +76,6 @@ class SWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
             
             painter.drawRect(1, 1, self.frame_qimg.width()-pen_width, self.frame_qimg.height()-pen_width);
             painter.end()
-            print(1)
             
         self.pixmap = QPixmap.fromImage(self.frame_qimg)
         self.ui.imageCanvas.setPixmap(self.pixmap);

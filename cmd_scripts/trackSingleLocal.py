@@ -12,7 +12,9 @@ import argparse
 import subprocess
 import time, datetime
 
-from trackSingleWorker import getTrajectoriesWorkerL, getStartingPoint, checkpoint, checkpoint_label, constructNames, isBadStageAligment
+from trackSingleWorker import getTrajectoriesWorkerL, getStartingPoint, checkpoint, \
+checkpoint_label, constructNames, isBadStageAligment, isBadCntOrientationStr
+
 from MWTracker.helperFunctions.miscFun import print_flush
 
 def copyFilesLocal(files2copy):
@@ -85,11 +87,15 @@ class trackLocal:
 
 	def clean(self):
 		self.last_check_point = checkpoint_label[self.end_point];
-		if self.is_single_worm:
+
+
+		if self.is_single_worm and self.end_point>=checkpoint['SKE_CREATE']:
 			#in the case of single worm it can exit before due to problems in the stage aligment
 			if isBadStageAligment(self.skeletons_tmp):
 				self.last_check_point = 'STAGE_ALIGMENT'
-
+			#on in the contour orientation.
+			if isBadCntOrientationStr(self.skeletons_tmp):
+				self.last_check_point = 'CONTOUR_ORIENT'
 
 		self.copyFilesToFinal()
 		self.cleanTmpFiles()
@@ -238,7 +244,7 @@ class trackLocal:
 			if self.end_point >= checkpoint['INT_PROFILE']:
 				assert os.path.exists(self.intensities_file)
 
-			if self.end_point >= checkpoint['FEAT_CREATE']:
+			if self.end_point >= checkpoint['FEAT_CREATE'] and self.last_check_point != 'CONTOUR_ORIENT':
 				assert os.path.exists(self.features_file)
 
 			if self.end_point >= checkpoint['FEAT_MANUAL_CREATE'] and self.use_manual_join:

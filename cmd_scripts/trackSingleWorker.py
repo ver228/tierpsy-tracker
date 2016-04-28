@@ -8,6 +8,7 @@ import os, sys
 import tables
 import argparse
 import time, datetime
+import json
 
 from MWTracker.trackWorms.getWormTrajectories import getWormTrajectories, correctTrajectories
 from MWTracker.trackWorms.getDrawTrajectories import drawTrajectoriesVideo
@@ -19,6 +20,7 @@ from MWTracker.intensityAnalysis.getIntensityProfile import getIntensityProfile
 from MWTracker.intensityAnalysis.correctHeadTailIntensity import correctHeadTailIntensity
 
 from MWTracker.featuresAnalysis.obtainFeatures import getWormFeaturesFilt
+from MWTracker.featuresAnalysis.obtainFeaturesHelper import switchCntSingleWorm
 
 from MWTracker.helperFunctions.tracker_param import tracker_param
 from MWTracker.helperFunctions.trackProvenance import getGitCommitHash, execThisPoint
@@ -116,6 +118,19 @@ def isBadStageAligment(skeletons_file):
         
         return not good_aligment in [1,2]
 
+def isBadCntOrientationStr(skeletons_file):
+    #i'm reading this data twice (one more in switchCntSingleWorm), but I think this is cleaner
+    #from a function organization point of view.
+    with tables.File(skeletons_file, 'r') as fid:
+        if not '/experiment_info' in fid:
+            return True
+        exp_info_b = fid.get_node('/experiment_info').read()
+        exp_info = json.loads(exp_info_b.decode("utf-8"))
+        
+        print('ventral_side:{}'.format(exp_info['ventral_side']))
+        #only clockwise and anticlockwise are valid contour orientations
+        return not exp_info['ventral_side'] in ['clockwise', 'anticlockwise']
+        
 
 def constructNames(masked_image_file, results_dir):
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
@@ -238,9 +253,15 @@ class getTrajectoriesWorkerL():
                 'feat_filt_param':self.param.feat_filt_param},
             'output_file':self.feat_manual_file
             },
+        #only for single worm
         'STAGE_ALIGMENT': {
             'func':alignStageMotion,
             'argkws':{'masked_image_file':self.masked_image_file, 'skeletons_file':self.skeletons_file},
+            'output_file':self.skeletons_file
+            },
+        'CONTOUR_ORIENT': {
+            'func':switchCntSingleWorm,
+            'argkws':{'skeletons_file':self.skeletons_file},
             'output_file':self.skeletons_file
             }
         }
@@ -259,22 +280,27 @@ class getTrajectoriesWorkerL():
 
         for ii in range(self.start_point, self.end_point+1):
             current_point = checkpoint_label[ii]
-            
-            if self.is_single_worm and current_point == 'INT_PROFILE': 
-                execThisPoint(current_point, **self.points_parameters['STAGE_ALIGMENT'], 
-                commit_hash=self.commit_hash, cmd_original=self.cmd_original)
-                
-                if isBadStageAligment(self.skeletons_file):
-                    #break, bad video we do not need to calculate anything else.
-                    last_check_point = 'STAGE_ALIGMENT'
-                    break
-
             if not self.use_manual_join and current_point == 'FEAT_MANUAL_CREATE': continue
-                
-
-            last_check_point = checkpoint_label[self.end_point]
-
             if current_point == 'END': break
+
+            #extra steps for the single worm case
+            if self.is_single_worm:
+                if current_point == 'INT_PROFILE': 
+                    execThisPoint(current_point, **self.points_parameters['STAGE_ALIGMENT'], 
+                    commit_hash=self.commit_hash, cmd_original=self.cmd_original)
+                    
+                    if isBadStageAligment(self.skeletons_file):
+                        #break, bad video we do not need to calculate anything else.
+                        current_point = 'STAGE_ALIGMENT'
+                        break
+
+                if current_point == 'FEAT_CREATE':
+                    if isBadCntOrientationStr(self.skeletons_file):
+                        current_point = 'CONTOUR_ORIENT'
+                        break
+                    else:
+                        execThisPoint(current_point, **self.points_parameters['CONTOUR_ORIENT'], 
+                        commit_hash=self.commit_hash, cmd_original=self.cmd_original)
 
             #print(current_point, self.points_parameters[current_point]['func'])
             #print(self.points_parameters[current_point]['argkws'])
@@ -283,7 +309,7 @@ class getTrajectoriesWorkerL():
             
         
         time_str = str(datetime.timedelta(seconds=round(time.time()-initial_time)))
-        print_flush('%s  Finished in %s. Total time %s' % (self.base_name, last_check_point, time_str))
+        print_flush('%s  Finished in %s. Total time %s' % (self.base_name, current_point, time_str))
         
 
 

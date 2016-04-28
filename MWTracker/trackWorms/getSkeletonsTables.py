@@ -507,7 +507,12 @@ strel_size = 5, smoothed_traj_param = {}, worm_midbody = (0.35, 0.65)):
                 progress_str = progressTime.getStr(frame)
                 print(base_name + ' ' + progress_str);
                 sys.stdout.flush()
-
+ 
+        #add data from the experiment info (currently only for singleworm)
+        if '/experiment_info' in mask_fid:
+            dd = mask_fid.get_node('/experiment_info').read()
+            ske_file_id.create_array('/', 'experiment_info', obj = dd)
+            
         #FINISH!!!
         #Mark a succesful termination
         skel_arrays['skeleton']._v_attrs['has_finished'] = 1;
