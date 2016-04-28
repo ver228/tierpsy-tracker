@@ -219,7 +219,7 @@ class trackLocal:
 			if wasProccesed('INT_PROFILE'):
 				files2copy += [(self.intensities_tmp, self.results_dir)]
 			
-			if wasProccesed('FEAT_CREATE'):
+			if wasProccesed('FEAT_CREATE') and self.last_check_point != 'CONTOUR_ORIENT':
 				files2copy += [(self.features_tmp, self.results_dir)]
 			
 			if wasProccesed('FEAT_MANUAL_CREATE') and self.use_manual_join:

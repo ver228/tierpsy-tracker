@@ -10,7 +10,7 @@ import sys
 import tables
 import fnmatch
 
-from trackSingleWorker import getStartingPoint, checkpoint, constructNames, isBadStageAligment
+from trackSingleWorker import getStartingPoint, checkpoint, constructNames, isBadStageAligment, isBadCntOrientationStr
 from MWTracker.helperFunctions.timeCounterStr import timeCounterStr
 from MWTracker.compressVideos.getAdditionalData import getAdditionalFiles
 from MWTracker.compressVideos.extractMetaData import correctTimestamp
@@ -357,6 +357,8 @@ class checkTrackFiles(checkVideoFiles):
 		if (start_point > self.end_point_N or start_point == checkpoint['END']) and not self.force_start_point:
 			return 'FINISHED_GOOD' , (masked_image_file, results_dir)
 		elif self.is_single_worm and start_point == checkpoint['INT_PROFILE'] and isBadStageAligment(skeletons_file):
+			return 'FINISHED_BAD' , (masked_image_file, results_dir)
+		elif self.is_single_worm and start_point == checkpoint['FEAT_CREATE'] and isBadCntOrientationStr(skeletons_file):
 			return 'FINISHED_BAD' , (masked_image_file, results_dir)
 		
 		elif not self.checkBadMask(masked_image_file):# and not self.checkBadTimeStamp(masked_image_file)

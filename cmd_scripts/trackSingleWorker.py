@@ -127,7 +127,7 @@ def isBadCntOrientationStr(skeletons_file):
         exp_info_b = fid.get_node('/experiment_info').read()
         exp_info = json.loads(exp_info_b.decode("utf-8"))
         
-        print('ventral_side:{}'.format(exp_info['ventral_side']))
+        #print('ventral_side:{}'.format(exp_info['ventral_side']))
         #only clockwise and anticlockwise are valid contour orientations
         return not exp_info['ventral_side'] in ['clockwise', 'anticlockwise']
         
