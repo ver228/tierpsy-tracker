@@ -113,7 +113,7 @@ def isBadStageAligment(skeletons_file):
     with tables.File(skeletons_file, 'r') as fid:
         try:
             good_aligment = fid.get_node('/stage_movement')._v_attrs['has_finished'][:]
-        except (KeyError,IndexError):
+        except (KeyError,IndexError, tables.exceptions.NoSuchNodeError):
             good_aligment = 0;
         
         return not good_aligment in [1,2]
