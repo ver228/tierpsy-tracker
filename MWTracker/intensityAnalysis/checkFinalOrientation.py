@@ -74,7 +74,7 @@ def getHeadProvInt(intensities_file, trajectories_worm, min_block_size, peak_sea
     '''
     with tables.File(intensities_file, 'r') as fid:
         int_map_id = trajectories_worm.loc[trajectories_worm['int_map_id']!=-1,'int_map_id']
-        if int_map_id.size < min_block_size:
+        if int_map_id.size ==0 or int_map_id.size < min_block_size:
             #the number of maps is too small let's return nan's nothing to do here
             return np.nan, np.nan, []
         

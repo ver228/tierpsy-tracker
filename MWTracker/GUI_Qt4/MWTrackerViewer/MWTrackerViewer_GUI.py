@@ -16,6 +16,8 @@ from MWTracker.GUI_Qt4.MWTrackerViewer.MWTrackerViewer_ui import Ui_ImageViewer
 from MWTracker.GUI_Qt4.MWTrackerViewerSingle.MWTrackerViewerSingle_GUI import MWTrackerViewerSingle_GUI
 
 from MWTracker.trackWorms.getSkeletonsTables import getWormROI, getWormMask, binaryMask2Contour
+from MWTracker.featuresAnalysis.obtainFeatures import getWormFeaturesFilt
+from MWTracker.helperFunctions.trackProvenance import getGitCommitHash, execThisPoint
 
 class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 	def __init__(self, ui='', argv=''):
@@ -53,6 +55,8 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 		
 		self.ui.comboBox_labelType.currentIndexChanged.connect(self.selectWormIndexType)
 		
+		self.ui.pushButton_feats.clicked.connect(self.getManualFeatures)
+
 		#flags for RW and FF
 		self.RW, self.FF = 1, 2
 		self.ui.pushButton_ROI1_RW.clicked.connect(partial(self.roiRWFF, 1, self.RW))
@@ -72,6 +76,20 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 		#self.ui.pushButton_join.clicked.connect(self.joinTraj)
 		#self.ui.pushButton_split.clicked.connect(self.splitTraj)
 	
+	def getManualFeatures(self):
+		self.feat_manual_file = self.skeletons_file.replace('_skeletons.hdf5', '_feat_manual.hdf5')
+		self.commit_hash = getGitCommitHash()
+		
+		#dd = { 'func':getWormFeaturesFilt,
+        #    'argkws':{'skeletons_file':self.skeletons_file, 'features_file':self.feat_manual_file,  
+        #        'expected_fps': self.param.expected_fps, 'is_single_worm':False, 
+        #        'use_skel_filter':self.use_skel_filter, 'use_manual_join':True,
+        #        'feat_filt_param':self.param.feat_filt_param},
+        #    'output_file':self.feat_manual_file }
+
+		#execThisPoint('FEAT_MANUAL_CREATE', **self.points_parameters['STAGE_ALIGMENT'], 
+        #            commit_hash=self.commit_hash, cmd_original=self.cmd_original)
+		
 
 	def selectWormIndexType(self):
 		#select between automatic and manual worm indexing and label

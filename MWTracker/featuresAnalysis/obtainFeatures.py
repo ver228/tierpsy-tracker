@@ -58,11 +58,15 @@ def getFPS(skeletons_file, expected_fps):
     try:
         with tables.File(skeletons_file, 'r') as fid:
             timestamp_time = fid.get_node('/timestamp/time')[:]
+            
             if np.all(np.isnan(timestamp_time)): 
                 raise ValueError
-            fps = 1/np.median(np.diff(timestamp_time))
+            fps = 1/np.nanmedian(np.diff(timestamp_time))
             
+            if np.isnan(fps):
+                raise ValueError
             is_default_timestamp = 0
+
     except (tables.exceptions.NoSuchNodeError, IOError, ValueError):
         fps = expected_fps
         is_default_timestamp = 1

@@ -293,11 +293,11 @@ def correctHeadTailIntWorm(trajectories_worm, skeletons_file, intensities_file, 
     int_skeleton_id = trajectories_worm.loc[good, 'skeleton_id'].values
     int_frame_number = trajectories_worm.loc[good, 'frame_number'].values
     
+    
     #only analyze data that contains at least  min_block_size intensity profiles     
-    if int_map_id.size < min_block_size:
+    if int_map_id.size == 0 or int_map_id.size < min_block_size:
         return []
     
-        
     #read the worm intensity profiles
     with tables.File(intensities_file, 'r') as fid:
         worm_int_profile = fid.get_node('/straighten_worm_intensity_median')[int_map_id,:]
