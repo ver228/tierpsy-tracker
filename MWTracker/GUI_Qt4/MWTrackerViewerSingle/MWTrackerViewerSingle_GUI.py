@@ -21,7 +21,7 @@ class MWTrackerViewerSingle_GUI(HDF5videoViewer_GUI):
             super().__init__(ui)
 
         self.results_dir = ''
-        self.skel_file = ''
+        self.skeletons_file = ''
 
         self.trajectories_data = -1
         self.traj_time_grouped = -1
@@ -37,19 +37,19 @@ class MWTrackerViewerSingle_GUI(HDF5videoViewer_GUI):
         if not os.path.exists(selected_file):
             return
 
-        self.skel_file = selected_file
-        self.ui.lineEdit_skel.setText(self.skel_file)
+        self.skeletons_file = selected_file
+        self.ui.lineEdit_skel.setText(self.skeletons_file)
         if self.fid != -1:
             self.updateSkelFile()
 
     def updateSkelFile(self):
-        if not self.skel_file or self.fid == -1:
+        if not self.skeletons_file or self.fid == -1:
             self.trajectories_data = -1
             self.traj_time_grouped = -1
             self.skel_dat = {}
         
         try:
-            with pd.HDFStore(self.skel_file, 'r') as ske_file_id:
+            with pd.HDFStore(self.skeletons_file, 'r') as ske_file_id:
                 self.trajectories_data = ske_file_id['/trajectories_data']
                 self.traj_time_grouped = self.trajectories_data.groupby('frame_number')
 
@@ -84,10 +84,10 @@ class MWTrackerViewerSingle_GUI(HDF5videoViewer_GUI):
         if os.path.exists(dum):
             self.results_dir = dum
             self.basename = self.vfilename.rpartition(os.sep)[-1].rpartition('.')[0]
-            self.skel_file = self.results_dir + os.sep + self.basename + '_skeletons.hdf5'
-            if not os.path.exists(self.skel_file):
-                self.skel_file = ''
-            self.ui.lineEdit_skel.setText(self.skel_file)
+            self.skeletons_file = self.results_dir + os.sep + self.basename + '_skeletons.hdf5'
+            if not os.path.exists(self.skeletons_file):
+                self.skeletons_file = ''
+            self.ui.lineEdit_skel.setText(self.skeletons_file)
 
         self.updateSkelFile()
 
@@ -121,7 +121,7 @@ class MWTrackerViewerSingle_GUI(HDF5videoViewer_GUI):
 
 
     def drawSkel(self, worm_img, worm_qimg, row_data, roi_corner = (0,0)):
-        if not self.skel_file or not isinstance(self.trajectories_data, pd.DataFrame):
+        if not self.skeletons_file or not isinstance(self.trajectories_data, pd.DataFrame):
             return
 
         c_ratio_y = worm_qimg.width()/worm_img.shape[1];
@@ -131,7 +131,7 @@ class MWTrackerViewerSingle_GUI(HDF5videoViewer_GUI):
 
         qPlg = {}
 
-        with tables.File(self.skel_file, 'r') as ske_file_id:
+        with tables.File(self.skeletons_file, 'r') as ske_file_id:
             for tt in ['skeleton', 'contour_side1', 'contour_side2']:
                 dat = ske_file_id.get_node('/' + tt)[skel_id];
                 dat[:,0] = (dat[:,0]-roi_corner[0])*c_ratio_x
