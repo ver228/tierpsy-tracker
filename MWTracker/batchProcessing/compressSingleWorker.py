@@ -22,8 +22,7 @@ def compressVideoWProv(video_file, masked_image_file, compress_vid_param, cmd_or
     argkws = {**{'video_file':video_file, 'masked_image_file':masked_image_file}, **compress_vid_param}
     execThisPoint('COMPRESS', compressVideo, argkws, masked_image_file, commits_hash, cmd_original)
 
-def compressSingleWorker(video_file, mask_dir, json_file = '', is_single_worm = False, cmd_original = ''): 
-    
+def compressSingleWorker(video_file, mask_dir, json_file = '', is_single_worm = False, cmd_original = ''):
     if mask_dir[-1] != os.sep: mask_dir += os.sep
 
     #get function parameters

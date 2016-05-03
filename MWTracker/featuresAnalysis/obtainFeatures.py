@@ -290,7 +290,6 @@ def getWormFeaturesFilt(skeletons_file, features_file, use_skel_filter, use_manu
             good = trajectories_data['worm_label'] == WLAB['WORM']
             trajectories_data = trajectories_data[good]
             
-
         if use_skel_filter:
             #select data that was labeld in FEAT_FILTER
             good = trajectories_data['is_good_skel'] == 1

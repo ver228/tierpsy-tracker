@@ -10,7 +10,7 @@ import sys
 import tables
 import fnmatch
 
-from .compressMultipleFilesHelper import checkVideoFiles, exploreDirs, getDstDir
+from .compressMultipleFilesHelper import checkVideoFiles, exploreDirs, getDstDir, isBadMask
 from .trackSingleWorker import getStartingPoint, checkpoint, constructNames, \
 isBadStageAligment, isBadCntOrientationStr
 
@@ -124,7 +124,7 @@ class checkTrackFiles(checkVideoFiles):
 		elif self.is_single_worm and start_point == checkpoint['FEAT_CREATE'] and isBadCntOrientationStr(skeletons_file):
 			return 'FINISHED_BAD' , (masked_image_file, results_dir)
 		
-		elif not self.checkBadMask(masked_image_file):# and not self.checkBadTimeStamp(masked_image_file)
+		elif not isBadMask(masked_image_file):
 			return 'SOURCE_GOOD', masked_image_file
 		else:
 			return 'SOURCE_BAD', masked_image_file

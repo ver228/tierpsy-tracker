@@ -36,6 +36,39 @@ def exploreDirs(root_dir, pattern_include = '*', pattern_exclude = ''):
 	
 	return valid_files
 
+
+def isBadVideo(video_file, is_single_worm):
+	try:
+		vid, im_width, im_height, reader_type = selectVideoReader(video_file)
+		vid.release() # i have problems with corrupt videos that can create infinite loops...
+		if is_single_worm: 
+			#check for the additional files in the case of single worm
+			try:
+			#this function will throw and error if the .info.xml or .log.csv are not found
+				info_file, stage_file = getAdditionalFiles(video_file)
+			except (IOError, FileNotFoundError):
+				return True
+	except OSError:
+		#corrupt file, cannot read the size
+		return True
+	return False
+
+
+def isBadMask(masked_image_file):
+	#test if the file finished correctly
+	try:
+		with tables.File(masked_image_file, 'r') as mask_fid:
+			mask_node = mask_fid.get_node('/mask')
+			if mask_node._v_attrs['has_finished'] < 1: 
+				raise ValueError
+			if mask_node.shape[0] == 0:
+				raise ValueError
+	except (tables.exceptions.HDF5ExtError, tables.exceptions.NoSuchNodeError, ValueError, IOError):
+		return True
+	#no problems with the file
+	return False
+
+
 def getDstDir(source_dir, source_root_dir, dst_root_dir):
 	'''
 	Generate the destination dir path keeping the same structure as the source directory
@@ -99,14 +132,14 @@ class checkVideoFiles:
 		masked_image_file = self.getMaskName(video_file, mask_dir)
 		
 		if os.path.exists(masked_image_file):
-			if not self.checkBadMask(masked_image_file):# and not self.checkBadTimeStamp(masked_image_file)
+			if not isBadMask(masked_image_file):
 				return 'FINISHED_GOOD' , (video_file, masked_image_file)
 			else:
 				return 'FINISHED_BAD', (video_file, masked_image_file)
 				
 		
 		else:
-			if self.checkBadVideo(video_file, self.is_single_worm):
+			if isBadVideo(video_file, self.is_single_worm):
 				return 'SOURCE_BAD', video_file
 			else:
 				return 'SOURCE_GOOD', video_file
@@ -195,60 +228,10 @@ class checkVideoFiles:
 		masked_image_file = os.path.join(mask_dir, base_name + '.hdf5')
 		return masked_image_file
 
-	@staticmethod
-	def checkBadVideo(video_file, is_single_worm):
-		try:
-			vid, im_width, im_height, reader_type = selectVideoReader(video_file)
-			vid.release() # i have problems with corrupt videos that can create infinite loops...
-			if is_single_worm: 
-				#check for the additional files in the case of single worm
-				try:
-				#this function will throw and error if the .info.xml or .log.csv are not found
-					info_file, stage_file = getAdditionalFiles(video_file)
-				except (IOError, FileNotFoundError):
-					return True
-		except OSError:
-			#corrupt file, cannot read the size
-			return True
-		return False
+
 	
 	
-	@staticmethod
-	def checkBadMask(masked_image_file):
-		#test if the file finished correctly
-		try:
-			with tables.File(masked_image_file, 'r') as mask_fid:
-				mask_node = mask_fid.get_node('/mask')
-				if mask_node._v_attrs['has_finished'] < 1: 
-					raise ValueError
-				if mask_node.shape[0] == 0:
-					raise ValueError
-		except (tables.exceptions.HDF5ExtError, tables.exceptions.NoSuchNodeError, ValueError, IOError):
-			return 1
 
-		#no problems with the file
-		return 0
-
-	def checkBadTimeStamp(masked_image_file):
-		#test if the file timestamp length exists or is correct
-		try:
-			with tables.File(masked_image_file, 'r') as mask_fid:
-				#if we have metadata from ffprobe test that there is no missmatch between the frame number and timestamp.
-				mask_N_frames = mask_fid.get_node('/mask').shape[0]
-				timestamp_N_frames = len(mask_fid.get_node('/video_metadata')) #size of the table
-				if mask_N_frames != timestamp_N_frames:
-					#if the timestamp and the mask length do not match we aim to correct the timestamp
-					best_effort_timestamp_time = mask_fid.get_node('/video_metadata').col('best_effort_timestamp_time')
-					best_effort_timestamp = mask_fid.get_node('/video_metadata').col('best_effort_timestamp')
-					timestamp, timestamp_time = correctTimestamp(best_effort_timestamp, best_effort_timestamp_time)
-
-					#print('!!!! %i %i' % (timestamp.size, mask_N_frames))
-					#we tolerate up to 1 frame of difference
-					if abs(timestamp.size - mask_N_frames) > 1: 
-						raise ValueError #raise error
-		except (tables.exceptions.HDF5ExtError, tables.exceptions.NoSuchNodeError, ValueError):
-			return 2
-		return 0
 	
 	
     
