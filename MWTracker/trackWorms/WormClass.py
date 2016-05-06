@@ -31,7 +31,7 @@ class WormClass:
             self.index = worm_index
             self.rows_range = rows_range
             self.data_fields = ['skeleton', 'skeleton_length', 'contour_side1', 
-            'contour_side2', 'contour_side1_length', 'contour_side2_length', 'contour_width', 'contour_area']        
+            'contour_side2', 'contour_width', 'contour_area'] #'contour_side1_length', 'contour_side2_length'        
             
             tab = file_id.get_node('/trajectories_data')
             self.frames = tab.read(ini,end,1,'frame_number')
@@ -43,8 +43,8 @@ class WormClass:
             self.contour_side1 = file_id.get_node('/contour_side1')[ini:end+1,:,:]
             self.contour_side2 = file_id.get_node('/contour_side2')[ini:end+1,:,:]
             
-            self.contour_side1_length = file_id.get_node('/contour_side1_length')[ini:end+1]#pixels
-            self.contour_side2_length = file_id.get_node('/contour_side2_length')[ini:end+1]#pixels
+            #self.contour_side1_length = file_id.get_node('/contour_side1_length')[ini:end+1]#pixels
+            #self.contour_side2_length = file_id.get_node('/contour_side2_length')[ini:end+1]#pixels
             self.skeleton_length = file_id.get_node('/skeleton_length')[ini:end+1] #pixels
             
             self.contour_width = file_id.get_node('/contour_width')[ini:end+1, :]
@@ -76,8 +76,8 @@ class WormClass:
         self.contour_side1[is_switched], self.contour_side2[is_switched ] = \
         self.contour_side2[is_switched], self.contour_side1[is_switched]
 
-        self.contour_side1_length[is_switched], self.contour_side2_length[is_switched] = \
-        self.contour_side2_length[is_switched], self.contour_side1_length[is_switched]
+        #self.contour_side1_length[is_switched], self.contour_side2_length[is_switched] = \
+        #self.contour_side2_length[is_switched], self.contour_side1_length[is_switched]
 
     
     def getImage(self, masked_image_file, index, roi_size=128):
@@ -87,10 +87,6 @@ class WormClass:
         worm_img, roi_corner = getWormROI(img, self.coord_x[index], self.coord_y[index], roi_size)
         return worm_img,roi_corner
     
-
-
-
-
 if __name__ == '__main__':
     import sys
     sys.path.append('../tracking_worms/')
