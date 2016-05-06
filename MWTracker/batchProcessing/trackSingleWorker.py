@@ -328,7 +328,7 @@ if __name__ == '__main__':
     
     if len(sys.argv)>1: 
         args = parser.parse_args()
-        getTrajectoriesWorkerL(**vars(args)) 
+        getTrajectoriesWorker(**vars(args)) 
     else:
         print_flush('Bad', sys.argv)
         
