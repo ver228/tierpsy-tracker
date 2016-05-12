@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import sys
 import cv2
+import json
 import tables
 from functools import partial
 
@@ -16,6 +17,9 @@ from MWTracker.GUI_Qt4.MWTrackerViewer.MWTrackerViewer_ui import Ui_ImageViewer
 from MWTracker.GUI_Qt4.MWTrackerViewerSingle.MWTrackerViewerSingle_GUI import MWTrackerViewerSingle_GUI
 
 from MWTracker.trackWorms.getSkeletonsTables import getWormROI, getWormMask, binaryMask2Contour
+from MWTracker.featuresAnalysis.obtainFeatures import getWormFeaturesFilt
+from MWTracker.helperFunctions.trackProvenance import getGitCommitHash, execThisPoint
+from MWTracker.helperFunctions.tracker_param import tracker_param
 
 class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 	def __init__(self, ui='', argv=''):
@@ -42,7 +46,7 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 		
 		self.videos_dir = r"/Volumes/behavgenom$/GeckoVideo/MaskedVideos/"
 		self.results_dir = ''
-		self.skel_file = ''
+		self.skeletons_file = ''
 		self.worm_index_type = 'worm_index_manual'
 		self.label_type = 'worm_label'
 
@@ -53,6 +57,8 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 		
 		self.ui.comboBox_labelType.currentIndexChanged.connect(self.selectWormIndexType)
 		
+		self.ui.pushButton_feats.clicked.connect(self.getManualFeatures)
+
 		#flags for RW and FF
 		self.RW, self.FF = 1, 2
 		self.ui.pushButton_ROI1_RW.clicked.connect(partial(self.roiRWFF, 1, self.RW))
@@ -69,9 +75,58 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 
 		self.ui.imageCanvas.mousePressEvent = self.selectWorm
 
-		#self.ui.pushButton_join.clicked.connect(self.joinTraj)
-		#self.ui.pushButton_split.clicked.connect(self.splitTraj)
+		self.ui.pushButton_join.clicked.connect(self.joinTraj)
+		self.ui.pushButton_split.clicked.connect(self.splitTraj)
 	
+	def getManualFeatures(self):
+		self.saveData()
+		self.close()
+
+		self.feat_manual_file = self.skeletons_file.replace('_skeletons.hdf5', '_feat_manual.hdf5')
+		self.commit_hash = getGitCommitHash()
+		
+		
+		with h5py.File(self.vfilename, 'r') as mask_fid, \
+			h5py.File(self.skeletons_file, 'r') as skel_fid:
+			
+			has_expected_fps = 'expected_fps' in mask_fid['/mask'].attrs
+			has_prov_skel_filt = '/provenance_tracking/SKE_FILT' in skel_fid
+			
+			#if any of this fields is missing load the default parameters
+			if not has_expected_fps or not has_prov_skel_filt:
+				param_default = tracker_param()
+				param_default.get_param()
+
+			if has_expected_fps:
+				expected_fps = mask_fid['/mask'].attrs['expected_fps']
+			else:
+				expected_fps = param_default.expected_fps
+
+			if has_prov_skel_filt:
+				ss = skel_fid['/provenance_tracking/SKE_FILT'].value
+				ss = json.loads(ss.decode("utf-8"))
+				feat_filt_param = json.loads(ss['func_arguments'])
+				use_skel_filter = feat_filt_param['use_skel_filter']
+				del feat_filt_param['use_skel_filter']
+				del feat_filt_param['skeletons_file']
+			else:
+				use_skel_filter = True
+				feat_filt_param = param_default.feat_filt_param
+
+		points_parameters = { 'func':getWormFeaturesFilt,
+            	'argkws':{
+            	'skeletons_file':self.skeletons_file, 
+            	'features_file':self.feat_manual_file,  
+                'expected_fps': expected_fps, 'is_single_worm':False, 
+                'use_skel_filter':use_skel_filter, 'use_manual_join':True,
+                'feat_filt_param':feat_filt_param
+                },
+        	    'output_file':self.feat_manual_file
+        	}
+
+		execThisPoint('FEAT_MANUAL_CREATE', **points_parameters, 
+                    commit_hash=self.commit_hash, cmd_original='')
+		
 
 	def selectWormIndexType(self):
 		#select between automatic and manual worm indexing and label
@@ -103,7 +158,7 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 		#convert data into a rec array to save into pytables
 		trajectories_recarray = self.trajectories_data.to_records(index=False)
 
-		with tables.File(self.skel_file, "r+") as ske_file_id:
+		with tables.File(self.skeletons_file, "r+") as ske_file_id:
 			#pytables filters.
 			table_filters = tables.Filters(complevel=5, complib='zlib', shuffle=True, fletcher32=True)
 			
@@ -116,7 +171,7 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 
 	def updateSkelFile(self):
 		super().updateSkelFile()
-		if not self.skel_file or not isinstance(self.trajectories_data, pd.DataFrame):
+		if not self.skeletons_file or not isinstance(self.trajectories_data, pd.DataFrame):
 			return
 
 		if 'worm_index_N' in self.trajectories_data:
@@ -329,8 +384,8 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 		if not self.worm_index_type == 'worm_index_manual':
 			return
 
-		worm_ind1 = self.worm_index_roi1#self.ui.spinBox_join1.value()
-		worm_ind2 = self.worm_index_roi2#self.ui.spinBox_join2.value()
+		worm_ind1 = self.worm_index_roi1
+		worm_ind2 = self.worm_index_roi2
 		
 		if worm_ind1 == worm_ind2:
 			QMessageBox.critical(self, 'Cannot join the same trajectory with itself', 'Cannot join the same trajectory with itself.',

@@ -240,8 +240,8 @@ def switchBlocks(skel_group, skeletons_file, int_group, intensities_file):
         contour_width = fid.get_node('/contour_width')
         
         
-        cnt1_length = fid.get_node('/contour_side1_length')
-        cnt2_length = fid.get_node('/contour_side2_length')
+        #cnt1_length = fid.get_node('/contour_side1_length')
+        #cnt2_length = fid.get_node('/contour_side2_length')
         
         # w_head_t = fid.get_node('/width_head_tip')
         # w_head_b = fid.get_node('/width_head_base')
@@ -256,7 +256,7 @@ def switchBlocks(skel_group, skeletons_file, int_group, intensities_file):
             dat_switch(skeleton, gg)
             dat_switch(contour_width, gg)
             
-            dat_swap(cnt1_length, cnt2_length, gg)
+            #dat_swap(cnt1_length, cnt2_length, gg)
             #dat_swap(w_head_t, w_tail_t, gg)
             #dat_swap(w_head_b, w_tail_b, gg)
             #dat_swap(w_hips, w_neck, gg)
@@ -293,11 +293,11 @@ def correctHeadTailIntWorm(trajectories_worm, skeletons_file, intensities_file, 
     int_skeleton_id = trajectories_worm.loc[good, 'skeleton_id'].values
     int_frame_number = trajectories_worm.loc[good, 'frame_number'].values
     
+    
     #only analyze data that contains at least  min_block_size intensity profiles     
-    if int_map_id.size < min_block_size:
+    if int_map_id.size == 0 or int_map_id.size < min_block_size:
         return []
     
-        
     #read the worm intensity profiles
     with tables.File(intensities_file, 'r') as fid:
         worm_int_profile = fid.get_node('/straighten_worm_intensity_median')[int_map_id,:]

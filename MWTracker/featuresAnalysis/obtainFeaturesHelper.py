@@ -125,10 +125,13 @@ def switchCntSingleWorm(skeletons_file):
         
         #let's use the first valid skeleton, it seems like a waste to use all the other skeletons.
         #I checked earlier to make sure the have the same orientation.
-        valid_ind = np.where(has_skeletons)[0][0]
         
-        cnt_side1 = fid.get_node('/contour_side1')[valid_ind,:,:]
-        cnt_side2 = fid.get_node('/contour_side2')[valid_ind,:,:]
+        valid_ind = np.where(has_skeletons)[0]
+        if valid_ind.size == 0:
+            return
+        
+        cnt_side1 = fid.get_node('/contour_side1')[valid_ind[0],:,:]
+        cnt_side2 = fid.get_node('/contour_side2')[valid_ind[0],:,:]
         A_sign = calWormAreaSigned(cnt_side1, cnt_side2)
         
         #if not (np.all(A_sign > 0) or np.all(A_sign < 0)):

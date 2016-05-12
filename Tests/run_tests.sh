@@ -5,7 +5,7 @@ TEST1_DIR="$EXAMPLES_DIR/test_1"
 TEST2_DIR="$EXAMPLES_DIR/test_2"
 TEST3_DIR="$EXAMPLES_DIR/test_3"
 TEST4_DIR="$EXAMPLES_DIR/test_4"
-TEST5_DIR="$EXAMPLES_DIR/test_4"
+TEST5_DIR="$EXAMPLES_DIR/test_5"
 
 function test1 {
 echo "%%%% TEST1 %%%%"
@@ -49,6 +49,6 @@ rm -Rf "$TEST3_DIR/Results"
 
 #test1
 #test2
-#test3
+test3
 #test4
-test5
+#test5

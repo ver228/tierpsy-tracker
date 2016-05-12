@@ -31,7 +31,7 @@ class SWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
     def updateSkelFile(self):
         super().updateSkelFile()
         
-        with tables.File(self.skel_file, 'r') as fid:
+        with tables.File(self.skeletons_file, 'r') as fid:
             if '/provenance_tracking/INT_SKE_ORIENT' in fid:
                 prov_str = fid.get_node('/provenance_tracking/INT_SKE_ORIENT').read()
                 func_arg_str = json.loads(prov_str.decode("utf-8"))['func_arguments']
@@ -53,7 +53,7 @@ class SWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
         else:
             self.changeSkelBlock(0)
 
-        with tables.File(self.skel_file, 'r') as fid:
+        with tables.File(self.skeletons_file, 'r') as fid:
             if '/stage_movement/stage_vec' in fid:
                 self.is_stage_move = np.isnan(fid.get_node('/stage_movement/stage_vec')[:,0])
             else:

@@ -5,7 +5,6 @@ OPENCV_DIR=$MW_MAIN_DIR/../opencv
 OPENCV_VER=3.1.0
 
 function create_directories {
-	
 	# make sure the /usr/local/ is writable by the user
 	# sudo chown -R `whoami`:admin /usr/local/
 
@@ -27,26 +26,20 @@ function copy_old_ffmpeg {
 }
 
 function clone_worm_analysis_toolbox {
-
-
-	#if [ ! -d $OPENWORM_DIR ]
 	git clone https://github.com/openworm/open-worm-analysis-toolbox $OPENWORM_DIR
-	#else
-	#	cd $OPENWORM_DIR
-	#	git pull https://github.com/openworm/open-worm-analysis-toolbox
-	#fi
-	#change permissions so other users can access to this
-	
-	#cd $OPENWORM_DIR
-	#git checkout 14577fc9c49183bf731a605df687c0739ed56657
 	chmod -R ugo+rx $MW_MAIN_DIR/../open-worm-analysis-toolbox 
 
 }
 
 function install_dependencies {
+	xcode-select --install
 	#install homebrew and other software used
 	ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-	brew install wget cmake python3
+	#make the current user the owner of homebrew otherewise it can cause some problems
+	sudo chown -R `whoami`:admin /usr/local/bin
+	sudo chown -R `whoami`:admin /usr/local/share
+
+	brew install wget cmake python3 git
 
 
 	#ffmpeg libraries, I need them to install opencv
@@ -62,8 +55,7 @@ function install_dependencies {
 	brew install matplotlib --with-python3 numpy --with-python3
 
 	pip3 install -U numpy spyder tables pandas h5py scipy scikit-learn \
-		scikit-image tifffile seaborn xlrd gitpython
-
+		scikit-image tifffile seaborn xlrd gitpython psutil
 }
 
 function compile_cython_files {
@@ -107,11 +99,6 @@ function install_opencv3 {
 	-DCMAKE_BUILD_TYPE=RELEASE \
 	..
 	make clean
-	#-DOPENCV_EXTRA_MODULES_PATH=$MW_MAIN_DIR/../opencv_contrib/modules \
-	#-DBUILD_opencv_surface_matching=OFF \
-	#-DBUILD_opencv_hdf=OFF \
-	#-DBUILD_opencv_xphoto=OFF \
-	#..
 	done
 	make -j24
 	make install
@@ -131,14 +118,14 @@ function install_main_modules {
 
 #get sudo permissions
 #sudo echo "Thanks."
+
+
 create_directories
 copy_old_ffmpeg
-clone_worm_analysis_toolbox
 install_dependencies
 if [ ! $OPENCV_VER -eq `python3 -c "import cv2; print(cv2.__version__)"` ]; then
 	install_opencv3
 fi
 compile_cython_files
+clone_worm_analysis_toolbox
 install_main_modules
-
-
