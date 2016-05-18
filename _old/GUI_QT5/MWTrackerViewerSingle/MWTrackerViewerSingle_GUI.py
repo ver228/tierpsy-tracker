@@ -65,15 +65,22 @@ class MWTrackerViewerSingle_GUI(HDF5videoViewer_GUI):
 
     def updateVideoFile(self):
         super().updateVideoFile()
-        dum = self.videos_dir.replace('MaskedVideos', 'Results')
-        if os.path.exists(dum):
-            self.results_dir = dum
-            self.basename = self.vfilename.rpartition(os.sep)[-1].rpartition('.')[0]
+        self.basename = self.vfilename.rpartition(os.sep)[-1].rpartition('.')[0]
+
+        #look first in the same directory for the skeletons file
+        self.results_dir = self.videos_dir
+        self.skel_file = self.videos_dir + os.sep + self.basename + '_skeletons.hdf5'
+        
+        if not os.exists(self.skel_file):
+            #otherwise look by replacing MaskedVideos dir
+            self.results_dir = self.videos_dir.replace('MaskedVideos', 'Results')
             self.skel_file = self.results_dir + os.sep + self.basename + '_skeletons.hdf5'
             if not os.path.exists(self.skel_file):
+                #finally make it nulll
                 self.skel_file = ''
-            self.ui.lineEdit_skel.setText(self.skel_file)
-
+                self.results_dir = ''
+        
+        self.ui.lineEdit_skel.setText(self.skel_file)
         self.updateSkelFile()
 
     def getRowData(self):

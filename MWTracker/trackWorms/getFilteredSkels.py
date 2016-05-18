@@ -53,12 +53,11 @@ def saveModifiedTrajData(skeletons_file, trajectories_data):
         newT.rename('trajectories_data')
     
 
-def readField(fid, field, valid_index):
-    data = fid.get_node(field)[:]
-    data = data[valid_index]
-    return data
-
-def nodes2Array(skeletons_file, nodes4fit, valid_index = -1):
+def _h_nodes2Array(skeletons_file, nodes4fit, valid_index = -1):
+    '''
+    Read the groups in skeletons file and save them as a matrix.
+    Used by _h_readFeat2Check
+    '''
     with tables.File(skeletons_file, 'r') as fid:
         assert all(node in fid for node in nodes4fit)
         
@@ -72,190 +71,48 @@ def nodes2Array(skeletons_file, nodes4fit, valid_index = -1):
 
         if valid_index.size > 0:
             for ii, node in enumerate(nodes4fit):
-                X[:,ii] = readField(fid, node, valid_index)
+                X[:,ii] = fid.get_node(node)[valid_index]
             
         return X
 
-def getSkelRows(skeletons_file):
+def _h_readFeat2Check(skeletons_file, valid_index = -1):
+    nodes4fit = ['/skeleton_length', '/contour_area', '/width_midbody']
+    
+    worm_morph = _h_nodes2Array(skeletons_file, nodes4fit, valid_index)
+    
     with tables.File(skeletons_file, 'r') as fid:
-        #get the idea of valid skeletons    
-        skeleton_length = fid.get_node('/skeleton_length')[:]
-        has_skeleton = fid.get_node('/trajectories_data').col('has_skeleton')
-        skeleton_id = fid.get_node('/trajectories_data').col('skeleton_id')
-        
-        skeleton_id = skeleton_id[has_skeleton==1]
-        tot_rows = len(has_skeleton) #total number of rows in the arrays
-
-    return skeleton_id, tot_rows
-
-def calculateWidths(skeletons_file):
-    with tables.File(skeletons_file, 'r+') as fid:
-        #i am using an auxiliar field in case the function is interrupted before finisihing
-        for part in worm_partitions:
-            aux_name = name_width_fun(part) + '_AUX'
-            if '/' + aux_name in fid: fid.remove_node('/', aux_name)
-        
-        if all('/' + name_width_fun(part) in fid for part in worm_partitions): return
-
-    
-    base_name = getBaseName(skeletons_file)
-    progress_timer = timeCounterStr('');
-    
-    #get the list of valid indexes with skeletons in the table
-    skeleton_id, tot_rows = getSkelRows(skeletons_file)
-
-    #calculate the widhts
-    with tables.File(skeletons_file, 'r+') as fid:
-        widths = fid.get_node('/contour_width')
-        tot_rows = widths.shape[0]
-        
-        table_filters = tables.Filters(complevel=5, complib='zlib', shuffle=True, fletcher32=True)
-        widths_means = {}
-        
-        for part in worm_partitions:
-            widths_means[part] = fid.create_carray('/', name_width_fun(part) + '_AUX', \
-                                    tables.Float32Atom(dflt = np.nan), (tot_rows,), filters = table_filters)
-
-        for ii, skel_id in enumerate(skeleton_id):
-            skel_width = widths[skel_id]
-            for part in worm_partitions:
-                pp = worm_partitions[part]
-                widths_means[part][skel_id] = np.mean(skel_width[pp[0]:pp[1]])
-
-            if ii % 25000 == 0:
-                dd = " Calculating mean widths: skeleton %i of %i done." % (ii, len(skeleton_id))
-                print_flush(base_name + dd + ' Total time:' + progress_timer.getTimeStr())
-                
-
-        for part in worm_partitions:        
-            widths_means[part].rename(name_width_fun(part)) #now we can use the real name
-        print_flush(base_name + ' Calculating mean widths. Finished. Total time :' + progress_timer.getTimeStr())
-
-def calculateAreas(skeletons_file):
-
-    with tables.File(skeletons_file, 'r+') as fid:
-        #i am using an auxiliar field in case the function is interrupted before finisihing
-        if '/contour_area_AUX' in fid: fid.remove_node('/', 'contour_area_AUX')
-        if '/contour_area' in fid: return
-        
-    base_name = getBaseName(skeletons_file)
-    progress_timer = timeCounterStr('');
-    print_flush(base_name + ' Calculating countour areas...')
-
-    #get the list of valid indexes with skeletons in the table
-    skeleton_id, tot_rows = getSkelRows(skeletons_file)
-    
-    #calculate areas
-    with tables.File(skeletons_file, 'r+') as fid:
-        
-        #intiailize area arreay
-        table_filters = tables.Filters(complevel=5, complib='zlib', shuffle=True, fletcher32=True)
-        contour_area = fid.create_carray('/', "contour_area_AUX", \
-        tables.Float32Atom(dflt = np.nan), (tot_rows,), filters = table_filters);
-        
-        cnt_side1 = fid.get_node('/contour_side1')
-        cnt_side2 = fid.get_node('/contour_side2')
-            
-        for ii, skel_id in enumerate(skeleton_id):
-            contour = np.hstack((cnt_side1[skel_id], cnt_side2[skel_id][::-1,:]))
-            signed_area = np.sum(contour[:-1,0]*contour[1:,1]-contour[1:,0]*contour[:-1,1])
-            contour_area[skel_id] =  np.abs(signed_area)/2
-
-            if ii % 25000 == 0:
-                dd = " Calculating countour areas: skeleton %i of %i done." % (ii, len(skeleton_id))
-                print_flush(base_name + dd + ' Total time:' + progress_timer.getTimeStr())
-            
-
-        contour_area.rename('contour_area') #now we can use the real name
-        fid.flush()
-        print_flush(base_name + ' Calculating countour area. Finished. Total time :' + progress_timer.getTimeStr())
+        if isinstance(valid_index, (float,int)) and valid_index <0:
+            valid_index = np.arange(fid.get_node(nodes4fit[0]).shape[0])
 
 
-def labelValidSkeletons_old(skeletons_file, good_skel_row, fit_contamination = 0.05):
-    base_name = getBaseName(skeletons_file)
-    progress_timer = timeCounterStr('');
-    
-    print_flush(base_name + ' Filter Skeletons: Starting...')
-    with pd.HDFStore(skeletons_file, 'r') as table_fid:
-        trajectories_data = table_fid['/trajectories_data']
+        cnt_widths = fid.get_node('/contour_width')[valid_index,:]
 
-    trajectories_data['is_good_skel'] = trajectories_data['has_skeleton']
-    
-    if good_skel_row.size > 0:
-        #nothing to do if there are not valid skeletons left. 
-        
-        print_flush(base_name + ' Filter Skeletons: Reading features for outlier identification.')
-        #calculate classifier for the outliers    
-        
-        nodes4fit = ['/skeleton_length', '/contour_area'] + \
-        ['/' + name_width_fun(part) for part in worm_partitions]
-        
-        X4fit = nodes2Array(skeletons_file, nodes4fit, good_skel_row)
-        assert not np.any(np.isnan(X4fit))
-        
-        #%%
-        print_flush(base_name + ' Filter Skeletons: Fitting elliptic envelope. Total time:' + progress_timer.getTimeStr())
-        #TODO here the is a problem with singular covariance matrices that i need to figure out how to solve
-        clf = EllipticEnvelope(contamination = fit_contamination)
-        clf.fit(X4fit)
-        
-        print_flush(base_name + ' Filter Skeletons: Calculating outliers. Total time:' + progress_timer.getTimeStr())
-        #calculate outliers using the fitted classifier
-        X = nodes2Array(skeletons_file, nodes4fit) #use all the indexes
-        y_pred = clf.decision_function(X).ravel() #less than zero would be an outlier
+        sample_N = cnt_widths.shape[1]
+        ht_limits = int(round(sample_N/7))
 
-        print_flush(base_name + ' Filter Skeletons: Labeling valid skeletons. Total time:' + progress_timer.getTimeStr())
-        #labeled rows of valid individual skeletons as GOOD_SKE
-        trajectories_data['is_good_skel'] = (y_pred>0).astype(np.int)
-    
-    #Save the new is_good_skel column
-    saveModifiedTrajData(skeletons_file, trajectories_data)
+        head_widths = cnt_widths[:, 1:ht_limits]
+        tail_widths = cnt_widths[:, -ht_limits:-1]
 
-    print_flush(base_name + ' Filter Skeletons: Finished. Total time:' + progress_timer.getTimeStr())
-def getFrameStats(feat_file):
-    
-    stats_funs = {'median':np.nanmedian, 'mean':np.nanmean, \
-    'std':np.nanstd, 'count':lambda a : np.count_nonzero(~np.isnan(a))}
-    
-    table_filters = tables.Filters(complevel=5, complib='zlib', shuffle=True, fletcher32=True)
-    warnings.simplefilter("ignore")
-            
-    with pd.HDFStore(feat_file) as feat_fid:
-        features_timeseries = feat_fid['/features_timeseries']            
-    
-    if len(features_timeseries['worm_index'].unique()) == 1:
-        return #nothing to do here
-    
-    groupbyframe = features_timeseries.groupby('frame_number')
-        
-    with warnings.catch_warnings(), tables.File(feat_file, 'r+') as feat_fid:
-        if '/frame_stats' in feat_fid:
-            feat_fid.remove_node('/', 'frame_stats', recursive = True)
-        
-        frame_stats_group = feat_fid.create_group('/', 'frame_stats')
-        
-        for stat in stats_funs:
-            #ignore wargings from frames/features with only nan's
-            plate_stats = groupbyframe.agg(stats_funs[stat])
-            
-            feat_fid.create_table(frame_stats_group, stat, \
-            obj = plate_stats.to_records(), filters = table_filters)
-########
+        #The log(x+1e-1) transform skew the distribution to the right, so the lower values have a higher change to 
+        #be outliers.I do this because a with close to zero is typically an oulier.
+        head_widthsL = np.log(head_widths+1)
+        tail_widthsL = np.log(tail_widths+1)
 
-def getMahalanobisRobust(dat, critical_alpha = 0.01, good_rows = np.zeros(0)):
+    return worm_morph, head_widths, tail_widths, head_widthsL, tail_widthsL
 
-    '''Calculate the Mahalanobis distance from the sample vector.'''
-    
-    
+
+def _h_getMahalanobisRobust(dat, critical_alpha = 0.01, good_rows = np.zeros(0)):
+
+    '''Calculate the Mahalanobis distance from the sample vector.'''    
     if good_rows.size == 0:
         good_rows = np.any(~np.isnan(dat), axis=1);
     
-    #import pdb
-    #pdb.set_trace()
 
     try:
-
-        robust_cov = MinCovDet().fit(dat[good_rows])
+        dat2fit = dat[good_rows]
+        assert not np.any(np.isnan(dat2fit))
+        
+        robust_cov = MinCovDet().fit(dat2fit)
         mahalanobis_dist = np.sqrt(robust_cov.mahalanobis(dat))
     except ValueError:
         #this step will fail if the covariance matrix is not singular. This happens if the data is not 
@@ -271,26 +128,169 @@ def getMahalanobisRobust(dat, critical_alpha = 0.01, good_rows = np.zeros(0)):
     
     return mahalanobis_dist, outliers, maha_lim
 
-def readFeat2Check(skeletons_file, valid_index = -1):
-    nodes4fit = ['/skeleton_length', '/contour_area', '/width_midbody']
+
+def _h_getPerpContourInd(skeleton, skel_ind, contour_side1, contour_side2, contour_width):
+    #get the closest point in the contour from a line perpedicular to the skeleton.
+    #%%
     
-    worm_morph = nodes2Array(skeletons_file, nodes4fit, valid_index)
+    #get the slop of a line perpendicular to the keleton
+    dR = skeleton[skel_ind+1] - skeleton[skel_ind-1]
+    #m = dR[1]/dR[0]; M = -1/m
+    a = -dR[0]
+    b = +dR[1]
     
-    with tables.File(skeletons_file, 'r') as fid:
-        if isinstance(valid_index, (float,int)) and valid_index <0:
-            valid_index = np.arange(fid.get_node(nodes4fit[0]).shape[0])
+    c = b*skeleton[skel_ind,1]-a*skeleton[skel_ind,0]
+    
+    max_width_squared = np.max(contour_width)**2
+    #modified from https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
+    #a = M, b = -1
+    
+    #make sure we are not selecting a point that get traversed by a coiled worm
+    dist2cnt1 = np.sum((contour_side1-skeleton[skel_ind])**2,axis=1)
+    d1 = np.abs(a*contour_side1[:,0] - b*contour_side1[:,1]+ c)
+    d1[dist2cnt1>max_width_squared] = np.nan
+    cnt1_ind = np.nanargmin(d1)
+    
+    dist2cnt2 = np.sum((contour_side2-skeleton[skel_ind])**2,axis=1)
+    d2 = np.abs(a*contour_side2[:,0] - b*contour_side2[:,1]+ c)
+    d2[dist2cnt2>max_width_squared] = np.nan
+    cnt2_ind = np.nanargmin(d2)
+    #%%
+    return cnt1_ind, cnt2_ind
 
-        cnt_widths = fid.get_node('/contour_width')[valid_index,:]
+def _h_calcArea(cnt):
+    signed_area = np.sum(cnt[:-1,0]*cnt[1:,1]-cnt[1:,0]*cnt[:-1,1])
+    return np.abs(signed_area/2)
 
-        head_widths = cnt_widths[:, 1:7]
-        tail_widths = cnt_widths[:, -7:-1]
+def filterPossibleCoils(skeletons_file, max_width_ratio = 2.25, max_area_ratio = 6):
+    with pd.HDFStore(skeletons_file, 'r') as table_fid:
+        trajectories_data = table_fid['/trajectories_data']
 
-        #The log(x+1e-1) transform skew the distribution to the right, so the lower values have a higher change to 
-        #be outliers.I do this because a with close to zero is typically an oulier.
-        head_widthsL = np.log(head_widths+1)
-        tail_widthsL = np.log(tail_widths+1)
+    is_good_skel = trajectories_data['has_skeleton'].values.copy()
 
-    return worm_morph, head_widths, tail_widths, head_widthsL, tail_widthsL
+    with tables.File(skeletons_file, 'r') as ske_file_id:
+        
+        skeletons = ske_file_id.get_node('/skeleton')
+        contour_side1s = ske_file_id.get_node('/contour_side1')
+        contour_side2s = ske_file_id.get_node('/contour_side2')
+        contour_widths = ske_file_id.get_node('/contour_width')
+        
+        tot_frames = contour_widths.shape[0]
+        sample_N = contour_widths.shape[1]
+        
+        ht_limits = int(round(sample_N/6))
+        mid_limits = (int(round(3*sample_N/6)), int(round(4*sample_N/6))+1)
+        
+        for frame_number in range(tot_frames):
+            if is_good_skel[frame_number] == 0:
+                continue
+        
+            contour_width = contour_widths[frame_number]
+            contour_side1 = contour_side1s[frame_number]
+            contour_side2 = contour_side2s[frame_number]
+            skeleton = skeletons[frame_number]
+            
+            #%%
+            edge_length = 8
+            p1 = contour_side1[:-edge_length]
+            p2 = contour_side1[edge_length:]
+            points = contour_side1[edge_length/2:-edge_length/2]
+            ang2 = np.arctan2(points[:,0] - p2[:,0], points[:,1] - p2[:,1])
+            ang1 = np.arctan2(p1[:,0] - points[:,0], p1[:,1] - points[:,1]);
+            angles = ang2-ang1
+            
+            for i in range(angles.size):
+                if angles[i] > np.pi:
+                    angles[i] = angles[i] - 2*np.pi;
+                elif angles[i] < -np.pi:
+                    angles[i] = angles[i] + 2*np.pi;
+            angles = angles*180/np.pi;
+            
+            blurWin = np.full(edge_length, 1./edge_length);
+            anglesb = np.convolve(angles, blurWin, 'same');
+            #%%
+            #the idea is that when the worm coils and there is an skeletons, it is
+            #likely to be a cnonsequence of the head/tail protuding, therefore we can
+            #use the head/tail withd to get a good ratio of the worm width
+            
+            #calculate head and tail width
+            head_w = contour_width[ht_limits]
+            tail_w = contour_width[-ht_limits]
+            midbody_w = np.max(contour_width)
+            
+            '''
+            Does the worm more than double its width from the head/tail?
+            Note: if the worm coils, its width will grow to more than
+            double that at the end of the head.
+            '''
+            if midbody_w/head_w > max_width_ratio or \
+            midbody_w/tail_w > max_width_ratio or max(head_w/tail_w, tail_w/head_w) > max_width_ratio:
+                is_good_skel[frame_number] = 0
+                continue
+            
+            
+            #calculate the head and tail area (it is an approximation the limits are not super well defined, but it is enough for filtering)
+            head_skel_lim = skeleton[np.newaxis, ht_limits]
+            tail_skel_lim = skeleton[np.newaxis, -ht_limits]
+            
+            cnt_side1_ind_h, cnt_side2_ind_h = _h_getPerpContourInd(skeleton, ht_limits, 
+                                                                 contour_side1, contour_side2,contour_width)
+            cnt_side1_ind_t, cnt_side2_ind_t = _h_getPerpContourInd(skeleton, -ht_limits, 
+                                                                 contour_side1, contour_side2,contour_width)
+            
+            if cnt_side1_ind_h>cnt_side1_ind_t or cnt_side2_ind_h>cnt_side2_ind_t:
+                is_good_skel[frame_number] = 0
+                continue
+            #if cnt_side1_ind_h>cnt_side1_ind_t:
+            #    cnt_side1_ind_h, cnt_side1_ind_t = cnt_side1_ind_t, cnt_side1_ind_h
+            #if cnt_side2_ind_h>cnt_side2_ind_t:
+            #    cnt_side2_ind_h, cnt_side2_ind_t = cnt_side2_ind_t, cnt_side2_ind_h
+            
+            cnt_head = np.concatenate((contour_side1[:cnt_side1_ind_h+1], head_skel_lim, 
+                                       contour_side2[:cnt_side2_ind_h+1][::-1]))
+            cnt_tail = np.concatenate((contour_side2[cnt_side2_ind_t:][::-1], tail_skel_lim, 
+                                       contour_side1[cnt_side1_ind_t:]))
+            
+            
+            area_head = _h_calcArea(cnt_head)
+            area_tail = _h_calcArea(cnt_tail)
+            
+            '''Is the tail too small (or the head too large)?
+            Note: the area of the head and tail should be roughly the same size.
+            A 2-fold difference is huge!
+            '''
+            if area_tail == 0 or area_head==0 or area_head/area_tail > max_width_ratio \
+            or area_tail/area_head > max_width_ratio:
+                is_good_skel[frame_number] = 0
+                continue
+                
+            #calculate the area of the rest of the body
+            cnt_rest = np.concatenate((head_skel_lim, contour_side1[cnt_side1_ind_h:cnt_side1_ind_t+1], 
+                                       tail_skel_lim, contour_side2[cnt_side2_ind_h:cnt_side2_ind_t+1][::-1],
+                                        head_skel_lim))
+            area_rest = _h_calcArea(cnt_rest)
+            
+            '''
+            Are the head and tail too small (or the body too large)?
+            Note: earlier, the head and tail were each chosen to be 4/24 = 1/6
+            the body length of the worm. The head and tail are roughly shaped
+            like rounded triangles with a convex taper. And, the width at their
+            ends is nearly the width at the center of the worm. Imagine they were
+            2 triangles that, when combined, formed a rectangle similar to the
+            midsection of the worm. The area of this rectangle would be greater
+            than a 1/6 length portion from the midsection of the worm (the
+            maximum area per length in a worm is located at its midsection). The
+            combined area of the right and left sides is 4/6 of the worm.
+            Therefore, the combined area of the head and tail must be greater
+            than (1/6) / (4/6) = 1/4 the combined area of the left and right
+            sides.
+            '''
+            if area_rest/(area_head+area_tail) > max_area_ratio:
+                is_good_skel[frame_number] = 0
+                continue
+    trajectories_data['is_good_skel'] = is_good_skel
+    saveModifiedTrajData(skeletons_file, trajectories_data)
+        
 
 def labelValidSkeletons(skeletons_file, good_skel_row, critical_alpha = 0.01):
     base_name = getBaseName(skeletons_file)
@@ -300,7 +300,8 @@ def labelValidSkeletons(skeletons_file, good_skel_row, critical_alpha = 0.01):
     with pd.HDFStore(skeletons_file, 'r') as table_fid:
         trajectories_data = table_fid['/trajectories_data']
 
-    trajectories_data['is_good_skel'] = trajectories_data['has_skeleton']
+    assert 'is_good_skel' in trajectories_data
+    #trajectories_data['is_good_skel'] = trajectories_data['has_skeleton']
     
     if good_skel_row.size > 0:
         #nothing to do if there are not valid skeletons left. 
@@ -308,19 +309,24 @@ def labelValidSkeletons(skeletons_file, good_skel_row, critical_alpha = 0.01):
         print_flush(base_name + ' Filter Skeletons: Reading features for outlier identification.')
         #calculate classifier for the outliers    
 
-        feats4fit = readFeat2Check(skeletons_file)
+        nodes4fit = ['/skeleton_length', '/contour_area', '/width_midbody']
+        worm_morph = _h_nodes2Array(skeletons_file, nodes4fit, -1)
+        #worm_morph[~trajectories_data['is_good_skel'].values] = np.nan
+        feats4fit = [worm_morph]
+        
+        #feats4fit = _h_readFeat2Check(skeletons_file)
         
         print_flush(base_name + ' Filter Skeletons: Calculating outliers. Total time:' + progress_timer.getTimeStr())
-        
 
-        assert all(feats4fit[0].shape[0]==featdat.shape[0] for featdat in feats4fit) #check all the data to fit has the same size in the first axis
-
-        outliers_rob = np.zeros(feats4fit[0].shape[0], np.bool)
-        outliers_flag = np.zeros(feats4fit[0].shape[0], np.int)
+        tot_rows2fit = feats4fit[0].shape[0]
+        #check all the data to fit has the same size in the first axis
+        assert all(tot_rows2fit == featdat.shape[0] for featdat in feats4fit)         
+        outliers_rob = np.zeros(tot_rows2fit, np.bool)
+        outliers_flag = np.zeros(tot_rows2fit, np.int)
         assert len(feats4fit)<64 #otherwise the outlier flag will not work
         
         for out_ind, dat in enumerate(feats4fit):
-            maha, out_d, lim_d = getMahalanobisRobust(dat, critical_alpha, good_skel_row)
+            maha, out_d, lim_d = _h_getMahalanobisRobust(dat, critical_alpha, good_skel_row)
             outliers_rob = outliers_rob | out_d
 
             #flag the outlier flag by turning on the corresponding bit
@@ -338,16 +344,14 @@ def labelValidSkeletons(skeletons_file, good_skel_row, critical_alpha = 0.01):
     print_flush(base_name + ' Filter Skeletons: Finished. Total time:' + progress_timer.getTimeStr())
 
 def getFilteredSkels(skeletons_file, use_skel_filter, min_num_skel = 100, bad_seg_thresh = 0.8, 
-    min_dist = 5, critical_alpha = 0.01):#, fit_contamination = 0.05):
+    min_dist = 5, critical_alpha = 0.01, max_width_ratio = 2.25, max_area_ratio = 6):
     #check if the skeletonization finished succesfully
     with tables.File(skeletons_file, "r") as ske_file_id:
         skeleton_table = ske_file_id.get_node('/skeleton')
-        assert skeleton_table._v_attrs['has_finished'] >= 2
+        assert skeleton_table._v_attrs['has_finished'] >= 1
 
-    #calculate valid widths and areas if they were not calculated before
-    #calculateWidths(skeletons_file)
-    #calculateAreas(skeletons_file)
-
+    filterPossibleCoils(skeletons_file, max_width_ratio = max_width_ratio, max_area_ratio = max_area_ratio)
+    
     if use_skel_filter:
         #get valid rows using the trajectory displacement and the skeletonization success
         good_traj_index , good_skel_row = getValidIndexes(skeletons_file, \
@@ -358,7 +362,7 @@ def getFilteredSkels(skeletons_file, use_skel_filter, min_num_skel = 100, bad_se
     with tables.File(skeletons_file, "r+") as ske_file_id:
         skeleton_table = ske_file_id.get_node('/skeleton')
         #label as finished
-        skeleton_table._v_attrs['has_finished'] = 3
+        skeleton_table._v_attrs['has_finished'] = 2
         
 
 

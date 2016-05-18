@@ -12,7 +12,7 @@ import fnmatch
 
 from .compressMultipleFilesHelper import checkVideoFiles, exploreDirs, getDstDir, isBadMask
 from .trackSingleWorker import getStartingPoint, checkpoint, constructNames, \
-isBadStageAligment, isBadCntOrientationStr
+isBadStageAligment, hasExpCntInfo
 
 
 class checkTrackFiles(checkVideoFiles):
@@ -102,7 +102,6 @@ class checkTrackFiles(checkVideoFiles):
 			tmp_val = eval(arg)
 			if tmp_val: cmd += ['--' + arg, tmp_val]
 		
-
 		for arg in ['is_single_worm', 'no_skel_filter', 'use_manual_join']:
 			if getattr(self, arg): cmd.append('--' + arg)
 
@@ -118,11 +117,11 @@ class checkTrackFiles(checkVideoFiles):
 
 		#check that the file finished correctly and that there is no force_start_point specified
 		if (start_point > self.end_point_N or start_point == checkpoint['END']) and not self.force_start_point:
-			return 'FINISHED_GOOD' , (masked_image_file, results_dir)
+			return 'FINISHED_GOOD', (masked_image_file, results_dir)
 		elif self.is_single_worm and start_point == checkpoint['INT_PROFILE'] and isBadStageAligment(skeletons_file):
-			return 'FINISHED_BAD' , (masked_image_file, results_dir)
-		elif self.is_single_worm and start_point == checkpoint['FEAT_CREATE'] and isBadCntOrientationStr(skeletons_file):
-			return 'FINISHED_BAD' , (masked_image_file, results_dir)
+			return 'FINISHED_BAD', (masked_image_file, results_dir)
+		elif self.is_single_worm and start_point == checkpoint['FEAT_CREATE'] and hasExpCntInfo(skeletons_file):
+			return 'FINISHED_BAD', (masked_image_file, results_dir)
 		
 		elif not isBadMask(masked_image_file):
 			return 'SOURCE_GOOD', masked_image_file

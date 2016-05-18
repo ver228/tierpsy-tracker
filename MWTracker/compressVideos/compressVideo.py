@@ -47,7 +47,6 @@ def getROIMask(image,  min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEF
     #find good contours: between max_area and min_area, and do not touch the image border
     goodIndex = []
     for ii, contour in enumerate(contours):
-
         if not keep_border_data:
             #eliminate blobs that touch a border
             keep = not np.any(contour ==1) and \

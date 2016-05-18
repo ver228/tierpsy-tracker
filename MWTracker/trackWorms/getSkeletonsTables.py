@@ -396,8 +396,6 @@ strel_size = 5, smoothed_traj_param = {}, worm_midbody = (0.35, 0.65)):
         trajectories_df['coord_x_new'] = np.nan
         trajectories_df['coord_y_new'] = np.nan
 
-
-
     #open skeleton file for append and #the compressed videos as read
     with tables.File(skeletons_file, "r+") as ske_file_id, \
     tables.File(masked_image_file, 'r') as mask_fid:

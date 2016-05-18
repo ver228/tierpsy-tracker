@@ -6,16 +6,6 @@ Created on Sun May 24 10:54:16 2015
 """
 import numpy as np
 
-errMsg = {104 : '''The worm has 3 or more low-frequency sampled convexities 
-        sharper than 90 degrees (possible head/tail points).''',
-        105 : '''The worm contour has less than 2 high-frequency sampled 
-        convexities sharper than 60 degrees (the head and tail). 
-        Therefore, the worm is coiled or obscured and cannot be segmented.''',
-        106: '''The worm length, from head to tail, is more than
-        twice as large on one side than it is on the other.
-        Therefore, the worm is coiled or obscured and cannot be segmented.'''
-        };
-
 def absDistanceCirc(one_index, several_index, cnt_chain_code_len):
     dist = np.abs(cnt_chain_code_len[one_index] - cnt_chain_code_len[several_index]);
     dist = np.min((dist, cnt_chain_code_len[-1] - dist), axis=0); #wrapping
@@ -31,12 +21,11 @@ def headTailIndex(angles, peak1_ind, peak2_ind):
         tail_ind = peak1_ind;
     return head_ind, tail_ind
 
-def isWormTouching(head_ind, tail_ind, cnt_chain_code_len):
-    #% Are the sides within 50% of each others size?
-    #% Note: if a worm's length from head to tail is at least twice larger
-    #% on one side (relative to the other), than the worm must be touching
-    #% itself.
-    #% Find the length of each side.
+def isHeadTailTouching(head_ind, tail_ind, cnt_chain_code_len):
+    ''' Are the sides within 0.5 of each others size?
+     Note: if a worm's length from head to tail is at least twice larger
+     on one side (relative to the other), than the worm must be touching
+     itself. Find the length of each side.'''
     if head_ind > tail_ind:
         size1 = cnt_chain_code_len[head_ind] - cnt_chain_code_len[tail_ind];
         size2 = cnt_chain_code_len[-1] - cnt_chain_code_len[head_ind] + cnt_chain_code_len[tail_ind];
@@ -45,10 +34,8 @@ def isWormTouching(head_ind, tail_ind, cnt_chain_code_len):
         size2 = cnt_chain_code_len[-1] - cnt_chain_code_len[tail_ind] + cnt_chain_code_len[head_ind];
     
     
-    if min(size1, size2)/ max(size1, size2) <= .5:
-        return errMsg[106];
-    else:
-        return '';
+    return min(size1, size2)/ max(size1, size2) <= .5
+        
 
 def getHeadTail(cnt_ang_low_freq, maxima_low_freq_ind, cnt_ang_hi_freq, maxima_hi_freq_ind, cnt_chain_code_len):
     #We will consider only possible head/tail points
@@ -63,11 +50,11 @@ def getHeadTail(cnt_ang_low_freq, maxima_low_freq_ind, cnt_ang_hi_freq, maxima_h
     #% Are there too many possible head/tail points?
     if maxima_low_freq_ind.size > 2:
         
-        return -1,-1, errMsg[104]; #more three or more candidates for head and tail
+        return -1,-1, 104; #more three or more candidates for head and tail
     
     #% Are the head and tail on the outer contour?
     if maxima_hi_freq_ind.size < 2:
-        return -1,-1, errMsg[105];   
+        return -1,-1, 105;   
     
     if maxima_low_freq_ind.size == 2: 
         #Easy case, there is only two head/tail candidates
@@ -110,9 +97,11 @@ def getHeadTail(cnt_ang_low_freq, maxima_low_freq_ind, cnt_ang_hi_freq, maxima_h
        
         head_ind, tail_ind = headTailIndex(cnt_ang_hi_freq, head_ind, tail_ind)
     
-    err_msg = isWormTouching(head_ind, tail_ind, cnt_chain_code_len);
-    
-    return head_ind, tail_ind, err_msg
+    #one of the sides is too short so it might be touching itself (coiling)
+    if isHeadTailTouching(head_ind, tail_ind, cnt_chain_code_len):
+        return head_ind, tail_ind, 106
+    else:
+        return head_ind, tail_ind, 0
 
 
 def rollHead2FirstIndex(head_ind, tail_ind, contour, cnt_chain_code_len, cnt_ang_low_freq, maxima_low_freq_ind):

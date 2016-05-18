@@ -22,36 +22,10 @@ from collections import OrderedDict
 
 from MWTracker.helperFunctions.timeCounterStr import timeCounterStr
 from MWTracker.helperFunctions.miscFun import print_flush
-from MWTracker.featuresAnalysis.obtainFeaturesHelper import WormStatsClass, WormFromTable, getValidIndexes
+from MWTracker.featuresAnalysis.obtainFeaturesHelper import WormStatsClass, WormFromTable, getValidIndexes, isBadVentralOrient
 from MWTracker.helperFunctions.miscFun import WLAB
 
 import open_worm_analysis_toolbox as mv
-
-
-
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Jun  4 11:30:53 2015
-
-@author: ajaver
-"""
-import os, sys
-#import sys
-import tables
-import pandas as pd
-import numpy as np
-from math import floor, ceil
-
-from collections import OrderedDict
-
-from MWTracker.helperFunctions.timeCounterStr import timeCounterStr
-from MWTracker.helperFunctions.miscFun import print_flush
-
-import open_worm_analysis_toolbox as mv
-
-from MWTracker.featuresAnalysis.obtainFeaturesHelper import WormStatsClass, WormFromTable, getValidIndexes
-from MWTracker.helperFunctions.miscFun import WLAB
-
 
 def getFPS(skeletons_file, expected_fps):
         #try to infer the fps from the timestamp
@@ -92,7 +66,6 @@ def correctSingleWorm(worm, skeletons_file):
     #adjust the stage_vec to match the timestamps in the skeletons
     timestamp_ind = timestamp_ind
     good = (timestamp_ind>=worm.first_frame) & (timestamp_ind<=worm.last_frame)
-    
 
     ind_ff = timestamp_ind[good] - worm.first_frame
     stage_vec_ori = stage_vec_ori[good]
@@ -102,11 +75,16 @@ def correctSingleWorm(worm, skeletons_file):
     
     tot_skel = worm.skeleton.shape[0]
     
+    #let's rotate the stage movement
+    rotation_matrix_inv = rotation_matrix*[(1,-1),(-1,1)]
+    stage_vec_inv = -np.dot(stage_vec,rotation_matrix_inv)
+
     for field in ['skeleton', 'ventral_contour', 'dorsal_contour']:
         if hasattr(worm, field):
             tmp_dat = getattr(worm, field)
-            for ii in range(tot_skel):
-                tmp_dat[ii] = np.dot(tmp_dat[ii], rotation_matrix) - stage_vec[ii]
+            #for ii in range(tot_skel):
+            #    tmp_dat[ii] = np.dot(tmp_dat[ii], rotation_matrix) - stage_vec[ii]
+            tmp_dat += stage_vec_inv[:,np.newaxis, :]
             setattr(worm, field, tmp_dat)
     return worm
 #%%%%%%%
@@ -205,7 +183,7 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, expected_fps
         #node to save features events
         group_events = features_fid.create_group('/', 'features_events')
         
-        #save the skeletons in the same group
+        #save the skeletons
         with tables.File(skeletons_file, 'r') as ske_file_id:
             skel_shape = ske_file_id.get_node('/skeleton').shape
         skeletons_array = features_fid.create_earray('/', 'skeletons', shape = (0, skel_shape[1], skel_shape[2]) ,
@@ -223,6 +201,7 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, expected_fps
                     if '/experiment_info' in skel_fid:
                         dd = skel_fid.get_node('/experiment_info').read()
                         features_fid.create_array('/', 'experiment_info', obj = dd)
+                        assert not isBadVentralOrient(skeletons_file)
 
                 assert worm_index == 1 and ind_N == 0
                 worm = correctSingleWorm(worm, skeletons_file)

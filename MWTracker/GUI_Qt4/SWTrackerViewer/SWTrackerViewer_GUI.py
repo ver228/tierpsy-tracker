@@ -16,17 +16,22 @@ import json
 
 
 class SWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
-    def __init__(self, ui = ''):
+    def __init__(self, ui = '', mask_file = ''):
         if not ui:
             super().__init__(Ui_ImageViewer())
         else:
             super().__init__(ui)
+
 
         self.skel_block = []
         self.skel_block_n = 0
         self.is_stage_move = []
 
         self.ui.spinBox_skelBlock.valueChanged.connect(self.changeSkelBlock)
+
+        if mask_file:
+            self.vfilename = mask_file
+            self.updateVideoFile()
 
     def updateSkelFile(self):
         super().updateSkelFile()
@@ -39,10 +44,10 @@ class SWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 
                 good = (self.trajectories_data['int_map_id']>0).values          
                 has_skel_group = createBlocks(good, min_block_size = 0)
-                self.skel_block = _fuseOverlapingGroups(has_skel_group, gap_size = gap_size)
+                if len(has_skel_group)>0:
+                    self.skel_block = _fuseOverlapingGroups(has_skel_group, gap_size = gap_size)
             else:
                 self.skel_block = []
-
 
         self.ui.spinBox_skelBlock.setMaximum(max(len(self.skel_block)-1,0))
         self.ui.spinBox_skelBlock.setMinimum(0)
@@ -59,7 +64,6 @@ class SWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
             else:
                 self.is_stage_move = []
 
-
     def updateImage(self):
         self.readImage()
         self.drawSkelResult()
@@ -73,7 +77,6 @@ class SWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
             pen.setColor(Qt.red)
             painter.setPen(pen)
 
-            
             painter.drawRect(1, 1, self.frame_qimg.width()-pen_width, self.frame_qimg.height()-pen_width);
             painter.end()
             
