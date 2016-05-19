@@ -167,7 +167,7 @@ def filterPossibleCoils(skeletons_file, max_width_ratio = 2.25, max_area_ratio =
         trajectories_data = table_fid['/trajectories_data']
 
     is_good_skel = trajectories_data['has_skeleton'].values.copy()
-
+    tot_skeletons = len(is_good_skel)
     with tables.File(skeletons_file, 'r') as ske_file_id:
         
         skeletons = ske_file_id.get_node('/skeleton')
@@ -175,20 +175,20 @@ def filterPossibleCoils(skeletons_file, max_width_ratio = 2.25, max_area_ratio =
         contour_side2s = ske_file_id.get_node('/contour_side2')
         contour_widths = ske_file_id.get_node('/contour_width')
         
-        tot_frames = contour_widths.shape[0]
+        
         sample_N = contour_widths.shape[1]
         
         ht_limits = int(round(sample_N/6))
         mid_limits = (int(round(3*sample_N/6)), int(round(4*sample_N/6))+1)
         
-        for frame_number in range(tot_frames):
-            if is_good_skel[frame_number] == 0:
+        for skel_id in range(tot_skeletons):
+            if is_good_skel[skel_id] == 0:
                 continue
         
-            contour_width = contour_widths[frame_number]
-            contour_side1 = contour_side1s[frame_number]
-            contour_side2 = contour_side2s[frame_number]
-            skeleton = skeletons[frame_number]
+            contour_width = contour_widths[skel_id]
+            contour_side1 = contour_side1s[skel_id]
+            contour_side2 = contour_side2s[skel_id]
+            skeleton = skeletons[skel_id]
             
             #%%
             edge_length = 8
@@ -225,7 +225,7 @@ def filterPossibleCoils(skeletons_file, max_width_ratio = 2.25, max_area_ratio =
             '''
             if midbody_w/head_w > max_width_ratio or \
             midbody_w/tail_w > max_width_ratio or max(head_w/tail_w, tail_w/head_w) > max_width_ratio:
-                is_good_skel[frame_number] = 0
+                is_good_skel[skel_id] = 0
                 continue
             
             
@@ -239,7 +239,7 @@ def filterPossibleCoils(skeletons_file, max_width_ratio = 2.25, max_area_ratio =
                                                                  contour_side1, contour_side2,contour_width)
             
             if cnt_side1_ind_h>cnt_side1_ind_t or cnt_side2_ind_h>cnt_side2_ind_t:
-                is_good_skel[frame_number] = 0
+                is_good_skel[skel_id] = 0
                 continue
             #if cnt_side1_ind_h>cnt_side1_ind_t:
             #    cnt_side1_ind_h, cnt_side1_ind_t = cnt_side1_ind_t, cnt_side1_ind_h
@@ -261,7 +261,7 @@ def filterPossibleCoils(skeletons_file, max_width_ratio = 2.25, max_area_ratio =
             '''
             if area_tail == 0 or area_head==0 or area_head/area_tail > max_width_ratio \
             or area_tail/area_head > max_width_ratio:
-                is_good_skel[frame_number] = 0
+                is_good_skel[skel_id] = 0
                 continue
                 
             #calculate the area of the rest of the body
@@ -286,7 +286,7 @@ def filterPossibleCoils(skeletons_file, max_width_ratio = 2.25, max_area_ratio =
             sides.
             '''
             if area_rest/(area_head+area_tail) > max_area_ratio:
-                is_good_skel[frame_number] = 0
+                is_good_skel[skel_id] = 0
                 continue
     trajectories_data['is_good_skel'] = is_good_skel
     saveModifiedTrajData(skeletons_file, trajectories_data)
