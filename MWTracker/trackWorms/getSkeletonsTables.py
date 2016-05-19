@@ -229,7 +229,7 @@ def getWormMask(worm_img, threshold, strel_size = 5, min_mask_area=50, roi_cente
     '''
 
     if any(x<3 for x in worm_img.shape):
-        return np.zeros_like(worm_img)
+        return np.zeros_like(worm_img), np.zeros(0), 0
     
     #structural elements used in the morphological operations
     #strel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (strel_size,strel_size))
