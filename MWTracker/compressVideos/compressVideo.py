@@ -20,7 +20,7 @@ from ..helperFunctions.timeCounterStr import timeCounterStr
 DEFAULT_MASK_PARAM = {'min_area':100, 'max_area':5000, 'has_timestamp':True, 
 'thresh_block_size':61, 'thresh_C':15, 'dilation_size': 9, 'keep_border_data': False}
 
-def getROIMask(image,  min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEFAULT_MASK_PARAM['max_area'], 
+def getROIMask(image, fluo_flag= False, min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEFAULT_MASK_PARAM['max_area'], 
     has_timestamp = DEFAULT_MASK_PARAM['has_timestamp'], thresh_block_size = DEFAULT_MASK_PARAM['thresh_block_size'], 
     thresh_C = DEFAULT_MASK_PARAM['thresh_C'], dilation_size = DEFAULT_MASK_PARAM['dilation_size'], 
     keep_border_data = DEFAULT_MASK_PARAM['keep_border_data']):
@@ -35,8 +35,11 @@ def getROIMask(image,  min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEF
     if thresh_block_size%2==0:
         thresh_block_size+=1 #this value must be odd
     
-    #adaptative threshold is the best way to find possible worms. I setup the parameters manually, they seems to work fine if there is no condensation in the sample
-    mask = cv2.adaptiveThreshold(image,255,cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, thresh_block_size, thresh_C)
+    #adaptative threshold is the best way to find possible worms. I setup the parameters manually, they seem to work fine if there is no condensation in the sample
+    if fluo_flag: # check if we are dealing with a fluorescent image
+        mask = cv2.adaptiveThreshold(image,255,cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, thresh_block_size, -thresh_C)
+    else: #image is not fluorescent
+        mask = cv2.adaptiveThreshold(image,255,cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, thresh_block_size, thresh_C)
     #ret, mask = cv2.threshold(image, thresh_C, 255, cv2.THRESH_BINARY_INV)
 
 
@@ -104,7 +107,7 @@ def selectVideoReader(video_file):
         #im_width= vid.get(cv2.CAP_PROP_FRAME_WIDTH)
         #im_height= vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
         
-        #sometimes video capture seems to give the wrong dimenssions read the firest image and try again
+        #sometimes video capture seems to give the wrong dimensions read the first image and try again
         ret, image = vid.read() #get video frame, stop program when no frame is retrive (end of file)
         if ret:
             im_height, im_width, _ = image.shape
@@ -122,7 +125,7 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM, ex
     Compresses video by selecting pixels that are likely to have worms on it and making the rest of 
     the image zero. By creating a large amount of redundant data, any lossless compression
     algorithm will dramatically increase its efficiency. The masked images are saved as hdf5 with gzip compression.
-    The mask is calculated over a minimum projection of an image stack. This projection preserve darker regions
+    The mask is calculated over a minimum projection of an image stack. This projection preserves darker regions
     where the worm has more probability to be located. Additionally it has the advantage of reducing 
     the processing load by only requiring to calculate the mask once per image stack.
      video_file --  original video file
