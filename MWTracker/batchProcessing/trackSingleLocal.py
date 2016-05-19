@@ -94,9 +94,9 @@ class trackLocal:
 			if isBadStageAligment(self.skeletons_tmp):
 				self.last_check_point = 'STAGE_ALIGMENT'
 			#on in the contour orientation.
-			if hasExpCntInfo(self.skeletons_tmp):
+			elif hasExpCntInfo(self.skeletons_tmp):
 				self.last_check_point = 'CONTOUR_ORIENT'
-
+		
 		self.copyFilesToFinal()
 		self.cleanTmpFiles()
 		
