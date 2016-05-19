@@ -37,8 +37,8 @@ def compressSingleWorker(video_file, mask_dir, json_file = '', is_single_worm = 
         with h5py.File(masked_image_file, "r") as mask_fid:
             has_finished = mask_fid['/mask'].attrs['has_finished']
 
-            if is_single_worm and not all(dd in mask_fid for dd in ['stage_data', 'xml_info']):
-                #if a single_worm file does not have the stage_data or xml_info there is something really bad, 
+            if is_single_worm and not all(dd in mask_fid for dd in ['stage_log', 'xml_info']):
+                #if a single_worm file does not have the stage_log or xml_info there is something really bad, 
                 #let's recalculate everything again
                 has_finished = 0 
     except:

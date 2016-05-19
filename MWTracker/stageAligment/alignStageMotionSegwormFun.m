@@ -103,9 +103,9 @@ function alignStageMotionSegwormFun(masked_image_file,skeletons_file)
     % 1) to the media times in this log file. Therefore, we load these media
     % times and stage locations.
     %from the .log.csv file
-    stage_data = h5read(masked_image_file, '/stage_data');
-    mediaTimes = stage_data.stage_time';
-    locations = [stage_data.stage_x , stage_data.stage_y];
+    stage_log = h5read(masked_image_file, '/stage_log');
+    mediaTimes = stage_log.stage_time';
+    locations = [stage_log.stage_x , stage_log.stage_y];
     
     %% The shift makes everything a bit more complicated. I have to remove the first frame, before resizing the array considering the dropping frames.
     

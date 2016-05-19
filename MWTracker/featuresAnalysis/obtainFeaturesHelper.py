@@ -111,8 +111,8 @@ def calWormArea(cnt_side1, cnt_side2):
     signed_area = calWormAreaSigned(cnt_side1, cnt_side2)
     return np.abs(signed_area)/2
 
-def switchCntSingleWorm(skeletons_file):
-    with tables.File(skeletons_file, 'r+') as fid:
+def isBadVentralOrient(skeletons_file):
+    with tables.File(skeletons_file, 'r') as fid:
         exp_info_b = fid.get_node('/experiment_info').read()
         exp_info = json.loads(exp_info_b.decode("utf-8"))
         
@@ -133,20 +133,24 @@ def switchCntSingleWorm(skeletons_file):
         cnt_side1 = fid.get_node('/contour_side1')[valid_ind[0],:,:]
         cnt_side2 = fid.get_node('/contour_side2')[valid_ind[0],:,:]
         A_sign = calWormAreaSigned(cnt_side1, cnt_side2)
-        
+
         #if not (np.all(A_sign > 0) or np.all(A_sign < 0)):
         #    raise ValueError('There is a problem. All the contours should have the same orientation.')
-        
+    
+        return (exp_info['ventral_side'] == 'clockwise' and A_sign[0] < 0) or \
+            (exp_info['ventral_side'] == 'anticlockwise' and A_sign[0] > 0)
+
+def switchCntSingleWorm(skeletons_file):
         #change contours if they do not match the known orientation
-        if (exp_info['ventral_side'] == 'clockwise' and A_sign[0] < 0) or \
-            (exp_info['ventral_side'] == 'anticlockwise' and A_sign[0] > 0):
-            #since here we are changing all the contours, let's just change the name of the datasets
-            side1 = fid.get_node('/contour_side1')
-            side2 = fid.get_node('/contour_side2')
-            
-            side1.rename('contour_side1_bkp')
-            side2.rename('contour_side1')
-            side1.rename('contour_side2')
+        if isBadVentralOrient(skeletons_file):
+            with tables.File(skeletons_file, 'r+') as fid:
+                #since here we are changing all the contours, let's just change the name of the datasets
+                side1 = fid.get_node('/contour_side1')
+                side2 = fid.get_node('/contour_side2')
+                
+                side1.rename('contour_side1_bkp')
+                side2.rename('contour_side1')
+                side1.rename('contour_side2')
 
 def smoothCurve(curve, window = 5, pol_degree = 3):
     '''smooth curves using the savgol_filter'''
@@ -465,14 +469,16 @@ def getValidIndexes(skel_file, min_num_skel = 100, bad_seg_thresh = 0.8, min_dis
         trajectories_data = table_fid['/trajectories_data']
 
     trajectories_data =  trajectories_data[trajectories_data['worm_index_joined'] > 0]
-    
+    valid_ind_str = 'is_good_skel' if 'is_good_skel' in trajectories_data else 'has_skeleton'
+
     if len(trajectories_data['worm_index_joined'].unique()) == 1:
-        good_skel_row = trajectories_data['skeleton_id'][trajectories_data.has_skeleton.values.astype(np.bool)].values
+        good_skel_row = trajectories_data['skeleton_id'][trajectories_data[valid_ind_str].values.astype(np.bool)].values
         return (np.array([1]), good_skel_row)
     
     else:
+        
         #get the fraction of worms that were skeletonized per trajectory
-        how2agg = {'has_skeleton':['mean', 'sum'], 'coord_x':['max', 'min', 'count'],
+        how2agg = {valid_ind_str:['mean', 'sum'], 'coord_x':['max', 'min', 'count'],
                    'coord_y':['max', 'min']}
         tracks_data = trajectories_data.groupby('worm_index_joined').agg(how2agg)
         
@@ -481,8 +487,8 @@ def getValidIndexes(skel_file, min_num_skel = 100, bad_seg_thresh = 0.8, min_dis
         
         max_avg_dist = np.sqrt(delX*delX + delY*delY)#/tracks_data['coord_x']['count']
         
-        skeleton_fracc = tracks_data['has_skeleton']['mean']
-        skeleton_tot = tracks_data['has_skeleton']['sum']
+        skeleton_fracc = tracks_data[valid_ind_str]['mean']
+        skeleton_tot = tracks_data[valid_ind_str]['sum']
         
         good_worm = (skeleton_fracc>=bad_seg_thresh) & (skeleton_tot>=min_num_skel)
         good_worm = good_worm & (max_avg_dist>min_dist)
@@ -490,7 +496,7 @@ def getValidIndexes(skel_file, min_num_skel = 100, bad_seg_thresh = 0.8, min_dis
         good_traj_index = good_worm[good_worm].index
 
         good_row = (trajectories_data.worm_index_joined.isin(good_traj_index)) \
-        & (trajectories_data.has_skeleton.values.astype(np.bool))
+        & (trajectories_data[valid_ind_str].values.astype(np.bool))
         
         good_skel_row = trajectories_data.loc[good_row, 'skeleton_id'].values
         assert np.all(good_skel_row == trajectories_data[good_row].index)

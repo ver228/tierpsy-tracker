@@ -57,7 +57,7 @@ def storeStageData(stage_file, masked_image_file):
     if len(data)<=1:
         with tables.File(masked_image_file, 'r+') as fid:
             dtype = [('real_time', int), ('stage_time', int), ('stage_x', float), ('stage_y', float)]
-            fid.create_table('/', 'stage_data', obj = np.recarray(0, dtype))
+            fid.create_table('/', 'stage_log', obj = np.recarray(0, dtype))
             return
 
     #import pdb
@@ -69,8 +69,8 @@ def storeStageData(stage_file, masked_image_file):
     stage_recarray = _dict2recarray(csv_dict)
 
     with tables.File(masked_image_file, 'r+') as mask_fid:
-        if '/stage_data' in mask_fid: mask_fid.remove_node('/', 'stage_data')
-        mask_fid.create_table('/', 'stage_data', obj = stage_recarray)
+        if '/stage_log' in mask_fid: mask_fid.remove_node('/', 'stage_log')
+        mask_fid.create_table('/', 'stage_log', obj = stage_recarray)
     
     return csv_dict
 

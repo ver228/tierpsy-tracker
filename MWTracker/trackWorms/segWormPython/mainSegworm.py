@@ -18,19 +18,15 @@ from .cleanWorm import circSmooth, extremaPeaksCircDist
 #wrappers around C functions
 from .cythonFiles.circCurvature import circCurvature
 
-#from .cythonFiles.curvspace import curvspace
-# def resample_old(skeleton, cnt_side1, cnt_side2, cnt_widths):
-#     #resample data
-#     skeleton, ske_len = curvspace(skeleton, resampling_N)
-#     cnt_side1, cnt_side1_len = curvspace(cnt_side1, resampling_N)
-#     cnt_side2, cnt_side2_len = curvspace(cnt_side2, resampling_N)
-    
-#     f = interp1d(np.arange(cnt_widths.size), cnt_widths)
-#     x = np.linspace(0, cnt_widths.size-1, resampling_N)
-#     cnt_widths = f(x);
-    
-#     return skeleton, ske_len, cnt_side1, cnt_side1_len, cnt_side2, cnt_side2_len, cnt_widths
-
+errMsg = {104 : '''The worm has 3 or more low-frequency sampled convexities 
+        sharper than 90 degrees (possible head/tail points).''',
+        105 : '''The worm contour has less than 2 high-frequency sampled 
+        convexities sharper than 60 degrees (the head and tail). 
+        Therefore, the worm is coiled or obscured and cannot be segmented.''',
+        106: '''The worm length, from head to tail, is more than
+        twice as large on one side than it is on the other.
+        Therefore, the worm is coiled or obscured and cannot be segmented.'''
+        };
 
 def contour2Skeleton(contour):
     #contour must be a Nx2 numpy array
@@ -106,7 +102,7 @@ def contour2Skeleton(contour):
     head_ind, tail_ind, err_msg = \
     getHeadTail(cnt_ang_low_freq, maxima_low_freq_ind, cnt_ang_hi_freq, maxima_hi_freq_ind, cnt_chain_code_len)
     
-    if err_msg:
+    if err_msg != 0:
         return 4*[np.zeros(0)]+[err_msg]
     
     #change arrays so the head correspond to the first position

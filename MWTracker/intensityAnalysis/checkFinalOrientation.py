@@ -33,12 +33,13 @@ def getHeadProbMov(skeletons_file, trajectories_worm, max_gap_allowed = 10, wind
             skeletons[good_skeletons, :, :] = fid.get_node('/skeleton')[skeletons_id, :, :]
         else:
             return np.nan, skel_group
-        
-    is_switch_skel, roll_std = isWormHTSwitched(skeletons, segment4angle = 5, max_gap_allowed = 10, \
-                         window_std = 25, min_block_size=250)
     
-    head_angle = np.nanmedian(roll_std['head_angle'])
-    tail_angle = np.nanmedian(roll_std['tail_angle'])
+
+    is_switch_skel, roll_std = isWormHTSwitched(skeletons, segment4angle = segment4angle, max_gap_allowed = max_gap_allowed, \
+                         window_std = window_std, min_block_size=min_block_size)
+    
+    head_angle = np.nanmean(roll_std['head_angle'])
+    tail_angle = np.nanmean(roll_std['tail_angle'])
     
     p_mov = head_angle/(head_angle + tail_angle)
     

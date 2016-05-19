@@ -33,7 +33,7 @@ from collections import OrderedDict
 
 
 #the order of the list is very IMPORTANT, and reflects the order where is step is done
-checkpoint_label = ['TRAJ_CREATE', 'TRAJ_JOIN', 'SKE_CREATE', 'SKE_ORIENT', 'SKE_FILT', 
+checkpoint_label = ['TRAJ_CREATE', 'TRAJ_JOIN', 'SKE_CREATE', 'SKE_FILT', 'SKE_ORIENT', 
 'INT_PROFILE', 'INT_SKE_ORIENT', 
 'FEAT_CREATE','FEAT_MANUAL_CREATE', 'END']
 checkpoint = {ii:x for x,ii in enumerate(checkpoint_label)}
@@ -64,9 +64,10 @@ def getStartingPoint(masked_image_file, results_dir):
             if skeleton_table._v_attrs['has_finished'] <= 0:
                 return checkpoint['SKE_CREATE'];
             elif skeleton_table._v_attrs['has_finished'] <= 1:
-                return checkpoint['SKE_ORIENT'];
-            elif skeleton_table._v_attrs['has_finished'] <= 2:
                 return checkpoint['SKE_FILT'];
+            elif skeleton_table._v_attrs['has_finished'] <= 2:
+                return checkpoint['SKE_ORIENT'];
+
     except accepted_errors:
         #if there is any problem while reading the file, create it again
         return checkpoint['SKE_CREATE'];
@@ -118,7 +119,7 @@ def isBadStageAligment(skeletons_file):
         
         return not good_aligment in [1,2]
 
-def isBadCntOrientationStr(skeletons_file):
+def hasExpCntInfo(skeletons_file):
     #i'm reading this data twice (one more in switchCntSingleWorm), but I think this is cleaner
     #from a function organization point of view.
     with tables.File(skeletons_file, 'r') as fid:
@@ -209,15 +210,15 @@ class getTrajectoriesWorker():
                     'join_traj_param':self.param.join_traj_param},
             'output_file':self.trajectories_file
             },
+        'SKE_ORIENT': {
+            'func':correctHeadTail, 
+            'argkws':{**{'skeletons_file':self.skeletons_file}, **self.param.head_tail_param},
+            'output_file':self.skeletons_file
+            },
         'SKE_CREATE': {
             'func':trajectories2Skeletons,
             'argkws':{**{'masked_image_file':self.masked_image_file, 'skeletons_file':self.skeletons_file, \
                     'trajectories_file':self.trajectories_file}, **self.param.skeletons_param},
-            'output_file':self.skeletons_file
-            },
-        'SKE_ORIENT': {
-            'func':correctHeadTail, 
-            'argkws':{**{'skeletons_file':self.skeletons_file}, **self.param.head_tail_param},
             'output_file':self.skeletons_file
             },
         'SKE_FILT': {
@@ -296,7 +297,7 @@ class getTrajectoriesWorker():
                         break
 
                 if current_point == 'FEAT_CREATE':
-                    if isBadCntOrientationStr(self.skeletons_file):
+                    if hasExpCntInfo(self.skeletons_file):
                         current_point = 'CONTOUR_ORIENT'
                         break
                     else:

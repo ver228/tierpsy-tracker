@@ -52,8 +52,9 @@ function install_dependencies {
 	brew install sip --with-python3 pyqt --with-python3 pyqt5 --with-python3
 	
 	#i prefer to install matplotlib and numpy with homebrew it gives less problems of compatilibity down the road
-	brew install matplotlib --with-python3 numpy --with-python3
-
+	brew install homebrew/python/matplotlib --with-python3 
+	brew install homebrew/python/numpy --with-python3
+	
 	pip3 install -U numpy spyder tables pandas h5py scipy scikit-learn \
 		scikit-image tifffile seaborn xlrd gitpython psutil
 }
@@ -123,7 +124,7 @@ function install_main_modules {
 create_directories
 copy_old_ffmpeg
 install_dependencies
-if [ ! $OPENCV_VER -eq `python3 -c "import cv2; print(cv2.__version__)"` ]; then
+if [[ ! $OPENCV_VER -eq `python3 -c "import cv2; print(cv2.__version__)"` ]]; then
 	install_opencv3
 fi
 compile_cython_files

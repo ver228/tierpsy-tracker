@@ -12,8 +12,8 @@ import argparse
 import subprocess
 import time, datetime
 
-from .trackSingleWorker import getTrajectoriesWorker, getStartingPoint, checkpoint, \
-checkpoint_label, constructNames, isBadStageAligment, isBadCntOrientationStr
+from MWTracker.batchProcessing.trackSingleWorker import getTrajectoriesWorker, getStartingPoint, checkpoint, \
+checkpoint_label, constructNames, isBadStageAligment, hasExpCntInfo
 
 from MWTracker.helperFunctions.miscFun import print_flush
 
@@ -94,9 +94,9 @@ class trackLocal:
 			if isBadStageAligment(self.skeletons_tmp):
 				self.last_check_point = 'STAGE_ALIGMENT'
 			#on in the contour orientation.
-			if isBadCntOrientationStr(self.skeletons_tmp):
+			elif hasExpCntInfo(self.skeletons_tmp):
 				self.last_check_point = 'CONTOUR_ORIENT'
-
+		
 		self.copyFilesToFinal()
 		self.cleanTmpFiles()
 		
