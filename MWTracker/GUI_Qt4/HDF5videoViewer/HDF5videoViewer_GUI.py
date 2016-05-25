@@ -14,7 +14,7 @@ import numpy as np
 class HDF5videoViewer_GUI(QMainWindow):
     def __init__(self, ui = ''):
         super().__init__()
-        
+
         # Set up the user interface from Designer.
         if not ui:
             self.ui = Ui_ImageViewer()
@@ -22,16 +22,17 @@ class HDF5videoViewer_GUI(QMainWindow):
             self.ui = ui
 
         self.ui.setupUi(self)
+        #self.ui.lineEdit_video.setAcceptDrops(True)
+        self.ui.imageCanvas.setAcceptDrops(True)
+        self.ui.imageCanvas.dragEnterEvent = self.dragEnterEvent
+        self.ui.imageCanvas.dropEvent = self.fileDrop
+
 
         self.isPlay = False
         self.fid = -1
         self.image_group = -1
         self.videos_dir = ''
-        #self.videos_dir =  r"/Volumes/behavgenom$/GeckoVideo/Results/20150521_1115/"
-        #self.videos_dir =  os.path.expanduser("~") + os.sep + 'Downloads' + os.sep + 'wetransfer-cf3818' + os.sep
         
-        #self.ui.imageCanvas.setFocusPolicy(Qt.ClickFocus)
-
         self.h5path = self.ui.comboBox_h5path.itemText(0)
         
         self.ui.pushButton_video.clicked.connect(self.getVideoFile)
@@ -56,8 +57,27 @@ class HDF5videoViewer_GUI(QMainWindow):
         # SET UP RECURRING EVENTS
         self.timer = QTimer()
         self.timer.timeout.connect(self.getNextImage)
+    
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls:
+            event.accept()
+        else:
+            event.ignore()
         
-        
+    def fileDrop(self, e):
+        print(e.mimeData().urls())
+        for url in e.mimeData().urls():
+            path = url.toLocalFile()
+            
+            #path = url.toLocalFile().toLocal8Bit().data()
+            #if os.path.isfile(path):
+            #there is a bug in pyqt4 on osx (http://stackoverflow.com/questions/34689562/pyqt-mimedata-filename)
+            #I cannot really retrive a file name using drag and drop
+            print(path)
+
+
+
     #Scroller
     def imSldPressed(self):
         self.ui.imageSlider.setCursor(Qt.ClosedHandCursor)

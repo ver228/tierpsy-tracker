@@ -225,7 +225,7 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, threshold_factor = 1., strel_size =
     
     with tables.File(masked_image_file, 'r') as mask_fid:
         mask_dataset = mask_fid.get_node("/mask")
-        if not mask_dataset._v_attrs['has_finished'] >= 1:
+        if 'has_finished' in mask_dataset._v_attrs and not mask_dataset._v_attrs['has_finished'] >= 1:
             raise Exception('HDF5 Masked Image was not finished correctly.')
         if mask_dataset.shape[0] == 0:
             raise Exception('Empty set in masked image file. Nothing to do here.')

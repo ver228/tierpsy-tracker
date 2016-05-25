@@ -179,7 +179,8 @@ class trackLocal:
 			except:
 				with h5py.File(self.masked_image_file, "r") as mask_fid:
 					#check if the video to mask conversion did indeed finished correctly
-					assert mask_fid['/mask'].attrs['has_finished'] >= 1
+					if 'has_finished' in mask_fid['/mask'].attrs:
+						assert mask_fid['/mask'].attrs['has_finished'] >= 1
 
 				files2copy += [(self.masked_image_file, self.tmp_mask_dir)]
 
