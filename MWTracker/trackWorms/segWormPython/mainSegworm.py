@@ -222,7 +222,7 @@ def resampleAll(skeleton, cnt_side1, cnt_side2, cnt_widths, resampling_N):
     return skeleton, ske_len, cnt_side1, cnt_side2, cnt_widths
 
 
-def getSkeleton(worm_cnt, prev_skeleton = np.zeros(0), resampling_N = 50):
+def getSkeleton(worm_cnt, prev_skeleton = np.zeros(0), resampling_N = 49):
     
     n_output_param = 6 #number of expected output parameters
     
