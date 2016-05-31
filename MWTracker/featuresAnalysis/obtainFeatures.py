@@ -51,7 +51,15 @@ def getFPS(skeletons_file, expected_fps):
 def getMicronsPerPixel(skeletons_file):
     try:
         with tables.File(skeletons_file, 'r') as fid:
-            return fid.get_node('/stage_movement')._v_attrs['pixel_per_micron_scale']
+            pixel_per_micron_scale = fid.get_node('/stage_movement')._v_attrs['pixel_per_micron_scale']
+            rotation_matrix = fid.get_node('/stage_movement')._v_attrs['rotation_matrix']
+
+            #rotate the pixel scale
+            rotation_matrix_inv = rotation_matrix*[(1,-1),(-1,1)]
+            pixel_per_micron_scale = np.dot(rotation_matrix_inv, pixel_per_micron_scale)
+            
+            return pixel_per_micron_scale
+
     except (tables.exceptions.NoSuchNodeError, IOError):
             #i need to change it to something better, but for the momement let's use 1 as default
             return 1
@@ -77,8 +85,10 @@ def correctSingleWorm(worm, skeletons_file):
     
     #let's rotate the stage movement
     rotation_matrix_inv = rotation_matrix*[(1,-1),(-1,1)]
-    stage_vec_inv = -np.dot(stage_vec,rotation_matrix_inv)
-
+    #the negative symbole is to add the stage vector directly, instead of substracting it.
+    #stage_vec_inv = -np.dot(stage_vec,rotation_matrix_inv)
+    stage_vec_inv = -np.dot(rotation_matrix_inv, stage_vec.T).T
+    
     for field in ['skeleton', 'ventral_contour', 'dorsal_contour']:
         if hasattr(worm, field):
             tmp_dat = getattr(worm, field)
