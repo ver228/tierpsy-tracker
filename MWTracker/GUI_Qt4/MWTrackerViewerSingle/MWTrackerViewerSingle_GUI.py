@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import cv2
 import json
+#from scipy.signal import savgol_filter
 
 class MWTrackerViewerSingle_GUI(HDF5videoViewer_GUI):
     def __init__(self, ui = ''):
@@ -145,7 +146,10 @@ class MWTrackerViewerSingle_GUI(HDF5videoViewer_GUI):
                 dat = ske_file_id.get_node('/' + tt)[skel_id];
                 dat[:,0] = (dat[:,0]-roi_corner[0])*c_ratio_x
                 dat[:,1] = (dat[:,1]-roi_corner[1])*c_ratio_y
-            
+                
+                #for nn in range(2):
+                #    dat[:,nn] = savgol_filter(dat[:,nn], window_length=5, polyorder=3)
+
                 qPlg[tt] = QPolygonF()
                 for p in dat:
                     qPlg[tt].append(QPointF(*p))

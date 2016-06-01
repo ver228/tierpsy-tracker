@@ -70,11 +70,11 @@ function install_opencv3 {
 	echo 'Installing opencv.'
 	#there is a brew formula for this, but there are more changes this will work.
 	cd $MW_MAIN_DIR/..
-
+	
 	git clone https://github.com/Itseez/opencv
 	#git clone https://github.com/Itseez/opencv_contrib
 
-	cd $MW_MAIN_DIR/../opencv
+	cd $OPENCV_DIR
 	git checkout -f $OPENCV_VER
 
 	PY_VER=`python3 -c "import sys; print(sys.version.partition(' ')[0])"`
@@ -99,10 +99,18 @@ function install_opencv3 {
 	-D INSTALL_C_EXAMPLES=OFF \
 	-DCMAKE_BUILD_TYPE=RELEASE \
 	..
-	make clean
 	done
 	make -j24
 	make install
+	make clean
+}
+
+function clean_prev_installation{
+	rm -Rf $OPENCV_DIR
+	rm -Rf $OPENWORM_DIR
+	pip3 uninstall -y numpy spyder tables pandas h5py scipy scikit-learn \
+		scikit-image tifffile seaborn xlrd gitpython psutil
+	brew uninstall --force wget cmake python3 git ffmpeg homebrew/science/hdf5 sip pyqt pyqt5
 }
 
 function install_main_modules {
@@ -120,7 +128,7 @@ function install_main_modules {
 #get sudo permissions
 #sudo echo "Thanks."
 
-
+#clean_prev_installation
 create_directories
 copy_old_ffmpeg
 install_dependencies

@@ -1,6 +1,0 @@
-*.pyc
-/MWTracker.egg-info
-/open_worm_analysis_toolbox.egg-info
-__pycache__/*
-*.dropbox.attr
-*nohup.out

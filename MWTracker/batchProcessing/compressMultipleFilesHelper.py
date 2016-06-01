@@ -59,7 +59,7 @@ def isBadMask(masked_image_file):
 	try:
 		with tables.File(masked_image_file, 'r') as mask_fid:
 			mask_node = mask_fid.get_node('/mask')
-			if mask_node._v_attrs['has_finished'] < 1: 
+			if ('has_finished' in mask_node._v_attrs) and (mask_node._v_attrs['has_finished'] < 1): 
 				raise ValueError
 			if mask_node.shape[0] == 0:
 				raise ValueError
