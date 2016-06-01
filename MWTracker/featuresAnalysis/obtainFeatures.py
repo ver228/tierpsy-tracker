@@ -59,7 +59,7 @@ def correctSingleWorm(worm, skeletons_file):
         stage_vec_ori = fid.get_node('/stage_movement/stage_vec')[:]
         timestamp_ind = fid.get_node('/timestamp/raw')[:].astype(np.int)
         rotation_matrix = fid.get_node('/stage_movement')._v_attrs['rotation_matrix']
-        pixel_per_micron_scale = fid.get_node('/stage_movement')._v_attrs['pixel_per_micron_scale']
+        microns_per_pixel_scale = fid.get_node('/stage_movement')._v_attrs['microns_per_pixel_scale']
 
     #adjust the stage_vec to match the timestamps in the skeletons
     timestamp_ind = timestamp_ind
@@ -85,7 +85,7 @@ def correctSingleWorm(worm, skeletons_file):
             #rotate the skeletons
             for ii in range(tot_skel):
                 tmp_dat[ii] = np.dot(rotation_matrix, tmp_dat[ii].T).T
-            tmp_dat = tmp_dat*pixel_per_micron_scale - stage_vec[:,np.newaxis, :]
+            tmp_dat = tmp_dat*microns_per_pixel_scale - stage_vec[:,np.newaxis, :]
             setattr(worm, field, tmp_dat)
     return worm
 #%%%%%%%
