@@ -49,20 +49,9 @@ def getFPS(skeletons_file, expected_fps):
 
 #%%%%%% these function are related with the singleworm case it might be necesary to change them in the future
 def getMicronsPerPixel(skeletons_file):
-    try:
-        with tables.File(skeletons_file, 'r') as fid:
-            pixel_per_micron_scale = fid.get_node('/stage_movement')._v_attrs['pixel_per_micron_scale']
-            rotation_matrix = fid.get_node('/stage_movement')._v_attrs['rotation_matrix']
-
-            #rotate the pixel scale
-            rotation_matrix_inv = rotation_matrix*[(1,-1),(-1,1)]
-            pixel_per_micron_scale = np.dot(rotation_matrix_inv, pixel_per_micron_scale)
-            
-            return pixel_per_micron_scale
-
-    except (tables.exceptions.NoSuchNodeError, IOError):
-            #i need to change it to something better, but for the momement let's use 1 as default
-            return 1
+    #dum function until I figure out how to add the pixel_per_micron data into the multiworm data. 
+    #in the case of single worm the scaling is done in the correctSingleWorm 
+    return 1
 
 def correctSingleWorm(worm, skeletons_file):
     ''' Correct worm positions using the stage vector calculated by alignStageMotionSegwormFun.m'''
@@ -70,6 +59,7 @@ def correctSingleWorm(worm, skeletons_file):
         stage_vec_ori = fid.get_node('/stage_movement/stage_vec')[:]
         timestamp_ind = fid.get_node('/timestamp/raw')[:].astype(np.int)
         rotation_matrix = fid.get_node('/stage_movement')._v_attrs['rotation_matrix']
+        pixel_per_micron_scale = fid.get_node('/stage_movement')._v_attrs['pixel_per_micron_scale']
 
     #adjust the stage_vec to match the timestamps in the skeletons
     timestamp_ind = timestamp_ind
@@ -84,17 +74,18 @@ def correctSingleWorm(worm, skeletons_file):
     tot_skel = worm.skeleton.shape[0]
     
     #let's rotate the stage movement
-    rotation_matrix_inv = rotation_matrix*[(1,-1),(-1,1)]
+    #rotation_matrix_inv = rotation_matrix*[(1,-1),(-1,1)]
     #the negative symbole is to add the stage vector directly, instead of substracting it.
-    #stage_vec_inv = -np.dot(stage_vec,rotation_matrix_inv)
-    stage_vec_inv = -np.dot(rotation_matrix_inv, stage_vec.T).T
+    #stage_vec_inv = -np.dot(rotation_matrix_inv, stage_vec.T).T
     
+
     for field in ['skeleton', 'ventral_contour', 'dorsal_contour']:
         if hasattr(worm, field):
             tmp_dat = getattr(worm, field)
-            #for ii in range(tot_skel):
-            #    tmp_dat[ii] = np.dot(tmp_dat[ii], rotation_matrix) - stage_vec[ii]
-            tmp_dat += stage_vec_inv[:,np.newaxis, :]
+            #rotate the skeletons
+            for ii in range(tot_skel):
+                tmp_dat[ii] = np.dot(rotation_matrix, tmp_dat[ii].T).T
+            tmp_dat = tmp_dat*pixel_per_micron_scale - stage_vec[:,np.newaxis, :]
             setattr(worm, field, tmp_dat)
     return worm
 #%%%%%%%
@@ -202,11 +193,17 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, expected_fps
         #start to calculate features for each worm trajectory
         for ind_N, worm_index  in enumerate(good_traj_index):
             #initialize worm object, and extract data from skeletons file
-            worm = WormFromTable(skeletons_file, worm_index,
+            if not is_single_worm:
+                worm = WormFromTable(skeletons_file, worm_index,
                 use_skel_filter = use_skel_filter, worm_index_str = worm_index_str,
                 micronsPerPixel = micronsPerPixel, fps = fps, smooth_window = 5)
             
-            if is_single_worm:
+            else:
+                #do not use micronsPerPixel 
+                worm = WormFromTable(skeletons_file, worm_index,
+                use_skel_filter = use_skel_filter, worm_index_str = worm_index_str,
+                micronsPerPixel = 1, fps = fps, smooth_window = 5)
+
                 with tables.File(skeletons_file, 'r') as skel_fid:
                     if '/experiment_info' in skel_fid:
                         dd = skel_fid.get_node('/experiment_info').read()
@@ -218,6 +215,7 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, expected_fps
                 if np.all(np.isnan(worm.skeleton[:,0,0])):
                     return
 
+                
             
             #calculate features
             timeseries_data, events_data, worm_stats, skeletons = \
