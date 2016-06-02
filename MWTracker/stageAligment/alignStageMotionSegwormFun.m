@@ -81,7 +81,7 @@ function alignStageMotionSegwormFun(masked_image_file,skeletons_file)
     %% save appropiated attributes into the hdf5
     h5writeatt(skeletons_file, '/stage_movement', 'fps', fps)
     h5writeatt(skeletons_file, '/stage_movement', 'delay_frames', delay_frames)
-    h5writeatt(skeletons_file , '/stage_movement',  'pixel_per_micron_scale',  pixelPerMicronScale)
+    h5writeatt(skeletons_file , '/stage_movement',  'microns_per_pixel_scale',  pixelPerMicronScale)
     h5writeatt(skeletons_file , '/stage_movement',  'rotation_matrix',  rotation_matrix)
     
     %% calculate the variance of the difference between frames
