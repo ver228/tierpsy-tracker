@@ -20,7 +20,7 @@ from ..helperFunctions.timeCounterStr import timeCounterStr
 DEFAULT_MASK_PARAM = {'min_area':100, 'max_area':5000, 'has_timestamp':True, 
 'thresh_block_size':61, 'thresh_C':15, 'dilation_size': 9, 'keep_border_data': False}
 
-def getROIMask(image, min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEFAULT_MASK_PARAM['max_area'], 
+def getROIMask(image, fluo_flag = False, fluo_marker = [], min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEFAULT_MASK_PARAM['max_area'], 
     has_timestamp = DEFAULT_MASK_PARAM['has_timestamp'], thresh_block_size = DEFAULT_MASK_PARAM['thresh_block_size'], 
     thresh_C = DEFAULT_MASK_PARAM['thresh_C'], dilation_size = DEFAULT_MASK_PARAM['dilation_size'], 
     keep_border_data = DEFAULT_MASK_PARAM['keep_border_data']):
@@ -35,12 +35,15 @@ def getROIMask(image, min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEFA
     if thresh_block_size%2==0:
         thresh_block_size+=1 #this value must be odd
     
-    #adaptative threshold is the best way to find possible worms. I setup the parameters manually, they seem to work fine if there is no condensation in the sample
-    # if fluo_flag: # check if we are dealing with a fluorescent image
-        # mask = cv2.adaptiveThreshold(image,255,cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, thresh_block_size, -thresh_C)
-    # else: #image is not fluorescent
-    mask = cv2.adaptiveThreshold(image,255,cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, thresh_block_size, thresh_C)
-    #ret, mask = cv2.threshold(image, thresh_C, 255, cv2.THRESH_BINARY_INV)
+    #adaptative threshold is the best way to find possible worms. The parameters are set manually, they seem to work fine if there is no condensation in the sample
+    if fluo_flag: # check if we are dealing with a fluorescent image
+        if fluo_marker == 'pharynx':
+            mask = cv2.adaptiveThreshold(image,255,cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, thresh_block_size, -thresh_C)
+        elif fluo_marker == 'bodywallmuscle':
+            mask = cv2.adaptiveThreshold(image,255,cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, thresh_block_size, -thresh_C)
+    else: #image is not fluorescent
+        mask = cv2.adaptiveThreshold(image,255,cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, thresh_block_size, thresh_C)
+    ret, mask = cv2.threshold(image, thresh_C, 255, cv2.THRESH_BINARY_INV)
 
 
     #find the contour of the connected objects (much faster than labeled images)
