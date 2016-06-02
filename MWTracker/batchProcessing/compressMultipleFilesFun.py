@@ -16,7 +16,7 @@ from .compressMultipleFilesHelper import checkVideoFiles, exploreDirs
 parser = argparse.ArgumentParser(description="Compress video files in the local drive using several parallel processes")
 
 parser.add_argument('video_dir_root', help='Root directory with the raw videos.')
-parser.add_argument('mask_dir_root', help='Root directory with the where the masked hdf5 files are going to be saved.')
+parser.add_argument('mask_dir_root', help='Root directory where the masked hdf5 files are going to be saved.')
 
 parser.add_argument('--videos_list', default='', help='File containing the full path of the videos to be analyzed, otherwise there will be search from video_dir_root using pattern_include and pattern_exclude.')
 
