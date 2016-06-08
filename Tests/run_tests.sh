@@ -1,5 +1,5 @@
-EXAMPLES_DIR="/Users/ajaver/Google Drive/MWTracker/Tests"
-SCRIPT_DIR=/Users/ajaver/Documents/GitHub/Multiworm_Tracking/cmd_scripts
+EXAMPLES_DIR="/Users/linus/Dropbox/projects/collectiveBehaviour/wormtracking/Multiworm_Tracking/Tests"
+SCRIPT_DIR=/Users/linus/Dropbox/projects/collectiveBehaviour/wormtracking/Multiworm_Tracking/cmd_scripts
 
 TEST1_DIR="$EXAMPLES_DIR/test_1"
 TEST2_DIR="$EXAMPLES_DIR/test_2"
@@ -47,8 +47,8 @@ rm -Rf "$TEST2_DIR/MaskedVideos"
 rm -Rf "$TEST3_DIR/Results"
 }
 
-#test1
-#test2
+test1
+test2
 test3
-#test4
-#test5
+test4
+test5
