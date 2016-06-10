@@ -3,7 +3,7 @@ import os
 from sys import exit
 import glob
 
-class readDat:
+class readDatFile:
     """ Reads a stack of dat images """
     def __init__(self, dirName):
         self.fid = dirName

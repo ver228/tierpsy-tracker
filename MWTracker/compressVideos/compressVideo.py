@@ -13,7 +13,7 @@ import sys
 from .readVideoffmpeg import readVideoffmpeg
 from .readVideoHDF5 import readVideoHDF5
 from .extractMetaData import storeMetaData, readAndSaveTimestamp
-from .readDat import readDat
+from .readDatFile import readDatFile
 #from .imageDifferenceMask import imageDifferenceMask
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
@@ -102,7 +102,7 @@ def selectVideoReader(video_file):
         im_width = vid.width;
         reader_type = READER_TYPE['FFMPEG_CMD']
     elif isDATstack:
-        vid = readDat(video_file[:-20]);
+        vid = readDatFile(video_file[:-20]);
         im_height = vid.height;
         im_width = vid.width;
         reader_type = READER_TYPE['DAT']
