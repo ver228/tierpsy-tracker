@@ -42,7 +42,7 @@ function install_dependencies {
 	brew install wget cmake python3 git
 
 
-	#ffmpeg libraries, I need them to install opencv
+	#ffmpeg libraries, needed to install opencv
 	brew install ffmpeg --with-fdk-aac --with-ffplay --with-freetype --with-libass --with-libquvi \
 	--with-libvorbis --with-libvpx --with-opus --with-x265 --with-openh264 --with-tools --with-fdk-aac
 	
