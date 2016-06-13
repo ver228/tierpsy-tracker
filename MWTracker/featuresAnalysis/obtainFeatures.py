@@ -52,7 +52,7 @@ def getMicronsPerPixel(skeletons_file):
 	try:
 		with tables.File(skeletons_file, 'r') as fid:
 			microns_per_pixel_scale = fid.get_node('/stage_movement')._v_attrs['microns_per_pixel_scale']
-	except KeyError:
+	except (KeyError, tables.exceptions.NoSuchNodeError):
 		return 1
 
 	if microns_per_pixel_scale.size == 2:

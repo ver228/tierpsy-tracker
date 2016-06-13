@@ -24,7 +24,13 @@ def dict2recarray(dat):
     return recarray
 
 def ffprobeMetadata(video_file):
-    command = ['ffprobe', '-v', 'error', '-show_frames', '-print_format', 'json', video_file]
+
+    if os.name == 'nt':
+        ffprobe_cmd = 'ffprobe.exe'
+    else:
+        ffprobe_cmd = '/usr/local/bin/ffprobe' #this version reads the Gecko files
+        
+    command = [ffprobe_cmd, '-v', 'error', '-show_frames', '-print_format', 'json', video_file]
     FNULL = open(os.devnull, 'w')
     pipe = sp.Popen(command, stdout = sp.PIPE, stderr = sp.PIPE)
     buff = pipe.stdout.read()
