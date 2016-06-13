@@ -74,9 +74,9 @@ class compressLocal:
 		#this might be more logically group in main_code, but this operation can and should be do remotely if required
 		if self.final_has_finished  == 1:
 			#The file finished to be processed but the additional data was not stored. We can do this remotely. 
-			os.chflags(self.masked_image_file, not stat.UF_IMMUTABLE)
+			if os.name != 'nt': os.chflags(self.masked_image_file, not stat.UF_IMMUTABLE)
 			compressSingleWorker(self.video_file, self.mask_dir, self.json_file, self.is_single_worm, self.cmd_original)
-			os.chflags(self.masked_image_file, stat.UF_IMMUTABLE)
+			if os.name != 'nt': os.chflags(self.masked_image_file, stat.UF_IMMUTABLE)
 
 		if self.final_has_finished  == 2:
 			print_flush('File alread exists: %s. If you want to calculate the mask again delete the existing file.' % self.masked_image_file)
@@ -170,12 +170,13 @@ class compressLocal:
 				assert os.path.exists(self.masked_image_file)
 				os.remove(self.tmp_mask_file)
 
-			#Change the permissions so everybody can read/write. 
-			#Otherwise only the owner would be able to change the ummutable flag.
-			os.chmod(self.masked_image_file, stat.S_IRUSR|stat.S_IRGRP|stat.S_IROTH|stat.S_IWUSR|stat.S_IWGRP|stat.S_IWOTH) 
+			if os.name != 'nt':
+				#Change the permissions so everybody can read/write. 
+				#Otherwise only the owner would be able to change the ummutable flag.
+				os.chmod(self.masked_image_file, stat.S_IRUSR|stat.S_IRGRP|stat.S_IROTH|stat.S_IWUSR|stat.S_IWGRP|stat.S_IWOTH) 
 			
-			#Protect file from deletion.
-			os.chflags(self.masked_image_file, stat.UF_IMMUTABLE)
+				#Protect file from deletion.
+				os.chflags(self.masked_image_file, stat.UF_IMMUTABLE)
 			#print_flush(self.base_name + " Finished to create masked file")
 
 

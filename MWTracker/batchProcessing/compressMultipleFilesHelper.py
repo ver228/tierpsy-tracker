@@ -210,8 +210,9 @@ class checkVideoFiles:
 		for video_file, masked_image_file in self.filtered_files['FINISHED_BAD']:
 			assert masked_image_file[-5:] == '.hdf5'
 			
-			#delete wrong file from previous analysis	
-			os.chflags(masked_image_file, not stat.UF_IMMUTABLE)
+			#delete wrong file from previous analysis
+			if os.name != 'nt':	
+				os.chflags(masked_image_file, not stat.UF_IMMUTABLE)
 			os.remove(masked_image_file)
 
 			#add the video to files to be processed

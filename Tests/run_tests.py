@@ -5,16 +5,26 @@ import shutil
 import stat
 import glob
 
+def execute_cmd(command):
 
-def execute_cmd(command):	
-	command = ['"' + x + '"' for x in command]
-	os.system(' '.join(command))
+	cmd_dd = []
+	for ii, x in enumerate(command):
+		if ii != 0 and not x.startswith('--'):
+			cmd_dd.append('"' + x + '"')
+		else:
+			cmd_dd.append(x)
 
+	cmd_dd = ' '.join(cmd_dd)
+	print(cmd_dd)
+	
+	os.system(cmd_dd)
 
 def remove_dir(dir2remove):
 	if os.path.exists(dir2remove):
-		for fname in glob.glob(os.path.join(dir2remove, '*.hdf5')):
-			os.chflags(fname, not stat.UF_IMMUTABLE)
+		if os.name != 'nt':
+			for fname in glob.glob(os.path.join(dir2remove, '*.hdf5')):
+				os.chflags(fname, not stat.UF_IMMUTABLE)
+	
 		shutil.rmtree(dir2remove)
 
 def test1(script_dir, examples_dir):
@@ -81,7 +91,5 @@ if __name__ == '__main__':
 	examples_dir = os.path.join(os.path.expanduser("~"), 'Google Drive', 'MWTracker', 'Tests')
 	script_dir = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'cmd_scripts')
 
-	for fun in [test1, test2, test3, test4, test5]:
+	for fun in [test3]:#, test2, test3, test4, test5]:
 		fun(script_dir, examples_dir)
-
-	
