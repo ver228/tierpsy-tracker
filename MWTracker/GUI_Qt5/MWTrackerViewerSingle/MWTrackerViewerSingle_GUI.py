@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QFileDialog
 from PyQt5.QtGui import QPixmap, QImage, QPolygonF, QPen, QPainter, QColor
 from PyQt5.QtCore import QPointF, Qt
 
@@ -32,7 +32,7 @@ class MWTrackerViewerSingle_GUI(HDF5videoViewer_GUI):
         
 
     def getSkelFile(self):
-        selected_file = QFileDialog.getOpenFileName(self, 'Select file with the worm skeletons', 
+        selected_file, _ = QFileDialog.getOpenFileName(self, 'Select file with the worm skeletons', 
             self.results_dir,  "Skeletons files (*_skeletons.hdf5);; All files (*)")
         
         if not os.path.exists(selected_file):
