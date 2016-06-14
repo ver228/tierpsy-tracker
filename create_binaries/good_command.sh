@@ -1,8 +1,7 @@
 
 PYVER=`python3 -c "import MWTracker; print(MWTracker.__version__)"`
-
 for FNAME in HDF5videoViewer MWTrackerViewer SWTrackerViewer getMaskParams
-do
+do 
 pyinstaller ../MWTracker_GUI/$FNAME.py --exclude-module PyQt4 \
 --exclude-module PyQt4.QtCore --exclude-module PyQt4.QtGui \
 --hidden-import=h5py.defs --hidden-import=h5py.utils \

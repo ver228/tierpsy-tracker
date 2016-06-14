@@ -3,8 +3,8 @@
 block_cipher = None
 
 
-a = Analysis(['../MWTracker_GUI/getMaskParams.py'],
-             pathex=['/Users/ajaver/Documents/GitHub/Multiworm_Tracking/create_binaries'],
+a = Analysis(['..\\MWTracker_GUI\\getMaskParams.py'],
+             pathex=['C:\\Users\\Avelino.Avelino_VM\\Documents\\GitHub\\Multiworm_Tracking\\create_binaries'],
              binaries=None,
              datas=None,
              hiddenimports=['h5py.defs', 'h5py.utils', 'h5py.h5ac', 'h5py._proxy'],
@@ -31,7 +31,3 @@ coll = COLLECT(exe,
                strip=False,
                upx=True,
                name='getMaskParams')
-app = BUNDLE(coll,
-             name='getMaskParams.app',
-             icon=None,
-             bundle_identifier=None)
