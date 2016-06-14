@@ -3,7 +3,7 @@
 block_cipher = None
 
 
-a = Analysis(['../MWTracker_GUI/MWTrackerViewer.py'],
+a = Analysis(['../MWTracker_GUI/HDF5videoViewer.py'],
              pathex=['/Users/ajaver/Documents/GitHub/Multiworm_Tracking/create_binaries'],
              binaries=None,
              datas=None,
@@ -19,7 +19,7 @@ pyz = PYZ(a.pure, a.zipped_data,
 exe = EXE(pyz,
           a.scripts,
           exclude_binaries=True,
-          name='MWTrackerViewer',
+          name='HDF5videoViewer',
           debug=False,
           strip=False,
           upx=True,
@@ -30,8 +30,8 @@ coll = COLLECT(exe,
                a.datas,
                strip=False,
                upx=True,
-               name='MWTrackerViewer')
+               name='HDF5videoViewer')
 app = BUNDLE(coll,
-             name='MWTrackerViewer.app',
+             name='HDF5videoViewer.app',
              icon=None,
              bundle_identifier=None)
