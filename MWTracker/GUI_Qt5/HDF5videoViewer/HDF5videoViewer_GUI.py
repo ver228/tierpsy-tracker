@@ -34,6 +34,7 @@ class HDF5videoViewer_GUI(QMainWindow):
         self.ui.playButton.clicked.connect(self.playVideo)
         self.ui.imageSlider.sliderPressed.connect(self.imSldPressed)
         self.ui.imageSlider.sliderReleased.connect(self.imSldReleased)
+        self.ui.imageSlider.valueChanged.connect(self.imSldChanged)
         
         self.ui.spinBox_frame.valueChanged.connect(self.updateFrameNumber)
         self.ui.doubleSpinBox_fps.valueChanged.connect(self.updateFPS)
@@ -105,6 +106,8 @@ class HDF5videoViewer_GUI(QMainWindow):
     
     def imSldReleased(self):
         self.ui.imageSlider.setCursor(Qt.OpenHandCursor)
+
+    def imSldChanged(self):
         if self.image_group != -1:
             self.frame_number = int(round((self.tot_frames-1)*self.ui.imageSlider.value()/100))
             self.ui.spinBox_frame.setValue(self.frame_number)
