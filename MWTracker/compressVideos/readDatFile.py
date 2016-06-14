@@ -43,7 +43,12 @@ class readDatFile:
             image_decoded = np.zeros((self.height, self.width), np.uint16)
             image_decoded[::-1, -2::-2] = D3s.reshape((self.height, -1))
             image_decoded[::-1, ::-2] = D1s.reshape((self.height, -1))
-            return (1, image_decoded.astype(np.uint8))
+
+            #normalise image intensities to 8 bit
+            max_intensity = max(image_decoded)
+            min_intensity = min(image_decoded)
+            image_normalized = (image_decoded - min_intensity)/(max_intensity - min_intensity)*255
+            return (1, image_normalized, max_intensity, min_intensity)
         else:
             return (0, [])
     def release(self):

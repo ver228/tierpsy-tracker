@@ -225,7 +225,10 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM, ex
         progressTime = timeCounterStr('Compressing video.');
 
         while frame_number < max_frame:
-            ret, image = vid.read() #get video frame, stop program when no frame is retrive (end of file)
+            if reader_type==3:
+                ret, image, max_intensity, min_intensity = vid.read() #for dat files save intensity limits used for normalising to 8bit range
+            else:
+                ret, image = vid.read() #get video frame, stop program when no frame is retrieved (end of file)
             if ret != 0:
                 #opencv can give an artificial rgb image. Let's get it back to gray scale.
                 if image.ndim==3:
