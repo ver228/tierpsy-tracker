@@ -1,0 +1,7 @@
+
+*.pyc
+
+create_binaries/build/*
+
+create_binaries/dist/*
+MWTracker.egg-info/*

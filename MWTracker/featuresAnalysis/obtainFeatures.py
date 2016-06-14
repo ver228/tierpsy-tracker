@@ -49,9 +49,18 @@ def getFPS(skeletons_file, expected_fps):
 
 #%%%%%% these function are related with the singleworm case it might be necesary to change them in the future
 def getMicronsPerPixel(skeletons_file):
-    #dum function until I figure out how to add the pixel_per_micron data into the multiworm data. 
-    #in the case of single worm the scaling is done in the correctSingleWorm 
-    return 1
+	try:
+		with tables.File(skeletons_file, 'r') as fid:
+			microns_per_pixel_scale = fid.get_node('/stage_movement')._v_attrs['microns_per_pixel_scale']
+	except (KeyError, tables.exceptions.NoSuchNodeError):
+		return 1
+
+	if microns_per_pixel_scale.size == 2:
+		assert np.abs(microns_per_pixel_scale[0]) == np.abs(microns_per_pixel_scale[1])
+		microns_per_pixel_scale = np.abs(microns_per_pixel_scale[0])
+		return microns_per_pixel_scale
+	else:
+		return 1
 
 def correctSingleWorm(worm, skeletons_file):
     ''' Correct worm positions using the stage vector calculated by alignStageMotionSegwormFun.m'''
@@ -60,7 +69,12 @@ def correctSingleWorm(worm, skeletons_file):
         timestamp_ind = fid.get_node('/timestamp/raw')[:].astype(np.int)
         rotation_matrix = fid.get_node('/stage_movement')._v_attrs['rotation_matrix']
         microns_per_pixel_scale = fid.get_node('/stage_movement')._v_attrs['microns_per_pixel_scale']
+    
+    #let's rotate the stage movement    
+    dd = np.sign(microns_per_pixel_scale)
+    rotation_matrix_inv = np.dot(rotation_matrix*[(1,-1),(-1,1)], [(dd[0], 0), (0, dd[1])])
 
+    
     #adjust the stage_vec to match the timestamps in the skeletons
     timestamp_ind = timestamp_ind
     good = (timestamp_ind>=worm.first_frame) & (timestamp_ind<=worm.last_frame)
@@ -73,19 +87,17 @@ def correctSingleWorm(worm, skeletons_file):
     
     tot_skel = worm.skeleton.shape[0]
     
-    #let's rotate the stage movement
-    #rotation_matrix_inv = rotation_matrix*[(1,-1),(-1,1)]
     #the negative symbole is to add the stage vector directly, instead of substracting it.
-    #stage_vec_inv = -np.dot(rotation_matrix_inv, stage_vec.T).T
+    stage_vec_inv = -np.dot(rotation_matrix_inv, stage_vec.T).T
     
 
     for field in ['skeleton', 'ventral_contour', 'dorsal_contour']:
         if hasattr(worm, field):
             tmp_dat = getattr(worm, field)
             #rotate the skeletons
-            for ii in range(tot_skel):
-                tmp_dat[ii] = np.dot(rotation_matrix, tmp_dat[ii].T).T
-            tmp_dat = tmp_dat*microns_per_pixel_scale - stage_vec[:,np.newaxis, :]
+            #for ii in range(tot_skel):
+                #tmp_dat[ii] = np.dot(rotation_matrix, tmp_dat[ii].T).T
+            tmp_dat = tmp_dat + stage_vec_inv[:,np.newaxis, :]
             setattr(worm, field, tmp_dat)
     return worm
 #%%%%%%%
@@ -193,17 +205,11 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, expected_fps
         #start to calculate features for each worm trajectory
         for ind_N, worm_index  in enumerate(good_traj_index):
             #initialize worm object, and extract data from skeletons file
-            if not is_single_worm:
-                worm = WormFromTable(skeletons_file, worm_index,
+            worm = WormFromTable(skeletons_file, worm_index,
                 use_skel_filter = use_skel_filter, worm_index_str = worm_index_str,
                 micronsPerPixel = micronsPerPixel, fps = fps, smooth_window = 5)
             
-            else:
-                #do not use micronsPerPixel 
-                worm = WormFromTable(skeletons_file, worm_index,
-                use_skel_filter = use_skel_filter, worm_index_str = worm_index_str,
-                micronsPerPixel = 1, fps = fps, smooth_window = 5)
-
+            if is_single_worm:
                 with tables.File(skeletons_file, 'r') as skel_fid:
                     if '/experiment_info' in skel_fid:
                         dd = skel_fid.get_node('/experiment_info').read()

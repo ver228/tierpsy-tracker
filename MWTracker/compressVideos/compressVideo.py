@@ -13,8 +13,12 @@ import sys
 from .readVideoffmpeg import readVideoffmpeg
 from .readVideoHDF5 import readVideoHDF5
 from .extractMetaData import storeMetaData, readAndSaveTimestamp
+<<<<<<< HEAD
 from .readDatFile import readDatFile
 #from .imageDifferenceMask import imageDifferenceMask
+=======
+#from .readDat import readDat
+>>>>>>> 99a48ed52289467a94ffe9165ab41683ba4373a0
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
 
@@ -47,7 +51,6 @@ def getROIMask(image, min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEFA
     #find the contour of the connected objects (much faster than labeled images)
     _, contours, hierarchy = cv2.findContours(mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-    
     #find good contours: between max_area and min_area, and do not touch the image border
     goodIndex = []
     for ii, contour in enumerate(contours):
