@@ -111,8 +111,7 @@ class HDF5videoViewer_GUI(QMainWindow):
         if self.image_group != -1:
             self.frame_number = int(round((self.tot_frames-1)*self.ui.imageSlider.value()/100))
             self.ui.spinBox_frame.setValue(self.frame_number)
-            self.updateImage()
-    
+        
     #frame spin box
     def updateFrameNumber(self):
         self.frame_number = self.ui.spinBox_frame.value()
