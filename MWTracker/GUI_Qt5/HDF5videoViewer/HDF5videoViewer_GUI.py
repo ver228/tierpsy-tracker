@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QGraphicsScene, QGraphicsPixmapItem
+from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow, QFileDialog, QMessageBox, QGraphicsScene, QGraphicsPixmapItem
 from PyQt5.QtCore import QDir, QTimer, Qt, QRectF
 from PyQt5.QtGui import QPixmap, QImage
 
@@ -65,6 +65,17 @@ class HDF5videoViewer_GUI(QMainWindow):
         self.ui.lineEdit_video.setAcceptDrops(True)
         self.ui.lineEdit_video.dragEnterEvent = self.canvasDragEnterEvent
         self.ui.lineEdit_video.dropEvent = self.canvasFileDrop
+
+        self.setChildrenFocusPolicy(Qt.NoFocus)
+ 
+    #make sure the childrenfocus policy is none in order to be able to use the arrow keys
+    def setChildrenFocusPolicy (self, policy):
+        def recursiveSetChildFocusPolicy (parentQWidget):
+            for childQWidget in parentQWidget.findChildren(QWidget):
+                childQWidget.setFocusPolicy(policy)
+                recursiveSetChildFocusPolicy(childQWidget)
+        recursiveSetChildFocusPolicy(self)
+
 
     #zoom wheel
     def zoomWheelEvent(self, event):

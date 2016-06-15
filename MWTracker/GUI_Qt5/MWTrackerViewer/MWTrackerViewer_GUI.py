@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtGui import QPixmap, QImage, QPainter, QFont, QPen
 from PyQt5.QtCore import Qt, QEvent
 
