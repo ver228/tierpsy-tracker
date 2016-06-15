@@ -105,7 +105,7 @@ function install_opencv3 {
 	make clean
 }
 
-function clean_prev_installation{
+function clean_prev_installation {
 	rm -Rf $OPENCV_DIR
 	rm -Rf $OPENWORM_DIR
 	pip3 uninstall -y numpy spyder tables pandas h5py scipy scikit-learn \
