@@ -262,7 +262,8 @@ class getMaskParams_GUI(QMainWindow):
         os.system(['clear','cls'][os.name == 'nt'])
         compressSingleWorker(self.video_file, self.mask_files_dir, json_file = self.json_file)
         getTrajectoriesWorker(self.masked_image_file, self.results_dir, json_file = self.json_file)
-        input('Press any key to continue...')
+        if os.name =='nt':
+            input('Press any key to continue...')
         sys.exit()
         
 
