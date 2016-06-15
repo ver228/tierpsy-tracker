@@ -210,12 +210,6 @@ class HDF5videoViewer_GUI(QMainWindow):
                 self.updateVideoFile(vfilename)
 
     def updateVideoFile(self, vfilename):
-        
-        if not os.path.exists(vfilename):
-            QMessageBox.critical(self, 'The hdf5 video file does not exists', "The hdf5 video file does not exists. Please select a valid file",
-                    QMessageBox.Ok)
-            return
-        
         #close the if there was another file opened before.
         if self.fid != -1:
             self.fid.close()
@@ -227,7 +221,7 @@ class HDF5videoViewer_GUI(QMainWindow):
         
         try:
             self.fid = tables.File(vfilename, 'r')
-        except tables.exceptions.HDF5ExtError:
+        except (IOError, tables.exceptions.HDF5ExtError):
             self.fid = -1
             self.image_group = -1
             QMessageBox.critical(self, '', "The selected file is not a valid .hdf5. Please select a valid file",

@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QFileDialog
+from PyQt5.QtWidgets import QApplication, QFileDialog, QMessageBox
 from PyQt5.QtGui import QPixmap, QImage, QPolygonF, QPen, QPainter, QColor
 from PyQt5.QtCore import QPointF, Qt
 
@@ -81,16 +81,18 @@ class MWTrackerViewerSingle_GUI(HDF5videoViewer_GUI):
 
     def updateVideoFile(self, vfilename):
         super().updateVideoFile(vfilename)
+        videos_dir, basename = os.path.split(vfilename)
+        basename = os.path.splitext(basename)[0]
         
-        basename = self.vfilename.rpartition(os.sep)[-1].rpartition('.')[0]
         self.skeletons_file = ''
         self.results_dir = ''
 
-        possible_dirs = [self.videos_dir, self.videos_dir.replace('MaskedVideos', 'Results'), 
-        os.path.join(self.videos_dir , 'Results')]
+        possible_dirs = [videos_dir, videos_dir.replace('MaskedVideos', 'Results'), 
+        os.path.join(videos_dir , 'Results')]
         
         for new_dir in possible_dirs:
             new_skel_file = os.path.join(new_dir, basename + '_skeletons.hdf5')
+
             if os.path.exists(new_skel_file):
                 self.skeletons_file = new_skel_file
                 self.results_dir = new_dir

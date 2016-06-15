@@ -477,7 +477,6 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 
 	#change frame number using the keys
 	def keyPressEvent(self, event):
-		
 		#select uchange the radio button pression the up and down keys
 		if event.key() == Qt.Key_Up:
 			self.ui.radioButton_ROI1.setChecked(True)
