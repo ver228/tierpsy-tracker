@@ -82,7 +82,15 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 
 		
 	def getManualFeatures(self):
+		if os.name == 'nt':
+			#I Windows the paths return by QFileDialog use / as the file separation character. We need to correct it.
+			for field_name in ['vfilename', 'skeletons_file']:
+				setattr(self, field_name, getattr(self, field_name).replace('/', os.sep))
+
+		#save the user changes before recalculating anything
 		self.saveData()
+		
+		#close the GUI
 		self.close()
 
 		self.feat_manual_file = self.skeletons_file.replace('_skeletons.hdf5', '_feat_manual.hdf5')
@@ -116,6 +124,7 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 				use_skel_filter = True
 				feat_filt_param = param_default.feat_filt_param
 
+
 		points_parameters = { 'func':getWormFeaturesFilt,
             	'argkws':{
             	'skeletons_file':self.skeletons_file, 
@@ -127,8 +136,10 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
         	    'output_file':self.feat_manual_file
         	}
 
+		os.system(['clear','cls'][os.name == 'nt'])
 		execThisPoint('FEAT_MANUAL_CREATE', **points_parameters, 
                     commit_hash=self.commit_hash, cmd_original='')
+		input('Press any key to continue...')
 	
 	def selectWormIndexType(self):
 		#select between automatic and manual worm indexing and label

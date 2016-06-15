@@ -1,17 +1,15 @@
 import os
 import json
 import tables
-from git import Repo
+import git
 
 def getVersion(main_package):
     git_file = os.path.join((os.sep).join((main_package.__file__).split(os.sep)[0:-2]), '.git')
     try:
-        repo = Repo(git_file)
+        repo = git.Repo(git_file)
         return repo.commit('HEAD').hexsha
     except git.exc.NoSuchPathError:
         return main_package.__version__
-    
-    
 
 def getGitCommitHash():
     import MWTracker

@@ -210,7 +210,7 @@ class WormFromTable(mv.NormalizedWorm):
         
         #smooth data if required
         if self.smooth_window > self.POL_DEGREE_DFLT:
-            print('Smoothing...')
+            #print('Smoothing...')
             self.skeleton = smoothCurvesAll(self.skeleton, window = self.smooth_window)
             self.widths = smoothCurvesAll(self.widths, window = self.smooth_window)
 
@@ -298,7 +298,7 @@ class WormFromTable(mv.NormalizedWorm):
         
         #read data from the skeletons table
         with tables.File(self.file_name, 'r') as ske_file_id:
-            print('reading skeletons...')
+            #print('reading skeletons...')
             self.skeleton[ind_ff] = ske_file_id.get_node('/skeleton')[skeleton_id,:,:]*micronsPerPixel
             
             microsPerPixel_abs = np.mean(np.abs(micronsPerPixel))
@@ -306,10 +306,10 @@ class WormFromTable(mv.NormalizedWorm):
             self.widths[ind_ff] = ske_file_id.get_node('/contour_width')[skeleton_id,:]*microsPerPixel_abs
             self.area[ind_ff] = ske_file_id.get_node('/contour_area')[skeleton_id]*(microsPerPixel_abs**2)
             
-            print('reading ventral contours...')
+            #print('reading ventral contours...')
             self.ventral_contour[ind_ff] = ske_file_id.get_node('/contour_side1')[skeleton_id,:,:]*micronsPerPixel
             
-            print('reading dorsal contours...')
+            #print('reading dorsal contours...')
             self.dorsal_contour[ind_ff] = ske_file_id.get_node('/contour_side2')[skeleton_id,:,:]*micronsPerPixel
 
     def assertDataDim(self):

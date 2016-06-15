@@ -51,15 +51,12 @@ class getMaskParams_GUI(QMainWindow):
         self.ui.checkBox_hasTimestamp.stateChanged.connect(self.updateMask)
         self.ui.checkBox_keepBorderData.stateChanged.connect(self.updateMask)
 
-        
         self.ui.pushButton_video.clicked.connect(self.getVideoFile)
         self.ui.pushButton_results.clicked.connect(self.updateResultsDir)
         self.ui.pushButton_mask.clicked.connect(self.updateMasksDir)
         
         self.ui.pushButton_next.clicked.connect(self.getNextChunk)
         self.ui.pushButton_start.clicked.connect(self.startAnalysis)
-
-        
 
         self.videos_dir = default_videos_dir
         if not os.path.exists(self.videos_dir): self.videos_dir = ''
@@ -73,18 +70,36 @@ class getMaskParams_GUI(QMainWindow):
         self.Ifull = np.zeros(0)
         self.vid = 0
 
-
         self.ui.lineEdit_mask.setText(self.mask_files_dir)
         self.ui.lineEdit_results.setText(self.results_dir)
         self.updateBuffSize()
         self.read_json()
 
+        #let drag and drop a file into the video file line edit
+        self.ui.lineEdit_video.setAcceptDrops(True)
+        self.ui.lineEdit_video.dragEnterEvent = self.canvasDragEnterEvent
+        self.ui.lineEdit_video.dropEvent = self.canvasFileDrop
     
+
+    def canvasDragEnterEvent(self, event):
+        if event.mimeData().hasUrls:
+            event.accept()
+        else:
+            event.ignore()
+        
+    def canvasFileDrop(self, e):
+        for url in e.mimeData().urls():
+            vfilename = url.toLocalFile()
+            if os.path.isfile(vfilename):
+                self.updateVideoFile(vfilename)
+
     #file dialog to the the hdf5 file
     def getVideoFile(self):
-        video_file = QFileDialog.getOpenFileName(self, "Find video file", 
+        video_file, _ = QFileDialog.getOpenFileName(self, "Find video file", 
         self.videos_dir, "All files (*)")
+        self.updateVideoFile(video_file)
 
+    def updateVideoFile(self, video_file):
         if video_file:
             self.video_file = video_file
             if os.path.exists(self.video_file):
@@ -96,7 +111,7 @@ class getMaskParams_GUI(QMainWindow):
                 self.ui.label_full.clear()
                 self.Ifull = np.zeros(0)
 
-                self.videos_dir = self.video_file.rpartition(os.sep)[0] + os.sep
+                self.videos_dir = os.path.split(self.video_file)[0]
                 
                 self.ui.lineEdit_video.setText(self.video_file)
                 self.vid, self.im_width, self.im_height, self.reader_type = selectVideoReader(video_file)
@@ -208,10 +223,10 @@ class getMaskParams_GUI(QMainWindow):
         self.updateImage()
 
     def updateResultsDir(self):
-        results_dir = QFileDialog.getExistingDirectory(self, "Selects the directory where the analysis results will be stored", 
+        results_dir, _ = QFileDialog.getExistingDirectory(self, "Selects the directory where the analysis results will be stored", 
         self.results_dir)
         if results_dir:
-            self.results_dir = results_dir + os.sep
+            self.results_dir = results_dir
             self.ui.lineEdit_results.setText(self.results_dir)
 
 
@@ -219,7 +234,7 @@ class getMaskParams_GUI(QMainWindow):
         mask_files_dir = QFileDialog.getExistingDirectory(self, "Selects the directory where the hdf5 video will be stored", 
         self.mask_files_dir)
         if mask_files_dir:
-            self.mask_files_dir = mask_files_dir + os.sep
+            self.mask_files_dir = mask_files_dir
             self.ui.lineEdit_mask.setText(self.mask_files_dir)
 
     def startAnalysis(self):
@@ -239,10 +254,16 @@ class getMaskParams_GUI(QMainWindow):
         base_name = os.path.splitext(os.path.split(self.video_file)[-1])[0]
         self.masked_image_file = os.path.join(self.mask_files_dir, base_name + '.hdf5')
         
+        if os.name == 'nt':
+            #I Windows the paths return by QFileDialog use / as the file separation character. We need to correct it.
+            for field_name in ['video_file', 'mask_files_dir' ,'masked_image_file' ,'results_dir']:
+                setattr(self, field_name, getattr(self, field_name).replace('/', os.sep))
+
         os.system(['clear','cls'][os.name == 'nt'])
         compressSingleWorker(self.video_file, self.mask_files_dir, json_file = self.json_file)
         getTrajectoriesWorker(self.masked_image_file, self.results_dir, json_file = self.json_file)
-
+        input('Press any key to continue...')
+        sys.exit()
         
 
     def read_json(self):

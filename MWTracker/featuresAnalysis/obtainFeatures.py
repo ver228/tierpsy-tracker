@@ -202,6 +202,10 @@ def getWormFeatures(skeletons_file, features_file, good_traj_index, expected_fps
         skeletons_array = features_fid.create_earray('/', 'skeletons', shape = (0, skel_shape[1], skel_shape[2]) ,
                                     atom = tables.Float32Atom(shape=()), filters = filters_tables)
 
+        #display progress
+        dd =  " Extracting features. Worm %i of %i done." % (0, tot_worms)
+        print_flush(base_name + dd + ' Total time:' + progress_timer.getTimeStr())
+        
         #start to calculate features for each worm trajectory
         for ind_N, worm_index  in enumerate(good_traj_index):
             #initialize worm object, and extract data from skeletons file

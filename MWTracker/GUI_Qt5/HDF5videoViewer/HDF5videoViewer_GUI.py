@@ -61,7 +61,7 @@ class HDF5videoViewer_GUI(QMainWindow):
         self._zoom = 0
         self.ui.mainGraphicsView.wheelEvent = self.zoomWheelEvent
 
-        #let drag and drop a file into the canvas
+        #let drag and drop a file into the video file line edit
         self.ui.lineEdit_video.setAcceptDrops(True)
         self.ui.lineEdit_video.dragEnterEvent = self.canvasDragEnterEvent
         self.ui.lineEdit_video.dropEvent = self.canvasFileDrop
