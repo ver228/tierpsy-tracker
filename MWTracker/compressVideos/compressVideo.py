@@ -161,6 +161,9 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM, ex
         print(base_name + ' Extracting video metadata...')
         sys.stdout.flush()
         expected_frames = storeMetaData(video_file, masked_image_file)
+    else:
+    	# give a random number as expected frames, it does not matter.
+    	expected_frames = 10000; 
 
 
 
@@ -212,10 +215,12 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM, ex
         full_dataset.attrs["IMAGE_VERSION"] = np.string_("1.2")
 
 
-
-        #im_diff_set = mask_fid.create_dataset('/im_diff', (expected_frames,), 
-        #                                      dtype = 'f4', maxshape = (None,), 
-        #                                    chunks = True, compression = "gzip", compression_opts=4, shuffle = True, fletcher32=True)
+        #this will worm as flags to be sure that the normalization took place. If at the end of the program they are still nan, 
+        #no normalization took place and we can delete normalization_factor
+        max_intensity, min_intensity = np.nan, np.nan
+        normalization_range = mask_fid.create_dataset('/normalization_range', (expected_frames, 2), 
+                                              dtype = 'f4', maxshape = (None,2), 
+                                            chunks = True, compression = "gzip", compression_opts=4, shuffle = True, fletcher32=True)
         
         #intialize frame number
         frame_number = 0;
@@ -226,17 +231,27 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM, ex
         progressTime = timeCounterStr('Compressing video.');
 
         while frame_number < max_frame:
-            if reader_type==3:
-                ret, image, max_intensity, min_intensity = vid.read() #for dat files save intensity limits used for normalising to 8bit range
-            else:
-                ret, image = vid.read() #get video frame, stop program when no frame is retrieved (end of file)
+
+            ret, image = vid.read() 
             if ret != 0:
+                #increase frame number
+                frame_number += 1;
+
                 #opencv can give an artificial rgb image. Let's get it back to gray scale.
                 if image.ndim==3:
                     image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
                 
-                #increase frame number
-                frame_number += 1;
+                if image.dtype != np.uint8:
+                    #normalise image intensities if the data type is other than uint8
+                    image = image.astype(np.double)
+                    max_intensity = image.max()
+                    min_intensity = image.min()
+                    image_normalized = (image - min_intensity)/(max_intensity - min_intensity)*255
+                    image = image_normalized.astype(np.uint8)
+
+                    if normalization_range.shape[0] <= frame_number + 1:
+                        mask_dataset.resize(frame_number + 1000, axis=0);
+                    normalization_range[frame_number] = (min_intensity, max_intensity)
                 
                 #Resize mask array every 1000 frames (doing this every frame does not impact much the performance)
                 if mask_dataset.shape[0] <= frame_number + 1:
@@ -296,6 +311,13 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM, ex
             
         if full_dataset.shape[0] != full_frame_number:
             full_dataset.resize(full_frame_number, axis=0);
+
+        if np.isnan(max_intensity) and np.isnan(min_intensity):
+            #remove if the normalization range was never used
+            del normalization_range
+        else:
+            if normalization_range.shape[0] != frame_number:
+                full_dataset.resize(frame_number, axis=0);
         
         #close the video
         vid.release() 
