@@ -163,7 +163,7 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM, ex
         expected_frames = storeMetaData(video_file, masked_image_file)
     else:
     	# give a random number as expected frames, it does not matter.
-    	expected_frames = 10000; 
+    	expected_frames = 1; 
 
 
 
@@ -250,7 +250,7 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM, ex
                     image = image_normalized.astype(np.uint8)
 
                     if normalization_range.shape[0] <= frame_number + 1:
-                        mask_dataset.resize(frame_number + 1000, axis=0);
+                        normalization_range.resize(frame_number + 1000, axis=0);
                     normalization_range[frame_number] = (min_intensity, max_intensity)
                 
                 #Resize mask array every 1000 frames (doing this every frame does not impact much the performance)
@@ -307,17 +307,17 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM, ex
         #once we finished to read the whole video, we need to make sure that the hdf5 array sizes are correct.
         if mask_dataset.shape[0] != frame_number:
             mask_dataset.resize(frame_number, axis=0);
-            #im_diff_set.resize(frame_number, axis=0);
             
         if full_dataset.shape[0] != full_frame_number:
             full_dataset.resize(full_frame_number, axis=0);
 
+        #reshape or remove the normalization range
         if np.isnan(max_intensity) and np.isnan(min_intensity):
             #remove if the normalization range was never used
             del normalization_range
         else:
             if normalization_range.shape[0] != frame_number:
-                full_dataset.resize(frame_number, axis=0);
+                normalization_range.resize(frame_number, axis=0);
         
         #close the video
         vid.release() 
