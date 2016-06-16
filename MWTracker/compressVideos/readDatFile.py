@@ -2,7 +2,6 @@ import numpy as np
 import os
 from sys import exit
 import glob
-import pdb
 
 class readDatFile:
     """ Reads a stack of dat images """
@@ -46,11 +45,10 @@ class readDatFile:
             image_decoded[::-1, ::-2] = D1s.reshape((self.height, -1))
 
             #normalise image intensities to 8 bit
-            pdb.set_trace()
-            max_intensity = max(image_decoded)
-            min_intensity = min(image_decoded)
+            max_intensity = image_decoded.max()
+            min_intensity = image_decoded.min()
             image_normalized = (image_decoded - min_intensity)/(max_intensity - min_intensity)*255
-            return (1, image_normalized, max_intensity, min_intensity)
+            return (1, image_normalized.astype(np.uint8), max_intensity, min_intensity)
         else:
             return (0, [])
     def release(self):
