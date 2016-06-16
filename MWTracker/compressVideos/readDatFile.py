@@ -3,7 +3,7 @@ import os
 from sys import exit
 import glob
 
-class readDat:
+class readDatFile:
     """ Reads a stack of dat images """
     def __init__(self, dirName):
         self.fid = dirName
@@ -43,7 +43,12 @@ class readDat:
             image_decoded = np.zeros((self.height, self.width), np.uint16)
             image_decoded[::-1, -2::-2] = D3s.reshape((self.height, -1))
             image_decoded[::-1, ::-2] = D1s.reshape((self.height, -1))
-            return (1, image_decoded.astype(np.uint8))
+
+            #normalise image intensities to 8 bit
+            max_intensity = image_decoded.max()
+            min_intensity = image_decoded.min()
+            image_normalized = (image_decoded - min_intensity)/(max_intensity - min_intensity)*255
+            return (1, image_normalized.astype(np.uint8), max_intensity, min_intensity)
         else:
             return (0, [])
     def release(self):

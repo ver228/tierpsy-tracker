@@ -13,7 +13,7 @@ import sys
 from .readVideoffmpeg import readVideoffmpeg
 from .readVideoHDF5 import readVideoHDF5
 from .extractMetaData import storeMetaData, readAndSaveTimestamp
-#from .readDat import readDat
+from .readDatFile import readDatFile
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
 
@@ -100,7 +100,7 @@ def selectVideoReader(video_file):
         im_width = vid.width;
         reader_type = READER_TYPE['FFMPEG_CMD']
     elif isDATstack:
-        vid = readDat(video_file[:-20]);
+        vid = readDatFile(video_file[:-20]);
         im_height = vid.height;
         im_width = vid.width;
         reader_type = READER_TYPE['DAT']
@@ -223,7 +223,10 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM, ex
         progressTime = timeCounterStr('Compressing video.');
 
         while frame_number < max_frame:
-            ret, image = vid.read() #get video frame, stop program when no frame is retrive (end of file)
+            if reader_type==3:
+                ret, image, max_intensity, min_intensity = vid.read() #for dat files save intensity limits used for normalising to 8bit range
+            else:
+                ret, image = vid.read() #get video frame, stop program when no frame is retrieved (end of file)
             if ret != 0:
                 #opencv can give an artificial rgb image. Let's get it back to gray scale.
                 if image.ndim==3:
