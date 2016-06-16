@@ -156,7 +156,7 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM, ex
     #select the video reader class according to the file type. 
     vid, im_width, im_height, reader_type = selectVideoReader(video_file)
     
-    if reader_type in [READER_TYPE['OPENCV'], READER_TYPE['FFMPEG_CMD']:
+    if reader_type in [READER_TYPE['OPENCV'], READER_TYPE['FFMPEG_CMD']]:
         #extract and store video metadata using ffprobe
         print(base_name + ' Extracting video metadata...')
         sys.stdout.flush()
