@@ -13,12 +13,7 @@ import sys
 from .readVideoffmpeg import readVideoffmpeg
 from .readVideoHDF5 import readVideoHDF5
 from .extractMetaData import storeMetaData, readAndSaveTimestamp
-<<<<<<< HEAD
 from .readDatFile import readDatFile
-#from .imageDifferenceMask import imageDifferenceMask
-=======
-#from .readDat import readDat
->>>>>>> 99a48ed52289467a94ffe9165ab41683ba4373a0
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
 
