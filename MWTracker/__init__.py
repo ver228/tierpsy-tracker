@@ -17,7 +17,7 @@ if os.name == 'nt':
 
 	if getattr(sys, 'frozen', False):
 	  # Override dll search path.
-	  python_dir =  os.path.split(sys.executable)
+	  python_dir =  os.path.split(sys.executable)[0]
 	  ctypes.windll.kernel32.SetDllDirectoryW(os.path.join(python_dir, 'Library', 'bin'))
 	  
 	  # Init code to load external dll
