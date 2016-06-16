@@ -50,6 +50,6 @@ class readDatFile:
             image_normalized = (image_decoded - min_intensity)/(max_intensity - min_intensity)*255
             return (1, image_normalized.astype(np.uint8), max_intensity, min_intensity)
         else:
-            return (0, [])
+            return (0, [], [], [])
     def release(self):
         pass
