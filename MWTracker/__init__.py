@@ -6,9 +6,6 @@
 # """
 
 from .version import __version__
-#force to use matplotlib with qt5
-import matplotlib
-matplotlib.use('Qt5Agg', force=True)
 
 import os
 if os.name == 'nt':
