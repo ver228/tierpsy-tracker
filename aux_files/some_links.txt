@@ -1,4 +1,0 @@
-How to clean the git from clutered files:
-http://stevelorek.com/how-to-shrink-a-git-repository.html
-https://rtyley.github.io/bfg-repo-cleaner/
- 

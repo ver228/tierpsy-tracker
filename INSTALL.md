@@ -17,6 +17,7 @@ Run `./installation_script.sh`. If it is not a clean installation, I cannot warr
 git clone https://github.com/ver228/Multiworm_Tracking
 git clone https://github.com/openworm/open-worm-analysis-toolbox
 ```
+- Install [ffmpeg](https://ffmpeg.org/download.html). [Here](http://adaptivesamples.com/how-to-install-ffmpeg-on-windows/) are friendly installation instructions.
 - Download [anaconda](https://www.continuum.io/downloads) or [miniconda](http://conda.pydata.org/miniconda.html) with python 3.5.
 - If you install miniconda install the following packages:
 ```
@@ -30,7 +31,6 @@ conda install -c https://conda.binstar.org/ver228 opencv3
 - Go to open-worm-analysis-toolbox directory and run `python3 setup.py develop`
 - Go to open-worm-analysis-toolbox/open_worm_analysis_toolbox  and change the file `user_config_example.txt` to `user_config.py`
 - Go the the Multiworm_Tracking directory and run `python3 setup.py develop`
-
 - Try to run `python -c "import cv2; import h5py; import MWTracker; import open_worm_analysis_toolbox"`. You should recieve no error messages.
 ##Issues
 - If you recieve an error related with a module in segWormPython you will need to compile the cython files. It will require the same C compiler used to compile python. On OS X you need to install xcode using the app store. On Windows using python 3.5 you have to install [visual studio community 2015](https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx) (use custom installation and select Visual C++). Then run `python3 setup.py build_ext --inplace` in the directory `Multiworm_Tracking/MWTracker/trackWorms/segWormPython/cythonFile`, and try to check again if it was a succesful installation.

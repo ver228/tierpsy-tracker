@@ -140,8 +140,6 @@ class MWTrackerViewer_GUI(MWTrackerViewerSingle_GUI):
 		execThisPoint('FEAT_MANUAL_CREATE', **points_parameters, 
                     commit_hash=self.commit_hash, cmd_original='')
 
-		if os.name == 'nt':
-			input('Press any key to continue...')
 	
 	def selectWormIndexType(self):
 		#select between automatic and manual worm indexing and label

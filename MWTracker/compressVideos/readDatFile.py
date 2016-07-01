@@ -10,9 +10,23 @@ class readDatFile:
         if not os.path.exists(self.fid):
             print('Error: Directory (%s) does not exist.' % self.fid)
             exit()
-        self.files = sorted(glob.glob(os.path.join(self.fid, '*.dat')))
-        #the file name contains the image number as an inverted string, e.g. 6100000000 -> 0000000016
-        self.dat_order = [int(os.path.split(x)[1].partition('spool')[0][::-1]) for x in self.files]
+
+        self.files = glob.glob(os.path.join(self.fid, '*.dat'))
+        
+        #TODO: figure out how to really do this. This file order works half of the time
+        #get the order of the frames from the file name. 
+        file_num_str = [os.path.split(x)[1].partition('spool')[0] for x in self.files]
+        #first we assume that the filename contains the frame number 00001, 00002, 00003
+        self.dat_order = sorted([int(x) for x in file_num_str])
+        #check in the indexes in the file order are really continuous. The ordered index should go 1, 2, 3, 4
+        is_continous =  all(np.diff(self.dat_order)==1)
+        if not is_continous:
+            #the file name can contain the image number as an inverted string, e.g. 6100000 -> 0000016
+            self.dat_order = sorted([int(x[::-1]) for x in file_num_str])
+
+            #check again in the indexes in the file order are really continuous. This will throw and error if it is not the case
+            assert all(np.diff(self.dat_order)==1)
+        
         #It seems that the last 40 bytes of each file are the header (it contains zeros and the size of the image 2080*2156)
         bin_dat = np.fromfile(self.files[0], np.uint8)
         header = bin_dat[-40:].astype(np.uint16)
@@ -23,6 +37,7 @@ class readDatFile:
         self.num_frames = len(self.dat_order)
         #initialize pointer for frames
         self.curr_frame = -1
+    
     def read(self): 
         self.curr_frame += 1
         if self.curr_frame < self.num_frames:

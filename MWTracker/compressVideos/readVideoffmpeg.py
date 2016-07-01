@@ -26,7 +26,7 @@ class readVideoffmpeg:
     -> it can be a pain to compile opencv with ffmpeg compability. 
     -> this funciton is a bit faster (less overhead), but only works with gecko's mjpeg 
     '''
-    def __init__(self, fileName, width = -1, height = -1):
+    def __init__(self, fileName):
         #requires the fileName, and optionally the frame width and heigth.
         if os.name == 'nt':
             ffmpeg_cmd = 'ffmpeg.exe'
@@ -34,23 +34,20 @@ class readVideoffmpeg:
             ffmpeg_cmd = '/usr/local/bin/ffmpeg22' #this version reads the Gecko files
         
         #try to open the file and determine the frame size. Raise an exception otherwise.
-        if width<=0 or height <=0:
-            try:
-                command = [ffmpeg_cmd, '-i', fileName, '-']
-                pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.PIPE)
-                buff = pipe.stderr.read()
-                pipe.terminate()
-                #the frame size is somewhere printed at the beggining by ffmpeg
-                dd = str(buff).partition('Video: ')[2].split(',')[2]
-                dd = re.findall(r'\d*x\d*', dd)[0].split('x')
-                self.height = int(dd[0])
-                self.width = int(dd[1])
-            except:
-                raise Exception('Error while getting the width and height using ffmpeg. Buffer output:', buff)
-        else:
-            self.width = width
-            self.height = height
-                
+        
+        try:
+            command = [ffmpeg_cmd, '-i', fileName, '-']
+            pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.PIPE)
+            buff = pipe.stderr.read()
+            pipe.terminate()
+            #the frame size is somewhere printed at the beggining by ffmpeg
+            dd = str(buff).partition('Video: ')[2].split(',')[2]
+            dd = re.findall(r'\d*x\d*', dd)[0].split('x')
+            self.height = int(dd[1])
+            self.width = int(dd[0])
+        except:
+            raise Exception('Error while getting the width and height using ffmpeg. Buffer output:', buff)
+    
         self.tot_pix = self.height*self.width
         
         command = [ffmpeg_cmd, 
@@ -98,8 +95,7 @@ class readVideoffmpeg:
             return (0, []);
         
         image = np.fromstring(raw_image, dtype='uint8')
-        #print(len(image), self.width, self.height)
-        image = image.reshape(self.width,self.height)
+        image = image.reshape(self.height, self.width)
 
         # i need to read this here because otherwise the err buff will get full.
         self.get_timestamp()

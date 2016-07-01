@@ -26,8 +26,8 @@ from MWTracker.featuresAnalysis.obtainFeaturesHelper import WormStatsClass, Worm
 from MWTracker.helperFunctions.miscFun import WLAB
 
 import open_worm_analysis_toolbox as mv
-
-def getFPS(skeletons_file, expected_fps):
+##
+def getFPS(skeletons_file, expected_fps, min_allowed_fps = 1):
         #try to infer the fps from the timestamp
     try:
         with tables.File(skeletons_file, 'r') as fid:
@@ -37,7 +37,7 @@ def getFPS(skeletons_file, expected_fps):
                 raise ValueError
             fps = 1/np.nanmedian(np.diff(timestamp_time))
             
-            if np.isnan(fps):
+            if np.isnan(fps) or fps < 1:
                 raise ValueError
             is_default_timestamp = 0
 
