@@ -51,7 +51,7 @@ class tracker_param:
         #getROIMask
         self.mask_param = {'min_area': min_area, 'max_area': max_area, 'has_timestamp': has_timestamp, 
         'thresh_block_size':thresh_block_size, 'thresh_C':thresh_C, 'dilation_size':dilation_size, 
-        'keep_border_data':keep_border_data, 'fluo_flag': fluo_flag}
+        'keep_border_data':keep_border_data, 'is_invert_thresh': is_invert_thresh}
         
         #compressVideo
         self.compress_vid_param =  {'buffer_size' : compression_buff, 'save_full_interval' : 200*fps, 

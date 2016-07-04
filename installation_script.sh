@@ -56,7 +56,7 @@ function install_dependencies {
 	brew install homebrew/python/numpy --with-python3
 	
 	pip3 install -U numpy spyder tables pandas h5py scipy scikit-learn \
-		scikit-image tifffile seaborn xlrd gitpython psutil
+		scikit-image tifffile seaborn xlrd gitpython psutil tiffcapture
 }
 
 function compile_cython_files {

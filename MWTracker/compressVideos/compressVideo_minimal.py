@@ -53,9 +53,6 @@ def getROIMask(image, min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEFA
         thresh_block_size+=1 #this value must be odd
     
     #adaptative threshold is the best way to find possible worms. I setup the parameters manually, they seems to work fine if there is no condensation in the sample
-    # if fluo_flag: # check if we are dealing with a fluorescent image
-        # mask = cv2.adaptiveThreshold(image,255,cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, thresh_block_size, -thresh_C)
-    # else: #image is not fluorescent
     mask = cv2.adaptiveThreshold(image,255,cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, thresh_block_size, thresh_C)
 
     #find the contour of the connected objects (much faster than labeled images)
