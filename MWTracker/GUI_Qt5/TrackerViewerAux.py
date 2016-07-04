@@ -3,7 +3,7 @@ from PyQt5.QtGui import QPixmap, QImage, QPolygonF, QPen, QPainter, QColor
 from PyQt5.QtCore import QPointF, Qt
 
 from MWTracker.GUI_Qt5.TrackerViewerAux_ui import Ui_TrackerViewerAux
-from MWTracker.GUI_Qt5.HDF5videoViewer import HDF5videoViewer_GUI
+from MWTracker.GUI_Qt5.HDF5VideoPlayer import HDF5VideoPlayer_GUI
 from MWTracker.trackWorms.getSkeletonsTables import getWormMask, binaryMask2Contour
 
 import tables, os
@@ -14,7 +14,7 @@ import json
 import sys
 #from scipy.signal import savgol_filter
 
-class TrackerViewerAux_GUI(HDF5videoViewer_GUI):
+class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
     def __init__(self, ui = ''):
         if not ui:
             super().__init__(Ui_TrackerViewerAux())

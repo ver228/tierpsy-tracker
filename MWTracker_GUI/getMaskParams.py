@@ -1,6 +1,6 @@
 import os, sys
 
-from MWTracker.GUI_Qt5.getMaskParams.getMaskParams_GUI import getMaskParams_GUI
+from MWTracker.GUI_Qt5.GetMaskParams import getMaskParams_GUI
 from PyQt5.QtWidgets import QApplication
 
 if __name__ == '__main__':

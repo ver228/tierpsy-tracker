@@ -2,20 +2,28 @@ import sys
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import Qt
 
-from MWTracker.GUI_Qt5.HDF5videoViewer_ui import Ui_HDFvideoViewer
+from MWTracker.GUI_Qt5.HDF5VideoPlayer_ui import Ui_HDF5VideoPlayer
 
 import tables
 import os
 import numpy as np
 import copy
 
-class HDF5videoViewer_GUI(QtWidgets.QMainWindow):
+def setChildrenFocusPolicy (obj, policy):
+    #recursively change the focus policy of all the objects in the widgets
+    def recursiveSetChildFocusPolicy(parentQWidget):
+        for childQWidget in parentQWidget.findChildren(QtWidgets.QWidget):
+            childQWidget.setFocusPolicy(policy)
+            recursiveSetChildFocusPolicy(childQWidget)
+    recursiveSetChildFocusPolicy(obj)
+
+class HDF5VideoPlayer_GUI(QtWidgets.QMainWindow):
     def __init__(self, ui = ''):
         super().__init__()
 
         # Set up the user interface from Designer.
         if not ui:
-            self.ui = Ui_HDFvideoViewer()
+            self.ui = Ui_HDF5VideoPlayer()
         else:
             self.ui = ui
 
@@ -53,22 +61,14 @@ class HDF5videoViewer_GUI(QtWidgets.QMainWindow):
         self.timer.timeout.connect(self.getNextImage)
 
         #setup image view as a zoom 
-        self.mainImage = GraphicsWithZoom(self.ui.mainGraphicsView)
+        self.mainImage = ViewsWithZoom(self.ui.mainGraphicsView)
         
         #let drag and drop a file into the video file line edit
         lineEditDragDrop(self.ui.lineEdit_video, self.updateVideoFile)
         
         #make sure the childrenfocus policy is none in order to be able to use the arrow keys
-        self.setChildrenFocusPolicy(QtCore.Qt.NoFocus)
+        setChildrenFocusPolicy(self, QtCore.Qt.NoFocus)
  
-    def setChildrenFocusPolicy (self, policy):
-        #recursively change the focus policy of all the objects in the widgets
-        def recursiveSetChildFocusPolicy (parentQWidget):
-            for childQWidget in parentQWidget.findChildren(QtWidgets.QWidget):
-                childQWidget.setFocusPolicy(policy)
-                recursiveSetChildFocusPolicy(childQWidget)
-        recursiveSetChildFocusPolicy(self)
-
     #Scroller
     def imSldPressed(self):
         self.ui.imageSlider.setCursor(QtCore.Qt.ClosedHandCursor)
@@ -293,7 +293,7 @@ class HDF5videoViewer_GUI(QtWidgets.QMainWindow):
         else:
             QtWidgets.QMainWindow.keyPressEvent(self, event)
 
-class GraphicsWithZoom():
+class ViewsWithZoom():
     def __init__(self, view):
         self._view = view
         self._scene = QtWidgets.QGraphicsScene(self._view)
@@ -376,7 +376,7 @@ class lineEditDragDrop():
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     
-    ui = HDF5videoViewer_GUI()
+    ui = HDF5VideoPlayer_GUI()
     ui.show()
     
     sys.exit(app.exec_())
