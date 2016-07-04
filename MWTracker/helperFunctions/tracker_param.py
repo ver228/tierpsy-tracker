@@ -18,7 +18,7 @@ class tracker_param:
     
     def get_param(self, min_area = 50, max_area = 1e10, thresh_C = 15,  has_timestamp = True, thresh_block_size = 61,
             dilation_size = 9, compression_buff = 25, keep_border_data = False,
-            fluo_flag = False,
+            is_invert_thresh = False,
             fps = 25, fps_filter = 0, threshold_factor = 1.05,
             resampling_N = 49,  max_gap_allowed_block = 10, max_gap_allowed_block_int = -1, is_single_worm = False, 
             bad_seg_thresh = 0.8, min_displacement = 0, strel_size = 5, min_displacement_filt = 10, critical_alpha = 0.01, #fit_contamination = 0.05, 
@@ -31,7 +31,7 @@ class tracker_param:
         has_timestamp - keep the pixels in the top left corner that correspond to the video timestamp (used only in our setup)
         dilation_size - size of the structural element used in morphological operations.
         keep_border_data - set it to false if you want to remove any connected component that touches the border.
-        fluo_flag - set to True if image is fluorescent
+        is_invert_thresh - set to true to indentify bright worms over a dark background.
         
         fps - expected frame rate
         fps_filter - frame per second used to calcular filters for trajectories. As default it will have the same value as fps. Set to zero to eliminate filtering.

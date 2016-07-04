@@ -18,12 +18,12 @@ from .readDatFile import readDatFile
 from ..helperFunctions.timeCounterStr import timeCounterStr
 
 DEFAULT_MASK_PARAM = {'min_area':100, 'max_area':5000, 'has_timestamp':True, 
-'thresh_block_size':61, 'thresh_C':15, 'dilation_size': 9, 'keep_border_data': False, 'fluo_flag': False}
+'thresh_block_size':61, 'thresh_C':15, 'dilation_size': 9, 'keep_border_data': False, 'is_invert_thresh': False}
 
 def getROIMask(image, min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEFAULT_MASK_PARAM['max_area'], 
     has_timestamp = DEFAULT_MASK_PARAM['has_timestamp'], thresh_block_size = DEFAULT_MASK_PARAM['thresh_block_size'], 
     thresh_C = DEFAULT_MASK_PARAM['thresh_C'], dilation_size = DEFAULT_MASK_PARAM['dilation_size'], 
-    keep_border_data = DEFAULT_MASK_PARAM['keep_border_data'], fluo_flag = DEFAULT_MASK_PARAM['fluo_flag']):
+    keep_border_data = DEFAULT_MASK_PARAM['keep_border_data'], is_invert_thresh = DEFAULT_MASK_PARAM['is_invert_thresh']):
     '''
     Calculate a binary mask to mark areas where it is possible to find worms.
     Objects with less than min_area or more than max_area pixels are rejected.
@@ -36,7 +36,7 @@ def getROIMask(image, min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEFA
         thresh_block_size+=1 #this value must be odd
 
     #adaptative threshold is the best way to find possible worms. The parameters are set manually, they seem to work fine if there is no condensation in the sample
-    if fluo_flag: # check if we are dealing with a fluorescent image
+    if is_invert_thresh: # check if we are dealing with a fluorescent image
         mask = cv2.adaptiveThreshold(image,255,cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, thresh_block_size, -thresh_C)
     else: #image is not fluorescent
         mask = cv2.adaptiveThreshold(image,255,cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, thresh_block_size, thresh_C)
