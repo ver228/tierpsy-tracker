@@ -12,9 +12,9 @@ import time
 import subprocess as sp
 from threading  import Thread
 from queue import Queue, Empty
-
-
 from io import StringIO
+
+GUI_CLEAR_SIGNAL = '+++++++++++++++++++++++++++++++++++++++++++++++++'
 class CapturingOutput(list):
     '''modified from http://stackoverflow.com/questions/1218933/can-i-redirect-the-stdout-in-python-into-some-sort-of-string-buffer'''
     def __enter__(self):
@@ -97,7 +97,6 @@ def runMultiCMD(cmd_list, local_obj='', max_num_process = 3, refresh_time = 10):
     finished_tasks = [];
     num_tasks = 0;
     
-    
     current_tasks = [];
     for ii in range(max_num_process):
         cmd = cmd_list.pop()
@@ -107,6 +106,8 @@ def runMultiCMD(cmd_list, local_obj='', max_num_process = 3, refresh_time = 10):
     #the number of tasks stated is less than the total number of tasks
     while cmd_list or any(tasks.pid.poll() is None for tasks in current_tasks):
         time.sleep(refresh_time)
+        
+        print(GUI_CLEAR_SIGNAL)
         os.system(['clear','cls'][os.name == 'nt'])
         
         #print info of the finished tasks
@@ -161,7 +162,5 @@ def print_cmd_list(cmd_list_compress):
         for cmd in cmd_list_compress: 
             cmd_str = cmdlist2str(cmd)
             print(cmd_str)
-
-    print(len(cmd_list_compress))
 
 

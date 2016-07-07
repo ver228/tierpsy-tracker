@@ -247,8 +247,7 @@ class getMaskParams_GUI(QMainWindow):
     def read_json(self):
         if not self.json_file:
             param = tracker_param();
-            param.get_param()
-
+            
             self.mask_param = param.mask_param
             self.mask_param['fps'] = param.compress_vid_param['expected_fps']
             self.mask_param['resampling_N'] = param.skeletons_param['resampling_N']

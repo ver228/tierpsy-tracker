@@ -15,109 +15,7 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="14" column="2">
-     <widget class="QPushButton" name="pushButton_paramFile">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Parameters File</string>
-      </property>
-     </widget>
-    </item>
-    <item row="13" column="2">
-     <widget class="QPushButton" name="pushButton_mask">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Mask Dir</string>
-      </property>
-     </widget>
-    </item>
-    <item row="12" column="2">
-     <widget class="QPushButton" name="pushButton_results">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Results Dir</string>
-      </property>
-     </widget>
-    </item>
-    <item row="11" column="2">
-     <widget class="QPushButton" name="pushButton_video">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Video File</string>
-      </property>
-     </widget>
-    </item>
-    <item row="14" column="5">
-     <widget class="QPushButton" name="pushButton_start">
-      <property name="font">
-       <font>
-        <pointsize>24</pointsize>
-       </font>
-      </property>
-      <property name="mouseTracking">
-       <bool>false</bool>
-      </property>
-      <property name="autoFillBackground">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>Start</string>
-      </property>
-      <property name="checkable">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="11" column="5">
-     <widget class="QPushButton" name="pushButton_next">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Next Chunk</string>
-      </property>
-     </widget>
-    </item>
-    <item row="11" column="3" colspan="2">
-     <widget class="QLineEdit" name="lineEdit_video"/>
-    </item>
-    <item row="12" column="3" colspan="2">
-     <widget class="QLineEdit" name="lineEdit_results"/>
-    </item>
-    <item row="13" column="3" colspan="2">
-     <widget class="QLineEdit" name="lineEdit_mask">
-      <property name="readOnly">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="14" column="3" colspan="2">
-     <widget class="QLineEdit" name="lineEdit_paramFile"/>
-    </item>
-    <item row="3" column="0" rowspan="12">
+    <item row="3" column="0" rowspan="17">
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="10" column="0" colspan="2">
        <widget class="QCheckBox" name="checkBox_keepBorderData">
@@ -380,43 +278,184 @@
       </item>
      </layout>
     </item>
-    <item row="3" column="4" rowspan="8" colspan="2">
-     <widget class="QGraphicsView" name="graphicsView_mask">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="dragMode">
-       <enum>QGraphicsView::ScrollHandDrag</enum>
-      </property>
-      <property name="transformationAnchor">
-       <enum>QGraphicsView::AnchorUnderMouse</enum>
-      </property>
-      <property name="resizeAnchor">
-       <enum>QGraphicsView::AnchorViewCenter</enum>
+    <item row="19" column="3" colspan="3">
+     <widget class="QLineEdit" name="lineEdit_mask">
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
-    <item row="3" column="2" rowspan="8" colspan="2">
-     <widget class="QGraphicsView" name="graphicsView_full">
+    <item row="18" column="2">
+     <widget class="QPushButton" name="pushButton_results">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
-      <property name="dragMode">
-       <enum>QGraphicsView::ScrollHandDrag</enum>
-      </property>
-      <property name="transformationAnchor">
-       <enum>QGraphicsView::AnchorUnderMouse</enum>
-      </property>
-      <property name="resizeAnchor">
-       <enum>QGraphicsView::AnchorViewCenter</enum>
+      <property name="text">
+       <string>Results Dir</string>
       </property>
      </widget>
+    </item>
+    <item row="18" column="3" colspan="3">
+     <widget class="QLineEdit" name="lineEdit_results"/>
+    </item>
+    <item row="19" column="2">
+     <widget class="QPushButton" name="pushButton_mask">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Mask Dir</string>
+      </property>
+     </widget>
+    </item>
+    <item row="17" column="2">
+     <widget class="QPushButton" name="pushButton_paramFile">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Parameters File</string>
+      </property>
+     </widget>
+    </item>
+    <item row="17" column="3" colspan="3">
+     <widget class="QLineEdit" name="lineEdit_paramFile"/>
+    </item>
+    <item row="16" column="2">
+     <widget class="QPushButton" name="pushButton_video">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Video File</string>
+      </property>
+     </widget>
+    </item>
+    <item row="16" column="6">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Maximum</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="16" column="3" colspan="3">
+     <widget class="QLineEdit" name="lineEdit_video"/>
+    </item>
+    <item row="17" column="7">
+     <widget class="QPushButton" name="pushButton_saveParam">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Save Parameters</string>
+      </property>
+     </widget>
+    </item>
+    <item row="16" column="7">
+     <widget class="QPushButton" name="pushButton_next">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Next Chunk</string>
+      </property>
+     </widget>
+    </item>
+    <item row="18" column="6" rowspan="2" colspan="2">
+     <widget class="QPushButton" name="pushButton_start">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>24</pointsize>
+       </font>
+      </property>
+      <property name="mouseTracking">
+       <bool>false</bool>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>Start Analysis</string>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="2" rowspan="13" colspan="6">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QGraphicsView" name="graphicsView_full">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="dragMode">
+         <enum>QGraphicsView::ScrollHandDrag</enum>
+        </property>
+        <property name="transformationAnchor">
+         <enum>QGraphicsView::AnchorUnderMouse</enum>
+        </property>
+        <property name="resizeAnchor">
+         <enum>QGraphicsView::AnchorViewCenter</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGraphicsView" name="graphicsView_mask">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="dragMode">
+         <enum>QGraphicsView::ScrollHandDrag</enum>
+        </property>
+        <property name="transformationAnchor">
+         <enum>QGraphicsView::AnchorUnderMouse</enum>
+        </property>
+        <property name="resizeAnchor">
+         <enum>QGraphicsView::AnchorViewCenter</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>

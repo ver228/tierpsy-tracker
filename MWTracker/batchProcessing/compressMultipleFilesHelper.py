@@ -118,9 +118,11 @@ class checkVideoFiles:
 		self.use_manual_join = use_manual_join
 		
 		#Let's look look for a MaskedVideos subdirectory, otherwise we add it at the end of the root dir
-		self.mask_dir_root = self.checkMaskPrefix(mask_dir_root)
+		#self.mask_dir_root = self.checkMaskPrefix(mask_dir_root)
 		#If tmp_dir_root is empty let's use the mask_dir_root as our source
-		self.tmp_dir_root = self.checkMaskPrefix(tmp_dir_root) if tmp_dir_root else self.mask_dir_root
+		#self.tmp_dir_root = self.checkMaskPrefix(tmp_dir_root) if tmp_dir_root else self.mask_dir_root
+		self.mask_dir_root = mask_dir_root
+		self.tmp_dir_root = tmp_dir_root if tmp_dir_root else mask_dir_root
 
 		self.filtered_files_fields = ('SOURCE_GOOD', 'SOURCE_BAD', 'FINISHED_GOOD', 'FINISHED_BAD')
 		self.filtered_files = {key : [] for key in self.filtered_files_fields}
@@ -162,17 +164,17 @@ class checkVideoFiles:
 		print('Finished to check files. Total time elapsed %s' % progress_timer.getTimeStr())
 
 
-	@staticmethod
-	def checkMaskPrefix(fdir):
-		#check if the root dir has a subfolder MaskedVideos otherwise add it to the end
-		N = sum('MaskedVideos' == part for part in fdir.split(os.sep))
+	# @staticmethod
+	# def checkMaskPrefix(fdir):
+	# 	#check if the root dir has a subfolder MaskedVideos otherwise add it to the end
+	# 	N = sum('MaskedVideos' == part for part in fdir.split(os.sep))
 
-		if N > 1: 
-			raise ValueError('Only one subdirectory is allowed to be named "MaskedVideos"')
+	# 	if N > 1: 
+	# 		raise ValueError('Only one subdirectory is allowed to be named "MaskedVideos"')
 			
-		if N == 0:
-			fdir =  os.path.join(fdir, 'MaskedVideos')
-		return os.path.abspath(fdir)
+	# 	if N == 0:
+	# 		fdir =  os.path.join(fdir, 'MaskedVideos')
+	# 	return os.path.abspath(fdir)
 
 	def getCMDlist(self):
 		good_video_files = self.filtered_files['SOURCE_GOOD']

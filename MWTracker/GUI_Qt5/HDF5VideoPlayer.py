@@ -64,11 +64,11 @@ class HDF5VideoPlayer_GUI(QtWidgets.QMainWindow):
         self.mainImage = ViewsWithZoom(self.ui.mainGraphicsView)
         
         #let drag and drop a file into the video file line edit
-        lineEditDragDrop(self.ui.lineEdit_video, self.updateVideoFile)
+        lineEditDragDrop(self.ui.lineEdit_video, self.updateVideoFile, os.path.isfile)
         
         #make sure the childrenfocus policy is none in order to be able to use the arrow keys
-        setChildrenFocusPolicy(self, QtCore.Qt.NoFocus)
- 
+        setChildrenFocusPolicy(self, QtCore.Qt.ClickFocus)
+
     #Scroller
     def imSldPressed(self):
         self.ui.imageSlider.setCursor(QtCore.Qt.ClosedHandCursor)
@@ -293,6 +293,11 @@ class HDF5VideoPlayer_GUI(QtWidgets.QMainWindow):
         else:
             QtWidgets.QMainWindow.keyPressEvent(self, event)
 
+    def closeEvent(self, event):
+        if self.fid != -1:
+            self.fid.close()
+        super(HDF5VideoPlayer_GUI, self).closeEvent(event)
+
 class ViewsWithZoom():
     def __init__(self, view):
         self._view = view
@@ -352,9 +357,10 @@ class ViewsWithZoom():
 
 
 class lineEditDragDrop():
-    def __init__(self, line_edit, updateFun):
+    def __init__(self, line_edit, updateFun, testFun):
         self.updateFun = updateFun
-        
+        self.testFun = testFun
+
         self.line_edit = line_edit
         self.line_edit.setAcceptDrops(True)
         self.line_edit.dragEnterEvent = self.dragEnterEvent
@@ -369,7 +375,7 @@ class lineEditDragDrop():
     def dropEvent(self, e):
         for url in e.mimeData().urls():
             vfilename = url.toLocalFile()
-            if os.path.isfile(vfilename):
+            if self.testFun(vfilename):
                 self.updateFun(vfilename)
                 
 

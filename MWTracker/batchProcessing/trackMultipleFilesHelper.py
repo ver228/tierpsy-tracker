@@ -14,9 +14,21 @@ from .compressMultipleFilesHelper import checkVideoFiles, exploreDirs, getDstDir
 from .trackSingleWorker import getStartingPoint, checkpoint, constructNames, \
 isBadStageAligment, hasExpCntInfo
 
+def getResultsDir(mask_dir_root):
+	#construct the results dir on base of the mask_dir_root
+	subdir_list = mask_dir_root.split(os.sep)
+
+	for ii in range(len(subdir_list))[::-1]:
+		if subdir_list[ii] == 'MaskedVideos':
+			 subdir_list[ii] = 'Results'
+			 break
+	#the counter arrived to zero, add Results at the end of the directory
+	if ii == 0: subdir_list.append('Results') 
+	
+	return (os.sep).join(subdir_list)
 
 class checkTrackFiles(checkVideoFiles):
-	def __init__(self, mask_dir_root, tmp_dir_root = '', \
+	def __init__(self, mask_dir_root, results_dir_root, tmp_dir_root = '', \
 		is_single_worm = False, json_file = '', force_start_point='', end_point = '', \
 		script_abs_path = './trackSingleLocal.py', \
 		no_skel_filter = False, use_manual_join = False
@@ -24,6 +36,12 @@ class checkTrackFiles(checkVideoFiles):
 		
 		#checkings before accepting the data
 		mask_dir_root = os.path.abspath(mask_dir_root)
+		results_dir_root = os.path.abspath(results_dir_root)
+		script_abs_path = os.path.abspath(script_abs_path)
+		
+		if not os.path.exists(results_dir_root):
+			os.makedirs(results_dir_root)
+
 		assert os.path.exists(mask_dir_root)
 		assert os.path.exists(script_abs_path)
 
@@ -36,9 +54,10 @@ class checkTrackFiles(checkVideoFiles):
 			if not os.path.exists(tmp_dir_root):
 				os.makedirs(tmp_dir_root)
 
-		
 
+		#save inputs as object properties
 		self.mask_dir_root = mask_dir_root
+		self.results_dir_root = results_dir_root
 		self.tmp_dir_root = tmp_dir_root
 		self.json_file = json_file
 		self.script_abs_path = script_abs_path
@@ -51,9 +70,7 @@ class checkTrackFiles(checkVideoFiles):
 		self.end_point_N = checkpoint['END'] if not end_point else checkpoint[end_point]
 		self.end_point = end_point
 
-		#get results directory
-		self.results_dir_root = self.getResultsDir(mask_dir_root)
-
+		
 		#search extensions that must be invalid to keep the analysis coherent
 		self.invalid_ext = ['*_skeletons.hdf5', '*_trajectories.hdf5', '*_features.hdf5', '*_feat_ind.hdf5']
 		
@@ -61,20 +78,6 @@ class checkTrackFiles(checkVideoFiles):
 		self.filtered_files_fields = ('SOURCE_GOOD', 'SOURCE_BAD', 'FINISHED_GOOD', 'FINISHED_BAD')
 		self.filtered_files = {key : [] for key in self.filtered_files_fields}
 	
-	@staticmethod
-	def getResultsDir(mask_dir_root):
-		#construct the results dir on base of the mask_dir_root
-		subdir_list = mask_dir_root.split(os.sep)
-
-		for ii in range(len(subdir_list))[::-1]:
-			if subdir_list[ii] == 'MaskedVideos':
-				 subdir_list[ii] = 'Results'
-				 break
-		#the counter arrived to zero, add Results at the end of the directory
-		if ii == 0: subdir_list.append('Results') 
-		
-		return (os.sep).join(subdir_list)
-
 
 	def generateIndCMD(self, masked_image_file):
 		mask_dir, masked_file_name = os.path.split(masked_image_file)

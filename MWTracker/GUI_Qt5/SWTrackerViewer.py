@@ -7,7 +7,6 @@ from MWTracker.GUI_Qt5.TrackerViewerAux import TrackerViewerAux_GUI
 from MWTracker.trackWorms.getSkeletonsTables import getWormMask, binaryMask2Contour
 from MWTracker.intensityAnalysis.correctHeadTailIntensity import createBlocks, _fuseOverlapingGroups
 
-import sys
 import tables, os
 import numpy as np
 import pandas as pd
@@ -115,10 +114,10 @@ class SWTrackerViewer_GUI(TrackerViewerAux_GUI):
     
 
 if __name__ == '__main__':
+    import sys
+
     app = QApplication(sys.argv)
-    
     ui = SWTrackerViewer_GUI()
     ui.show()
-
     sys.exit(app.exec_())
 

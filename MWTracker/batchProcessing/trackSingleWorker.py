@@ -308,7 +308,6 @@ class getTrajectoriesWorker():
             #print(self.points_parameters[current_point]['argkws'])
             execThisPoint(current_point, **self.points_parameters[current_point], 
                 commit_hash=self.commit_hash, cmd_original=self.cmd_original)
-            
         
         time_str = str(datetime.timedelta(seconds=round(time.time()-initial_time)))
         print_flush('%s  Finished in %s. Total time %s' % (self.base_name, current_point, time_str))

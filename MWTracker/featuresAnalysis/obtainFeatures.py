@@ -15,6 +15,7 @@ import warnings
 warnings.filterwarnings('ignore', '.*empty slice*',)
 warnings.filterwarnings('ignore', ".*Falling back to 'gelss' driver.",)
 warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
+warnings.simplefilter(action = "ignore", category = RuntimeWarning)
 
 tables.parameters.MAX_COLUMNS = 1024 #(http://www.pytables.org/usersguide/parameter_files.html)
 

@@ -2,16 +2,16 @@ import json
 import h5py
 import os
 import numpy as np
-import sys
 import cv2
 from functools import partial
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QGraphicsView, \
 QCheckBox, QDoubleSpinBox, QSpinBox
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QThread
 from PyQt5.QtGui import QPixmap, QImage
 
 from MWTracker.GUI_Qt5.GetMaskParams_ui import Ui_GetMaskParams
+from MWTracker.GUI_Qt5.AnalysisProgress import WorkerFunQt, AnalysisProgress
 from MWTracker.GUI_Qt5.HDF5VideoPlayer import lineEditDragDrop, ViewsWithZoom, setChildrenFocusPolicy
 
 from MWTracker.helperFunctions.tracker_param import tracker_param
@@ -50,8 +50,7 @@ class twoViewsWithZoom():
         self.hscroll_full.valueChanged.connect(dd)        
         dd = partial(self.chgScroll , self.vscroll_full, self.vscroll_mask)
         self.vscroll_full.valueChanged.connect(dd)        
-        
-                
+
     def chgScroll(self, scroll_changed, scroll2change):
         scroll2change.setValue(scroll_changed.value())
 
@@ -133,9 +132,9 @@ class ParamWidgetMapper():
         else:
             return widget.value()
 
-class getMaskParams_GUI(QMainWindow):
+class GetMaskParams_GUI(QMainWindow):
     def __init__(self, default_videos_dir = '', scripts_dir = ''):
-        super().__init__()
+        super(GetMaskParams_GUI, self).__init__()
         
         # Set up the user interface from Designer.
         self.ui = Ui_GetMaskParams()
@@ -160,9 +159,12 @@ class getMaskParams_GUI(QMainWindow):
         self.ui.checkBox_isFluorescence.stateChanged.connect(self.updateMask)
 
         self.ui.pushButton_video.clicked.connect(self.getVideoFile)
-        self.ui.pushButton_results.clicked.connect(self.updateResultsDir)
-        self.ui.pushButton_mask.clicked.connect(self.updateMasksDir)
+        self.ui.pushButton_results.clicked.connect(self.getResultsDir)
+        self.ui.pushButton_mask.clicked.connect(self.getMasksDir)
+        self.ui.pushButton_paramFile.clicked.connect(self.getParamFile)
         
+        self.ui.pushButton_saveParam.clicked.connect(self.saveParamFile)
+
         self.ui.pushButton_next.clicked.connect(self.getNextChunk)
         self.ui.pushButton_start.clicked.connect(self.startAnalysis)
 
@@ -182,7 +184,6 @@ class getMaskParams_GUI(QMainWindow):
             'thresh_block_size': self.ui.spinBox_block_size,
             'thresh_C': self.ui.spinBox_thresh_C,
             'dilation_size': self.ui.spinBox_dilation_size,
-            'has_timestamp':self.ui.checkBox_hasTimestamp,
             'keep_border_data':self.ui.checkBox_keepBorderData,
             'is_invert_thresh' : self.ui.checkBox_isFluorescence,
             'fps':self.ui.spinBox_fps,
@@ -191,7 +192,7 @@ class getMaskParams_GUI(QMainWindow):
         
         self.videos_dir = default_videos_dir
         if not os.path.exists(self.videos_dir): self.videos_dir = ''
-        self.readJsonFile()
+        self.updateParamFile('')
 
         self.ui.lineEdit_mask.setText(self.mask_files_dir)
         self.ui.lineEdit_results.setText(self.results_dir)
@@ -200,60 +201,181 @@ class getMaskParams_GUI(QMainWindow):
         #setup image view as a zoom 
         self.twoViews = twoViewsWithZoom(self.ui.graphicsView_full, self.ui.graphicsView_mask)
         
+
         #let drag and drop a file into the video file line edit
-        lineEditDragDrop(self.ui.lineEdit_video, self.updateVideoFile)
+        lineEditDragDrop(self.ui.lineEdit_video, self.updateVideoFile, os.path.isfile)
+        lineEditDragDrop(self.ui.lineEdit_results, self.updateResultsDir, os.path.isdir)
+        lineEditDragDrop(self.ui.lineEdit_mask, self.updateMasksDir, os.path.isdir)
+        lineEditDragDrop(self.ui.lineEdit_paramFile, self.updateParamFile, os.path.isfile)
         
         #make sure the childrenfocus policy is none in order to be able to use the arrow keys
-        setChildrenFocusPolicy(self, Qt.NoFocus)
+        setChildrenFocusPolicy(self, Qt.ClickFocus)
 
+    def updateMaxArea(self):
+        self.ui.dial_max_area.setValue(self.ui.spinBox_max_area.value())
+        self.updateMask()
 
-    def readParam(self, param_name):
-        widget = self.param2widget[param_name]
+    def updateMinArea(self):
+        self.ui.dial_min_area.setValue(self.ui.spinBox_min_area.value())
+        self.updateMask()
 
+    def updateBlockSize(self):
+        self.ui.dial_block_size.setValue(self.ui.spinBox_block_size.value())
+        self.updateMask()
 
+    def updateThreshC(self):
+        self.ui.dial_thresh_C.setValue(self.ui.spinBox_thresh_C.value())
+        self.updateMask()
+
+    def updateDilationSize(self):
+        self.updateMask()
+
+    def updateBuffSize(self):
+        self.buffer_size = int(np.round(self.ui.spinBox_buff_size.value()))
+
+    def getResultsDir(self):
+        results_dir = QFileDialog.getExistingDirectory(self, "Selects the directory where the analysis results will be stored", 
+        self.results_dir)
+        self.updateResultsDir(results_dir)
+    
+    def updateResultsDir(self, results_dir):
+        if results_dir:
+            self.results_dir = results_dir
+            self.ui.lineEdit_results.setText(self.results_dir)
+
+    def getMasksDir(self):
+        mask_files_dir = QFileDialog.getExistingDirectory(self, "Selects the directory where the hdf5 video will be stored", 
+        self.mask_files_dir)
+        self.updateMasksDir(mask_files_dir)
+    
+    def updateMasksDir(self, mask_files_dir):
+        if mask_files_dir:
+            self.mask_files_dir = mask_files_dir
+            self.ui.lineEdit_mask.setText(self.mask_files_dir)
+
+    #file dialog to the the hdf5 file
+    def getParamFile(self):
+        json_file, _ = QFileDialog.getSaveFileName(self, "Find parameters file", 
+        self.videos_dir, "JSON files (*.json);; All (*)")
+        if json_file:
+            self.updateParamFile(json_file)
+
+    #def readAllParam(self):
+    def _setDefaultParam(self):
+        param = tracker_param();
+        widget_param = param.mask_param
+        widget_param['fps'] = param.compress_vid_param['expected_fps']
+        widget_param['compression_buff'] = param.compress_vid_param['buffer_size']
+        
+        for param_name in widget_param:
+            self.mapper.set(param_name, widget_param[param_name])
     #file dialog to the the hdf5 file
     def getVideoFile(self):
         video_file, _ = QFileDialog.getOpenFileName(self, "Find video file", 
         self.videos_dir, "All files (*)")
         self.updateVideoFile(video_file)
+    
+    def updateParamFile(self, json_file):
+        #set the widgets with the default parameters, in case the parameters are not given
+        # by the json file.
+        if os.path.exists(json_file):
+            try:
+                with open(json_file, 'r') as fid:
+                    json_str = fid.read()
+                    self.json_param = json.loads(json_str)
+                    
+            except (OSError, UnicodeDecodeError, json.decoder.JSONDecodeError):
+                QMessageBox.critical(self, 'Cannot read parameters file.', "Cannot read parameters file. Try another file",
+                 QMessageBox.Ok)
+                return
+        else:
+            self.json_param = {}
 
+        #put reset to the default paramters in the main application. Any paramter not contain 
+        #in the json file will be keep with the default value.
+        self._setDefaultParam()
+        
+        #set correct widgets to the values given in the json file
+        for param_name in self.json_param:
+
+            if param_name in self.mapper.param2widget:
+                self.mapper.set(param_name, self.json_param[param_name])
+        
+        self.json_file = json_file
+        self.ui.lineEdit_paramFile.setText(self.json_file)
+
+    def saveParamFile(self):
+        if not self.json_file:
+            QMessageBox.critical(self, 'No parameter file name given.', 'No parameter file name given. Please select name using the "Parameters File" button',
+                 QMessageBox.Ok)
+            return
+        
+        if os.path.exists(self.json_file):
+
+            reply = QMessageBox.question(self, 'Message',
+            '''The parameters file already exists. Do you want to overwrite it? 
+            If No the parameters in the existing file will be used instead of the values displayed.''', 
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+            if reply == QMessageBox.No:
+                return
+
+            #read all the values in the GUI
+            for param_name in self.mapper.param2widget:
+                param_value = self.mapper.get(param_name)
+                self.json_param[param_name] = param_value
+
+            #save data into the json file
+            with open(self.json_file, 'w') as fid:
+                json.dump(self.json_param, fid)
+            
     def updateVideoFile(self, video_file):
-        if video_file:
-            self.video_file = video_file
-            if os.path.exists(self.video_file):
-                
-                self.twoViews.cleanCanvas()
-                self.Ifull = np.zeros(0)
-
-                self.videos_dir = os.path.split(self.video_file)[0]
-                
-                self.ui.lineEdit_video.setText(self.video_file)
-                self.vid, self.im_width, self.im_height, self.reader_type = selectVideoReader(video_file)
-                if self.im_width == 0 or self.im_height == 0:
-                     QMessageBox.critical(self, 'Cannot read video file.', "Cannot read video file. Try another file",
-                    QMessageBox.Ok)
-                     self.vid = 0
-                     return
-
-                #replace Worm_Videos or add a directory for the Results and MaskedVideos directories
-                if 'Worm_Videos' in self.videos_dir:
-                    self.mask_files_dir = self.videos_dir.replace('Worm_Videos', 'MaskedVideos')
-                    self.results_dir = self.videos_dir.replace('Worm_Videos', 'Results')
+        if video_file and os.path.exists(video_file):                
+            try:
+                vid, im_width, im_height, reader_type = \
+                selectVideoReader(video_file)
+                if im_width == 0 or im_height == 0:
+                    raise ValueError
                 else:
-                    self.mask_files_dir = os.path.join(self.videos_dir, 'MaskedVideos')
-                    self.results_dir = os.path.join(self.videos_dir, 'Results')
-                
-                self.ui.lineEdit_mask.setText(self.mask_files_dir)
-                self.ui.lineEdit_results.setText(self.results_dir)
+                    if not isinstance(self.vid, int):
+                        self.vid.release()
+                    self.vid, self.im_width, self.im_height, self.reader_type = \
+                    vid, im_width, im_height, reader_type
+                    
+            except (OSError, ValueError, IOError):
+                 QMessageBox.critical(self, 'Cannot read video file.', "Cannot read video file. Try another file",
+                 QMessageBox.Ok)
+                 return
 
-                self.json_file = self.video_file.rpartition('.')[0] + '.json'
-                if not os.path.exists(self.json_file):
-                    self.json_file = ''
-                self.ui.lineEdit_paramFile.setText(self.json_file)
-                self.readJsonFile()
-                
-                self.getNextChunk()
-                self.twoViews.zoomFitInView()
+            #self.twoViews.cleanCanvas()
+
+            self.video_file = video_file
+            self.videos_dir = os.path.split(self.video_file)[0]
+            self.ui.lineEdit_video.setText(self.video_file)            
+            
+            #replace Worm_Videos or add a directory for the Results and MaskedVideos directories
+            if 'Worm_Videos' in self.videos_dir:
+                mask_files_dir = self.videos_dir.replace('Worm_Videos', 'MaskedVideos')
+                results_dir = self.videos_dir.replace('Worm_Videos', 'Results')
+            else:
+                mask_files_dir = os.path.join(self.videos_dir, 'MaskedVideos')
+                results_dir = os.path.join(self.videos_dir, 'Results')
+            
+            self.updateResultsDir(results_dir)
+            self.updateMasksDir(mask_files_dir)
+
+            #read json file
+            json_file = self.video_file.rpartition('.')[0] + '.json'
+            if not os.path.exists(json_file):
+                json_file = ''
+            
+            self.updateParamFile(json_file)
+            
+            #get next chuck
+            self.getNextChunk()
+
+            #fit the image to the canvas size
+            self.twoViews.zoomFitInView()
 
     def getNextChunk(self):
 
@@ -283,8 +405,8 @@ class getMaskParams_GUI(QMainWindow):
             self.updateMask()
 
 
-    def numpy2qimage(self, im_ori):
-        return QImage(im_ori.data, im_ori.shape[0], im_ori.shape[1], 
+    def _numpy2qimage(self, im_ori):
+        return QImage(im_ori.data, im_ori.shape[1], im_ori.shape[0], 
                 im_ori.data.strides[0], QImage.Format_Indexed8)
 
 
@@ -292,32 +414,9 @@ class getMaskParams_GUI(QMainWindow):
         if self.Ifull.size == 0:
             self.twoViews.cleanCanvas()
         else:
-            qimage_full = self.numpy2qimage(self.Ifull)
-            qimage_mask = self.numpy2qimage(self.Imask)
+            qimage_full = self._numpy2qimage(self.Ifull)
+            qimage_mask = self._numpy2qimage(self.Imask)
             self.twoViews.setPixmap(qimage_full, qimage_mask)
-
-    def updateMaxArea(self):
-        self.ui.dial_max_area.setValue(self.ui.spinBox_max_area.value())
-        self.updateMask()
-
-    def updateMinArea(self):
-        self.ui.dial_min_area.setValue(self.ui.spinBox_min_area.value())
-        self.updateMask()
-
-    def updateBlockSize(self):
-        self.ui.dial_block_size.setValue(self.ui.spinBox_block_size.value())
-        self.updateMask()
-
-    def updateThreshC(self):
-        self.ui.dial_thresh_C.setValue(self.ui.spinBox_thresh_C.value())
-        self.updateMask()
-
-    def updateDilationSize(self):
-        self.updateMask()
-
-    def updateBuffSize(self):
-        self.buffer_size = int(np.round(self.ui.spinBox_buff_size.value()))
-
     
     def updateMask(self):
         if self.Ifull.size == 0:
@@ -325,7 +424,7 @@ class getMaskParams_GUI(QMainWindow):
         #read parameters used to calculate the mask
         mask_param = {}
         for param_name in ['max_area', 'min_area', 'thresh_block_size', 'thresh_C',
-        'dilation_size', 'has_timestamp', 'keep_border_data', 'is_invert_thresh']:
+        'dilation_size', 'keep_border_data', 'is_invert_thresh']:
             mask_param[param_name] = self.mapper.get(param_name)
         
         mask = getROIMask(self.Imin.copy(), **mask_param)
@@ -333,39 +432,13 @@ class getMaskParams_GUI(QMainWindow):
 
         self.updateImage()
 
-    #update image if the GUI is resized event
-    def resizeEvent(self, event):
-        self.updateImage()
-        self.twoViews.zoomFitInView()
-
-    def updateResultsDir(self):
-        results_dir, _ = QFileDialog.getExistingDirectory(self, "Selects the directory where the analysis results will be stored", 
-        self.results_dir)
-        if results_dir:
-            self.results_dir = results_dir
-            self.ui.lineEdit_results.setText(self.results_dir)
-
-
-    def updateMasksDir(self):
-        mask_files_dir = QFileDialog.getExistingDirectory(self, "Selects the directory where the hdf5 video will be stored", 
-        self.mask_files_dir)
-        if mask_files_dir:
-            self.mask_files_dir = mask_files_dir
-            self.ui.lineEdit_mask.setText(self.mask_files_dir)
 
     def startAnalysis(self):
         if self.video_file == '' or self.Ifull.size == 0:
-            QMessageBox.critical(self, 'No valid video file selected.', "No valid video file selected.", QMessageBox.Ok)
+            QMessageBox.critical(self, 'Message', "No valid video file selected.", QMessageBox.Ok)
             return
-        self.close()
 
-        #read all the values in the GUI
-        for param_name in self.mapper.param2widget:
-            param_value = self.mapper.get(param_name)
-            self.json_param[param_name] = param_value
-
-        with open(self.json_file, 'w') as fid:
-            json.dump(self.mask_param, fid)
+        self.saveParamFile()
 
         base_name = os.path.splitext(os.path.split(self.video_file)[-1])[0]
         self.masked_image_file = os.path.join(self.mask_files_dir, base_name + '.hdf5')
@@ -375,41 +448,21 @@ class getMaskParams_GUI(QMainWindow):
             for field_name in ['video_file', 'mask_files_dir' ,'masked_image_file' ,'results_dir']:
                 setattr(self, field_name, getattr(self, field_name).replace('/', os.sep))
 
-        os.system(['clear','cls'][os.name == 'nt'])
-        compressSingleWorker(self.video_file, self.mask_files_dir, json_file = self.json_file)
-        getTrajectoriesWorker(self.masked_image_file, self.results_dir, json_file = self.json_file)
-        sys.exit()
+        compress_argvs = {'video_file':self.video_file, 'mask_dir':self.mask_files_dir,
+                        'json_file':self.json_file, 'is_single_worm':False}
 
-    #def readAllParam(self):
-    def setDefaultParam(self):
-        param = tracker_param();
-        param.get_param()
-        widget_param = param.mask_param
-        widget_param['fps'] = param.compress_vid_param['expected_fps']
-        widget_param['compression_buff'] = param.compress_vid_param['buffer_size']
+        track_argvs = {'masked_image_file':self.masked_image_file, 'results_dir':self.results_dir,
+                    'json_file':self.json_file, 'is_single_worm':False,
+                    'use_skel_filter':True, 'use_manual_join':False, 'cmd_original':'GUI'} 
+        
+        def complete_analysis(compress_argvs, track_argvs):
+            compressSingleWorker(**compress_argvs)
+            getTrajectoriesWorker(**track_argvs)
 
-        
-        for param_name in widget_param:
-            self.mapper.set(param_name, widget_param[param_name])
-        
-
-    def readJsonFile(self):
-        #set the widgets with the default parameters, in case the parameters are not given
-        # by the json file.
-        self.setDefaultParam()
-        
-        if os.path.exists(self.json_file): 
-            with open(self.json_file, 'r') as fid:
-                json_str = fid.read()
-                self.json_param = json.loads(json_str)
-        else:
-            self.json_param = {}
-        
-        #set correct widgets to the values given in the json file
-        for param_name in self.json_param:
-            if param_name in self.mapper.param2widget:
-                self.mapper.set(param_name, self.json_param[param_name])
-        
+        analysis_worker = WorkerFunQt(complete_analysis, {'compress_argvs':compress_argvs, 'track_argvs':track_argvs})
+        progress_dialog = AnalysisProgress(analysis_worker)
+        progress_dialog.setAttribute(Qt.WA_DeleteOnClose)
+        progress_dialog.exec_()
 
     def keyPressEvent(self, event):
         if self.vid == -1:
@@ -417,7 +470,6 @@ class getMaskParams_GUI(QMainWindow):
             return
         
         key = event.key()
-        
         if key == Qt.Key_Minus:
             self.twoViews.zoom(-1)
         elif key == Qt.Key_Plus:
@@ -426,13 +478,23 @@ class getMaskParams_GUI(QMainWindow):
         else:
             QMainWindow.keyPressEvent(self, event)
 
+    def closeEvent(self, event):
+        if not isinstance(self.vid, int):
+            self.vid.release()
+        super(GetMaskParams_GUI, self).closeEvent(event)
+
+    #update image if the GUI is resized event
+    def resizeEvent(self, event):
+        self.updateImage()
+        self.twoViews.zoomFitInView()
+
 if __name__ == '__main__':
+    import sys
+
     app = QApplication(sys.argv)
     
-    ui = getMaskParams_GUI()
+    ui = GetMaskParams_GUI()
     ui.show()
     
-    #sys.exit(app.exec_())
-    app.exec_()
-    me = os.getpid()
-    kill_proc_tree(me)
+    sys.exit(app.exec_())
+    
