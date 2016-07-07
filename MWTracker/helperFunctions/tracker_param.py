@@ -48,18 +48,25 @@ default_param = {'is_single_worm':False, 'min_area':50, 'max_area':1e10, 'thresh
 
 class tracker_param:
     def __init__(self, source_file=''):
-        input_params = default_param.copy()
+        input_param = default_param.copy()
         if source_file:
             with open(source_file) as fid:
                 param_in_file = json.load(fid)
-            for key in input_param:
+            for key in param_in_file:
                 if key in deprecated_fields:
                     continue
-                default_param[key] = input_param[key]
+                input_param[key] = param_in_file[key]
                 
         self._get_param(**input_param)
         #print(input_param)
-    def _get_param(self, **argkws):
+    def _get_param(self, is_single_worm, min_area, max_area, thresh_C, 
+        has_timestamp, thresh_block_size, dilation_size, compression_buff, 
+        keep_border_data, is_invert_thresh, expected_fps, threshold_factor,
+        resampling_N, max_gap_allowed_block, fps_filter, min_displacement, strel_size, 
+        filt_bad_seg_thresh, filt_min_displacement, filt_critical_alpha, 
+        filt_max_width_ratio, filt_max_area_ratio,
+        save_int_maps, int_avg_width_frac, int_width_resampling, 
+        int_length_resampling, int_max_gap_allowed_block):
         
         if not isinstance(expected_fps, int):
             expected_fps = int(expected_fps)
