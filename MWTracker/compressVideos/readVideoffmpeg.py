@@ -27,12 +27,17 @@ class readVideoffmpeg:
     -> this funciton is a bit faster (less overhead), but only works with gecko's mjpeg 
     '''
     def __init__(self, fileName):
-        #requires the fileName, and optionally the frame width and heigth.
+        #get the correct path for ffmpeg. First we look in the auxFiles directory, otherwise we look in the system path.
+        aux_file_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'auxFiles')
         if os.name == 'nt':
-            ffmpeg_cmd = 'ffmpeg.exe'
+            ffmpeg_cmd = os.path.join(aux_file_dir, 'ffmpeg.exe')
+            if not os.path.exists(ffmpeg_cmd):
+                ffmpeg_cmd = 'ffmpeg.exe'
         else:
-            ffmpeg_cmd = '/usr/local/bin/ffmpeg22' #this version reads the Gecko files
-        
+            ffmpeg_cmd = os.path.join(aux_file_dir, 'ffmpeg22')
+            if not os.path.exists(ffmpeg_cmd):
+                ffmpeg_cmd = '/usr/local/bin/ffmpeg22'
+
         #try to open the file and determine the frame size. Raise an exception otherwise.
         
         try:

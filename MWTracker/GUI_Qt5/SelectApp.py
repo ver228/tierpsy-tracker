@@ -19,7 +19,7 @@ class SelectApp(QMainWindow):
 		self.ui.pushButton_batchProcess.clicked.connect(partial(self.appCall, BatchProcessing_GUI))
 		self.ui.pushButton_MWViewer.clicked.connect(partial(self.appCall, MWTrackerViewer_GUI))
 		self.ui.pushButton_SWViewer.clicked.connect(partial(self.appCall, SWTrackerViewer_GUI))
-		    
+		
 	def appCall(self, appFun):
 		ui = appFun()
 		ui.show()

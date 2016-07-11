@@ -17,79 +17,70 @@
    <layout class="QGridLayout" name="gridLayout">
     <item row="3" column="0" rowspan="17">
      <layout class="QGridLayout" name="gridLayout_3">
-      <item row="10" column="0" colspan="2">
-       <widget class="QCheckBox" name="checkBox_keepBorderData">
-        <property name="text">
-         <string>keep border data?</string>
-        </property>
-       </widget>
-      </item>
       <item row="8" column="0" colspan="2">
-       <widget class="QCheckBox" name="checkBox_hasTimestamp">
-        <property name="text">
-         <string>corner timestamp?</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-        <property name="tristate">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="9" column="0" colspan="2">
        <widget class="QCheckBox" name="checkBox_isFluorescence">
         <property name="text">
          <string>is fluorescence?</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QLabel" name="label_3">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Block Size</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="spinBox_block_size">
-          <property name="minimum">
-           <number>5</number>
-          </property>
-          <property name="maximum">
-           <number>1000000</number>
-          </property>
-          <property name="value">
-           <number>61</number>
-          </property>
-         </widget>
-        </item>
-       </layout>
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Frames to average</string>
+        </property>
+       </widget>
       </item>
-      <item row="3" column="1">
-       <widget class="QDial" name="dial_block_size">
+      <item row="7" column="1">
+       <widget class="QSpinBox" name="spinBox_buff_size">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>1000</number>
+        </property>
+        <property name="value">
+         <number>25</number>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_fps">
+        <property name="text">
+         <string>Expected FPS</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QDoubleSpinBox" name="spinBox_fps">
+        <property name="value">
+         <double>25.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QSpinBox" name="spinBox_dilation_size">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>999</number>
+        </property>
+        <property name="value">
+         <number>9</number>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_6">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="minimum">
-         <number>5</number>
-        </property>
-        <property name="maximum">
-         <number>200</number>
-        </property>
-        <property name="value">
-         <number>61</number>
+        <property name="text">
+         <string>Dilation</string>
         </property>
        </widget>
       </item>
@@ -131,63 +122,59 @@
         </property>
        </widget>
       </item>
-      <item row="7" column="1">
-       <widget class="QSpinBox" name="spinBox_buff_size">
-        <property name="minimum">
-         <number>1</number>
-        </property>
-        <property name="maximum">
-         <number>1000</number>
-        </property>
-        <property name="value">
-         <number>25</number>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="1">
-       <widget class="QDoubleSpinBox" name="spinBox_fps">
-        <property name="value">
-         <double>25.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="label_fps">
-        <property name="text">
-         <string>Expected FPS</string>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="0">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>Frames to average</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="label_6">
+      <item row="3" column="1">
+       <widget class="QDial" name="dial_block_size">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="text">
-         <string>Dilation</string>
+        <property name="minimum">
+         <number>5</number>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="value">
+         <number>61</number>
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
-       <widget class="QSpinBox" name="spinBox_dilation_size">
-        <property name="minimum">
-         <number>1</number>
-        </property>
-        <property name="maximum">
-         <number>999</number>
-        </property>
-        <property name="value">
-         <number>9</number>
+      <item row="3" column="0">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QLabel" name="label_3">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Block Size</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="spinBox_block_size">
+          <property name="minimum">
+           <number>5</number>
+          </property>
+          <property name="maximum">
+           <number>1000000</number>
+          </property>
+          <property name="value">
+           <number>61</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="9" column="0" colspan="2">
+       <widget class="QCheckBox" name="checkBox_keepBorderData">
+        <property name="text">
+         <string>keep border data?</string>
         </property>
        </widget>
       </item>
@@ -275,6 +262,13 @@
          </widget>
         </item>
        </layout>
+      </item>
+      <item row="10" column="0" colspan="2">
+       <widget class="QPushButton" name="pushButton_moreParams">
+        <property name="text">
+         <string>Edit more parameters</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
@@ -411,6 +405,15 @@
        <string>Start Analysis</string>
       </property>
       <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+      <property name="default">
+       <bool>false</bool>
+      </property>
+      <property name="flat">
        <bool>false</bool>
       </property>
      </widget>

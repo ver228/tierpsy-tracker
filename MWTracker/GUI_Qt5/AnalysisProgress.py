@@ -51,7 +51,6 @@ class TxtReceiver(QThread):
         self.exit(0)
         
 
-    @pyqtSlot()
     def break_run(self):
         self.is_running = False
 
@@ -91,7 +90,13 @@ class AnalysisProgress(QDialog):
         
         self.process_thread.start()
     
-    @pyqtSlot()
+    def closeEvent(self, event):
+        self.reciever.break_run()
+        self.process_thread.terminate()
+        self.reciever.terminate()
+        sys.stdout = self.original_stdout
+        super(AnalysisProgress, self).closeEvent(event)
+
     def task_done(self):
         sys.stdout = self.original_stdout
         
@@ -103,7 +108,6 @@ class AnalysisProgress(QDialog):
         self.reciever.start()
         
 
-    @pyqtSlot(str)
     def appendText(self,text):
         #GUI CLEAR SIGNAL is a string that will be printed by runMultiCMD to indicate a clear screen to this widget
         if text == GUI_CLEAR_SIGNAL:
@@ -113,12 +117,7 @@ class AnalysisProgress(QDialog):
         self.ui.textEdit.moveCursor(QTextCursor.End)
         self.ui.textEdit.insertPlainText(text)
 
-    def closeEvent(self, event):
-        self.reciever.break_run()
-        self.process_thread.terminate()
-        self.reciever.terminate()
-        sys.stdout = self.original_stdout
-        super(AnalysisProgress, self).closeEvent(event)
+
 
 def dumfun(N):
     for i in range(N):

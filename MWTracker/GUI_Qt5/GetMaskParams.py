@@ -13,6 +13,8 @@ from PyQt5.QtGui import QPixmap, QImage
 from MWTracker.GUI_Qt5.GetMaskParams_ui import Ui_GetMaskParams
 from MWTracker.GUI_Qt5.AnalysisProgress import WorkerFunQt, AnalysisProgress
 from MWTracker.GUI_Qt5.HDF5VideoPlayer import lineEditDragDrop, ViewsWithZoom, setChildrenFocusPolicy
+from MWTracker.GUI_Qt5.GetAllParameters import GetAllParameters
+
 
 from MWTracker.helperFunctions.tracker_param import tracker_param
 from MWTracker.compressVideos.compressVideo import getROIMask, selectVideoReader
@@ -53,7 +55,6 @@ class twoViewsWithZoom():
 
     def chgScroll(self, scroll_changed, scroll2change):
         scroll2change.setValue(scroll_changed.value())
-
 
     def zoomWheelEvent(self, event):
         self.view_full.zoomWheelEvent(event)
@@ -154,7 +155,6 @@ class GetMaskParams_GUI(QMainWindow):
 
         self.ui.spinBox_buff_size.valueChanged.connect(self.updateBuffSize)
 
-        self.ui.checkBox_hasTimestamp.stateChanged.connect(self.updateMask)
         self.ui.checkBox_keepBorderData.stateChanged.connect(self.updateMask)
         self.ui.checkBox_isFluorescence.stateChanged.connect(self.updateMask)
 
@@ -168,6 +168,7 @@ class GetMaskParams_GUI(QMainWindow):
         self.ui.pushButton_next.clicked.connect(self.getNextChunk)
         self.ui.pushButton_start.clicked.connect(self.startAnalysis)
 
+        self.ui.pushButton_moreParams.clicked.connect(self.getMoreParams)
         self.mask_files_dir = ''
         self.results_dir = ''
         
@@ -210,6 +211,16 @@ class GetMaskParams_GUI(QMainWindow):
         
         #make sure the childrenfocus policy is none in order to be able to use the arrow keys
         setChildrenFocusPolicy(self, Qt.ClickFocus)
+
+    def closeEvent(self, event):
+        if not isinstance(self.vid, int):
+            self.vid.release()
+        super(GetMaskParams_GUI, self).closeEvent(event)
+
+    #update image if the GUI is resized event
+    def resizeEvent(self, event):
+        self.updateImage()
+        self.twoViews.zoomFitInView()
 
     def updateMaxArea(self):
         self.ui.dial_max_area.setValue(self.ui.spinBox_max_area.value())
@@ -255,7 +266,7 @@ class GetMaskParams_GUI(QMainWindow):
 
     #file dialog to the the hdf5 file
     def getParamFile(self):
-        json_file, _ = QFileDialog.getSaveFileName(self, "Find parameters file", 
+        json_file, _ = QFileDialog.getOpenFileName(self, "Find parameters file", 
         self.videos_dir, "JSON files (*.json);; All (*)")
         if json_file:
             self.updateParamFile(json_file)
@@ -269,11 +280,7 @@ class GetMaskParams_GUI(QMainWindow):
         
         for param_name in widget_param:
             self.mapper.set(param_name, widget_param[param_name])
-    #file dialog to the the hdf5 file
-    def getVideoFile(self):
-        video_file, _ = QFileDialog.getOpenFileName(self, "Find video file", 
-        self.videos_dir, "All files (*)")
-        self.updateVideoFile(video_file)
+
     
     def updateParamFile(self, json_file):
         #set the widgets with the default parameters, in case the parameters are not given
@@ -320,15 +327,21 @@ class GetMaskParams_GUI(QMainWindow):
             if reply == QMessageBox.No:
                 return
 
-            #read all the values in the GUI
-            for param_name in self.mapper.param2widget:
-                param_value = self.mapper.get(param_name)
-                self.json_param[param_name] = param_value
+        #read all the values in the GUI
+        for param_name in self.mapper.param2widget:
+            param_value = self.mapper.get(param_name)
+            self.json_param[param_name] = param_value
 
-            #save data into the json file
-            with open(self.json_file, 'w') as fid:
-                json.dump(self.json_param, fid)
-            
+        #save data into the json file
+        with open(self.json_file, 'w') as fid:
+            json.dump(self.json_param, fid)
+    
+        #file dialog to the the hdf5 file
+    def getVideoFile(self):
+        video_file, _ = QFileDialog.getOpenFileName(self, "Find video file", 
+        self.videos_dir, "All files (*)")
+        self.updateVideoFile(video_file)
+
     def updateVideoFile(self, video_file):
         if video_file and os.path.exists(video_file):                
             try:
@@ -478,15 +491,13 @@ class GetMaskParams_GUI(QMainWindow):
         else:
             QMainWindow.keyPressEvent(self, event)
 
-    def closeEvent(self, event):
-        if not isinstance(self.vid, int):
-            self.vid.release()
-        super(GetMaskParams_GUI, self).closeEvent(event)
+    def getMoreParams(self):
+        json_file = self.ui.lineEdit_paramFile.text()
+        allparamGUI = GetAllParameters(json_file)
+        allparamGUI.file_saved.connect(self.updateParamFile)
+        allparamGUI.exec_()
 
-    #update image if the GUI is resized event
-    def resizeEvent(self, event):
-        self.updateImage()
-        self.twoViews.zoomFitInView()
+    
 
 if __name__ == '__main__':
     import sys

@@ -27,11 +27,9 @@ from .segWormPython.mainSegworm import getSkeleton
 
 
 def getSmoothTrajectories(trajectories_file, roi_size = -1, min_track_size = 100,
-    displacement_smooth_win = 101, 
-    min_displacement = 0, threshold_smooth_win = 501):
+    displacement_smooth_win = 101, threshold_smooth_win = 501):
     '''
     Smooth trajectories and thresholds created by getWormTrajectories. 
-    If min_displacement is specified there is the option to filter immobile particles, typically spurious.
     '''
     
     #a track size less than 2 will break the interp_1 function
@@ -57,15 +55,7 @@ def getSmoothTrajectories(trajectories_file, roi_size = -1, min_track_size = 100
         raise Exception('bad %i, %i. \nFile: %s' % (len(timestamp_raw), df['frame_number'].max(), trajectories_file))
 
     tracks_data = df.groupby('worm_index_joined').aggregate(['max', 'min', 'count'])
-    
-    #filter for trajectories that move too little (static objects)
-    if min_displacement > 0:
-        delX = tracks_data['coord_x']['max'] - tracks_data['coord_x']['min']
-        delY = tracks_data['coord_y']['max'] - tracks_data['coord_y']['min']
         
-        good_index = tracks_data[(delX>min_displacement) & (delY>min_displacement)].index
-        df = df[df.worm_index_joined.isin(good_index)]
-    
     #get the total length of the tracks, this is more accurate than using count since parts of the track could have got lost for a few frames
     track_lenghts = (tracks_data['frame_number']['max'] - tracks_data['frame_number']['min']+1)
     tot_rows_ini = track_lenghts[track_lenghts>min_track_size].sum()
