@@ -4,34 +4,12 @@ OPENWORM_DIR=$MW_MAIN_DIR/../open-worm-analysis-toolbox
 OPENCV_DIR=$MW_MAIN_DIR/../opencv
 OPENCV_VER=3.1.0
 
-function create_directories {
-	# make sure the /usr/local/ is writable by the user
-	# sudo chown -R `whoami`:admin /usr/local/
-
-	for DIRECTORY in $MW_MAIN_DIR $OPENWORM_DIR $OPENCV_DIR
-	do
-		echo $DIRECTORY
-		mkdir -p $DIRECTORY
-		#change permissions so other users can access to this folder
-		chmod -R ugo+rx $DIRECTORY
-	done
-
-	echo 'Directories to store the helper repositories created.'
-}
-
-function copy_old_ffmpeg {
-	cp $MW_MAIN_DIR/aux_files/ffmpeg22 /usr/local/bin/ffmpeg22
-	chmod 777 /usr/local/bin/ffmpeg22
-	echo 'Old version of .mjpeg used to read .mjpeg files copied as /usr/local/bin/ffmpeg22'
-}
-
 function clone_worm_analysis_toolbox {
 	git clone https://github.com/openworm/open-worm-analysis-toolbox $OPENWORM_DIR
 	chmod -R ugo+rx $MW_MAIN_DIR/../open-worm-analysis-toolbox 
-
 }
 
-function install_dependencies {
+function install_dependencies_osx {
 	xcode-select --install
 	#install homebrew and other software used
 	ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -40,7 +18,6 @@ function install_dependencies {
 	sudo chown -R `whoami`:admin /usr/local/share
 
 	brew install wget cmake python3 git
-
 
 	#ffmpeg libraries, needed to install opencv
 	brew install ffmpeg --with-fdk-aac --with-ffplay --with-freetype --with-libass --with-libquvi \
@@ -57,6 +34,23 @@ function install_dependencies {
 	
 	pip3 install -U numpy spyder tables pandas h5py scipy scikit-learn \
 		scikit-image tifffile seaborn xlrd gitpython psutil
+}
+
+function install_anaconda {
+
+	curl -L http://repo.continuum.io/archive/Anaconda3-4.1.1-Linux-x86_64.sh -o Anaconda3-4.1.1-Linux-x86_64.sh
+	bash Anaconda3-4.1.1-Linux-x86_64.sh
+	rm Anaconda3-4-4.1.1-Linux-x86_64.sh
+	
+	conda install -c ver228 opencv3
+	pip install gitpython pyqt5
+} 
+
+function install_dependencies_linux {
+	sudo apt install git
+	sudo apt install ffmpeg
+	install_anaconda
+
 }
 
 function compile_cython_files {
@@ -105,7 +99,7 @@ function install_opencv3 {
 	make clean
 }
 
-function clean_prev_installation {
+function clean_prev_installation_osx {
 	rm -Rf $OPENCV_DIR
 	rm -Rf $OPENWORM_DIR
 	pip3 uninstall -y numpy spyder tables pandas h5py scipy scikit-learn \
@@ -125,16 +119,20 @@ function install_main_modules {
 	python3 setup.py develop
 }
 
-#get sudo permissions
-#sudo echo "Thanks."
-
-#clean_prev_installation
-create_directories
-copy_old_ffmpeg
-install_dependencies
-if [[ ! $OPENCV_VER -eq `python3 -c "import cv2; print(cv2.__version__)"` ]]; then
-	install_opencv3
+SHORT_OS_STR=$(uname -s)
+if [ "${SHORT_OS_STR}" == "Darwin" ]; then
+	#clean_prev_installation_osx
+	install_dependencies_osx
+	if [[ ! $OPENCV_VER -eq `python3 -c "import cv2; print(cv2.__version__)"` ]]; then
+		install_opencv3
+	fi
+	
 fi
+
+if [ "${SHORT_OS_STR:0:5}" == "Linux" ]; then
+	install_dependencies_linux
+fi
+
 compile_cython_files
 clone_worm_analysis_toolbox
 install_main_modules
