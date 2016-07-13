@@ -12,6 +12,7 @@ import os
 import subprocess as sp
 from collections import OrderedDict
 
+from MWTracker import AUX_FILES_DIR
 
 def dict2recarray(dat):
     '''convert into recarray (pytables friendly)'''
@@ -25,13 +26,12 @@ def dict2recarray(dat):
 
 def ffprobeMetadata(video_file):
     #get the correct path for ffprobe. First we look in the auxFiles directory, otherwise we look in the system path.
-    aux_file_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'auxFiles')
     if os.name == 'nt':
-        ffprobe_cmd = os.path.join(aux_file_dir, 'ffprobe.exe')
+        ffprobe_cmd = os.path.join(AUX_FILES_DIR, 'ffprobe.exe')
         if not os.path.exists(ffprobe_cmd):
             ffprobe_cmd = 'ffprobe.exe'
     else:
-        ffprobe_cmd = os.path.join(aux_file_dir, 'ffprobe')
+        ffprobe_cmd = os.path.join(AUX_FILES_DIR, 'ffprobe')
         if not os.path.exists(ffprobe_cmd):
             ffprobe_cmd = '/usr/local/bin/ffprobe' 
         

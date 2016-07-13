@@ -16,6 +16,12 @@ import argparse
 
 from MWTracker.helperFunctions.miscFun import print_flush
 
+try:
+	#use this directory if it is a one-file produced by pyinstaller
+	SCRIPT_COMPRESS_WORKER = [os.path.join(sys._MEIPASS, 'compressSingleWorker')]
+except Exception:
+	SCRIPT_COMPRESS_WORKER = [sys.executable, os.path.join(os.path.dirname(os.path.realpath(__file__)), 'compressSingleWorker.py')]
+
 class compressLocal:
 	def __init__(self, video_file, mask_dir, tmp_mask_dir='', json_file='', \
 		is_copy_video = False, is_single_worm = False, cmd_original=''):
@@ -91,8 +97,8 @@ class compressLocal:
 		
 
 	def create_script(self):
-		self.scrip_file_name = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'compressSingleWorker.py')
-		cmd = [sys.executable, self.scrip_file_name] + self.main_input_params
+		
+		cmd = SCRIPT_COMPRESS_WORKER + self.main_input_params
 		#replace bool values by a letter, otherwise one cannot parse them to the command line
 		cmd = [x if not isinstance(x, bool) else 'T' if x else '' for x in cmd]
 		return cmd

@@ -16,7 +16,6 @@ from .compressMultipleFilesHelper import checkVideoFiles, exploreDirs
 
 compress_dflt_vals = {'tmp_dir_root':os.path.join(os.path.expanduser("~"), 'Tmp'),
 	'json_file':'', 'pattern_include':'*.mjpg', 'pattern_exclude':'',
-	'script_abs_path':os.path.join(os.path.dirname(os.path.realpath(__file__)), 'compressSingleLocal.py'),
 	'max_num_process':6, 'refresh_time':10, 'is_single_worm':False, 'only_summary':False, 
 	'clean_previous':False, 'is_copy_video':False, 'videos_list':''}
 
@@ -28,8 +27,8 @@ compress_parser.add_argument('mask_dir_root', help='Root directory where the mas
 compress_parser.add_argument('--videos_list', default='', help='File containing the full path of the videos to be analyzed, otherwise there will be search from video_dir_root using pattern_include and pattern_exclude.')
 
 #name of the scripts used
-compress_parser.add_argument('--script_abs_path', default=compress_dflt_vals['script_abs_path'], \
-	help='Full path of the script to analyze single files.')
+#compress_parser.add_argument('--script_abs_path', default=compress_dflt_vals['script_abs_path'], \
+#	help='Full path of the script to analyze single files.')
 
 compress_parser.add_argument('--json_file', default=compress_dflt_vals['json_file'], help='File (.json) containing the tracking parameters.')
 
@@ -47,11 +46,11 @@ compress_parser.add_argument('--clean_previous', action='store_true', help='Use 
 compress_parser.add_argument('--is_copy_video', action='store_true', help = 'The video file would be copied to the temporary directory.')
 
 def compressMultipleFilesFun(video_dir_root, mask_dir_root, tmp_dir_root, json_file, \
-	pattern_include, pattern_exclude, script_abs_path, max_num_process, \
+	pattern_include, pattern_exclude, max_num_process, \
 	refresh_time, is_single_worm, only_summary, clean_previous, is_copy_video, videos_list):
 	
 	cvf = checkVideoFiles(video_dir_root, mask_dir_root, tmp_dir_root = tmp_dir_root, \
-		json_file = json_file, script_abs_path = script_abs_path, is_single_worm = is_single_worm, is_copy_video=is_copy_video)
+		json_file = json_file, is_single_worm = is_single_worm, is_copy_video=is_copy_video)
 
 	if not videos_list:
 		valid_files = exploreDirs(video_dir_root, pattern_include = pattern_include, pattern_exclude = pattern_exclude)

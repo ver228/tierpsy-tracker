@@ -14,10 +14,10 @@ from .trackSingleLocal import trackLocal_parser
 from .trackMultipleFilesHelper import checkTrackFiles, exploreDirs
 from .trackSingleWorker import checkpoint_label
 
-
+#'script_abs_path' : os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trackSingleLocal.py'),
+	
 track_dflt_vals = {'results_dir_root':'', 'tmp_dir_root': os.path.join(os.path.expanduser("~"), 'Tmp'),
 	'videos_list':'','json_file':'', 'pattern_include': '*.hdf5', 'pattern_exclude' : '',
-	'script_abs_path' : os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trackSingleLocal.py'),
 	'max_num_process':6, 'refresh_time':10, 'force_start_point':'', 'end_point':'END',
 	'is_single_worm':False, 'only_summary':False, 'no_prev_check':False, 'use_manual_join':False, 
 	'no_skel_filter':False }
@@ -33,8 +33,8 @@ track_parser.add_argument('--results_dir_root', default =track_dflt_vals['result
 track_parser.add_argument('--videos_list', default=track_dflt_vals['videos_list'], 
 	help='File containing the full path of the masked videos to be analyzed, otherwise there will be search from video_dir_root using pattern_include and pattern_exclude.')
 
-track_parser.add_argument('--script_abs_path', default=track_dflt_vals['script_abs_path'] , \
-	help='Full path of the script to analyze single files.')
+#track_parser.add_argument('--script_abs_path', default=track_dflt_vals['script_abs_path'] , \
+#	help='Full path of the script to analyze single files.')
 
 track_parser.add_argument('--json_file', default=track_dflt_vals['json_file'], 
 	help='File (.json) containing the tracking parameters.')
@@ -80,7 +80,7 @@ def getResultsDir(mask_dir_root):
 	
 	return (os.sep).join(subdir_list)
 
-def trackMultipleFilesFun(mask_dir_root, results_dir_root, tmp_dir_root, json_file, script_abs_path, \
+def trackMultipleFilesFun(mask_dir_root, results_dir_root, tmp_dir_root, json_file, \
 	pattern_include, pattern_exclude, \
 	max_num_process, refresh_time, force_start_point, end_point, is_single_worm, 
 	only_summary, no_prev_check, use_manual_join, no_skel_filter, videos_list):
@@ -91,7 +91,7 @@ def trackMultipleFilesFun(mask_dir_root, results_dir_root, tmp_dir_root, json_fi
 
 	ctf = checkTrackFiles(mask_dir_root, results_dir_root, tmp_dir_root = tmp_dir_root, \
 		is_single_worm = is_single_worm, json_file = json_file, force_start_point = force_start_point, end_point = end_point, \
-		script_abs_path = script_abs_path, use_manual_join= use_manual_join, no_skel_filter = no_skel_filter)
+		use_manual_join= use_manual_join, no_skel_filter = no_skel_filter)
 	
 	pattern_exclude = [pattern_exclude] + ctf.invalid_ext
 	

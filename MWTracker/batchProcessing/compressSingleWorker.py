@@ -74,6 +74,9 @@ def compressSingleWorker(video_file, mask_dir, json_file = '', is_single_worm = 
 if __name__ == '__main__':
     if len(sys.argv)==6:
         compressSingleWorker(*sys.argv[1:])
+    else:
+        print('Wrong number of arguments.')
+        print(sys.argv)
     
     
     

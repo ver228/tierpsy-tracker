@@ -6,12 +6,14 @@ Created on Thu Apr  2 13:15:59 2015
 """
 
 import os
+import sys
 import re
 import subprocess as sp
 import numpy as np
 from threading  import Thread
 from queue import Queue, Empty
 
+from MWTracker import AUX_FILES_DIR
 
 def enqueue_error(out, queue):
     for line in iter(out.readline, b''):
@@ -28,16 +30,19 @@ class readVideoffmpeg:
     '''
     def __init__(self, fileName):
         #get the correct path for ffmpeg. First we look in the auxFiles directory, otherwise we look in the system path.
-        aux_file_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'auxFiles')
-        if os.name == 'nt':
-            ffmpeg_cmd = os.path.join(aux_file_dir, 'ffmpeg.exe')
+        def get_local_or_sys(ffmpeg_name):
+            ffmpeg_cmd = os.path.join(AUX_FILES_DIR, ffmpeg_name)
             if not os.path.exists(ffmpeg_cmd):
-                ffmpeg_cmd = 'ffmpeg.exe'
-        else:
-            ffmpeg_cmd = os.path.join(aux_file_dir, 'ffmpeg22')
-            if not os.path.exists(ffmpeg_cmd):
-                ffmpeg_cmd = '/usr/local/bin/ffmpeg22'
+                ffmpeg_cmd = ffmpeg_name
+            return ffmpeg_cmd
 
+        if sys.platform == 'win32':
+            ffmpeg_cmd = get_local_or_sys('ffmpeg.exe')
+        elif sys.platform == 'darwin':
+            ffmpeg_cmd = get_local_or_sys('ffmpeg22')
+        elif sys.platform == 'linux':
+            ffmpeg_cmd = get_local_or_sys('ffmpeg')
+            
         #try to open the file and determine the frame size. Raise an exception otherwise.
         
         try:

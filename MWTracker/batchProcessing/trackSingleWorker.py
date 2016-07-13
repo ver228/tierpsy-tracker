@@ -313,22 +313,22 @@ class getTrajectoriesWorker():
         print_flush('%s  Finished in %s. Total time %s' % (self.base_name, current_point, time_str))
         
 
+track_worker_parser = argparse.ArgumentParser(description="Track woms in an individual video hdf5 file.")
+track_worker_parser.add_argument('masked_image_file', help = 'hdf5 video file.')
+track_worker_parser.add_argument('results_dir', help = 'Directory where results are going to be saved.')
+track_worker_parser.add_argument('--json_file', default = '', help='File (.json) containing the tracking parameters.')
+track_worker_parser.add_argument('--start_point', type=int, default = -1, help = 'Force the program to start at a specific point in the analysis.')
+track_worker_parser.add_argument('--end_point', type=int, default = checkpoint['END'], help='End point of the analysis.')
+track_worker_parser.add_argument('--is_single_worm', action='store_true', help = 'This flag indicates if the video corresponds to the single worm case.')
+track_worker_parser.add_argument('--use_manual_join', action='store_true', help = 'Use this flag to calculate features on manually joined data.')
+track_worker_parser.add_argument('--use_skel_filter', action='store_true', help = 'Flag to filter valid skeletons using the movie robust averages.')
+track_worker_parser.add_argument('--cmd_original', default = '', help = 'Internal. Used in provenance tracking.')
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Track woms in an individual video hdf5 file.")
-    parser.add_argument('masked_image_file', help = 'hdf5 video file.')
-    parser.add_argument('results_dir', help = 'Directory where results are going to be saved.')
-    parser.add_argument('--json_file', default = '', help='File (.json) containing the tracking parameters.')
-    parser.add_argument('--start_point', type=int, default = -1, help = 'Force the program to start at a specific point in the analysis.')
-    parser.add_argument('--end_point', type=int, default = checkpoint['END'], help='End point of the analysis.')
-    parser.add_argument('--is_single_worm', action='store_true', help = 'This flag indicates if the video corresponds to the single worm case.')
-    parser.add_argument('--use_manual_join', action='store_true', help = 'Use this flag to calculate features on manually joined data.')
-    parser.add_argument('--use_skel_filter', action='store_true', help = 'Flag to filter valid skeletons using the movie robust averages.')
-    parser.add_argument('--cmd_original', default = '', help = 'Internal. Used in provenance tracking.')
     
     if len(sys.argv)>1: 
-        args = parser.parse_args()
+        args = track_worker_parser.parse_args()
         getTrajectoriesWorker(**vars(args)) 
     else:
-        print_flush('Bad', sys.argv)
+        print('Bad', sys.argv)
         

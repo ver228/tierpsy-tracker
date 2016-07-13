@@ -41,13 +41,14 @@ class checkTrackFiles(checkVideoFiles):
 		
 		if not os.path.exists(results_dir_root):
 			os.makedirs(results_dir_root)
-
-		assert os.path.exists(mask_dir_root)
-		assert os.path.exists(script_abs_path)
-
-		if json_file: 
+		if not os.path.exists(mask_dir_root):
+			raise FileExistsError('The masks root directory %s does not exist.' % mask_dir_root)
+		
+		if json_file: #empty file is accepted (Default parameters)
 			json_file = os.path.abspath(json_file)
-			assert os.path.exists(json_file)
+			if not os.path.exists(json_file):
+				raise FileExistsError('The parameters file %s does not exist.' % json_file)
+		
 		
 		if tmp_dir_root: 
 			tmp_dir_root = os.path.abspath(tmp_dir_root)

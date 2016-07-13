@@ -1,9 +1,4 @@
 
 *.pyc
-
-create_binaries/build/*
-
-create_binaries/dist/*
+create_binaries/*.app
 MWTracker.egg-info/*
-*.spec
-*.spec

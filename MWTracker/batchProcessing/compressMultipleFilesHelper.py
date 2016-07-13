@@ -92,18 +92,18 @@ class checkVideoFiles:
 		
 		#checkings before accepting the data
 		video_dir_root = os.path.abspath(video_dir_root)
-		assert os.path.exists(video_dir_root)
+		if not os.path.exists(video_dir_root):
+			raise FileExistsError('The root video directory %s does not exist.' % video_dir_root)
 		
 		mask_dir_root = os.path.abspath(mask_dir_root)
 		if not os.path.exists(mask_dir_root):
 			os.makedirs(mask_dir_root)
 		
-		assert os.path.exists(script_abs_path)
-
 		if json_file: 
 			json_file = os.path.abspath(json_file)
-			assert os.path.exists(json_file)
-		
+			if not os.path.exists(json_file):
+				raise FileExistsError('The parameters file %s does not exist.' % json_file)
+			
 		if tmp_dir_root: 
 			tmp_dir_root = os.path.abspath(tmp_dir_root)
 			if not os.path.exists(tmp_dir_root):

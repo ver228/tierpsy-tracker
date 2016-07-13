@@ -3,8 +3,8 @@
 block_cipher = None
 
 
-a = Analysis(['..\\MWTracker_GUI\\SWTrackerViewer.py'],
-             pathex=['C:\\Users\\Avelino.Avelino_VM\\Documents\\GitHub\\Multiworm_Tracking\\create_binaries'],
+a = Analysis(['../scripts/trackSingleWorker.py'],
+             pathex=['/Users/ajaver/Documents/GitHub/Multiworm_Tracking/create_binaries'],
              binaries=None,
              datas=None,
              hiddenimports=['h5py.defs', 'h5py.utils', 'h5py.h5ac', 'h5py._proxy'],
@@ -19,15 +19,15 @@ pyz = PYZ(a.pure, a.zipped_data,
 exe = EXE(pyz,
           a.scripts,
           exclude_binaries=True,
-          name='SWTrackerViewer',
+          name='trackSingleWorker',
           debug=False,
           strip=False,
           upx=True,
-          console=False )
+          console=True )
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,
                a.datas,
                strip=False,
                upx=True,
-               name='SWTrackerViewer')
+               name='trackSingleWorker')
