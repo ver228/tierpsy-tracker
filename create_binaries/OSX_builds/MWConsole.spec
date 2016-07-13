@@ -1,5 +1,4 @@
 # -*- mode: python -*-
-
 import os
 import MWTracker
 import open_worm_analysis_toolbox
@@ -13,19 +12,19 @@ added_files = [
 (os.path.join(open_worm_path, 'features/master_eigen_worms_n2.mat'), 
 'open_worm_analysis_toolbox/features'),
 (os.path.join(MWTracker_path, 'auxFiles/features_names.csv'), 
-'MWTracker/auxFiles'),
+'auxFiles'),
 (os.path.join(MWTracker_path, 'auxFiles/ffmpeg22'), 
-'MWTracker/auxFiles'),
-('/usr/local/bin/ffprobe', 'MWTracker/auxFiles'),
+'auxFiles'),
+('/usr/local/bin/ffprobe', 'auxFiles'),
 ('./dist/compressSingleWorker/compressSingleWorker', '.'),
 ('./dist/trackSingleWorker/trackSingleWorker', '.')
 ]
 
-
 block_cipher = None
 
+
 a = Analysis(['../scripts/MWConsole.py'],
-             pathex=['/Users/ajaver/Documents/GitHub/Multiworm_Tracking/create_binaries'],
+             pathex=['/Users/ajaver/Documents/GitHub/Multiworm_Tracking/create_binaries/OSX_builds'],
              binaries=None,
              datas=added_files,
              hiddenimports=['h5py.defs', 'h5py.utils', 'h5py.h5ac', 'h5py._proxy'],
@@ -39,16 +38,19 @@ pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
 exe = EXE(pyz,
           a.scripts,
-          exclude_binaries=True,
+          a.binaries,
+          a.zipfiles,
+          a.datas,
           name='MWConsole',
           debug=False,
           strip=False,
           upx=True,
-          console=True )
-coll = COLLECT(exe,
-               a.binaries,
-               a.zipfiles,
-               a.datas,
-               strip=False,
-               upx=True,
-               name='MWConsole')
+          console=False )
+app = BUNDLE(exe,
+             name='MWConsole.app',
+             icon=None,
+             bundle_identifier=None,
+             info_plist={
+              'CFBundleShortVersionString' : MWTracker.__version__
+              }
+            )

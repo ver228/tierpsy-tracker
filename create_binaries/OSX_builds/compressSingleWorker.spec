@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['../scripts/compressSingleWorker.py'],
-             pathex=['/Users/ajaver/Documents/GitHub/Multiworm_Tracking/create_binaries'],
+             pathex=['/Users/ajaver/Documents/GitHub/Multiworm_Tracking/create_binaries/OSX_builds'],
              binaries=None,
              datas=None,
              hiddenimports=['h5py.defs', 'h5py.utils', 'h5py.h5ac', 'h5py._proxy'],

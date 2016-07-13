@@ -6,7 +6,45 @@ pyinstaller --noconfirm  --clean \
 trackSingleWorker.spec
 
 pyinstaller --noconfirm  --clean \
+MWConsole.spec
+}
+
+function build_spec {
+pyinstaller --noconfirm  --clean \
+--exclude-module PyQt4 \
+--exclude-module PyQt4.QtCore \
+--exclude-module PyQt4.QtGui \
+--hidden-import=h5py.defs \
+--hidden-import=h5py.utils \
+--hidden-import=h5py.h5ac \
+--hidden-import='h5py._proxy' \
+../scripts/compressSingleWorker.py
+
+pyinstaller --noconfirm  --clean \
+--exclude-module PyQt4 \
+--exclude-module PyQt4.QtCore \
+--exclude-module PyQt4.QtGui \
+--hidden-import=h5py.defs \
+--hidden-import=h5py.utils \
+--hidden-import=h5py.h5ac \
+--hidden-import='h5py._proxy' \
+../scripts/trackSingleWorker.py
+
+
+pyinstaller --noconfirm  --clean --onefile --windowed \
+--exclude-module PyQt4 \
+--exclude-module PyQt4.QtCore \
+--exclude-module PyQt4.QtGui \
+--hidden-import=h5py.defs \
+--hidden-import=h5py.utils \
+--hidden-import=h5py.h5ac \
+--hidden-import='h5py._proxy' \
+../scripts/MWConsole.py
+MWConsole.spec
+../MWTracker_GUI/MWConsole.py
 MWConsole_OSX.spec
+--onefile --windowed
+
 }
 
 function clean {
@@ -21,20 +59,3 @@ function clean {
 build
 clean
 
-#
-
-
-# pyinstaller --noconfirm  --clean \
-# --exclude-module PyQt4 \
-# --exclude-module PyQt4.QtCore \
-# --exclude-module PyQt4.QtGui \
-# --hidden-import=h5py.defs \
-# --hidden-import=h5py.utils \
-# --hidden-import=h5py.h5ac \
-# --hidden-import='h5py._proxy' \
-# ./scripts/compressSingleWorker.py
-
-#MWConsole.spec
-#../MWTracker_GUI/MWConsole.py
-#MWConsole_OSX.spec
-#--onefile --windowed
