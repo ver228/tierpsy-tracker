@@ -1,0 +1,5 @@
+
+
+* the hidden import h5py._proxy requires quotations ('') in linux/mac but not in windows. Putting quotations  in windows will confuse pyinstaller and will not be able to locate the file.
+
+* use the options --windowed in Windows will cause problems in any subprocess. There seem to be some work arounds (https://github.com/pyinstaller/pyinstaller/wiki/Recipe-subprocess), but for the moment I will just leave the annoying background screen in the application.

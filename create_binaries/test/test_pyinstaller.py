@@ -1,7 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget
 import pandas as pd
-import h5py
 import tables
 import cv2
 
@@ -9,7 +8,13 @@ import numpy as np
 import matplotlib
 matplotlib.use("Qt5Agg")
 import matplotlib.pylab as plt
+import h5py
 
+if getattr(sys, 'frozen', False):
+    print('Frozen.')
+    print(sys._MEIPASS)
+else:
+    print('Not frozen.')
 
 if __name__ == '__main__':
     print('HOLA')

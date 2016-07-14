@@ -21,6 +21,8 @@ from MWTracker.helperFunctions.miscFun import print_flush
 try:
 	#use this directory if it is a one-file produced by pyinstaller
 	SCRIPT_TRACK_WORKER = [os.path.join(sys._MEIPASS, 'trackSingleWorker')]
+	if os.name == 'nt':
+		SCRIPT_TRACK_WORKER[0] = SCRIPT_TRACK_WORKER[0] + '.exe'
 except Exception:
 	SCRIPT_TRACK_WORKER = [sys.executable, os.path.join(os.path.dirname(os.path.realpath(__file__)), 'trackSingleWorker.py')]
 		

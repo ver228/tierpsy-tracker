@@ -79,8 +79,9 @@ class AnalysisProgress(QDialog):
         super(AnalysisProgress, self).__init__()
         self.ui = Ui_AnalysisProgress()
         self.ui.setupUi(self)
+        self.ui.progressBar.setValue(0)
+
         self.setAttribute(Qt.WA_DeleteOnClose)
-        
         
         self.process_thread = process_thread
         self.startRecieverThread()
@@ -99,6 +100,7 @@ class AnalysisProgress(QDialog):
 
     def task_done(self):
         sys.stdout = self.original_stdout
+        self.ui.progressBar.setValue(100)
         
     def startRecieverThread(self):
         #redirect the stdout to reciever

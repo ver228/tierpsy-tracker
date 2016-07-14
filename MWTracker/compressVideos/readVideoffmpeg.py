@@ -13,7 +13,7 @@ import numpy as np
 from threading  import Thread
 from queue import Queue, Empty
 
-from MWTracker import AUX_FILES_DIR
+from MWTracker.helperFunctions.miscFun import get_local_or_sys_path
 
 def enqueue_error(out, queue):
     for line in iter(out.readline, b''):
@@ -29,20 +29,17 @@ class readVideoffmpeg:
     -> this funciton is a bit faster (less overhead), but only works with gecko's mjpeg 
     '''
     def __init__(self, fileName):
-        #get the correct path for ffmpeg. First we look in the auxFiles directory, otherwise we look in the system path.
-        def get_local_or_sys(ffmpeg_name):
-            ffmpeg_cmd = os.path.join(AUX_FILES_DIR, ffmpeg_name)
-            if not os.path.exists(ffmpeg_cmd):
-                ffmpeg_cmd = ffmpeg_name
-            return ffmpeg_cmd
 
+        if not os.path.exists(fileName):
+            raise FileNotFoundError(fileName)
+        
         if sys.platform == 'win32':
-            ffmpeg_cmd = get_local_or_sys('ffmpeg.exe')
+            ffmpeg_cmd = get_local_or_sys_path('ffmpeg.exe')
         elif sys.platform == 'darwin':
-            ffmpeg_cmd = get_local_or_sys('ffmpeg22')
+            ffmpeg_cmd = get_local_or_sys_path('ffmpeg22')
         elif sys.platform == 'linux':
-            ffmpeg_cmd = get_local_or_sys('ffmpeg')
-            
+            ffmpeg_cmd = get_local_or_sys_path('ffmpeg')
+        
         #try to open the file and determine the frame size. Raise an exception otherwise.
         
         try:
@@ -55,7 +52,8 @@ class readVideoffmpeg:
             dd = re.findall(r'\d*x\d*', dd)[0].split('x')
             self.height = int(dd[1])
             self.width = int(dd[0])
-        except:
+            
+        except (IndexError, ValueError):
             raise Exception('Error while getting the width and height using ffmpeg. Buffer output:', buff)
     
         self.tot_pix = self.height*self.width

@@ -40,10 +40,6 @@ pyinstaller --noconfirm  --clean --onefile --windowed \
 --hidden-import=h5py.h5ac \
 --hidden-import='h5py._proxy' \
 ../scripts/MWConsole.py
-MWConsole.spec
-../MWTracker_GUI/MWConsole.py
-MWConsole_OSX.spec
---onefile --windowed
 
 }
 

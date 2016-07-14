@@ -19,6 +19,8 @@ from MWTracker.helperFunctions.miscFun import print_flush
 try:
 	#use this directory if it is a one-file produced by pyinstaller
 	SCRIPT_COMPRESS_WORKER = [os.path.join(sys._MEIPASS, 'compressSingleWorker')]
+	if os.name == 'nt':
+		SCRIPT_COMPRESS_WORKER[0] = SCRIPT_COMPRESS_WORKER[0] + '.exe'
 except Exception:
 	SCRIPT_COMPRESS_WORKER = [sys.executable, os.path.join(os.path.dirname(os.path.realpath(__file__)), 'compressSingleWorker.py')]
 
