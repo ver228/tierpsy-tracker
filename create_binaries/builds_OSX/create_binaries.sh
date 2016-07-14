@@ -45,9 +45,8 @@ pyinstaller --noconfirm  --clean --onefile --windowed \
 
 function clean {
 	MWVER=`python3 -c "import MWTracker; print(MWTracker.__version__)"`
-	OSXVER=`python3 -c "import platform; print(platform.mac_ver()[0])"`
-
-	mv ./dist/MWConsole.app "../MWConsole $MWVER - MacOSX($OSXVER+).app"
+	OSXVER=`python3 -c "import platform; print(platform.platform().replace('Darwin', 'MacOSX'))"`
+	mv ./dist/MWConsole.app "../MWConsole $MWVER - $OSXVER+.app"
 	rm -Rf ./dist
 	rm -Rf ./build	
 }
