@@ -18,16 +18,18 @@ from .readDatFile import readDatFile
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
 
-DEFAULT_MASK_PARAM = {'min_area':100, 'max_area':5000, 'has_timestamp':True, 
-'thresh_block_size':61, 'thresh_C':15, 'dilation_size': 9, 'keep_border_data': False, 'is_invert_thresh': False}
-
-def getROIMask(image, min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEFAULT_MASK_PARAM['max_area'], 
-    has_timestamp = DEFAULT_MASK_PARAM['has_timestamp'], thresh_block_size = DEFAULT_MASK_PARAM['thresh_block_size'], 
-    thresh_C = DEFAULT_MASK_PARAM['thresh_C'], dilation_size = DEFAULT_MASK_PARAM['dilation_size'], 
-    keep_border_data = DEFAULT_MASK_PARAM['keep_border_data'], is_invert_thresh = DEFAULT_MASK_PARAM['is_invert_thresh']):
+def getROIMask(image, min_area, max_area, thresh_block_size, thresh_C, dilation_size, 
+    keep_border_data, is_invert_thresh):
     '''
     Calculate a binary mask to mark areas where it is possible to find worms.
     Objects with less than min_area or more than max_area pixels are rejected.
+        > min_area -- minimum blob area to be considered in the mask
+        > max_area -- max blob area to be considered in the mask
+        > thresh_C -- threshold used by openCV adaptiveThreshold
+        > thresh_block_size -- block size used by openCV adaptiveThreshold
+        > dilation_size -- size of the structure element to dilate the mask
+        > keep_border_data -- (bool) if false it will reject any blob that touches the image border 
+
     '''
     #Objects that touch the limit of the image are removed. I use -2 because openCV findCountours remove the border pixels
     IM_LIMX = image.shape[0]-2
@@ -41,8 +43,7 @@ def getROIMask(image, min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEFA
         mask = cv2.adaptiveThreshold(image,255,cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, thresh_block_size, -thresh_C)
     else: #image is not fluorescent
         mask = cv2.adaptiveThreshold(image,255,cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, thresh_block_size, thresh_C)
-    # ret, mask = cv2.threshold(image, thresh_C, 255, cv2.THRESH_BINARY_INV)
-
+    
 
     #find the contour of the connected objects (much faster than labeled images)
     _, contours, hierarchy = cv2.findContours(mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -75,10 +76,7 @@ def getROIMask(image, min_area = DEFAULT_MASK_PARAM['min_area'], max_area = DEFA
     struct_element = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (dilation_size,dilation_size)) 
     mask = cv2.dilate(mask, struct_element, iterations = 3)
     
-    if has_timestamp:
-        #the gecko images have a time stamp in the image border
-        cv2.rectangle(mask, (0,0), (479,15), 1, thickness=-1) 
-
+    
     return mask
 
 READER_TYPE = {'OPENCV':0, 'FFMPEG_CMD':1, 'HDF5':2, 'DAT':3, 'TIF':4};
@@ -130,8 +128,8 @@ def selectVideoReader(video_file):
 
     return vid, im_width, im_height, reader_type
 
-def compressVideo(video_file, masked_image_file, buffer_size = 25, \
-save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM, expected_fps = 25):
+def compressVideo(video_file, masked_image_file, mask_param, buffer_size = 25, \
+save_full_interval = 5000, max_frame = 1e32, expected_fps = 25):
     '''
     Compresses video by selecting pixels that are likely to have worms on it and making the rest of 
     the image zero. By creating a large amount of redundant data, any lossless compression
@@ -145,14 +143,7 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM, ex
      buffer_size -- size of the image stack used to calculate the minimal projection and the mask
      save_full_interval -- have often a full image is saved
      max_frame -- last frame saved (default a very large number, so it goes until the end of the video)
-     mask_param -- parameters used to calculate the mask:
-        > min_area -- minimum blob area to be considered in the mask
-        > max_area -- max blob area to be considered in the mask
-        > thresh_C -- threshold used by openCV adaptiveThreshold
-        > thresh_block_size -- block size used by openCV adaptiveThreshold
-        > has_timestamp -- (bool) indicates if the timestamp stamp in Gecko images is going to be conserved
-        > dilation_size -- size of the structure element to dilate the mask
-        > keep_border_data -- (bool) if false it will reject any blob that touches the image border 
+     mask_param -- parameters used to calculate the mask
     '''
 
     #processes identifier.
@@ -195,12 +186,6 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM, ex
         mask_dataset.attrs["DISPLAY_ORIGIN"] = np.string_("UL") # not rotated
         mask_dataset.attrs["IMAGE_VERSION"] = np.string_("1.2")
 
-        #flag to store the parameters using in the mask calculation
-        for key in DEFAULT_MASK_PARAM:
-            if key in mask_param:
-                mask_dataset.attrs[key] = int(mask_param[key])
-            else:
-                mask_dataset.attrs[key] = int(DEFAULT_MASK_PARAM[key])
         
         #flag to indicate that the conversion finished succesfully
         mask_dataset.attrs['has_finished'] = 0
@@ -296,8 +281,9 @@ save_full_interval = 5000, max_frame = 1e32, mask_param = DEFAULT_MASK_PARAM, ex
 
             #mask buffer and save data into the hdf5 file
             if (ind_buff == buffer_size-1 or ret == 0) and Ibuff.size > 0:
+                Imin = np.min(Ibuff, axis=0)
                 #calculate the mask only when the buffer is full or there are no more frames left
-                mask = getROIMask(np.min(Ibuff, axis=0), **mask_param)
+                mask = getROIMask(Imin, **mask_param)
                 #mask all the images in the buffer
                 Ibuff *= mask
                 #add buffer to the hdf5 file

@@ -6,21 +6,19 @@ import h5py
 import os
 import pandas as pd
 import numpy as np
-import sys
 import cv2
 import json
 import tables
 from functools import partial
 
-import sys
-
 from MWTracker.GUI_Qt5.MWTrackerViewer_ui import Ui_MWTrackerViewer
 from MWTracker.GUI_Qt5.TrackerViewerAux import TrackerViewerAux_GUI
+from MWTracker.GUI_Qt5.AnalysisProgress import WorkerFunQt, AnalysisProgress
 
 from MWTracker.trackWorms.getSkeletonsTables import getWormROI, getWormMask, binaryMask2Contour
 from MWTracker.featuresAnalysis.obtainFeatures import getWormFeaturesFilt
-from MWTracker.helperFunctions.trackProvenance import getGitCommitHash, execThisPoint
 from MWTracker.helperFunctions.tracker_param import tracker_param
+from MWTracker.helperFunctions.trackProvenance import getGitCommitHash, execThisPoint
 
 class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
 	def __init__(self, ui='', argv=''):
@@ -90,12 +88,8 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
 		#save the user changes before recalculating anything
 		self.saveData()
 		
-		#close the GUI
-		self.close()
-
+		#%%
 		self.feat_manual_file = self.skeletons_file.replace('_skeletons.hdf5', '_feat_manual.hdf5')
-		self.commit_hash = getGitCommitHash()
-		
 		
 		with h5py.File(self.vfilename, 'r') as mask_fid, \
 			h5py.File(self.skeletons_file, 'r') as skel_fid:
@@ -106,8 +100,7 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
 			#if any of this fields is missing load the default parameters
 			if not has_expected_fps or not has_prov_skel_filt:
 				param_default = tracker_param()
-				param_default.get_param()
-
+				
 			if has_expected_fps:
 				expected_fps = mask_fid['/mask'].attrs['expected_fps']
 			else:
@@ -125,22 +118,27 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
 				feat_filt_param = param_default.feat_filt_param
 
 
-		points_parameters = { 'func':getWormFeaturesFilt,
-            	'argkws':{
-            	'skeletons_file':self.skeletons_file, 
-            	'features_file':self.feat_manual_file,  
-                'expected_fps': expected_fps, 'is_single_worm':False, 
-                'use_skel_filter':use_skel_filter, 'use_manual_join':True,
-                'feat_filt_param':feat_filt_param
-                },
-        	    'output_file':self.feat_manual_file
-        	}
+		point_parameters = { 'func':getWormFeaturesFilt,
+			'argkws':{
+			'skeletons_file':self.skeletons_file, 
+			'features_file':self.feat_manual_file,  
+			'expected_fps': expected_fps, 'is_single_worm':False, 
+			'use_skel_filter':use_skel_filter, 'use_manual_join':True,
+			'feat_filt_param':feat_filt_param
+			},
+			'output_file':self.feat_manual_file
+			}
+		
+		def featManualFun(point_argvs):
+			commit_hash = getGitCommitHash()
+			execThisPoint('FEAT_MANUAL_CREATE', **point_argvs, 
+				commit_hash=commit_hash, cmd_original='GUI')
 
-		os.system(['clear','cls'][os.name == 'nt'])
-		execThisPoint('FEAT_MANUAL_CREATE', **points_parameters, 
-                    commit_hash=self.commit_hash, cmd_original='')
-
-	
+		trackpoint_worker = WorkerFunQt(featManualFun, {'point_argvs':point_parameters})
+		progress_dialog = AnalysisProgress(trackpoint_worker)
+		progress_dialog.setAttribute(Qt.WA_DeleteOnClose)
+		progress_dialog.exec_()
+    
 	def selectWormIndexType(self):
 		#select between automatic and manual worm indexing and label
 		if self.ui.comboBox_labelType.currentIndex() == 0:
@@ -521,9 +519,9 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
 		super().keyPressEvent(event)
 	
 if __name__ == '__main__':
-	app = QApplication(sys.argv)
-	
+	import sys
+
+	app = QApplication(sys.argv)	
 	ui = MWTrackerViewer_GUI(argv=sys.argv)
 	ui.show()
-	app.exec_()
-	sys.exit()
+	sys.exit(app.exec_())

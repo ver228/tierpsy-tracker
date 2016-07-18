@@ -12,6 +12,7 @@ import os
 import subprocess as sp
 from collections import OrderedDict
 
+from MWTracker.helperFunctions.miscFun import get_local_or_sys_path
 
 def dict2recarray(dat):
     '''convert into recarray (pytables friendly)'''
@@ -24,11 +25,14 @@ def dict2recarray(dat):
     return recarray
 
 def ffprobeMetadata(video_file):
-
+    if not os.path.exists(video_file):
+        raise FileNotFoundError(video_file)
+        
+    #get the correct path for ffprobe. First we look in the auxFiles directory, otherwise we look in the system path.
     if os.name == 'nt':
-        ffprobe_cmd = 'ffprobe.exe'
+        ffprobe_cmd = get_local_or_sys_path('ffprobe.exe')
     else:
-        ffprobe_cmd = '/usr/local/bin/ffprobe' #this version reads the Gecko files
+        ffprobe_cmd = get_local_or_sys_path('ffprobe')
         
     command = [ffprobe_cmd, '-v', 'error', '-show_frames', '-print_format', 'json', video_file]
     FNULL = open(os.devnull, 'w')

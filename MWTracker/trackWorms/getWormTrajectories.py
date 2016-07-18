@@ -207,7 +207,7 @@ def joinConsecutiveFrames(index_list_prev, coord, coord_prev, area, area_prev, t
 
 def getWormTrajectories(masked_image_file, trajectories_file, initial_frame = 0, last_frame = -1, \
 min_area = 25, min_length = 5, max_allowed_dist = 20, \
-area_ratio_lim = (0.5, 2), buffer_size = 25, threshold_factor = 1., strel_size = (5,5)):
+area_ratio_lim = (0.5, 2), buffer_size = 25, worm_bw_thresh_factor = 1., strel_size = (5,5)):
     '''
     #read images from 'masked_image_file', and save the linked trajectories and their features into 'trajectories_file'
     #use the first 'total_frames' number of frames, if it is equal -1, use all the frames in 'masked_image_file'
@@ -215,7 +215,7 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, threshold_factor = 1., strel_size =
     min_length -- min size of the bounding box in the ROI of the compressed image
     max_allowed_dist -- maximum allowed distance between to consecutive trajectories
     area_ratio_lim -- allowed range between the area ratio of consecutive frames 
-    threshold_factor -- The calculated threshold will be multiplied by this factor. Desperate attempt to solve for the swimming case. 
+    worm_bw_thresh_factor -- The calculated threshold will be multiplied by this factor. Desperate attempt to solve for the swimming case. 
     ''' 
     
 
@@ -295,7 +295,7 @@ area_ratio_lim = (0.5, 2), buffer_size = 25, threshold_factor = 1., strel_size =
                     continue
                 #caculate threshold
                 thresh = getWormThreshold(pix_valid)
-                thresh *= threshold_factor
+                thresh *= worm_bw_thresh_factor
                                              
                 if buff_last_coord.size!=0:
                     #select data from previous trajectories only within the contour bounding box.

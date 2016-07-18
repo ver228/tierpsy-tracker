@@ -3,11 +3,11 @@
 block_cipher = None
 
 
-a = Analysis(['..\\MWTracker_GUI\\MWTrackerViewer.py'],
-             pathex=['C:\\Users\\Avelino.Avelino_VM\\Documents\\GitHub\\Multiworm_Tracking\\create_binaries'],
+a = Analysis(['test_pyinstaller.py'],
+             pathex=['C:\\Users\\Avelino.Avelino_VM\\Documents\\GitHub\\Multiworm_Tracking\\create_binaries\\test'],
              binaries=None,
              datas=None,
-             hiddenimports=['h5py.defs', 'h5py.utils', 'h5py.h5ac', 'h5py._proxy'],
+             hiddenimports=['h5py._errors', 'h5py.defs', 'h5py.utils', 'h5py.h5ac', 'h5py._proxy'],
              hookspath=[],
              runtime_hooks=[],
              excludes=['PyQt4', 'PyQt4.QtCore', 'PyQt4.QtGui'],
@@ -18,16 +18,11 @@ pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
 exe = EXE(pyz,
           a.scripts,
-          exclude_binaries=True,
-          name='MWTrackerViewer',
+          a.binaries,
+          a.zipfiles,
+          a.datas,
+          name='test_pyinstaller',
           debug=False,
           strip=False,
           upx=True,
           console=True )
-coll = COLLECT(exe,
-               a.binaries,
-               a.zipfiles,
-               a.datas,
-               strip=False,
-               upx=True,
-               name='MWTrackerViewer')

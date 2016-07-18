@@ -344,7 +344,7 @@ def labelValidSkeletons(skeletons_file, good_skel_row, critical_alpha = 0.01):
     print_flush(base_name + ' Filter Skeletons: Finished. Total time:' + progress_timer.getTimeStr())
 
 def getFilteredSkels(skeletons_file, use_skel_filter, min_num_skel = 100, bad_seg_thresh = 0.8, 
-    min_dist = 5, critical_alpha = 0.01, max_width_ratio = 2.25, max_area_ratio = 6):
+    min_displacement = 5, critical_alpha = 0.01, max_width_ratio = 2.25, max_area_ratio = 6):
     #check if the skeletonization finished succesfully
     with tables.File(skeletons_file, "r") as ske_file_id:
         skeleton_table = ske_file_id.get_node('/skeleton')
@@ -355,9 +355,9 @@ def getFilteredSkels(skeletons_file, use_skel_filter, min_num_skel = 100, bad_se
     if use_skel_filter:
         #get valid rows using the trajectory displacement and the skeletonization success
         good_traj_index , good_skel_row = getValidIndexes(skeletons_file, \
-        min_num_skel = min_num_skel, bad_seg_thresh = bad_seg_thresh, min_dist = min_dist)
+        min_num_skel = min_num_skel, bad_seg_thresh = bad_seg_thresh, min_dist = min_displacement)
 
-        labelValidSkeletons(skeletons_file, good_skel_row, critical_alpha = 0.01)#fit_contamination = fit_contamination)
+        labelValidSkeletons(skeletons_file, good_skel_row, critical_alpha = critical_alpha)
 
     with tables.File(skeletons_file, "r+") as ske_file_id:
         skeleton_table = ske_file_id.get_node('/skeleton')

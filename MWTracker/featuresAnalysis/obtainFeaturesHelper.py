@@ -14,6 +14,7 @@ from math import floor, ceil
 import csv
 import json
 from scipy.signal import savgol_filter
+from MWTracker import AUX_FILES_DIR
 
 tables.parameters.MAX_COLUMNS = 1024 #(http://www.pytables.org/usersguide/parameter_files.html)
 
@@ -361,7 +362,10 @@ class WormStatsClass():
     def __init__(self):
         '''get the info for each feature chategory'''
         
-        feat_names_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'features_names.csv')
+
+        feat_names_file = os.path.join(AUX_FILES_DIR, 'features_names.csv')
+        #feat_names_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'auxFiles', 'features_names.csv')
+        
         self.features_info = pd.read_csv(feat_names_file, index_col=0)
         self.builtFeatAvgNames() #create self.feat_avg_names
         

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'HDF5videoViewer.ui'
+# Form implementation generated from reading ui file 'HDF5VideoPlayer.ui'
 #
 # Created by: PyQt5 UI code generator 5.6
 #
@@ -8,11 +8,11 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-class Ui_HDFvideoViewer(object):
-    def setupUi(self, HDFvideoViewer):
-        HDFvideoViewer.setObjectName("HDFvideoViewer")
-        HDFvideoViewer.resize(600, 760)
-        self.centralWidget = QtWidgets.QWidget(HDFvideoViewer)
+class Ui_HDF5VideoPlayer(object):
+    def setupUi(self, HDF5VideoPlayer):
+        HDF5VideoPlayer.setObjectName("HDF5VideoPlayer")
+        HDF5VideoPlayer.resize(600, 760)
+        self.centralWidget = QtWidgets.QWidget(HDF5VideoPlayer)
         self.centralWidget.setEnabled(True)
         self.centralWidget.setObjectName("centralWidget")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.centralWidget)
@@ -126,31 +126,31 @@ class Ui_HDFvideoViewer(object):
         self.horizontalLayout.addWidget(self.pushButton_video)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.verticalLayout_2.addLayout(self.verticalLayout)
-        HDFvideoViewer.setCentralWidget(self.centralWidget)
-        self.menuBar = QtWidgets.QMenuBar(HDFvideoViewer)
+        HDF5VideoPlayer.setCentralWidget(self.centralWidget)
+        self.menuBar = QtWidgets.QMenuBar(HDF5VideoPlayer)
         self.menuBar.setGeometry(QtCore.QRect(0, 0, 600, 22))
         self.menuBar.setObjectName("menuBar")
-        HDFvideoViewer.setMenuBar(self.menuBar)
-        self.mainToolBar = QtWidgets.QToolBar(HDFvideoViewer)
+        HDF5VideoPlayer.setMenuBar(self.menuBar)
+        self.mainToolBar = QtWidgets.QToolBar(HDF5VideoPlayer)
         self.mainToolBar.setObjectName("mainToolBar")
-        HDFvideoViewer.addToolBar(QtCore.Qt.TopToolBarArea, self.mainToolBar)
-        self.toolBar = QtWidgets.QToolBar(HDFvideoViewer)
+        HDF5VideoPlayer.addToolBar(QtCore.Qt.TopToolBarArea, self.mainToolBar)
+        self.toolBar = QtWidgets.QToolBar(HDF5VideoPlayer)
         self.toolBar.setObjectName("toolBar")
-        HDFvideoViewer.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
+        HDF5VideoPlayer.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
 
-        self.retranslateUi(HDFvideoViewer)
-        QtCore.QMetaObject.connectSlotsByName(HDFvideoViewer)
+        self.retranslateUi(HDF5VideoPlayer)
+        QtCore.QMetaObject.connectSlotsByName(HDF5VideoPlayer)
 
-    def retranslateUi(self, HDFvideoViewer):
+    def retranslateUi(self, HDF5VideoPlayer):
         _translate = QtCore.QCoreApplication.translate
-        HDFvideoViewer.setWindowTitle(_translate("HDFvideoViewer", "HDFvideoViewer"))
-        self.label_frame.setText(_translate("HDFvideoViewer", "Frame"))
-        self.label_step.setText(_translate("HDFvideoViewer", "Step Size"))
-        self.label_fps.setText(_translate("HDFvideoViewer", "FPS display"))
-        self.comboBox_h5path.setItemText(0, _translate("HDFvideoViewer", "/mask"))
-        self.comboBox_h5path.setItemText(1, _translate("HDFvideoViewer", "/full_data"))
-        self.pushButton_h5groups.setText(_translate("HDFvideoViewer", "Update Groups"))
-        self.playButton.setText(_translate("HDFvideoViewer", "Play"))
-        self.pushButton_video.setText(_translate("HDFvideoViewer", "Select File"))
-        self.toolBar.setWindowTitle(_translate("HDFvideoViewer", "toolBar"))
+        HDF5VideoPlayer.setWindowTitle(_translate("HDF5VideoPlayer", "HDF5VideoPlayer"))
+        self.label_frame.setText(_translate("HDF5VideoPlayer", "Frame"))
+        self.label_step.setText(_translate("HDF5VideoPlayer", "Step Size"))
+        self.label_fps.setText(_translate("HDF5VideoPlayer", "FPS display"))
+        self.comboBox_h5path.setItemText(0, _translate("HDF5VideoPlayer", "/mask"))
+        self.comboBox_h5path.setItemText(1, _translate("HDF5VideoPlayer", "/full_data"))
+        self.pushButton_h5groups.setText(_translate("HDF5VideoPlayer", "Update Groups"))
+        self.playButton.setText(_translate("HDF5VideoPlayer", "Play"))
+        self.pushButton_video.setText(_translate("HDF5VideoPlayer", "Select File"))
+        self.toolBar.setWindowTitle(_translate("HDF5VideoPlayer", "toolBar"))
 

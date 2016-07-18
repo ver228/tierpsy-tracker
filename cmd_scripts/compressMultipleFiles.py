@@ -5,8 +5,8 @@ Created on Tue Jun  9 15:12:48 2015
 @author: ajaver
 """
 
-from MWTracker.batchProcessing.compressMultipleFilesFun import compressMultipleFilesFun, parser
+from MWTracker.batchProcessing.compressMultipleFilesFun import compressMultipleFilesFun, compress_parser
 
 if __name__ == '__main__':
-	args = parser.parse_args()
+	args = compress_parser.parse_args()
 	compressMultipleFilesFun(**vars(args))

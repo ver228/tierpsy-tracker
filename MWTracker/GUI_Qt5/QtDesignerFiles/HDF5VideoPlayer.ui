@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>HDFvideoViewer</class>
- <widget class="QMainWindow" name="HDFvideoViewer">
+ <class>HDF5VideoPlayer</class>
+ <widget class="QMainWindow" name="HDF5VideoPlayer">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>HDFvideoViewer</string>
+   <string>HDF5VideoPlayer</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="enabled">

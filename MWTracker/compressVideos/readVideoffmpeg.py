@@ -6,12 +6,14 @@ Created on Thu Apr  2 13:15:59 2015
 """
 
 import os
+import sys
 import re
 import subprocess as sp
 import numpy as np
 from threading  import Thread
 from queue import Queue, Empty
 
+from MWTracker.helperFunctions.miscFun import get_local_or_sys_path
 
 def enqueue_error(out, queue):
     for line in iter(out.readline, b''):
@@ -27,11 +29,16 @@ class readVideoffmpeg:
     -> this funciton is a bit faster (less overhead), but only works with gecko's mjpeg 
     '''
     def __init__(self, fileName):
-        #requires the fileName, and optionally the frame width and heigth.
-        if os.name == 'nt':
-            ffmpeg_cmd = 'ffmpeg.exe'
-        else:
-            ffmpeg_cmd = '/usr/local/bin/ffmpeg22' #this version reads the Gecko files
+
+        if not os.path.exists(fileName):
+            raise FileNotFoundError(fileName)
+        
+        if sys.platform == 'win32':
+            ffmpeg_cmd = get_local_or_sys_path('ffmpeg.exe')
+        elif sys.platform == 'darwin':
+            ffmpeg_cmd = get_local_or_sys_path('ffmpeg22')
+        elif sys.platform == 'linux':
+            ffmpeg_cmd = get_local_or_sys_path('ffmpeg')
         
         #try to open the file and determine the frame size. Raise an exception otherwise.
         
@@ -45,7 +52,8 @@ class readVideoffmpeg:
             dd = re.findall(r'\d*x\d*', dd)[0].split('x')
             self.height = int(dd[1])
             self.width = int(dd[0])
-        except:
+            
+        except (IndexError, ValueError):
             raise Exception('Error while getting the width and height using ffmpeg. Buffer output:', buff)
     
         self.tot_pix = self.height*self.width

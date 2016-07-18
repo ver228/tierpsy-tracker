@@ -3,8 +3,8 @@
 block_cipher = None
 
 
-a = Analysis(['..\\MWTracker_GUI\\getMaskParams.py'],
-             pathex=['C:\\Users\\Avelino.Avelino_VM\\Documents\\GitHub\\Multiworm_Tracking\\create_binaries'],
+a = Analysis(['../scripts/compressSingleWorker.py'],
+             pathex=['/Users/ajaver/Documents/GitHub/Multiworm_Tracking/create_binaries/OSX_builds'],
              binaries=None,
              datas=None,
              hiddenimports=['h5py.defs', 'h5py.utils', 'h5py.h5ac', 'h5py._proxy'],
@@ -19,7 +19,7 @@ pyz = PYZ(a.pure, a.zipped_data,
 exe = EXE(pyz,
           a.scripts,
           exclude_binaries=True,
-          name='getMaskParams',
+          name='compressSingleWorker',
           debug=False,
           strip=False,
           upx=True,
@@ -30,4 +30,4 @@ coll = COLLECT(exe,
                a.datas,
                strip=False,
                upx=True,
-               name='getMaskParams')
+               name='compressSingleWorker')

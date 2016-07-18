@@ -1,0 +1,1 @@
+pyinstaller --noconfirm  test_reader.spec

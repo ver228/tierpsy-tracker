@@ -91,5 +91,5 @@ if __name__ == '__main__':
 	examples_dir = os.path.join(os.path.expanduser("~"), 'OneDrive - Imperial College London', 'MWTracker', 'Tests')
 	script_dir = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'cmd_scripts')
 
-	for fun in [test1, test2, test3, test4, test5]:
+	for fun in [test3]:#[test1, test2, test3, test4, test5]:
 		fun(script_dir, examples_dir)

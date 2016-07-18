@@ -16,6 +16,14 @@ import argparse
 
 from MWTracker.helperFunctions.miscFun import print_flush
 
+try:
+	#use this directory if it is a one-file produced by pyinstaller
+	SCRIPT_COMPRESS_WORKER = [os.path.join(sys._MEIPASS, 'compressSingleWorker')]
+	if os.name == 'nt':
+		SCRIPT_COMPRESS_WORKER[0] = SCRIPT_COMPRESS_WORKER[0] + '.exe'
+except Exception:
+	SCRIPT_COMPRESS_WORKER = [sys.executable, os.path.join(os.path.dirname(os.path.realpath(__file__)), 'compressSingleWorker.py')]
+
 class compressLocal:
 	def __init__(self, video_file, mask_dir, tmp_mask_dir='', json_file='', \
 		is_copy_video = False, is_single_worm = False, cmd_original=''):
@@ -74,9 +82,9 @@ class compressLocal:
 		#this might be more logically group in main_code, but this operation can and should be do remotely if required
 		if self.final_has_finished  == 1:
 			#The file finished to be processed but the additional data was not stored. We can do this remotely. 
-			if os.name != 'nt': os.chflags(self.masked_image_file, not stat.UF_IMMUTABLE)
+			if sys.platform == 'darwin': os.chflags(self.masked_image_file, not stat.UF_IMMUTABLE)
 			compressSingleWorker(self.video_file, self.mask_dir, self.json_file, self.is_single_worm, self.cmd_original)
-			if os.name != 'nt': os.chflags(self.masked_image_file, stat.UF_IMMUTABLE)
+			if sys.platform == 'darwin': os.chflags(self.masked_image_file, stat.UF_IMMUTABLE)
 
 		if self.final_has_finished  == 2:
 			print_flush('File alread exists: %s. If you want to calculate the mask again delete the existing file.' % self.masked_image_file)
@@ -91,8 +99,8 @@ class compressLocal:
 		
 
 	def create_script(self):
-		self.scrip_file_name = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'compressSingleWorker.py')
-		cmd = [sys.executable, self.scrip_file_name] + self.main_input_params
+		
+		cmd = SCRIPT_COMPRESS_WORKER + self.main_input_params
 		#replace bool values by a letter, otherwise one cannot parse them to the command line
 		cmd = [x if not isinstance(x, bool) else 'T' if x else '' for x in cmd]
 		return cmd
@@ -170,7 +178,7 @@ class compressLocal:
 				assert os.path.exists(self.masked_image_file)
 				os.remove(self.tmp_mask_file)
 
-			if os.name != 'nt':
+			if sys.platform == 'darwin':
 				#Change the permissions so everybody can read/write. 
 				#Otherwise only the owner would be able to change the ummutable flag.
 				os.chmod(self.masked_image_file, stat.S_IRUSR|stat.S_IRGRP|stat.S_IROTH|stat.S_IWUSR|stat.S_IWGRP|stat.S_IWOTH) 
