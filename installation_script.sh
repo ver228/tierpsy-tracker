@@ -23,7 +23,6 @@ function install_dependencies_osx {
 	brew install ffmpeg --with-fdk-aac --with-ffplay --with-freetype --with-libass --with-libquvi \
 	--with-libvorbis --with-libvpx --with-opus --with-x265 --with-openh264 --with-tools --with-fdk-aac
 	
-	
 	#python dependencies
 	brew install homebrew/science/hdf5
 	brew install sip --with-python3 pyqt --with-python3 pyqt5 --with-python3
@@ -34,23 +33,37 @@ function install_dependencies_osx {
 	
 	pip3 install -U numpy spyder tables pandas h5py scipy scikit-learn \
 		scikit-image tifffile seaborn xlrd gitpython psutil
+
+	if [[ ! $OPENCV_VER -eq `python3 -c "import cv2; print(cv2.__version__)"` ]]; then
+		install_opencv3
+	fi
 }
 
 function install_anaconda {
 
-	curl -L http://repo.continuum.io/archive/Anaconda3-4.1.1-Linux-x86_64.sh -o Anaconda3-4.1.1-Linux-x86_64.sh
-	bash Anaconda3-4.1.1-Linux-x86_64.sh
-	rm Anaconda3-4-4.1.1-Linux-x86_64.sh
+	curl -L http://repo.continuum.io/archive/Anaconda3-4.1.1-Linux-x86_64.sh -o anaconda_installer.sh
+	bash anaconda_installer.sh
+	rm anaconda_installer.sh
 	
-	conda install -c ver228 opencv3
 	pip install gitpython pyqt5
 } 
 
-function install_dependencies_linux {
-	sudo apt install git
-	sudo apt install ffmpeg
-	install_anaconda
+function install_opencv3_anaconda {
+	#opencv3 dependencies http://docs.opencv.org/3.0-beta/doc/tutorials/introduction/linux_install/linux_install.html
+	#[required]
+	sudo apt-get install -y build-essential libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
+	#[optional]
+	sudo apt-get install -y libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
 
+	conda install -y conda-build
+	conda build menpo_conda-opencv3
+	conda install -y --use-local opencv3
+}
+
+function install_dependencies_linux {
+	sudo apt-get install git ffmpeg
+	install_anaconda
+	install_opencv3_anaconda
 }
 
 function compile_cython_files {
@@ -71,9 +84,6 @@ function install_opencv3 {
 	cd $OPENCV_DIR
 	git checkout -f $OPENCV_VER
 
-	PY_VER=`python3 -c "import sys; print(sys.version.partition(' ')[0])"`
-	PY_VER_SHORT=`python3 -c "import sys; print('.'.join(sys.version.partition(' ')[0].split('.')[0:2]))"`
-
 	rm -rf build
 	mkdir build
 	cd build
@@ -83,10 +93,10 @@ function install_opencv3 {
 	cmake '"Unix Makefile"' -DBUILD_opencv_python3=ON \
 	-DBUILD_opencv_python2=OFF \
 	-DPYTHON_EXECUTABLE=`which python3` \
-	-DPYTHON3_INCLUDE_DIR=/usr/local/Cellar/python3/${PY_VER}/Frameworks/Python.framework/Versions/${PY_VER_SHORT}/include/python${PY_VER_SHORT}m/ \
-	-DPYTHON3_LIBRARY=/usr/local/Cellar/python3/${PY_VER}/Frameworks/Python.framework/Versions/${PY_VER_SHORT}/lib/libpython${PY_VER_SHORT}m.dylib \
-	-DPYTHON3_PACKAGES_PATH=/usr/local/lib/python${PY_VER_SHORT}/site-packages \
-	-DPYTHON3_NUMPY_INCLUDE_DIRS=/usr/local/lib/python${PY_VER_SHORT}/site-packages/numpy/core/include \
+	-DPYTHON3_INCLUDE_DIR=`python3 -c "import sysconfig; print(sysconfig.get_path('platinclude'))"` \
+	-DPYTHON3_LIBRARY=`python3 -c "import sysconfig; print(sysconfig.get_path('platstdlib'))"` \
+	-DPYTHON3_PACKAGES_PATH=`python3 -c "import sysconfig; print(sysconfig.get_path('platlib'))"` \
+	-DPYTHON3_NUMPY_INCLUDE_DIRS=`python3 -c "from numpy.distutils.misc_util import get_numpy_include_dirs; print(get_numpy_include_dirs()[0])"` \
 	-DBUILD_TIFF=ON -DBUILD_opencv_java=OFF -DWITH_CUDA=OFF -DENABLE_AVX=ON -DWITH_OPENGL=ON -DWITH_OPENCL=ON \
 	-DWITH_IPP=ON -DWITH_TBB=ON -DWITH_EIGEN=ON -DWITH_V4L=ON -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF \
 	-DWITH_QT=OFF -DINSTALL_PYTHON_EXAMPLES=ON \
@@ -123,9 +133,6 @@ SHORT_OS_STR=$(uname -s)
 if [ "${SHORT_OS_STR}" == "Darwin" ]; then
 	#clean_prev_installation_osx
 	install_dependencies_osx
-	if [[ ! $OPENCV_VER -eq `python3 -c "import cv2; print(cv2.__version__)"` ]]; then
-		install_opencv3
-	fi
 	
 fi
 
