@@ -230,9 +230,9 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
 		self.img_w_ratio = image.width()/self.image_width;
 
 		fontsize = max(1, max(image.height(), image.width())//60)
-		penwidth = max(1, max(image.height(), image.width())//600)
+		penwidth = max(1, max(image.height(), image.width())//300)
+		penwidth = penwidth if penwidth % 2 == 1 else penwidth+1
 		
-
 		painter = QPainter()
 		painter.begin(image)
 		for row_id, row_data in self.frame_data.iterrows():

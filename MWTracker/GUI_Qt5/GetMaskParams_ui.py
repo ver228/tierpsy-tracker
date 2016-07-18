@@ -166,7 +166,7 @@ class Ui_GetMaskParams(object):
         self.gridLayout_3.addWidget(self.pushButton_moreParams, 10, 0, 1, 2)
         self.gridLayout.addLayout(self.gridLayout_3, 3, 0, 17, 1)
         self.lineEdit_mask = QtWidgets.QLineEdit(self.centralWidget)
-        self.lineEdit_mask.setReadOnly(True)
+        self.lineEdit_mask.setReadOnly(False)
         self.lineEdit_mask.setObjectName("lineEdit_mask")
         self.gridLayout.addWidget(self.lineEdit_mask, 19, 3, 1, 3)
         self.pushButton_results = QtWidgets.QPushButton(self.centralWidget)
