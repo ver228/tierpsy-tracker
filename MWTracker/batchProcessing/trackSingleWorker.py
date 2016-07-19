@@ -10,9 +10,9 @@ import argparse
 import time, datetime
 import json
 
-from MWTracker.trackWorms.getWormTrajectories import getWormTrajectories, correctTrajectories
-from MWTracker.trackWorms.getDrawTrajectories import drawTrajectoriesVideo
-from MWTracker.trackWorms.getSkeletonsTables import trajectories2Skeletons, writeIndividualMovies
+from MWTracker.trackWorms.getWormTrajectories import getWormTrajectories
+from MWTracker.trackWorms.correctTrajectories import correctTrajectories
+from MWTracker.trackWorms.getSkeletonsTables import trajectories2Skeletons
 from MWTracker.trackWorms.checkHeadOrientation import correctHeadTail
 from MWTracker.trackWorms.getFilteredSkels import getFilteredSkels
 

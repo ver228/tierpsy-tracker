@@ -14,7 +14,7 @@ def get_local_or_sys_path(file_name):
     file_source = os.path.join(AUX_FILES_DIR, file_name)
     if not os.path.exists(file_source):
         file_source = shutil.which(file_name)
+    
     if not file_source:
-        raise FileNotFoundError('command not found: %s', file_name)
+        raise FileNotFoundError('command not found: %s' % file_name)
     return file_source
-

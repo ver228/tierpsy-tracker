@@ -139,7 +139,6 @@ fi
 if [ "${SHORT_OS_STR:0:5}" == "Linux" ]; then
 	install_dependencies_linux
 fi
-
 compile_cython_files
 clone_worm_analysis_toolbox
 install_main_modules
