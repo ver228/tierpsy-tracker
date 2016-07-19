@@ -121,6 +121,7 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
         self.drawSkelResult()
         self.mainImage.setPixmap(self.frame_qimg)
 
+
     def drawSkelResult(self):
         row_data = self.getRowData()
         isDrawSkel = self.ui.checkBox_showLabel.isChecked()

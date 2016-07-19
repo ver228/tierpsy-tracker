@@ -46,11 +46,8 @@ class HDF5VideoPlayer_GUI(QtWidgets.QMainWindow):
         self.ui.spinBox_frame.valueChanged.connect(self.updateFrameNumber)
         self.ui.doubleSpinBox_fps.valueChanged.connect(self.updateFPS)
         self.ui.spinBox_step.valueChanged.connect(self.updateFrameStep)
-        
-        self.ui.spinBox_step.valueChanged.connect(self.updateFrameStep)
 
         self.ui.comboBox_h5path.activated.connect(self.getImGroup)
-
         self.ui.pushButton_h5groups.clicked.connect(self.updateGroupNames)
 
         self.updateFPS()
@@ -78,18 +75,20 @@ class HDF5VideoPlayer_GUI(QtWidgets.QMainWindow):
 
     def imSldChanged(self):
         if self.image_group != -1:
-            self.frame_number = int(round((self.tot_frames-1)*self.ui.imageSlider.value()/100))
+            prev_progress_bar = round(100*self.frame_number/self.tot_frames)
+            if prev_progress_bar !=self.ui.imageSlider.value():
+                self.frame_number = int(round((self.tot_frames-1)*self.ui.imageSlider.value()/100))
             self.ui.spinBox_frame.setValue(self.frame_number)
         
     #frame spin box
     def updateFrameNumber(self):
         self.frame_number = self.ui.spinBox_frame.value()
-        progress = round(100*self.frame_number/self.tot_frames)
-        if progress != self.ui.imageSlider.value():
-            self.ui.imageSlider.setValue(progress)
+        progress_bar = round(100*self.frame_number/self.tot_frames)
+        if progress_bar != self.ui.imageSlider.value():
+            self.ui.imageSlider.setValue(progress_bar)
         
         self.updateImage()
-
+        
     #fps spin box
     def updateFPS(self):
         self.fps = self.ui.doubleSpinBox_fps.value()
@@ -250,6 +249,7 @@ class HDF5VideoPlayer_GUI(QtWidgets.QMainWindow):
     def resizeEvent(self, event):
         if self.fid != -1:
             self.updateImage()
+            self.mainImage.zoomFitInView()
     
     def keyPressEvent(self, event):
         if self.fid == -1:
