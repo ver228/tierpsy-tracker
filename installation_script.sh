@@ -66,6 +66,24 @@ function install_dependencies_linux {
 	install_opencv3_anaconda
 }
 
+function redhad_opencv3_dependencies {
+	yum install cmake
+	yum install gcc gcc-c++
+	yum install gtk2-devel
+	yum install libdc1394-devel
+	yum install libv4l-devel
+	yum install ffmpeg-devel
+	yum install gstreamer-plugins-base-devel
+	yum install libpng-devel
+	yum install libjpeg-turbo-devel
+	yum install jasper-devel
+	yum install openexr-devel
+	yum install libtiff-devel
+	yum install libwebp-devel
+	yum install tbb-devel
+	yum install eigen3-devel
+}
+
 function compile_cython_files {
 	cd $MW_MAIN_DIR/MWTracker/trackWorms/segWormPython/cythonFiles/
 	make
@@ -133,7 +151,6 @@ SHORT_OS_STR=$(uname -s)
 if [ "${SHORT_OS_STR}" == "Darwin" ]; then
 	#clean_prev_installation_osx
 	install_dependencies_osx
-	
 fi
 
 if [ "${SHORT_OS_STR:0:5}" == "Linux" ]; then

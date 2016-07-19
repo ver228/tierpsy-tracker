@@ -47,6 +47,7 @@ cmake .. -G"$CMAKE_GENERATOR"                                            \
     $OPENMP                                                              \
     $OCV_PYTHON                                                          \
     -DWITH_EIGEN=1                                                       \
+    -DWITH_TBB=1                                                         \
     -DBUILD_TESTS=0                                                      \
     -DBUILD_DOCS=0                                                       \
     -DBUILD_PERF_TESTS=0                                                 \
