@@ -1,0 +1,14 @@
+language: python
+python:
+  # We don't actually use the Travis Python (we use Anaconda), but this keeps it organized.
+  - "3.4"
+  - "3.5"
+install:
+  - bash installation_script.sh
+
+script:
+  python3 -c "import cv2; print(cv2.__version__)"
+
+branches:
+  only:
+    - master

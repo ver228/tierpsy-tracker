@@ -2,24 +2,8 @@
 MW_MAIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 OPENWORM_DIR=$MW_MAIN_DIR/../open-worm-analysis-toolbox
 OPENCV_DIR=$MW_MAIN_DIR/../opencv
-OPENCV_VER=3.1.0
-
+OPENCV_VER="3.1.0"
 SHORT_OS_STR=$(uname -s)
-
-
-if [ "${SHORT_OS_STR}" == "Darwin" ]; then
-	#clean_prev_installation_osx
-	install_dependencies_osx
-fi
-
-if [ "${SHORT_OS_STR:0:5}" == "Linux" ]; then
-	LINUX_OS=$(lsb_release -si)
-	install_dependencies_linux
-fi
-
-compile_cython_files
-clone_worm_analysis_toolbox
-install_main_modules
 
 #############
 function clone_worm_analysis_toolbox {
@@ -47,35 +31,50 @@ function install_dependencies_osx {
 	
 	#i prefer to install matplotlib and numpy with homebrew it gives less problems of compatilibity down the road
 	brew install homebrew/python/matplotlib --with-python3
-	brew install homebrew/python/numpy --with-python3
+	#brew install homebrew/python/numpy --with-python3
 	pip3 install -U numpy spyder tables pandas h5py scipy scikit-learn \
 	scikit-image tifffile seaborn xlrd gitpython psutil
 	
-	if [[ ! $OPENCV_VER -eq `python3 -c "import cv2; print(cv2.__version__)"` ]]; then
+	CURRENT_OPENCV_VER=`python3 -c "import cv2; print(cv2.__version__)"`
+	if [ $OPENCV_VER != $CURRENT_OPENCV_VER ]; then
 		install_opencv3
 	fi
 }
 
 function install_anaconda {
-	curl -L http://repo.continuum.io/archive/Anaconda3-4.1.1-Linux-x86_64.sh -o anaconda_installer.sh
-	bash anaconda_installer.sh
-	rm anaconda_installer.sh
+	curl -L https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda_installer.sh
+	bash miniconda_installer.sh -b -p $HOME/miniconda
+	export PATH="$HOME/miniconda/bin:$PATH"
+	rm -f miniconda_installer.sh
+
+	conda install -y anaconda-client conda-build numpy matplotlib pytables pandas \
+	h5py scipy scikit-learn scikit-image seaborn xlrd statsmodels
 	pip install gitpython pyqt5
 }
 
 function install_opencv3_anaconda {	
 	conda install -y conda-build
+	conda config --add channels menpo
 	conda build menpo_conda-opencv3
 	conda install -y --use-local opencv3
 }
 
 function install_dependencies_linux {
+	case `lsb_release -si` in
+		"Ubuntu")
+		ubuntu_dependencies
+		;;
+		"RedHatEnterpriseWorkstation")
+		redhad_dependencies
+		;;
+	esac
+
 	install_anaconda
 	install_opencv3_anaconda
 }
 
 function ubuntu_dependencies {
-	sudo apt-get install git ffmpeg
+	sudo apt-get install -y curl git ffmpeg
 	#opencv3 dependencies http://docs.opencv.org/3.0-beta/doc/tutorials/introduction/linux_install/linux_install.html
 	#[required]
 	sudo apt-get install -y build-essential cmake libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
@@ -162,3 +161,17 @@ function install_main_modules {
 	cd $MW_MAIN_DIR
 	python3 setup.py develop
 }
+
+##########
+if [ "${SHORT_OS_STR}" == "Darwin" ]; then
+	#clean_prev_installation_osx
+	install_dependencies_osx
+fi
+
+if [ "${SHORT_OS_STR:0:5}" == "Linux" ]; then
+	install_dependencies_linux
+fi
+
+compile_cython_files
+clone_worm_analysis_toolbox
+install_main_modules
