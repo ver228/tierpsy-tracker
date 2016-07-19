@@ -13,7 +13,7 @@ source:
 
 requirements:
   build:
-   - python
+   - python >3
    - cmake
    - hdf5 1.8.*      # [osx]
    - numpy >=1.10
