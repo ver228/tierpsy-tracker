@@ -16,7 +16,7 @@ except Exception:
 	base_path = os.path.dirname(__file__)
 
 AUX_FILES_DIR = os.path.abspath(os.path.join(base_path, 'auxFiles'))
-		
+
 if getattr(sys, 'frozen', False):
 	#force qt5 to be the backend of matplotlib. 
 	#otherwise the pyinstaller packages might have some problems in the binaries.
@@ -40,3 +40,6 @@ if getattr(sys, 'frozen', False):
 
 		# Restore dll search path.
 		ctypes.windll.kernel32.SetDllDirectoryW(sys._MEIPASS)
+else:
+	if sys.platform == 'darwin': 
+		os.environ["PATH"] += os.pathsep + '/usr/local/bin' #add homebrew directory to the path
