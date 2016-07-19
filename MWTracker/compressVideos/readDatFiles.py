@@ -3,7 +3,7 @@ import os
 from sys import exit
 import glob
 
-class readDatFile:
+class readDatFiles:
     """ Reads a stack of dat images """
     def __init__(self, dirName):
         self.fid = dirName
@@ -61,6 +61,6 @@ class readDatFile:
 
             return (1, image_decoded)
         else:
-            return (0, [])
+            return (0, [], [], [])
     def release(self):
         pass

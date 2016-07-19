@@ -2,3 +2,4 @@
 *.pyc
 create_binaries/*.app
 MWTracker.egg-info/*
+*.dropbox.attr
