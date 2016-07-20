@@ -153,8 +153,8 @@ function install_anaconda {
 	if [[ ":$PATH:" != "*:$CONDA_PATH:*" ]]; then
         echo "export PATH=$CONDA_PATH:\$PATH" >> $BASH_PROFILE_FILE
         source $BASH_PROFILE_FILE
+        export PATH=$CONDA_PATH:$PATH
         hash -r
-        cat $BASH_PROFILE_FILE
     fi
 
 	conda install -y anaconda-client conda-build numpy matplotlib pytables pandas \
