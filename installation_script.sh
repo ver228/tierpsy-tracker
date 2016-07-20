@@ -61,6 +61,9 @@ function install_opencv3 {
 	make -j24
 	make install
 	make clean
+
+	#make a dirty test
+	python3 -c "import cv2; print(cv2.__version__)"
 }
 
 function clean_prev_installation_osx {
@@ -107,6 +110,7 @@ function install_dependencies_osx {
 	#make the current user the owner of homebrew otherewise it can cause some problems
 	#sudo chown -R `whoami`:admin /usr/local/bin
 	#sudo chown -R `whoami`:admin /usr/local/share
+	brew update
 	
 	brew install git
 	
@@ -156,8 +160,9 @@ function install_anaconda {
 function install_opencv3_anaconda {	
 	conda install -y conda-build
 	conda config --add channels menpo
-	conda build --no-anaconda-upload menpo_conda-opencv3
+	conda build --no-anaconda-upload installation/menpo_conda-opencv3
 	conda install -y --use-local opencv3
+	python3 -c "import cv2; print(cv2.__version__)"
 }
 
 function compile_cython_files {
@@ -205,3 +210,4 @@ esac
 
 compile_cython_files
 install_main_modules
+python3 ./installation/installation_test.py
