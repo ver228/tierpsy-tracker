@@ -85,8 +85,7 @@ function install_dependencies_linux {
 		"Ubuntu")
 		ubuntu_dependencies
 		;;
-		"RedHat*")
-		"CentOS")
+		"RedHat*"|"CentOS")
 		redhat_dependencies
 		;;
 	esac
