@@ -94,21 +94,9 @@ function redhat_dependencies {
 	sudo yum install git
 
 	# opencv3 dependencies (http://docs.opencv.org/3.0-beta/doc/py_tutorials/py_setup/py_setup_in_fedora/py_setup_in_fedora.html)
-	sudo yum install cmake
-	sudo yum install gcc gcc-c++
-	sudo yum install gtk2-devel
-	sudo yum install libdc1394-devel
-	sudo yum install libv4l-devel
-	sudo yum install ffmpeg-devel
-	sudo yum install gstreamer-plugins-base-devel
-	sudo yum install libpng-devel
-	sudo yum install libjpeg-turbo-devel
-	sudo yum install jasper-devel
-	sudo yum install openexr-devel
-	sudo yum install libtiff-devel
-	sudo yum install libwebp-devel
-	sudo yum install tbb-devel
-	sudo yum install eigen3-devel
+	sudo yum install gcc gcc-c++ cmake gtk2-devel libdc1394-devel libv4l-devel ffmpeg-devel \
+	gstreamer-plugins-base-devel libpng-devel libjpeg-turbo-devel jasper-devel openexr-devel \
+	libtiff-devel libwebp-devel tbb-devel eigen3-devel
 }
 
 function install_dependencies_osx {

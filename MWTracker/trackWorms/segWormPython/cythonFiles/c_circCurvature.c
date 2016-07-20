@@ -11,21 +11,23 @@ void computeFractionalPixel(double *points, int numberOfPoints, double de1, int 
 {
     double dp1[2];
     const double SQRT2 = 1.414213562373095;
-    for(int j = 0; j<2; j++){
+    int j = 0;
+    for(j = 0; j<2; j++){
         dp1[j] = points[ind(nextP1I,j)]- points[ind(p1I,j)];
     }
     //mexPrintf("%f, %f\n", dp1[0], dp1[1]);
     
     if ((dp1[0] == 0) || (dp1[1] == 0))
     {
-        for(int j = 0; j<2; j++)
+        
+        for(j = 0; j<2; j++)
             p1[j] = de1*getSign(dp1[j]) + points[ind(p1I,j)];
    }
     else
     {
         if ((fabs(dp1[0]) == 1) && (fabs(dp1[1]) == 1))
         {
-            for(int j = 0; j<2; j++)
+            for(j = 0; j<2; j++)
                 p1[j] = points[ind(p1I,j)] + (dp1[j] * de1 / SQRT2);
         }
         else
@@ -193,7 +195,8 @@ void c_circCurvature_simple(double *points, int numberOfPoints, double edgeLengt
     p1I = (int)(numberOfPoints - edgeLength);
     p2I = (int)(edgeLength);
     
-    for(int kk=0; kk<numberOfPoints; kk++, p1I++, p2I++)
+    int kk;
+    for(kk=0; kk<numberOfPoints; kk++, p1I++, p2I++)
     {
         if(p1I == numberOfPoints)
             p1I = 0;

@@ -23,14 +23,14 @@ double c_curvspace(double *points, int p_size, int p_dim, int N, double *output)
     //helper variables
     double totaldist, intv, remainder, distsum, disttmp;
     double dum, R;
-    int p_ind_first, kk;
+    int p_ind_first, kk, k0, k;
     
     double ptnow[p_dim], newpt[p_dim], pttarget[p_dim];
     
     
     //%% distance between points in p %%
     totaldist = 0;
-    for(int k0 = 0; k0<p_size-1; k0++)
+    for(k0 = 0; k0<p_size-1; k0++)
     {
         R = 0;
         for(int k = 0; k<p_dim; k++)
@@ -45,7 +45,7 @@ double c_curvspace(double *points, int p_size, int p_dim, int N, double *output)
     intv = totaldist/(N-1);
     
     
-    for (int k = 0; k<p_dim; k++)
+    for (k = 0; k<p_dim; k++)
     {
         output[k] = points[ind(0,k, p_dim)]; //% copy the first output point
         ptnow[k] = points[ind(0,k, p_dim)]; //initialize the current point
@@ -62,7 +62,7 @@ double c_curvspace(double *points, int p_size, int p_dim, int N, double *output)
         
         while(1)
         {
-            for(int k=0; k<p_dim; k++)
+            for(k=0; k<p_dim; k++)
                 pttarget[k] = points[ind(p_ind_first+kk,k, p_dim)];
             
             
@@ -96,7 +96,7 @@ double c_curvspace(double *points, int p_size, int p_dim, int N, double *output)
         
         p_ind_first += kk;
         //% add to the new resampled point
-        for(int k=0; k<p_dim; k++)
+        for(k=0; k<p_dim; k++)
         {
             output[ind(q_ind,k, p_dim)] = newpt[k];
             ptnow[k] = newpt[k]; //% update current point
@@ -114,7 +114,8 @@ double distance(double *x, double *y, int p_dim)
 //calculate the distance between two points
     double dum;
     double R = 0;
-    for(int k = 0; k<p_dim; k++)
+    int k;
+    for(k = 0; k<p_dim; k++)
     {
         dum = x[k]-y[k];
         R+= dum*dum;
@@ -129,14 +130,16 @@ void interpintv(double *pt1, double *pt2, int p_dim, double intv, double *newpt)
     //results are save into the newpt direction.
     double dum;
     double normR = 0;
-    for(int k = 0; k<p_dim; k++)
+    int k;
+    
+    for(k = 0; k<p_dim; k++)
     {
         dum = pt2[k]-pt1[k];
         normR += dum*dum;
     }
     normR = sqrt(normR);
     
-    for(int k = 0; k<p_dim; k++)
+    for(k = 0; k<p_dim; k++)
     {
         newpt[k] = intv*(pt2[k]-pt1[k])/normR + pt1[k];
     }

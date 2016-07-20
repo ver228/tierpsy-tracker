@@ -3,3 +3,8 @@
 create_binaries/*.app
 MWTracker.egg-info/*
 *.dropbox.attr
+
+*.so
+
+*.o
+
