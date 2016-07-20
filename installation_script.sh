@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 MW_MAIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 OPENWORM_DIR=$MW_MAIN_DIR/../open-worm-analysis-toolbox
 OPENCV_DIR=$MW_MAIN_DIR/../opencv
@@ -94,6 +96,9 @@ function install_anaconda {
         echo "export PATH=$CONDA_PATH:\$PATH" >> $BASH_PROFILE_FILE
         source $BASH_PROFILE_FILE
     fi
+	
+	echo $PATH
+	cat $BASH_PROFILE_FILE
 	
 	rm -f miniconda_installer.sh
 
