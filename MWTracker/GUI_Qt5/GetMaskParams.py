@@ -21,16 +21,6 @@ from MWTracker.compressVideos.compressVideo import getROIMask, selectVideoReader
 from MWTracker.batchProcessing.compressSingleWorker import compressSingleWorker
 from MWTracker.batchProcessing.trackSingleWorker import getTrajectoriesWorker
 
-import psutil, os
-
-def kill_proc_tree(pid, including_parent=True):  
-    '''http://stackoverflow.com/questions/22291434/pyqt-application-closes-successfully-but-process-is-not-killed'''
-    parent = psutil.Process(pid)
-    for child in parent.children(recursive=True):
-        child.kill()
-    if including_parent:
-        parent.kill()
-
 class twoViewsWithZoom():
     def __init__(self, view_full, view_mask):
         self.view_full = ViewsWithZoom(view_full)
