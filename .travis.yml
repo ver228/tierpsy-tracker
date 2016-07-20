@@ -1,4 +1,8 @@
 language: generic
+cache:
+  directories:
+  - $HOME/miniconda
+
 matrix:
     include:
         - os: linux
