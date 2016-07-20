@@ -8,11 +8,9 @@ import sys
 from MWTracker.batchProcessing.trackSingleWorker import getTrajectoriesWorker, track_worker_parser
 
 if __name__ == '__main__':
-    
-    if len(sys.argv)>1: 
+
+    if len(sys.argv) > 1:
         args = track_worker_parser.parse_args()
-        getTrajectoriesWorker(**vars(args)) 
+        getTrajectoriesWorker(**vars(args))
     else:
         print('Bad', sys.argv)
-    
-    

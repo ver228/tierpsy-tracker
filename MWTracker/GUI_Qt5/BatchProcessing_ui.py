@@ -8,7 +8,9 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_BatchProcessing(object):
+
     def setupUi(self, BatchProcessing):
         BatchProcessing.setObjectName("BatchProcessing")
         BatchProcessing.resize(712, 425)
@@ -56,19 +58,25 @@ class Ui_BatchProcessing(object):
         self.pushButton_resultsDir.setObjectName("pushButton_resultsDir")
         self.gridLayout_2.addWidget(self.pushButton_resultsDir, 3, 1, 1, 1)
         self.checkBox_txtFileList = QtWidgets.QCheckBox(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum,
+            QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.checkBox_txtFileList.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.checkBox_txtFileList.sizePolicy().hasHeightForWidth())
         self.checkBox_txtFileList.setSizePolicy(sizePolicy)
         self.checkBox_txtFileList.setText("")
         self.checkBox_txtFileList.setObjectName("checkBox_txtFileList")
         self.gridLayout_2.addWidget(self.checkBox_txtFileList, 1, 0, 1, 1)
         self.checkBox_tmpDir = QtWidgets.QCheckBox(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum,
+            QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.checkBox_tmpDir.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.checkBox_tmpDir.sizePolicy().hasHeightForWidth())
         self.checkBox_tmpDir.setSizePolicy(sizePolicy)
         self.checkBox_tmpDir.setText("")
         self.checkBox_tmpDir.setObjectName("checkBox_tmpDir")
@@ -89,10 +97,13 @@ class Ui_BatchProcessing(object):
         self.checkBox_isCompress.setObjectName("checkBox_isCompress")
         self.gridLayout_3.addWidget(self.checkBox_isCompress, 0, 3, 1, 1)
         self.label_numMaxProc = QtWidgets.QLabel(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred,
+            QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_numMaxProc.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.label_numMaxProc.sizePolicy().hasHeightForWidth())
         self.label_numMaxProc.setSizePolicy(sizePolicy)
         self.label_numMaxProc.setObjectName("label_numMaxProc")
         self.gridLayout_3.addWidget(self.label_numMaxProc, 2, 3, 1, 1)
@@ -124,18 +135,24 @@ class Ui_BatchProcessing(object):
         self.label_comp.setObjectName("label_comp")
         self.gridLayout_3.addWidget(self.label_comp, 3, 0, 1, 1)
         self.label_patternIn = QtWidgets.QLabel(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred,
+            QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_patternIn.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.label_patternIn.sizePolicy().hasHeightForWidth())
         self.label_patternIn.setSizePolicy(sizePolicy)
         self.label_patternIn.setObjectName("label_patternIn")
         self.gridLayout_3.addWidget(self.label_patternIn, 2, 1, 1, 1)
         self.label_patternExc = QtWidgets.QLabel(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred,
+            QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_patternExc.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.label_patternExc.sizePolicy().hasHeightForWidth())
         self.label_patternExc.setSizePolicy(sizePolicy)
         self.label_patternExc.setObjectName("label_patternExc")
         self.gridLayout_3.addWidget(self.label_patternExc, 2, 2, 1, 1)
@@ -158,21 +175,52 @@ class Ui_BatchProcessing(object):
 
     def retranslateUi(self, BatchProcessing):
         _translate = QtCore.QCoreApplication.translate
-        BatchProcessing.setWindowTitle(_translate("BatchProcessing", "Batch Processing"))
-        self.pushButton_videosDir.setText(_translate("BatchProcessing", "Original Videos Dir"))
-        self.pushButton_tmpDir.setText(_translate("BatchProcessing", "Temporary Dir"))
-        self.pushButton_txtFileList.setText(_translate("BatchProcessing", "Individual Files List"))
-        self.pushButton_masksDir.setText(_translate("BatchProcessing", "Masked Videos Dir"))
-        self.pushButton_paramFile.setText(_translate("BatchProcessing", "Parameters File"))
-        self.pushButton_resultsDir.setText(_translate("BatchProcessing", "Tracking Results Dir"))
+        BatchProcessing.setWindowTitle(
+            _translate(
+                "BatchProcessing",
+                "Batch Processing"))
+        self.pushButton_videosDir.setText(_translate(
+            "BatchProcessing", "Original Videos Dir"))
+        self.pushButton_tmpDir.setText(
+            _translate(
+                "BatchProcessing",
+                "Temporary Dir"))
+        self.pushButton_txtFileList.setText(_translate(
+            "BatchProcessing", "Individual Files List"))
+        self.pushButton_masksDir.setText(_translate(
+            "BatchProcessing", "Masked Videos Dir"))
+        self.pushButton_paramFile.setText(
+            _translate("BatchProcessing", "Parameters File"))
+        self.pushButton_resultsDir.setText(_translate(
+            "BatchProcessing", "Tracking Results Dir"))
         self.pushButton_start.setText(_translate("BatchProcessing", "START"))
-        self.checkBox_isCompress.setText(_translate("BatchProcessing", "Execute compression"))
-        self.label_numMaxProc.setText(_translate("BatchProcessing", "Maximum number of processes:"))
-        self.checkBox_isTrack.setText(_translate("BatchProcessing", "Execute tracking"))
-        self.checkBox_isSingleWorm.setText(_translate("BatchProcessing", "Is single worm (Shafer Lab)?"))
+        self.checkBox_isCompress.setText(
+            _translate(
+                "BatchProcessing",
+                "Execute compression"))
+        self.label_numMaxProc.setText(
+            _translate(
+                "BatchProcessing",
+                "Maximum number of processes:"))
+        self.checkBox_isTrack.setText(
+            _translate(
+                "BatchProcessing",
+                "Execute tracking"))
+        self.checkBox_isSingleWorm.setText(
+            _translate(
+                "BatchProcessing",
+                "Is single worm (Shafer Lab)?"))
         self.label_track.setText(_translate("BatchProcessing", "Tracking"))
         self.label_comp.setText(_translate("BatchProcessing", "Compression"))
-        self.label_patternIn.setText(_translate("BatchProcessing", "File pattern to include:"))
-        self.label_patternExc.setText(_translate("BatchProcessing", "File pattern to exclude:"))
-        self.checkBox_isCopyVideo.setText(_translate("BatchProcessing", "Copy original videos to tmp dir"))
-
+        self.label_patternIn.setText(
+            _translate(
+                "BatchProcessing",
+                "File pattern to include:"))
+        self.label_patternExc.setText(
+            _translate(
+                "BatchProcessing",
+                "File pattern to exclude:"))
+        self.checkBox_isCopyVideo.setText(
+            _translate(
+                "BatchProcessing",
+                "Copy original videos to tmp dir"))

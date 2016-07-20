@@ -8,7 +8,9 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_AnalysisProgress(object):
+
     def setupUi(self, AnalysisProgress):
         AnalysisProgress.setObjectName("AnalysisProgress")
         AnalysisProgress.resize(594, 465)
@@ -32,5 +34,7 @@ class Ui_AnalysisProgress(object):
 
     def retranslateUi(self, AnalysisProgress):
         _translate = QtCore.QCoreApplication.translate
-        AnalysisProgress.setWindowTitle(_translate("AnalysisProgress", "Analysis Progress"))
-
+        AnalysisProgress.setWindowTitle(
+            _translate(
+                "AnalysisProgress",
+                "Analysis Progress"))

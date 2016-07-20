@@ -8,7 +8,9 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_SWTrackerViewer(object):
+
     def setupUi(self, SWTrackerViewer):
         SWTrackerViewer.setObjectName("SWTrackerViewer")
         SWTrackerViewer.resize(522, 760)
@@ -30,17 +32,24 @@ class Ui_SWTrackerViewer(object):
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
         self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 494, 449))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
-        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout(
+            self.scrollAreaWidgetContents)
         self.verticalLayout_3.setContentsMargins(11, 11, 11, 11)
         self.verticalLayout_3.setSpacing(6)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
-        self.mainGraphicsView = QtWidgets.QGraphicsView(self.scrollAreaWidgetContents)
+        self.mainGraphicsView = QtWidgets.QGraphicsView(
+            self.scrollAreaWidgetContents)
         self.mainGraphicsView.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.mainGraphicsView.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.mainGraphicsView.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.mainGraphicsView.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
-        self.mainGraphicsView.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
-        self.mainGraphicsView.setResizeAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
+        self.mainGraphicsView.setVerticalScrollBarPolicy(
+            QtCore.Qt.ScrollBarAlwaysOff)
+        self.mainGraphicsView.setHorizontalScrollBarPolicy(
+            QtCore.Qt.ScrollBarAlwaysOff)
+        self.mainGraphicsView.setDragMode(
+            QtWidgets.QGraphicsView.ScrollHandDrag)
+        self.mainGraphicsView.setTransformationAnchor(
+            QtWidgets.QGraphicsView.AnchorUnderMouse)
+        self.mainGraphicsView.setResizeAnchor(
+            QtWidgets.QGraphicsView.AnchorUnderMouse)
         self.mainGraphicsView.setObjectName("mainGraphicsView")
         self.verticalLayout_3.addWidget(self.mainGraphicsView)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
@@ -54,18 +63,24 @@ class Ui_SWTrackerViewer(object):
         self.checkBox_showLabel.setObjectName("checkBox_showLabel")
         self.horizontalLayout_6.addWidget(self.checkBox_showLabel)
         self.label_skelBlock = QtWidgets.QLabel(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum,
+            QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_skelBlock.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.label_skelBlock.sizePolicy().hasHeightForWidth())
         self.label_skelBlock.setSizePolicy(sizePolicy)
         self.label_skelBlock.setObjectName("label_skelBlock")
         self.horizontalLayout_6.addWidget(self.label_skelBlock)
         self.spinBox_skelBlock = QtWidgets.QSpinBox(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum,
+            QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.spinBox_skelBlock.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.spinBox_skelBlock.sizePolicy().hasHeightForWidth())
         self.spinBox_skelBlock.setSizePolicy(sizePolicy)
         self.spinBox_skelBlock.setObjectName("spinBox_skelBlock")
         self.horizontalLayout_6.addWidget(self.spinBox_skelBlock)
@@ -129,10 +144,13 @@ class Ui_SWTrackerViewer(object):
         self.comboBox_h5path.addItem("")
         self.horizontalLayout_4.addWidget(self.comboBox_h5path)
         self.pushButton_h5groups = QtWidgets.QPushButton(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum,
+            QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_h5groups.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.pushButton_h5groups.sizePolicy().hasHeightForWidth())
         self.pushButton_h5groups.setSizePolicy(sizePolicy)
         self.pushButton_h5groups.setObjectName("pushButton_h5groups")
         self.horizontalLayout_4.addWidget(self.pushButton_h5groups)
@@ -173,17 +191,29 @@ class Ui_SWTrackerViewer(object):
 
     def retranslateUi(self, SWTrackerViewer):
         _translate = QtCore.QCoreApplication.translate
-        SWTrackerViewer.setWindowTitle(_translate("SWTrackerViewer", "SWTrackerViewer"))
-        self.checkBox_showLabel.setText(_translate("SWTrackerViewer", "Show Skeleton"))
+        SWTrackerViewer.setWindowTitle(
+            _translate(
+                "SWTrackerViewer",
+                "SWTrackerViewer"))
+        self.checkBox_showLabel.setText(
+            _translate("SWTrackerViewer", "Show Skeleton"))
         self.label_skelBlock.setText(_translate("SWTrackerViewer", "Block"))
         self.label_frame.setText(_translate("SWTrackerViewer", "Frame"))
         self.label_step.setText(_translate("SWTrackerViewer", "Step Size"))
         self.label_fps.setText(_translate("SWTrackerViewer", "FPS display"))
         self.playButton.setText(_translate("SWTrackerViewer", "Play"))
-        self.comboBox_h5path.setItemText(0, _translate("SWTrackerViewer", "/mask"))
-        self.comboBox_h5path.setItemText(1, _translate("SWTrackerViewer", "/full_data"))
-        self.pushButton_h5groups.setText(_translate("SWTrackerViewer", "Update Groups"))
-        self.pushButton_video.setText(_translate("SWTrackerViewer", "Select Video File"))
-        self.pushButton_skel.setText(_translate("SWTrackerViewer", "Select Skeletons File"))
+        self.comboBox_h5path.setItemText(
+            0, _translate("SWTrackerViewer", "/mask"))
+        self.comboBox_h5path.setItemText(
+            1, _translate("SWTrackerViewer", "/full_data"))
+        self.pushButton_h5groups.setText(
+            _translate("SWTrackerViewer", "Update Groups"))
+        self.pushButton_video.setText(
+            _translate(
+                "SWTrackerViewer",
+                "Select Video File"))
+        self.pushButton_skel.setText(
+            _translate(
+                "SWTrackerViewer",
+                "Select Skeletons File"))
         self.toolBar.setWindowTitle(_translate("SWTrackerViewer", "toolBar"))
-

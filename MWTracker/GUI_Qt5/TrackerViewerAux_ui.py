@@ -8,7 +8,9 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_TrackerViewerAux(object):
+
     def setupUi(self, TrackerViewerAux):
         TrackerViewerAux.setObjectName("TrackerViewerAux")
         TrackerViewerAux.resize(642, 760)
@@ -30,17 +32,24 @@ class Ui_TrackerViewerAux(object):
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
         self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 614, 485))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
-        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout(
+            self.scrollAreaWidgetContents)
         self.verticalLayout_3.setContentsMargins(11, 11, 11, 11)
         self.verticalLayout_3.setSpacing(6)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
-        self.mainGraphicsView = QtWidgets.QGraphicsView(self.scrollAreaWidgetContents)
+        self.mainGraphicsView = QtWidgets.QGraphicsView(
+            self.scrollAreaWidgetContents)
         self.mainGraphicsView.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.mainGraphicsView.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.mainGraphicsView.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
-        self.mainGraphicsView.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
-        self.mainGraphicsView.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
-        self.mainGraphicsView.setResizeAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
+        self.mainGraphicsView.setVerticalScrollBarPolicy(
+            QtCore.Qt.ScrollBarAlwaysOff)
+        self.mainGraphicsView.setHorizontalScrollBarPolicy(
+            QtCore.Qt.ScrollBarAsNeeded)
+        self.mainGraphicsView.setDragMode(
+            QtWidgets.QGraphicsView.ScrollHandDrag)
+        self.mainGraphicsView.setTransformationAnchor(
+            QtWidgets.QGraphicsView.AnchorUnderMouse)
+        self.mainGraphicsView.setResizeAnchor(
+            QtWidgets.QGraphicsView.AnchorUnderMouse)
         self.mainGraphicsView.setObjectName("mainGraphicsView")
         self.verticalLayout_3.addWidget(self.mainGraphicsView)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
@@ -108,10 +117,13 @@ class Ui_TrackerViewerAux(object):
         self.comboBox_h5path.addItem("")
         self.horizontalLayout_4.addWidget(self.comboBox_h5path)
         self.pushButton_h5groups = QtWidgets.QPushButton(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum,
+            QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_h5groups.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.pushButton_h5groups.sizePolicy().hasHeightForWidth())
         self.pushButton_h5groups.setSizePolicy(sizePolicy)
         self.pushButton_h5groups.setObjectName("pushButton_h5groups")
         self.horizontalLayout_4.addWidget(self.pushButton_h5groups)
@@ -152,16 +164,30 @@ class Ui_TrackerViewerAux(object):
 
     def retranslateUi(self, TrackerViewerAux):
         _translate = QtCore.QCoreApplication.translate
-        TrackerViewerAux.setWindowTitle(_translate("TrackerViewerAux", "TrackerViewerAux"))
+        TrackerViewerAux.setWindowTitle(
+            _translate(
+                "TrackerViewerAux",
+                "TrackerViewerAux"))
         self.label_frame.setText(_translate("TrackerViewerAux", "Frame"))
         self.label_step.setText(_translate("TrackerViewerAux", "Step Size"))
         self.label_fps.setText(_translate("TrackerViewerAux", "FPS display"))
-        self.checkBox_showLabel.setText(_translate("TrackerViewerAux", "Show Skeleton"))
+        self.checkBox_showLabel.setText(
+            _translate(
+                "TrackerViewerAux",
+                "Show Skeleton"))
         self.playButton.setText(_translate("TrackerViewerAux", "Play"))
-        self.comboBox_h5path.setItemText(0, _translate("TrackerViewerAux", "/mask"))
-        self.comboBox_h5path.setItemText(1, _translate("TrackerViewerAux", "/full_data"))
-        self.pushButton_h5groups.setText(_translate("TrackerViewerAux", "Update Groups"))
-        self.pushButton_video.setText(_translate("TrackerViewerAux", "Select Video File"))
-        self.pushButton_skel.setText(_translate("TrackerViewerAux", "Select Skeletons File"))
+        self.comboBox_h5path.setItemText(
+            0, _translate("TrackerViewerAux", "/mask"))
+        self.comboBox_h5path.setItemText(
+            1, _translate("TrackerViewerAux", "/full_data"))
+        self.pushButton_h5groups.setText(
+            _translate("TrackerViewerAux", "Update Groups"))
+        self.pushButton_video.setText(
+            _translate(
+                "TrackerViewerAux",
+                "Select Video File"))
+        self.pushButton_skel.setText(
+            _translate(
+                "TrackerViewerAux",
+                "Select Skeletons File"))
         self.toolBar.setWindowTitle(_translate("TrackerViewerAux", "toolBar"))
-

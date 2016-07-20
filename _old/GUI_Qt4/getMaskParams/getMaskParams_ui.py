@@ -16,13 +16,16 @@ except AttributeError:
 
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
+
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
+
 class Ui_MainWindow(object):
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.resize(1161, 746)
@@ -138,23 +141,34 @@ class Ui_MainWindow(object):
         self.lineEdit_video = QtGui.QLineEdit(self.centralWidget)
         self.lineEdit_video.setObjectName(_fromUtf8("lineEdit_video"))
         self.gridLayout.addWidget(self.lineEdit_video, 17, 3, 1, 2)
-        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        spacerItem = QtGui.QSpacerItem(
+            40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem, 16, 4, 1, 1)
-        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Minimum)
+        spacerItem1 = QtGui.QSpacerItem(
+            40,
+            20,
+            QtGui.QSizePolicy.MinimumExpanding,
+            QtGui.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem1, 16, 3, 1, 1)
         self.pushButton_next = QtGui.QPushButton(self.centralWidget)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)
+        sizePolicy = QtGui.QSizePolicy(
+            QtGui.QSizePolicy.Maximum,
+            QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_next.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.pushButton_next.sizePolicy().hasHeightForWidth())
         self.pushButton_next.setSizePolicy(sizePolicy)
         self.pushButton_next.setObjectName(_fromUtf8("pushButton_next"))
         self.gridLayout.addWidget(self.pushButton_next, 16, 5, 1, 1)
         self.label_mask = QtGui.QLabel(self.centralWidget)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Ignored)
+        sizePolicy = QtGui.QSizePolicy(
+            QtGui.QSizePolicy.Ignored,
+            QtGui.QSizePolicy.Ignored)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_mask.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.label_mask.sizePolicy().hasHeightForWidth())
         self.label_mask.setSizePolicy(sizePolicy)
         self.label_mask.setFrameShape(QtGui.QFrame.Box)
         self.label_mask.setFrameShadow(QtGui.QFrame.Raised)
@@ -162,10 +176,13 @@ class Ui_MainWindow(object):
         self.label_mask.setObjectName(_fromUtf8("label_mask"))
         self.gridLayout.addWidget(self.label_mask, 0, 4, 13, 2)
         self.label_full = QtGui.QLabel(self.centralWidget)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Ignored)
+        sizePolicy = QtGui.QSizePolicy(
+            QtGui.QSizePolicy.Ignored,
+            QtGui.QSizePolicy.Ignored)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_full.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.label_full.sizePolicy().hasHeightForWidth())
         self.label_full.setSizePolicy(sizePolicy)
         self.label_full.setFrameShape(QtGui.QFrame.Box)
         self.label_full.setFrameShadow(QtGui.QFrame.Raised)
@@ -175,7 +192,8 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.label_full, 0, 2, 13, 2)
         self.checkBox_hasTimestamp = QtGui.QCheckBox(self.centralWidget)
         self.checkBox_hasTimestamp.setChecked(True)
-        self.checkBox_hasTimestamp.setObjectName(_fromUtf8("checkBox_hasTimestamp"))
+        self.checkBox_hasTimestamp.setObjectName(
+            _fromUtf8("checkBox_hasTimestamp"))
         self.gridLayout.addWidget(self.checkBox_hasTimestamp, 9, 0, 1, 1)
         self.gridLayout_3 = QtGui.QGridLayout()
         self.gridLayout_3.setMargin(11)
@@ -211,11 +229,13 @@ class Ui_MainWindow(object):
         self.spinBox_dilation_size.setMinimum(1)
         self.spinBox_dilation_size.setMaximum(999)
         self.spinBox_dilation_size.setProperty("value", 9)
-        self.spinBox_dilation_size.setObjectName(_fromUtf8("spinBox_dilation_size"))
+        self.spinBox_dilation_size.setObjectName(
+            _fromUtf8("spinBox_dilation_size"))
         self.gridLayout_3.addWidget(self.spinBox_dilation_size, 0, 1, 1, 1)
         self.gridLayout.addLayout(self.gridLayout_3, 15, 0, 4, 2)
         self.checkBox_keepBorderData = QtGui.QCheckBox(self.centralWidget)
-        self.checkBox_keepBorderData.setObjectName(_fromUtf8("checkBox_keepBorderData"))
+        self.checkBox_keepBorderData.setObjectName(
+            _fromUtf8("checkBox_keepBorderData"))
         self.gridLayout.addWidget(self.checkBox_keepBorderData, 9, 1, 1, 1)
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
@@ -236,17 +256,33 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
         self.label_2.setText(_translate("MainWindow", "Thresh_C", None))
         self.label.setText(_translate("MainWindow", "Min Area", None))
-        self.pushButton_mask.setText(_translate("MainWindow", "Mask Dir", None))
+        self.pushButton_mask.setText(
+            _translate("MainWindow", "Mask Dir", None))
         self.label_3.setText(_translate("MainWindow", "Block Size", None))
         self.label_4.setText(_translate("MainWindow", "Max Area", None))
         self.pushButton_start.setText(_translate("MainWindow", "Start", None))
-        self.pushButton_video.setText(_translate("MainWindow", "Video File", None))
-        self.pushButton_results.setText(_translate("MainWindow", "Results Dir", None))
-        self.pushButton_next.setText(_translate("MainWindow", "Next Chunk", None))
-        self.checkBox_hasTimestamp.setText(_translate("MainWindow", "has time stamp?", None))
+        self.pushButton_video.setText(
+            _translate("MainWindow", "Video File", None))
+        self.pushButton_results.setText(
+            _translate("MainWindow", "Results Dir", None))
+        self.pushButton_next.setText(
+            _translate(
+                "MainWindow",
+                "Next Chunk",
+                None))
+        self.checkBox_hasTimestamp.setText(
+            _translate("MainWindow", "has time stamp?", None))
         self.label_6.setText(_translate("MainWindow", "Dilation", None))
-        self.label_skelSeg.setText(_translate("MainWindow", "Skeleton Segments", None))
+        self.label_skelSeg.setText(
+            _translate(
+                "MainWindow",
+                "Skeleton Segments",
+                None))
         self.label_fps.setText(_translate("MainWindow", "FPS", None))
-        self.label_5.setText(_translate("MainWindow", "Frames to average", None))
-        self.checkBox_keepBorderData.setText(_translate("MainWindow", "keep border data?", None))
-
+        self.label_5.setText(
+            _translate(
+                "MainWindow",
+                "Frames to average",
+                None))
+        self.checkBox_keepBorderData.setText(
+            _translate("MainWindow", "keep border data?", None))

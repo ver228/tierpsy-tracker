@@ -8,7 +8,9 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_ImageViewer(object):
+
     def setupUi(self, ImageViewer):
         ImageViewer.setObjectName("ImageViewer")
         ImageViewer.resize(642, 760)
@@ -30,15 +32,19 @@ class Ui_ImageViewer(object):
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
         self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 614, 485))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
-        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout(
+            self.scrollAreaWidgetContents)
         self.verticalLayout_3.setContentsMargins(11, 11, 11, 11)
         self.verticalLayout_3.setSpacing(6)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.imageCanvas = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Ignored,
+            QtWidgets.QSizePolicy.Ignored)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.imageCanvas.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.imageCanvas.sizePolicy().hasHeightForWidth())
         self.imageCanvas.setSizePolicy(sizePolicy)
         self.imageCanvas.setFrameShape(QtWidgets.QFrame.Box)
         self.imageCanvas.setFrameShadow(QtWidgets.QFrame.Sunken)
@@ -110,10 +116,13 @@ class Ui_ImageViewer(object):
         self.comboBox_h5path.addItem("")
         self.horizontalLayout_4.addWidget(self.comboBox_h5path)
         self.pushButton_h5groups = QtWidgets.QPushButton(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum,
+            QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_h5groups.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.pushButton_h5groups.sizePolicy().hasHeightForWidth())
         self.pushButton_h5groups.setSizePolicy(sizePolicy)
         self.pushButton_h5groups.setObjectName("pushButton_h5groups")
         self.horizontalLayout_4.addWidget(self.pushButton_h5groups)
@@ -158,12 +167,20 @@ class Ui_ImageViewer(object):
         self.label_frame.setText(_translate("ImageViewer", "Frame"))
         self.label_step.setText(_translate("ImageViewer", "Step Size"))
         self.label_fps.setText(_translate("ImageViewer", "FPS display"))
-        self.checkBox_showLabel.setText(_translate("ImageViewer", "Show Skeleton"))
+        self.checkBox_showLabel.setText(
+            _translate("ImageViewer", "Show Skeleton"))
         self.playButton.setText(_translate("ImageViewer", "Play"))
         self.comboBox_h5path.setItemText(0, _translate("ImageViewer", "/mask"))
-        self.comboBox_h5path.setItemText(1, _translate("ImageViewer", "/full_data"))
-        self.pushButton_h5groups.setText(_translate("ImageViewer", "Update Groups"))
-        self.pushButton_video.setText(_translate("ImageViewer", "Select Video File"))
-        self.pushButton_skel.setText(_translate("ImageViewer", "Select Skeletons File"))
+        self.comboBox_h5path.setItemText(
+            1, _translate("ImageViewer", "/full_data"))
+        self.pushButton_h5groups.setText(
+            _translate("ImageViewer", "Update Groups"))
+        self.pushButton_video.setText(
+            _translate(
+                "ImageViewer",
+                "Select Video File"))
+        self.pushButton_skel.setText(
+            _translate(
+                "ImageViewer",
+                "Select Skeletons File"))
         self.toolBar.setWindowTitle(_translate("ImageViewer", "toolBar"))
-

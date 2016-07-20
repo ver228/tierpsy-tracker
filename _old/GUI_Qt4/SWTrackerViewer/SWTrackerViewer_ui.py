@@ -16,13 +16,16 @@ except AttributeError:
 
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
+
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
+
 class Ui_ImageViewer(object):
+
     def setupUi(self, ImageViewer):
         ImageViewer.setObjectName(_fromUtf8("ImageViewer"))
         ImageViewer.resize(522, 760)
@@ -43,16 +46,21 @@ class Ui_ImageViewer(object):
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
         self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 494, 449))
-        self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
-        self.verticalLayout_3 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents)
+        self.scrollAreaWidgetContents.setObjectName(
+            _fromUtf8("scrollAreaWidgetContents"))
+        self.verticalLayout_3 = QtGui.QVBoxLayout(
+            self.scrollAreaWidgetContents)
         self.verticalLayout_3.setMargin(11)
         self.verticalLayout_3.setSpacing(6)
         self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
         self.imageCanvas = QtGui.QLabel(self.scrollAreaWidgetContents)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Ignored)
+        sizePolicy = QtGui.QSizePolicy(
+            QtGui.QSizePolicy.Ignored,
+            QtGui.QSizePolicy.Ignored)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.imageCanvas.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.imageCanvas.sizePolicy().hasHeightForWidth())
         self.imageCanvas.setSizePolicy(sizePolicy)
         self.imageCanvas.setFrameShape(QtGui.QFrame.Box)
         self.imageCanvas.setFrameShadow(QtGui.QFrame.Sunken)
@@ -70,18 +78,24 @@ class Ui_ImageViewer(object):
         self.checkBox_showLabel.setObjectName(_fromUtf8("checkBox_showLabel"))
         self.horizontalLayout_6.addWidget(self.checkBox_showLabel)
         self.label_skelBlock = QtGui.QLabel(self.centralWidget)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Preferred)
+        sizePolicy = QtGui.QSizePolicy(
+            QtGui.QSizePolicy.Maximum,
+            QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_skelBlock.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.label_skelBlock.sizePolicy().hasHeightForWidth())
         self.label_skelBlock.setSizePolicy(sizePolicy)
         self.label_skelBlock.setObjectName(_fromUtf8("label_skelBlock"))
         self.horizontalLayout_6.addWidget(self.label_skelBlock)
         self.spinBox_skelBlock = QtGui.QSpinBox(self.centralWidget)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)
+        sizePolicy = QtGui.QSizePolicy(
+            QtGui.QSizePolicy.Maximum,
+            QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.spinBox_skelBlock.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.spinBox_skelBlock.sizePolicy().hasHeightForWidth())
         self.spinBox_skelBlock.setSizePolicy(sizePolicy)
         self.spinBox_skelBlock.setObjectName(_fromUtf8("spinBox_skelBlock"))
         self.horizontalLayout_6.addWidget(self.spinBox_skelBlock)
@@ -145,12 +159,16 @@ class Ui_ImageViewer(object):
         self.comboBox_h5path.addItem(_fromUtf8(""))
         self.horizontalLayout_4.addWidget(self.comboBox_h5path)
         self.pushButton_h5groups = QtGui.QPushButton(self.centralWidget)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)
+        sizePolicy = QtGui.QSizePolicy(
+            QtGui.QSizePolicy.Maximum,
+            QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_h5groups.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.pushButton_h5groups.sizePolicy().hasHeightForWidth())
         self.pushButton_h5groups.setSizePolicy(sizePolicy)
-        self.pushButton_h5groups.setObjectName(_fromUtf8("pushButton_h5groups"))
+        self.pushButton_h5groups.setObjectName(
+            _fromUtf8("pushButton_h5groups"))
         self.horizontalLayout_4.addWidget(self.pushButton_h5groups)
         self.verticalLayout.addLayout(self.horizontalLayout_4)
         self.gridLayout = QtGui.QGridLayout()
@@ -188,17 +206,32 @@ class Ui_ImageViewer(object):
         QtCore.QMetaObject.connectSlotsByName(ImageViewer)
 
     def retranslateUi(self, ImageViewer):
-        ImageViewer.setWindowTitle(_translate("ImageViewer", "ImageViewer", None))
-        self.checkBox_showLabel.setText(_translate("ImageViewer", "Show Skeleton", None))
+        ImageViewer.setWindowTitle(
+            _translate(
+                "ImageViewer",
+                "ImageViewer",
+                None))
+        self.checkBox_showLabel.setText(
+            _translate("ImageViewer", "Show Skeleton", None))
         self.label_skelBlock.setText(_translate("ImageViewer", "Block", None))
         self.label_frame.setText(_translate("ImageViewer", "Frame", None))
         self.label_step.setText(_translate("ImageViewer", "Step Size", None))
         self.label_fps.setText(_translate("ImageViewer", "FPS display", None))
         self.playButton.setText(_translate("ImageViewer", "Play", None))
-        self.comboBox_h5path.setItemText(0, _translate("ImageViewer", "/mask", None))
-        self.comboBox_h5path.setItemText(1, _translate("ImageViewer", "/full_data", None))
-        self.pushButton_h5groups.setText(_translate("ImageViewer", "Update Groups", None))
-        self.pushButton_video.setText(_translate("ImageViewer", "Select Video File", None))
-        self.pushButton_skel.setText(_translate("ImageViewer", "Select Skeletons File", None))
+        self.comboBox_h5path.setItemText(
+            0, _translate("ImageViewer", "/mask", None))
+        self.comboBox_h5path.setItemText(
+            1, _translate("ImageViewer", "/full_data", None))
+        self.pushButton_h5groups.setText(
+            _translate("ImageViewer", "Update Groups", None))
+        self.pushButton_video.setText(
+            _translate(
+                "ImageViewer",
+                "Select Video File",
+                None))
+        self.pushButton_skel.setText(
+            _translate(
+                "ImageViewer",
+                "Select Skeletons File",
+                None))
         self.toolBar.setWindowTitle(_translate("ImageViewer", "toolBar", None))
-

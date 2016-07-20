@@ -13,5 +13,5 @@ from MWTracker.helperFunctions.getTrajectoriesWorker import getTrajectoriesWorke
 if __name__ == '__main__':
     masked_image_file = sys.argv[1]
     results_dir = sys.argv[2]
-    
-    getTrajectoriesWorker(masked_image_file, results_dir, overwrite = False)
+
+    getTrajectoriesWorker(masked_image_file, results_dir, overwrite=False)
