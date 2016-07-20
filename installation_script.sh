@@ -98,6 +98,9 @@ function ubuntu_dependencies {
 	sudo apt-get install -y build-essential cmake libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
 	#[optional]
 	sudo apt-get install -y libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
+
+	#qt5 libraries
+	sudo apt-add-repository ppa:canonical-qt5-edgers/ubuntu1204-qt5
 }
 
 function redhat_dependencies {
@@ -123,8 +126,8 @@ function install_dependencies_osx {
 	brew install git
 	
 	#ffmpeg libraries, needed to install opencv
-	brew install ffmpeg --with-fdk-aac --with-ffplay --with-freetype --with-libass --with-libquvi \
-	--with-libvorbis --with-libvpx --with-opus --with-x265 --with-openh264 --with-tools --with-fdk-aac
+	brew install ffmpeg --with-fdk-aac --with-libass --with-libquvi \
+	--with-libvorbis --with-libvpx --with-x265 --with-openh264 --with-tools --with-fdk-aac
 
 	#image libraries for opencv
 	brew install jpeg libpng libtiff openexr eigen tbb
@@ -151,10 +154,9 @@ function install_anaconda {
 	#add the path to the bash profile only if it is not presented on the path
 	if [[ ":$PATH:" != "*:$CONDA_PATH:*" ]]; then
         echo "export PATH=$CONDA_PATH:\$PATH" >> $BASH_PROFILE_FILE
+        hash -r
         source $BASH_PROFILE_FILE
     fi
-	#export PATH=$CONDA_PATH:$PATH
-	#hash -r
 
 	conda install -y anaconda-client conda-build numpy matplotlib pytables pandas \
 	h5py scipy scikit-learn scikit-image seaborn xlrd cython

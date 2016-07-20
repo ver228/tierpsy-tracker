@@ -1,11 +1,12 @@
 import sys
 import os
-from PyQt5.QtWidgets import QApplication, QWidget
 import pandas as pd
 import tables
 import h5py
 import numpy as np
 import cv2
+
+from PyQt5.QtWidgets import QApplication, QWidget
 
 import matplotlib
 matplotlib.use("Qt5Agg")
