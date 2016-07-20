@@ -12,6 +12,10 @@ matrix:
 install:
   - bash ./installation_script.sh
 
+before_script:
+  #add conda path to the system. For some reason it does not work if it is done in the installation script.
+  -export PATH=/home/travis/miniconda/bin:$PATH
+
 script:
   - which python3 
   - python3 ./installation/installation_test.py
