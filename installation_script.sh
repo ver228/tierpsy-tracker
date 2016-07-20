@@ -152,8 +152,8 @@ function install_anaconda {
 	#add the path to the bash profile only if it is not presented on the path
 	if [[ ":$PATH:" != "*:$CONDA_PATH:*" ]]; then
         echo "export PATH=$CONDA_PATH:\$PATH" >> $BASH_PROFILE_FILE
-        hash -r
         source $BASH_PROFILE_FILE
+        hash -r
     fi
 
 	conda install -y anaconda-client conda-build numpy matplotlib pytables pandas \
