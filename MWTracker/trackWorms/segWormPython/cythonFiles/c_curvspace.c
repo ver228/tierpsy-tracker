@@ -33,7 +33,7 @@ double c_curvspace(double *points, int p_size, int p_dim, int N, double *output)
     for(k0 = 0; k0<p_size-1; k0++)
     {
         R = 0;
-        for(int k = 0; k<p_dim; k++)
+        for(k = 0; k<p_dim; k++)
         {
             dum = points[ind(k0,k, p_dim)]-points[ind(k0+1,k, p_dim)];
             R += dum*dum;
@@ -54,7 +54,8 @@ double c_curvspace(double *points, int p_size, int p_dim, int N, double *output)
     
     //%% iteration %%
     p_ind_first = 1;
-    for (int q_ind = 1; q_ind < N; q_ind++)
+    int q_ind;
+    for (q_ind = 1; q_ind < N; q_ind++)
     {
         distsum = 0;
         remainder = intv; //% remainder of distance that should be accumulated
@@ -82,12 +83,12 @@ double c_curvspace(double *points, int p_size, int p_dim, int N, double *output)
             {
                 remainder -= disttmp;
                 kk++;
-                for(int k=0; k<p_dim; k++)
+                for(k=0; k<p_dim; k++)
                     ptnow[k] = pttarget[k];
                 
                 if (p_ind_first+kk == p_size)
                 {
-                    for(int k=0; k<p_dim; k++)
+                    for(k=0; k<p_dim; k++)
                         newpt[k] = points[ind(p_size-1,k, p_dim)];
                     break;
                 }
