@@ -154,6 +154,7 @@ function install_anaconda {
         echo "export PATH=$CONDA_PATH:\$PATH" >> $BASH_PROFILE_FILE
         source $BASH_PROFILE_FILE
         hash -r
+        cat $BASH_PROFILE_FILE
     fi
 
 	conda install -y anaconda-client conda-build numpy matplotlib pytables pandas \
