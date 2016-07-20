@@ -1,8 +1,4 @@
 language: python
-python:
-  # We don't actually use the Travis Python (we use Anaconda), but this keeps it organized.
-  - "3.5"
-
 matrix:
     include:
         - os: linux

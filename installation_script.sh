@@ -105,7 +105,7 @@ function install_anaconda {
 function install_opencv3_anaconda {	
 	conda install -y conda-build
 	conda config --add channels menpo
-	conda build menpo_conda-opencv3
+	conda build --no-anaconda-upload menpo_conda-opencv3
 	conda install -y --use-local opencv3
 }
 
