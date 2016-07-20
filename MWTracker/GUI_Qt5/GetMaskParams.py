@@ -21,7 +21,6 @@ from MWTracker.compressVideos.compressVideo import getROIMask, selectVideoReader
 from MWTracker.batchProcessing.compressSingleWorker import compressSingleWorker
 from MWTracker.batchProcessing.trackSingleWorker import getTrajectoriesWorker
 
-
 class twoViewsWithZoom():
 
     def __init__(self, view_full, view_mask):

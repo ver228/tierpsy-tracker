@@ -3,15 +3,19 @@ import os
 from PyQt5.QtWidgets import QApplication, QWidget
 import pandas as pd
 import tables
+import h5py
+import numpy as np
 import cv2
 
-import numpy as np
 import matplotlib
 matplotlib.use("Qt5Agg")
 import matplotlib.pylab as plt
-import h5py
+
+import MWTracker
+import open_worm_analysis_toolbox
 
 if __name__ == '__main__':
+    print(r"%%%%%%% INSTALLATION TESTS %%%%%%%%")
     print('python:', sys.executable)
 
     print(np.__name__, np.__version__)
@@ -34,6 +38,9 @@ if __name__ == '__main__':
     os.remove(inputFiles)
 
     print(pd.__name__, pd.__version__)
+
+    print(MWTracker.__name__, MWTracker.__version__)
+    print(open_worm_analysis_toolbox.__name__, open_worm_analysis_toolbox.__version__)
 
     if False:
         app = QApplication(sys.argv)
