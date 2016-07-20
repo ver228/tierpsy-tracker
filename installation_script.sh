@@ -87,14 +87,19 @@ function clean_prev_installation_osx {
 function install_anaconda {
 	curl -L "$MINICONDA_LINK" -o miniconda_installer.sh
 	bash miniconda_installer.sh -b -f -p $HOME/miniconda
-	echo 'export PATH="$HOME/miniconda/bin:$PATH"' >> $BASH_PROFILE_FILE
-	source $BASH_PROFILE_FILE
 	
-	#rm -f miniconda_installer.sh
+	#add the path to the bash profile only if it is not presented on the path
+	CONDA_PATH="$HOME/miniconda/bin"
+	if [[ ":$PATH:" != *":$CONDA_PATH:"* ]]; then
+        echo "export PATH=$CONDA_PATH:\$PATH" >> $BASH_PROFILE_FILE
+        source $BASH_PROFILE_FILE
+    fi
+	
+	rm -f miniconda_installer.sh
 
-	#conda install -y anaconda-client conda-build numpy matplotlib pytables pandas \
-	#h5py scipy scikit-learn scikit-image seaborn xlrd statsmodels
-	#pip install gitpython pyqt5
+	conda install -y anaconda-client conda-build numpy matplotlib pytables pandas \
+	h5py scipy scikit-learn scikit-image seaborn xlrd statsmodels
+	pip install gitpython pyqt5
 }
 
 function install_opencv3_anaconda {	
@@ -199,8 +204,8 @@ case "${OS}" in
 	;;
 esac
 
-install_anaconda
-# install_opencv3_anaconda
+#install_anaconda
+install_opencv3_anaconda
 # compile_cython_files
 # clone_worm_analysis_toolbox
 # install_main_modules
