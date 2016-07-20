@@ -192,7 +192,7 @@ function install_main_modules {
 OS=$(uname -s)
 case "${OS}" in
 	"Darwin")
-	#install_dependencies_osx
+	install_dependencies_osx
 	MINICONDA_LINK="https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh"
 	BASH_PROFILE_FILE=$HOME/.bash_profile
 	;;
@@ -204,8 +204,8 @@ case "${OS}" in
 	;;
 esac
 
-#install_anaconda
+install_anaconda
 install_opencv3_anaconda
-# compile_cython_files
-# clone_worm_analysis_toolbox
-# install_main_modules
+compile_cython_files
+clone_worm_analysis_toolbox
+install_main_modules
