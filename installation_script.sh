@@ -118,7 +118,7 @@ function install_dependencies_osx {
 	#sudo chown -R `whoami`:admin /usr/local/bin
 	#sudo chown -R `whoami`:admin /usr/local/share
 	brew update
-	brew upgrade 
+	brew upgrade --verbose
 
 	brew install git
 	
@@ -162,9 +162,6 @@ function install_anaconda {
 	conda install -y anaconda-client conda-build numpy matplotlib pytables pandas \
 	h5py scipy scikit-learn scikit-image seaborn xlrd cython
 	pip install gitpython pyqt5
-
-	#bug https://github.com/ContinuumIO/anaconda-issues/issues/368
-	conda install -y -c asmeurer pango
 
 	install_opencv3_anaconda
 }
