@@ -12,16 +12,16 @@ OS=$(uname -s)
 function install_homebrew_python {
 	brew install python3
 
-	#python dependencies
+	#required for pytables
 	brew install homebrew/science/hdf5
-	brew install sip --with-python3 pyqt5 --with-python3
 	
-	pip3 install -U tables pandas h5py scipy scikit-learn \
-	scikit-image seaborn xlrd gitpython cython
+	#python dependencies
+	pip3 install -U numpy tables pandas h5py scipy scikit-learn \
+	scikit-image seaborn xlrd gitpython cython matplotlib pyqt5
 	
 	#i prefer to install matplotlib and numpy with homebrew it gives less problems of compatilibity down the road
-	brew install homebrew/python/matplotlib --with-python3
-
+	#brew install homebrew/python/matplotlib --with-python3
+	
 	CURRENT_OPENCV_VER=`python3 -c "import cv2; print(cv2.__version__)"`
 	if [ $OPENCV_VER != $CURRENT_OPENCV_VER ]; then
 		install_opencv3
@@ -153,6 +153,9 @@ function install_anaconda {
 	conda install -y anaconda-client conda-build numpy matplotlib pytables pandas \
 	h5py scipy scikit-learn scikit-image seaborn xlrd cython
 	pip install gitpython pyqt5
+
+	#bug https://github.com/ContinuumIO/anaconda-issues/issues/368
+	conda install -c asmeurer pango
 
 	install_opencv3_anaconda
 }
