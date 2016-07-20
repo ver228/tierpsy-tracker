@@ -10,11 +10,15 @@ OS=$(uname -s)
 
 #############
 function install_homebrew_python {
-	brew install python3
+	if [[ -z `brew ls --versions python3` ]]; then
+		brew install python3
+	fi
 
-	#required for pytables
-	brew install homebrew/science/hdf5
-	
+	if [[ -z `brew ls --versions hdf5` ]]; then
+		#required for pytables
+		brew install homebrew/science/hdf5
+	fi
+
 	#python dependencies
 	pip3 install -U numpy tables pandas h5py scipy scikit-learn \
 	scikit-image seaborn xlrd gitpython cython matplotlib pyqt5
@@ -22,8 +26,8 @@ function install_homebrew_python {
 	#i prefer to install matplotlib and numpy with homebrew it gives less problems of compatilibity down the road
 	#brew install homebrew/python/matplotlib --with-python3
 	
-	CURRENT_OPENCV_VER=`python3 -c "import cv2; print(cv2.__version__)"` || :
-	if [ $OPENCV_VER != $CURRENT_OPENCV_VER ]; then
+	CURRENT_OPENCV_VER=`python3 -c "import cv2; print(cv2.__version__)" || :`
+	if [[ $OPENCV_VER != $CURRENT_OPENCV_VER ]]; then
 		install_opencv3
 	fi
 }
@@ -111,7 +115,8 @@ function install_dependencies_osx {
 	#sudo chown -R `whoami`:admin /usr/local/bin
 	#sudo chown -R `whoami`:admin /usr/local/share
 	brew update
-	
+	brew upgrade 
+
 	brew install git
 	
 	#ffmpeg libraries, needed to install opencv
@@ -202,7 +207,7 @@ function install_main_modules {
 
 case "${OS}" in
 	"Darwin")
-	install_dependencies_osx || :
+	#install_dependencies_osx || :
 	install_homebrew_python
 	;;
 	
@@ -212,6 +217,6 @@ case "${OS}" in
 	;;
 esac
 
-compile_cython_files
-install_main_modules
-python3 ./installation/installation_test.py
+#compile_cython_files
+#install_main_modules
+#python3 ./installation/installation_test.py
