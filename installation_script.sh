@@ -90,15 +90,16 @@ function install_anaconda {
 	curl -L "$MINICONDA_LINK" -o miniconda_installer.sh
 	bash miniconda_installer.sh -b -f -p $HOME/miniconda
 	
-	#add the path to the bash profile only if it is not presented on the path
 	CONDA_PATH="$HOME/miniconda/bin"
+	
+	export PATH=$CONDA_PATH:$PATH
+	hash -r
+
+	#add the path to the bash profile only if it is not presented on the path
 	if [[ ":$PATH:" != *":$CONDA_PATH:"* ]]; then
         echo "export PATH=$CONDA_PATH:\$PATH" >> $BASH_PROFILE_FILE
         source $BASH_PROFILE_FILE
     fi
-	
-	echo $PATH
-	cat $BASH_PROFILE_FILE
 	
 	rm -f miniconda_installer.sh
 
