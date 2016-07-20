@@ -3,7 +3,7 @@ MW_MAIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 OPENWORM_DIR=$MW_MAIN_DIR/../open-worm-analysis-toolbox
 OPENCV_DIR=$MW_MAIN_DIR/../opencv
 OPENCV_VER="3.1.0"
-SHORT_OS_STR=$(uname -s)
+
 
 #############
 function clone_worm_analysis_toolbox {
@@ -11,7 +11,7 @@ function clone_worm_analysis_toolbox {
 	chmod -R ugo+rx $MW_MAIN_DIR/../open-worm-analysis-toolbox
 }
 
-function install_dependencies_osx {
+function install_dependencies_osx_old {
 	xcode-select --install
 	#install homebrew and other software used
 	ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -19,6 +19,7 @@ function install_dependencies_osx {
 	#make the current user the owner of homebrew otherewise it can cause some problems
 	sudo chown -R `whoami`:admin /usr/local/bin
 	sudo chown -R `whoami`:admin /usr/local/share
+	
 	brew install wget cmake python3 git
 	
 	#ffmpeg libraries, needed to install opencv
@@ -39,75 +40,6 @@ function install_dependencies_osx {
 	if [ $OPENCV_VER != $CURRENT_OPENCV_VER ]; then
 		install_opencv3
 	fi
-}
-
-function install_anaconda {
-	curl -L https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda_installer.sh
-	bash miniconda_installer.sh -b -p $HOME/miniconda
-	export PATH="$HOME/miniconda/bin:$PATH"
-	rm -f miniconda_installer.sh
-
-	conda install -y anaconda-client conda-build numpy matplotlib pytables pandas \
-	h5py scipy scikit-learn scikit-image seaborn xlrd statsmodels
-	pip install gitpython pyqt5
-}
-
-function install_opencv3_anaconda {	
-	conda install -y conda-build
-	conda config --add channels menpo
-	conda build menpo_conda-opencv3
-	conda install -y --use-local opencv3
-}
-
-function install_dependencies_linux {
-	case `lsb_release -si` in
-		"Ubuntu")
-		ubuntu_dependencies
-		;;
-		"RedHatEnterpriseWorkstation")
-		redhad_dependencies
-		;;
-	esac
-
-	install_anaconda
-	install_opencv3_anaconda
-}
-
-function ubuntu_dependencies {
-	sudo apt-get install -y curl git ffmpeg
-	#opencv3 dependencies http://docs.opencv.org/3.0-beta/doc/tutorials/introduction/linux_install/linux_install.html
-	#[required]
-	sudo apt-get install -y build-essential cmake libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
-	#[optional]
-	sudo apt-get install -y libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
-}
-
-function redhad_dependencies {
-	yum install git
-
-	# opencv3 dependencies (http://docs.opencv.org/3.0-beta/doc/py_tutorials/py_setup/py_setup_in_fedora/py_setup_in_fedora.html)
-	yum install cmake
-	yum install gcc gcc-c++
-	yum install gtk2-devel
-	yum install libdc1394-devel
-	yum install libv4l-devel
-	yum install ffmpeg-devel
-	yum install gstreamer-plugins-base-devel
-	yum install libpng-devel
-	yum install libjpeg-turbo-devel
-	yum install jasper-devel
-	yum install openexr-devel
-	yum install libtiff-devel
-	yum install libwebp-devel
-	yum install tbb-devel
-	yum install eigen3-devel
-}
-
-function compile_cython_files {
-	cd $MW_MAIN_DIR/MWTracker/trackWorms/segWormPython/cythonFiles/
-	make
-	make clean
-	cd $MW_MAIN_DIR
 }
 
 function install_opencv3 {
@@ -151,6 +83,94 @@ function clean_prev_installation_osx {
 	brew uninstall --force wget cmake python3 git ffmpeg homebrew/science/hdf5 sip pyqt pyqt5
 }
 
+
+function install_anaconda {
+	curl -L "$MINICONDA_LINK" -o miniconda_installer.sh
+	bash miniconda_installer.sh -b -f -p $HOME/miniconda
+	echo 'export PATH="$HOME/miniconda/bin:$PATH"' >> $BASH_PROFILE_FILE
+	source $BASH_PROFILE_FILE
+	
+	#rm -f miniconda_installer.sh
+
+	#conda install -y anaconda-client conda-build numpy matplotlib pytables pandas \
+	#h5py scipy scikit-learn scikit-image seaborn xlrd statsmodels
+	#pip install gitpython pyqt5
+}
+
+function install_opencv3_anaconda {	
+	conda install -y conda-build
+	conda config --add channels menpo
+	conda build menpo_conda-opencv3
+	conda install -y --use-local opencv3
+}
+
+function install_dependencies_linux {
+	case `lsb_release -si` in
+		"Ubuntu")
+		ubuntu_dependencies
+		;;
+		"RedHatEnterpriseWorkstation")
+		redhad_dependencies
+		;;
+	esac
+}
+
+function ubuntu_dependencies {
+	sudo apt-get install -y curl git ffmpeg
+	#opencv3 dependencies http://docs.opencv.org/3.0-beta/doc/tutorials/introduction/linux_install/linux_install.html
+	#[required]
+	sudo apt-get install -y build-essential cmake libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
+	#[optional]
+	sudo apt-get install -y libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
+}
+
+function redhad_dependencies {
+	sudo yum install git
+
+	# opencv3 dependencies (http://docs.opencv.org/3.0-beta/doc/py_tutorials/py_setup/py_setup_in_fedora/py_setup_in_fedora.html)
+	sudo yum install cmake
+	sudo yum install gcc gcc-c++
+	sudo yum install gtk2-devel
+	sudo yum install libdc1394-devel
+	sudo yum install libv4l-devel
+	sudo yum install ffmpeg-devel
+	sudo yum install gstreamer-plugins-base-devel
+	sudo yum install libpng-devel
+	sudo yum install libjpeg-turbo-devel
+	sudo yum install jasper-devel
+	sudo yum install openexr-devel
+	sudo yum install libtiff-devel
+	sudo yum install libwebp-devel
+	sudo yum install tbb-devel
+	sudo yum install eigen3-devel
+}
+
+function install_dependencies_osx {
+	xcode-select --install
+	#install homebrew and other software used
+	ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+	
+	#make the current user the owner of homebrew otherewise it can cause some problems
+	#sudo chown -R `whoami`:admin /usr/local/bin
+	#sudo chown -R `whoami`:admin /usr/local/share
+	
+	brew install git
+	
+	#ffmpeg libraries, needed to install opencv
+	brew install ffmpeg --with-fdk-aac --with-ffplay --with-freetype --with-libass --with-libquvi \
+	--with-libvorbis --with-libvpx --with-opus --with-x265 --with-openh264 --with-tools --with-fdk-aac
+
+	brew install jpeg libpng libtiff openexr eigen tbb
+
+}
+
+function compile_cython_files {
+	cd $MW_MAIN_DIR/MWTracker/trackWorms/segWormPython/cythonFiles/
+	make
+	make clean
+	cd $MW_MAIN_DIR
+}
+
 function install_main_modules {
 	USER_CONFIG=$OPENWORM_DIR/open_worm_analysis_toolbox/user_config.py
 	if [ ! -f $USER_CONFIG ]; then
@@ -162,16 +182,25 @@ function install_main_modules {
 	python3 setup.py develop
 }
 
+
 ##########
-if [ "${SHORT_OS_STR}" == "Darwin" ]; then
-	#clean_prev_installation_osx
-	install_dependencies_osx
-fi
-
-if [ "${SHORT_OS_STR:0:5}" == "Linux" ]; then
+OS=$(uname -s)
+case "${OS}" in
+	"Darwin")
+	#install_dependencies_osx
+	MINICONDA_LINK="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
+	BASH_PROFILE_FILE=$HOME/.bash_profile
+	;;
+	
+	"Linux"*)
 	install_dependencies_linux
-fi
+	MINICONDA_LINK="https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh"
+	BASH_PROFILE_FILE=$HOME/.bashrc
+	;;
+esac
 
-compile_cython_files
-clone_worm_analysis_toolbox
-install_main_modules
+install_anaconda
+# install_opencv3_anaconda
+# compile_cython_files
+# clone_worm_analysis_toolbox
+# install_main_modules

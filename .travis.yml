@@ -1,4 +1,7 @@
 language: python
+python:
+  # We don't actually use the Travis Python (we use Anaconda), but this keeps it organized.
+  - "3.5"
 
 matrix:
     include:
@@ -10,6 +13,5 @@ install:
   - bash ./installation_script.sh
 
 script:
-  python3 -c "import MWTracker; print(MWTracker.__version__)"
-  python3 -c "import cv2; print(cv2.__version__)"
-
+  - python3 -c "import MWTracker; print(MWTracker.__version__)"
+  - python3 -c "import cv2; print(cv2.__version__)"
