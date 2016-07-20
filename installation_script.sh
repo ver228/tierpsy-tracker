@@ -85,7 +85,8 @@ function install_dependencies_linux {
 		"Ubuntu")
 		ubuntu_dependencies
 		;;
-		"RedHatEnterpriseWorkstation")
+		"RedHat*")
+		"CentOS")
 		redhat_dependencies
 		;;
 	esac
@@ -102,10 +103,10 @@ function ubuntu_dependencies {
 }
 
 function redhat_dependencies {
-	sudo yum install git
+	sudo yum -y install git
 
 	# opencv3 dependencies (http://docs.opencv.org/3.0-beta/doc/py_tutorials/py_setup/py_setup_in_fedora/py_setup_in_fedora.html)
-	sudo yum install gcc gcc-c++ cmake gtk2-devel libdc1394-devel libv4l-devel ffmpeg-devel \
+	sudo yum -y install gcc gcc-c++ cmake gtk2-devel libdc1394-devel libv4l-devel ffmpeg-devel \
 	gstreamer-plugins-base-devel libpng-devel libjpeg-turbo-devel jasper-devel openexr-devel \
 	libtiff-devel libwebp-devel tbb-devel eigen3-devel
 }
@@ -217,4 +218,3 @@ esac
 
 compile_cython_files
 install_main_modules
-python3 ./installation/installation_test.py
