@@ -22,7 +22,7 @@ function install_homebrew_python {
 	#i prefer to install matplotlib and numpy with homebrew it gives less problems of compatilibity down the road
 	#brew install homebrew/python/matplotlib --with-python3
 	
-	CURRENT_OPENCV_VER=`python3 -c "import cv2; print(cv2.__version__)"`
+	CURRENT_OPENCV_VER=`python3 -c "import cv2; print(cv2.__version__)"` || :
 	if [ $OPENCV_VER != $CURRENT_OPENCV_VER ]; then
 		install_opencv3
 	fi
@@ -69,7 +69,7 @@ function install_opencv3 {
 function clean_prev_installation_osx {
 	rm -Rf $OPENCV_DIR
 	rm -Rf $OPENWORM_DIR
-	brew uninstall --force cmake python3 git ffmpeg homebrew/science/hdf5 sip pyqt5
+	brew uninstall --force cmake python3 git ffmpeg homebrew/science/hdf5 #sip pyqt5
 }
 
 
@@ -118,6 +118,7 @@ function install_dependencies_osx {
 	brew install ffmpeg --with-fdk-aac --with-ffplay --with-freetype --with-libass --with-libquvi \
 	--with-libvorbis --with-libvpx --with-opus --with-x265 --with-openh264 --with-tools --with-fdk-aac
 
+	#image libraries for opencv
 	brew install jpeg libpng libtiff openexr eigen tbb
 }
 
@@ -155,7 +156,7 @@ function install_anaconda {
 	pip install gitpython pyqt5
 
 	#bug https://github.com/ContinuumIO/anaconda-issues/issues/368
-	conda install -c asmeurer pango
+	conda install -y -c asmeurer pango
 
 	install_opencv3_anaconda
 }
