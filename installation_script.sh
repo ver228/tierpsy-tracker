@@ -33,7 +33,9 @@ function install_homebrew_python {
 }
 
 function install_opencv3 {
-	brew install cmake 
+	if [[ -z `brew ls --versions cmake` ]]; then
+		brew install cmake 
+	fi
 
 	echo 'Installing opencv.'
 	#there is a brew formula for this, but there are more changes this will work.
@@ -41,9 +43,10 @@ function install_opencv3 {
 	git clone https://github.com/Itseez/opencv
 	cd $OPENCV_DIR
 	git checkout -f $OPENCV_VER
-	rm -rf build
-	mkdir build
-	cd build
+	
+	#remove build directory if it existed before
+	rm -rf build || : 
+	mkdir build && cd build
 
 	#for some weird reason i have to execute make twice or it does not find the python libraries directory
 	for i in 1 2
@@ -207,7 +210,7 @@ function install_main_modules {
 
 case "${OS}" in
 	"Darwin")
-	#install_dependencies_osx || :
+	install_dependencies_osx || :
 	install_homebrew_python
 	;;
 	
@@ -217,6 +220,6 @@ case "${OS}" in
 	;;
 esac
 
-#compile_cython_files
-#install_main_modules
-#python3 ./installation/installation_test.py
+compile_cython_files
+install_main_modules
+python3 ./installation/installation_test.py
