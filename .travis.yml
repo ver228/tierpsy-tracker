@@ -1,4 +1,6 @@
 language: generic
+notifications:
+  email: false
 
 matrix:
     include:

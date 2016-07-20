@@ -145,19 +145,16 @@ function install_anaconda {
 
 	curl -L "$MINICONDA_LINK" -o miniconda_installer.sh
 	bash miniconda_installer.sh -b -f -p $HOME/miniconda
+	rm -f miniconda_installer.sh
 	
 	CONDA_PATH="$HOME/miniconda/bin"
-	
-	export PATH=$CONDA_PATH:$PATH
-	hash -r
-
 	#add the path to the bash profile only if it is not presented on the path
-	if [[ ":$PATH:" != *":$CONDA_PATH:"* ]]; then
+	if [[ ":$PATH:" != "*:$CONDA_PATH:*" ]]; then
         echo "export PATH=$CONDA_PATH:\$PATH" >> $BASH_PROFILE_FILE
         source $BASH_PROFILE_FILE
     fi
-	
-	rm -f miniconda_installer.sh
+	#export PATH=$CONDA_PATH:$PATH
+	#hash -r
 
 	conda install -y anaconda-client conda-build numpy matplotlib pytables pandas \
 	h5py scipy scikit-learn scikit-image seaborn xlrd cython
