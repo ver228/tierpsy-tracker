@@ -28,7 +28,7 @@ class readTifFiles:
         assert all(np.diff(sorted(file_num_int))==1) #  This will throw and error if it is not the case
 
         # read the first image to determine width and height
-        image = cv2.imread(self.files[0])
+        image = cv2.imread(self.files[0],-1)
         self.height = image.shape[0]
         self.width = image.shape[1]
         self.num_frames = len(self.dat_order)
@@ -39,7 +39,7 @@ class readTifFiles:
         self.curr_frame += 1
         if self.curr_frame < self.num_frames:
             filename = self.files[self.dat_order[self.curr_frame]]
-            image = cv2.imread(filename,0)
+            image = cv2.imread(filename,-1)
             return (1, image)
         else:
             return(0, [])
