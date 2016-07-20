@@ -197,13 +197,13 @@ function install_main_modules {
 OS=$(uname -s)
 case "${OS}" in
 	"Darwin")
-	install_dependencies_osx
+	install_dependencies_osx || :
 	MINICONDA_LINK="https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh"
 	BASH_PROFILE_FILE=$HOME/.bash_profile
 	;;
 	
 	"Linux"*)
-	install_dependencies_linux
+	install_dependencies_linux || :
 	MINICONDA_LINK="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
 	BASH_PROFILE_FILE=$HOME/.bashrc
 	;;
