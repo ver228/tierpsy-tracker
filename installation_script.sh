@@ -99,8 +99,6 @@ function ubuntu_dependencies {
 	#[optional]
 	sudo apt-get install -y libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
 
-	#qt5 libraries
-	sudo apt-add-repository ppa:canonical-qt5-edgers/ubuntu1204-qt5
 }
 
 function redhat_dependencies {
@@ -126,7 +124,7 @@ function install_dependencies_osx {
 	brew install git
 	
 	#ffmpeg libraries, needed to install opencv
-	brew install ffmpeg --with-fdk-aac --with-libass --with-libquvi \
+	brew install ffmpeg --verbose --with-fdk-aac --with-libass --with-libquvi \
 	--with-libvorbis --with-libvpx --with-x265 --with-openh264 --with-tools --with-fdk-aac
 
 	#image libraries for opencv
