@@ -14,16 +14,19 @@ cimport numpy as np
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-def get_max_min(np.ndarray[np.float64_t, ndim=2] image):
-    cdef double amax = image[0];
-    cdef double amin = image[0];
-    cdef int i;
+def getMaxMin(np.ndarray[np.float64_t, ndim=2] image):
+    cdef double amax = image[0,0];
+    cdef double amin = image[0,0];
+    cdef double pix_val;
+    cdef int i, j;
         
-    for i in range(tot_pix):
-        if image[i] > amax:
-            amax = image[i]
-        elif image[i] < amin:
-            amin = image[i]
+    for i in range(image.shape[0]):
+        for j in range(image.shape[1]):
+            pix_val = image[i,j]
+            if pix_val > amax:
+                amax = pix_val
+            elif pix_val < amin:
+                amin = pix_val
     
     return amin, amax
     
@@ -31,20 +34,20 @@ def get_max_min(np.ndarray[np.float64_t, ndim=2] image):
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True)
-def normalize_image(image_ori):
-    np.ndarray[np.float64_t, ndim=2] image = image_ori.astype(np.float64) 
+def normalizeImage(image_ori):
+    cdef np.ndarray[np.float64_t, ndim=2] image = image_ori.astype(np.float64) 
     
     cdef int i;
     cdef double amin, amax, factor;
-    cdef int tot_pix = image.size;    
     
-    cdef np.ndarray[np.uint8_t, ndim=2, cast=True] image_norm = \
-        np.zeros(image.shape, dtype=np.uint8);
+    cdef np.ndarray[np.uint8_t, ndim=2] image_norm = \
+        np.zeros(image_ori.shape, dtype=np.uint8);
 
-    amin, amax = get_max_min(image)  
+    amin, amax = getMaxMin(image)  
     factor = 255/(amax-amin);
-    for i in range(tot_pix):
-        image_norm[i] = image[i]*factor;
+    for i in range(image.shape[0]):
+        for j in range(image.shape[1]):
+            image_norm[i,j] = <char>((image[i,j]-amin)*factor);
 
-    return image_norm        
+    return image_norm, (amin, amax)    
         

@@ -7,42 +7,72 @@ This is a temporary script file.
 import cv2
 import numpy as np
 import time
+
 from MWTracker.compressVideos.readTifFiles import readTifFiles
 #from MWTracker.compressVideos.compressVideo import normalizeImage
 
+from normalizeImage import normalizeImage
 import numexpr as ne
 
 #from numba import jit
 #@jit
-def normalizeImage(img):
+def normalizeImage_ne(img):
     # normalise image intensities if the data type is other
     # than uint8
     imax = img.max()
     imin = img.min()
     factor = 255/(imax-imin)
     
-#    imgN = (img-imax)*factor
-#    imgN = imgN.astype(np.uint8)
+    imgN = ne.evaluate('(img-imin)*factor')
+    imgN = imgN.astype(np.uint8)
 
-    return img, (imin, imax) 
+    return imgN, (imin, imax) 
 
-directory_name = r'E:\\28.6.16 recording 8\\recording 8.1\\8.1 TIFF\\'
+def normalizeImage_python(img):
+    # normalise image intensities if the data type is other
+    # than uint8
+    imax = img.max()
+    imin = img.min()
+    factor = 255/(imax-imin)
+    
+    #imgN = ne.evaluate('(img-imin)*factor')
+    imgN = (img-imin)*factor
+    imgN = imgN.astype(np.uint8)
 
+    return imgN, (imin, imax) 
 
-reader = readTifFiles(directory_name)
+#directory_name = r'E:\\28.6.16 recording 8\\recording 8.1\\8.1 TIFF\\'
+directory_name = '/Users/ajaver/Desktop/Videos/tiffs/'
+
 
 tic = time.time()
-for n in range(200):
+reader = readTifFiles(directory_name)
+for n in range(100):
     ret, img = reader.read()
-    
-    alpha = np.min(img)
-    beta = np.max(img)
-    
+print('Read only', time.time() - tic)
+
+
+tic = time.time()
+reader = readTifFiles(directory_name)
+for n in range(100):
+    ret, img = reader.read()
+    img_N = normalizeImage_python(img)
+print('python', time.time() - tic)
+
+tic = time.time()
+reader = readTifFiles(directory_name)
+for n in range(100):
+    ret, img = reader.read()
+    img_N = normalizeImage_ne(img)
+print('numexpr', time.time() - tic)
+
+tic = time.time()
+reader = readTifFiles(directory_name)
+for n in range(100):
+    ret, img = reader.read()
     img_N = normalizeImage(img)
-#    img = img.astype(np.float32)
-#    img_N =  np.zeros_like(img)
-#    cv2.normalize(img,img_N, beta, alpha)
-    if n % 100 == 0:
-        print(n, time.time() - tic)
-        tic = time.time()
+print('cython', time.time() - tic)
+
+
+
         
