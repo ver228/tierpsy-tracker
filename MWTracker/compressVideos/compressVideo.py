@@ -9,6 +9,7 @@ import cv2
 import h5py
 import os
 import sys
+from scipy.ndimage.filters import median_filter
 
 from .readVideoffmpeg import readVideoffmpeg
 from .readVideoHDF5 import readVideoHDF5
@@ -47,14 +48,18 @@ def getROIMask(
     if thresh_block_size % 2 == 0:
         thresh_block_size += 1  # this value must be odd
 
+    #let's add a median filter, this will smooth the image, and eliminate small variations in intensity
+    image = median_filter(image, 5)
+
+
+    # invert the threshold if we are dealing with a fluorescence image
+    if is_invert_thresh:  
+        thresh_C = -thresh_C
+
     # adaptative threshold is the best way to find possible worms. The
     # parameters are set manually, they seem to work fine if there is no
     # condensation in the sample
-    if is_invert_thresh:  # check if we are dealing with a fluorescent image
-        mask = cv2.adaptiveThreshold(
-            image, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, thresh_block_size, -thresh_C)
-    else:  # image is not fluorescent
-        mask = cv2.adaptiveThreshold(
+    mask = cv2.adaptiveThreshold(
             image,
             255,
             cv2.ADAPTIVE_THRESH_MEAN_C,
@@ -179,6 +184,11 @@ def normalizeImage(img):
 
     return imgN, (imin, imax)
  
+def reduceBuffer(Ibuff, is_invert_thresh):
+    if is_invert_thresh:
+        return np.max(Ibuff, axis=0)
+    else:
+        return np.min(Ibuff, axis=0)
 
 def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
                   save_full_interval=5000, max_frame=1e32, expected_fps=25):
@@ -369,10 +379,12 @@ def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
 
             # mask buffer and save data into the hdf5 file
             if (ind_buff == buffer_size - 1 or ret == 0) and Ibuff.size > 0:
-                Imin = np.min(Ibuff, axis=0)
+                #calculate the max/min in the of the buffer
+                img_reduce = reduceBuffer(Ibuff, mask_param['is_invert_thresh'])
+                
                 # calculate the mask only when the buffer is full or there are
                 # no more frames left
-                mask = getROIMask(Imin, **mask_param)
+                mask = getROIMask(img_reduce, **mask_param)
                 # mask all the images in the buffer
                 Ibuff *= mask
                 # add buffer to the hdf5 file

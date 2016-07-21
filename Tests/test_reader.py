@@ -41,8 +41,8 @@ def normalizeImage_python(img):
 
     return imgN, (imin, imax) 
 
-directory_name = r'E:\\28.6.16 recording 8\\recording 8.1\\8.1 TIFF\\'
-# directory_name = '/Users/ajaver/Desktop/Videos/tiffs/'
+#directory_name = r'E:\\28.6.16 recording 8\\recording 8.1\\8.1 TIFF\\'
+directory_name = '/Users/ajaver/Desktop/Videos/tiffs/'
 
 
 tic = time.time()

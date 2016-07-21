@@ -17,7 +17,7 @@ from MWTracker.GUI_Qt5.GetAllParameters import GetAllParameters
 
 
 from MWTracker.helperFunctions.tracker_param import tracker_param
-from MWTracker.compressVideos.compressVideo import getROIMask, selectVideoReader
+from MWTracker.compressVideos.compressVideo import getROIMask, selectVideoReader, reduceBuffer
 from MWTracker.batchProcessing.compressSingleWorker import compressSingleWorker
 from MWTracker.batchProcessing.trackSingleWorker import getTrajectoriesWorker
 
@@ -333,6 +333,7 @@ class GetMaskParams_GUI(QMainWindow):
 
         self.json_file = json_file
         self.ui.lineEdit_paramFile.setText(self.json_file)
+        self.updateMask()
 
     def saveParamFile(self):
         if not self.json_file:
@@ -452,7 +453,8 @@ class GetMaskParams_GUI(QMainWindow):
             if tot < self.buffer_size:
                 return
 
-            self.Imin = np.min(Ibuff, axis=0)
+            is_invert_thresh = self.mapper.get('is_invert_thresh')
+            self.Imin = reduceBuffer(Ibuff, is_invert_thresh)
             self.Ifull = Ibuff[0]
 
             self.updateMask()
