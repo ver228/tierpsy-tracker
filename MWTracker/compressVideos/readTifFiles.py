@@ -22,6 +22,7 @@ class readTifFiles:
         # make a list of the files belonging to this tif series
         self.files = glob.glob(os.path.join(self.fid, '*.tif'))
         # extract string list of filenumbers from list of files
+
         file_num_str = [os.path.split(x)[1].split(
             '_X')[1].split('.tif')[0] for x in self.files]
         # numerically sort list of file numbers
@@ -31,8 +32,9 @@ class readTifFiles:
         # This will throw and error if it is not the case
         assert all(np.diff(self.dat_order) == 1)
 
+
         # read the first image to determine width and height
-        image = cv2.imread(self.files[0])
+        image = cv2.imread(self.files[0],-1)
         self.height = image.shape[0]
         self.width = image.shape[1]
         self.num_frames = len(self.dat_order)
