@@ -165,6 +165,18 @@ def selectVideoReader(video_file):
     return vid, im_width, im_height, reader_type
 
 
+def normalizeImage(image):
+    # normalise image intensities if the data type is other
+    # than uint8
+    image = image.astype(np.double)
+    max_intensity = image.max()
+    min_intensity = image.min()
+    image_normalized = (image - min_intensity) / \
+        (max_intensity - min_intensity) * 255
+    image = image_normalized.astype(np.uint8)
+
+    return image, (min_intensity, max_intensity) 
+
 def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
                   save_full_interval=5000, max_frame=1e32, expected_fps=25):
     '''
@@ -309,17 +321,11 @@ def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
                 if image.dtype != np.uint8:
                     # normalise image intensities if the data type is other
                     # than uint8
-                    image = image.astype(np.double)
-                    max_intensity = image.max()
-                    min_intensity = image.min()
-                    image_normalized = (image - min_intensity) / \
-                        (max_intensity - min_intensity) * 255
-                    image = image_normalized.astype(np.uint8)
+                    image, img_norm_range = normalizeImage(image)
 
                     if normalization_range.shape[0] <= frame_number + 1:
                         normalization_range.resize(frame_number + 1000, axis=0)
-                    normalization_range[frame_number] = (
-                        min_intensity, max_intensity)
+                    normalization_range[frame_number] = img_norm_range
 
                 # Resize mask array every 1000 frames (doing this every frame
                 # does not impact much the performance)
