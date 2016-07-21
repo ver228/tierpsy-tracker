@@ -206,14 +206,18 @@ function install_main_modules {
 case "${OS}" in
 	"Darwin")
 	install_dependencies_osx || :
-	install_homebrew_python
 	;;
 	
 	"Linux"*)
 	install_dependencies_linux || :
-	install_anaconda
 	;;
 esac
+
+if [[ $1 == 'brew' ]]; then
+	install_homebrew_python
+else
+	install_anaconda
+fi
 
 compile_cython_files
 install_main_modules
