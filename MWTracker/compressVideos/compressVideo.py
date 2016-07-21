@@ -165,17 +165,20 @@ def selectVideoReader(video_file):
     return vid, im_width, im_height, reader_type
 
 
-def normalizeImage(image):
+def normalizeImage(img):
     # normalise image intensities if the data type is other
     # than uint8
     image = image.astype(np.double)
-    max_intensity = image.max()
-    min_intensity = image.min()
-    image_normalized = (image - min_intensity) / \
-        (max_intensity - min_intensity) * 255
-    image = image_normalized.astype(np.uint8)
+    
+    imax = img.max()
+    imin = img.min()
+    factor = 255/(imax-imin)
+    
+    imgN = ne.evaluate('(img-imin)*factor')
+    imgN = imgN.astype(np.uint8)
 
-    return image, (min_intensity, max_intensity) 
+    return imgN, (imin, imax)
+ 
 
 def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
                   save_full_interval=5000, max_frame=1e32, expected_fps=25):

@@ -19,11 +19,11 @@ class readTifFiles:
     """ Reads a single tif image, to be expanded for reading videos/stacks"""
 
     
-    def __init__(self, dir_name, imread_flag=RETURN_AS_IT_IS):
+    def __init__(self, dir_name, imread_flag=RETURN_UINT8_GRAY):
         self.imread_flag = imread_flag
         self.dir_name = dir_name
         if not os.path.exists(self.dir_name):
-            raise ErrorFileNotExists('Error: Directory (%s) does not exist.' % self.dir_name)
+            raise FileNotFoundError('Error: Directory (%s) does not exist.' % self.dir_name)
             
         # make a list of the files belonging to this tif series
         self.files = glob.glob(os.path.join(self.dir_name, '*.tif'))

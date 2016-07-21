@@ -8,10 +8,10 @@ import cv2
 import numpy as np
 import time
 
-from MWTracker.compressVideos.readTifFiles import readTifFiles
+from MWTracker.compressVideos.readTifFiles import readTifFiles, RETURN_AS_IT_IS, RETURN_UINT8_GRAY
 #from MWTracker.compressVideos.compressVideo import normalizeImage
 
-from normalizeImage import normalizeImage
+# from normalizeImage import normalizeImage
 import numexpr as ne
 
 #from numba import jit
@@ -41,38 +41,39 @@ def normalizeImage_python(img):
 
     return imgN, (imin, imax) 
 
-#directory_name = r'E:\\28.6.16 recording 8\\recording 8.1\\8.1 TIFF\\'
-directory_name = '/Users/ajaver/Desktop/Videos/tiffs/'
+directory_name = r'E:\\28.6.16 recording 8\\recording 8.1\\8.1 TIFF\\'
+# directory_name = '/Users/ajaver/Desktop/Videos/tiffs/'
 
 
 tic = time.time()
-reader = readTifFiles(directory_name)
+reader = readTifFiles(directory_name, RETURN_AS_IT_IS)
 for n in range(100):
     ret, img = reader.read()
 print('Read only', time.time() - tic)
 
+tic = time.time()
+reader = readTifFiles(directory_name, RETURN_UINT8_GRAY)
+for n in range(100):
+    ret, img = reader.read()
+print('Read norm', time.time() - tic)
 
 tic = time.time()
-reader = readTifFiles(directory_name)
+reader = readTifFiles(directory_name, RETURN_AS_IT_IS)
 for n in range(100):
     ret, img = reader.read()
     img_N = normalizeImage_python(img)
 print('python', time.time() - tic)
 
 tic = time.time()
-reader = readTifFiles(directory_name)
+reader = readTifFiles(directory_name, RETURN_AS_IT_IS)
 for n in range(100):
     ret, img = reader.read()
     img_N = normalizeImage_ne(img)
 print('numexpr', time.time() - tic)
 
-tic = time.time()
-reader = readTifFiles(directory_name)
-for n in range(100):
-    ret, img = reader.read()
-    img_N = normalizeImage(img)
-print('cython', time.time() - tic)
-
-
-
-        
+# tic = time.time()
+# reader = readTifFiles(directory_name)
+# for n in range(100):
+#     ret, img = reader.read()
+#     img_N = normalizeImage(img)
+# print('cython', time.time() - tic)
