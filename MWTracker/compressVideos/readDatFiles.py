@@ -49,7 +49,7 @@ class readDatFiles:
     def read(self):
         self.curr_frame += 1
         if self.curr_frame < self.num_frames:
-            fname = self.files[self.dat_order[self.curr_frame]]
+            fname = self.files[self.dat_order[self.curr_frame]] # is this indexing correct, or do we need to shift down by one?
             bin_dat = np.fromfile(fname, np.uint8)
             # every 3 bytes will correspond two pixel levels.
             D1 = bin_dat[:-40:3]
