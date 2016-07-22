@@ -8,9 +8,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_GetMaskParams(object):
-
     def setupUi(self, GetMaskParams):
         GetMaskParams.setObjectName("GetMaskParams")
         GetMaskParams.resize(1161, 746)
@@ -24,9 +22,10 @@ class Ui_GetMaskParams(object):
         self.gridLayout_3.setContentsMargins(11, 11, 11, 11)
         self.gridLayout_3.setSpacing(6)
         self.gridLayout_3.setObjectName("gridLayout_3")
-        self.checkBox_isFluorescence = QtWidgets.QCheckBox(self.centralWidget)
-        self.checkBox_isFluorescence.setObjectName("checkBox_isFluorescence")
-        self.gridLayout_3.addWidget(self.checkBox_isFluorescence, 8, 0, 1, 2)
+        self.checkBox_isLightBgnd = QtWidgets.QCheckBox(self.centralWidget)
+        self.checkBox_isLightBgnd.setChecked(True)
+        self.checkBox_isLightBgnd.setObjectName("checkBox_isLightBgnd")
+        self.gridLayout_3.addWidget(self.checkBox_isLightBgnd, 8, 0, 1, 2)
         self.label_5 = QtWidgets.QLabel(self.centralWidget)
         self.label_5.setObjectName("label_5")
         self.gridLayout_3.addWidget(self.label_5, 7, 0, 1, 1)
@@ -50,24 +49,18 @@ class Ui_GetMaskParams(object):
         self.spinBox_dilation_size.setObjectName("spinBox_dilation_size")
         self.gridLayout_3.addWidget(self.spinBox_dilation_size, 4, 1, 1, 1)
         self.label_6 = QtWidgets.QLabel(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Maximum,
-            QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.label_6.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.label_6.sizePolicy().hasHeightForWidth())
         self.label_6.setSizePolicy(sizePolicy)
         self.label_6.setObjectName("label_6")
         self.gridLayout_3.addWidget(self.label_6, 4, 0, 1, 1)
         self.dial_max_area = QtWidgets.QDial(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Maximum,
-            QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.dial_max_area.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.dial_max_area.sizePolicy().hasHeightForWidth())
         self.dial_max_area.setSizePolicy(sizePolicy)
         self.dial_max_area.setMinimum(100)
         self.dial_max_area.setMaximum(100000)
@@ -75,13 +68,10 @@ class Ui_GetMaskParams(object):
         self.dial_max_area.setObjectName("dial_max_area")
         self.gridLayout_3.addWidget(self.dial_max_area, 1, 1, 1, 1)
         self.dial_thresh_C = QtWidgets.QDial(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Maximum,
-            QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.dial_thresh_C.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.dial_thresh_C.sizePolicy().hasHeightForWidth())
         self.dial_thresh_C.setSizePolicy(sizePolicy)
         self.dial_thresh_C.setMinimum(5)
         self.dial_thresh_C.setMaximum(100)
@@ -89,13 +79,10 @@ class Ui_GetMaskParams(object):
         self.dial_thresh_C.setObjectName("dial_thresh_C")
         self.gridLayout_3.addWidget(self.dial_thresh_C, 2, 1, 1, 1)
         self.dial_block_size = QtWidgets.QDial(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Maximum,
-            QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.dial_block_size.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.dial_block_size.sizePolicy().hasHeightForWidth())
         self.dial_block_size.setSizePolicy(sizePolicy)
         self.dial_block_size.setMinimum(5)
         self.dial_block_size.setMaximum(200)
@@ -107,13 +94,10 @@ class Ui_GetMaskParams(object):
         self.verticalLayout_3.setSpacing(6)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.label_3 = QtWidgets.QLabel(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Preferred,
-            QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.label_3.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
         self.label_3.setSizePolicy(sizePolicy)
         self.label_3.setObjectName("label_3")
         self.verticalLayout_3.addWidget(self.label_3)
@@ -128,13 +112,10 @@ class Ui_GetMaskParams(object):
         self.checkBox_keepBorderData.setObjectName("checkBox_keepBorderData")
         self.gridLayout_3.addWidget(self.checkBox_keepBorderData, 9, 0, 1, 2)
         self.dial_min_area = QtWidgets.QDial(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Maximum,
-            QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.dial_min_area.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.dial_min_area.sizePolicy().hasHeightForWidth())
         self.dial_min_area.setSizePolicy(sizePolicy)
         self.dial_min_area.setMaximum(10000)
         self.dial_min_area.setProperty("value", 100)
@@ -190,13 +171,10 @@ class Ui_GetMaskParams(object):
         self.lineEdit_mask.setObjectName("lineEdit_mask")
         self.gridLayout.addWidget(self.lineEdit_mask, 19, 3, 1, 3)
         self.pushButton_results = QtWidgets.QPushButton(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Preferred,
-            QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.pushButton_results.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.pushButton_results.sizePolicy().hasHeightForWidth())
         self.pushButton_results.setSizePolicy(sizePolicy)
         self.pushButton_results.setObjectName("pushButton_results")
         self.gridLayout.addWidget(self.pushButton_results, 18, 2, 1, 1)
@@ -204,24 +182,18 @@ class Ui_GetMaskParams(object):
         self.lineEdit_results.setObjectName("lineEdit_results")
         self.gridLayout.addWidget(self.lineEdit_results, 18, 3, 1, 3)
         self.pushButton_mask = QtWidgets.QPushButton(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Preferred,
-            QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.pushButton_mask.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.pushButton_mask.sizePolicy().hasHeightForWidth())
         self.pushButton_mask.setSizePolicy(sizePolicy)
         self.pushButton_mask.setObjectName("pushButton_mask")
         self.gridLayout.addWidget(self.pushButton_mask, 19, 2, 1, 1)
         self.pushButton_paramFile = QtWidgets.QPushButton(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Maximum,
-            QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.pushButton_paramFile.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.pushButton_paramFile.sizePolicy().hasHeightForWidth())
         self.pushButton_paramFile.setSizePolicy(sizePolicy)
         self.pushButton_paramFile.setObjectName("pushButton_paramFile")
         self.gridLayout.addWidget(self.pushButton_paramFile, 17, 2, 1, 1)
@@ -229,52 +201,39 @@ class Ui_GetMaskParams(object):
         self.lineEdit_paramFile.setObjectName("lineEdit_paramFile")
         self.gridLayout.addWidget(self.lineEdit_paramFile, 17, 3, 1, 3)
         self.pushButton_video = QtWidgets.QPushButton(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Preferred,
-            QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.pushButton_video.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.pushButton_video.sizePolicy().hasHeightForWidth())
         self.pushButton_video.setSizePolicy(sizePolicy)
         self.pushButton_video.setObjectName("pushButton_video")
         self.gridLayout.addWidget(self.pushButton_video, 16, 2, 1, 1)
-        spacerItem = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem, 16, 6, 1, 1)
         self.lineEdit_video = QtWidgets.QLineEdit(self.centralWidget)
         self.lineEdit_video.setObjectName("lineEdit_video")
         self.gridLayout.addWidget(self.lineEdit_video, 16, 3, 1, 3)
         self.pushButton_saveParam = QtWidgets.QPushButton(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Maximum,
-            QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.pushButton_saveParam.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.pushButton_saveParam.sizePolicy().hasHeightForWidth())
         self.pushButton_saveParam.setSizePolicy(sizePolicy)
         self.pushButton_saveParam.setObjectName("pushButton_saveParam")
         self.gridLayout.addWidget(self.pushButton_saveParam, 17, 7, 1, 1)
         self.pushButton_next = QtWidgets.QPushButton(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Preferred,
-            QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.pushButton_next.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.pushButton_next.sizePolicy().hasHeightForWidth())
         self.pushButton_next.setSizePolicy(sizePolicy)
         self.pushButton_next.setObjectName("pushButton_next")
         self.gridLayout.addWidget(self.pushButton_next, 16, 7, 1, 1)
         self.pushButton_start = QtWidgets.QPushButton(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Maximum,
-            QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.pushButton_start.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.pushButton_start.sizePolicy().hasHeightForWidth())
         self.pushButton_start.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setPointSize(24)
@@ -292,37 +251,25 @@ class Ui_GetMaskParams(object):
         self.horizontalLayout_2.setSpacing(6)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.graphicsView_full = QtWidgets.QGraphicsView(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Minimum,
-            QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.graphicsView_full.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.graphicsView_full.sizePolicy().hasHeightForWidth())
         self.graphicsView_full.setSizePolicy(sizePolicy)
-        self.graphicsView_full.setDragMode(
-            QtWidgets.QGraphicsView.ScrollHandDrag)
-        self.graphicsView_full.setTransformationAnchor(
-            QtWidgets.QGraphicsView.AnchorUnderMouse)
-        self.graphicsView_full.setResizeAnchor(
-            QtWidgets.QGraphicsView.AnchorViewCenter)
+        self.graphicsView_full.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
+        self.graphicsView_full.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
+        self.graphicsView_full.setResizeAnchor(QtWidgets.QGraphicsView.AnchorViewCenter)
         self.graphicsView_full.setObjectName("graphicsView_full")
         self.horizontalLayout_2.addWidget(self.graphicsView_full)
         self.graphicsView_mask = QtWidgets.QGraphicsView(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Minimum,
-            QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.graphicsView_mask.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.graphicsView_mask.sizePolicy().hasHeightForWidth())
         self.graphicsView_mask.setSizePolicy(sizePolicy)
-        self.graphicsView_mask.setDragMode(
-            QtWidgets.QGraphicsView.ScrollHandDrag)
-        self.graphicsView_mask.setTransformationAnchor(
-            QtWidgets.QGraphicsView.AnchorUnderMouse)
-        self.graphicsView_mask.setResizeAnchor(
-            QtWidgets.QGraphicsView.AnchorViewCenter)
+        self.graphicsView_mask.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
+        self.graphicsView_mask.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
+        self.graphicsView_mask.setResizeAnchor(QtWidgets.QGraphicsView.AnchorViewCenter)
         self.graphicsView_mask.setObjectName("graphicsView_mask")
         self.horizontalLayout_2.addWidget(self.graphicsView_mask)
         self.gridLayout.addLayout(self.horizontalLayout_2, 3, 2, 13, 6)
@@ -343,34 +290,22 @@ class Ui_GetMaskParams(object):
 
     def retranslateUi(self, GetMaskParams):
         _translate = QtCore.QCoreApplication.translate
-        GetMaskParams.setWindowTitle(
-            _translate(
-                "GetMaskParams",
-                "GetMaskParams"))
-        self.checkBox_isFluorescence.setText(
-            _translate("GetMaskParams", "is fluorescence?"))
+        GetMaskParams.setWindowTitle(_translate("GetMaskParams", "GetMaskParams"))
+        self.checkBox_isLightBgnd.setText(_translate("GetMaskParams", "is light background?"))
         self.label_5.setText(_translate("GetMaskParams", "Frames to average"))
         self.label_fps.setText(_translate("GetMaskParams", "Expected FPS"))
         self.label_6.setText(_translate("GetMaskParams", "Dilation"))
         self.label_3.setText(_translate("GetMaskParams", "Block Size"))
-        self.checkBox_keepBorderData.setText(
-            _translate("GetMaskParams", "keep border data?"))
+        self.checkBox_keepBorderData.setText(_translate("GetMaskParams", "keep border data?"))
         self.label_2.setText(_translate("GetMaskParams", "Thresh_C"))
         self.label_4.setText(_translate("GetMaskParams", "Max Area"))
         self.label.setText(_translate("GetMaskParams", "Min Area"))
-        self.pushButton_moreParams.setText(
-            _translate("GetMaskParams", "Edit more parameters"))
-        self.pushButton_results.setText(
-            _translate("GetMaskParams", "Results Dir"))
+        self.pushButton_moreParams.setText(_translate("GetMaskParams", "Edit more parameters"))
+        self.pushButton_results.setText(_translate("GetMaskParams", "Results Dir"))
         self.pushButton_mask.setText(_translate("GetMaskParams", "Mask Dir"))
-        self.pushButton_paramFile.setText(
-            _translate("GetMaskParams", "Parameters File"))
-        self.pushButton_video.setText(
-            _translate("GetMaskParams", "Video File"))
-        self.pushButton_saveParam.setText(
-            _translate("GetMaskParams", "Save Parameters"))
+        self.pushButton_paramFile.setText(_translate("GetMaskParams", "Parameters File"))
+        self.pushButton_video.setText(_translate("GetMaskParams", "Video File"))
+        self.pushButton_saveParam.setText(_translate("GetMaskParams", "Save Parameters"))
         self.pushButton_next.setText(_translate("GetMaskParams", "Next Chunk"))
-        self.pushButton_start.setText(
-            _translate(
-                "GetMaskParams",
-                "Start Analysis"))
+        self.pushButton_start.setText(_translate("GetMaskParams", "Start Analysis"))
+

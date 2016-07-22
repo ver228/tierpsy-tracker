@@ -157,7 +157,7 @@ class GetMaskParams_GUI(QMainWindow):
         self.ui.spinBox_buff_size.valueChanged.connect(self.updateBuffSize)
 
         self.ui.checkBox_keepBorderData.stateChanged.connect(self.updateMask)
-        self.ui.checkBox_isFluorescence.stateChanged.connect(self.updateMask)
+        self.ui.checkBox_isLightBgnd.stateChanged.connect(self.updateMask)
 
         self.ui.pushButton_video.clicked.connect(self.getVideoFile)
         self.ui.pushButton_results.clicked.connect(self.getResultsDir)
@@ -187,7 +187,7 @@ class GetMaskParams_GUI(QMainWindow):
             'thresh_C': self.ui.spinBox_thresh_C,
             'dilation_size': self.ui.spinBox_dilation_size,
             'keep_border_data': self.ui.checkBox_keepBorderData,
-            'is_invert_thresh': self.ui.checkBox_isFluorescence,
+            'is_light_background': self.ui.checkBox_isLightBgnd,
             'fps': self.ui.spinBox_fps,
             'compression_buff': self.ui.spinBox_buff_size
         })
@@ -453,8 +453,8 @@ class GetMaskParams_GUI(QMainWindow):
             if tot < self.buffer_size:
                 return
 
-            is_invert_thresh = self.mapper.get('is_invert_thresh')
-            self.Imin = reduceBuffer(Ibuff, is_invert_thresh)
+            is_light_background = self.mapper.get('is_light_background')
+            self.Imin = reduceBuffer(Ibuff, is_light_background)
             self.Ifull = Ibuff[0]
 
             self.updateMask()
@@ -483,7 +483,7 @@ class GetMaskParams_GUI(QMainWindow):
             'thresh_C',
             'dilation_size',
             'keep_border_data',
-                'is_invert_thresh']:
+                'is_light_background']:
             mask_param[param_name] = self.mapper.get(param_name)
 
         mask = getROIMask(self.Imin.copy(), **mask_param)

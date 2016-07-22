@@ -8,19 +8,14 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_MWTrackerViewer(object):
-
     def setupUi(self, MWTrackerViewer):
         MWTrackerViewer.setObjectName("MWTrackerViewer")
         MWTrackerViewer.resize(855, 851)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Preferred,
-            QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            MWTrackerViewer.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(MWTrackerViewer.sizePolicy().hasHeightForWidth())
         MWTrackerViewer.setSizePolicy(sizePolicy)
         MWTrackerViewer.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.centralWidget = QtWidgets.QWidget(MWTrackerViewer)
@@ -42,13 +37,10 @@ class Ui_MWTrackerViewer(object):
         self.lineEdit_video.setObjectName("lineEdit_video")
         self.gridLayout.addWidget(self.lineEdit_video, 3, 3, 1, 5)
         self.pushButton_video = QtWidgets.QPushButton(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.pushButton_video.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.pushButton_video.sizePolicy().hasHeightForWidth())
         self.pushButton_video.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setPointSize(13)
@@ -63,13 +55,10 @@ class Ui_MWTrackerViewer(object):
         self.label_frame.setObjectName("label_frame")
         self.gridLayout.addWidget(self.label_frame, 0, 0, 1, 1)
         self.pushButton_skel = QtWidgets.QPushButton(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.pushButton_skel.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.pushButton_skel.sizePolicy().hasHeightForWidth())
         self.pushButton_skel.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setPointSize(13)
@@ -80,13 +69,10 @@ class Ui_MWTrackerViewer(object):
         self.lineEdit_skel.setObjectName("lineEdit_skel")
         self.gridLayout.addWidget(self.lineEdit_skel, 4, 3, 1, 5)
         self.playButton = QtWidgets.QPushButton(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Minimum,
-            QtWidgets.QSizePolicy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.playButton.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.playButton.sizePolicy().hasHeightForWidth())
         self.playButton.setSizePolicy(sizePolicy)
         self.playButton.setCheckable(False)
         self.playButton.setObjectName("playButton")
@@ -97,13 +83,10 @@ class Ui_MWTrackerViewer(object):
         self.spinBox_step.setObjectName("spinBox_step")
         self.gridLayout.addWidget(self.spinBox_step, 1, 1, 1, 1)
         self.label_fps = QtWidgets.QLabel(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Maximum,
-            QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.label_fps.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.label_fps.sizePolicy().hasHeightForWidth())
         self.label_fps.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setPointSize(13)
@@ -112,13 +95,10 @@ class Ui_MWTrackerViewer(object):
         self.label_fps.setObjectName("label_fps")
         self.gridLayout.addWidget(self.label_fps, 2, 0, 1, 1)
         self.doubleSpinBox_fps = QtWidgets.QDoubleSpinBox(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Maximum,
-            QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.doubleSpinBox_fps.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.doubleSpinBox_fps.sizePolicy().hasHeightForWidth())
         self.doubleSpinBox_fps.setSizePolicy(sizePolicy)
         self.doubleSpinBox_fps.setMaximum(100.0)
         self.doubleSpinBox_fps.setProperty("value", 25.0)
@@ -153,13 +133,10 @@ class Ui_MWTrackerViewer(object):
         self.pushButton_split.setObjectName("pushButton_split")
         self.gridLayout.addWidget(self.pushButton_split, 2, 4, 1, 1)
         self.pushButton_save = QtWidgets.QPushButton(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Maximum,
-            QtWidgets.QSizePolicy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.pushButton_save.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.pushButton_save.sizePolicy().hasHeightForWidth())
         self.pushButton_save.setSizePolicy(sizePolicy)
         self.pushButton_save.setObjectName("pushButton_save")
         self.gridLayout.addWidget(self.pushButton_save, 1, 7, 2, 1)
@@ -179,13 +156,10 @@ class Ui_MWTrackerViewer(object):
         self.pushButton_h5groups.setObjectName("pushButton_h5groups")
         self.gridLayout.addWidget(self.pushButton_h5groups, 5, 0, 1, 2)
         self.imageSlider = QtWidgets.QSlider(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.imageSlider.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.imageSlider.sizePolicy().hasHeightForWidth())
         self.imageSlider.setSizePolicy(sizePolicy)
         self.imageSlider.setCursor(QtGui.QCursor(QtCore.Qt.OpenHandCursor))
         self.imageSlider.setMouseTracking(True)
@@ -216,13 +190,10 @@ class Ui_MWTrackerViewer(object):
         self.comboBox_ROI1.setObjectName("comboBox_ROI1")
         self.gridLayout_3.addWidget(self.comboBox_ROI1, 1, 5, 1, 1)
         self.wormCanvas2 = QtWidgets.QLabel(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Ignored,
-            QtWidgets.QSizePolicy.Ignored)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.wormCanvas2.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.wormCanvas2.sizePolicy().hasHeightForWidth())
         self.wormCanvas2.setSizePolicy(sizePolicy)
         self.wormCanvas2.setFrameShape(QtWidgets.QFrame.Box)
         self.wormCanvas2.setFrameShadow(QtWidgets.QFrame.Sunken)
@@ -247,13 +218,10 @@ class Ui_MWTrackerViewer(object):
         self.comboBox_ROI2.setObjectName("comboBox_ROI2")
         self.gridLayout_3.addWidget(self.comboBox_ROI2, 4, 5, 1, 1)
         self.wormCanvas1 = QtWidgets.QLabel(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Ignored,
-            QtWidgets.QSizePolicy.Ignored)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.wormCanvas1.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.wormCanvas1.sizePolicy().hasHeightForWidth())
         self.wormCanvas1.setSizePolicy(sizePolicy)
         self.wormCanvas1.setFrameShape(QtWidgets.QFrame.Box)
         self.wormCanvas1.setFrameShadow(QtWidgets.QFrame.Sunken)
@@ -268,11 +236,7 @@ class Ui_MWTrackerViewer(object):
         self.comboBox_labelType.addItem("")
         self.comboBox_labelType.addItem("")
         self.gridLayout_3.addWidget(self.comboBox_labelType, 4, 1, 1, 1)
-        spacerItem = QtWidgets.QSpacerItem(
-            600,
-            20,
-            QtWidgets.QSizePolicy.Preferred,
-            QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(600, 20, QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout_3.addItem(spacerItem, 4, 2, 1, 1)
         self.pushButton_feats = QtWidgets.QPushButton(self.centralWidget)
         self.pushButton_feats.setObjectName("pushButton_feats")
@@ -281,13 +245,10 @@ class Ui_MWTrackerViewer(object):
         self.pushButton_ROI2_FF.setObjectName("pushButton_ROI2_FF")
         self.gridLayout_3.addWidget(self.pushButton_ROI2_FF, 4, 8, 1, 1)
         self.pushButton_ROI1_FF = QtWidgets.QPushButton(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Maximum,
-            QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.pushButton_ROI1_FF.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.pushButton_ROI1_FF.sizePolicy().hasHeightForWidth())
         self.pushButton_ROI1_FF.setSizePolicy(sizePolicy)
         self.pushButton_ROI1_FF.setObjectName("pushButton_ROI1_FF")
         self.gridLayout_3.addWidget(self.pushButton_ROI1_FF, 1, 8, 1, 1)
@@ -295,26 +256,18 @@ class Ui_MWTrackerViewer(object):
         self.pushButton_ROI2_RW.setObjectName("pushButton_ROI2_RW")
         self.gridLayout_3.addWidget(self.pushButton_ROI2_RW, 4, 7, 1, 1)
         self.mainGraphicsView = QtWidgets.QGraphicsView(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Ignored,
-            QtWidgets.QSizePolicy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.mainGraphicsView.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.mainGraphicsView.sizePolicy().hasHeightForWidth())
         self.mainGraphicsView.setSizePolicy(sizePolicy)
         self.mainGraphicsView.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.mainGraphicsView.setFrameShape(QtWidgets.QFrame.Box)
-        self.mainGraphicsView.setVerticalScrollBarPolicy(
-            QtCore.Qt.ScrollBarAlwaysOff)
-        self.mainGraphicsView.setHorizontalScrollBarPolicy(
-            QtCore.Qt.ScrollBarAlwaysOff)
-        self.mainGraphicsView.setDragMode(
-            QtWidgets.QGraphicsView.ScrollHandDrag)
-        self.mainGraphicsView.setTransformationAnchor(
-            QtWidgets.QGraphicsView.AnchorUnderMouse)
-        self.mainGraphicsView.setResizeAnchor(
-            QtWidgets.QGraphicsView.AnchorUnderMouse)
+        self.mainGraphicsView.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.mainGraphicsView.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.mainGraphicsView.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
+        self.mainGraphicsView.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
+        self.mainGraphicsView.setResizeAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
         self.mainGraphicsView.setObjectName("mainGraphicsView")
         self.gridLayout_3.addWidget(self.mainGraphicsView, 0, 0, 3, 4)
         self.gridLayout_4.addLayout(self.gridLayout_3, 0, 0, 1, 1)
@@ -335,61 +288,32 @@ class Ui_MWTrackerViewer(object):
 
     def retranslateUi(self, MWTrackerViewer):
         _translate = QtCore.QCoreApplication.translate
-        MWTrackerViewer.setWindowTitle(
-            _translate(
-                "MWTrackerViewer",
-                "MWTrackerViewer"))
-        self.pushButton_video.setText(
-            _translate(
-                "MWTrackerViewer",
-                "Select Video File"))
+        MWTrackerViewer.setWindowTitle(_translate("MWTrackerViewer", "MWTrackerViewer"))
+        self.pushButton_video.setText(_translate("MWTrackerViewer", "Select Video File"))
         self.label_frame.setText(_translate("MWTrackerViewer", "Frame"))
-        self.pushButton_skel.setText(
-            _translate(
-                "MWTrackerViewer",
-                "Select Skeletons File"))
+        self.pushButton_skel.setText(_translate("MWTrackerViewer", "Select Skeletons File"))
         self.playButton.setText(_translate("MWTrackerViewer", "Play"))
         self.label_fps.setText(_translate("MWTrackerViewer", "FPS display"))
-        self.comboBox_h5path.setItemText(
-            0, _translate("MWTrackerViewer", "/mask"))
-        self.comboBox_h5path.setItemText(
-            1, _translate("MWTrackerViewer", "/full_data"))
+        self.comboBox_h5path.setItemText(0, _translate("MWTrackerViewer", "/mask"))
+        self.comboBox_h5path.setItemText(1, _translate("MWTrackerViewer", "/full_data"))
         self.label_step.setText(_translate("MWTrackerViewer", "Step Size"))
-        self.pushButton_join.setText(
-            _translate(
-                "MWTrackerViewer",
-                "Join Trajectory"))
-        self.pushButton_split.setText(
-            _translate(
-                "MWTrackerViewer",
-                "Split Trajectory"))
+        self.pushButton_join.setText(_translate("MWTrackerViewer", "Join Trajectory"))
+        self.pushButton_split.setText(_translate("MWTrackerViewer", "Split Trajectory"))
         self.pushButton_save.setText(_translate("MWTrackerViewer", "SAVE"))
         self.pushButton_U.setText(_translate("MWTrackerViewer", "Undefined"))
-        self.pushButton_W.setText(
-            _translate(
-                "MWTrackerViewer",
-                "Single Worms"))
-        self.pushButton_WS.setText(
-            _translate(
-                "MWTrackerViewer",
-                "Worm Cluster"))
+        self.pushButton_W.setText(_translate("MWTrackerViewer", "Single Worms"))
+        self.pushButton_WS.setText(_translate("MWTrackerViewer", "Worm Cluster"))
         self.pushButton_B.setText(_translate("MWTrackerViewer", "Bad"))
-        self.pushButton_h5groups.setText(
-            _translate("MWTrackerViewer", "Update Groups"))
+        self.pushButton_h5groups.setText(_translate("MWTrackerViewer", "Update Groups"))
         self.checkBox_ROI2.setText(_translate("MWTrackerViewer", "Skeleton"))
         self.checkBox_ROI1.setText(_translate("MWTrackerViewer", "Skeleton"))
-        self.checkBox_showLabel.setText(
-            _translate("MWTrackerViewer", "Show Labels"))
+        self.checkBox_showLabel.setText(_translate("MWTrackerViewer", "Show Labels"))
         self.pushButton_ROI1_RW.setText(_translate("MWTrackerViewer", "<<"))
-        self.comboBox_labelType.setItemText(
-            0, _translate("MWTrackerViewer", "Manual"))
-        self.comboBox_labelType.setItemText(
-            1, _translate("MWTrackerViewer", "Auto"))
-        self.pushButton_feats.setText(
-            _translate(
-                "MWTrackerViewer",
-                "Calculate Features"))
+        self.comboBox_labelType.setItemText(0, _translate("MWTrackerViewer", "Manual"))
+        self.comboBox_labelType.setItemText(1, _translate("MWTrackerViewer", "Auto"))
+        self.pushButton_feats.setText(_translate("MWTrackerViewer", "Calculate Features"))
         self.pushButton_ROI2_FF.setText(_translate("MWTrackerViewer", ">>"))
         self.pushButton_ROI1_FF.setText(_translate("MWTrackerViewer", ">>"))
         self.pushButton_ROI2_RW.setText(_translate("MWTrackerViewer", "<<"))
         self.toolBar.setWindowTitle(_translate("MWTrackerViewer", "toolBar"))
+

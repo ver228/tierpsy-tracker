@@ -8,9 +8,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_HDF5VideoPlayer(object):
-
     def setupUi(self, HDF5VideoPlayer):
         HDF5VideoPlayer.setObjectName("HDF5VideoPlayer")
         HDF5VideoPlayer.resize(600, 760)
@@ -32,25 +30,18 @@ class Ui_HDF5VideoPlayer(object):
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
         self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 572, 525))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
-        self.verticalLayout_3 = QtWidgets.QVBoxLayout(
-            self.scrollAreaWidgetContents)
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_3.setContentsMargins(11, 11, 11, 11)
         self.verticalLayout_3.setSpacing(6)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
-        self.mainGraphicsView = QtWidgets.QGraphicsView(
-            self.scrollAreaWidgetContents)
+        self.mainGraphicsView = QtWidgets.QGraphicsView(self.scrollAreaWidgetContents)
         self.mainGraphicsView.setAutoFillBackground(False)
         self.mainGraphicsView.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.mainGraphicsView.setVerticalScrollBarPolicy(
-            QtCore.Qt.ScrollBarAlwaysOff)
-        self.mainGraphicsView.setHorizontalScrollBarPolicy(
-            QtCore.Qt.ScrollBarAlwaysOff)
-        self.mainGraphicsView.setDragMode(
-            QtWidgets.QGraphicsView.ScrollHandDrag)
-        self.mainGraphicsView.setTransformationAnchor(
-            QtWidgets.QGraphicsView.AnchorUnderMouse)
-        self.mainGraphicsView.setResizeAnchor(
-            QtWidgets.QGraphicsView.AnchorUnderMouse)
+        self.mainGraphicsView.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.mainGraphicsView.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.mainGraphicsView.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
+        self.mainGraphicsView.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
+        self.mainGraphicsView.setResizeAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
         self.mainGraphicsView.setObjectName("mainGraphicsView")
         self.verticalLayout_3.addWidget(self.mainGraphicsView)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
@@ -94,13 +85,10 @@ class Ui_HDF5VideoPlayer(object):
         self.comboBox_h5path.addItem("")
         self.horizontalLayout_6.addWidget(self.comboBox_h5path)
         self.pushButton_h5groups = QtWidgets.QPushButton(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Maximum,
-            QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.pushButton_h5groups.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.pushButton_h5groups.sizePolicy().hasHeightForWidth())
         self.pushButton_h5groups.setSizePolicy(sizePolicy)
         self.pushButton_h5groups.setObjectName("pushButton_h5groups")
         self.horizontalLayout_6.addWidget(self.pushButton_h5groups)
@@ -155,22 +143,14 @@ class Ui_HDF5VideoPlayer(object):
 
     def retranslateUi(self, HDF5VideoPlayer):
         _translate = QtCore.QCoreApplication.translate
-        HDF5VideoPlayer.setWindowTitle(
-            _translate(
-                "HDF5VideoPlayer",
-                "HDF5VideoPlayer"))
+        HDF5VideoPlayer.setWindowTitle(_translate("HDF5VideoPlayer", "HDF5VideoPlayer"))
         self.label_frame.setText(_translate("HDF5VideoPlayer", "Frame"))
         self.label_step.setText(_translate("HDF5VideoPlayer", "Step Size"))
         self.label_fps.setText(_translate("HDF5VideoPlayer", "FPS display"))
-        self.comboBox_h5path.setItemText(
-            0, _translate("HDF5VideoPlayer", "/mask"))
-        self.comboBox_h5path.setItemText(
-            1, _translate("HDF5VideoPlayer", "/full_data"))
-        self.pushButton_h5groups.setText(
-            _translate("HDF5VideoPlayer", "Update Groups"))
+        self.comboBox_h5path.setItemText(0, _translate("HDF5VideoPlayer", "/mask"))
+        self.comboBox_h5path.setItemText(1, _translate("HDF5VideoPlayer", "/full_data"))
+        self.pushButton_h5groups.setText(_translate("HDF5VideoPlayer", "Update Groups"))
         self.playButton.setText(_translate("HDF5VideoPlayer", "Play"))
-        self.pushButton_video.setText(
-            _translate(
-                "HDF5VideoPlayer",
-                "Select File"))
+        self.pushButton_video.setText(_translate("HDF5VideoPlayer", "Select File"))
         self.toolBar.setWindowTitle(_translate("HDF5VideoPlayer", "toolBar"))
+

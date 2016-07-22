@@ -28,6 +28,12 @@ from scipy.interpolate import interp1d
 from ..helperFunctions.timeCounterStr import timeCounterStr
 from .segWormPython.mainSegworm import getSkeleton
 
+# pytables filters.
+TABLE_FILTERS = tables.Filters(
+        complevel=5,
+        complib='zlib',
+        shuffle=True,
+        fletcher32=True)
 
 def getWormROI(img, CMx, CMy, roi_size=128):
     '''
@@ -72,7 +78,8 @@ def getWormMask(
         strel_size=5,
         min_mask_area=50,
         roi_center_x=-1,
-        roi_center_y=-1):
+        roi_center_y=-1,
+        is_light_background=True):
     '''
     Calculate worm mask using an specific threshold.
 
@@ -97,8 +104,9 @@ def getWormMask(
     worm_img = cv2.medianBlur(worm_img, 3)
 
     # compute the thresholded mask
-    worm_mask = ((worm_img < threshold) & (worm_img != 0)).astype(np.uint8)
-
+    worm_mask = worm_img < threshold if is_light_background else worm_img > threshold
+    worm_mask = (worm_mask & (worm_img != 0)).astype(np.uint8)
+    
     # first compute a small closing to join possible fragments of the worm.
     worm_mask = cv2.morphologyEx(worm_mask, cv2.MORPH_CLOSE, strel_half)
 
@@ -371,52 +379,117 @@ def _getSmoothTrajectories(
 
     return trajectories_df, worms_frame_range, tot_rows, timestamp_raw, timestamp_time
 
+def _initializeSkeletonsArrays(ske_file_id, tot_rows, resampling_N, worm_midbody):
+    '''initialize arrays to save the skeletons data.
+        Used by trajectories2Skeletons
+    '''
 
-def trajectories2Skeletons(
-    masked_image_file,
-    skeletons_file,
-    trajectories_file,
-    create_single_movies=False,
-    resampling_N=49,
-    min_mask_area=50,
-    strel_size=5,
-    smoothed_traj_param={},
-    worm_midbody=(
-        0.35,
-        0.65)):
+    skel_arrays = {}
+    # initialize compressed arrays to save the data. Note that the data
+    # will be sorted according to trajectories_df
+    for data_str in ['skeleton', 'contour_side1', 'contour_side2']:
+        length_str = data_str + '_length'
 
-    # extract the base name from the masked_image_file. This is used in the
-    # progress status.
-    base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
+        skel_arrays[length_str] = ske_file_id.create_carray(
+            "/",
+            length_str,
+            tables.Float32Atom(
+                dflt=np.nan),
+            (tot_rows,
+             ),
+            filters=TABLE_FILTERS)
 
-    # pytables filters.
-    table_filters = tables.Filters(
-        complevel=5,
-        complib='zlib',
-        shuffle=True,
-        fletcher32=True)
+        skel_arrays[data_str] = ske_file_id.create_carray(
+            "/",
+            data_str,
+            tables.Float32Atom(
+                dflt=np.nan),
+            (tot_rows,
+             resampling_N,
+             2),
+            filters=TABLE_FILTERS,
+            chunkshape=(
+                1,
+                resampling_N,
+                2))
 
-    # get trajectories, threshold and indexes from the first part of the tracker.
-    # Note that data is sorted by worm index. This speed up access for access
-    # individual worm data.
+    skel_arrays['contour_width'] = ske_file_id.create_carray(
+        '/',
+        "contour_width",
+        tables.Float32Atom(
+            dflt=np.nan),
+        (tot_rows,
+         resampling_N),
+        filters=TABLE_FILTERS,
+        chunkshape=(
+            1,
+            resampling_N))
 
-    trajectories_df, worms_frame_range, tot_rows, timestamp_raw, timestamp_time = \
+    # get the indexes that would be use in the calculation of the worm
+    # midbody width
+    skel_arrays['width_midbody'] = ske_file_id.create_carray(
+        "/",
+        'width_midbody',
+        tables.Float32Atom(
+            dflt=np.nan),
+        (tot_rows,
+         ),
+        filters=TABLE_FILTERS)
+
+    #array with the countour areas
+    skel_arrays['contour_area'] = ske_file_id.create_carray(
+        '/',
+        "contour_area",
+        tables.Float32Atom(
+            dflt=np.nan),
+        (tot_rows,
+         ),
+        filters=TABLE_FILTERS)
+
+    # flag to mark if this function finished succesfully
+    skel_arrays['skeleton']._v_attrs['has_finished'] = 0
+
+    return skel_arrays
+
+def _getSaveTrajectoriesData(trajectories_file, skeletons_file, masked_image_file, smoothed_traj_param):
+    
+    #create a smoothed trajectories table from the trajectories file
+    trajectories_df, _, tot_rows, timestamp_raw, timestamp_time = \
         _getSmoothTrajectories(trajectories_file, **smoothed_traj_param)
+
+    # this is to initialize the arrays to one row, pytables do not accept empty arrays as initializers of carrays
     if tot_rows == 0:
-        tot_rows = 1  # this is to initialize the arrays to one row, pytables do not accept empty arrays as initializers of carrays
+        tot_rows = 1  
 
     # pytables saving format is more convenient...
-    with tables.File(skeletons_file, "w") as ske_file_id:
+    with tables.File(skeletons_file, "w") as ske_file_id, tables.File(masked_image_file, 'r') as mask_fid:
+        mask_dataset = mask_fid.get_node("/mask")
         ske_file_id.create_table(
             '/',
             'trajectories_data',
             obj=trajectories_df,
-            filters=table_filters)
+            filters=TABLE_FILTERS)
+
+        #save some extra info as attributes in the trajectories_data
 
         # save a copy of the video timestamp data
         ske_file_id.create_group('/', 'timestamp')
         ske_file_id.create_carray('/timestamp', 'raw', obj=timestamp_raw)
         ske_file_id.create_carray('/timestamp', 'time', obj=timestamp_time)
+
+        #read and the pixel information
+        trajectories_data = ske_file_id.get_node('/trajectories_data')
+        if 'pixels2microns_x' in mask_dataset._v_attrs:
+            trajectories_data._v_attrs['pixels2microns_x'] = \
+                            mask_dataset._v_attrs['pixels2microns_x']
+            trajectories_data._v_attrs['pixels2microns_y'] = \
+                            mask_dataset._v_attrs['pixels2microns_y']
+
+        #find if it is a mask from fluorescence and save it in the new group
+        is_light_background = 1 if not 'is_light_background' in mask_dataset._v_attrs \
+                        else mask_dataset._v_attrs['is_light_background']
+        trajectories_data._v_attrs['is_light_background'] = is_light_background
+
 
     #...but it is easier to process data with pandas
     with pd.HDFStore(skeletons_file, 'r') as ske_file_id:
@@ -425,100 +498,64 @@ def trajectories2Skeletons(
         trajectories_df['coord_x_new'] = np.nan
         trajectories_df['coord_y_new'] = np.nan
 
+    return trajectories_df
+
+
+
+def _getTrajFields(ske_file_id):
+    '''
+    Read some columns fields from the trajectories file that will be modified
+    '''
+
+    # flags to mark if a frame was skeletonized
+    has_skeleton = ske_file_id.get_node(
+        '/trajectories_data').cols.has_skeleton
+
+    # get the center of mass coordinates and area of the contour with the
+    # corrected threshold
+    cnt_coord_x = ske_file_id.get_node(
+        '/trajectories_data').cols.cnt_coord_x
+    cnt_coord_y = ske_file_id.get_node(
+        '/trajectories_data').cols.cnt_coord_y
+    cnt_areas = ske_file_id.get_node('/trajectories_data').cols.cnt_area
+
+    return has_skeleton, cnt_coord_x, cnt_coord_y, cnt_areas
+
+
+    
+
+def trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file, create_single_movies=False,
+    resampling_N=49, min_mask_area=50, strel_size=5, smoothed_traj_param={}, worm_midbody=(0.35, 0.65)):
+
+    #get the index number for the width limit
+    midbody_ind = (int(np.floor(
+        worm_midbody[0] * resampling_N)), int(np.ceil(worm_midbody[1]) * resampling_N))
+    
+    # extract the base name from the masked_image_file. This is used in the
+    # progress status.
+    base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
+
+    # get trajectories, threshold and indexes from the first part of the tracker.
+    # Note that data is sorted by worm index. This speed up access for access
+    # individual worm data.
+    trajectories_df = _getSaveTrajectoriesData(trajectories_file, skeletons_file, masked_image_file, smoothed_traj_param)
+    tot_rows = len(trajectories_df)
+    
     # open skeleton file for append and #the compressed videos as read
     with tables.File(skeletons_file, "r+") as ske_file_id, \
             tables.File(masked_image_file, 'r') as mask_fid:
         mask_dataset = mask_fid.get_node("/mask")
 
-        dd = ske_file_id.get_node('/trajectories_data')
+        #initialize arrays to save the skeletons data
+        skel_arrays = _initializeSkeletonsArrays(ske_file_id, tot_rows, resampling_N, worm_midbody)
+        
+        #get some files to be modified and flags
+        has_skeleton, cnt_coord_x, cnt_coord_y, cnt_areas = _getTrajFields(ske_file_id)
 
-        if 'pixels2microns_x' in mask_dataset._v_attrs:
-            dd._v_attrs['pixels2microns_x'] = mask_dataset._v_attrs[
-                'pixels2microns_x']
-            dd._v_attrs['pixels2microns_y'] = mask_dataset._v_attrs[
-                'pixels2microns_y']
+        #attribute useful to understand if we are dealing with dark or light worms
+        is_light_background = ske_file_id.get_node('/trajectories_data')._v_attrs['is_light_background']
 
-        skel_arrays = {}
-
-        data_strS = ['skeleton', 'contour_side1', 'contour_side2']
-
-        # initialize compressed arrays to save the data. Note that the data
-        # will be sorted according to trajectories_df
-        for data_str in data_strS:
-            length_str = data_str + '_length'
-
-            skel_arrays[length_str] = ske_file_id.create_carray(
-                "/",
-                length_str,
-                tables.Float32Atom(
-                    dflt=np.nan),
-                (tot_rows,
-                 ),
-                filters=table_filters)
-
-            skel_arrays[data_str] = ske_file_id.create_carray(
-                "/",
-                data_str,
-                tables.Float32Atom(
-                    dflt=np.nan),
-                (tot_rows,
-                 resampling_N,
-                 2),
-                filters=table_filters,
-                chunkshape=(
-                    1,
-                    resampling_N,
-                    2))
-
-        skel_arrays['contour_width'] = ske_file_id.create_carray(
-            '/',
-            "contour_width",
-            tables.Float32Atom(
-                dflt=np.nan),
-            (tot_rows,
-             resampling_N),
-            filters=table_filters,
-            chunkshape=(
-                1,
-                resampling_N))
-
-        # get the indexes that would be use in the calculation of the worm
-        # midbody width
-        midbody_ind = (int(np.floor(
-            worm_midbody[0] * resampling_N)), int(np.ceil(worm_midbody[1]) * resampling_N))
-        skel_arrays['width_midbody'] = ske_file_id.create_carray(
-            "/",
-            'width_midbody',
-            tables.Float32Atom(
-                dflt=np.nan),
-            (tot_rows,
-             ),
-            filters=table_filters)
-
-        skel_arrays['contour_area'] = ske_file_id.create_carray(
-            '/',
-            "contour_area",
-            tables.Float32Atom(
-                dflt=np.nan),
-            (tot_rows,
-             ),
-            filters=table_filters)
-
-        # flags to mark if a frame was skeletonized
-        has_skeleton = ske_file_id.get_node(
-            '/trajectories_data').cols.has_skeleton
-
-        # get the center of mass coordinates and area of the contour with the
-        # corrected threshold
-        cnt_coord_x = ske_file_id.get_node(
-            '/trajectories_data').cols.cnt_coord_x
-        cnt_coord_y = ske_file_id.get_node(
-            '/trajectories_data').cols.cnt_coord_y
-        cnt_areas = ske_file_id.get_node('/trajectories_data').cols.cnt_area
-
-        # flag to mark if this function finished succesfully
-        skel_arrays['skeleton']._v_attrs['has_finished'] = 0
-
+        
         # dictionary to store previous skeletons
         prev_skeleton = {}
 
@@ -531,7 +568,8 @@ def trajectories2Skeletons(
                 worm_img, roi_corner = getWormROI(
                     img, row_data['coord_x'], row_data['coord_y'], row_data['roi_size'])
                 worm_mask, worm_cnt, cnt_area = getWormMask(
-                    worm_img, row_data['threshold'], strel_size, min_mask_area=row_data['area'] / 2)
+                    worm_img, row_data['threshold'], strel_size, 
+                    min_mask_area=row_data['area'] / 2, is_light_background = is_light_background)
 
                 if worm_cnt.size == 0:
                     continue

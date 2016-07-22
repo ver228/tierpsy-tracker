@@ -8,9 +8,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_SelectApp(object):
-
     def setupUi(self, SelectApp):
         SelectApp.setObjectName("SelectApp")
         SelectApp.resize(304, 249)
@@ -23,8 +21,7 @@ class Ui_SelectApp(object):
         self.pushButton_paramGUI = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_paramGUI.setObjectName("pushButton_paramGUI")
         self.verticalLayout.addWidget(self.pushButton_paramGUI)
-        self.pushButton_batchProcess = QtWidgets.QPushButton(
-            self.centralwidget)
+        self.pushButton_batchProcess = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_batchProcess.setObjectName("pushButton_batchProcess")
         self.verticalLayout.addWidget(self.pushButton_batchProcess)
         self.pushButton_MWViewer = QtWidgets.QPushButton(self.centralwidget)
@@ -49,13 +46,8 @@ class Ui_SelectApp(object):
     def retranslateUi(self, SelectApp):
         _translate = QtCore.QCoreApplication.translate
         SelectApp.setWindowTitle(_translate("SelectApp", "Select App"))
-        self.pushButton_paramGUI.setText(
-            _translate(
-                "SelectApp",
-                "Set parameters / Process individual file"))
-        self.pushButton_batchProcess.setText(_translate(
-            "SelectApp", "Batch processing multiple files"))
-        self.pushButton_MWViewer.setText(_translate(
-            "SelectApp", "Multi-worm tracker viewer"))
-        self.pushButton_SWViewer.setText(_translate(
-            "SelectApp", "Single-worm tracker viewer"))
+        self.pushButton_paramGUI.setText(_translate("SelectApp", "Set parameters / Process individual file"))
+        self.pushButton_batchProcess.setText(_translate("SelectApp", "Batch processing multiple files"))
+        self.pushButton_MWViewer.setText(_translate("SelectApp", "Multi-worm tracker viewer"))
+        self.pushButton_SWViewer.setText(_translate("SelectApp", "Single-worm tracker viewer"))
+

@@ -61,6 +61,7 @@ class plate_worms(tables.IsDescription):
 
 
 def _getWormThreshold(pix_valid):
+    
     # calculate otsu_threshold as lower limit. Otsu understimate the threshold.
     try:
         otsu_thresh = threshold_otsu(pix_valid)
@@ -96,7 +97,7 @@ def _getWormThreshold(pix_valid):
     return thresh
 
 
-def _getWormContours(ROI_image, thresh, strel_size=(5, 5)):
+def _getWormContours(ROI_image, threshold, strel_size=(5, 5), is_light_background=True):
     # get the border of the ROI mask, this will be used to filter for valid
     # worms
     ROI_valid = (ROI_image != 0).astype(np.uint8)
@@ -115,8 +116,11 @@ def _getWormContours(ROI_image, thresh, strel_size=(5, 5)):
             ROI_valid, ROI_border_ind, valid_ind, 1, -1)
         ROI_image = ROI_image * ROI_valid
 
-    # get binary image, and clean it using morphological closing
-    ROI_mask = ((ROI_image < thresh) & (ROI_image != 0)).astype(np.uint8)
+    # get binary image, 
+    ROI_mask = ROI_image < threshold if is_light_background else ROI_image > threshold
+    ROI_mask = (ROI_mask & (ROI_image != 0)).astype(np.uint8)
+    
+    # clean it using morphological closing
     strel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, strel_size)
     ROI_mask = cv2.morphologyEx(ROI_mask, cv2.MORPH_CLOSE, strel)
 
@@ -141,11 +145,14 @@ def _getWormFeatures(
         return None  # area too small to be a worm
 
     worm_bbox = cv2.boundingRect(worm_cnt)
-
     # find use the best rotated bounding box, the fitEllipse function produces bad results quite often
     # this method is better to obtain an estimate of the worm length than
     # eccentricity
     (CMx, CMy), (L, W), angle = cv2.minAreaRect(worm_cnt)
+    
+    if L == 0 or W == 0:
+        return None #something went wrong abort
+    
     if W > L:
         L, W = W, L  # switch if width is larger than length
     quirkiness = sqrt(1 - W**2 / L**2)
@@ -292,6 +299,8 @@ def getWormTrajectories(
     with tables.File(masked_image_file, 'r') as mask_fid, \
             tables.open_file(trajectories_file, mode='w') as feature_fid:
         mask_dataset = mask_fid.get_node("/mask")
+        
+        max_pix_allowed = np.iinfo(mask_dataset.dtype).max
 
         feature_table = feature_fid.create_table(
             '/',
@@ -302,7 +311,13 @@ def getWormTrajectories(
 
         # flag used to determine if the function finished correctly
         feature_table._v_attrs['has_finished'] = 0
+        
+        #find if it is a mask from fluorescence and save it in the new group
+        is_light_background = 1 if not 'is_light_background' in mask_dataset._v_attrs \
+                            else mask_dataset._v_attrs['is_light_background']
+        feature_table._v_attrs['is_light_background'] = is_light_background
 
+        #if the number of frames is not given use all the frames in the mask dataset
         if last_frame <= 0:
             last_frame = mask_dataset.shape[0]
 
@@ -360,7 +375,13 @@ def getWormTrajectories(
                     # no valid pixels in this buffer, nothing to do here
                     continue
                 # caculate threshold
-                thresh = _getWormThreshold(pix_valid)
+                if is_light_background:
+                    thresh = _getWormThreshold(pix_valid)
+                else:
+                    #invert pixel values
+                    thresh = _getWormThreshold(max_pix_allowed - pix_valid)
+                    thresh = max_pix_allowed - thresh
+
                 thresh *= worm_bw_thresh_factor
 
                 if buff_last_coord.size != 0:
@@ -384,7 +405,7 @@ def getWormTrajectories(
                 for buff_ind in range(image_buffer.shape[0]):
                     # get the contour of possible worms
                     ROI_worms, hierarchy = _getWormContours(
-                        ROI_buffer_med[buff_ind, :, :], thresh, strel_size)
+                        ROI_buffer_med[buff_ind, :, :], thresh, strel_size, is_light_background)
 
                     current_frame = frame_number + buff_ind
                     frame_features = []

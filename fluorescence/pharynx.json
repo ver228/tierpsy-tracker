@@ -1,1 +1,1 @@
-{"is_invert_thresh": true, "compression_buff": 3, "thresh_C": 15, "max_area": 1000000, "has_timestamp": false, "min_area": 0, "keep_border_data": false, "thresh_block_size": 15, "fps": 25.0, "dilation_size": 10}
+{"is_invert_thresh": true, "thresh_block_size": 15, "is_light_background": false, "keep_border_data": false, "fps": 3.0, "min_area": 0, "has_timestamp": false, "compression_buff": 3, "thresh_C": 15, "max_area": 1000000, "dilation_size": 10}

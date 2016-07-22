@@ -85,6 +85,11 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
 
     def updateVideoFile(self, vfilename):
         super().updateVideoFile(vfilename)
+
+        #find if it is a fluorescence image
+        self.is_light_background = 1 if not 'is_light_background' in self.image_group._v_attrs \
+            else self.image_group._v_attrs['is_light_background']
+
         videos_dir, basename = os.path.split(vfilename)
         basename = os.path.splitext(basename)[0]
 
@@ -104,6 +109,10 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
                 self.results_dir = new_dir
                 self.ui.lineEdit_skel.setText(self.skeletons_file)
                 break
+
+
+
+
 
         self.updateSkelFile()
 
@@ -213,7 +222,8 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
                   'coord_y']) if read_center else (-1, -1)
 
         worm_mask, _, _ = getWormMask(worm_img, row_data['threshold'], strel_size=self.strel_size,
-                                      roi_center_x=c1, roi_center_y=c2, min_mask_area=min_mask_area)
+                                      roi_center_x=c1, roi_center_y=c2, min_mask_area=min_mask_area,
+                                      is_light_background = self.is_light_background)
 
         #worm_mask = np.zeros_like(worm_mask)
         #cv2.drawContours(worm_mask, [worm_cnt.astype(np.int32)], 0, 1, -1)

@@ -6,6 +6,7 @@ Created on Thu Jul 21 20:31:40 2016
 """
 
 import cv2
+import numpy as np
 import matplotlib.pylab as plt
 from scipy.ndimage.filters import median_filter
 
@@ -20,4 +21,13 @@ img = median_filter(img, 5)
 mask = cv2.adaptiveThreshold(
             img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, thresh_block_size, thresh_C)
             
+plt.figure()
 plt.imshow(mask, interpolation='none', cmap='gray')
+#%%
+
+plt.figure()
+plt.imshow(img, interpolation='none', cmap='gray')
+
+img_cmp = np.full_like(img, 255) - img
+plt.figure()
+plt.imshow(img_cmp, interpolation='none', cmap='gray')

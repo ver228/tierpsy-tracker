@@ -15,7 +15,7 @@ from MWTracker.GUI_Qt5.MWTrackerViewer_ui import Ui_MWTrackerViewer
 from MWTracker.GUI_Qt5.TrackerViewerAux import TrackerViewerAux_GUI
 from MWTracker.GUI_Qt5.AnalysisProgress import WorkerFunQt, AnalysisProgress
 
-from MWTracker.trackWorms.getSkeletonsTables import getWormROI, getWormMask, binaryMask2Contour
+from MWTracker.trackWorms.getSkeletonsTables import getWormROI
 from MWTracker.featuresAnalysis.obtainFeatures import getWormFeaturesFilt
 from MWTracker.helperFunctions.tracker_param import tracker_param
 from MWTracker.helperFunctions.trackProvenance import getGitCommitHash, execThisPoint

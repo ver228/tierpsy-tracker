@@ -9,7 +9,9 @@ import json
 deprecated_fields = ['has_timestamp', 'min_displacement']
 deprecated_alias = {
     'fps': 'expected_fps',
-    'threshold_factor': 'worm_bw_thresh_factor'}
+    'threshold_factor': 'worm_bw_thresh_factor',
+    'is_invert_thresh' : 'is_light_background',
+    'is_fluorescence' : 'is_light_background'}
 
 dflt_param_list = [
     ('min_area', 50, 'minimum allowed area in pixels.'),
@@ -19,8 +21,9 @@ dflt_param_list = [
     ('dilation_size', 9, 'size of the structural element used in morphological operations.'),
     ('compression_buff', 25, 'number of images "min-averaged" to calculate the image mask.'),
     ('keep_border_data', False, 'set it to false if you want to remove any connected component that touches the border.'),
-    ('is_invert_thresh', False, 'set to true to indentify bright worms over a dark background.'),
+    ('is_light_background', True, 'set to true to indentify dark worms over a light background.'),
     ('expected_fps', 25, 'expected frame rate.'),
+    ('traj_max_allowed_dist', 25, 'Maximum displacement expected between frames to be consider same track.'),
     ('worm_bw_thresh_factor', 1.05, 'This factor multiplies the threshold used to binarize the individual worms image.'),
     ('resampling_N', 49, 'number of segments used to renormalize the worm skeleton and contours.'),
     ('max_gap_allowed_block', 10, ''),
@@ -69,8 +72,9 @@ class tracker_param:
             dilation_size,
             compression_buff,
             keep_border_data,
-            is_invert_thresh,
+            is_light_background,
             expected_fps,
+            traj_max_allowed_dist,
             worm_bw_thresh_factor,
             resampling_N,
             max_gap_allowed_block,
@@ -100,7 +104,7 @@ class tracker_param:
             'thresh_C': thresh_C,
             'dilation_size': dilation_size,
             'keep_border_data': keep_border_data,
-            'is_invert_thresh': is_invert_thresh}
+            'is_light_background': is_light_background}
 
         # compressVideo
         self.compress_vid_param = {
@@ -109,16 +113,15 @@ class tracker_param:
             'max_frame': 1e32,
             'mask_param': self.mask_param,
             'expected_fps': expected_fps}
+        
         # getWormTrajectories
         min_track_lenght = max(1, fps_filter / 5)
-        max_allowed_dist = max(1, expected_fps)
-
         self.trajectories_param = {
             'initial_frame': 0,
             'last_frame': -1,
             'min_area': min_area / 2,
             'min_length': min_track_lenght,
-            'max_allowed_dist': max_allowed_dist,
+            'max_allowed_dist': traj_max_allowed_dist,
             'area_ratio_lim': (
                 0.5,
                 2),

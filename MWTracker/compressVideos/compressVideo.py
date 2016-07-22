@@ -28,7 +28,7 @@ def getROIMask(
         thresh_C,
         dilation_size,
         keep_border_data,
-        is_invert_thresh):
+        is_light_background):
     '''
     Calculate a binary mask to mark areas where it is possible to find worms.
     Objects with less than min_area or more than max_area pixels are rejected.
@@ -53,7 +53,7 @@ def getROIMask(
 
 
     # invert the threshold if we are dealing with a fluorescence image
-    if is_invert_thresh:  
+    if not is_light_background:  
         thresh_C = -thresh_C
 
     # adaptative threshold is the best way to find possible worms. The
@@ -184,11 +184,12 @@ def normalizeImage(img):
 
     return imgN, (imin, imax)
  
-def reduceBuffer(Ibuff, is_invert_thresh):
-    if is_invert_thresh:
-        return np.max(Ibuff, axis=0)
-    else:
+def reduceBuffer(Ibuff, is_light_background):
+    if is_light_background:
         return np.min(Ibuff, axis=0)
+    else:
+        return np.max(Ibuff, axis=0)
+        
 
 def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
                   save_full_interval=5000, max_frame=1e32, expected_fps=25):
@@ -252,6 +253,13 @@ def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
             shuffle=True,
             fletcher32=True)
 
+        # flag to indicate if the conversion finished succesfully
+        mask_dataset.attrs['has_finished'] = 0
+        
+        #extra attribute flags
+        mask_dataset.attrs['expected_fps'] = expected_fps
+        mask_dataset.attrs['is_light_background'] = int(mask_param['is_light_background'])
+        
         # attribute labels to make the group compatible with the standard image
         # definition in hdf5
         mask_dataset.attrs["CLASS"] = np.string_("IMAGE")
@@ -260,8 +268,6 @@ def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
         mask_dataset.attrs["DISPLAY_ORIGIN"] = np.string_("UL")  # not rotated
         mask_dataset.attrs["IMAGE_VERSION"] = np.string_("1.2")
 
-        # flag to indicate that the conversion finished succesfully
-        mask_dataset.attrs['has_finished'] = 0
 
         # full frames are saved in "/full_data" every save_full_interval frames
         full_dataset = mask_fid.create_dataset(
@@ -380,7 +386,7 @@ def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
             # mask buffer and save data into the hdf5 file
             if (ind_buff == buffer_size - 1 or ret == 0) and Ibuff.size > 0:
                 #calculate the max/min in the of the buffer
-                img_reduce = reduceBuffer(Ibuff, mask_param['is_invert_thresh'])
+                img_reduce = reduceBuffer(Ibuff, mask_param['is_light_background'])
                 
                 # calculate the mask only when the buffer is full or there are
                 # no more frames left
@@ -388,7 +394,8 @@ def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
                 # mask all the images in the buffer
                 Ibuff *= mask
                 # add buffer to the hdf5 file
-                mask_dataset[(frame_number - Ibuff.shape[0])                             :frame_number, :, :] = Ibuff
+                frame_first_buff = frame_number - Ibuff.shape[0]
+                mask_dataset[frame_first_buff:frame_number, :, :] = Ibuff
 
             if frame_number % 500 == 0:
                 # calculate the progress and put it in a string
