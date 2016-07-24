@@ -25,8 +25,8 @@ from scipy.ndimage.filters import median_filter
 from scipy.signal import savgol_filter
 from scipy.interpolate import interp1d
 
-from ..helperFunctions.timeCounterStr import timeCounterStr
-from .segWormPython.mainSegworm import getSkeleton
+from MWTracker.helperFunctions.timeCounterStr import timeCounterStr
+from MWTracker.trackWorms.segWormPython.mainSegworm import getSkeleton
 
 # pytables filters.
 TABLE_FILTERS = tables.Filters(
@@ -56,18 +56,18 @@ def getWormROI(img, CMx, CMy, roi_size=128):
     range_y = (CMy + roi_range).astype(np.int)
 
     if range_x[0] < 0:
-        range_x[0] = 0  # range_x -=
+        range_x[0] = 0
     if range_y[0] < 0:
-        range_y[0] = 0  # range_y -= range_y[0]
+        range_y[0] = 0
     #%%
     if range_x[1] > img.shape[1]:
-        range_x[1] = img.shape[1]  # range_x += img.shape[1]-range_x[1]-1
+        range_x[1] = img.shape[1]
     if range_y[1] > img.shape[0]:
-        range_y[1] = img.shape[0]  # range_y += img.shape[0]-range_y[1]-1
+        range_y[1] = img.shape[0]
 
     worm_img = img[range_y[0]:range_y[1], range_x[0]:range_x[1]]
 
-    roi_corner = np.array([range_x[0] - 1, range_y[0] - 1])
+    roi_corner = np.array([range_x[0], range_y[0]])
 
     return worm_img, roi_corner
 
@@ -600,12 +600,9 @@ def trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file,
                         cnt_widths[midbody_ind[0]:midbody_ind[1] + 1])
 
                     # convert into the main image coordinates
-                    skel_arrays['skeleton'][
-                        skeleton_id, :, :] = skeleton + roi_corner
-                    skel_arrays['contour_side1'][
-                        skeleton_id, :, :] = cnt_side1 + roi_corner
-                    skel_arrays['contour_side2'][
-                        skeleton_id, :, :] = cnt_side2 + roi_corner
+                    skel_arrays['skeleton'][skeleton_id, :, :] = skeleton + roi_corner
+                    skel_arrays['contour_side1'][skeleton_id, :, :] = cnt_side1 + roi_corner
+                    skel_arrays['contour_side2'][skeleton_id, :, :] = cnt_side2 + roi_corner
                     skel_arrays['contour_area'][skeleton_id] = cnt_area
 
                     has_skeleton[skeleton_id] = True

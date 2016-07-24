@@ -182,6 +182,7 @@ class HDF5VideoPlayer_GUI(QtWidgets.QMainWindow):
         if self.fid != -1:
             self.fid.close()
             self.mainImage.cleanCanvas()
+            self.fid = -1
 
         self.vfilename = vfilename
         self.ui.lineEdit_video.setText(self.vfilename)

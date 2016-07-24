@@ -286,7 +286,7 @@ class GetMaskParams_GUI(QMainWindow):
 
     # file dialog to the the hdf5 file
     def getParamFile(self):
-        json_file, _ = QFileDialog.getOpenFileName(
+        json_file, _ = QFileDialog.getSaveFileName(
             self, "Find parameters file", self.videos_dir, "JSON files (*.json);; All (*)")
         if json_file:
             self.updateParamFile(json_file)
@@ -414,9 +414,6 @@ class GetMaskParams_GUI(QMainWindow):
 
             # read json file
             json_file = self.video_file.rpartition('.')[0] + '.json'
-            if not os.path.exists(json_file):
-                json_file = ''
-
             self.updateParamFile(json_file)
 
             # get next chuck

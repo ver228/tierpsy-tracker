@@ -3,8 +3,10 @@ from PyQt5.QtGui import QPixmap, QImage, QPolygonF, QPen, QPainter, QColor
 from PyQt5.QtCore import QPointF, Qt
 
 from MWTracker.GUI_Qt5.TrackerViewerAux_ui import Ui_TrackerViewerAux
-from MWTracker.GUI_Qt5.HDF5VideoPlayer import HDF5VideoPlayer_GUI
+from MWTracker.GUI_Qt5.HDF5VideoPlayer import HDF5VideoPlayer_GUI, lineEditDragDrop 
+
 from MWTracker.trackWorms.getSkeletonsTables import getWormMask, binaryMask2Contour
+from MWTracker.trackWorms.segWormPython.mainSegworm import getSkeleton
 
 import tables
 import os
@@ -33,6 +35,11 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
         self.ui.pushButton_skel.clicked.connect(self.getSkelFile)
         self.ui.checkBox_showLabel.stateChanged.connect(self.updateImage)
 
+        lineEditDragDrop(
+            self.ui.lineEdit_skel,
+            self.updateSkelFile,
+            os.path.isfile)
+
     def getSkelFile(self):
         selected_file, _ = QFileDialog.getOpenFileName(
             self, 'Select file with the worm skeletons', self.results_dir, "Skeletons files (*_skeletons.hdf5);; All files (*)")
@@ -40,12 +47,13 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
         if not os.path.exists(selected_file):
             return
 
+        self.updateSkelFile(selected_file)
+
+    def updateSkelFile(self, selected_file):
+        
         self.skeletons_file = selected_file
         self.ui.lineEdit_skel.setText(self.skeletons_file)
-        if self.fid != -1:
-            self.updateSkelFile()
-
-    def updateSkelFile(self):
+        
         if not self.skeletons_file or self.fid == -1:
             self.trajectories_data = -1
             self.traj_time_grouped = -1
@@ -85,6 +93,8 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
 
     def updateVideoFile(self, vfilename):
         super().updateVideoFile(vfilename)
+        if not type(self.image_group) is tables.array.ImageArray:
+            return
 
         #find if it is a fluorescence image
         self.is_light_background = 1 if not 'is_light_background' in self.image_group._v_attrs \
@@ -107,14 +117,9 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
             if os.path.exists(new_skel_file):
                 self.skeletons_file = new_skel_file
                 self.results_dir = new_dir
-                self.ui.lineEdit_skel.setText(self.skeletons_file)
                 break
-
-
-
-
-
-        self.updateSkelFile()
+        
+        self.updateSkelFile(self.skeletons_file)
 
     def getRowData(self):
         if not isinstance(
@@ -182,6 +187,7 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
                 for p in dat:
                     qPlg[tt].append(QPointF(*p))
 
+
         if 'is_good_skel' in row_data and row_data['is_good_skel'] == 0:
             self.skel_colors = {
                 'skeleton': (
@@ -196,7 +202,7 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
                     231, 41, 138)}
 
         pen = QPen()
-        pen.setWidth(2)
+        pen.setWidth(1)
 
         painter = QPainter()
         painter.begin(worm_qimg)
@@ -213,6 +219,8 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
         radius = 3
         painter.drawEllipse(qPlg['skeleton'][0], radius, radius)
 
+        painter.drawEllipse(QPointF(0,0), radius, radius)
+
         painter.end()
 
     def drawThreshMask(self, worm_img, worm_qimg, row_data, read_center=True):
@@ -221,7 +229,7 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
         c1, c2 = (row_data['coord_x'], row_data[
                   'coord_y']) if read_center else (-1, -1)
 
-        worm_mask, _, _ = getWormMask(worm_img, row_data['threshold'], strel_size=self.strel_size,
+        worm_mask, worm_cnt, _ = getWormMask(worm_img, row_data['threshold'], strel_size=self.strel_size,
                                       roi_center_x=c1, roi_center_y=c2, min_mask_area=min_mask_area,
                                       is_light_background = self.is_light_background)
 
@@ -242,6 +250,18 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
         p = QPainter(worm_qimg)
         p.setPen(QColor(0, 204, 102))
         p.drawPixmap(worm_qimg.rect(), worm_mask, worm_mask.rect())
+        
+        if False:
+            #test skeletonization
+            skeleton, ske_len, cnt_side1, cnt_side2, cnt_widths, cnt_area = \
+                getSkeleton(worm_cnt, np.zeros(0), 49)
+            for cnt in skeleton, cnt_side1, cnt_side2:
+                p.setPen(Qt.black)
+                polyline = QPolygonF()
+                for point in cnt:
+                    polyline.append(QPointF(*point))
+                p.drawPolyline(polyline)
+
         p.end()
 
 
