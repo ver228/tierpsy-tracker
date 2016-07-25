@@ -31,10 +31,13 @@ if [ "${SHORT_OS_STR}" == "Darwin" ]; then
 fi
 
 if [ $PY3K -eq 1 ]; then
-    PY_VER_M="${PY_VER}m"
-    OCV_PYTHON="-DBUILD_opencv_python3=1 -DPYTHON3_EXECUTABLE=$PYTHON -DPYTHON3_INCLUDE_DIR=$PREFIX/include/python${PY_VER_M} -DPYTHON3_LIBRARY=${PREFIX}/lib/libpython${PY_VER_M}.${DYNAMIC_EXT}"
+    OCV_PYTHON="-DBUILD_opencv_python3=1 -DBUILD_opencv_python2=0 -DPYTHON_EXECUTABLE=`which python3`
+    -DPYTHON3_INCLUDE_DIR=`python3 -c "import sysconfig; print(sysconfig.get_path('platinclude'))"`
+    -DPYTHON3_LIBRARY=`python3 -c "import sysconfig; print(sysconfig.get_path('platstdlib'))"`
+    -DPYTHON3_PACKAGES_PATH=`python3 -c "import sysconfig; print(sysconfig.get_path('platlib'))"`
+    -DPYTHON3_NUMPY_INCLUDE_DIRS=`python3 -c "from numpy.distutils.misc_util import get_numpy_include_dirs; print(get_numpy_include_dirs()[0])"`"
 else
-    OCV_PYTHON="-DBUILD_opencv_python2=1 -DPYTHON2_EXECUTABLE=$PYTHON -DPYTHON2_INCLUDE_DIR=$PREFIX/include/python${PY_VER} -DPYTHON2_LIBRARY=${PREFIX}/lib/libpython${PY_VER}.${DYNAMIC_EXT} -DPYTHON_INCLUDE_DIR2=$PREFIX/include/python${PY_VER}"
+    OCV_PYTHON="-DBUILD_opencv_python2=1 -DBUILD_opencv_python3=0 -DPYTHON2_EXECUTABLE=$PYTHON -DPYTHON2_INCLUDE_DIR=$PREFIX/include/python${PY_VER} -DPYTHON2_LIBRARY=${PREFIX}/lib/libpython${PY_VER}.${DYNAMIC_EXT} -DPYTHON_INCLUDE_DIR2=$PREFIX/include/python${PY_VER}"
 fi
 
 #git clone https://github.com/Itseez/opencv_contrib
@@ -47,6 +50,7 @@ cmake .. -G"$CMAKE_GENERATOR"                                            \
     $OPENMP                                                              \
     $OCV_PYTHON                                                          \
     -DWITH_EIGEN=1                                                       \
+    -DWITH_TBB=1                                                         \
     -DBUILD_TESTS=0                                                      \
     -DBUILD_DOCS=0                                                       \
     -DBUILD_PERF_TESTS=0                                                 \

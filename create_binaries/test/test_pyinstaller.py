@@ -18,19 +18,19 @@ else:
 
 if __name__ == '__main__':
     print('HOLA')
-    
+
     a = np.arange(10)
     print(a)
-    
+
     print(cv2.__version__)
 
     inputFiles = "test.h5"
     with h5py.File(inputFiles, 'w') as inputFileOpen:
         print('good h5py')
-    
+
     with tables.File(inputFiles, 'w') as inputFileOpen:
         print('good tables')
-    
+
     print(pd.__version__)
 
     app = QApplication(sys.argv)
@@ -40,6 +40,4 @@ if __name__ == '__main__':
     w.move(300, 300)
     w.setWindowTitle('Simple')
     w.show()
-    sys.exit(app.exec_()) 
-    
-    
+    sys.exit(app.exec_())

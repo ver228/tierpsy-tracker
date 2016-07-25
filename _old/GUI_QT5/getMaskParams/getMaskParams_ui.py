@@ -8,7 +8,9 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_MainWindow(object):
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1161, 746)
@@ -124,23 +126,34 @@ class Ui_MainWindow(object):
         self.lineEdit_video = QtWidgets.QLineEdit(self.centralWidget)
         self.lineEdit_video.setObjectName("lineEdit_video")
         self.gridLayout.addWidget(self.lineEdit_video, 17, 3, 1, 2)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem, 16, 4, 1, 1)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.MinimumExpanding,
+            QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem1, 16, 3, 1, 1)
         self.pushButton_next = QtWidgets.QPushButton(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum,
+            QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_next.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.pushButton_next.sizePolicy().hasHeightForWidth())
         self.pushButton_next.setSizePolicy(sizePolicy)
         self.pushButton_next.setObjectName("pushButton_next")
         self.gridLayout.addWidget(self.pushButton_next, 16, 5, 1, 1)
         self.label_mask = QtWidgets.QLabel(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Ignored,
+            QtWidgets.QSizePolicy.Ignored)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_mask.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.label_mask.sizePolicy().hasHeightForWidth())
         self.label_mask.setSizePolicy(sizePolicy)
         self.label_mask.setFrameShape(QtWidgets.QFrame.Box)
         self.label_mask.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -148,10 +161,13 @@ class Ui_MainWindow(object):
         self.label_mask.setObjectName("label_mask")
         self.gridLayout.addWidget(self.label_mask, 0, 4, 13, 2)
         self.label_full = QtWidgets.QLabel(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Ignored,
+            QtWidgets.QSizePolicy.Ignored)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_full.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.label_full.sizePolicy().hasHeightForWidth())
         self.label_full.setSizePolicy(sizePolicy)
         self.label_full.setFrameShape(QtWidgets.QFrame.Box)
         self.label_full.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -228,12 +244,17 @@ class Ui_MainWindow(object):
         self.label_4.setText(_translate("MainWindow", "Max Area"))
         self.pushButton_start.setText(_translate("MainWindow", "Start"))
         self.pushButton_video.setText(_translate("MainWindow", "Video File"))
-        self.pushButton_results.setText(_translate("MainWindow", "Results Dir"))
+        self.pushButton_results.setText(
+            _translate("MainWindow", "Results Dir"))
         self.pushButton_next.setText(_translate("MainWindow", "Next Chunk"))
-        self.checkBox_hasTimestamp.setText(_translate("MainWindow", "has time stamp?"))
+        self.checkBox_hasTimestamp.setText(
+            _translate("MainWindow", "has time stamp?"))
         self.label_6.setText(_translate("MainWindow", "Dilation"))
-        self.label_skelSeg.setText(_translate("MainWindow", "Skeleton Segments"))
+        self.label_skelSeg.setText(
+            _translate(
+                "MainWindow",
+                "Skeleton Segments"))
         self.label_fps.setText(_translate("MainWindow", "FPS"))
         self.label_5.setText(_translate("MainWindow", "Frames to average"))
-        self.checkBox_keepBorderData.setText(_translate("MainWindow", "keep border data?"))
-
+        self.checkBox_keepBorderData.setText(
+            _translate("MainWindow", "keep border data?"))

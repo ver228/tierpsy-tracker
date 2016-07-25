@@ -18,9 +18,12 @@
     <item row="3" column="0" rowspan="17">
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="8" column="0" colspan="2">
-       <widget class="QCheckBox" name="checkBox_isFluorescence">
+       <widget class="QCheckBox" name="checkBox_isLightBgnd">
         <property name="text">
-         <string>is fluorescence?</string>
+         <string>is light background?</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>

@@ -9,11 +9,8 @@ from MWTracker.batchProcessing.compressSingleWorker import compressSingleWorker
 
 
 if __name__ == '__main__':
-    if len(sys.argv)==6:
+    if len(sys.argv) == 6:
         compressSingleWorker(*sys.argv[1:])
     else:
         print('Wrong number of arguments.')
         print(sys.argv)
-    
-    
-    

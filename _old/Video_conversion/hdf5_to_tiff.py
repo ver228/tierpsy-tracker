@@ -10,35 +10,36 @@ import numpy as np
 from math import floor
 from skimage.io._plugins import freeimage_plugin as fi
 
-#def save_full_frames(mask_fid, tiff_file, reduce_fractor = 8):
+# def save_full_frames(mask_fid, tiff_file, reduce_fractor = 8):
 #    expected_size = int(floor(mask_fid["/mask"].shape[0]/float(mask_fid["/full_data"].attrs['save_interval']) + 1));
 #
 #    im_size = tuple(np.array(mask_fid["/full_data"].shape[1:])/reduce_fractor)
-#    
+#
 #    I_worms = np.zeros((expected_size, im_size[0],im_size[1]), dtype = np.uint8)
-#    
+#
 #    if np.all(mask_fid["/full_data"][1,:,:]==0):
 #        save_interval = mask_fid["/full_data"].attrs['save_interval']
 #        for frame in range(expected_size):
-#            
+#
 #            I_worms[frame, :,:] = cv2.resize(mask_fid["/full_data"][frame*save_interval,:,:], im_size);
-#        
+#
 #    else:
 #        for frame in range(expected_size):
 #            I_worms[frame, :,:] = cv2.resize(mask_fid["/full_data"][frame,:,:], im_size);
-#        
-#        
+#
+#
 #    fi.write_multipage(I_worms, tiff_file, fi.IO_FLAGS.TIFF_LZW)
 
 
-root_dir = '/Users/ajaver/Downloads/wetransfer-2af646/' #'/Volumes/ajaver$/GeckoVideo/Compressed/'
+# '/Volumes/ajaver$/GeckoVideo/Compressed/'
+root_dir = '/Users/ajaver/Downloads/wetransfer-2af646/'
 base_file = 'CaptureTest_90pc_Ch3_21022015_205929'
 
 masked_image_file = root_dir + base_file + '.hdf5'
 tiff_file = root_dir + base_file + '_mask_deflate.tiff'
-    
-mask_fid = h5py.File(masked_image_file, "r");
-    
+
+mask_fid = h5py.File(masked_image_file, "r")
+
 fi.write_multipage(mask_fid["/mask"], tiff_file, fi.IO_FLAGS.TIFF_DEFLATE)
 
 
@@ -53,11 +54,11 @@ fi.write_multipage(mask_fid["/mask"], tiff_file, fi.IO_FLAGS.TIFF_DEFLATE)
 #root_dir = '/Volumes/ajaver$/GeckoVideo/Compressed/'
 #base_file = 'CaptureTest_90pc_Ch1%i_20022015_183607'
 #
-#for ch_ind in range(1,2):
+# for ch_ind in range(1,2):
 #    channel_file = (base_file % ch_ind)
 #    masked_image_file = root_dir + channel_file + '.hdf5'
 #    tiff_file = root_dir + channel_file + '_full.tiff'
-#    
+#
 #    mask_fid = h5py.File(masked_image_file, "r");
-#    
+#
 #    save_full_frames(mask_fid, tiff_file, reduce_fractor = 8)

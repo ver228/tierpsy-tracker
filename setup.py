@@ -11,4 +11,4 @@ setup(name='MWTracker',
       author_email='avelino.javer@imperial.ac.uk',
       url='https://github.com/ver228/Multiworm_Tracking',
       packages=['MWTracker'],
-     )
+      )

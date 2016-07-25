@@ -22,9 +22,10 @@ class Ui_GetMaskParams(object):
         self.gridLayout_3.setContentsMargins(11, 11, 11, 11)
         self.gridLayout_3.setSpacing(6)
         self.gridLayout_3.setObjectName("gridLayout_3")
-        self.checkBox_isFluorescence = QtWidgets.QCheckBox(self.centralWidget)
-        self.checkBox_isFluorescence.setObjectName("checkBox_isFluorescence")
-        self.gridLayout_3.addWidget(self.checkBox_isFluorescence, 8, 0, 1, 2)
+        self.checkBox_isLightBgnd = QtWidgets.QCheckBox(self.centralWidget)
+        self.checkBox_isLightBgnd.setChecked(True)
+        self.checkBox_isLightBgnd.setObjectName("checkBox_isLightBgnd")
+        self.gridLayout_3.addWidget(self.checkBox_isLightBgnd, 8, 0, 1, 2)
         self.label_5 = QtWidgets.QLabel(self.centralWidget)
         self.label_5.setObjectName("label_5")
         self.gridLayout_3.addWidget(self.label_5, 7, 0, 1, 1)
@@ -290,7 +291,7 @@ class Ui_GetMaskParams(object):
     def retranslateUi(self, GetMaskParams):
         _translate = QtCore.QCoreApplication.translate
         GetMaskParams.setWindowTitle(_translate("GetMaskParams", "GetMaskParams"))
-        self.checkBox_isFluorescence.setText(_translate("GetMaskParams", "is fluorescence?"))
+        self.checkBox_isLightBgnd.setText(_translate("GetMaskParams", "is light background?"))
         self.label_5.setText(_translate("GetMaskParams", "Frames to average"))
         self.label_fps.setText(_translate("GetMaskParams", "Expected FPS"))
         self.label_6.setText(_translate("GetMaskParams", "Dilation"))

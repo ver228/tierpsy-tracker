@@ -8,14 +8,19 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_ImageViewer(object):
+
     def setupUi(self, ImageViewer):
         ImageViewer.setObjectName("ImageViewer")
         ImageViewer.resize(1645, 802)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred,
+            QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(ImageViewer.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            ImageViewer.sizePolicy().hasHeightForWidth())
         ImageViewer.setSizePolicy(sizePolicy)
         ImageViewer.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.centralWidget = QtWidgets.QWidget(ImageViewer)
@@ -39,10 +44,13 @@ class Ui_ImageViewer(object):
         self.comboBox_ROI1.setObjectName("comboBox_ROI1")
         self.gridLayout_3.addWidget(self.comboBox_ROI1, 1, 6, 1, 1)
         self.wormCanvas2 = QtWidgets.QLabel(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Ignored,
+            QtWidgets.QSizePolicy.Ignored)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.wormCanvas2.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.wormCanvas2.sizePolicy().hasHeightForWidth())
         self.wormCanvas2.setSizePolicy(sizePolicy)
         self.wormCanvas2.setFrameShape(QtWidgets.QFrame.Box)
         self.wormCanvas2.setFrameShadow(QtWidgets.QFrame.Sunken)
@@ -71,10 +79,13 @@ class Ui_ImageViewer(object):
         self.comboBox_ROI2.setObjectName("comboBox_ROI2")
         self.gridLayout_3.addWidget(self.comboBox_ROI2, 4, 6, 1, 1)
         self.wormCanvas1 = QtWidgets.QLabel(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Ignored,
+            QtWidgets.QSizePolicy.Ignored)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.wormCanvas1.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.wormCanvas1.sizePolicy().hasHeightForWidth())
         self.wormCanvas1.setSizePolicy(sizePolicy)
         self.wormCanvas1.setFrameShape(QtWidgets.QFrame.Box)
         self.wormCanvas1.setFrameShadow(QtWidgets.QFrame.Sunken)
@@ -89,13 +100,17 @@ class Ui_ImageViewer(object):
         self.comboBox_labelType.addItem("")
         self.comboBox_labelType.addItem("")
         self.gridLayout_3.addWidget(self.comboBox_labelType, 4, 1, 1, 1)
-        spacerItem = QtWidgets.QSpacerItem(600, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            600, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout_3.addItem(spacerItem, 4, 3, 1, 1)
         self.imageCanvas = QtWidgets.QLabel(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Ignored,
+            QtWidgets.QSizePolicy.Ignored)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.imageCanvas.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.imageCanvas.sizePolicy().hasHeightForWidth())
         self.imageCanvas.setSizePolicy(sizePolicy)
         self.imageCanvas.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.imageCanvas.setFrameShape(QtWidgets.QFrame.Box)
@@ -113,17 +128,22 @@ class Ui_ImageViewer(object):
         self.pushButton_ROI2_RW.setObjectName("pushButton_ROI2_RW")
         self.gridLayout_3.addWidget(self.pushButton_ROI2_RW, 4, 8, 1, 1)
         self.pushButton_ROI1_FF = QtWidgets.QPushButton(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum,
+            QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_ROI1_FF.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.pushButton_ROI1_FF.sizePolicy().hasHeightForWidth())
         self.pushButton_ROI1_FF.setSizePolicy(sizePolicy)
         self.pushButton_ROI1_FF.setObjectName("pushButton_ROI1_FF")
         self.gridLayout_3.addWidget(self.pushButton_ROI1_FF, 1, 9, 1, 1)
         self.gridLayout_4.addLayout(self.gridLayout_3, 0, 1, 1, 1)
-        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout_4.addItem(spacerItem1, 0, 2, 1, 1)
-        spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout_4.addItem(spacerItem2, 0, 0, 1, 1)
         self.gridLayout = QtWidgets.QGridLayout()
         self.gridLayout.setContentsMargins(11, 11, 11, 11)
@@ -137,10 +157,13 @@ class Ui_ImageViewer(object):
         self.lineEdit_video.setObjectName("lineEdit_video")
         self.gridLayout.addWidget(self.lineEdit_video, 3, 3, 1, 5)
         self.pushButton_video = QtWidgets.QPushButton(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_video.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.pushButton_video.sizePolicy().hasHeightForWidth())
         self.pushButton_video.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setPointSize(13)
@@ -155,10 +178,13 @@ class Ui_ImageViewer(object):
         self.label_frame.setObjectName("label_frame")
         self.gridLayout.addWidget(self.label_frame, 0, 0, 1, 1)
         self.pushButton_skel = QtWidgets.QPushButton(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_skel.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.pushButton_skel.sizePolicy().hasHeightForWidth())
         self.pushButton_skel.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setPointSize(13)
@@ -169,10 +195,13 @@ class Ui_ImageViewer(object):
         self.lineEdit_skel.setObjectName("lineEdit_skel")
         self.gridLayout.addWidget(self.lineEdit_skel, 4, 3, 1, 5)
         self.playButton = QtWidgets.QPushButton(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum,
+            QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.playButton.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.playButton.sizePolicy().hasHeightForWidth())
         self.playButton.setSizePolicy(sizePolicy)
         self.playButton.setCheckable(False)
         self.playButton.setObjectName("playButton")
@@ -183,10 +212,13 @@ class Ui_ImageViewer(object):
         self.spinBox_step.setObjectName("spinBox_step")
         self.gridLayout.addWidget(self.spinBox_step, 1, 1, 1, 1)
         self.label_fps = QtWidgets.QLabel(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum,
+            QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_fps.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.label_fps.sizePolicy().hasHeightForWidth())
         self.label_fps.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setPointSize(13)
@@ -195,10 +227,13 @@ class Ui_ImageViewer(object):
         self.label_fps.setObjectName("label_fps")
         self.gridLayout.addWidget(self.label_fps, 2, 0, 1, 1)
         self.doubleSpinBox_fps = QtWidgets.QDoubleSpinBox(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum,
+            QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.doubleSpinBox_fps.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.doubleSpinBox_fps.sizePolicy().hasHeightForWidth())
         self.doubleSpinBox_fps.setSizePolicy(sizePolicy)
         self.doubleSpinBox_fps.setMaximum(100.0)
         self.doubleSpinBox_fps.setProperty("value", 25.0)
@@ -233,10 +268,13 @@ class Ui_ImageViewer(object):
         self.pushButton_split.setObjectName("pushButton_split")
         self.gridLayout.addWidget(self.pushButton_split, 2, 4, 1, 1)
         self.pushButton_save = QtWidgets.QPushButton(self.centralWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum,
+            QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_save.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.pushButton_save.sizePolicy().hasHeightForWidth())
         self.pushButton_save.setSizePolicy(sizePolicy)
         self.pushButton_save.setObjectName("pushButton_save")
         self.gridLayout.addWidget(self.pushButton_save, 1, 7, 2, 1)
@@ -287,29 +325,48 @@ class Ui_ImageViewer(object):
         ImageViewer.setWindowTitle(_translate("ImageViewer", "ImageViewer"))
         self.checkBox_ROI1.setText(_translate("ImageViewer", "Skeleton"))
         self.checkBox_ROI2.setText(_translate("ImageViewer", "Skeleton"))
-        self.checkBox_showLabel.setText(_translate("ImageViewer", "Show Labels"))
+        self.checkBox_showLabel.setText(
+            _translate("ImageViewer", "Show Labels"))
         self.pushButton_ROI1_RW.setText(_translate("ImageViewer", "<<"))
-        self.comboBox_labelType.setItemText(0, _translate("ImageViewer", "Manual"))
-        self.comboBox_labelType.setItemText(1, _translate("ImageViewer", "Auto"))
-        self.pushButton_feats.setText(_translate("ImageViewer", "Calc Individual Feat"))
+        self.comboBox_labelType.setItemText(
+            0, _translate("ImageViewer", "Manual"))
+        self.comboBox_labelType.setItemText(
+            1, _translate("ImageViewer", "Auto"))
+        self.pushButton_feats.setText(
+            _translate(
+                "ImageViewer",
+                "Calc Individual Feat"))
         self.pushButton_ROI2_FF.setText(_translate("ImageViewer", ">>"))
         self.pushButton_ROI2_RW.setText(_translate("ImageViewer", "<<"))
         self.pushButton_ROI1_FF.setText(_translate("ImageViewer", ">>"))
-        self.pushButton_video.setText(_translate("ImageViewer", "Select Video File"))
+        self.pushButton_video.setText(
+            _translate(
+                "ImageViewer",
+                "Select Video File"))
         self.label_frame.setText(_translate("ImageViewer", "Frame"))
-        self.pushButton_skel.setText(_translate("ImageViewer", "Select Skeletons File"))
+        self.pushButton_skel.setText(
+            _translate(
+                "ImageViewer",
+                "Select Skeletons File"))
         self.playButton.setText(_translate("ImageViewer", "Play"))
         self.label_fps.setText(_translate("ImageViewer", "FPS display"))
         self.comboBox_h5path.setItemText(0, _translate("ImageViewer", "/mask"))
-        self.comboBox_h5path.setItemText(1, _translate("ImageViewer", "/full_data"))
+        self.comboBox_h5path.setItemText(
+            1, _translate("ImageViewer", "/full_data"))
         self.label_step.setText(_translate("ImageViewer", "Step Size"))
-        self.pushButton_join.setText(_translate("ImageViewer", "Join Trajectory"))
-        self.pushButton_split.setText(_translate("ImageViewer", "Split Trajectory"))
+        self.pushButton_join.setText(
+            _translate(
+                "ImageViewer",
+                "Join Trajectory"))
+        self.pushButton_split.setText(
+            _translate(
+                "ImageViewer",
+                "Split Trajectory"))
         self.pushButton_save.setText(_translate("ImageViewer", "SAVE"))
         self.pushButton_U.setText(_translate("ImageViewer", "Undefined"))
         self.pushButton_W.setText(_translate("ImageViewer", "Single Worms"))
         self.pushButton_WS.setText(_translate("ImageViewer", "Worm Cluster"))
         self.pushButton_B.setText(_translate("ImageViewer", "Bad"))
-        self.pushButton_h5groups.setText(_translate("ImageViewer", "Update Groups"))
+        self.pushButton_h5groups.setText(
+            _translate("ImageViewer", "Update Groups"))
         self.toolBar.setWindowTitle(_translate("ImageViewer", "toolBar"))
-

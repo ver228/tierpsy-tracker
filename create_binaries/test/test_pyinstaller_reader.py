@@ -4,7 +4,7 @@ if getattr(sys, 'frozen', False):
     print(sys._MEIPASS)
 else:
     print('Not frozen.')
-    
+
 
 import traceback
 from MWTracker.compressVideos.compressVideo import selectVideoReader
@@ -23,4 +23,9 @@ if __name__ == '__main__':
     except Exception as e:
         print(e)
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        traceback.print_exception(exc_type, exc_value, exc_traceback,limit=2, file=sys.stdout)
+        traceback.print_exception(
+            exc_type,
+            exc_value,
+            exc_traceback,
+            limit=2,
+            file=sys.stdout)

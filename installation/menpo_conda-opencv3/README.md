@@ -1,0 +1,1 @@
+This code is based on the [menpo/conda-opencv3](https://github.com/menpo/conda-opencv3) repository.
