@@ -6,6 +6,9 @@ OPENWORM_DIR=$MW_MAIN_DIR/../open-worm-analysis-toolbox
 OPENCV_DIR=$MW_MAIN_DIR/../opencv
 OPENCV_VER="3.1.0"
 
+EXAMPLES_LINK="https://imperiallondon-my.sharepoint.com/personal/ajaver_ic_ac_uk/_layouts/15/guestaccess.aspx?guestaccesstoken=ldZ18fLY%2bzlu7XuO9mbKVdyiKoH4naiesqiLXWU4vGQ%3d&docid=0cec4e52f4ccf4d5b8bb3a737020fc12f&rev=1"
+EXAMPLES_DIR="$MW_MAIN_DIR/Tests/Data/"
+
 OS=$(uname -s)
 
 #############
@@ -92,7 +95,7 @@ function install_dependencies_linux {
 }
 
 function ubuntu_dependencies {
-	sudo apt-get install -y curl git ffmpeg
+	sudo apt-get install -y curl git ffmpeg unzip
 	#opencv3 dependencies http://docs.opencv.org/3.0-beta/doc/tutorials/introduction/linux_install/linux_install.html
 	#[required]
 	sudo apt-get install -y build-essential cmake libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
@@ -200,24 +203,32 @@ function install_main_modules {
 	python3 setup.py develop
 }
 
+function download_examples {
+	curl -L $EXAMPLES_LINK -o test_data.zip
+	rm -rf $EXAMPLES_DIR || : 
+	mkdir $EXAMPLES_DIR
+	unzip test_data.zip -d $EXAMPLES_DIR
+	rm test_data.zip
+}
 
 ##########
 
-case "${OS}" in
-	"Darwin")
-	install_dependencies_osx || :
-	;;
+# case "${OS}" in
+# 	"Darwin")
+# 	install_dependencies_osx || :
+# 	;;
 	
-	"Linux"*)
-	install_dependencies_linux || :
-	;;
-esac
+# 	"Linux"*)
+# 	install_dependencies_linux || :
+# 	;;
+# esac
 
-if [[ $1 == 'brew' ]]; then
-	install_homebrew_python
-else
-	install_anaconda
-fi
+# if [[ $1 == 'brew' ]]; then
+# 	install_homebrew_python
+# else
+# 	install_anaconda
+# fi
 
-compile_cython_files
-install_main_modules
+# compile_cython_files
+# install_main_modules
+download_examples

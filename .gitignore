@@ -5,3 +5,4 @@ MWTracker.egg-info/*
 *.dropbox.attr
 
 MWTracker/trackWorms/segWormPython/cythonFiles/linearSkeleton_cython.cpython-35m-x86_64-linux-gnu.so
+Tests/Data/*
