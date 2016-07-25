@@ -207,10 +207,10 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
             ske_file_id.remove_node('/', 'trajectories_data')
             newT.rename('trajectories_data')
 
-        self.updateSkelFile()
+        self.updateSkelFile(self.skeletons_file)
 
-    def updateSkelFile(self):
-        super().updateSkelFile()
+    def updateSkelFile(self, skeletons_file):
+        super().updateSkelFile(self.skeletons_file)
         if not self.skeletons_file or not isinstance(
                 self.trajectories_data, pd.DataFrame):
             return
