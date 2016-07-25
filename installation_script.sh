@@ -213,22 +213,22 @@ function download_examples {
 
 ##########
 
-# case "${OS}" in
-# 	"Darwin")
-# 	install_dependencies_osx || :
-# 	;;
+case "${OS}" in
+	"Darwin")
+	install_dependencies_osx || :
+	;;
 	
-# 	"Linux"*)
-# 	install_dependencies_linux || :
-# 	;;
-# esac
+	"Linux"*)
+	install_dependencies_linux || :
+	;;
+esac
 
-# if [[ $1 == 'brew' ]]; then
-# 	install_homebrew_python
-# else
-# 	install_anaconda
-# fi
+if [[ $1 == 'brew' ]]; then
+	install_homebrew_python
+else
+	install_anaconda
+fi
 
-# compile_cython_files
-# install_main_modules
+compile_cython_files
+install_main_modules
 download_examples
