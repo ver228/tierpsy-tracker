@@ -141,17 +141,19 @@ class BatchProcessing_GUI(QMainWindow):
         is_enable = self.ui.checkBox_isCompress.isChecked()
         self.ui.pushButton_videosDir.setEnabled(is_enable)
         self.ui.lineEdit_videosDir.setEnabled(is_enable)
-        self.ui.label_comp.setEnabled(is_enable)
-        self.ui.lineEdit_patternExcComp.setEnabled(is_enable)
-        self.ui.lineEdit_patternInComp.setEnabled(is_enable)
+        if not self.ui.checkBox_txtFileList.isChecked():
+            self.ui.label_comp.setEnabled(is_enable)
+            self.ui.lineEdit_patternExcComp.setEnabled(is_enable)
+            self.ui.lineEdit_patternInComp.setEnabled(is_enable)
 
     def enableTrackInput(self):
         is_enable = self.ui.checkBox_isTrack.isChecked()
         self.ui.pushButton_resultsDir.setEnabled(is_enable)
         self.ui.lineEdit_resultsDir.setEnabled(is_enable)
-        self.ui.label_track.setEnabled(is_enable)
-        self.ui.lineEdit_patternExcTrack.setEnabled(is_enable)
-        self.ui.lineEdit_patternInTrack.setEnabled(is_enable)
+        if not self.ui.checkBox_txtFileList.isChecked():
+            self.ui.label_track.setEnabled(is_enable)
+            self.ui.lineEdit_patternExcTrack.setEnabled(is_enable)
+            self.ui.lineEdit_patternInTrack.setEnabled(is_enable)
 
     def getVideosDir(self):
         videos_dir = QFileDialog.getExistingDirectory(
@@ -309,7 +311,7 @@ class BatchProcessing_GUI(QMainWindow):
         track_vals['is_single_worm'] = self.ui.checkBox_isSingleWorm.isChecked()
         track_vals['json_file'] = self.ui.lineEdit_paramFile.text()
         if self.ui.checkBox_txtFileList.isChecked():
-            track_vals['videos_list'] = self.ui.lineEdit_txtFileList.value()
+            track_vals['videos_list'] = self.ui.lineEdit_txtFileList.text()
         else:
             track_vals[
                 'pattern_include'] = self.ui.lineEdit_patternInTrack.text()
