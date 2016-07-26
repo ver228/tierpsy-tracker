@@ -8,7 +8,6 @@ import glob
 import MWTracker
 
 def execute_cmd(command):
-
     cmd_dd = []
     for ii, x in enumerate(command):
         if ii != 0 and not x.startswith('--'):
@@ -24,10 +23,6 @@ def execute_cmd(command):
 
 def remove_dir(dir2remove):
     if os.path.exists(dir2remove):
-        if os.name != 'nt':
-            for fname in glob.glob(os.path.join(dir2remove, '*.hdf5')):
-                os.chflags(fname, not stat.UF_IMMUTABLE)
-
         shutil.rmtree(dir2remove)
 
 
