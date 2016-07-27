@@ -32,6 +32,7 @@ fi
 
 if [ $PY3K -eq 1 ]; then
     OCV_PYTHON="-DBUILD_opencv_python3=1 -DBUILD_opencv_python2=0 -DPYTHON_EXECUTABLE=`which python3`
+    -DPYTHON3_EXECUTABLE=`which python3` 
     -DPYTHON3_INCLUDE_DIR=`python3 -c "import sysconfig; print(sysconfig.get_path('platinclude'))"`
     -DPYTHON3_LIBRARY=`python3 -c "import sysconfig; print(sysconfig.get_path('platstdlib'))"`
     -DPYTHON3_PACKAGES_PATH=`python3 -c "import sysconfig; print(sysconfig.get_path('platlib'))"`
