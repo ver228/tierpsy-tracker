@@ -183,12 +183,11 @@ function compile_cython_files {
 }
 
 function install_main_modules {
-
 	git clone https://github.com/openworm/open-worm-analysis-toolbox $OPENWORM_DIR || :
 	cd $OPENWORM_DIR
-	git pull origin HEAD
+	git pull origin HEAD || :
+	
 	cd $MW_MAIN_DIR
-
 	chmod -R ugo+rx $MW_MAIN_DIR/../open-worm-analysis-toolbox
 
 	USER_CONFIG=$OPENWORM_DIR/open_worm_analysis_toolbox/user_config.py

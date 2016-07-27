@@ -247,7 +247,7 @@ class checkVideoFiles:
             assert masked_image_file[-5:] == '.hdf5'
 
             # delete wrong file from previous analysis
-            if os.name != 'nt':
+            if sys.platform == 'darwin':
                 os.chflags(masked_image_file, not stat.UF_IMMUTABLE)
             os.remove(masked_image_file)
 
