@@ -46,6 +46,7 @@ def ffprobeMetadata(video_file):
         '-print_format',
         'json',
         video_file]
+    
     FNULL = open(os.devnull, 'w')
     pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.PIPE)
     buff = pipe.stdout.read()

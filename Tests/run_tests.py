@@ -23,6 +23,9 @@ def execute_cmd(command):
 
 def remove_dir(dir2remove):
     if os.path.exists(dir2remove):
+        if sys.platform == 'darwin':
+            for fname in glob.glob(os.path.join(dir2remove, '*.hdf5')):
+                os.chflags(fname, not stat.UF_IMMUTABLE)
         shutil.rmtree(dir2remove)
 
 
@@ -132,5 +135,5 @@ if __name__ == '__main__':
     examples_dir = os.path.join(root_dir, 'Tests', 'Data')
     script_dir = os.path.join(root_dir, 'cmd_scripts')
 
-    for fun in [test1, test2, test3, test4, test5]:
+    for fun in [test1, test2, test3, test4]#:, test5]:
         fun(script_dir, examples_dir)

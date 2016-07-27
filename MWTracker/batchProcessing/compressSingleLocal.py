@@ -14,7 +14,7 @@ import subprocess
 import time
 import datetime
 
-from .compressSingleWorker import compressSingleWorker
+from  MWTracker.batchProcessing.compressSingleWorker import compressSingleWorker
 import argparse
 
 from MWTracker.helperFunctions.miscFun import print_flush
