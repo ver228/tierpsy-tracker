@@ -384,6 +384,10 @@ def _initializeSkeletonsArrays(ske_file_id, tot_rows, resampling_N, worm_midbody
         Used by trajectories2Skeletons
     '''
 
+    # this is to initialize the arrays to one row, pytables do not accept empty arrays as initializers of carrays
+    if tot_rows == 0:
+        tot_rows = 1  
+
     skel_arrays = {}
     # initialize compressed arrays to save the data. Note that the data
     # will be sorted according to trajectories_df
@@ -456,10 +460,6 @@ def _getSaveTrajectoriesData(trajectories_file, skeletons_file, masked_image_fil
     #create a smoothed trajectories table from the trajectories file
     trajectories_df, _, tot_rows, timestamp_raw, timestamp_time = \
         _getSmoothTrajectories(trajectories_file, **smoothed_traj_param)
-
-    # this is to initialize the arrays to one row, pytables do not accept empty arrays as initializers of carrays
-    if tot_rows == 0:
-        tot_rows = 1  
 
     # pytables saving format is more convenient...
     with tables.File(skeletons_file, "w") as ske_file_id, tables.File(masked_image_file, 'r') as mask_fid:
