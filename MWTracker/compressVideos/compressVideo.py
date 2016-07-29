@@ -51,15 +51,19 @@ def getROIMask(
     #let's add a median filter, this will smooth the image, and eliminate small variations in intensity
     image = median_filter(image, 5)
 
-
-    # invert the threshold if we are dealing with a fluorescence image
-    if not is_light_background:  
-        thresh_C = -thresh_C
-
     # adaptative threshold is the best way to find possible worms. The
     # parameters are set manually, they seem to work fine if there is no
     # condensation in the sample
-    mask = cv2.adaptiveThreshold(
+    if not is_light_background:  # invert the threshold (change thresh_C->-thresh_C and cv2.THRESH_BINARY_INV->cv2.THRESH_BINARY) if we are dealing with a fluorescence image
+        mask = cv2.adaptiveThreshold(
+            image,
+            255,
+            cv2.ADAPTIVE_THRESH_MEAN_C,
+            cv2.THRESH_BINARY,
+            thresh_block_size,
+            -thresh_C)
+    else:
+        mask = cv2.adaptiveThreshold(
             image,
             255,
             cv2.ADAPTIVE_THRESH_MEAN_C,
