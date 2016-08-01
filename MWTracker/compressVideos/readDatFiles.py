@@ -14,7 +14,6 @@ class readDatFiles:
             exit()
 
         self.files = glob.glob(os.path.join(self.fid, '*.dat'))
-
         # TODO: figure out how to really do this. This file order works half of the time
         # get the order of the frames from the file name.
         file_num_str = [os.path.split(x)[1].partition('spool')[
