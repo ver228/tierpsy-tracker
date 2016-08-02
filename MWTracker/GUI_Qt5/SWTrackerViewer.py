@@ -33,8 +33,8 @@ class SWTrackerViewer_GUI(TrackerViewerAux_GUI):
             self.vfilename = mask_file
             self.updateVideoFile()
 
-    def updateSkelFile(self):
-        super().updateSkelFile()
+    def updateSkelFile(self, skel_file):
+        super().updateSkelFile(skel_file)
         try:
 
             with tables.File(self.skeletons_file, 'r') as fid:
