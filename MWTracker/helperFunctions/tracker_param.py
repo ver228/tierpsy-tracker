@@ -27,7 +27,7 @@ dflt_param_list = [
     ('worm_bw_thresh_factor', 1.05, 'This factor multiplies the threshold used to binarize the individual worms image.'),
     ('resampling_N', 49, 'number of segments used to renormalize the worm skeleton and contours.'),
     ('max_gap_allowed_block', 10, ''),
-    ('fps_filter', -1, 'frame per second used to calcular filters for trajectories. As default it will have the same value as expected_fps. Set to zero to eliminate filtering.'),
+    ('fps_filter', -1, 'frame per second used to calculate filters for trajectories. As default it will have the same value as expected_fps. Set to zero to eliminate filtering.'),
     ('strel_size', 5, ''),
     ('filt_bad_seg_thresh', 0.8, 'minimum fraction of succesfully skeletonized frames in a worm trajectory to be considered valid'),
     ('filt_min_displacement', 10, 'minimum total displacement of a trajectory to be used to calculate the threshold to dectect bad skeletons.'),
@@ -115,12 +115,12 @@ class tracker_param:
             'expected_fps': expected_fps}
         
         # getWormTrajectories
-        min_track_lenght = max(1, fps_filter / 5)
+        min_track_length = max(1, fps_filter / 5)
         self.trajectories_param = {
             'initial_frame': 0,
             'last_frame': -1,
             'min_area': min_area / 2,
-            'min_length': min_track_lenght,
+            'min_length': min_track_length,
             'max_allowed_dist': traj_max_allowed_dist,
             'area_ratio_lim': (
                 0.5,
