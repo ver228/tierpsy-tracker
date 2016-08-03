@@ -161,7 +161,7 @@ def _getWormFeatures(
     hull = cv2.convexHull(worm_cnt)  # for the solidity
     solidity = area / cv2.contourArea(hull)
     perimeter = float(cv2.arcLength(worm_cnt, True))
-    compactness = area / (4 * np.pi * perimeter**2)
+    compactness = 4 * np.pi * area / (perimeter**2)
 
     # calculate the mean intensity of the worm
     worm_mask = np.zeros(ROI_image.shape, dtype=np.uint8)
