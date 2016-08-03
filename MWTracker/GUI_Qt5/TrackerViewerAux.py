@@ -93,7 +93,7 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
 
     def updateVideoFile(self, vfilename):
         super().updateVideoFile(vfilename)
-        if not type(self.image_group) is tables.array.ImageArray:
+        if type(self.image_group) is int:
             return
 
         #find if it is a fluorescence image
@@ -113,7 +113,6 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
 
         for new_dir in possible_dirs:
             new_skel_file = os.path.join(new_dir, basename + '_skeletons.hdf5')
-
             if os.path.exists(new_skel_file):
                 self.skeletons_file = new_skel_file
                 self.results_dir = new_dir
