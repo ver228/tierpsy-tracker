@@ -62,7 +62,7 @@ class plate_worms(tables.IsDescription):
 
 def _getWormThreshold(pix_valid):
     
-    # calculate otsu_threshold as lower limit. Otsu understimate the threshold.
+    # calculate otsu_threshold as lower limit. Otsu understimates the threshold.
     try:
         otsu_thresh = threshold_otsu(pix_valid)
     except:
@@ -108,7 +108,7 @@ def _getWormContours(ROI_image, threshold, strel_size=(5, 5), is_light_backgroun
         valid_ind = 0
     else:
         # consider the case where there is more than one contour in the blob
-        # i.e. the is a neiboring ROI in the square, just keep the largest area
+        # i.e. there is a neighboring ROI in the square, just keep the largest area
         ROI_area = [cv2.contourArea(x) for x in ROI_border_ind]
         valid_ind = np.argmax(ROI_area)
         ROI_valid = np.zeros_like(ROI_valid)
@@ -120,9 +120,10 @@ def _getWormContours(ROI_image, threshold, strel_size=(5, 5), is_light_backgroun
     ROI_mask = ROI_image < threshold if is_light_background else ROI_image > threshold
     ROI_mask = (ROI_mask & (ROI_image != 0)).astype(np.uint8)
     
-    # clean it using morphological closing
-    strel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, strel_size)
-    ROI_mask = cv2.morphologyEx(ROI_mask, cv2.MORPH_CLOSE, strel)
+    # clean it using morphological closing - make this optional by setting strel_size to 0
+    if np.all(strel_size):
+        strel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, strel_size)
+        ROI_mask = cv2.morphologyEx(ROI_mask, cv2.MORPH_CLOSE, strel)
 
     # get worms, assuming each contour in the ROI is a worm
     [_, ROI_worms, hierarchy] = cv2.findContours(
@@ -349,12 +350,12 @@ def getWormTrajectories(
             # examinate each region of interest
             for ROI_cnt in ROI_cnts:
                 ROI_bbox = cv2.boundingRect(ROI_cnt)
-                # boudning box too small to be a worm
+                # bounding box too small to be a worm
                 if ROI_bbox[1] < min_length or ROI_bbox[3] < min_length:
                     continue
 
                 # select ROI for all buffer slides and apply a median filter to
-                # sharp edgers
+                # sharp edges
                 ROI_buffer = image_buffer[
                     :,
                     ROI_bbox[1]:(
