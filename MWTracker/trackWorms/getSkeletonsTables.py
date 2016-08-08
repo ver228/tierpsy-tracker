@@ -560,7 +560,7 @@ def trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file,
         prev_skeleton = {}
 
         # timer
-        progressTime = timeCounterStr('Calculation skeletons.')
+        progressTime = timeCounterStr('Calculating skeletons.')
         for frame, frame_data in trajectories_df.groupby('frame_number'):
             img = mask_dataset[frame, :, :]
             for skeleton_id, row_data in frame_data.iterrows():
