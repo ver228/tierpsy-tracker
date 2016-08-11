@@ -46,6 +46,7 @@ class start_process():
 
         if local_obj:
             with CapturingOutput() as output:
+                
                 self.obj_cmd = local_obj(cmd[1:])
                 self.cmd = self.obj_cmd.start()
             self.output += output

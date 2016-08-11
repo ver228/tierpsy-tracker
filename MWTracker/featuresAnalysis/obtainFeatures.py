@@ -5,12 +5,9 @@ Created on Thu Jun  4 11:30:53 2015
 @author: ajaver
 """
 import os
-import sys
-#import sys
 import tables
 import pandas as pd
 import numpy as np
-from math import floor, ceil
 
 import warnings
 warnings.filterwarnings('ignore', '.*empty slice*',)
@@ -21,11 +18,10 @@ warnings.simplefilter(action="ignore", category=RuntimeWarning)
 # (http://www.pytables.org/usersguide/parameter_files.html)
 tables.parameters.MAX_COLUMNS = 1024
 
-from collections import OrderedDict
-
 from MWTracker.helperFunctions.timeCounterStr import timeCounterStr
 from MWTracker.helperFunctions.miscFun import print_flush
-from MWTracker.featuresAnalysis.obtainFeaturesHelper import WormStatsClass, WormFromTable, getValidIndexes, isBadVentralOrient
+from MWTracker.featuresAnalysis.obtainFeaturesHelper import WormStatsClass, WormFromTable, getValidIndexes
+from MWTracker.featuresAnalysis.correctVentralDorsal import isBadVentralOrient
 from MWTracker.helperFunctions.miscFun import WLAB
 
 import open_worm_analysis_toolbox as mv
@@ -327,6 +323,9 @@ def getWormFeatures(
             ' Feature extraction finished: ' +
             progress_timer.getTimeStr())
 
+def hasManualJoin(skeletons_file):
+    with tables.File(skeletons_file, 'r') as fid:
+        return any(x in fid.get_node('/trajectories_data').colnames for x in ['worm_index_manual', 'worm_index_N'])
 
 def getWormFeaturesFilt(
         skeletons_file,
@@ -337,6 +336,14 @@ def getWormFeaturesFilt(
         expected_fps,
         feat_filt_param):
     assert (use_skel_filter or use_manual_join) or feat_filt_param
+    if use_manual_join:
+        assert hasManualJoin(skeletons_file)
+
+    if use_manual_join:
+        worm_index_str = 'worm_index_manual' if 'worm_index_manual' in trajectories_data else 'worm_index_N'
+    else:
+        worm_index_str = 'worm_index_joined'
+
 
     if not (use_manual_join or use_skel_filter):
         # filter using the parameters in feat_filt_param
@@ -344,10 +351,9 @@ def getWormFeaturesFilt(
             x: feat_filt_param[x] for x in [
                 'min_num_skel',
                 'bad_seg_thresh',
-                'min_dist']}
+                'min_displacement']}
         good_traj_index, _ = getValidIndexes(
-            skeletons_file, **dd, use_manual_join=use_manual_join)
-
+            skeletons_file, **dd)
     else:
         with pd.HDFStore(skeletons_file, 'r') as table_fid:
             trajectories_data = table_fid['/trajectories_data']
@@ -362,10 +368,7 @@ def getWormFeaturesFilt(
             good = trajectories_data['is_good_skel'] == 1
             trajectories_data = trajectories_data[good]
 
-        if use_manual_join:
-            worm_index_str = 'worm_index_manual' if 'worm_index_manual' in trajectories_data else 'worm_index_N'
-        else:
-            worm_index_str = 'worm_index_joined'
+        
         assert worm_index_str in trajectories_data
 
         N = trajectories_data.groupby(worm_index_str).agg(

@@ -164,31 +164,11 @@
         <item row="3" column="3">
          <widget class="QSpinBox" name="spinBox_numMaxProc"/>
         </item>
-        <item row="4" column="1">
-         <widget class="QLineEdit" name="lineEdit_patternInTrack"/>
-        </item>
-        <item row="4" column="2">
-         <widget class="QLineEdit" name="lineEdit_patternExcTrack"/>
-        </item>
         <item row="3" column="2">
-         <widget class="QLineEdit" name="lineEdit_patternExcComp"/>
+         <widget class="QLineEdit" name="lineEdit_patternExc"/>
         </item>
         <item row="3" column="1">
-         <widget class="QLineEdit" name="lineEdit_patternInComp"/>
-        </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="label_track">
-          <property name="text">
-           <string>Tracking</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_comp">
-          <property name="text">
-           <string>Compression</string>
-          </property>
-         </widget>
+         <widget class="QLineEdit" name="lineEdit_patternIn"/>
         </item>
         <item row="2" column="1">
          <widget class="QLabel" name="label_patternIn">

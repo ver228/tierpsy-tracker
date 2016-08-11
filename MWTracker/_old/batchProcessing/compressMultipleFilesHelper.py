@@ -93,7 +93,7 @@ def getDstDir(source_dir, source_root_dir, dst_root_dir):
     return dst_dir
 
 
-class checkVideoFiles:
+class checkVideoFiles(object):
 
     def __init__(self, video_dir_root, mask_dir_root,
                  tmp_dir_root='', is_copy_video=False,
@@ -185,18 +185,6 @@ class checkVideoFiles:
         print(
             'Finished to check files. Total time elapsed %s' %
             progress_timer.getTimeStr())
-
-    # @staticmethod
-    # def checkMaskPrefix(fdir):
-    # 	#check if the root dir has a subfolder MaskedVideos otherwise add it to the end
-    # 	N = sum('MaskedVideos' == part for part in fdir.split(os.sep))
-
-    # 	if N > 1:
-    # 		raise ValueError('Only one subdirectory is allowed to be named "MaskedVideos"')
-
-    # 	if N == 0:
-    # 		fdir =  os.path.join(fdir, 'MaskedVideos')
-    # 	return os.path.abspath(fdir)
 
     def getCMDlist(self):
         good_video_files = self.filtered_files['SOURCE_GOOD']

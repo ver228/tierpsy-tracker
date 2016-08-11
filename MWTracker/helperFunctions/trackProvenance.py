@@ -33,14 +33,14 @@ def execThisPoint(
         thisPoint,
         func,
         argkws,
-        output_file,
+        provenance_file,
         commit_hash,
         cmd_original):
     # execute the function
     func(**argkws)
 
     # make sure the file was created correctly
-    assert os.path.exists(output_file)
+    assert os.path.exists(provenance_file)
 
     # this are the variables that are going to be stored
     variables2save = {
@@ -51,7 +51,7 @@ def execThisPoint(
     variables2save = bytes(json.dumps(variables2save), 'utf-8')
 
     # store the variables in the correct node
-    with tables.File(output_file, 'r+') as fid:
+    with tables.File(provenance_file, 'r+') as fid:
         main_node = 'provenance_tracking'
         if not '/' + main_node in fid:
             fid.create_group('/', main_node)

@@ -215,6 +215,7 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
                 self.trajectories_data, pd.DataFrame):
             return
 
+        #correct the index in case it was given before as worm_index_N
         if 'worm_index_N' in self.trajectories_data:
             self.trajectories_data.rename(
                 columns={'worm_index_N': 'worm_index_manual'})

@@ -22,7 +22,7 @@ from MWTracker.intensityAnalysis.getIntensityProfile import getIntensityProfile
 from MWTracker.intensityAnalysis.correctHeadTailIntensity import correctHeadTailIntensity
 
 from MWTracker.featuresAnalysis.obtainFeatures import getWormFeaturesFilt
-from MWTracker.featuresAnalysis.obtainFeaturesHelper import switchCntSingleWorm
+from MWTracker.featuresAnalysis.correctVentralDorsal import switchCntSingleWorm, hasExpCntInfo
 
 from MWTracker.helperFunctions.tracker_param import tracker_param
 from MWTracker.helperFunctions.trackProvenance import getGitCommitHash, execThisPoint
@@ -137,20 +137,6 @@ def isBadStageAligment(skeletons_file):
         return not good_aligment in [1, 2]
 
 
-def hasExpCntInfo(skeletons_file):
-    # i'm reading this data twice (one more in switchCntSingleWorm), but I think this is cleaner
-    # from a function organization point of view.
-    with tables.File(skeletons_file, 'r') as fid:
-        if not '/experiment_info' in fid:
-            return True
-        exp_info_b = fid.get_node('/experiment_info').read()
-        exp_info = json.loads(exp_info_b.decode("utf-8"))
-
-        # print('ventral_side:{}'.format(exp_info['ventral_side']))
-        # only clockwise and anticlockwise are valid contour orientations
-        return not exp_info['ventral_side'] in ['clockwise', 'anticlockwise']
-
-
 def constructNames(masked_image_file, results_dir):
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
 
@@ -261,8 +247,7 @@ class getTrajectoriesWorker():
             },
             'SKE_FILT': {
                 'func': getFilteredSkels,
-                'argkws': {**{'skeletons_file': self.skeletons_file, 'use_skel_filter': self.use_skel_filter},
-                           **self.param.feat_filt_param},
+                'argkws': {**{'skeletons_file': self.skeletons_file}, **self.param.feat_filt_param},
                 'output_file': self.skeletons_file
             },
             'INT_PROFILE': {
@@ -347,7 +332,7 @@ class getTrajectoriesWorker():
                         break
 
                 if current_point == 'FEAT_CREATE':
-                    if hasExpCntInfo(self.skeletons_file):
+                    if not hasExpCntInfo(self.skeletons_file):
                         current_point = 'CONTOUR_ORIENT'
                         break
                     else:

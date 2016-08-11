@@ -329,7 +329,7 @@ def filterPossibleCoils(
     saveModifiedTrajData(skeletons_file, trajectories_data)
 
 
-def labelValidSkeletons(skeletons_file, good_skel_row, critical_alpha=0.01):
+def filterByPopulationMorphology(skeletons_file, good_skel_row, critical_alpha=0.01):
     base_name = getBaseName(skeletons_file)
     progress_timer = timeCounterStr('')
 
@@ -395,37 +395,34 @@ def labelValidSkeletons(skeletons_file, good_skel_row, critical_alpha=0.01):
 
 def getFilteredSkels(
         skeletons_file,
-        use_skel_filter,
         min_num_skel=100,
         bad_seg_thresh=0.8,
         min_displacement=5,
         critical_alpha=0.01,
         max_width_ratio=2.25,
         max_area_ratio=6):
+
     # check if the skeletonization finished succesfully
     with tables.File(skeletons_file, "r") as ske_file_id:
         skeleton_table = ske_file_id.get_node('/skeleton')
         assert skeleton_table._v_attrs['has_finished'] >= 1
 
-    try:
-        filterPossibleCoils(
-            skeletons_file,
-            max_width_ratio=max_width_ratio,
-            max_area_ratio=max_area_ratio)
-    except Exception:
-        import pdb
-        pdb.set_trace()
+    #eliminate skeletons that do not match a decent head, tail and body ratio. Likely to be coils. Taken from Segworm.
+    filterPossibleCoils(
+        skeletons_file,
+        max_width_ratio=max_width_ratio,
+        max_area_ratio=max_area_ratio)
 
-    if use_skel_filter:
-        # get valid rows using the trajectory displacement and the
-        # skeletonization success
-        good_traj_index, good_skel_row = getValidIndexes(
-            skeletons_file, min_num_skel=min_num_skel, bad_seg_thresh=bad_seg_thresh, min_dist=min_displacement)
+    # get valid rows using the trajectory displacement and the
+    # skeletonization success. These indexes will be used to calculate statistics of what represent a valid skeleton.
+    good_traj_index, good_skel_row = getValidIndexes(
+        skeletons_file, min_num_skel=min_num_skel, bad_seg_thresh=bad_seg_thresh, min_dist=min_displacement)
 
-        labelValidSkeletons(
-            skeletons_file,
-            good_skel_row,
-            critical_alpha=critical_alpha)
+    #filter skeletons depending the population morphology (area, width and length)
+    filterByPopulationMorphology(
+        skeletons_file,
+        good_skel_row,
+        critical_alpha=critical_alpha)
 
     with tables.File(skeletons_file, "r+") as ske_file_id:
         skeleton_table = ske_file_id.get_node('/skeleton')

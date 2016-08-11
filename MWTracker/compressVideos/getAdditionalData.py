@@ -183,6 +183,12 @@ def getAdditionalFiles(video_file):
 
     return info_file, stage_file
 
+def hasAdditionalFiles(video_file):
+    try:
+        getAdditionalFiles(video_file)
+        return True
+    except FileNotFoundError:
+        return False
 
 def _insertDirectory(original_file, dir2add):
     dd = os.path.split(original_file)

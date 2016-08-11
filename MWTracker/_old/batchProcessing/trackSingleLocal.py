@@ -344,7 +344,6 @@ class trackLocal:
 
 
 class trackLocal_parser(trackLocal):
-
     def __init__(self, sys_argv=''):
         if not sys_argv:
             sys_argv = sys.argv

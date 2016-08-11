@@ -1,14 +1,13 @@
 import json
-import h5py
 import os
 import numpy as np
 import cv2
 from functools import partial
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QGraphicsView, \
-    QCheckBox, QDoubleSpinBox, QSpinBox
-from PyQt5.QtCore import Qt, QThread
-from PyQt5.QtGui import QPixmap, QImage
+from PyQt5.QtWidgets import QApplication, QMainWindow, \
+QFileDialog, QMessageBox, QCheckBox
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QImage
 
 from MWTracker.GUI_Qt5.GetMaskParams_ui import Ui_GetMaskParams
 from MWTracker.GUI_Qt5.AnalysisProgress import WorkerFunQt, AnalysisProgress
@@ -18,8 +17,8 @@ from MWTracker.GUI_Qt5.GetAllParameters import GetAllParameters
 
 from MWTracker.helperFunctions.tracker_param import tracker_param
 from MWTracker.compressVideos.compressVideo import getROIMask, selectVideoReader, reduceBuffer
-from MWTracker.batchProcessing.compressSingleWorker import compressSingleWorker
-from MWTracker.batchProcessing.trackSingleWorker import getTrajectoriesWorker
+from MWTracker.batchProcessing.ProcessWormsWorker import ProcessWormsWorker
+from MWTracker.batchProcessing.helperFunc import getDefaultSequence
 
 class twoViewsWithZoom():
 
@@ -423,7 +422,6 @@ class GetMaskParams_GUI(QMainWindow):
             self.twoViews.zoomFitInView()
 
     def getNextChunk(self):
-
         if self.vid:
             # read the buffsize before getting the next chunk
             self.updateBuffSize()
@@ -516,28 +514,18 @@ class GetMaskParams_GUI(QMainWindow):
                         self, field_name).replace(
                         '/', os.sep))
 
-        compress_argvs = {
-            'video_file': self.video_file,
-            'mask_dir': self.mask_files_dir,
-            'json_file': self.json_file,
-            'is_single_worm': False}
-
-        track_argvs = {
-            'masked_image_file': self.masked_image_file,
+        analysis_argvs = {
+            'main_file': self.video_file,
+            'masks_dir': self.mask_files_dir,
             'results_dir': self.results_dir,
+            'analysis_checkpoints' : getDefaultSequence('All'),
             'json_file': self.json_file,
             'is_single_worm': False,
             'use_skel_filter': True,
-            'use_manual_join': False,
             'cmd_original': 'GUI'}
-
-        def complete_analysis(compress_argvs, track_argvs):
-            compressSingleWorker(**compress_argvs)
-            getTrajectoriesWorker(**track_argvs)
-
+            
         analysis_worker = WorkerFunQt(
-            complete_analysis, {
-                'compress_argvs': compress_argvs, 'track_argvs': track_argvs})
+            ProcessWormsWorker, analysis_argvs)
         progress_dialog = AnalysisProgress(analysis_worker)
         progress_dialog.setAttribute(Qt.WA_DeleteOnClose)
         progress_dialog.exec_()
