@@ -339,11 +339,13 @@ def getWormFeaturesFilt(
     if use_manual_join:
         assert hasManualJoin(skeletons_file)
 
+    with pd.HDFStore(skeletons_file, 'r') as table_fid:
+        colnames = table_fid.get_node('/trajectories_data').colnames
+
     if use_manual_join:
-        worm_index_str = 'worm_index_manual' if 'worm_index_manual' in trajectories_data else 'worm_index_N'
+        worm_index_str = 'worm_index_manual' if 'worm_index_manual' in colnames else 'worm_index_N'
     else:
         worm_index_str = 'worm_index_joined'
-
 
     if not (use_manual_join or use_skel_filter):
         # filter using the parameters in feat_filt_param
@@ -375,6 +377,8 @@ def getWormFeaturesFilt(
             {'has_skeleton': np.nansum})
         N = N[N > feat_filt_param['min_num_skel']].dropna()
         good_traj_index = N.index
+
+        
 
     # calculate features
     getWormFeatures(

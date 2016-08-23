@@ -416,7 +416,7 @@ def getFilteredSkels(
     # get valid rows using the trajectory displacement and the
     # skeletonization success. These indexes will be used to calculate statistics of what represent a valid skeleton.
     good_traj_index, good_skel_row = getValidIndexes(
-        skeletons_file, min_num_skel=min_num_skel, bad_seg_thresh=bad_seg_thresh, min_dist=min_displacement)
+        skeletons_file, min_num_skel=min_num_skel, bad_seg_thresh=bad_seg_thresh, min_displacement=min_displacement)
 
     #filter skeletons depending the population morphology (area, width and length)
     filterByPopulationMorphology(
