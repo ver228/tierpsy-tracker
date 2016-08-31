@@ -8,5 +8,5 @@ from MWTracker.batchProcessing.processMultipleFilesFun import trackMultipleFiles
 from MWTracker.batchProcessing.ProcessMultipleFilesParser import TrackMultipleFilesParser
 
 if __name__ == '__main__':
-    args = TrackMultipleFilesParser().parse_args()
-    trackMultipleFilesFun(**vars(args))
+	args = TrackMultipleFilesParser().parse_args()
+	trackMultipleFilesFun(**vars(args))

@@ -23,9 +23,8 @@ def processMultipleFiles(walk_args, check_args,
     
     files_checker = CheckFilesForProcessing(**check_args)
 
-
     cmd_list = files_checker.filterFiles(valid_files)
-
+    
     if not only_summary:
         # run all the commands
         print_cmd_list(cmd_list)
@@ -141,7 +140,6 @@ def _removePointFromSide(list_of_points, point, index):
         while list_of_points and \
         list_of_points[index] != point:
             list_of_points.pop(index)
-            print(list_of_points)
     if not list_of_points:
         raise ValueError("Point {} is not valid.".format(point))
 
