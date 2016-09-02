@@ -306,9 +306,7 @@ class WormFromTable(mv.NormalizedWorm):
                 '/skeleton_length')[skeleton_id] * microsPerPixel_abs
             self.widths[ind_ff] = ske_file_id.get_node(
                 '/contour_width')[skeleton_id, :] * microsPerPixel_abs
-            self.area[ind_ff] = ske_file_id.get_node(
-                '/contour_area')[skeleton_id] * (microsPerPixel_abs**2)
-
+            
             #print('reading ventral contours...')
             self.ventral_contour[ind_ff] = ske_file_id.get_node(
                 '/contour_side1')[skeleton_id, :, :] * micronsPerPixel
@@ -316,6 +314,14 @@ class WormFromTable(mv.NormalizedWorm):
             #print('reading dorsal contours...')
             self.dorsal_contour[ind_ff] = ske_file_id.get_node(
                 '/contour_side2')[skeleton_id, :, :] * micronsPerPixel
+
+            #support older versions where the area is not calculated
+            if '/contour_area' in ske_file_id:
+                self.area[ind_ff] = ske_file_id.get_node(
+                    '/contour_area')[skeleton_id] * (microsPerPixel_abs**2)
+            else:
+                self.area = calWormArea(self.ventral_contour, self.dorsal_contour)
+
 
     def assertDataDim(self):
         # assertions to check the data has the proper dimensions
