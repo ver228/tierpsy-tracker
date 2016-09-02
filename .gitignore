@@ -9,3 +9,5 @@ Tests/Data/*
 *.hdf5
 
 *.m~
+
+*.DS_Store

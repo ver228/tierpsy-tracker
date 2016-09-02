@@ -71,28 +71,33 @@ class SWTrackerViewer_GUI(TrackerViewerAux_GUI):
 
     def updateImage(self):
         self.readCurrentFrame()
-        self.drawSkelResult()
+        self.drawSkelSingleWorm()
 
-        if len(self.is_stage_move) > 0 and self.is_stage_move[
-                self.frame_number]:
-            painter = QPainter()
-            painter.begin(self.frame_qimg)
-            pen = QPen()
-            pen_width = 3
-            pen.setWidth(pen_width)
-            pen.setColor(Qt.red)
-            painter.setPen(pen)
-
-            painter.drawRect(
-                1,
-                1,
-                self.frame_qimg.width() -
-                pen_width,
-                self.frame_qimg.height() -
-                pen_width)
-            painter.end()
+        #draw stage movement if necessary
+        if len(self.is_stage_move) > 0 and self.is_stage_move[self.frame_number]:
+            self.frame_qimg = self._drawRect(self.frame_qimg)
 
         self.mainImage.setPixmap(self.frame_qimg)
+
+    def _drawRect(self, qimg):
+        painter = QPainter()
+        painter.begin(qimg)
+        pen = QPen()
+        pen_width = 3
+        pen.setWidth(pen_width)
+        pen.setColor(Qt.red)
+        painter.setPen(pen)
+
+        painter.drawRect(
+            1,
+            1,
+            qimg.width() -
+            pen_width,
+            qimg.height() -
+            pen_width)
+        painter.end()
+        return qimg
+
 
     def changeSkelBlock(self, val):
 

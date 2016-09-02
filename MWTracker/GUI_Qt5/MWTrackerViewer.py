@@ -149,7 +149,9 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
                 'use_skel_filter': use_skel_filter,
                 'use_manual_join': True,
                 'feat_filt_param': feat_filt_param},
-            'output_file': self.feat_manual_file}
+            'provenance_file': self.feat_manual_file
+            }
+
 
         def featManualFun(point_argvs):
             commit_hash = getGitCommitHash()
@@ -211,20 +213,25 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
 
     def updateSkelFile(self, skeletons_file):
         super().updateSkelFile(self.skeletons_file)
+        
         if not self.skeletons_file or not isinstance(
                 self.trajectories_data, pd.DataFrame):
             return
 
         #correct the index in case it was given before as worm_index_N
         if 'worm_index_N' in self.trajectories_data:
-            self.trajectories_data.rename(
+            self.trajectories_data = self.trajectories_data.rename(
                 columns={'worm_index_N': 'worm_index_manual'})
-
+        
         if not 'worm_index_manual' in self.trajectories_data:
             self.trajectories_data['worm_label'] = self.wlab['U']
             self.trajectories_data['worm_index_manual'] = self.trajectories_data[
                 'worm_index_joined']
             self.updateImage()
+
+        self.traj_time_grouped = self.trajectories_data.groupby(
+                    'frame_number')
+        self.updateImage()
 
     # update image
     def updateImage(self):
@@ -236,31 +243,28 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         self.img_w_ratio = self.frame_qimg.width() / self.image_width
 
         # read the data of the particles that exists in the frame
-        if isinstance(
-                self.traj_time_grouped,
-                pd.core.groupby.DataFrameGroupBy):
-            try:
-                self.frame_data = self.traj_time_grouped.get_group(
-                    self.frame_number)
-                self.frame_data = self.frame_data[
-                    self.frame_data[self.worm_index_type] >= 0]
-            except KeyError:
-                self.frame_data = -1
+        self.frame_data = self.getFrameData(self.frame_number)
 
-        # draw the boxes in each of the trajectories found
-        if self.ui.checkBox_showLabel.isChecked():
-            self.drawROIBoxes(self.frame_qimg)
-
+        #draw extra info only if the worm_index_type is valid
+        if self.worm_index_type in self.frame_data: 
+            # draw the boxes in each of the trajectories found
+            if self.ui.checkBox_showLabel.isChecked() and self.label_type in self.frame_data:
+                self.drawROIBoxes(self.frame_qimg)
+            
+            self.updateROIcanvasN(1)
+            self.updateROIcanvasN(2)
+        
         # create the pixmap for the label
         self.mainImage.setPixmap(self.frame_qimg)
 
-        self.updateROIcanvasN(1)
-        self.updateROIcanvasN(2)
-
     def drawROIBoxes(self, image):
-        # print(self.frame_data)
-        if not isinstance(self.frame_data, pd.DataFrame) or len(
-                self.frame_data) == 0 or not self.label_type in self.frame_data:
+        '''
+        Draw boxes around each worm trajectory.
+        '''
+
+        #continue only if the frame_data is a pandas dataframe it is larger than 0 
+        #and the selected label_type is a column in the frame_data.
+        if len(self.frame_data) == 0 or not self.label_type in self.frame_data:
             return
 
         self.img_h_ratio = image.height() / self.image_height
@@ -338,7 +342,7 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         # update valid index for the comboBox
         comboBox_ROI.clear()
         comboBox_ROI.addItem(str(worm_index_roi))
-        # add the indexes of the current frame into the roi combo box
+        
         for ind in self.frame_data[self.worm_index_type].data:
             comboBox_ROI.addItem(str(ind))
 
@@ -355,35 +359,19 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
 
         worm_img, roi_corner = getWormROI(self.frame_img, row_data['coord_x'], row_data[
                                           'coord_y'], row_data['roi_size'])
-        #roi_corner = roi_corner+1
-
+        
         roi_ori_size = worm_img.shape
 
         worm_img = np.ascontiguousarray(worm_img)
-        worm_qimg = QImage(
-            worm_img.data,
-            worm_img.shape[1],
-            worm_img.shape[0],
-            worm_img.strides[0],
-            QImage.Format_Indexed8)
-        worm_qimg = worm_qimg.convertToFormat(
-            QImage.Format_RGB32, Qt.AutoColor)
+        worm_qimg = self._convert2Qimg(worm_img)
 
         canvas_size = min(wormCanvas.height(), wormCanvas.width())
         worm_qimg = worm_qimg.scaled(
             canvas_size, canvas_size, Qt.KeepAspectRatio)
 
-        if isDrawSkel:
-            if row_data['has_skeleton'] == 1:
-                self.drawSkel(
-                    worm_img,
-                    worm_qimg,
-                    row_data,
-                    roi_corner=roi_corner)
-            elif row_data['has_skeleton'] == 0:
-                self.drawThreshMask(
-                    worm_img, worm_qimg, row_data, read_center=False)
-
+        worm_qimg = self.drawSkelResult(worm_img, worm_qimg, row_data, 
+            isDrawSkel, roi_corner, read_center=False)
+        
         pixmap = QPixmap.fromImage(worm_qimg)
         wormCanvas.setPixmap(pixmap)
 
