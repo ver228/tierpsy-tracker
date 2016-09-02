@@ -365,7 +365,7 @@ def getWormFeaturesFilt(
             good = trajectories_data['worm_label'] == WLAB['WORM']
             trajectories_data = trajectories_data[good]
 
-        if use_skel_filter:
+        if use_skel_filter and 'is_good_skel' in trajectories_data:
             # select data that was labeld in FEAT_FILTER
             good = trajectories_data['is_good_skel'] == 1
             trajectories_data = trajectories_data[good]

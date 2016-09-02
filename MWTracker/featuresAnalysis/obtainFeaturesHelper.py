@@ -250,8 +250,7 @@ class WormFromTable(mv.NormalizedWorm):
 
             # we need to use (.values) to be able to use the & operator
             good_skeletons = (trajectories_data['has_skeleton'] == 1).values
-            if use_skel_filter:
-                assert 'is_good_skel' in trajectories_data
+            if use_skel_filter and 'is_good_skel' in trajectories_data:
                 # only keep skeletons that where labeled as good skeletons in
                 # the filtering step
                 good_skeletons &= (
