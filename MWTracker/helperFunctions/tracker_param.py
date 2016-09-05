@@ -11,12 +11,12 @@ deprecated_alias = {
     'fps': 'expected_fps',
     'threshold_factor': 'worm_bw_thresh_factor',
     'is_invert_thresh' : 'is_light_background',
-    'is_fluorescence' : 'is_light_background'}
+    'is_fluorescence' : not 'is_light_background'}
 
 dflt_param_list = [
     ('min_area', 50, 'minimum allowed area in pixels.'),
     ('max_area', int(1e8), 'maximum allowed area in pixels.'),
-    ('thresh_C', 15, 'threshold used by the adaptative thresholding to calculate the mask.'),
+    ('thresh_C', 15, 'constant offset used by the adaptative thresholding to calculate the mask.'),
     ('thresh_block_size', 61, 'block size used by the adaptative thresholding.'),
     ('dilation_size', 9, 'size of the structural element used in morphological operations.'),
     ('compression_buff', 25, 'number of images "min-averaged" to calculate the image mask.'),

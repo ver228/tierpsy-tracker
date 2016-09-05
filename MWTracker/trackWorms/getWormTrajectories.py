@@ -354,8 +354,7 @@ def getWormTrajectories(
                 if ROI_bbox[1] < min_length or ROI_bbox[3] < min_length:
                     continue
 
-                # select ROI for all buffer slides and apply a median filter to
-                # sharp edges
+                # select ROI for all buffer slides and apply a median filter to reduce rough edges / sharpen the boundary btw worm and background
                 ROI_buffer = image_buffer[
                     :,
                     ROI_bbox[1]:(
@@ -415,7 +414,7 @@ def getWormTrajectories(
                         if hierarchy[0][worm_ind][3] != -1:
                             continue
 
-                        # obtain freatures for each worm
+                        # obtain features for each worm
                         mask_features = _getWormFeatures(
                             worm_cnt,
                             ROI_buffer[
