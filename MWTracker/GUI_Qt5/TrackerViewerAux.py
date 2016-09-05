@@ -29,7 +29,7 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
         self.results_dir = ''
         self.skeletons_file = ''
         self.frame_number = -1
-        self.trajectories_data = -1
+        self.trajectories_data = pd.DataFrame()
         self.traj_time_grouped = -1
 
         self.ui.pushButton_skel.clicked.connect(self.getSkelFile)
@@ -54,11 +54,6 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
         self.skeletons_file = selected_file
         self.ui.lineEdit_skel.setText(self.skeletons_file)
         
-        if not self.skeletons_file or self.fid == -1:
-            self.trajectories_data = -1
-            self.traj_time_grouped = -1
-            self.skel_dat = {}
-
         try:
             with pd.HDFStore(self.skeletons_file, 'r') as ske_file_id:
                 self.trajectories_data = ske_file_id['/trajectories_data']
@@ -82,7 +77,7 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
                     self.strel_size = 5
 
         except (IOError, KeyError):
-            self.trajectories_data = -1
+            self.trajectories_data = pd.DataFrame()
             self.traj_time_grouped = -1
             self.skel_dat = {}
 
@@ -93,7 +88,7 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
 
     def updateVideoFile(self, vfilename):
         super().updateVideoFile(vfilename)
-        if not type(self.image_group) is tables.array.ImageArray:
+        if type(self.image_group) is int:
             return
 
         #find if it is a fluorescence image
@@ -113,7 +108,6 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
 
         for new_dir in possible_dirs:
             new_skel_file = os.path.join(new_dir, basename + '_skeletons.hdf5')
-
             if os.path.exists(new_skel_file):
                 self.skeletons_file = new_skel_file
                 self.results_dir = new_dir
@@ -121,18 +115,7 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
         
         self.updateSkelFile(self.skeletons_file)
 
-    def getRowData(self):
-        if not isinstance(
-                self.traj_time_grouped,
-                pd.core.groupby.DataFrameGroupBy):
-            return -1
-        try:
-            row_data = self.traj_time_grouped.get_group(self.frame_number)
-            assert len(row_data) > 0
-            return row_data.squeeze()
-
-        except KeyError:
-            return -1
+    
 
     # function that generalized the updating of the ROI
     def updateImage(self):
@@ -140,27 +123,57 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
             return
 
         self.readCurrentFrame()
-        self.drawSkelResult()
+        self.drawSkelSingleWorm()
         self.mainImage.setPixmap(self.frame_qimg)
 
-    def drawSkelResult(self):
-        row_data = self.getRowData()
+    def drawSkelSingleWorm(self):
+        frame_data = self.getFrameData(self.frame_number)
+        row_data = frame_data.squeeze()
+        print(len(row_data))
+        
+        #for this viewer there must be only one particle per frame
+        if len(row_data) == 0: 
+            return
+
         isDrawSkel = self.ui.checkBox_showLabel.isChecked()
+        self.frame_qimg = self.drawSkelResult(self.frame_img,
+                    self.frame_qimg,
+                    row_data, isDrawSkel)
+
+        return self.frame_qimg
+        
+        
+
+    def getFrameData(self, frame_number):
+        try:
+            if not isinstance(self.traj_time_grouped,
+                pd.core.groupby.DataFrameGroupBy):
+                raise KeyError
+            
+            frame_data = self.traj_time_grouped.get_group(frame_number)
+            return frame_data
+
+        except KeyError:
+            return pd.DataFrame()
+
+    def drawSkelResult(self, img, qimg, row_data, isDrawSkel, 
+        roi_corner=(0,0), read_center=True):
         if isDrawSkel and isinstance(row_data, pd.Series):
             if row_data['has_skeleton'] == 1:
                 self.drawSkel(
-                    self.frame_img,
-                    self.frame_qimg,
+                    img,
+                    qimg,
                     row_data,
-                    roi_corner=(
-                        0,
-                        0))
+                    roi_corner = roi_corner
+                    )
             else:
                 self.drawThreshMask(
-                    self.frame_img,
-                    self.frame_qimg,
+                    img,
+                    qimg,
                     row_data,
-                    read_center=True)
+                    read_center=read_center)
+
+        return qimg
 
     def drawSkel(self, worm_img, worm_qimg, row_data, roi_corner=(0, 0)):
         if not self.skeletons_file or not isinstance(
@@ -224,8 +237,13 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
         painter.end()
 
     def drawThreshMask(self, worm_img, worm_qimg, row_data, read_center=True):
-
-        min_mask_area = row_data['area'] / 2
+        #in very old versions of the tracker I didn't save the area in trajectories table, 
+        #let's assign a default value to deal with this cases
+        if 'area' in row_data:
+            min_mask_area = row_data['area'] / 2
+        else:
+            min_mask_area = 10
+        
         c1, c2 = (row_data['coord_x'], row_data[
                   'coord_y']) if read_center else (-1, -1)
 

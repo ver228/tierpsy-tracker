@@ -19,6 +19,17 @@ from .readTifFiles import readTifFiles
 
 from ..helperFunctions.timeCounterStr import timeCounterStr
 
+def isGoodVideo(video_file):
+    try:
+        vid, im_width, im_height, reader_type = selectVideoReader(video_file)
+        # i have problems with corrupt videos that can create infinite loops...
+        #it is better to test it before start a large taks
+        vid.release()
+        return True
+    except OSError:
+        # corrupt file, cannot read the size
+        return False
+
 
 def getROIMask(
         image,

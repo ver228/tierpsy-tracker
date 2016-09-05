@@ -165,13 +165,18 @@ def _h_getPerpContourInd(
     dist2cnt1 = np.sum((contour_side1 - skeleton[skel_ind])**2, axis=1)
     d1 = np.abs(a * contour_side1[:, 0] - b * contour_side1[:, 1] + c)
     d1[dist2cnt1 > max_width_squared] = np.nan
-    cnt1_ind = np.nanargmin(d1)
 
     dist2cnt2 = np.sum((contour_side2 - skeleton[skel_ind])**2, axis=1)
     d2 = np.abs(a * contour_side2[:, 0] - b * contour_side2[:, 1] + c)
     d2[dist2cnt2 > max_width_squared] = np.nan
-    cnt2_ind = np.nanargmin(d2)
-    #%%
+    
+    try:
+        cnt1_ind = np.nanargmin(d1)
+        cnt2_ind = np.nanargmin(d2)
+    except ValueError:
+        cnt1_ind = np.nan
+        cnt2_ind = np.nan
+    
     return cnt1_ind, cnt2_ind
 
 
@@ -260,23 +265,23 @@ def filterPossibleCoils(
             cnt_side1_ind_t, cnt_side2_ind_t = _h_getPerpContourInd(
                 skeleton, -ht_limits, contour_side1, contour_side2, contour_width)
 
-            if cnt_side1_ind_h > cnt_side1_ind_t or cnt_side2_ind_h > cnt_side2_ind_t:
+            if cnt_side1_ind_h > cnt_side1_ind_t or cnt_side2_ind_h > cnt_side2_ind_t or \
+            np.any(np.isnan([cnt_side1_ind_h, cnt_side2_ind_h, cnt_side1_ind_t, cnt_side2_ind_t])):    
                 is_good_skel[skel_id] = 0
                 continue
+            
             # if cnt_side1_ind_h>cnt_side1_ind_t:
             #    cnt_side1_ind_h, cnt_side1_ind_t = cnt_side1_ind_t, cnt_side1_ind_h
             # if cnt_side2_ind_h>cnt_side2_ind_t:
             #    cnt_side2_ind_h, cnt_side2_ind_t = cnt_side2_ind_t, cnt_side2_ind_h
 
             cnt_head = np.concatenate((contour_side1[:cnt_side1_ind_h + 1], head_skel_lim,
-                                       contour_side2[:cnt_side2_ind_h + 1][::-1]))
+                                           contour_side2[:cnt_side2_ind_h + 1][::-1]))
+
             cnt_tail = np.concatenate(
-                (contour_side2[
-                    cnt_side2_ind_t:][
-                    ::-1],
+                (contour_side2[cnt_side2_ind_t:][::-1],
                     tail_skel_lim,
-                    contour_side1[
-                    cnt_side1_ind_t:]))
+                    contour_side1[cnt_side1_ind_t:]))
 
             area_head = _h_calcArea(cnt_head)
             area_tail = _h_calcArea(cnt_tail)
@@ -324,7 +329,7 @@ def filterPossibleCoils(
     saveModifiedTrajData(skeletons_file, trajectories_data)
 
 
-def labelValidSkeletons(skeletons_file, good_skel_row, critical_alpha=0.01):
+def filterByPopulationMorphology(skeletons_file, good_skel_row, critical_alpha=0.01):
     base_name = getBaseName(skeletons_file)
     progress_timer = timeCounterStr('')
 
@@ -390,33 +395,34 @@ def labelValidSkeletons(skeletons_file, good_skel_row, critical_alpha=0.01):
 
 def getFilteredSkels(
         skeletons_file,
-        use_skel_filter,
         min_num_skel=100,
         bad_seg_thresh=0.8,
         min_displacement=5,
         critical_alpha=0.01,
         max_width_ratio=2.25,
         max_area_ratio=6):
+
     # check if the skeletonization finished succesfully
     with tables.File(skeletons_file, "r") as ske_file_id:
         skeleton_table = ske_file_id.get_node('/skeleton')
         assert skeleton_table._v_attrs['has_finished'] >= 1
 
+    #eliminate skeletons that do not match a decent head, tail and body ratio. Likely to be coils. Taken from Segworm.
     filterPossibleCoils(
         skeletons_file,
         max_width_ratio=max_width_ratio,
         max_area_ratio=max_area_ratio)
 
-    if use_skel_filter:
-        # get valid rows using the trajectory displacement and the
-        # skeletonization success
-        good_traj_index, good_skel_row = getValidIndexes(
-            skeletons_file, min_num_skel=min_num_skel, bad_seg_thresh=bad_seg_thresh, min_dist=min_displacement)
+    # get valid rows using the trajectory displacement and the
+    # skeletonization success. These indexes will be used to calculate statistics of what represent a valid skeleton.
+    good_traj_index, good_skel_row = getValidIndexes(
+        skeletons_file, min_num_skel=min_num_skel, bad_seg_thresh=bad_seg_thresh, min_displacement=min_displacement)
 
-        labelValidSkeletons(
-            skeletons_file,
-            good_skel_row,
-            critical_alpha=critical_alpha)
+    #filter skeletons depending the population morphology (area, width and length)
+    filterByPopulationMorphology(
+        skeletons_file,
+        good_skel_row,
+        critical_alpha=critical_alpha)
 
     with tables.File(skeletons_file, "r+") as ske_file_id:
         skeleton_table = ske_file_id.get_node('/skeleton')

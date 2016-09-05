@@ -13,7 +13,6 @@ import pandas as pd
 import numpy as np
 from math import floor, ceil
 import csv
-import json
 from scipy.signal import savgol_filter
 from MWTracker import AUX_FILES_DIR
 
@@ -114,25 +113,10 @@ def calWormAreaSigned(cnt_side1, cnt_side2):
 
     contour = np.hstack((cnt_side1, cnt_side2[:, ::-1, :]))
     signed_area = np.sum(
-        contour[
-            :,
-            :-
-            1,
-            0] *
-        contour[
-            :,
-            1:,
-            1] -
-        contour[
-            :,
-            1:,
-            0] *
-        contour[
-            :,
-            :-
-            1,
-            1],
+        contour[:,:-1,0] * contour[:,1:,1] -
+        contour[:,1:,0] * contour[:,:-1,1],
         axis=1)
+    
     assert signed_area.size == contour.shape[0]
     return signed_area
 
@@ -142,51 +126,6 @@ def calWormArea(cnt_side1, cnt_side2):
     signed_area = calWormAreaSigned(cnt_side1, cnt_side2)
     return np.abs(signed_area) / 2
 
-
-def isBadVentralOrient(skeletons_file):
-    with tables.File(skeletons_file, 'r') as fid:
-        exp_info_b = fid.get_node('/experiment_info').read()
-        exp_info = json.loads(exp_info_b.decode("utf-8"))
-
-        if not exp_info['ventral_side'] in ['clockwise', 'anticlockwise']:
-            raise ValueError(
-                '"{}" is not a valid value for '
-                'ventral side orientation. Only "clockwise" or "anticlockwise" '
-                'are accepted values'.format(
-                    exp_info['ventral_side']))
-
-        has_skeletons = fid.get_node('/trajectories_data').col('has_skeleton')
-
-        # let's use the first valid skeleton, it seems like a waste to use all the other skeletons.
-        # I checked earlier to make sure the have the same orientation.
-
-        valid_ind = np.where(has_skeletons)[0]
-        if valid_ind.size == 0:
-            return
-
-        cnt_side1 = fid.get_node('/contour_side1')[valid_ind[0], :, :]
-        cnt_side2 = fid.get_node('/contour_side2')[valid_ind[0], :, :]
-        A_sign = calWormAreaSigned(cnt_side1, cnt_side2)
-
-        # if not (np.all(A_sign > 0) or np.all(A_sign < 0)):
-        #    raise ValueError('There is a problem. All the contours should have the same orientation.')
-
-        return (exp_info['ventral_side'] == 'clockwise' and A_sign[0] < 0) or \
-            (exp_info['ventral_side'] == 'anticlockwise' and A_sign[0] > 0)
-
-
-def switchCntSingleWorm(skeletons_file):
-        # change contours if they do not match the known orientation
-    if isBadVentralOrient(skeletons_file):
-        with tables.File(skeletons_file, 'r+') as fid:
-            # since here we are changing all the contours, let's just change
-            # the name of the datasets
-            side1 = fid.get_node('/contour_side1')
-            side2 = fid.get_node('/contour_side2')
-
-            side1.rename('contour_side1_bkp')
-            side2.rename('contour_side1')
-            side1.rename('contour_side2')
 
 
 def smoothCurve(curve, window=5, pol_degree=3):
@@ -311,8 +250,7 @@ class WormFromTable(mv.NormalizedWorm):
 
             # we need to use (.values) to be able to use the & operator
             good_skeletons = (trajectories_data['has_skeleton'] == 1).values
-            if use_skel_filter:
-                assert 'is_good_skel' in trajectories_data
+            if use_skel_filter and 'is_good_skel' in trajectories_data:
                 # only keep skeletons that where labeled as good skeletons in
                 # the filtering step
                 good_skeletons &= (
@@ -368,9 +306,7 @@ class WormFromTable(mv.NormalizedWorm):
                 '/skeleton_length')[skeleton_id] * microsPerPixel_abs
             self.widths[ind_ff] = ske_file_id.get_node(
                 '/contour_width')[skeleton_id, :] * microsPerPixel_abs
-            self.area[ind_ff] = ske_file_id.get_node(
-                '/contour_area')[skeleton_id] * (microsPerPixel_abs**2)
-
+            
             #print('reading ventral contours...')
             self.ventral_contour[ind_ff] = ske_file_id.get_node(
                 '/contour_side1')[skeleton_id, :, :] * micronsPerPixel
@@ -378,6 +314,14 @@ class WormFromTable(mv.NormalizedWorm):
             #print('reading dorsal contours...')
             self.dorsal_contour[ind_ff] = ske_file_id.get_node(
                 '/contour_side2')[skeleton_id, :, :] * micronsPerPixel
+
+            #support older versions where the area is not calculated before
+            if '/contour_area' in ske_file_id:
+                self.area[ind_ff] = ske_file_id.get_node(
+                    '/contour_area')[skeleton_id] * (microsPerPixel_abs**2)
+            else:
+                self.area = calWormArea(self.ventral_contour, self.dorsal_contour)
+
 
     def assertDataDim(self):
         # assertions to check the data has the proper dimensions
@@ -559,7 +503,7 @@ def getValidIndexes(
         skel_file,
         min_num_skel=100,
         bad_seg_thresh=0.8,
-        min_dist=5):
+        min_displacement=5):
     # min_num_skel - ignore trajectories that do not have at least this number of skeletons
     # min_dist - minimum distance explored by the blob to be consider a real
     # worm
@@ -598,7 +542,7 @@ def getValidIndexes(
         good_worm = (
             skeleton_fracc >= bad_seg_thresh) & (
             skeleton_tot >= min_num_skel)
-        good_worm = good_worm & (max_avg_dist > min_dist)
+        good_worm = good_worm & (max_avg_dist > min_displacement)
 
         good_traj_index = good_worm[good_worm].index
 

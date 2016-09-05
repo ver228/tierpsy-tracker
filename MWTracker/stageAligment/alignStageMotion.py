@@ -4,7 +4,7 @@ Created on Thu Feb 11 22:01:59 2016
 
 @author: ajaver
 """
-import sys
+
 import os
 import h5py
 import subprocess as sp
@@ -63,6 +63,15 @@ def alignStageMotion(
     # delete temporary file.
     os.close(tmp_fid)
     os.remove(tmp_script_file)
+
+def isGoodStageAligment(skeletons_file):
+    with h5py.File(skeletons_file, 'r') as fid:
+        try:
+            good_aligment = fid['/stage_movement'].attrs['has_finished'][:]
+        except (KeyError, IndexError):
+            good_aligment = 0
+
+        return good_aligment in [1, 2]
 
 if __name__ == '__main__':
     file_mask = '/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/unc-7 (cb5) on food R_2010_09_10__12_27_57__4.hdf5'

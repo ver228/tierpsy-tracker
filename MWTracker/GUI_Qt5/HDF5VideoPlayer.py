@@ -161,14 +161,19 @@ class HDF5VideoPlayer_GUI(QtWidgets.QMainWindow):
             self.frame_img = (self.frame_img - bot) * 255. / (top - bot)
             self.frame_img = np.round(self.frame_img).astype(np.uint8)
 
-        self.frame_qimg = QtGui.QImage(
-            self.frame_img.data,
-            self.image_width,
-            self.image_height,
-            self.frame_img.strides[0],
+        self.frame_qimg = self._convert2Qimg(self.frame_img)
+
+    def _convert2Qimg(self, img):
+        qimg = QtGui.QImage(
+            img.data,
+            img.shape[1],
+            img.shape[0],
+            img.strides[0],
             QtGui.QImage.Format_Indexed8)
-        self.frame_qimg = self.frame_qimg.convertToFormat(
+        qimg = qimg.convertToFormat(
             QtGui.QImage.Format_RGB32, QtCore.Qt.AutoColor)
+
+        return qimg
 
     # file dialog to the the hdf5 file
     def getVideoFile(self):
