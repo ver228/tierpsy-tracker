@@ -315,7 +315,7 @@ class WormFromTable(mv.NormalizedWorm):
             self.dorsal_contour[ind_ff] = ske_file_id.get_node(
                 '/contour_side2')[skeleton_id, :, :] * micronsPerPixel
 
-            #support older versions where the area is not calculated
+            #support older versions where the area is not calculated before
             if '/contour_area' in ske_file_id:
                 self.area[ind_ff] = ske_file_id.get_node(
                     '/contour_area')[skeleton_id] * (microsPerPixel_abs**2)

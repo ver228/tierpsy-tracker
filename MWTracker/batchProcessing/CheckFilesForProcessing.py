@@ -39,10 +39,9 @@ class CheckFilesForProcessing(object):
         self.mask_dir_root = _makeDirIfNotExists(mask_dir_root)
         self.results_dir_root = _makeDirIfNotExists(results_dir_root)
         self.json_file = _testFileExists(json_file)
+        
         self.tmp_dir_root = _makeDirIfNotExists(tmp_dir_root)
-        self.tmp_mask_root = os.path.join(self.tmp_dir_root, 'MaskedVideos')
-        self.tmp_results_root = os.path.join(self.tmp_dir_root, 'Results')
-
+        
         self.is_single_worm = is_single_worm
         self.is_copy_video = is_copy_video
         self.use_skel_filter = not no_skel_filter
@@ -54,8 +53,10 @@ class CheckFilesForProcessing(object):
     def _checkIndFile(self, video_file):
         '''Check the progress in the file.'''
         video_dir, video_file_name = os.path.split(video_file)
-        mask_dir = self._getDstDir(video_dir, self.video_dir_root, self.mask_dir_root)
-        results_dir = self._getDstDir(video_dir, self.video_dir_root, self.results_dir_root)
+        subdir_path = self._getSubDirPath(video_dir, self.video_dir_root)
+        
+        mask_dir = os.path.join(self.mask_dir_root, subdir_path)
+        results_dir = os.path.join(self.results_dir_root, subdir_path)
         
         ap_obj = AnalysisPoints(video_file, mask_dir, results_dir, self.json_file,
                  self.is_single_worm, self.use_skel_filter)
@@ -77,7 +78,7 @@ class CheckFilesForProcessing(object):
         
         return msg, ap_obj
     
-    def _getDstDir(self, source_dir, source_root_dir, dst_root_dir):
+    def _getSubDirPath(self, source_dir, source_root_dir):
         '''Generate the destination dir path keeping the same structure 
         as the source directory'''
         subdir_path = source_dir.replace(source_root_dir, '')
@@ -85,9 +86,8 @@ class CheckFilesForProcessing(object):
         # character
         if subdir_path and subdir_path[0] == os.sep:
             subdir_path = subdir_path[1:] if len(subdir_path) > 1 else ''
-        dst_dir = os.path.join(dst_root_dir, subdir_path)
         
-        return dst_dir
+        return subdir_path
             
     def filterFiles(self, valid_files):
         # intialize filtered files lists
@@ -127,12 +127,13 @@ Files whose analysis is incompleted : {}'''.format(
         return list(A) + list(B)
 
     def generateIndCMD(self, good_ap_obj):
-        
-        tmp_mask_dir = self._getDstDir(
+
+        subdir_path = self._getSubDirPath(
             os.path.dirname(good_ap_obj.video_file),
-            self.video_dir_root,
-            self.tmp_mask_root)
-        tmp_results_dir = tmp_mask_dir.replace(tmp_mask_dir, self.tmp_results_root)
+            self.video_dir_root)
+        
+        tmp_mask_dir = os.path.join(self.tmp_dir_root, 'MaskedVideos', subdir_path)
+        tmp_results_dir = os.path.join(self.tmp_dir_root, 'Results', subdir_path)
         
         args = [good_ap_obj.video_file]
         argkws = {'masks_dir':good_ap_obj.masks_dir, 
