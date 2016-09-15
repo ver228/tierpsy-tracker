@@ -399,7 +399,7 @@ def _h_calAreaSignedArray(cnt_side1, cnt_side2):
 
 def _h_calAreaArray(cnt_side1, cnt_side2):
     '''calculate the contour area using the shoelace method'''
-    signed_area = _h_calWormAreaSigned(cnt_side1, cnt_side2)
+    signed_area = _h_calAreaSignedArray(cnt_side1, cnt_side2)
     return np.abs(signed_area)
 
 def _addMissingFields(skeletons_file):
