@@ -410,7 +410,7 @@ def _addMissingFields(skeletons_file):
         if not '/contour_area' in fid:
             contour_side1 = fid.get_node('/contour_side1')
             contour_side2 = fid.get_node('/contour_side2')
-            cnt_area = _h_calWormArea(contour_side1, contour_side2)
+            cnt_area = _h_calAreaArray(contour_side1, contour_side2)
             fid.create_carray('/', "contour_area", obj=cnt_area, filters=TABLE_FILTERS)
 
         if not '/width_midbody' in fid:
