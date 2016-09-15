@@ -355,6 +355,11 @@ def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
                         normalization_range.resize(frame_number + 1000, axis=0)
                     normalization_range[frame_number] = img_norm_range
 
+                #limit the image range to 1 to 255, 0 is a reserved value for the background
+                assert image.dtype == np.uint8
+                image = np.clip(image, 1,255)
+
+
                 # Resize mask array every 1000 frames (doing this every frame
                 # does not impact much the performance)
                 if mask_dataset.shape[0] <= frame_number + 1:

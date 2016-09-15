@@ -15,6 +15,7 @@ from math import floor, ceil
 import csv
 from scipy.signal import savgol_filter
 from MWTracker import AUX_FILES_DIR
+from MWTracker.trackWorms.getFilteredSkels import _h_calAreaArray 
 
 # (http://www.pytables.org/usersguide/parameter_files.html)
 tables.parameters.MAX_COLUMNS = 1024
@@ -100,32 +101,6 @@ def calWormAnglesAll(skeleton, segment_size=5):
         #calWormAngles(skeleton[ss,:,0],skeleton[ss,:,1], segment_size=segment_size)
 
     return angles_all, meanAngles_all
-
-
-def calWormAreaSigned(cnt_side1, cnt_side2):
-    '''calculate the contour area using the shoelace method, the sign indicate the contour orientation.'''
-    assert cnt_side1.shape == cnt_side2.shape
-    if cnt_side1.ndim == 2:
-        # if it is only two dimenssion (as if in a single skeleton).
-        # Add an extra dimension to be compatible with the rest of the code
-        cnt_side1 = cnt_side1[np.newaxis, :, :]
-        cnt_side2 = cnt_side2[np.newaxis, :, :]
-
-    contour = np.hstack((cnt_side1, cnt_side2[:, ::-1, :]))
-    signed_area = np.sum(
-        contour[:,:-1,0] * contour[:,1:,1] -
-        contour[:,1:,0] * contour[:,:-1,1],
-        axis=1)
-    
-    assert signed_area.size == contour.shape[0]
-    return signed_area
-
-
-def calWormArea(cnt_side1, cnt_side2):
-    '''calculate the contour area using the shoelace method'''
-    signed_area = calWormAreaSigned(cnt_side1, cnt_side2)
-    return np.abs(signed_area) / 2
-
 
 
 def smoothCurve(curve, window=5, pol_degree=3):
@@ -320,7 +295,7 @@ class WormFromTable(mv.NormalizedWorm):
                 self.area[ind_ff] = ske_file_id.get_node(
                     '/contour_area')[skeleton_id] * (microsPerPixel_abs**2)
             else:
-                self.area = calWormArea(self.ventral_contour, self.dorsal_contour)
+                self.area = _h_calAreaArray(self.ventral_contour, self.dorsal_contour)
 
 
     def assertDataDim(self):
@@ -499,57 +474,4 @@ class WormStatsClass():
         return stats
 
 
-def getValidIndexes(
-        skel_file,
-        min_num_skel=100,
-        bad_seg_thresh=0.8,
-        min_displacement=5):
-    # min_num_skel - ignore trajectories that do not have at least this number of skeletons
-    # min_dist - minimum distance explored by the blob to be consider a real
-    # worm
-    with pd.HDFStore(skel_file, 'r') as table_fid:
-        trajectories_data = table_fid['/trajectories_data']
 
-    trajectories_data = trajectories_data[
-        trajectories_data['worm_index_joined'] > 0]
-    valid_ind_str = 'is_good_skel' if 'is_good_skel' in trajectories_data else 'has_skeleton'
-
-    if len(trajectories_data['worm_index_joined'].unique()) == 1:
-        good_skel_row = trajectories_data['skeleton_id'][
-            trajectories_data[valid_ind_str].values.astype(np.bool)].values
-        return (np.array([1]), good_skel_row)
-
-    else:
-
-        # get the fraction of worms that were skeletonized per trajectory
-        how2agg = {
-            valid_ind_str: [
-                'mean', 'sum'], 'coord_x': [
-                'max', 'min', 'count'], 'coord_y': [
-                'max', 'min']}
-        tracks_data = trajectories_data.groupby(
-            'worm_index_joined').agg(how2agg)
-
-        delX = tracks_data['coord_x']['max'] - tracks_data['coord_x']['min']
-        delY = tracks_data['coord_y']['max'] - tracks_data['coord_y']['min']
-
-        # /tracks_data['coord_x']['count']
-        max_avg_dist = np.sqrt(delX * delX + delY * delY)
-
-        skeleton_fracc = tracks_data[valid_ind_str]['mean']
-        skeleton_tot = tracks_data[valid_ind_str]['sum']
-
-        good_worm = (
-            skeleton_fracc >= bad_seg_thresh) & (
-            skeleton_tot >= min_num_skel)
-        good_worm = good_worm & (max_avg_dist > min_displacement)
-
-        good_traj_index = good_worm[good_worm].index
-
-        good_row = (trajectories_data.worm_index_joined.isin(good_traj_index)) \
-            & (trajectories_data[valid_ind_str].values.astype(np.bool))
-
-        good_skel_row = trajectories_data.loc[good_row, 'skeleton_id'].values
-        assert np.all(good_skel_row == trajectories_data[good_row].index)
-
-        return (good_traj_index, good_skel_row)

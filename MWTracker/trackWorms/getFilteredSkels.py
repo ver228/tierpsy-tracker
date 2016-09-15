@@ -26,8 +26,7 @@ import warnings
 warnings.filterwarnings('ignore', '.*det > previous_det*',)
 
 
-from MWTracker.featuresAnalysis.obtainFeatures import getWormFeatures
-from MWTracker.featuresAnalysis.obtainFeaturesHelper import getValidIndexes, calWormArea
+from MWTracker.trackWorms.getSkeletonsTables import TABLE_FILTERS
 
 getBaseName = lambda skeletons_file: skeletons_file.rpartition(
     os.sep)[-1].replace('_skeletons.hdf5', '')
@@ -46,19 +45,69 @@ worm_partitions = {'neck': (8, 16),
 name_width_fun = lambda part: 'width_' + part
 
 
+def getValidIndexes(
+        skel_file,
+        min_num_skel=100,
+        bad_seg_thresh=0.8,
+        min_displacement=5):
+    # min_num_skel - ignore trajectories that do not have at least this number of skeletons
+    # min_dist - minimum distance explored by the blob to be consider a real
+    # worm
+    with pd.HDFStore(skel_file, 'r') as table_fid:
+        trajectories_data = table_fid['/trajectories_data']
+
+    trajectories_data = trajectories_data[
+        trajectories_data['worm_index_joined'] > 0]
+    valid_ind_str = 'is_good_skel' if 'is_good_skel' in trajectories_data else 'has_skeleton'
+
+    if len(trajectories_data['worm_index_joined'].unique()) == 1:
+        good_skel_row = trajectories_data['skeleton_id'][
+            trajectories_data[valid_ind_str].values.astype(np.bool)].values
+        return (np.array([1]), good_skel_row)
+
+    else:
+
+        # get the fraction of worms that were skeletonized per trajectory
+        how2agg = {
+            valid_ind_str: [
+                'mean', 'sum'], 'coord_x': [
+                'max', 'min', 'count'], 'coord_y': [
+                'max', 'min']}
+        tracks_data = trajectories_data.groupby(
+            'worm_index_joined').agg(how2agg)
+
+        delX = tracks_data['coord_x']['max'] - tracks_data['coord_x']['min']
+        delY = tracks_data['coord_y']['max'] - tracks_data['coord_y']['min']
+
+        # /tracks_data['coord_x']['count']
+        max_avg_dist = np.sqrt(delX * delX + delY * delY)
+
+        skeleton_fracc = tracks_data[valid_ind_str]['mean']
+        skeleton_tot = tracks_data[valid_ind_str]['sum']
+
+        good_worm = (
+            skeleton_fracc >= bad_seg_thresh) & (
+            skeleton_tot >= min_num_skel)
+        good_worm = good_worm & (max_avg_dist > min_displacement)
+
+        good_traj_index = good_worm[good_worm].index
+
+        good_row = (trajectories_data.worm_index_joined.isin(good_traj_index)) \
+            & (trajectories_data[valid_ind_str].values.astype(np.bool))
+
+        good_skel_row = trajectories_data.loc[good_row, 'skeleton_id'].values
+        assert np.all(good_skel_row == trajectories_data[good_row].index)
+
+        return (good_traj_index, good_skel_row)
+
 def saveModifiedTrajData(skeletons_file, trajectories_data):
     trajectories_recarray = trajectories_data.to_records(index=False)
     with tables.File(skeletons_file, "r+") as ske_file_id:
-        table_filters = tables.Filters(
-            complevel=5,
-            complib='zlib',
-            shuffle=True,
-            fletcher32=True)
         newT = ske_file_id.create_table(
             '/',
             'trajectories_data_d',
             obj=trajectories_recarray,
-            filters=table_filters)
+            filters=TABLE_FILTERS)
         ske_file_id.remove_node('/', 'trajectories_data')
         newT.rename('trajectories_data')
 
@@ -181,9 +230,10 @@ def _h_getPerpContourInd(
 
 
 def _h_calcArea(cnt):
+    # make sure the contours are in the counter-clockwise direction
+    # x1y2 - x2y1(http://mathworld.wolfram.com/PolygonArea.html)
     signed_area = np.sum(cnt[:-1, 0] * cnt[1:, 1] - cnt[1:, 0] * cnt[:-1, 1])
     return np.abs(signed_area / 2)
-
 
 def filterPossibleCoils(
         skeletons_file,
@@ -329,6 +379,46 @@ def filterPossibleCoils(
     saveModifiedTrajData(skeletons_file, trajectories_data)
 
 
+def _h_calAreaSignedArray(cnt_side1, cnt_side2):
+    '''calculate the contour area using the shoelace method, the sign indicate the contour orientation.'''
+    assert cnt_side1.shape == cnt_side2.shape
+    if cnt_side1.ndim == 2:
+        # if it is only two dimenssion (as if in a single skeleton).
+        # Add an extra dimension to be compatible with the rest of the code
+        cnt_side1 = cnt_side1[np.newaxis, :, :]
+        cnt_side2 = cnt_side2[np.newaxis, :, :]
+
+    contour = np.hstack((cnt_side1, cnt_side2[:, ::-1, :]))
+    signed_area = np.sum(
+        contour[:,:-1,0] * contour[:,1:,1] -
+        contour[:,1:,0] * contour[:,:-1,1],
+        axis=1)/ 2
+    
+    assert signed_area.size == contour.shape[0]
+    return signed_area
+
+def _h_calAreaArray(cnt_side1, cnt_side2):
+    '''calculate the contour area using the shoelace method'''
+    signed_area = _h_calWormAreaSigned(cnt_side1, cnt_side2)
+    return np.abs(signed_area)
+
+def _addMissingFields(skeletons_file):
+    '''
+    Add missing fields that might have not been calculated before in older videos.
+    '''
+    with tables.File(skeletons_file, 'r') as fid:
+        if not '/contour_area' in fid:
+            contour_side1 = fid.get_node('/contour_side1')
+            contour_side2 = fid.get_node('/contour_side2')
+            cnt_area = _h_calWormArea(contour_side1, contour_side2)
+            fid.create_carray('/', "contour_area", obj=cnt_area, filters=TABLE_FILTERS)
+
+        if not '/width_midbody' in fid:
+            midbody_ind = (17, 32)
+            contour_width = fid.get_node('/contour_width')
+            width_midbody = np.median(contour_width[:, cnt_widths[midbody_ind[0]:midbody_ind[1]+1]], axis=1)
+            fid.create_carray('/', "width_midbody", obj=width_midbody, filters=TABLE_FILTERS)
+
 def filterByPopulationMorphology(skeletons_file, good_skel_row, critical_alpha=0.01):
     base_name = getBaseName(skeletons_file)
     progress_timer = timeCounterStr('')
@@ -346,8 +436,11 @@ def filterByPopulationMorphology(skeletons_file, good_skel_row, critical_alpha=0
         print_flush(
             base_name +
             ' Filter Skeletons: Reading features for outlier identification.')
+        
+        #add possible missing fields that were con calculated in older versions of the software
+        _addMissingFields(skeletons_file)
+        
         # calculate classifier for the outliers
-
         nodes4fit = ['/skeleton_length', '/contour_area', '/width_midbody']
         worm_morph = _h_nodes2Array(skeletons_file, nodes4fit, -1)
         #worm_morph[~trajectories_data['is_good_skel'].values] = np.nan

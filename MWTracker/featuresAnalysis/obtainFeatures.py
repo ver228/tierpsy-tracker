@@ -20,7 +20,8 @@ tables.parameters.MAX_COLUMNS = 1024
 
 from MWTracker.helperFunctions.timeCounterStr import timeCounterStr
 from MWTracker.helperFunctions.miscFun import print_flush
-from MWTracker.featuresAnalysis.obtainFeaturesHelper import WormStatsClass, WormFromTable, getValidIndexes
+from MWTracker.trackWorms.getFilteredSkels import getValidIndexes 
+from MWTracker.featuresAnalysis.obtainFeaturesHelper import WormStatsClass, WormFromTable
 from MWTracker.featuresAnalysis.correctVentralDorsal import isBadVentralOrient
 from MWTracker.helperFunctions.miscFun import WLAB
 

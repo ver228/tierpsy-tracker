@@ -529,7 +529,7 @@ def trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file,
 
     #get the index number for the width limit
     midbody_ind = (int(np.floor(
-        worm_midbody[0] * resampling_N)), int(np.ceil(worm_midbody[1]) * resampling_N))
+        worm_midbody[0]*resampling_N)), int(np.ceil(worm_midbody[1]*resampling_N)))
     
     # extract the base name from the masked_image_file. This is used in the
     # progress status.
