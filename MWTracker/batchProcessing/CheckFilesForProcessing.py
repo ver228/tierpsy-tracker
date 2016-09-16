@@ -19,12 +19,12 @@ class CheckFilesForProcessing(object):
                  is_single_worm = False, no_skel_filter=False,
                   is_copy_video = True):
         
-        def _testFileExists(fname):
+        def _testFileExists(fname, type_str):
             if fname:
                 fname =  os.path.abspath(fname)
                 if not os.path.exists(fname):
                     raise FileNotFoundError(
-                    'The root video directory %s does not exist.' % fname)
+                    '%s, %s does not exist.' % fname)
             return fname
         
         def _makeDirIfNotExists(fname):
@@ -35,10 +35,10 @@ class CheckFilesForProcessing(object):
             return fname
         
         # checkings before accepting the data
-        self.video_dir_root = _testFileExists(video_dir_root)
+        self.video_dir_root = _testFileExists(video_dir_root, 'Videos root directory')
         self.mask_dir_root = _makeDirIfNotExists(mask_dir_root)
         self.results_dir_root = _makeDirIfNotExists(results_dir_root)
-        self.json_file = _testFileExists(json_file)
+        self.json_file = _testFileExists(json_file, 'Parameters json file')
         
         self.tmp_dir_root = _makeDirIfNotExists(tmp_dir_root)
         
