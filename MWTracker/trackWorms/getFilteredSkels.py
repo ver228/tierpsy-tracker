@@ -242,7 +242,11 @@ def filterPossibleCoils(
     with pd.HDFStore(skeletons_file, 'r') as table_fid:
         trajectories_data = table_fid['/trajectories_data']
 
-    is_good_skel = trajectories_data['has_skeleton'].values.copy()
+    if not 'is_good_skel' in trajectories_data:
+        is_good_skel = trajectories_data['has_skeleton'].values.copy()
+    else:
+        is_good_skel = trajectories_data['is_good_skel'].values.copy()
+    
     tot_skeletons = len(is_good_skel)
     with tables.File(skeletons_file, 'r') as ske_file_id:
 
@@ -406,17 +410,17 @@ def _addMissingFields(skeletons_file):
     '''
     Add missing fields that might have not been calculated before in older videos.
     '''
-    with tables.File(skeletons_file, 'r') as fid:
+    with tables.File(skeletons_file, 'r+') as fid:
         if not '/contour_area' in fid:
-            contour_side1 = fid.get_node('/contour_side1')
-            contour_side2 = fid.get_node('/contour_side2')
+            contour_side1 = fid.get_node('/contour_side1')[:]
+            contour_side2 = fid.get_node('/contour_side2')[:]
             cnt_area = _h_calAreaArray(contour_side1, contour_side2)
             fid.create_carray('/', "contour_area", obj=cnt_area, filters=TABLE_FILTERS)
 
         if not '/width_midbody' in fid:
             midbody_ind = (17, 32)
-            contour_width = fid.get_node('/contour_width')
-            width_midbody = np.median(contour_width[:, cnt_widths[midbody_ind[0]:midbody_ind[1]+1]], axis=1)
+            contour_width = fid.get_node('/contour_width')[:]
+            width_midbody = np.median(contour_width[:, midbody_ind[0]:midbody_ind[1]+1], axis=1)
             fid.create_carray('/', "width_midbody", obj=width_midbody, filters=TABLE_FILTERS)
 
 def filterByPopulationMorphology(skeletons_file, good_skel_row, critical_alpha=0.01):
@@ -427,8 +431,8 @@ def filterByPopulationMorphology(skeletons_file, good_skel_row, critical_alpha=0
     with pd.HDFStore(skeletons_file, 'r') as table_fid:
         trajectories_data = table_fid['/trajectories_data']
 
-    assert 'is_good_skel' in trajectories_data
-    #trajectories_data['is_good_skel'] = trajectories_data['has_skeleton']
+    if not 'is_good_skel' in trajectories_data:
+        trajectories_data['is_good_skel'] = trajectories_data['has_skeleton']
 
     if good_skel_row.size > 0:
         # nothing to do if there are not valid skeletons left.
