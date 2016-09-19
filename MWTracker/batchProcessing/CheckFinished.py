@@ -31,7 +31,6 @@ class CheckFinished(object):
             'FEAT_MANUAL_CREATE': partial(_checkFlagsFun, outf['FEAT_MANUAL_CREATE'], '/features_means', 1),
         }
     
-    
     def _isValidFlag(self, field, flag_value):
         return (field._v_attrs['has_finished'] >= flag_value)
     

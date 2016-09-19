@@ -295,14 +295,14 @@ class BatchProcessing_GUI(QMainWindow):
             sequence_str = 'All'
         elif is_compress:
             sequence_str = 'Compress'
-            video_dir_root = mask_dir_root
+            results_dir_root = mask_dir_root #overwrite the results_dir_root since it will not be used
         elif is_track:
-            sequence_str = 'Track'
             is_copy_video = True
-
+            sequence_str = 'Track'
+            video_dir_root = mask_dir_root  #overwrite the video_dir_root in order to copy the mask file to tmp
+        
         analysis_checkpoints = getDefaultSequence(sequence_str, 
-                                             is_single_worm=is_single_worm)
-                  
+                                             is_single_worm=is_single_worm)          
         check_args = {'video_dir_root': video_dir_root,
                       'mask_dir_root': mask_dir_root,
                       'results_dir_root' : results_dir_root,
@@ -320,7 +320,6 @@ class BatchProcessing_GUI(QMainWindow):
                         'max_num_process' : max_num_process,
                         'refresh_time' : track_dflt_vals['refresh_time']}
 
-        
         analysis_worker = WorkerFunQt(processMultipleFiles, process_args)
         progress = AnalysisProgress(analysis_worker)
         progress.exec_()

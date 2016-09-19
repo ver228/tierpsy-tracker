@@ -209,19 +209,22 @@ class AnalysisPoints(object):
     
     def hasRequirements(self, point):
         requirements_results = {}
+
+        #check the requirements of a given point
         for requirement in self.checkpoints[point]['requirements']:
             if isinstance(requirement, str):
+                #if the requirement is a string, check the requirement with the checker 
                 requirements_results[requirement] = self.checker.get(requirement)
             else:
                 try:
                     requirements_results[requirement[0]] = requirement[1]()
                 except (OSError): 
-                    #if ther eis a problem with the file return back requirement
+                    #if there is a problem with the file return back requirement
                     requirements_results[requirement[0]] = False
         
-        unmet_requiriments = [x for x in requirements_results if not requirements_results[x]]
+        self.unmet_requirements = [x for x in requirements_results if not requirements_results[x]]
         
-        return unmet_requiriments
+        return self.unmet_requirements
     
     def getUnfinishedPoints(self, checkpoints2process):
         return self.checker.getUnfinishedPoints(checkpoints2process)

@@ -19,12 +19,12 @@ class CheckFilesForProcessing(object):
                  is_single_worm = False, no_skel_filter=False,
                   is_copy_video = True):
         
-        def _testFileExists(fname):
+        def _testFileExists(fname, type_str):
             if fname:
                 fname =  os.path.abspath(fname)
                 if not os.path.exists(fname):
                     raise FileNotFoundError(
-                    'The root video directory %s does not exist.' % fname)
+                    '%s, %s does not exist.' % fname)
             return fname
         
         def _makeDirIfNotExists(fname):
@@ -35,10 +35,10 @@ class CheckFilesForProcessing(object):
             return fname
         
         # checkings before accepting the data
-        self.video_dir_root = _testFileExists(video_dir_root)
+        self.video_dir_root = _testFileExists(video_dir_root, 'Videos root directory')
         self.mask_dir_root = _makeDirIfNotExists(mask_dir_root)
         self.results_dir_root = _makeDirIfNotExists(results_dir_root)
-        self.json_file = _testFileExists(json_file)
+        self.json_file = _testFileExists(json_file, 'Parameters json file')
         
         self.tmp_dir_root = _makeDirIfNotExists(tmp_dir_root)
         
@@ -73,10 +73,13 @@ class CheckFilesForProcessing(object):
                 msg = 'SOURCE_GOOD'
             else:
                 msg ='SOURCE_BAD'
+                #print(self.analysis_checkpoints[0], unmet_requirements)
+                #print(ap_obj.file_names['masked_image'])
         else:
-            msg = 'EMPTY ANALYSIS LIST'
+            msg = 'EMPTY_ANALYSIS_LIST'
         
         return msg, ap_obj
+    
     
     def _getSubDirPath(self, source_dir, source_root_dir):
         '''Generate the destination dir path keeping the same structure 
@@ -88,7 +91,8 @@ class CheckFilesForProcessing(object):
             subdir_path = subdir_path[1:] if len(subdir_path) > 1 else ''
         
         return subdir_path
-            
+    
+
     def filterFiles(self, valid_files):
         # intialize filtered files lists
         filtered_files_fields = (
@@ -96,7 +100,7 @@ class CheckFilesForProcessing(object):
             'SOURCE_BAD',
             'FINISHED_GOOD',
             'FINISHED_BAD',
-            'EMPTY ANALYSIS LIST')
+            'EMPTY_ANALYSIS_LIST')
         self.filtered_files = {key: [] for key in filtered_files_fields}
         
         progress_timer = timeCounterStr('')
@@ -120,7 +124,21 @@ Files whose analysis is incompleted : {}'''.format(
         print(msg)
         
         return self.getCMDlist()
-                
+    
+    def _printUnmetReq(self):
+        def _get_unmet_requirements(ap_obj):
+            for requirement in ap_obj.unmet_requirements:
+                if requirement in ap_obj.checkpoints:
+                    provenance_file = ap_obj.checkpoints[requirement]['provenance_file']
+                    requirement = '{} : {}'.format(requirement, provenance_file)
+                return requirement
+
+        dd = map(_get_unmet_requirements, self.filtered_files['SOURCE_BAD'])
+        dd ='\n'.join(dd)
+        print(dd)
+        return dd
+
+
     def getCMDlist(self):
         A = map(self.generateIndCMD, self.filtered_files['SOURCE_GOOD'])
         B = map(self.generateIndCMD, self.filtered_files['FINISHED_BAD'])
