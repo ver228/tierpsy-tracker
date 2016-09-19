@@ -343,7 +343,7 @@ def getWormTrajectories(
             main_mask = main_mask.astype(np.uint8)
 
             [_, ROI_cnts, hierarchy] = cv2.findContours(
-                main_mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
+                main_mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE) # why is this using RETR_CCOMP here?
 
             buffer_features = []
             last_frame_features = []
