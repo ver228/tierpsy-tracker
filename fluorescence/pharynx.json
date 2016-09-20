@@ -1,2 +1,2 @@
-{"thresh_block_size": 15, "is_light_background": false, "keep_border_data": false, "fps": 3.0, "min_area": 15, "has_timestamp": false,
+{"thresh_block_size": 15, "is_light_background": false, "keep_border_data": false, "expected_fps": 3.0, "min_area": 15, "has_timestamp": false,
  "compression_buff": 3, "thresh_C": 5, "max_area": 1000000, "dilation_size": 10, "traj_max_allowed_dist": 100, "strel_size": 0}
