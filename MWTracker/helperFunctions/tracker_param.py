@@ -16,6 +16,7 @@ deprecated_alias = {
 dflt_param_list = [
     ('min_area', 50, 'minimum allowed area in pixels.'),
     ('max_area', int(1e8), 'maximum allowed area in pixels.'),
+    ('min_box_width', 5, 'minimum allowed width of bounding box in pxels.'),
     ('thresh_C', 15, 'constant offset used by the adaptative thresholding to calculate the mask.'),
     ('thresh_block_size', 61, 'block size used by the adaptative thresholding.'),
     ('dilation_size', 9, 'size of the structural element used in morphological operations.'),
@@ -67,6 +68,7 @@ class tracker_param:
             self,
             min_area,
             max_area,
+            min_box_width,
             thresh_C,
             thresh_block_size,
             dilation_size,
@@ -115,12 +117,12 @@ class tracker_param:
             'expected_fps': expected_fps}
         
         # getWormTrajectories
-        min_track_length = max(1, fps_filter / 5)
         self.trajectories_param = {
             'initial_frame': 0,
             'last_frame': -1,
             'min_area': min_area / 2,
-            'min_length': min_track_length,
+            'min_box_width': min_box_width,
+            'min_track_length': max(1, fps_filter / 5), # this filter is currently not used in getWormTrajectories
             'max_allowed_dist': traj_max_allowed_dist,
             'area_ratio_lim': (
                 0.5,

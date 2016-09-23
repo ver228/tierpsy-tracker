@@ -260,7 +260,7 @@ def getWormTrajectories(
     initial_frame=0,
     last_frame=-1,
     min_area=25,
-    min_length=5,
+    min_box_width=5,
     max_allowed_dist=20,
     area_ratio_lim=(
         0.5,
@@ -274,7 +274,7 @@ def getWormTrajectories(
     #read images from 'masked_image_file', and save the linked trajectories and their features into 'trajectories_file'
     #use the first 'total_frames' number of frames, if it is equal -1, use all the frames in 'masked_image_file'
     min_area -- min area of the segmented worm
-    min_length -- min size of the bounding box in the ROI of the compressed image
+    min_box_width -- min size of the bounding box in the ROI of the compressed image
     max_allowed_dist -- maximum allowed distance between to consecutive trajectories
     area_ratio_lim -- allowed range between the area ratio of consecutive frames
     worm_bw_thresh_factor -- The calculated threshold will be multiplied by this factor. Desperate attempt to solve for the swimming case.
@@ -351,7 +351,7 @@ def getWormTrajectories(
             for ROI_cnt in ROI_cnts:
                 ROI_bbox = cv2.boundingRect(ROI_cnt)
                 # bounding box too small to be a worm
-                if ROI_bbox[1] < min_length or ROI_bbox[3] < min_length:
+                if ROI_bbox[1] < min_box_width or ROI_bbox[3] < min_box_width:
                     continue
 
                 # select ROI for all buffer slides and apply a median filter to reduce rough edges / sharpen the boundary btw worm and background
