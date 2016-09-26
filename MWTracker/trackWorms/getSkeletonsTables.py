@@ -177,7 +177,7 @@ def binaryMask2Contour(
         # filter only contours with areas larger than min_mask_area and do not
         # consider contour with holes
         cnt_tuple = [(contour[ii], cnt_area) for ii, cnt_area in enumerate(
-            cnt_areas) if cnt_area >= min_mask_area and hierarchy[0][ii][3] == -1]
+            cnt_areas) if cnt_area >= min_mask_area and hierarchy[0][ii][3] == -1] # shouldn't the last condition be automatically satisified by using RETR_EXTERNAL in cv2.findContours?
 
         # if there are not contour left continue
         if not cnt_tuple:
