@@ -81,8 +81,8 @@ def _getWormThreshold(pix_valid):
 
         xx = np.arange(otsu_thresh, cumhist.size)
         try:
-            # the threshold is calculated as the pixel level where there would be
-            # larger increase in the object area.
+            # the threshold is calculated as the first pixel level above the otsu threshold 
+            # at which there would be larger increase in the object area.
             hist_ratio = pix_hist[xx] / cumhist[xx]
             thresh = np.where(
                 (hist_ratio[3:] - hist_ratio[:-3]) > 0)[0][0] + otsu_thresh
