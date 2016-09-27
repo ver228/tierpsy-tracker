@@ -6,12 +6,17 @@ Created on Thu Jun 25 12:44:07 2015
 """
 
 import json
+
+#deprecated variables that will be ignored
 deprecated_fields = ['has_timestamp', 'min_displacement']
+
+#the dict key are the old names and the value the new name
 deprecated_alias = {
     'fps': 'expected_fps',
     'threshold_factor': 'worm_bw_thresh_factor',
     'is_invert_thresh' : 'is_light_background',
-    'is_fluorescence' : not 'is_light_background'}
+    'is_fluorescence' : 'is_light_background',
+    'min_length' : 'min_box_width'}
 
 dflt_param_list = [
     ('min_area', 50, 'minimum allowed area in pixels.'),
