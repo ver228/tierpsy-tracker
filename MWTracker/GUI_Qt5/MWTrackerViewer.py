@@ -131,12 +131,14 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
             if has_prov_skel_filt:
                 ss = skel_fid['/provenance_tracking/SKE_FILT'].value
                 ss = json.loads(ss.decode("utf-8"))
-                feat_filt_param = json.loads(ss['func_arguments'])
-                use_skel_filter = feat_filt_param['use_skel_filter']
-                del feat_filt_param['use_skel_filter']
-                del feat_filt_param['skeletons_file']
+                saved_func_args = json.loads(ss['func_arguments'])
+
+                feat_filt_param = {
+                x: saved_func_args[x] for x in [
+                'min_num_skel',
+                'bad_seg_thresh',
+                'min_displacement']}
             else:
-                use_skel_filter = True
                 feat_filt_param = param_default.feat_filt_param
 
         point_parameters = {
@@ -146,10 +148,10 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
                 'features_file': self.feat_manual_file,
                 'expected_fps': expected_fps,
                 'is_single_worm': False,
-                'use_skel_filter': use_skel_filter,
+                'use_skel_filter': True,
                 'use_manual_join': True,
                 'feat_filt_param': feat_filt_param},
-            'provenance_file': self.feat_manual_file
+                'provenance_file': self.feat_manual_file
             }
 
 
