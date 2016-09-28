@@ -20,13 +20,15 @@ from ..helperFunctions.miscFun import print_flush
 
 from sklearn.covariance import EllipticEnvelope, MinCovDet
 from scipy.stats import chi2
-np.seterr(invalid='ignore')
+from MWTracker.helperFunctions.miscFun import TABLE_FILTERS
 
+#supress unnecessary warnings
 import warnings
 warnings.filterwarnings('ignore', '.*det > previous_det*',)
+np.seterr(invalid='ignore')
 
 
-from MWTracker.trackWorms.getSkeletonsTables import TABLE_FILTERS
+
 
 getBaseName = lambda skeletons_file: skeletons_file.rpartition(
     os.sep)[-1].replace('_skeletons.hdf5', '')

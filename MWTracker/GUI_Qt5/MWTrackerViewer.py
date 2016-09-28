@@ -146,11 +146,12 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
             'argkws': {
                 'skeletons_file': self.skeletons_file,
                 'features_file': self.feat_manual_file,
-                'expected_fps': expected_fps,
+                'expected_fps': int(expected_fps), #if it is read as np.int64 can give errors in the json serializer
                 'is_single_worm': False,
                 'use_skel_filter': True,
                 'use_manual_join': True,
-                'feat_filt_param': feat_filt_param},
+                'feat_filt_param': feat_filt_param
+                },
                 'provenance_file': self.feat_manual_file
             }
 

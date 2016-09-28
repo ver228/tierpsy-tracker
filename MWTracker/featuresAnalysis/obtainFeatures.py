@@ -23,11 +23,9 @@ from MWTracker.helperFunctions.miscFun import print_flush
 from MWTracker.trackWorms.getFilteredSkels import getValidIndexes 
 from MWTracker.featuresAnalysis.obtainFeaturesHelper import WormStatsClass, WormFromTable
 from MWTracker.featuresAnalysis.correctVentralDorsal import isBadVentralOrient
-from MWTracker.helperFunctions.miscFun import WLAB
+from MWTracker.helperFunctions.miscFun import WLAB, TABLE_FILTERS
 
 import open_worm_analysis_toolbox as mv
-##
-
 
 def getFPS(skeletons_file, expected_fps, min_allowed_fps=1):
         # try to infer the fps from the timestamp
@@ -114,8 +112,23 @@ def correctSingleWorm(worm, skeletons_file):
     return worm
 #%%%%%%%
 
+def getFeatStats(worm, wStats=[]):
 
-def getFeaturesOpenWorm(worm, wStats=[]):
+    # IMPORTANT assert the axis is openworm format before calculating features
+    assert worm.skeleton.shape[1] == 2
+    #calculate features
+    worm_features = mv.WormFeatures(worm)
+    
+    # calculate the mean value of each feature
+    worm_stats = wStats.getWormStats(worm_features, np.mean)
+    worm_stats['n_frames'] = worm.n_frames
+    worm_stats['worm_index'] = worm.worm_index
+    worm_stats['n_valid_skel'] = worm.n_valid_skel
+    worm_stats['first_timestamp'] = worm.timestamp[0]
+
+    return worm_features, worm_stats
+
+def getOpenWormData(worm, wStats=[]):
     if not isinstance(wStats, WormStatsClass):
         wStats = WormStatsClass()
 
@@ -125,9 +138,10 @@ def getFeaturesOpenWorm(worm, wStats=[]):
     # IMPORTANT change axis to an openworm format before calculating features
     assert worm.skeleton.shape[2] == 2
     worm.changeAxis()
-    # OpenWorm feature calculation
-    assert worm.skeleton.shape[1] == 2
-    worm_features = mv.WormFeatures(worm)
+    
+    #get the worm features at its stats
+    worm_features, worm_stats = getFeatStats(worm, wStats=[])
+    
 
     # convert the timeseries features into a recarray
     tot_frames = worm.timestamp.size
@@ -148,16 +162,12 @@ def getFeaturesOpenWorm(worm, wStats=[]):
         feat_obj = wStats.features_info.loc[feat, 'feat_name_obj']
         events_data[feat] = worm_features._features[feat_obj].value
 
-    # calculate the mean value of each feature
-    worm_stats = wStats.getWormStats(worm_features, np.mean)
-    worm_stats['n_frames'] = worm.n_frames
-    worm_stats['worm_index'] = worm.worm_index
-    worm_stats['n_valid_skel'] = worm.n_valid_skel
+    
 
     return timeseries_data, events_data, worm_stats, skeletons
 
 
-def isValidSingleWorm(skeletons_file, good_traj_index):
+def _h_isValidSingleWorm(skeletons_file, good_traj_index):
     '''Check if it is sigle worm and if the stage movement has been aligned successfully.'''
     try:
         with tables.File(skeletons_file, 'r') as fid:
@@ -169,7 +179,11 @@ def isValidSingleWorm(skeletons_file, good_traj_index):
                 assert len(good_traj_index) <= 1
                 return True
     except (tables.exceptions.NoSuchNodeError, IOError, KeyError):
-        return False
+
+def _h_hasManualJoin(skeletons_file):
+    with tables.File(skeletons_file, 'r') as fid:
+        return any(x in fid.get_node('/trajectories_data').colnames for x in ['worm_index_manual', 'worm_index_N'])
+return False
 
 
 def getWormFeatures(
@@ -181,8 +195,7 @@ def getWormFeatures(
         worm_index_str='worm_index_joined',
         is_single_worm=False):
 
-    if is_single_worm:
-        if not isValidSingleWorm(skeletons_file, good_traj_index):
+    if is_single_worm and not isValidSingleWorm(skeletons_file, good_traj_index):
             # the stage was not aligned correctly. Return empty features file.
             good_traj_index = np.array([])
 
@@ -192,6 +205,7 @@ def getWormFeatures(
     # function to calculate the progress time. Useful to display progress
     base_name = skeletons_file.rpartition(
         '.')[0].rpartition(os.sep)[-1].rpartition('_')[0]
+    
     # filter used for each fo the tables
     filters_tables = tables.Filters(complevel=5, complib='zlib', shuffle=True)
     # Time series
@@ -271,7 +285,7 @@ def getWormFeatures(
 
             # calculate features
             timeseries_data, events_data, worm_stats, skeletons = \
-                getFeaturesOpenWorm(worm, wStats)
+                getOpenWormData(worm, wStats)
 
             #%%
             # save timeseries data
@@ -324,9 +338,6 @@ def getWormFeatures(
             ' Feature extraction finished: ' +
             progress_timer.getTimeStr())
 
-def hasManualJoin(skeletons_file):
-    with tables.File(skeletons_file, 'r') as fid:
-        return any(x in fid.get_node('/trajectories_data').colnames for x in ['worm_index_manual', 'worm_index_N'])
 
 def getWormFeaturesFilt(
         skeletons_file,
@@ -338,7 +349,7 @@ def getWormFeaturesFilt(
         feat_filt_param):
     assert (use_skel_filter or use_manual_join) or feat_filt_param
     if use_manual_join:
-        assert hasManualJoin(skeletons_file)
+        assert _h_hasManualJoin(skeletons_file)
 
     with pd.HDFStore(skeletons_file, 'r') as table_fid:
         colnames = table_fid.get_node('/trajectories_data').colnames

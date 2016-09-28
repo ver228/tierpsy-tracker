@@ -27,13 +27,8 @@ from scipy.interpolate import interp1d
 
 from MWTracker.helperFunctions.timeCounterStr import timeCounterStr
 from MWTracker.trackWorms.segWormPython.mainSegworm import getSkeleton
+from MWTracker.helperFunctions.miscFun import TABLE_FILTERS
 
-# pytables filters.
-TABLE_FILTERS = tables.Filters(
-        complevel=5,
-        complib='zlib',
-        shuffle=True,
-        fletcher32=True)
 
 def getWormROI(img, CMx, CMy, roi_size=128):
     '''

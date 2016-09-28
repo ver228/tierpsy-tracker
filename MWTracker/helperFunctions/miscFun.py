@@ -5,6 +5,12 @@ from MWTracker import AUX_FILES_DIR
 
 WLAB = {'U': 0, 'WORM': 1, 'WORMS': 2, 'BAD': 3, 'GOOD_SKE': 4}
 
+# pytables filters.
+TABLE_FILTERS = tables.Filters(
+        complevel=5,
+        complib='zlib',
+        shuffle=True,
+        fletcher32=True)
 
 def print_flush(msg):
     print(msg)
