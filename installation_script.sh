@@ -29,7 +29,7 @@ function install_homebrew_python {
 	#i prefer to install matplotlib and numpy with homebrew it gives less problems of compatilibity down the road
 	#brew install homebrew/python/matplotlib --with-python3
 	
-	CURRENT_OPENCV_VER=`python3 -c "import cv2; print(cv2.__version__)" || :`
+	CURRENT_OPENCV_VER=`python3 -c "import cv2; print(cv2.__version__)" 2> /dev/null || true`
 	if [[ $OPENCV_VER != $CURRENT_OPENCV_VER ]]; then
 		install_opencv3
 	fi
@@ -42,8 +42,11 @@ function install_opencv3 {
 
 	echo 'Installing opencv.'
 	#there is a brew formula for this, but there are more changes this will work.
-	cd $MW_MAIN_DIR/..
-	git clone https://github.com/Itseez/opencv
+	if ! [[ -d $OPENCV_DIR ]] ; then
+		cd $MW_MAIN_DIR/..
+		git clone https://github.com/Itseez/opencv	
+	fi
+	
 	cd $OPENCV_DIR
 	git checkout -f $OPENCV_VER
 	
@@ -211,6 +214,7 @@ function download_examples {
 }
 
 ##########
+
 
 case "${OS}" in
 	"Darwin")
