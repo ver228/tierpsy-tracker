@@ -146,9 +146,9 @@ class AnalysisPoints(object):
             'FEAT_CREATE': {
                 'func': getWormFeaturesFilt,
                 'argkws': {'skeletons_file': fn['skeletons'], 'features_file': fn['features'],
-                           'expected_fps': param.expected_fps, 'is_single_worm': is_single_worm,
-                           'use_skel_filter': use_skel_filter, 'use_manual_join': False,
-                           'feat_filt_param': param.feat_filt_param},
+                           **param.feats_param,
+                           'is_single_worm': is_single_worm, 'use_skel_filter': use_skel_filter, 'use_manual_join': False
+                           },
                 'input_files' : [fn['skeletons']],
                 'output_files': [fn['features']],
                 'requirements' : ['SKE_CREATE']
@@ -156,9 +156,9 @@ class AnalysisPoints(object):
             'FEAT_MANUAL_CREATE': {
                 'func': getWormFeaturesFilt,
                 'argkws': {'skeletons_file': fn['skeletons'], 'features_file': fn['feat_manual'],
-                           'expected_fps': param.expected_fps, 'is_single_worm': False,
-                           'use_skel_filter': use_skel_filter, 'use_manual_join': True,
-                           'feat_filt_param': param.feat_filt_param},
+                           **param.feats_param,
+                           'is_single_worm': False, 'use_skel_filter': use_skel_filter, 'use_manual_join': True,
+                           },
                 'input_files' : [fn['skeletons']],
                 'output_files': [fn['feat_manual']],
                 'requirements' : ['SKE_CREATE', 

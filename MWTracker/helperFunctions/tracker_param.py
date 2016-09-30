@@ -44,7 +44,8 @@ dflt_param_list = [
     ('int_avg_width_frac', 0.3, ''),
     ('int_width_resampling', 15, ''),
     ('int_length_resampling', 131, ''),
-    ('int_max_gap_allowed_block', -1, '')
+    ('int_max_gap_allowed_block', -1, ''),
+    ('split_traj_time', 300, '')
 ]
 
 default_param = {x: y for x, y, z in dflt_param_list}
@@ -96,7 +97,8 @@ class tracker_param:
             int_avg_width_frac,
             int_width_resampling,
             int_length_resampling,
-            int_max_gap_allowed_block):
+            int_max_gap_allowed_block,
+            split_traj_time):
 
         if not isinstance(expected_fps, int):
             expected_fps = int(expected_fps)
@@ -206,3 +208,9 @@ class tracker_param:
             'local_avg_win': 10 * expected_fps,
             'min_frac_in': 0.85,
             'head_tail_param': self.head_tail_param}
+
+        self.feats_param = {
+            'expected_fps': expected_fps, 
+            'feat_filt_param': self.feat_filt_param,
+            'split_traj_time' : split_traj_time
+        }

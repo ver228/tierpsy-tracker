@@ -11,7 +11,7 @@ import shutil
 
 from MWTracker.helperFunctions.miscFun import print_flush
 from MWTracker.batchProcessing.AnalysisPoints import AnalysisPoints
-from MWTracker.batchProcessing.ProcessWormsWorker import ProcessWormsWorkerParser, SCRIPT_WORKER
+from MWTracker.batchProcessing.ProcessWormsWorker import ProcessWormsWorkerParser, ProcessWormsWorker, SCRIPT_WORKER
 from MWTracker.batchProcessing.helperFunc import create_script, getRealPathName
 
 SCRIPT_LOCAL = getRealPathName(__file__)
@@ -20,7 +20,7 @@ class ProcessWormsLocal(object):
     def __init__(self, main_file, masks_dir, results_dir, tmp_mask_dir='',
             tmp_results_dir='', json_file='', analysis_checkpoints = [], 
             is_single_worm=False, use_skel_filter=True, is_copy_video = False):
-    
+        
         assert os.path.exists(main_file)
         self.main_file = main_file
         self.results_dir = results_dir
@@ -66,8 +66,8 @@ class ProcessWormsLocal(object):
     def start(self):
         
         self.start_time = time.time()
-        # get the correct starting point
 
+        #copy tmp files
         self._copyFinaltoTmp()
         
         args = [self.tmp_main_file]
@@ -237,6 +237,13 @@ if __name__ == '__main__':
     import subprocess
     import sys
     
+    #the local parser copy the tmp files into the tmp directory using its method start, and returns the command for the worm worker
+    local_obj = ProcessWormsLocalParser(sys.argv)
+    worker_cmd = local_obj.start()
+    
     worm_parser = ProcessWormsWorkerParser()
-    args = vars(worm_parser.parse_args())
-    ProcessWormsLocalParser(**args, cmd_original = subprocess.list2cmdline(sys.argv))
+    args = vars(worm_parser.parse_args(worker_cmd[2:]))
+    ProcessWormsWorker(**args, cmd_original = subprocess.list2cmdline(sys.argv))
+
+    #clear temporary files
+    local_obj.clean()    

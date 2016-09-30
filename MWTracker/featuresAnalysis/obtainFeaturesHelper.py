@@ -11,7 +11,7 @@ import sys
 import tables
 import pandas as pd
 import numpy as np
-from math import floor, ceil
+import copy
 import csv
 from scipy.signal import savgol_filter
 from MWTracker import AUX_FILES_DIR
@@ -347,15 +347,48 @@ class WormFromTable(mv.NormalizedWorm):
 
             #assert getattr(self, field).shape[0] == self.n_segments
 
+    def splitWormTraj(self, split_size):
+
+        #get the indexes to made the splits
+        split_ind = np.arange(split_size, self.n_frames, split_size)
+        n_splits = split_ind.size + 1
+
+        #get the fields that will be splitted, they should be ndarrays with the same number of elements in the fisrt dimension
+        fields2split = [field for field, val in self.__dict__.items() if isinstance(val, np.ndarray)]
+        # check all the fields have the same number of frames in the first dimension
+        assert all(getattr(self, x).shape[0] for x in fields2split)
+        
+        #copy the main object to initialize the smaller trajectories
+        base_worm =copy.copy(self)
+        #delete the ndarray fields so we don't copy large amount of data twice
+        [setattr(base_worm, x, np.nan) for x in fields2split]
+
+        #split each fields
+        splitted_worms = [copy.copy(base_worm) for n in range(n_splits)]
+        for field in fields2split:
+            splitted_field = np.split(getattr(self, field), split_ind, axis=0)
+            
+            for worm_s, dat_s in zip(splitted_worms, splitted_field):
+                setattr(worm_s, field, dat_s)
+
+        #correct for first_frame, n_frames, last_Frame
+        for worm_s in splitted_worms:
+            worm_s.n_frames = worm_s.timestamp.size
+            worm_s.first_frame = worm_s.timestamp[0]
+            worm_s.last_frame = worm_s.timestamp[-1]
+            worm_s.n_valid_skel = np.sum(~np.isnan(worm_s.skeleton[:, 0, 0]))
+
+        return splitted_worms
 
 class WormStatsClass():
 
     def __init__(self):
         '''get the info for each feature chategory'''
-
+        
         feat_names_file = os.path.join(AUX_FILES_DIR, 'features_names.csv')
         #feat_names_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'auxFiles', 'features_names.csv')
-
+        
+        self.extra_fields =  ['worm_index', 'n_frames', 'n_valid_skel', 'first_frame']
         self.features_info = pd.read_csv(feat_names_file, index_col=0)
         self.builtFeatAvgNames()  # create self.feat_avg_names
 
@@ -373,7 +406,7 @@ class WormStatsClass():
                 self.features_info['is_time_series'] == 0].index.values)
 
     def builtFeatAvgNames(self):
-        feat_avg_names = ['worm_index', 'n_frames', 'n_valid_skel']
+        feat_avg_names = self.extra_fields[:]
         for feat_name, feat_info in self.features_info.iterrows():
 
             motion_types = ['']

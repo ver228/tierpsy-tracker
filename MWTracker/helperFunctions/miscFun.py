@@ -1,6 +1,7 @@
 import shutil
 import sys
 import os
+import tables
 from MWTracker import AUX_FILES_DIR
 
 WLAB = {'U': 0, 'WORM': 1, 'WORMS': 2, 'BAD': 3, 'GOOD_SKE': 4}
