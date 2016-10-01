@@ -85,6 +85,9 @@ class CheckFilesForProcessing(object):
         '''Generate the destination dir path keeping the same structure 
         as the source directory'''
         subdir_path = source_dir.replace(source_root_dir, '')
+
+        #TODO: What happends is there is MaskedVideos within the subdirectory 
+
         # consider the case the subdirectory is only a directory separation
         # character
         if subdir_path and subdir_path[0] == os.sep:

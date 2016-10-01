@@ -78,15 +78,17 @@ class ProcessWormsLocal(object):
         return create_script(SCRIPT_WORKER, args, argkws)
 
     def clean(self):
-        self._copyTmpToFinal()
-        self._cleanTmpFiles()
+        self._copyTmpToFinalAndClean()
         
         delta_t = time.time() - self.start_time
         time_str = datetime.timedelta(seconds = round(delta_t))
         
         progress_str = '{}  Finished. Total time {}.'.format(self.base_name, time_str)
-        if len(self.unfinished_points_src) > 0:
-            progress_str = '{} Missing analysis points: {}.'.format(progress_str, self.unfinished_points_src)
+        if len(self.unfinished_points_tmp) > 0:
+            progress_str = '{} Missing analysis points in the tmp dir: {}.'.format(progress_str, self.unfinished_points_tmp)
+        elif len(self.unfinished_points_src) > 0:
+            progress_str = '''{} Missing analysis points in the final dir: {}. 
+            Problems when copy files?.'''.format(progress_str, self.unfinished_points_src)
         
         print_flush(progress_str)
         
@@ -127,47 +129,53 @@ class ProcessWormsLocal(object):
                                                self.ap_tmp.file2dir_dict)
         self._copyFilesLocal(files2copy)
     
-    
-    def _copyTmpToFinal(self):
-        #recalcuate the unfinished points in the tmp directory. At this point they should be empty
-        self.unfinished_points_tmp = self.ap_tmp.getUnfinishedPoints(self.analysis_checkpoints)
+    def _copyTmpToFinalAndClean(self):
+        '''copy files to final directory and clean'''
         
-        files_finished_tmp_no_src = self._getMissingFiles(self.unfinished_points_src, 
-                                                           self.unfinished_points_tmp, 
-                                                           self.ap_tmp)
-        files2copy = self._getFilesSrcDstPairs(files_finished_tmp_no_src, 
+        #recalcuate the unfinished points in the tmp directory. At this point they should be empty
+        self.unfinished_points_tmp = self.ap_tmp.getUnfinishedPoints(self.unfinished_points_src)
+        if len(self.unfinished_points_tmp) != 0:
+            #return, do not copy the files if the tmp analysis was interrupted
+            return
+
+        #copy all the files produced by the temp dir into the final destination
+        ouput_files_produced = self._points2Files(self.unfinished_points_src, self.ap_tmp, "output_files")
+        #print('AAA', ouput_files_produced)
+        files2copy = self._getFilesSrcDstPairs(ouput_files_produced, 
                                                self.ap_tmp.file2dir_dict, 
                                                self.ap_src.file2dir_dict)
         self._copyFilesLocal(files2copy)
-        
-        #recalculate the unfinished points in the final directory
-        self.unfinished_points_src = self.ap_src.getUnfinishedPoints(self.analysis_checkpoints)
-        
-        #check that there are not missing points that where finished in tmp but not in src
-        def assertIsSubset(B, A):
-            assert set(A).issubset(set(B)) 
-        assertIsSubset(self.unfinished_points_tmp, self.unfinished_points_src)
+        self._deleteTmpFiles()
         
 
-    def _cleanTmpFiles(self):
-        def _getAllExpectedFiles(ap_obj):
-            #get the fullnames of all the files produced by all analysis checkpoints
-            return set(_points2FullFiles(ap_obj, "input_files")) | \
-            set(_points2FullFiles(ap_obj, "output_files"))
-            
-        def _points2FullFiles(ap_obj, field_name):
-            data = ap_obj.getField(field_name, self.analysis_checkpoints)
-            return sum(data.values(), []) #flatten list
+             
+
+    def _deleteTmpFiles(self):    
+        def _points2FullFiles(points2check, ap_obj, field_name):
+            data = ap_obj.getField(field_name, points2check)
+            return set(sum(data.values(), [])) #flatten list
+
+        #check if the analysis was really finished in the src before deleting any files
+        self.unfinished_points_src = self.ap_src.getUnfinishedPoints(self.analysis_checkpoints)
+        if len(self.unfinished_points_src) != 0:
+            #return, there is something weird with the source, it seems that the tmp files were not copy correctly
+            return   
         
-        expected_final_files = _getAllExpectedFiles(self.ap_src)
-        expected_tmp_files = _getAllExpectedFiles(self.ap_tmp)
+        #CLEAN
+        all_tmp_files = _points2FullFiles(self.analysis_checkpoints, self.ap_tmp, "output_files") | \
+        _points2FullFiles(self.analysis_checkpoints, self.ap_tmp, "input_files")
         
-        #files that are only found in temporary but not in final
-        files2remove = expected_tmp_files - expected_final_files
+        all_src_files = _points2FullFiles(self.analysis_checkpoints, self.ap_src, "output_files") | \
+        _points2FullFiles(self.analysis_checkpoints, self.ap_src, "input_files")
+        
+        #remove all tmp files that are not in the source
+        files2remove = all_tmp_files - all_src_files
+
         for fname in files2remove:
             if os.path.exists(fname):
                 os.remove(fname)
-                
+    
+        
     def _getNewFilesCreated(self, points2process, ap_obj):
         '''get the new files that will be created after a given list of analysis points'''
         
@@ -240,7 +248,6 @@ if __name__ == '__main__':
     #the local parser copy the tmp files into the tmp directory using its method start, and returns the command for the worm worker
     local_obj = ProcessWormsLocalParser(sys.argv)
     worker_cmd = local_obj.start()
-    
     worm_parser = ProcessWormsWorkerParser()
     args = vars(worm_parser.parse_args(worker_cmd[2:]))
     ProcessWormsWorker(**args, cmd_original = subprocess.list2cmdline(sys.argv))

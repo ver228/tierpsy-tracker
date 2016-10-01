@@ -35,7 +35,7 @@ class ProcessWormsWorker(object):
     def execAllPoints(self):
         base_name = self.ap.file_names['base_name']
         if len(self.analysis_checkpoints) == 0:
-            print_flush('%s No checkpoints given. Nothing to do here. Exiting.' % base_name)
+            print_flush('%s No checkpoints given. It seems that there is a previous analysis finished. Exiting.' % base_name)
             return
         
         commit_hash = getGitCommitHash()

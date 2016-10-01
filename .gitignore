@@ -11,3 +11,5 @@ Tests/Data/*
 *.m~
 
 *.DS_Store
+
+*.so
