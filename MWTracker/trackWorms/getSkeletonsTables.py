@@ -182,9 +182,9 @@ def binaryMask2Contour(
         # if there are not contour left continue
         if not cnt_tuple:
             return np.zeros(0), 0
-
-        # get back the contour areas for filtering
-        contour, cnt_areas = zip(*cnt_tuple)
+        else:
+            # get back the contour areas for filtering
+            contour, cnt_areas = zip(*cnt_tuple)
 
         if pick_center:
             # In the multiworm tracker the worm should be in the center of the
@@ -192,7 +192,6 @@ def binaryMask2Contour(
             min_dist_center = np.inf
             valid_ind = -1
             for ii, cnt in enumerate(contour):
-                # print(cnt.shape)
                 #mm = cv2.moments(cnt)
                 cm_x = np.mean(cnt[:, :, 1])  # mm['m10']/mm['m00']
                 cm_y = np.mean(cnt[:, :, 0])  # mm['m01']/mm['m00']
@@ -585,16 +584,12 @@ def trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file,
 
 
                 if analysis_type == "WORM":
-
                     worm_mask, worm_cnt, cnt_area = getWormMask(
                         worm_img, row_data['threshold'], strel_size,
                         min_mask_area=row_data['area'] / 2, is_light_background = is_light_background)
 
-                    if worm_cnt.size == 0:
-                        continue
-
                     # get skeletons
-                    skeleton, ske_len, cnt_side1, cnt_side2, cnt_widths, cnt_area = \
+                    skeleton, ske_len, cnt_side1, cnt_side2, cnt_widths, _ = \
                         getSkeleton(worm_cnt, prev_skeleton[worm_index], resampling_N)
 
                 elif analysis_type == "ZEBRAFISH":
@@ -603,28 +598,29 @@ def trajectories2Skeletons(masked_image_file, skeletons_file, trajectories_file,
                     config = zebrafishAnalysis.ModelConfig(zf_num_segments, zf_min_angle, zf_max_angle, zf_num_angles, zf_tail_length, zf_tail_detection, zf_prune_retention, zf_test_width, zf_draw_width, zf_auto_detect_tail_length)
                     worm_mask, worm_cnt, cnt_area, cleaned_mask, head_point, smoothed_points = zebrafishAnalysis.getZebrafishMask(worm_img, config)
 
-                    if worm_mask == None:
+                    if worm_mask is None:
                         continue
 
                     # Get zebrafish skeleton
                     skeleton, ske_len, cnt_side1, cnt_side2, cnt_widths, cnt_area = zebrafishSkeleton.getZebrafishSkeleton(cleaned_mask, head_point, smoothed_points, config)
 
-                    if skeleton == None:
+                    if skeleton is None:
                         continue
 
                     # Resample skeleton and other variables
                     skeleton, ske_len, cnt_side1, cnt_side2, cnt_widths = resampleAll(skeleton, cnt_side1, cnt_side2, cnt_widths, resampling_N)
 
-                    if skeleton == None or cnt_side1 == None or cnt_side2 == None:
+                    if skeleton is None or cnt_side1 is None or cnt_side2 is None:
                         continue
 
-
                 cnt_areas[skeleton_id] = cnt_area
-                # calculate the mask center of mask and store it
-                cnt_coord_y[skeleton_id] = np.mean(
-                    worm_cnt[:, 1]) + roi_corner[1]
-                cnt_coord_x[skeleton_id] = np.mean(
-                    worm_cnt[:, 0]) + roi_corner[0]
+                
+                if worm_cnt.size > 0:
+                    # calculate the mask center of mask and store it
+                    cnt_coord_y[skeleton_id] = np.mean(
+                        worm_cnt[:, 1]) + roi_corner[1]
+                    cnt_coord_x[skeleton_id] = np.mean(
+                        worm_cnt[:, 0]) + roi_corner[0]
 
 
                 if skeleton.size > 0:

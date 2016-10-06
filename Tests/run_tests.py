@@ -135,5 +135,5 @@ if __name__ == '__main__':
     examples_dir = os.path.join(root_dir, 'Tests', 'Data')
     script_dir = os.path.join(root_dir, 'cmd_scripts')
 
-    for fun in [test4]:#[test1, test2, test3, test4]:
+    for fun in [test1, test2, test3, test4]:
         fun(script_dir, examples_dir)

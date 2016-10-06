@@ -145,6 +145,7 @@ class ProcessWormsLocal(object):
                                                self.ap_tmp.file2dir_dict, 
                                                self.ap_src.file2dir_dict)
         self._copyFilesLocal(files2copy)
+
         self._deleteTmpFiles()
         
 
