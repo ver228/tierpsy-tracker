@@ -242,6 +242,9 @@ def getSkeleton(worm_cnt, prev_skeleton=np.zeros(0), resampling_N=49):
 
     n_output_param = 6  # number of expected output parameters
 
+    if worm_cnt.size == 0:
+        return (n_output_param) * [np.zeros(0)]
+        
     assert isinstance(
         worm_cnt,
         np.ndarray) and worm_cnt.ndim == 2 and worm_cnt.shape[1] == 2
