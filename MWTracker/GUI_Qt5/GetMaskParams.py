@@ -145,7 +145,6 @@ class GetMaskParams_GUI(QMainWindow):
 
     def __init__(self, default_videos_dir='', scripts_dir=''):
         super(GetMaskParams_GUI, self).__init__()
-
         # Set up the user interface from Designer.
         self.ui = Ui_GetMaskParams()
         self.ui.setupUi(self)
@@ -501,9 +500,9 @@ class GetMaskParams_GUI(QMainWindow):
                 # get video frame, stop program when no frame is retrive (end
                 # of file)
                 ret, image = self.vid.read()
-
                 if ret == 0:
                     break
+                
                 if image.ndim == 3:
                     image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 
