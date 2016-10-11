@@ -13,6 +13,7 @@ import cv2
 from skimage.filters import threshold_otsu
 import os
 import sys
+import pdb
 
 from sklearn.utils.linear_assignment_ import linear_assignment  # hungarian algorithm
 from scipy.spatial.distance import cdist
@@ -351,8 +352,8 @@ def getWormTrajectories(
             # examinate each region of interest
             for ROI_cnt in ROI_cnts:
                 ROI_bbox = cv2.boundingRect(ROI_cnt)
-                # bounding box too small to be a worm
-                if ROI_bbox[1] < min_box_width or ROI_bbox[3] < min_box_width:
+                # bounding box too small to be a worm - ROI_bbox[2] and [3] are width and height
+                if ROI_bbox[2] < min_box_width or ROI_bbox[3] < min_box_width:
                     continue
 
                 # select ROI for all buffer slides and apply a median filter to reduce rough edges / sharpen the boundary btw worm and background
