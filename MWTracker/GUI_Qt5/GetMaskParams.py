@@ -500,8 +500,10 @@ class GetMaskParams_GUI(QMainWindow):
                 # get video frame, stop program when no frame is retrive (end
                 # of file)
                 ret, image = self.vid.read()
+                
                 if ret == 0:
                     break
+                
                 
                 if image.ndim == 3:
                     image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
@@ -510,8 +512,10 @@ class GetMaskParams_GUI(QMainWindow):
 
                 tot += 1
 
-            if tot < self.buffer_size:
+            if tot == 0:
                 return
+            elif tot < self.buffer_size:
+                Ibuff = Ibuff[:tot]
 
             is_light_background = self.mapper.get('is_light_background')
             self.Imin = reduceBuffer(Ibuff, is_light_background)
