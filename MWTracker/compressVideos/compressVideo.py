@@ -19,6 +19,10 @@ from .selectVideoReader import selectVideoReader
 from ..helperFunctions.timeCounterStr import timeCounterStr
 from ..backgroundSubtraction import backgroundSubtraction
 
+IMG_FILTERS = {"compression":"gzip",
+        "compression_opts":4,
+        "shuffle":True,
+        "fletcher32":True}
 
 def isGoodVideo(video_file):
     try:
@@ -144,11 +148,6 @@ def reduceBuffer(Ibuff, is_light_background):
         return np.min(Ibuff, axis=0)
     else:
         return np.max(Ibuff, axis=0)
-
-IMG_FILTERS = {"compression":"gzip",
-        "compression_opts":4,
-        "shuffle":True,
-        "fletcher32":True}
 
 def createImgGroup(fid, name, tot_frames, im_height, im_width):
     
