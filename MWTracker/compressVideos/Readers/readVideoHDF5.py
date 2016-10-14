@@ -22,6 +22,8 @@ class readVideoHDF5:
 
         self.width = self.dataset.shape[1]
         self.height = self.dataset.shape[2]
+        self.dtype = self.dtype
+        
         self.tot_pix = self.height * self.width
 
         # initialize pointer for frames

@@ -56,6 +56,7 @@ class readVideoffmpeg:
             dd = re.findall(r'\d*x\d*', dd)[0].split('x')
             self.height = int(dd[1])
             self.width = int(dd[0])
+            self.dtype = np.uint8
 
         except (IndexError, ValueError):
             raise Exception(
