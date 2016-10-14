@@ -33,14 +33,3 @@ def selectVideoReader(video_file):
         # use opencv VideoCapture
         vid = readVideoCapture(video_file)
     return vid
-
-def isGoodVideo(video_file):
-    try:
-        vid, reader_type = selectVideoReader(video_file)
-        # i have problems with corrupt videos that can create infinite loops...
-        #it is better to test it before start a large taks
-        vid.release()
-        return True
-    except OSError:
-        # corrupt file, cannot read the size
-        return False
