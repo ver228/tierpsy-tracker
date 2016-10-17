@@ -45,7 +45,7 @@ dflt_param_list = [
     ('int_width_resampling', 15, ''),
     ('int_length_resampling', 131, ''),
     ('int_max_gap_allowed_block', -1, ''),
-    ('split_traj_time', 300, ''),
+    ('split_traj_time', 300, 'time in SECONDS that a trajectory will be subdivided to calculate the splitted features.'),
     ('use_background_subtraction', False, 'Flag to determine whether background should be subtracted from original frames.'),
     ('background_threshold', 1, 'Threshold value to use when applying background subtraction.'),
     ('ignore_mask', False, 'Mask is not used if set to True. Only applies if background subtraction is also active.'),

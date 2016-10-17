@@ -6,7 +6,7 @@ Created on Thu Feb 11 22:01:59 2016
 """
 
 import os
-import h5py
+import tables
 import subprocess as sp
 import tempfile
 
@@ -25,9 +25,9 @@ def alignStageMotion(
 
     base_name = os.path.split(masked_image_file)[1].partition('.hdf5')[0]
     # check if it was finished before
-    with h5py.File(skeletons_file, 'r+') as fid:
+    with tables.File(skeletons_file, 'r+') as fid:
         try:
-            has_finished = fid['/stage_movement'].attrs['has_finished'][:]
+            has_finished = fid.get_node('/stage_movement')._v_attrs['has_finished'][:]
         except (KeyError, IndexError):
             has_finished = 0
     if has_finished > 0:
@@ -65,9 +65,9 @@ def alignStageMotion(
     os.remove(tmp_script_file)
 
 def isGoodStageAligment(skeletons_file):
-    with h5py.File(skeletons_file, 'r') as fid:
+    with tables.File(skeletons_file, 'r') as fid:
         try:
-            good_aligment = fid['/stage_movement'].attrs['has_finished'][:]
+            good_aligment = fid.get_node('/stage_movement')._v_attrs['has_finished'][:]
         except (KeyError, IndexError):
             good_aligment = 0
 

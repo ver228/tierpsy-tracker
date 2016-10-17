@@ -2,7 +2,6 @@ from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtGui import QPixmap, QImage, QPainter, QFont, QPen
 from PyQt5.QtCore import Qt, QEvent
 
-import h5py
 import os
 import pandas as pd
 import numpy as np
@@ -113,23 +112,19 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         self.feat_manual_file = self.skeletons_file.replace(
             '_skeletons.hdf5', '_feat_manual.hdf5')
 
-        with h5py.File(self.vfilename, 'r') as mask_fid, \
-                h5py.File(self.skeletons_file, 'r') as skel_fid:
-
-            has_expected_fps = 'expected_fps' in mask_fid['/mask'].attrs
-            has_prov_skel_filt = '/provenance_tracking/SKE_FILT' in skel_fid
+        with tables.File(self.vfilename, 'r') as mask_fid, \
+                tables.File(self.skeletons_file, 'r') as skel_fid:
 
             # if any of this fields is missing load the default parameters
-            if not has_expected_fps or not has_prov_skel_filt:
-                param_default = tracker_param()
+            param_default = tracker_param()
 
-            if has_expected_fps:
-                expected_fps = mask_fid['/mask'].attrs['expected_fps']
-            else:
+            try:
+                expected_fps = mask_fid.get_node('/mask')._v_attrs['expected_fps']
+            except KeyError:
                 expected_fps = param_default.expected_fps
 
-            if has_prov_skel_filt:
-                ss = skel_fid['/provenance_tracking/SKE_FILT'].value
+            try:
+                ss = skel_fid.get_node('/provenance_tracking/SKE_FILT').read()
                 ss = json.loads(ss.decode("utf-8"))
                 saved_func_args = json.loads(ss['func_arguments'])
 
@@ -138,7 +133,7 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
                 'min_num_skel',
                 'bad_seg_thresh',
                 'min_displacement']}
-            else:
+            except KeyError:
                 feat_filt_param = param_default.feat_filt_param
 
         point_parameters = {
@@ -150,7 +145,8 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
                 'is_single_worm': False,
                 'use_skel_filter': True,
                 'use_manual_join': True,
-                'feat_filt_param': feat_filt_param
+                'feat_filt_param': feat_filt_param,
+                'split_traj_time': param_default.feats_param['split_traj_time']
                 },
                 'provenance_file': self.feat_manual_file
             }
