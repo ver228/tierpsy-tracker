@@ -13,11 +13,11 @@ import sys
 from scipy.ndimage.filters import median_filter
 
 
-from .extractMetaData import storeMetaData, readAndSaveTimestamp
-from .selectVideoReader import selectVideoReader
+from  MWTracker.compressVideos.extractMetaData import storeMetaData, readAndSaveTimestamp
+from  MWTracker.compressVideos.selectVideoReader import selectVideoReader
 
-from ..helperFunctions.timeCounterStr import timeCounterStr
-from ..backgroundSubtraction import backgroundSubtraction
+from MWTracker.helperFunctions.timeCounterStr import timeCounterStr
+from MWTracker.backgroundSubtraction import backgroundSubtraction
 
 IMG_FILTERS = {"compression":"gzip",
         "compression_opts":4,
@@ -185,7 +185,8 @@ def initMasksGroups(fid, expected_frames, im_height, im_width,
     mask_dataset.attrs['is_light_background'] = int(is_light_background)
     
 
-    full_dataset = createImgGroup(fid, "/full_data", expected_frames // save_full_interval, im_height, im_width)
+    tot_save_full = (expected_frames // save_full_interval) + 1
+    full_dataset = createImgGroup(fid, "/full_data", tot_save_full, im_height, im_width)
     full_dataset.attrs['save_interval'] = save_full_interval
     full_dataset.attrs['expected_fps'] = expected_fps
         
