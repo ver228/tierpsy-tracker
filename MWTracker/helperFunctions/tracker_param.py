@@ -182,7 +182,8 @@ class tracker_param:
             'strel_size': (
                 strel_size,
                 strel_size),
-            'analysis_type': analysis_type}
+            'analysis_type': analysis_type,
+            'thresh_block_size': thresh_block_size}
 
         # joinTrajectories
         min_track_size = max(1, fps_filter * 2)
