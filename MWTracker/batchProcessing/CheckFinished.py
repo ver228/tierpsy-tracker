@@ -7,16 +7,35 @@ Created on Tue Aug  9 00:24:17 2016
 import tables
 from functools import partial
 
+def _isValidFlag(field, flag_value):
+    return (field._v_attrs['has_finished'] >= flag_value)
+
+def _isValidProvenance(field, point_name):
+    return (point_name in field)
+
+def _checkFlagsFun(fname, field_name, test_value, test_func=_isValidFlag):
+    accepted_errors = (tables.exceptions.HDF5ExtError, 
+        tables.exceptions.NoSuchNodeError, KeyError,IOError)
+    try:
+        with tables.open_file(fname, mode='r') as fid:
+            field = fid.get_node(field_name)
+            
+            return test_func(field, test_value)
+    except accepted_errors:
+            return False
+
 class CheckFinished(object):
     def __init__(self, provenance_files):
         outf = provenance_files
         
-        self._provenance_funcs = {x: partial(self._checkPoints, 
-                                    outf[x], '/provenance_tracking', x, 
-                                    self._isValidProvenance)  for x in provenance_files.keys()}
+        #check that the correct provenance point is stored in the corresponding file
+        self._provenance_funcs = {point: partial(_checkFlagsFun, 
+                                            outf[point], 
+                                            '/provenance_tracking', 
+                                            point, 
+                                            _isValidProvenance) for point in provenance_files.keys()}
         
         #I plan to check succesful processing using only provenance. I keep this for backwards compatibility.
-        _checkFlagsFun = partial(self._checkPoints, test_func=self._isValidFlag)
         self._flag_funcs = {
             'COMPRESS': partial(_checkFlagsFun, outf['COMPRESS'], '/mask', 1),
             'COMPRESS_ADD_DATA': partial(_checkFlagsFun, outf['COMPRESS'], '/mask', 2),
@@ -30,23 +49,6 @@ class CheckFinished(object):
             'FEAT_CREATE': partial(_checkFlagsFun, outf['FEAT_CREATE'], '/features_means', 1),
             'FEAT_MANUAL_CREATE': partial(_checkFlagsFun, outf['FEAT_MANUAL_CREATE'], '/features_means', 1),
         }
-    
-    def _isValidFlag(self, field, flag_value):
-        return (field._v_attrs['has_finished'] >= flag_value)
-    
-    def _isValidProvenance(self, field, point_name):
-        return (point_name in field)
-    
-    def _checkPoints(self, file, field_name, test_value, test_func):
-        accepted_errors = (tables.exceptions.HDF5ExtError, 
-            tables.exceptions.NoSuchNodeError, KeyError,IOError)
-        try:
-            with tables.open_file(file, mode='r') as fid:
-                field = fid.get_node(field_name)
-                
-                return test_func(field, test_value)
-        except accepted_errors:
-                return False
     
     def getUnfinishedPoints(self, checkpoints2process):
         unfinished_points = checkpoints2process[:]
