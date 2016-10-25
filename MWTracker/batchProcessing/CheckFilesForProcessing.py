@@ -153,7 +153,7 @@ Files whose analysis is incompleted : {}'''.format(
             os.path.dirname(good_ap_obj.video_file),
             self.video_dir_root)
         
-        if tmp_dir_root:
+        if self.tmp_dir_root:
             tmp_mask_dir = os.path.join(self.tmp_dir_root, 'MaskedVideos', subdir_path) 
             tmp_results_dir = os.path.join(self.tmp_dir_root, 'Results', subdir_path)
         else:

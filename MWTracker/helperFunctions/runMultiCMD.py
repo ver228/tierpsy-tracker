@@ -165,8 +165,11 @@ def cmdlist2str(cmdlist):
     # change the format from the list accepted by Popen to a text string
     # accepted by the terminal
     for ii, dd in enumerate(cmdlist):
-        if ii >= 2 and not dd.startswith('-'):
-            dd = "'" + dd + "'"
+        if not dd.startswith('-'):
+            if os.name != 'nt':
+            	dd = "'" + dd + "'"
+            else:
+                dd = '"' + dd + '"'
 
         if ii == 0:
             cmd_str = dd
