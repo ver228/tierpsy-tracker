@@ -428,15 +428,13 @@ class GetMaskParams_GUI(QMainWindow):
     def updateVideoFile(self, video_file):
         if video_file and os.path.exists(video_file):
             try:
-                vid, im_width, im_height, reader_type = \
-                    selectVideoReader(video_file)
-                if im_width == 0 or im_height == 0:
+                vid = selectVideoReader(video_file)
+                if vid.width == 0 or vid.height == 0:
                     raise ValueError
                 else:
                     if not isinstance(self.vid, int):
                         self.vid.release()
-                    self.vid, self.im_width, self.im_height, self.reader_type = \
-                        vid, im_width, im_height, reader_type
+                    self.vid, self.im_width, self.im_height = vid, vid.width, vid.height
 
             except (OSError, ValueError, IOError):
                 QMessageBox.critical(
