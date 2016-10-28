@@ -59,7 +59,7 @@ class readVideoffmpeg:
             self.dtype = np.uint8
 
         except (IndexError, ValueError):
-            raise Exception(
+            raise OSError(
                 'Error while getting the width and height using ffmpeg. Buffer output:', buff)
 
         self.tot_pix = self.height * self.width
