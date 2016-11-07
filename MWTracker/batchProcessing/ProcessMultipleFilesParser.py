@@ -3,7 +3,7 @@ import os
 
 from MWTracker.batchProcessing.helperFunc import getDefaultSequence
 
-class ProcessMultipleFilesParser(argparse.ArgumentParser):
+class BaseMultipleFilesParser(argparse.ArgumentParser):
     def __init__(self, description, dflt_vals):
         super().__init__(
             description=description)
@@ -54,7 +54,7 @@ class ProcessMultipleFilesParser(argparse.ArgumentParser):
             help='Use this flag if you only want to print a summary of the files in the directory.')
 
 
-class CompressMultipleFilesParser(ProcessMultipleFilesParser):
+class CompressMultipleFilesParser(BaseMultipleFilesParser):
     description="Compress video files in the local drive using several parallel processes"
     dflt_vals = {
     'tmp_dir_root': os.path.join(
@@ -82,7 +82,7 @@ class CompressMultipleFilesParser(ProcessMultipleFilesParser):
                 help='The video file would be copied to the temporary directory.')
 
 
-class TrackMultipleFilesParser(ProcessMultipleFilesParser):
+class TrackMultipleFilesParser(BaseMultipleFilesParser):
     description = "Track worm's hdf5 files in the local drive using several parallel processes"
     dflt_vals = {
     'results_dir_root': '',
