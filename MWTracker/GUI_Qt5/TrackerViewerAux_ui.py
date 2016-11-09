@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'TrackerViewerAux.ui'
 #
-# Created by: PyQt5 UI code generator 5.6
+# Created by: PyQt5 UI code generator 5.7
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -28,7 +28,7 @@ class Ui_TrackerViewerAux(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 614, 485))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 614, 490))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_3.setContentsMargins(11, 11, 11, 11)
@@ -72,10 +72,6 @@ class Ui_TrackerViewerAux(object):
         self.label_fps = QtWidgets.QLabel(self.centralWidget)
         self.label_fps.setObjectName("label_fps")
         self.horizontalLayout_3.addWidget(self.label_fps)
-        self.checkBox_showLabel = QtWidgets.QCheckBox(self.centralWidget)
-        self.checkBox_showLabel.setChecked(True)
-        self.checkBox_showLabel.setObjectName("checkBox_showLabel")
-        self.horizontalLayout_3.addWidget(self.checkBox_showLabel)
         self.verticalLayout.addLayout(self.horizontalLayout_3)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setContentsMargins(11, 11, 11, 11)
@@ -156,7 +152,6 @@ class Ui_TrackerViewerAux(object):
         self.label_frame.setText(_translate("TrackerViewerAux", "Frame"))
         self.label_step.setText(_translate("TrackerViewerAux", "Step Size"))
         self.label_fps.setText(_translate("TrackerViewerAux", "FPS display"))
-        self.checkBox_showLabel.setText(_translate("TrackerViewerAux", "Show Skeleton"))
         self.playButton.setText(_translate("TrackerViewerAux", "Play"))
         self.comboBox_h5path.setItemText(0, _translate("TrackerViewerAux", "/mask"))
         self.comboBox_h5path.setItemText(1, _translate("TrackerViewerAux", "/full_data"))

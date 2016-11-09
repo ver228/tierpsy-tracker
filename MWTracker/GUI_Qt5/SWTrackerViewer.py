@@ -28,7 +28,8 @@ class SWTrackerViewer_GUI(TrackerViewerAux_GUI):
         self.is_stage_move = []
 
         self.ui.spinBox_skelBlock.valueChanged.connect(self.changeSkelBlock)
-
+        self.ui.checkBox_showLabel.stateChanged.connect(self.updateImage)
+        
         if mask_file:
             self.vfilename = mask_file
             self.updateVideoFile()
@@ -69,6 +70,22 @@ class SWTrackerViewer_GUI(TrackerViewerAux_GUI):
         else:
             self.changeSkelBlock(0)
 
+    def drawSkelSingleWorm(self):
+        frame_data = self.getFrameData(self.frame_number)
+        row_data = frame_data.squeeze()
+        print(len(row_data))
+        
+        #for this viewer there must be only one particle per frame
+        if len(row_data) == 0: 
+            return
+
+        isDrawSkel = self.ui.checkBox_showLabel.isChecked()
+        self.frame_qimg = self.drawSkelResult(self.frame_img,
+                    self.frame_qimg,
+                    row_data, isDrawSkel)
+
+        return self.frame_qimg
+
     def updateImage(self):
         self.readCurrentFrame()
         self.drawSkelSingleWorm()
@@ -88,16 +105,15 @@ class SWTrackerViewer_GUI(TrackerViewerAux_GUI):
         pen.setColor(Qt.red)
         painter.setPen(pen)
 
+        dw = qimg.width() - pen_width
+        dh = qimg.height() - pen_width
         painter.drawRect(
             1,
             1,
-            qimg.width() -
-            pen_width,
-            qimg.height() -
-            pen_width)
+            dw,
+            dh)
         painter.end()
         return qimg
-
 
     def changeSkelBlock(self, val):
 

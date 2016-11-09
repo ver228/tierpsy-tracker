@@ -33,8 +33,6 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
         self.traj_time_grouped = -1
 
         self.ui.pushButton_skel.clicked.connect(self.getSkelFile)
-        self.ui.checkBox_showLabel.stateChanged.connect(self.updateImage)
-
         lineEditDragDrop(
             self.ui.lineEdit_skel,
             self.updateSkelFile,
@@ -114,35 +112,6 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
                 break
         
         self.updateSkelFile(self.skeletons_file)
-
-    
-
-    # function that generalized the updating of the ROI
-    def updateImage(self):
-        if self.image_group == -1:
-            return
-
-        self.readCurrentFrame()
-        self.drawSkelSingleWorm()
-        self.mainImage.setPixmap(self.frame_qimg)
-
-    def drawSkelSingleWorm(self):
-        frame_data = self.getFrameData(self.frame_number)
-        row_data = frame_data.squeeze()
-        print(len(row_data))
-        
-        #for this viewer there must be only one particle per frame
-        if len(row_data) == 0: 
-            return
-
-        isDrawSkel = self.ui.checkBox_showLabel.isChecked()
-        self.frame_qimg = self.drawSkelResult(self.frame_img,
-                    self.frame_qimg,
-                    row_data, isDrawSkel)
-
-        return self.frame_qimg
-        
-        
 
     def getFrameData(self, frame_number):
         try:
