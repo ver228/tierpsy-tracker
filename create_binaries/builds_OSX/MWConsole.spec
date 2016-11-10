@@ -52,6 +52,7 @@ app = BUNDLE(exe,
              icon=None,
              bundle_identifier=None,
              info_plist={
-              'CFBundleShortVersionString' : MWTracker.__version__
+              'CFBundleShortVersionString' : MWTracker.__version__,
+              'NSHighResolutionCapable': 'True'
               }
             )
