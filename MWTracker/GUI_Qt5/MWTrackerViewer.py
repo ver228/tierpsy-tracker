@@ -212,13 +212,6 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
             self.trajectories_data['worm_index_manual'] = self.trajectories_data[
                 'worm_index_joined']
         
-        #read expected frames per second
-        with tables.File(self.vfilename, 'r') as mask_fid:
-            try:
-                self.expected_fps = int(mask_fid.get_node('/mask')._v_attrs['expected_fps'])
-            except KeyError:
-                self.expected_fps = param_default.expected_fps
-
         #read filter skeletons parameters
         with tables.File(self.skeletons_file, 'r') as skel_fid:
 
@@ -236,6 +229,13 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
                 'min_displacement']}
             except KeyError:
                 self.feat_filt_param = self.param_default.feat_filt_param
+
+        #read expected frames per second
+        with tables.File(self.vfilename, 'r') as mask_fid:
+            try:
+                self.expected_fps = int(mask_fid.get_node('/mask')._v_attrs['expected_fps'])
+            except KeyError:
+                self.expected_fps = self.param_default.expected_fps
 
         dd = {x:self.feat_filt_param[x] for x in ['min_num_skel', 'bad_seg_thresh', 'min_displacement']}
         good_traj_index, _ = getValidIndexes(self.skeletons_file, **dd)
