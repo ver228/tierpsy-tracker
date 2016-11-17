@@ -237,11 +237,11 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
             except KeyError:
                 self.expected_fps = self.param_default.expected_fps
 
+        #TODO: THIS IS NOT REALLY THE INDEX I USE IN THE FEATURES FILES. I NEED A MORE CLEVER WAY TO SEE WHAT I AM REALLY FILTERING.
         dd = {x:self.feat_filt_param[x] for x in ['min_num_skel', 'bad_seg_thresh', 'min_displacement']}
         good_traj_index, _ = getValidIndexes(self.skeletons_file, **dd)
         self.trajectories_data['is_valid_index'] = self.trajectories_data[self.worm_index_type].isin(good_traj_index)
         
-        print(self.trajectories_data.columns)
         self.traj_time_grouped = self.trajectories_data.groupby('frame_number')
         self.updateImage()
 

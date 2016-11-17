@@ -30,6 +30,7 @@ dflt_param_list = [
     ('is_light_background', True, 'set to true to indentify dark worms over a light background.'),
     ('expected_fps', 25, 'expected frame rate.'),
     ('traj_max_allowed_dist', 25, 'Maximum displacement expected between frames to be consider same track.'),
+    ('traj_area_ratio_lim', [0.5, 2], 'Limits of the consecutive blob areas to be consider the same object.'),
     ('worm_bw_thresh_factor', 1.05, 'This factor multiplies the threshold used to binarize the individual worms image.'),
     ('resampling_N', 49, 'number of segments used to renormalize the worm skeleton and contours.'),
     ('max_gap_allowed_block', 10, 'maximum time gap allowed between valid skeletons to be considered as belonging in the same group. Head/Tail correction by movement.'),
@@ -103,6 +104,7 @@ class tracker_param:
             is_light_background,
             expected_fps,
             traj_max_allowed_dist,
+            traj_area_ratio_lim,
             worm_bw_thresh_factor,
             resampling_N,
             max_gap_allowed_block,
@@ -175,9 +177,13 @@ class tracker_param:
             'min_area': min_area / 2,
             'min_box_width': min_box_width,
             'max_allowed_dist': traj_max_allowed_dist,
+<<<<<<< HEAD
             'area_ratio_lim': (
                 0.25,
                 4),
+=======
+            'area_ratio_lim': traj_area_ratio_lim,
+>>>>>>> df9f86ae7f0caae293616789a04c930c8107fc12
             'buffer_size': compression_buff,
             'worm_bw_thresh_factor': worm_bw_thresh_factor,
             'strel_size': (
@@ -192,9 +198,13 @@ class tracker_param:
         self.join_traj_param = {
             'min_track_size': min_track_size,
             'max_time_gap': max_time_gap,
+<<<<<<< HEAD
             'area_ratio_lim': (
                 0.25,
                 4)}
+=======
+            'area_ratio_lim': traj_area_ratio_lim}
+>>>>>>> df9f86ae7f0caae293616789a04c930c8107fc12
 
         # getSmoothTrajectories
         self.smoothed_traj_param = {
@@ -272,3 +282,9 @@ class tracker_param:
             'feat_filt_param': self.feat_filt_param,
             'split_traj_time' : split_traj_time
         }
+
+if __name__=='__main__':
+    json_file = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/fluorescence/pharynx.json'
+    params = tracker_param(json_file)
+    print(params.trajectories_param)
+
