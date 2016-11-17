@@ -178,7 +178,6 @@ class tracker_param:
             'min_box_width': min_box_width,
             'max_allowed_dist': traj_max_allowed_dist,
             'area_ratio_lim': traj_area_ratio_lim,
->>>>>>> df9f86ae7f0caae293616789a04c930c8107fc12
             'buffer_size': compression_buff,
             'worm_bw_thresh_factor': worm_bw_thresh_factor,
             'strel_size': (
@@ -193,13 +192,7 @@ class tracker_param:
         self.join_traj_param = {
             'min_track_size': min_track_size,
             'max_time_gap': max_time_gap,
-<<<<<<< HEAD
-            'area_ratio_lim': (
-                0.25,
-                4)}
-=======
             'area_ratio_lim': traj_area_ratio_lim}
->>>>>>> df9f86ae7f0caae293616789a04c930c8107fc12
 
         # getSmoothTrajectories
         self.smoothed_traj_param = {
