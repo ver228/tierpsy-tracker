@@ -273,8 +273,8 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         self.img_h_ratio = image.height() / self.image_height
         self.img_w_ratio = image.width() / self.image_width
 
-        fontsize = max(1, max(image.height(), image.width()) // 240)
-        penwidth = 1#max(1, max(image.height(), image.width()) // 300)
+        fontsize = max(1, max(image.height(), image.width()) // 120)
+        penwidth = max(1, max(image.height(), image.width()) // 800)
         penwidth = penwidth if penwidth % 2 == 1 else penwidth + 1
 
         painter = QPainter()

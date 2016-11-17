@@ -172,11 +172,10 @@ class tracker_param:
             'last_frame': -1,
             'min_area': min_area / 2,
             'min_box_width': min_box_width,
-            #'min_track_length': max(1, fps_filter / 5), # this filter is currently not used in getWormTrajectories
             'max_allowed_dist': traj_max_allowed_dist,
             'area_ratio_lim': (
-                0.5,
-                2),
+                0.25,
+                4),
             'buffer_size': compression_buff,
             'worm_bw_thresh_factor': worm_bw_thresh_factor,
             'strel_size': (
@@ -192,8 +191,8 @@ class tracker_param:
             'min_track_size': min_track_size,
             'max_time_gap': max_time_gap,
             'area_ratio_lim': (
-                0.67,
-                1.5)}
+                0.25,
+                4)}
 
         # getSmoothTrajectories
         self.smoothed_traj_param = {
