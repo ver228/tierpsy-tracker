@@ -12,11 +12,13 @@ added_files = [
 (os.path.join(open_worm_path, 'features\\master_eigen_worms_n2.mat'), 
 'open_worm_analysis_toolbox\\features'),
 (os.path.join(MWTracker_path, 'auxFiles\\features_names.csv'), 'auxFiles'),
-('C:\\Anaconda3\\Scripts\\ffmpeg.exe', 'auxFiles'),
-('C:\\Anaconda3\\Scripts\\ffprobe.exe', 'auxFiles'),
+('C:\\ffmpeg\\bin\\ffmpeg.exe', 'auxFiles'),
+('C:\\ffmpeg\\bin\\ffprobe.exe', 'auxFiles'),
 ('.\\dist\\compressSingleWorker\\compressSingleWorker.exe', '.'),
 ('.\\dist\\trackSingleWorker\\trackSingleWorker.exe', '.')
 ]
+
+hiddenimports=[]
 
 block_cipher = None
 
@@ -25,7 +27,8 @@ a = Analysis(['..\\scripts\\MWConsole.py'],
              pathex=['C:\\Users\\Avelino.Avelino_VM\\Documents\\GitHub\\Multiworm_Tracking\\create_binaries\\Win7_builds'],
              binaries=None,
              datas=added_files,
-             hiddenimports=['h5py.defs', 'h5py.utils', 'h5py.h5ac', 'h5py._proxy'],
+             hiddenimports=['h5py.defs', 'h5py.utils', 'h5py.h5ac', 'h5py._proxy', 
+             'cython', 'sklearn', 'sklearn.neighbors.typedefs'],
              hookspath=[],
              runtime_hooks=[],
              excludes=['PyQt4', 'PyQt4.QtCore', 'PyQt4.QtGui'],

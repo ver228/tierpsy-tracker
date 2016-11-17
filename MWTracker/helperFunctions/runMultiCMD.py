@@ -125,12 +125,18 @@ def runMultiCMD(cmd_list, local_obj='', max_num_process=3, refresh_time=10):
         os.system(['clear', 'cls'][os.name == 'nt'])
 
         # print info of the finished tasks
-        for task in finished_tasks:
-            sys.stdout.write(task)
+        for task_finish_msg in finished_tasks:
+            sys.stdout.write(task_finish_msg)
 
         # loop along the process list to update output and see if there is any
         # task finished
         next_tasks = []
+        
+        #I want to close the tasks after starting the next the tasks. It has de disadvantage of 
+        #requiring more disk space, (required files for the new task + the finished files)
+        #but at least it should start a new tasks while it is copying the old results.
+        tasks_to_close = [] 
+        
         for task in current_tasks:
             task.read_buff()
             if task.pid.poll() is None:
@@ -140,9 +146,7 @@ def runMultiCMD(cmd_list, local_obj='', max_num_process=3, refresh_time=10):
             else:
                 # close the task and add its las output to the finished_tasks
                 # list
-                task.close()
-                sys.stdout.write(task.output[-1])
-                finished_tasks.append(task.output[-1])
+                tasks_to_close.append(task)
                 # add new task once the previous one was finished
                 if cmd_list and len(next_tasks) < max_num_process:
                     cmd = cmd_list.pop()
@@ -153,8 +157,15 @@ def runMultiCMD(cmd_list, local_obj='', max_num_process=3, refresh_time=10):
             cmd = cmd_list.pop()
             next_tasks.append(start_process(cmd, local_obj))
 
-        current_tasks = next_tasks
 
+        #close tasks (copy finished files to final destination)
+        for task in tasks_to_close:
+            task.close()
+            sys.stdout.write(task.output[-1])
+            finished_tasks.append(task.output[-1])
+                
+        #start the new loop
+        current_tasks = next_tasks
         print('*************************************************')
         print('Tasks: %i finished, %i remaining.' %
               (len(finished_tasks), len(current_tasks) + len(cmd_list)))
@@ -165,8 +176,11 @@ def cmdlist2str(cmdlist):
     # change the format from the list accepted by Popen to a text string
     # accepted by the terminal
     for ii, dd in enumerate(cmdlist):
-        if ii >= 2 and not dd.startswith('-'):
-            dd = "'" + dd + "'"
+        if not dd.startswith('-'):
+            if os.name != 'nt':
+            	dd = "'" + dd + "'"
+            else:
+                dd = '"' + dd + '"'
 
         if ii == 0:
             cmd_str = dd

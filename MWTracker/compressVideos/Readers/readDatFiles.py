@@ -41,6 +41,7 @@ class readDatFiles:
         im_size = header[14:16]
         self.height = im_size[1]
         self.width = im_size[0]
+        self.dtype = np.uint16
         self.num_frames = len(self.dat_order)
         # initialize pointer for frames
         self.curr_frame = -1

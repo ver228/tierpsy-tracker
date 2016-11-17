@@ -2,7 +2,6 @@ from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtGui import QPixmap, QImage, QPainter, QFont, QPen
 from PyQt5.QtCore import Qt, QEvent
 
-import h5py
 import os
 import pandas as pd
 import numpy as np
@@ -16,7 +15,8 @@ from MWTracker.GUI_Qt5.TrackerViewerAux import TrackerViewerAux_GUI
 from MWTracker.GUI_Qt5.AnalysisProgress import WorkerFunQt, AnalysisProgress
 
 from MWTracker.trackWorms.getSkeletonsTables import getWormROI
-from MWTracker.featuresAnalysis.obtainFeatures import getWormFeaturesFilt
+from MWTracker.trackWorms.getFilteredSkels import getValidIndexes
+from MWTracker.featuresAnalysis.obtainFeatures import getWormFeaturesFilt 
 from MWTracker.helperFunctions.tracker_param import tracker_param
 from MWTracker.helperFunctions.trackProvenance import getGitCommitHash, execThisPoint
 
@@ -93,19 +93,18 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         self.ui.pushButton_join.clicked.connect(self.joinTraj)
         self.ui.pushButton_split.clicked.connect(self.splitTraj)
 
+        #
+        
+        self.showT = {x: self.ui.comboBox_showLabels.findText(x , flags=Qt.MatchStartsWith) 
+                                for x in ['Hide', 'All', 'Filter']}
+        self.ui.comboBox_showLabels.setCurrentIndex(self.showT['All'])
+        self.ui.comboBox_showLabels.currentIndexChanged.connect(self.updateImage)
+
+
         # select worm ROI when doubleclick a worm
         self.mainImage._canvas.mouseDoubleClickEvent = self.selectWorm
 
     def getManualFeatures(self):
-        if os.name == 'nt':
-            # I Windows the paths return by QFileDialog use / as the file
-            # separation character. We need to correct it.
-            for field_name in ['vfilename', 'skeletons_file']:
-                setattr(
-                    self, field_name, getattr(
-                        self, field_name).replace(
-                        '/', os.sep))
-
         # save the user changes before recalculating anything
         self.saveData()
 
@@ -113,44 +112,17 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         self.feat_manual_file = self.skeletons_file.replace(
             '_skeletons.hdf5', '_feat_manual.hdf5')
 
-        with h5py.File(self.vfilename, 'r') as mask_fid, \
-                h5py.File(self.skeletons_file, 'r') as skel_fid:
-
-            has_expected_fps = 'expected_fps' in mask_fid['/mask'].attrs
-            has_prov_skel_filt = '/provenance_tracking/SKE_FILT' in skel_fid
-
-            # if any of this fields is missing load the default parameters
-            if not has_expected_fps or not has_prov_skel_filt:
-                param_default = tracker_param()
-
-            if has_expected_fps:
-                expected_fps = mask_fid['/mask'].attrs['expected_fps']
-            else:
-                expected_fps = param_default.expected_fps
-
-            if has_prov_skel_filt:
-                ss = skel_fid['/provenance_tracking/SKE_FILT'].value
-                ss = json.loads(ss.decode("utf-8"))
-                saved_func_args = json.loads(ss['func_arguments'])
-
-                feat_filt_param = {
-                x: saved_func_args[x] for x in [
-                'min_num_skel',
-                'bad_seg_thresh',
-                'min_displacement']}
-            else:
-                feat_filt_param = param_default.feat_filt_param
-
         point_parameters = {
             'func': getWormFeaturesFilt,
             'argkws': {
                 'skeletons_file': self.skeletons_file,
                 'features_file': self.feat_manual_file,
-                'expected_fps': int(expected_fps), #if it is read as np.int64 can give errors in the json serializer
+                'expected_fps': self.expected_fps, #if it is read as np.int64 can give errors in the json serializer
                 'is_single_worm': False,
                 'use_skel_filter': True,
                 'use_manual_join': True,
-                'feat_filt_param': feat_filt_param
+                'feat_filt_param': self.feat_filt_param,
+                'split_traj_time': self.param_default.feats_param['split_traj_time']
                 },
                 'provenance_file': self.feat_manual_file
             }
@@ -195,6 +167,15 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
     def saveData(self):
         '''save data from manual labelling. pytables saving format is more convenient than pandas'''
 
+        if os.name == 'nt':
+            # I Windows the paths return by QFileDialog use / as the file
+            # separation character. We need to correct it.
+            for field_name in ['vfilename', 'skeletons_file']:
+                setattr(
+                    self, field_name, getattr(
+                        self, field_name).replace(
+                        '/', os.sep))
+
         # convert data into a rec array to save into pytables
         trajectories_recarray = self.trajectories_data.to_records(index=False)
 
@@ -230,10 +211,38 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
             self.trajectories_data['worm_label'] = self.wlab['U']
             self.trajectories_data['worm_index_manual'] = self.trajectories_data[
                 'worm_index_joined']
-            self.updateImage()
+        
+        #read filter skeletons parameters
+        with tables.File(self.skeletons_file, 'r') as skel_fid:
 
-        self.traj_time_grouped = self.trajectories_data.groupby(
-                    'frame_number')
+            # if any of this fields is missing load the default parameters
+            self.param_default = tracker_param()
+            try:
+                ss = skel_fid.get_node('/provenance_tracking/SKE_FILT').read()
+                ss = json.loads(ss.decode("utf-8"))
+                saved_func_args = json.loads(ss['func_arguments'])
+
+                self.feat_filt_param = {
+                x: saved_func_args[x] for x in [
+                'min_num_skel',
+                'bad_seg_thresh',
+                'min_displacement']}
+            except KeyError:
+                self.feat_filt_param = self.param_default.feat_filt_param
+
+        #read expected frames per second
+        with tables.File(self.vfilename, 'r') as mask_fid:
+            try:
+                self.expected_fps = int(mask_fid.get_node('/mask')._v_attrs['expected_fps'])
+            except KeyError:
+                self.expected_fps = self.param_default.expected_fps
+
+        dd = {x:self.feat_filt_param[x] for x in ['min_num_skel', 'bad_seg_thresh', 'min_displacement']}
+        good_traj_index, _ = getValidIndexes(self.skeletons_file, **dd)
+        self.trajectories_data['is_valid_index'] = self.trajectories_data[self.worm_index_type].isin(good_traj_index)
+        
+        print(self.trajectories_data.columns)
+        self.traj_time_grouped = self.trajectories_data.groupby('frame_number')
         self.updateImage()
 
     # update image
@@ -251,7 +260,7 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         #draw extra info only if the worm_index_type is valid
         if self.worm_index_type in self.frame_data: 
             # draw the boxes in each of the trajectories found
-            if self.ui.checkBox_showLabel.isChecked() and self.label_type in self.frame_data:
+            if self.ui.comboBox_showLabels.currentIndex() != self.showT['Hide']and self.label_type in self.frame_data:
                 self.drawROIBoxes(self.frame_qimg)
             
             self.updateROIcanvasN(1)
@@ -284,6 +293,10 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
             y = row_data['coord_y'] * self.img_w_ratio
             # check if the coordinates are nan
             if not (x == x) or not (y == y):
+                continue
+
+            #if select between showing filtered index or not
+            if self.ui.comboBox_showLabels.currentIndex() == self.showT['Filter'] and not row_data['is_valid_index']:
                 continue
 
             x = int(x)

@@ -56,9 +56,10 @@ class readVideoffmpeg:
             dd = re.findall(r'\d*x\d*', dd)[0].split('x')
             self.height = int(dd[1])
             self.width = int(dd[0])
+            self.dtype = np.uint8
 
         except (IndexError, ValueError):
-            raise Exception(
+            raise OSError(
                 'Error while getting the width and height using ffmpeg. Buffer output:', buff)
 
         self.tot_pix = self.height * self.width

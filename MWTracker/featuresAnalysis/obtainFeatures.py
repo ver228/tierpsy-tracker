@@ -288,6 +288,7 @@ def getWormFeaturesFilt(
         return( header_timeseries, table_timeseries, group_events, 
                skeletons_array, mean_features_df)
     
+    progress_timer = timeCounterStr('')
     def _displayProgress(n):
             # display progress
         dd = " Extracting features. Worm %i of %i done." % (n, tot_worms)
@@ -311,16 +312,15 @@ def getWormFeaturesFilt(
     fps, is_default_timestamp = getFPS(skeletons_file, expected_fps)
     micronsPerPixel = getMicronsPerPixel(skeletons_file)
     split_traj_frames = split_traj_time*fps
+    
     # function to calculate the progress time. Useful to display progress
-    base_name = skeletons_file.rpartition(
-        '.')[0].rpartition(os.sep)[-1].rpartition('_')[0]
-    progress_timer = timeCounterStr('')
+    base_name = skeletons_file.rpartition('.')[0].rpartition(os.sep)[-1].rpartition('_')[0]
+    
     #total number of worms
     tot_worms = len(good_traj_index)
+    
     # initialize by getting the specs data subdivision
     wStats = WormStatsClass()
-
-    
     all_splitted_feats = []
     with tables.File(features_file, 'w') as features_fid:
         header_timeseries, table_timeseries, group_events, \

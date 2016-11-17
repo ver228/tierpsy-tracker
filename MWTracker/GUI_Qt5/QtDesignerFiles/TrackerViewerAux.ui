@@ -34,7 +34,7 @@
            <x>0</x>
            <y>0</y>
            <width>614</width>
-           <height>485</height>
+           <height>490</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -111,16 +111,6 @@
          <widget class="QLabel" name="label_fps">
           <property name="text">
            <string>FPS display</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="checkBox_showLabel">
-          <property name="text">
-           <string>Show Skeleton</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
           </property>
          </widget>
         </item>

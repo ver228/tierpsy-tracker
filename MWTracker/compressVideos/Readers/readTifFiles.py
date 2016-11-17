@@ -37,6 +37,7 @@ class readTifFiles:
         image = cv2.imread(self.files[0], self.imread_flag)
         self.height = image.shape[0]
         self.width = image.shape[1]
+        self.dtype = image.dtype
         self.num_frames = len(self.files)
         
         # initialize pointer for frames

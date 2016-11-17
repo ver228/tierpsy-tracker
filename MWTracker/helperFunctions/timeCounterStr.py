@@ -23,7 +23,7 @@ class timeCounterStr:
         self.initial_time = time.time()
         self.last_frame = 0
         self.task_str = task_str
-        self.fps_time = float('nan')
+        self.fps_time = time.time()
 
     def getStr(self, frame_number):
         # calculate the progress and put it in a string

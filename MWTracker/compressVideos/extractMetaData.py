@@ -86,8 +86,8 @@ def storeMetaData(video_file, masked_image_file):
     video_metadata = ffprobeMetadata(video_file)
     expected_frames = len(video_metadata)
 
-    if expected_frames == 0:  # nothing to do here
-        return expected_frames
+    if expected_frames == 0:  # nothing to do here. return a dum number of frames
+        return 1 
 
     with tables.File(masked_image_file, 'r+') as mask_fid:
         if '/video_metadata' in mask_fid:
