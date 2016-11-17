@@ -177,11 +177,6 @@ class tracker_param:
             'min_area': min_area / 2,
             'min_box_width': min_box_width,
             'max_allowed_dist': traj_max_allowed_dist,
-<<<<<<< HEAD
-            'area_ratio_lim': (
-                0.25,
-                4),
-=======
             'area_ratio_lim': traj_area_ratio_lim,
 >>>>>>> df9f86ae7f0caae293616789a04c930c8107fc12
             'buffer_size': compression_buff,
