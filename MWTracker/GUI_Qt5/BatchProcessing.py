@@ -173,10 +173,16 @@ class BatchProcessing_GUI(QMainWindow):
 
         # replace Worm_Videos or add a directory for the Results and
         # MaskedVideos directories
-        if 'Worm_Videos' in self.videos_dir:
+        def _replacePart(part):
             mask_files_dir = self.videos_dir.replace(
-                'Worm_Videos', 'MaskedVideos')
+                part, 'MaskedVideos')
             results_dir = self.videos_dir.replace('Worm_Videos', 'Results')
+            return mask_files_dir, results_dir
+
+        if 'Worm_Videos' in self.videos_dir:
+            mask_files_dir, results_dir = _replacePart('Worm_Videos')
+        elif 'RawVideos' in self.videos_dir:
+            mask_files_dir, results_dir = _replacePart('RawVideos')
         else:
             mask_files_dir = os.path.join(self.videos_dir, 'MaskedVideos')
             results_dir = os.path.join(self.videos_dir, 'Results')

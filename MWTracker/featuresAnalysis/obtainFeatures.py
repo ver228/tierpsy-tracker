@@ -9,6 +9,7 @@ import tables
 import copy
 import pandas as pd
 import numpy as np
+from functools import partial
 
 import warnings
 warnings.filterwarnings('ignore', '.*empty slice*',)
@@ -96,7 +97,7 @@ def correctSingleWorm(worm, skeletons_file):
     stage_vec = np.full((worm.timestamp.size, 2), np.nan)
     stage_vec[ind_ff, :] = stage_vec_ori
 
-    tot_skel = worm.skeleton.shape[0]
+    
 
     # the negative symbole is to add the stage vector directly, instead of
     # substracting it.
@@ -112,7 +113,16 @@ def correctSingleWorm(worm, skeletons_file):
             setattr(worm, field, tmp_dat)
     return worm
 #%%%%%%%
+def _n_percentile(n, q): 
+        if isinstance(n, (float, int)) or n.size>0:
+            return np.percentile(n, q)
+        else:
+            return np.nan
 
+FUNC_FOR_DIV = {'means':np.median, 'medians':np.median, 
+    'P10th':partial(_n_percentile, q=10), 'P90th':partial(_n_percentile, q=90)}
+    
+            
 def getFeatStats(worm, wStats):
     if not isinstance(wStats, WormStatsClass):
         wStats = WormStatsClass()
@@ -122,12 +132,14 @@ def getFeatStats(worm, wStats):
     assert worm_openworm.skeleton.shape[1] == 2
     worm_features = mv.WormFeatures(worm_openworm)
     
-    
-    # calculate the mean value of each feature
-    worm_stats = wStats.getWormStats(worm_features, np.mean)
-    for field in wStats.extra_fields:
-        worm_stats[field] = getattr(worm, field)
-
+    def _get_worm_stat(fun):
+        # calculate the mean value of each feature
+        worm_stat = wStats.getWormStats(worm_features, np.mean)
+        for field in wStats.extra_fields:
+            worm_stat[field] = getattr(worm, field)
+        return worm_stat
+        
+    worm_stats = {stat: _get_worm_stat(FUNC_FOR_DIV[stat]) for stat in FUNC_FOR_DIV}
     return worm_features, worm_stats
 
 def getOpenWormData(worm, wStats=[]):
@@ -184,6 +196,8 @@ def getGoodTrajIndexes(skeletons_file,
     else:
         worm_index_str = 'worm_index_joined'
 
+    
+    
     if not (use_manual_join or use_skel_filter):
         # filter the raw skeletons using the parameters in feat_filt_param
         dd = {
@@ -283,10 +297,10 @@ def getWormFeaturesFilt(
             filters=TABLE_FILTERS)
         
         # initialize rec array with the averaged features of each worm
-        mean_features_df = np.full(tot_worms, np.nan, dtype=wStats.feat_avg_dtype)
+        stats_features_df = {stat:np.full(tot_worms, np.nan, dtype=wStats.feat_avg_dtype) for stat in FUNC_FOR_DIV}
     
         return( header_timeseries, table_timeseries, group_events, 
-               skeletons_array, mean_features_df)
+               skeletons_array, stats_features_df)
     
     progress_timer = timeCounterStr('')
     def _displayProgress(n):
@@ -304,7 +318,7 @@ def getWormFeaturesFilt(
         use_manual_join,
         is_single_worm, 
         feat_filt_param)
-
+    
     #check if the stage was not aligned correctly. Return empty features file otherwise.
     if is_single_worm and not isValidSingleWorm(skeletons_file, good_traj_index):
         good_traj_index = np.array([])
@@ -321,10 +335,11 @@ def getWormFeaturesFilt(
     
     # initialize by getting the specs data subdivision
     wStats = WormStatsClass()
-    all_splitted_feats = []
+    all_splitted_feats = {stat:[] for stat in FUNC_FOR_DIV}
+    
     with tables.File(features_file, 'w') as features_fid:
         header_timeseries, table_timeseries, group_events, \
-        skeletons_array, mean_features_df = _iniFileGroups()
+        skeletons_array, stats_features_df = _iniFileGroups()
 
         _displayProgress(0)
         # start to calculate features for each worm trajectory
@@ -361,7 +376,8 @@ def getWormFeaturesFilt(
             #get splitted features
             splitted_worms = [x for x in worm.splitWormTraj(split_traj_frames) 
             if x.n_valid_skel > feat_filt_param['min_num_skel']]
-            splitted_feats = [getFeatStats(x, wStats)[1] for x in splitted_worms]
+            dd = [getFeatStats(x, wStats)[1] for x in splitted_worms]
+            splitted_feats = {stat:[x[stat] for x in dd] for stat in FUNC_FOR_DIV}
 
             #%% add data to save
             # save timeseries data
@@ -391,10 +407,11 @@ def getWormFeaturesFilt(
                     worm_node, feat, obj=tmp_data, filters=TABLE_FILTERS)
 
             # store the average for each worm feature
-            mean_features_df[ind_N] = worm_stats
-            
-            #append the splitted traj features
-            all_splitted_feats += splitted_feats
+            for stat in FUNC_FOR_DIV:
+                stats_features_df[stat][ind_N] = worm_stats[stat]
+                
+                #append the splitted traj features
+                all_splitted_feats[stat] += splitted_feats[stat]
             #%%
             # report progress
             _displayProgress(ind_N + 1)
@@ -402,18 +419,76 @@ def getWormFeaturesFilt(
         
         # create and save a table containing the averaged worm feature for each
         # worm
-        feat_mean = features_fid.create_table(
-            '/', 'features_means', obj=mean_features_df, filters=TABLE_FILTERS)
-        feat_mean_split = features_fid.create_table(
-            '/', 'features_means_split', obj=np.array(all_splitted_feats), filters=TABLE_FILTERS)
-        feat_mean_split._v_attrs['split_traj_frames'] = split_traj_frames
+        for stat in FUNC_FOR_DIV:
+            features_fid.create_table(
+                '/', 'features_' + stat, obj = stats_features_df[stat], filters = TABLE_FILTERS)
+            
+            feat_stat_split = features_fid.create_table(
+                '/', 'features_{}_split'.format(stat), obj=np.array(all_splitted_feats[stat]), filters=TABLE_FILTERS)
+            feat_stat_split._v_attrs['split_traj_frames'] = split_traj_frames
         
         # flag and report a success finish
-        feat_mean._v_attrs['has_finished'] = 1
+        features_fid.get_node('/', 'features_means')._v_attrs['has_finished'] = 1
         
         
         print_flush(
             base_name +
             ' Feature extraction finished: ' +
             progress_timer.getTimeStr())
+#%%
+if __name__ == '__main__':
+    from MWTracker.helperFunctions.tracker_param import tracker_param
+    skeletons_file = '/Users/ajaver/Tmp/Results/FirstRun_181016/HW_N1_Set2_Pos6_Ch1_18102016_140043_skeletons.hdf5'
+    features_file = skeletons_file.replace('_skeletons.hdf5', '_features.hdf5')
+    
+    
+    param = tracker_param()
+    is_single_worm = False
+    use_manual_join = False
+    use_skel_filter = True
+    expected_fps = 25
+    
+    good_traj_index, worm_index_str = getGoodTrajIndexes(skeletons_file,
+        use_skel_filter,
+        use_manual_join,
+        is_single_worm, 
+        param.feat_filt_param)
+    
+    micronsPerPixel = getMicronsPerPixel(skeletons_file)
+    fps, is_default_timestamp = getFPS(skeletons_file, expected_fps)
+    
+    worm_index = good_traj_index[0]
+    worm = WormFromTable(
+                skeletons_file,
+                worm_index,
+                use_skel_filter=use_skel_filter,
+                worm_index_str=worm_index_str,
+                micronsPerPixel=micronsPerPixel,
+                fps=fps,
+                smooth_window=5)
+    
+    split_traj_frames = 300*fps
+    splitted_worms = [x for x in worm.splitWormTraj(split_traj_frames) 
+            if x.n_valid_skel > 100]
+    
+    wStats = WormStatsClass()
+    dd = [getFeatStats(x, wStats)[1] for x in splitted_worms]
+    splitted_feats = {stat:[x[stat] for x in dd] for stat in FUNC_FOR_DIV}
+#    worm_openworm = copy.copy(worm)
+#    worm_openworm.changeAxis()
+#    assert worm_openworm.skeleton.shape[1] == 2
+#    worm_features = mv.WormFeatures(worm_openworm)
+#    
+#    wStats = WormStatsClass()
+#    worm_stats = wStats.getWormStats(worm_features, np.mean)
 
+
+    
+#%%
+#    getWormFeaturesFilt(
+#        skeletons_file,
+#        features_file,
+#        use_skel_filter,
+#        use_manual_join,
+#        is_single_worm,
+#        **param.feats_param)
