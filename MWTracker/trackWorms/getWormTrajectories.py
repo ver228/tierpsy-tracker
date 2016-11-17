@@ -10,10 +10,10 @@ import numpy as np
 import tables
 from math import sqrt
 import cv2
-from skimage.filters import threshold_otsu
+from skimage.filters import threshold_otsu, rank
+from skimage.morphology import disk
 import os
 import sys
-import pdb
 
 from sklearn.utils.linear_assignment_ import linear_assignment  # hungarian algorithm
 from scipy.spatial.distance import cdist
@@ -98,7 +98,7 @@ def _getWormThreshold(pix_valid):
     return thresh
 
 
-def _getWormContours(ROI_image, threshold, strel_size=(5, 5), is_light_background=True):
+def _getWormContours(ROI_image, threshold, strel_size=(5, 5), is_light_background=True, thresh_block_size=15):
     # get the border of the ROI mask, this will be used to filter for valid
     # worms
     ROI_valid = (ROI_image != 0).astype(np.uint8)
@@ -118,9 +118,15 @@ def _getWormContours(ROI_image, threshold, strel_size=(5, 5), is_light_backgroun
         ROI_image = ROI_image * ROI_valid
 
     # get binary image, 
-    ROI_mask = ROI_image < threshold if is_light_background else ROI_image > threshold
+    if is_light_background:
+        ROI_mask = ROI_image < threshold if is_light_background else ROI_image > threshold
+    else: # TODO: partition this into a separate function
+    # for fluorescent pharynx labeled images, refine the threshold with a local otsu (http://scikit-image.org/docs/dev/auto_examples/plot_local_otsu.html)
+    # this compensates for local variations in brightness in high density regions, when many worms are close to each other
+    # as a local threshold introcudes artifacts at the edge of the mask, also use a global threshold to cut these out
+        local_otsu = rank.otsu(ROI_image,disk(thresh_block_size))
+        ROI_mask = (ROI_image>local_otsu)&(ROI_image>=threshold)
     ROI_mask = (ROI_mask & (ROI_image != 0)).astype(np.uint8)
-    
     # clean it using morphological closing - make this optional by setting strel_size to 0
     if np.all(strel_size):
         strel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, strel_size)
@@ -271,7 +277,8 @@ def getWormTrajectories(
         strel_size=(
             5,
         5),
-    analysis_type="WORM"):
+    analysis_type="WORM",
+    thresh_block_size=61):
     '''
     #read images from 'masked_image_file', and save the linked trajectories and their features into 'trajectories_file'
     #use the first 'total_frames' number of frames, if it is equal -1, use all the frames in 'masked_image_file'
@@ -414,9 +421,10 @@ def getWormTrajectories(
 
                 for buff_ind in range(image_buffer.shape[0]):
                     # get the contour of possible worms
-                    ROI_worms, hierarchy = _getWormContours(
-                        ROI_buffer_med[buff_ind, :, :], thresh, strel_size, is_light_background)
-
+                    if is_light_background:
+                        ROI_worms, hierarchy = _getWormContours(ROI_buffer_med[buff_ind, :, :], thresh, strel_size, is_light_background, thresh_block_size)
+                    else: # don't use the blurred image for fluorescent pharynx-labeled images
+                        ROI_worms, hierarchy = _getWormContours(ROI_buffer[buff_ind, :, :], thresh, strel_size, is_light_background, thresh_block_size)
                     current_frame = frame_number + buff_ind
                     frame_features = []
                     for worm_ind, worm_cnt in enumerate(ROI_worms):
