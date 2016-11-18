@@ -82,8 +82,7 @@ def getDefaultSequence(action, is_single_worm=False, use_skel_filter=True):
         CHECKPOINTS_DFT = { 'Compress': ['COMPRESS',
                                         'VID_SUBSAMPLE',
                                         'COMPRESS_ADD_DATA'],
-                            'Track' : ['VID_SUBSAMPLE',
-                                        'TRAJ_CREATE',
+                            'Track' : ['TRAJ_CREATE',
                                         'TRAJ_JOIN',
                                         'SKE_CREATE',
                                         'STAGE_ALIGMENT',
@@ -92,25 +91,36 @@ def getDefaultSequence(action, is_single_worm=False, use_skel_filter=True):
                                         'INT_PROFILE',
                                         'INT_SKE_ORIENT',
                                         'CONTOUR_ORIENT',
-                                        'FEAT_CREATE']}
+                                        'FEAT_CREATE',
+                                        'VID_SUBSAMPLE']}
     else:
         CHECKPOINTS_DFT = { 'Compress': ['COMPRESS',
                                         'VID_SUBSAMPLE'],
-                            'Track' : ['VID_SUBSAMPLE',
-                                    'TRAJ_CREATE',
+                            'Track' : ['TRAJ_CREATE',
                                     'TRAJ_JOIN',
                                     'SKE_CREATE',
                                     'SKE_FILT',
                                     'SKE_ORIENT',
                                     'INT_PROFILE',
                                     'INT_SKE_ORIENT',
-                                    'FEAT_CREATE']}
+                                    'FEAT_CREATE',
+                                    'VID_SUBSAMPLE']}
     
     if not use_skel_filter:
         CHECKPOINTS_DFT['Track'].remove('SKE_FILT')
     
     if action == 'All':
-        return CHECKPOINTS_DFT['Compress'] + CHECKPOINTS_DFT['Track']
+        points =  CHECKPOINTS_DFT['Compress'] + CHECKPOINTS_DFT['Track']
+
+        #remove duplicates while keeping the order (http://stackoverflow.com/questions/480214/how-do-you-remove-duplicates-from-a-list-in-whilst-preserving-order)
+        seen = set()
+        seen_add = seen.add
+        points =  [x for x in points if not (x in seen or seen_add(x))]
+
+        assert len(points) == len(set(points))
+        return points
     else:
         return CHECKPOINTS_DFT[action]
 
+if __name__ == '__main__':
+    print(getDefaultSequence('All'))

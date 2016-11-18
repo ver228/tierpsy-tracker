@@ -9,7 +9,7 @@ import os
 from MWTracker.helperFunctions.runMultiCMD import runMultiCMD, print_cmd_list
 
 from MWTracker.batchProcessing.ProcessWormsLocal import ProcessWormsLocalParser
-from MWTracker.batchProcessing.helperFunc import getDefaultSequence, walkAndFindValidFiles
+from MWTracker.batchProcessing.batchProcHelperFunc import getDefaultSequence, walkAndFindValidFiles
 from MWTracker.batchProcessing.CheckFilesForProcessing import CheckFilesForProcessing
 
 def processMultipleFiles(walk_args, check_args,

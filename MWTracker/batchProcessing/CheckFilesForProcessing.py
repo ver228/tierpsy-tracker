@@ -7,7 +7,7 @@ Created on Tue Jun  9 15:12:48 2015
 
 import os
 from MWTracker.helperFunctions.timeCounterStr import timeCounterStr
-from MWTracker.batchProcessing.helperFunc import create_script
+from MWTracker.batchProcessing.batchProcHelperFunc import create_script
 from MWTracker.batchProcessing.ProcessWormsLocal import SCRIPT_LOCAL
 from MWTracker.batchProcessing.AnalysisPoints import AnalysisPoints
 

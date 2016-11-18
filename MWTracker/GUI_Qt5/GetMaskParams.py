@@ -19,7 +19,7 @@ from MWTracker.GUI_Qt5.GetAllParameters import GetAllParameters
 from MWTracker.helperFunctions.tracker_param import tracker_param
 from MWTracker.compressVideos.compressVideo import getROIMask, selectVideoReader, reduceBuffer
 from MWTracker.batchProcessing.ProcessWormsWorker import ProcessWormsWorker
-from MWTracker.batchProcessing.helperFunc import getDefaultSequence
+from MWTracker.batchProcessing.batchProcHelperFunc import getDefaultSequence
 
 from MWTracker.backgroundSubtraction import backgroundSubtraction
 

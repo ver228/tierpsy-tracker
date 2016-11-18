@@ -12,7 +12,7 @@ import shutil
 from MWTracker.helperFunctions.miscFun import print_flush
 from MWTracker.batchProcessing.AnalysisPoints import AnalysisPoints
 from MWTracker.batchProcessing.ProcessWormsWorker import ProcessWormsWorkerParser, ProcessWormsWorker, SCRIPT_WORKER
-from MWTracker.batchProcessing.helperFunc import create_script, getRealPathName
+from MWTracker.batchProcessing.batchProcHelperFunc import create_script, getRealPathName
 
 SCRIPT_LOCAL = getRealPathName(__file__)
 

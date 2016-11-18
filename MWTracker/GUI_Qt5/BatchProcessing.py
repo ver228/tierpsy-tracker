@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 from PyQt5.QtCore import Qt
 
 from MWTracker.batchProcessing.processMultipleFilesFun import processMultipleFiles, getResultsDir
-from MWTracker.batchProcessing.helperFunc import getDefaultSequence
+from MWTracker.batchProcessing.batchProcHelperFunc import getDefaultSequence
 
 from MWTracker.GUI_Qt5.AnalysisProgress import AnalysisProgress, WorkerFunQt
 from MWTracker.GUI_Qt5.HDF5VideoPlayer import lineEditDragDrop

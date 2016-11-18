@@ -12,7 +12,7 @@ import argparse
 from MWTracker.helperFunctions.miscFun import print_flush
 from MWTracker.helperFunctions.trackProvenance import getGitCommitHash, execThisPoint
 from MWTracker.batchProcessing.AnalysisPoints import AnalysisPoints
-from MWTracker.batchProcessing.helperFunc import getRealPathName
+from MWTracker.batchProcessing.batchProcHelperFunc import getRealPathName
 
 SCRIPT_WORKER = getRealPathName(__file__)
 
