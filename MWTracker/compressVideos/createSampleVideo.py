@@ -9,11 +9,6 @@ import numpy as np
 import cv2
 import os
 
-from sqlalchemy.ext.automap import automap_base
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
-
-
 from MWTracker.helperFunctions.miscFun import print_flush
 from MWTracker.featuresAnalysis.obtainFeatures import getFPS
 from MWTracker.helperFunctions.timeCounterStr import timeCounterStr
@@ -77,10 +72,14 @@ def createSampleVideo(masked_image_file, sample_video_name ='', time_factor = 8,
     
 #%%
 if __name__ == '__main__':
+
     #mask_file_name = '/Volumes/behavgenom_archive$/Avelino/Worm_Rig_Tests/Agar_Test/MaskedVideos/Agar_Screening_101116/N2_N10_F1-3_Set1_Pos3_Ch6_12112016_002739.hdf5'
     masked_image_file = '/Volumes/behavgenom_archive$/Avelino/Worm_Rig_Tests/Agar_Test/MaskedVideos/Agar_Screening_101116/unc-9_N3_F1-3_Set1_Pos3_Ch4_12112016_002739.hdf5'
     addSampleVideo(masked_image_file)
 
+    # from sqlalchemy.ext.automap import automap_base
+    # from sqlalchemy import create_engine
+    # from sqlalchemy.orm import Session
     # if True:
     #     engine_v2 = create_engine(r'mysql+pymysql://ajaver:@localhost/single_worm_db_v2')
     #     Base = automap_base()
