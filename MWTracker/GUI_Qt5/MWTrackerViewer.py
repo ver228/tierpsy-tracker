@@ -227,14 +227,14 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
                 'min_num_skel',
                 'bad_seg_thresh',
                 'min_displacement']}
-            except KeyError:
+            except (KeyError, tables.exceptions.NoSuchNodeError):
                 self.feat_filt_param = self.param_default.feat_filt_param
 
         #read expected frames per second
         with tables.File(self.vfilename, 'r') as mask_fid:
             try:
                 self.expected_fps = int(mask_fid.get_node('/mask')._v_attrs['expected_fps'])
-            except KeyError:
+            except (tables.exceptions.NoSuchNodeError, AttributeError):
                 self.expected_fps = self.param_default.expected_fps
 
         #TODO: THIS IS NOT REALLY THE INDEX I USE IN THE FEATURES FILES. I NEED A MORE CLEVER WAY TO SEE WHAT I AM REALLY FILTERING.
