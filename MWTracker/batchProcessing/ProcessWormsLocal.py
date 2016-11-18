@@ -111,6 +111,10 @@ class ProcessWormsLocal(object):
         #files that are required as input but are not produced later on
         needed_files = inputs_required - new_created_files
         
+        #files that will be created
+
+
+
         #files from steps finished in the source but not in the tmp
         files_finished_src_no_tmp = self._getMissingFiles(self.unfinished_points_tmp, 
                                                            self.unfinished_points_src, 
@@ -122,8 +126,8 @@ class ProcessWormsLocal(object):
         file_finished_tmp = input_finished_tmp | output_finished_tmp
         
         #remove from list tmp files that are not in a later step in source
-        filesnames2copy = needed_files - (file_finished_tmp - files_finished_src_no_tmp)
-                
+        filesnames2copy = needed_files - ( file_finished_tmp - files_finished_src_no_tmp) 
+        
         files2copy = self._getFilesSrcDstPairs(filesnames2copy, 
                                                self.ap_src.file2dir_dict, 
                                                self.ap_tmp.file2dir_dict)
@@ -140,7 +144,6 @@ class ProcessWormsLocal(object):
 
         #copy all the files produced by the temp dir into the final destination
         ouput_files_produced = self._points2Files(self.unfinished_points_src, self.ap_tmp, "output_files")
-        #print('AAA', ouput_files_produced)
         files2copy = self._getFilesSrcDstPairs(ouput_files_produced, 
                                                self.ap_tmp.file2dir_dict, 
                                                self.ap_src.file2dir_dict)

@@ -80,8 +80,10 @@ def getDefaultSequence(action, is_single_worm=False, use_skel_filter=True):
     assert any(action == x for x in ['Compress', 'Track', 'All'])
     if is_single_worm:
         CHECKPOINTS_DFT = { 'Compress': ['COMPRESS',
+                                        'VID_SUBSAMPLE',
                                         'COMPRESS_ADD_DATA'],
-                            'Track' : ['TRAJ_CREATE',
+                            'Track' : ['VID_SUBSAMPLE',
+                                        'TRAJ_CREATE',
                                         'TRAJ_JOIN',
                                         'SKE_CREATE',
                                         'STAGE_ALIGMENT',
@@ -92,8 +94,10 @@ def getDefaultSequence(action, is_single_worm=False, use_skel_filter=True):
                                         'CONTOUR_ORIENT',
                                         'FEAT_CREATE']}
     else:
-        CHECKPOINTS_DFT = { 'Compress': ['COMPRESS'],
-                            'Track' : ['TRAJ_CREATE',
+        CHECKPOINTS_DFT = { 'Compress': ['COMPRESS',
+                                        'VID_SUBSAMPLE'],
+                            'Track' : ['VID_SUBSAMPLE',
+                                    'TRAJ_CREATE',
                                     'TRAJ_JOIN',
                                     'SKE_CREATE',
                                     'SKE_FILT',

@@ -22,7 +22,8 @@ from MWTracker.featuresAnalysis.correctVentralDorsal import switchCntSingleWorm,
 
 from MWTracker.stageAligment.alignStageMotion import alignStageMotion, isGoodStageAligment
 from MWTracker.compressVideos.getAdditionalData import storeAdditionalDataSW, hasAdditionalFiles
-from MWTracker.compressVideos.compressVideo import compressVideo, isGoodVideo
+from MWTracker.compressVideos.processVideo import processVideo, isGoodVideo
+from MWTracker.compressVideos.createSampleVideo import createSampleVideo, getSubSampleVidName
 
 from MWTracker.helperFunctions.tracker_param import tracker_param
 
@@ -44,7 +45,7 @@ class AnalysisPoints(object):
         self.use_skel_filter = use_skel_filter
         
         self.buildPoints()
-        self.checker = CheckFinished(provenance_files = self.getField('provenance_file'))
+        self.checker = CheckFinished(output_files = self.getField('output_files'))
         
     def getFileNames(self, video_file, masks_dir, results_dir):
         base_name = video_file.rpartition('.')[0].rpartition(os.sep)[-1]
@@ -59,9 +60,12 @@ class AnalysisPoints(object):
             'features',
             'feat_manual',
             'intensities']
+
         for ext in ext2add:
             output[ext] = os.path.join(results_dir, base_name + '_' + ext + '.hdf5')
-    
+        
+        output['subsample'] = getSubSampleVidName(output['masked_image'])
+
         self.file_names =  output
         self.file2dir_dict = {fname:dname for dname, fname in map(os.path.split, self.file_names.values())}
     
@@ -80,14 +84,26 @@ class AnalysisPoints(object):
         is_single_worm = self.is_single_worm
         use_skel_filter = self.use_skel_filter
         
+        #THE FIRST ELEMENT IN OUTPUT_FILES MUST BE AND HDF5 AND WILL BE USED AS FLAG TO 
+        #STORE THE PROVENANCE TRACKING
+        
         self.checkpoints = {
             'COMPRESS' : {
-                'func':compressVideo,
-                'argkws' : {**{'video_file': fn['original_video'], 
-                            'masked_image_file': fn['masked_image']}, **param.compress_vid_param},
+                'func':processVideo,
+                'argkws' : {'video_file': fn['original_video'], 
+                            'masked_image_file' : fn['masked_image'],
+                            'compress_vid_param' : param.compress_vid_param},
                 'input_files' : [fn['original_video']],
                 'output_files': [fn['masked_image']],
                 'requirements' : [('can_read_video', partial(isGoodVideo, fn['original_video']))]
+            },
+            'VID_SUBSAMPLE': {
+                'func':createSampleVideo,
+                'argkws' : {**{'masked_image_file': fn['masked_image'], 'sample_video_name':fn['subsample']}, 
+                            **param.subsample_vid_param},
+                'input_files' : [fn['masked_image']],
+                'output_files': [fn['masked_image'], fn['subsample']],
+                'requirements' : ['COMPRESS']
             },
             'TRAJ_CREATE': {
                 'func': getWormTrajectories,

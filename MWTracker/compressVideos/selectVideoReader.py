@@ -7,7 +7,7 @@ from .Readers.readVideoCapture import readVideoCapture
 
 def selectVideoReader(video_file):
     # open video to read
-    isHDF5video = video_file.endswith('.hdf5')
+    isHDF5video = video_file.endswith('hdf5')
     isMJPGvideo = video_file.endswith('.mjpg')
     isDATfiles = video_file.endswith('spool.dat')
     isTIFfiles = video_file.endswith('.tif')

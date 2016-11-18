@@ -129,11 +129,30 @@ def test5(script_dir, examples_dir):
         masked_files_dir]
     execute_cmd(cmd)
 
+def test6(script_dir, examples_dir):
+    print('%%%%%% TEST6 %%%%%%\nReformat mask file produced by the rig.')
+    main_dir = os.path.join(examples_dir, 'test_6')
+    masked_files_dir = os.path.join(main_dir, 'MaskedVideos')
+    raw_video_dir = os.path.join(main_dir, 'RawVideos')
+
+    #remove_dir(masked_files_dir)
+
+    cmd = [
+        sys.executable,
+        os.path.join(
+            script_dir,
+            'compressMultipleFiles.py'),
+        raw_video_dir,
+        masked_files_dir,
+        '--pattern_include', 
+        '*.raw_hdf5']
+    execute_cmd(cmd)
+
 if __name__ == '__main__':
     root_dir = os.path.abspath(os.path.join(os.path.dirname(MWTracker.__file__), '..')) 
 
     examples_dir = os.path.join(root_dir, 'Tests', 'Data')
     script_dir = os.path.join(root_dir, 'cmd_scripts')
 
-    for fun in [test1, test2, test3, test4, test5]:
+    for fun in [test1, test2, test6]:#:[test1, test2, test3, test4, test5]:
         fun(script_dir, examples_dir)

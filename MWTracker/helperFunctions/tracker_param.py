@@ -169,7 +169,14 @@ class tracker_param:
             'background_frame_offset': background_frame_offset,
             'background_generation_function': background_generation_function,
             'background_file': background_file}
-        
+
+        # parameters for a subsampled video
+        self.subsample_vid_param = {
+            'time_factor' : 8, 
+            'size_factor' : 5, 
+            'expected_fps' : 30
+        }
+
         # getWormTrajectories
         self.trajectories_param = {
             'initial_frame': 0,

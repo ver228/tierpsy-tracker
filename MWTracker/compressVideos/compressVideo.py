@@ -16,6 +16,7 @@ from scipy.ndimage.filters import median_filter
 from  MWTracker.compressVideos.extractMetaData import storeMetaData, readAndSaveTimestamp
 from  MWTracker.compressVideos.selectVideoReader import selectVideoReader
 
+from MWTracker.helperFunctions.miscFun import print_flush
 from MWTracker.helperFunctions.timeCounterStr import timeCounterStr
 from MWTracker.backgroundSubtraction import backgroundSubtraction
 
@@ -23,17 +24,6 @@ IMG_FILTERS = {"compression":"gzip",
         "compression_opts":4,
         "shuffle":True,
         "fletcher32":True}
-
-def isGoodVideo(video_file):
-    try:
-        vid = selectVideoReader(video_file)
-        # i have problems with corrupt videos that can create infinite loops...
-        #it is better to test it before start a large taks
-        vid.release()
-        return True
-    except OSError:
-        # corrupt file, cannot read the size
-        return False
 
 def getROIMask(
         image,
@@ -229,8 +219,7 @@ def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
         raise RuntimeError
 
     # extract and store video metadata using ffprobe
-    print(base_name + ' Extracting video metadata...')
-    sys.stdout.flush()
+    print_flush(base_name + ' Extracting video metadata...')
     expected_frames = storeMetaData(video_file, masked_image_file)
     
 
@@ -357,9 +346,8 @@ def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
             if frame_number % 500 == 0:
                 # calculate the progress and put it in a string
                 progress_str = progressTime.getStr(frame_number)
-                print(base_name + ' ' + progress_str)
-                sys.stdout.flush()
-
+                print_flush(base_name + ' ' + progress_str)
+                
             # finish process
             if ret == 0:
                 break
@@ -384,6 +372,7 @@ def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
     with h5py.File(masked_image_file, "r+") as mask_fid:
         mask_fid['/mask'].attrs['has_finished'] = 1
 
-    print(base_name + ' Compressed video done.')
-    sys.stdout.flush()
+    print_flush(base_name + ' Compressed video done.')
+    
+
 
