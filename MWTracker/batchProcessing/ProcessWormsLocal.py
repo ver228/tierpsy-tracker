@@ -112,6 +112,7 @@ class ProcessWormsLocal(object):
         needed_files = inputs_required - new_created_files
         
         #files that will be created
+        outputs_to_create = self._points2Files(self.checkpoints2process, self.ap_tmp, "output_files")
 
 
 
