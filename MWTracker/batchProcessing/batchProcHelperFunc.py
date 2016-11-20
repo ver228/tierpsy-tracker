@@ -91,8 +91,9 @@ def getDefaultSequence(action, is_single_worm=False, use_skel_filter=True):
                                         'INT_PROFILE',
                                         'INT_SKE_ORIENT',
                                         'CONTOUR_ORIENT',
+                                        'VID_SUBSAMPLE',
                                         'FEAT_CREATE',
-                                        'VID_SUBSAMPLE']}
+                                        ]}
     else:
         CHECKPOINTS_DFT = { 'Compress': ['COMPRESS',
                                         'VID_SUBSAMPLE'],
@@ -103,8 +104,9 @@ def getDefaultSequence(action, is_single_worm=False, use_skel_filter=True):
                                     'SKE_ORIENT',
                                     'INT_PROFILE',
                                     'INT_SKE_ORIENT',
-                                    'FEAT_CREATE',
-                                    'VID_SUBSAMPLE']}
+                                    'VID_SUBSAMPLE',
+                                    'FEAT_CREATE'
+                                    ]}
     
     if not use_skel_filter:
         CHECKPOINTS_DFT['Track'].remove('SKE_FILT')
