@@ -82,7 +82,8 @@ def getDefaultSequence(action, is_single_worm=False, use_skel_filter=True):
         CHECKPOINTS_DFT = { 'Compress': ['COMPRESS',
                                         'VID_SUBSAMPLE',
                                         'COMPRESS_ADD_DATA'],
-                            'Track' : ['TRAJ_CREATE',
+                            'Track' : ['VID_SUBSAMPLE',
+                                        'TRAJ_CREATE',
                                         'TRAJ_JOIN',
                                         'SKE_CREATE',
                                         'STAGE_ALIGMENT',
@@ -91,20 +92,19 @@ def getDefaultSequence(action, is_single_worm=False, use_skel_filter=True):
                                         'INT_PROFILE',
                                         'INT_SKE_ORIENT',
                                         'CONTOUR_ORIENT',
-                                        'VID_SUBSAMPLE',
                                         'FEAT_CREATE',
                                         ]}
     else:
         CHECKPOINTS_DFT = { 'Compress': ['COMPRESS',
                                         'VID_SUBSAMPLE'],
-                            'Track' : ['TRAJ_CREATE',
+                            'Track' : ['VID_SUBSAMPLE',
+                                    'TRAJ_CREATE',
                                     'TRAJ_JOIN',
                                     'SKE_CREATE',
                                     'SKE_FILT',
                                     'SKE_ORIENT',
                                     'INT_PROFILE',
                                     'INT_SKE_ORIENT',
-                                    'VID_SUBSAMPLE',
                                     'FEAT_CREATE'
                                     ]}
     

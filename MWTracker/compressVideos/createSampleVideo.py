@@ -17,6 +17,36 @@ def getSubSampleVidName(masked_image_file):
     #used by AnalysisPoints.py and CheckFinished.py
     return masked_image_file.replace('.hdf5', '_subsample.mp4')
 
+
+def _getCorrectedTimeVec(fid, tot_frames):
+    '''time vector used to account for missing frames'''
+    if '/timestamp/raw' in fid:
+        timestamp_ind = fid['/timestamp/raw'][:]
+    else:
+        #if there is not valid timestamp field considered that there are not missing frames
+        return np.arange(tot_frames)
+    
+    #remove any nan, I notice that sometimes the last number is a nan
+    timestamp_ind = timestamp_ind[~np.isnan(timestamp_ind)]
+    if timestamp_ind.size == 0: #empty timestamp
+        #if there is not valid frames skip
+        return np.arange(tot_frames)
+
+
+    tot_timestamps = int(timestamp_ind[-1])
+    
+    #%%
+    #make sure to compensate for missing frames, so the video will have similar length.
+    tt_vec = np.full(tot_timestamps+1, np.nan)
+    current_frame = 0
+    for ii in range(tot_timestamps+1):
+        tt_vec[ii] = current_frame
+        current_timestamp = timestamp_ind[current_frame]
+        if current_timestamp <= ii:
+            current_frame += 1
+
+    return tt_vec
+
 def createSampleVideo(masked_image_file, sample_video_name ='', time_factor = 8, 
                      size_factor = 5, expected_fps=30):
     #%%
@@ -33,24 +63,9 @@ def createSampleVideo(masked_image_file, sample_video_name ='', time_factor = 8,
         im_h, im_w = im_h//size_factor, im_w//size_factor
         
         fps, is_default_timestamp = getFPS(masked_image_file, expected_fps)
-        if '/timestamp/raw' in fid:
-            timestamp_ind = fid['/timestamp/raw'][:]
-        else:
-            timestamp_ind = np.arange(tot_frames)
+
+        tt_vec = _getCorrectedTimeVec(fid, tot_frames)
         
-        #remove any nan, I notice that sometimes the last number is a nan
-        timestamp_ind = timestamp_ind[~np.isnan(timestamp_ind)]
-        
-        tot_timestamps = int(timestamp_ind[-1])
-        #%%
-        #make sure to compensate for missing frames, so the video will have similar length.
-        tt_vec = np.full(tot_timestamps+1, np.nan)
-        current_frame = 0
-        for ii in range(tot_timestamps+1):
-            tt_vec[ii] = current_frame
-            current_timestamp = timestamp_ind[current_frame]
-            if current_timestamp <= ii:
-                current_frame += 1
         #%%
         #'H264' #'MPEG' #XVID
         vid_writer = cv2.VideoWriter(sample_video_name, \
