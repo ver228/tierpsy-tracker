@@ -31,6 +31,7 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
         self.frame_number = -1
         self.trajectories_data = pd.DataFrame()
         self.traj_time_grouped = -1
+        self.frame_save_interval = 1 
 
         self.ui.pushButton_skel.clicked.connect(self.getSkelFile)
         lineEditDragDrop(
@@ -84,6 +85,13 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
         else:
             self.ui.spinBox_frame.setValue(0)
 
+    def updateImGroup(self):
+        super().updateImGroup()
+        if self.h5path == '/full_data':
+            self.frame_save_interval = int(self.image_group._v_attrs['save_interval'])
+        else:
+            self.frame_save_interval = 1
+
     def updateVideoFile(self, vfilename):
         super().updateVideoFile(vfilename)
         if type(self.image_group) is int:
@@ -92,6 +100,8 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
         #find if it is a fluorescence image
         self.is_light_background = 1 if not 'is_light_background' in self.image_group._v_attrs \
             else self.image_group._v_attrs['is_light_background']
+
+
 
         videos_dir, basename = os.path.split(vfilename)
         basename = os.path.splitext(basename)[0]
@@ -119,7 +129,7 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
                 pd.core.groupby.DataFrameGroupBy):
                 raise KeyError
             
-            frame_data = self.traj_time_grouped.get_group(frame_number)
+            frame_data = self.traj_time_grouped.get_group(self.frame_save_interval*frame_number)
             return frame_data
 
         except KeyError:
