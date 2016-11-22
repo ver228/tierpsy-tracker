@@ -36,9 +36,11 @@ def _getWormEnconderParams(fname):
             return x
 
     if os.path.exists(fname):
-        with open(fname, 'r') as fid:  
+
+        with open(fname, 'r') as fid:
+            dd = fid.read().split('\n')
             plugin_params =  {a.strip() : numOrStr(b) for a,b in 
-              [x.split('=') for x in fid.read().split('\n') if x[0].isalpha()]}
+              [x.split('=') for x in dd if x and x[0].isalpha()]}
     else:
         plugin_params = {}
 
