@@ -15,8 +15,11 @@ class readVideoHDF5:
         self.vid_frame_pos = []
         self.vid_time_pos = []
 
-        self.fid = tables.File(fileName, 'r')
-        self.dataset = self.fid.get_node('/mask')
+        try:
+            self.fid = tables.File(fileName, 'r')
+            self.dataset = self.fid.get_node('/mask')
+        except:
+            raise OSError
 
         self.tot_frames = self.dataset.shape[0]
 
