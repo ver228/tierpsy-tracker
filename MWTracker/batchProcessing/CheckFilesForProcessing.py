@@ -78,6 +78,7 @@ class CheckFilesForProcessing(object):
         else:
             msg = 'EMPTY_ANALYSIS_LIST'
         
+        #print(video_file_name, unfinished)
         return msg, ap_obj
     
     
