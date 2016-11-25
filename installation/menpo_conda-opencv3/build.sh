@@ -27,7 +27,7 @@ if [ "${SHORT_OS_STR}" == "Darwin" ]; then
     # SDK, so I hack around this here by moving the deployment target to 10.7
     # See here for the bug I'm seeing, which is specific to pthreads, not OpenCV
     # http://lists.gnu.org/archive/html/bug-gnulib/2013-05/msg00040.html
-    export MACOSX_DEPLOYMENT_TARGET="10.7"
+    export MACOSX_DEPLOYMENT_TARGET="10.10"
 fi
 
 if [ $PY3K -eq 1 ]; then
@@ -66,6 +66,7 @@ cmake .. -G"$CMAKE_GENERATOR"                                            \
     -DWITH_OPENNI=0                                                      \
     -DWITH_FFMPEG=1                                                      \
     -DWITH_VTK=0                                                         \
+    -DWITH_QT=0                                                          \
     -DINSTALL_C_EXAMPLES=0                                               \
     -DCMAKE_SKIP_RPATH:bool=ON                                           \
     -DCMAKE_INSTALL_PREFIX=$PREFIX

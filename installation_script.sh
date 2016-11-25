@@ -64,9 +64,20 @@ function install_opencv3 {
 	-DPYTHON3_LIBRARY=`python3 -c "import sysconfig; print(sysconfig.get_path('platstdlib'))"` \
 	-DPYTHON3_PACKAGES_PATH=`python3 -c "import sysconfig; print(sysconfig.get_path('platlib'))"` \
 	-DPYTHON3_NUMPY_INCLUDE_DIRS=`python3 -c "from numpy.distutils.misc_util import get_numpy_include_dirs; print(get_numpy_include_dirs()[0])"` \
-	-DBUILD_TIFF=ON -DBUILD_opencv_java=OFF -DWITH_CUDA=OFF -DENABLE_AVX=ON -DWITH_OPENGL=ON -DWITH_OPENCL=ON \
-	-DWITH_IPP=ON -DWITH_TBB=ON -DWITH_EIGEN=ON -DWITH_V4L=ON -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF \
-	-DWITH_QT=OFF -DINSTALL_PYTHON_EXAMPLES=ON \
+	-DBUILD_TIFF=ON 
+	-DBUILD_opencv_java=OFF 
+	-DWITH_CUDA=OFF 
+	-DENABLE_AVX=ON 
+	-DWITH_OPENGL=ON 
+	-DWITH_OPENCL=ON \
+	-DWITH_IPP=ON \
+	-DWITH_TBB=ON \
+	-DWITH_EIGEN=ON \
+	-DWITH_V4L=ON \
+	-DBUILD_TESTS=OFF \ 
+	-DBUILD_PERF_TESTS=OFF \
+	-DWITH_QT=OFF \
+	-DINSTALL_PYTHON_EXAMPLES=ON \
 	-D INSTALL_C_EXAMPLES=OFF \
 	-DCMAKE_BUILD_TYPE=RELEASE \
 	..
