@@ -61,11 +61,11 @@ class CheckFilesForProcessing(object):
         ap_obj = AnalysisPoints(video_file, mask_dir, results_dir, self.json_file,
                  self.is_single_worm, self.use_skel_filter)
         
-        unfinished = ap_obj.getUnfinishedPoints(self.analysis_checkpoints)
+        unfinished_points = ap_obj.getUnfinishedPoints(self.analysis_checkpoints)
         
-        if len(unfinished) == 0:
+        if len(unfinished_points) == 0:
             msg = 'FINISHED_GOOD'
-        elif unfinished != self.analysis_checkpoints:
+        elif unfinished_points != self.analysis_checkpoints:
             msg =  'FINISHED_BAD'
         elif self.analysis_checkpoints:
             unmet_requirements = ap_obj.hasRequirements(self.analysis_checkpoints[0])
@@ -78,8 +78,7 @@ class CheckFilesForProcessing(object):
         else:
             msg = 'EMPTY_ANALYSIS_LIST'
         
-        #print(video_file_name, unfinished)
-        return msg, ap_obj
+        return msg, ap_obj, unfinished_points
     
     
     def _getSubDirPath(self, source_dir, source_root_dir):
@@ -109,8 +108,8 @@ class CheckFilesForProcessing(object):
         
         progress_timer = timeCounterStr('')
         for ii, video_file in enumerate(valid_files):
-            label, ap_obj = self._checkIndFile(video_file)
-            self.filtered_files[label].append(ap_obj)
+            label, ap_obj, unfinished_points = self._checkIndFile(video_file)
+            self.filtered_files[label].append((ap_obj, unfinished_points))
             
             if (ii % 10) == 0:
                 print('Checking file {} of {}. Total time: {}'.format(ii + 1, 
@@ -148,7 +147,8 @@ Files whose analysis is incompleted : {}'''.format(
         B = map(self.generateIndCMD, self.filtered_files['FINISHED_BAD'])
         return list(A) + list(B)
 
-    def generateIndCMD(self, good_ap_obj):
+    def generateIndCMD(self, input_d):
+        good_ap_obj, unfinished_points = input_d
 
         subdir_path = self._getSubDirPath(
             os.path.dirname(good_ap_obj.video_file),
@@ -163,10 +163,13 @@ Files whose analysis is incompleted : {}'''.format(
         args = [good_ap_obj.video_file]
         argkws = {'masks_dir':good_ap_obj.masks_dir, 
                   'results_dir':good_ap_obj.results_dir,
-            'tmp_mask_dir':tmp_mask_dir, 'tmp_results_dir':tmp_results_dir,
-            'json_file':self.json_file, 'analysis_checkpoints':self.analysis_checkpoints,
-            'is_single_worm':self.is_single_worm, 'use_skel_filter':self.use_skel_filter,
-            'is_copy_video':self.is_copy_video}
+                  'tmp_mask_dir':tmp_mask_dir, 
+                  'tmp_results_dir':tmp_results_dir,
+                  'json_file':self.json_file, 
+                  'analysis_checkpoints': unfinished_points,#self.analysis_checkpoints,
+                  'is_single_worm':self.is_single_worm, 
+                  'use_skel_filter':self.use_skel_filter,
+                  'is_copy_video':self.is_copy_video}
         
         cmd = create_script(SCRIPT_LOCAL, args, argkws)
         return cmd
