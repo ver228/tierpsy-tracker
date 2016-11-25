@@ -90,14 +90,15 @@ def trackMultipleFilesFun(
     if not results_dir_root:
         results_dir_root = getResultsDir(mask_dir_root)
 
-    if not use_manual_join:
-        analysis_checkpoints = getDefaultSequence('Track', 
-                                                 is_single_worm=is_single_worm)
-        _removePointFromSide(analysis_checkpoints, force_start_point, 0)
-        _removePointFromSide(analysis_checkpoints, end_point, -1)
-    else:
-        #only execute the calculation of the manual features
-        analysis_checkpoints = ['FEAT_MANUAL_CREATE']
+    
+    analysis_checkpoints = getDefaultSequence('Track', 
+                                             is_single_worm=is_single_worm)
+    _removePointFromSide(analysis_checkpoints, force_start_point, 0)
+    _removePointFromSide(analysis_checkpoints, end_point, -1)
+    
+    if use_manual_join:
+          #only execute the calculation of the manual features
+          analysis_checkpoints = analysis_checkpoints + ['FEAT_MANUAL_CREATE']
     
     walk_args = {'root_dir':mask_dir_root, 
                  'pattern_include' : pattern_include,
