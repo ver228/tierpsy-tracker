@@ -127,6 +127,10 @@ def correctTimestamp(best_effort_timestamp, best_effort_timestamp_time):
 
 
 def getTimestamp(masked_image_file):
+    '''
+    Read the timestamp from the video_metadata, if this field does not exists return an array of nan
+    '''
+
     with tables.File(masked_image_file, 'r') as mask_fid:
         # get the total number of frmes previously processed
         tot_frames = mask_fid.get_node("/mask").shape[0]
@@ -154,7 +158,9 @@ def getTimestamp(masked_image_file):
 
 
 def readAndSaveTimestamp(masked_image_file, dst_file=''):
-
+    '''
+        Read and save timestamp data in to the dst_file, if there is not a dst_file save it into the masked_image_file
+    '''
     if not dst_file:
         dst_file = masked_image_file
 

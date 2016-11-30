@@ -13,6 +13,7 @@ import json
 
 from MWTracker.helperFunctions.timeCounterStr import timeCounterStr
 from MWTracker.compressVideos.compressVideo import initMasksGroups
+from MWTracker.compressVideos.extractMetaData import readAndSaveTimestamp
 from MWTracker.helperFunctions.miscFun import print_flush
 
 
@@ -122,7 +123,8 @@ def reformatRigMaskedVideo(original_file, new_file, plugin_param_file, expected_
                 # calculate the progress and put it in a string
                 progress_str = progress_timer.getStr(frame)
                 print_flush(base_name + ' ' + progress_str)
-            
+        
+        readAndSaveTimestamp(masked_image_file)
         #tag as finished reformatting
         mask_new.attrs['has_finished'] = 1
 

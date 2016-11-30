@@ -257,10 +257,12 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         # read the data of the particles that exists in the frame
         self.frame_data = self.getFrameData(self.frame_number)
 
+        
+
         #draw extra info only if the worm_index_type is valid
         if self.worm_index_type in self.frame_data: 
             # draw the boxes in each of the trajectories found
-            if self.ui.comboBox_showLabels.currentIndex() != self.showT['Hide']and self.label_type in self.frame_data:
+            if self.ui.comboBox_showLabels.currentIndex() != self.showT['Hide'] and self.label_type in self.frame_data:
                 self.drawROIBoxes(self.frame_qimg)
             
             self.updateROIcanvasN(1)
