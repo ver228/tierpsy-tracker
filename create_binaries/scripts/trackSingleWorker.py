@@ -5,7 +5,7 @@ Created on Tue Jun  9 12:59:25 2015
 @author: ajaver
 """
 import sys
-from MWTracker.batchProcessing.trackSingleWorker import getTrajectoriesWorker, track_worker_parser
+from MWTracker.batch_processing.trackSingleWorker import getTrajectoriesWorker, track_worker_parser
 
 if __name__ == '__main__':
 

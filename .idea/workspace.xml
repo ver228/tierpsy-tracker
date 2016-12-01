@@ -1,0 +1,932 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="09be277a-0def-4c61-9210-bf3a0766416c" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MWTracker/analysis/int_profile/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MWTracker/analysis/int_ske_orient/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/zebrafishAnalysis/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_filt/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_orient/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MWTracker/analysis/stage_aligment/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MWTracker/analysis/traj_create/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MWTracker/analysis/traj_join/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MWTracker/analysis/vid_subsample/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MWTracker/batch_processing/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MWTracker/helper/__init__.py" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/circCurvature.cpython-35m-darwin.so" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/circCurvature.cpython-35m-x86_64-linux-gnu.so" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/cleanWorm_cython.cpython-35m-darwin.so" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/cleanWorm_cython.cpython-35m-x86_64-linux-gnu.so" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/curvspace.cpython-35m-darwin.so" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/curvspace.cpython-35m-x86_64-linux-gnu.so" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/linearSkeleton_cython.cpython-35m-darwin.so" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/linearSkeleton_cython.cpython-35m-x86_64-linux-gnu.so" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/segWorm_cython.cpython-35m-darwin.so" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/segWorm_cython.cpython-35m-x86_64-linux-gnu.so" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/AnalysisProgress.py" afterPath="$PROJECT_DIR$/MWTracker/gui/AnalysisProgress.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/AnalysisProgress_ui.py" afterPath="$PROJECT_DIR$/MWTracker/gui/AnalysisProgress_ui.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/BatchProcessing.py" afterPath="$PROJECT_DIR$/MWTracker/gui/BatchProcessing.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/BatchProcessing_ui.py" afterPath="$PROJECT_DIR$/MWTracker/gui/BatchProcessing_ui.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/GetAllParameters.py" afterPath="$PROJECT_DIR$/MWTracker/gui/GetAllParameters.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/GetMaskParams.py" afterPath="$PROJECT_DIR$/MWTracker/gui/GetMaskParams.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/GetMaskParams_ui.py" afterPath="$PROJECT_DIR$/MWTracker/gui/GetMaskParams_ui.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/HDF5VideoPlayer.py" afterPath="$PROJECT_DIR$/MWTracker/gui/HDF5VideoPlayer.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/HDF5VideoPlayer_ui.py" afterPath="$PROJECT_DIR$/MWTracker/gui/HDF5VideoPlayer_ui.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/MWTrackerViewer.py" afterPath="$PROJECT_DIR$/MWTracker/gui/MWTrackerViewer.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/MWTrackerViewer_ui.py" afterPath="$PROJECT_DIR$/MWTracker/gui/MWTrackerViewer_ui.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/ProgressDialog_ui.py" afterPath="$PROJECT_DIR$/MWTracker/gui/ProgressDialog_ui.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/QtDesignerFiles/AnalysisProgress.ui" afterPath="$PROJECT_DIR$/MWTracker/gui/QtDesignerFiles/AnalysisProgress.ui" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/QtDesignerFiles/BatchProcessing.ui" afterPath="$PROJECT_DIR$/MWTracker/gui/QtDesignerFiles/BatchProcessing.ui" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/QtDesignerFiles/GetMaskParams.ui" afterPath="$PROJECT_DIR$/MWTracker/gui/QtDesignerFiles/GetMaskParams.ui" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/QtDesignerFiles/HDF5VideoPlayer.ui" afterPath="$PROJECT_DIR$/MWTracker/gui/QtDesignerFiles/HDF5VideoPlayer.ui" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/QtDesignerFiles/MWTrackerViewer.ui" afterPath="$PROJECT_DIR$/MWTracker/gui/QtDesignerFiles/MWTrackerViewer.ui" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/QtDesignerFiles/Makefile" afterPath="$PROJECT_DIR$/MWTracker/gui/QtDesignerFiles/Makefile" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/QtDesignerFiles/SWTrackerViewer.ui" afterPath="$PROJECT_DIR$/MWTracker/gui/QtDesignerFiles/SWTrackerViewer.ui" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/QtDesignerFiles/SelectApp.ui" afterPath="$PROJECT_DIR$/MWTracker/gui/QtDesignerFiles/SelectApp.ui" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/QtDesignerFiles/TrackerViewerAux.ui" afterPath="$PROJECT_DIR$/MWTracker/gui/QtDesignerFiles/TrackerViewerAux.ui" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/SWTrackerViewer.py" afterPath="$PROJECT_DIR$/MWTracker/gui/SWTrackerViewer.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/SWTrackerViewer_ui.py" afterPath="$PROJECT_DIR$/MWTracker/gui/SWTrackerViewer_ui.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/SelectApp.py" afterPath="$PROJECT_DIR$/MWTracker/gui/SelectApp.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/SelectApp_ui.py" afterPath="$PROJECT_DIR$/MWTracker/gui/SelectApp_ui.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/TrackerViewerAux.py" afterPath="$PROJECT_DIR$/MWTracker/gui/TrackerViewerAux.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/TrackerViewerAux_ui.py" afterPath="$PROJECT_DIR$/MWTracker/gui/TrackerViewerAux_ui.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/GUI_Qt5/__init__.py" afterPath="$PROJECT_DIR$/MWTracker/gui/__init__.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/auxFiles/features_names.csv" afterPath="$PROJECT_DIR$/MWTracker/aux/features_names.csv" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/auxFiles/ffmpeg22" afterPath="$PROJECT_DIR$/MWTracker/aux/ffmpeg22" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/backgroundSubtraction/backgroundSubtraction.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/backgroundSubtraction.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batchProcessing/AnalysisPoints.py" afterPath="$PROJECT_DIR$/MWTracker/batch_processing/AnalysisPoints.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batchProcessing/CheckFilesForProcessing.py" afterPath="$PROJECT_DIR$/MWTracker/batch_processing/CheckFilesForProcessing.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batchProcessing/CheckFinished.py" afterPath="$PROJECT_DIR$/MWTracker/batch_processing/CheckFinished.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batchProcessing/ProcessMultipleFilesParser.py" afterPath="$PROJECT_DIR$/MWTracker/batch_processing/ProcessMultipleFilesParser.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batchProcessing/ProcessWormsLocal.py" afterPath="$PROJECT_DIR$/MWTracker/batch_processing/ProcessWormsLocal.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batchProcessing/ProcessWormsWorker.py" afterPath="$PROJECT_DIR$/MWTracker/batch_processing/ProcessWormsWorker.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batchProcessing/__init__.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/__init__.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batchProcessing/batchProcHelperFunc.py" afterPath="$PROJECT_DIR$/MWTracker/batch_processing/batchProcHelperFunc.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batchProcessing/processMultipleFilesFun.py" afterPath="$PROJECT_DIR$/MWTracker/batch_processing/processMultipleFilesFun.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batchProcessing/tests/test_compress_mult.py" afterPath="$PROJECT_DIR$/MWTracker/batch_processing/tests/test_compress_mult.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batchProcessing/tests/test_mult_cmd.py" afterPath="$PROJECT_DIR$/MWTracker/batch_processing/tests/test_mult_cmd.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batchProcessing/tests/test_process.py" afterPath="$PROJECT_DIR$/MWTracker/batch_processing/tests/test_process.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/compressVideos/Readers/readDatFiles.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/Readers/readDatFiles.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/compressVideos/Readers/readTifFiles.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/Readers/readTifFiles.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/compressVideos/Readers/readTifStack.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/Readers/readTifStack.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/compressVideos/Readers/readVideoCapture.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/Readers/readVideoCapture.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/compressVideos/Readers/readVideoHDF5.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/Readers/readVideoHDF5.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/compressVideos/Readers/readVideoffmpeg.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/Readers/readVideoffmpeg.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/compressVideos/__init__.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/Readers/__init__.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/compressVideos/compressVideo.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/compressVideo.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/compressVideos/createSampleVideo.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/vid_subsample/createSampleVideo.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/compressVideos/extractMetaData.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/extractMetaData.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/compressVideos/getAdditionalData.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress_add_data/getAdditionalData.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/compressVideos/processVideo.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/processVideo.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/compressVideos/reformatRigMaskedVideo.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/reformatRigMaskedVideo.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/compressVideos/selectVideoReader.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/selectVideoReader.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/featuresAnalysis/__init__.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/__init__.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/featuresAnalysis/correctVentralDorsal.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/contour_orient/correctVentralDorsal.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/featuresAnalysis/obtainFeatures.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/feat_create/obtainFeatures.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/featuresAnalysis/obtainFeaturesHelper.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/feat_create/obtainFeaturesHelper.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/helperFunctions/__init__.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress_add_data/__init__.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/helperFunctions/miscFun.py" afterPath="$PROJECT_DIR$/MWTracker/helper/misc.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/helperFunctions/runMultiCMD.py" afterPath="$PROJECT_DIR$/MWTracker/helper/runMultiCMD.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/helperFunctions/timeCounterStr.py" afterPath="$PROJECT_DIR$/MWTracker/helper/timeCounterStr.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/helperFunctions/trackProvenance.py" afterPath="$PROJECT_DIR$/MWTracker/helper/trackProvenance.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/helperFunctions/tracker_param.py" afterPath="$PROJECT_DIR$/MWTracker/helper/tracker_param.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/intensityAnalysis/checkFinalOrientation.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/int_ske_orient/checkFinalOrientation.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/intensityAnalysis/correctHeadTailIntensity.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/int_ske_orient/correctHeadTailIntensity.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/intensityAnalysis/getIntensityProfile.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/int_profile/getIntensityProfile.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/stageAligment/alignStageMotion.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/stage_aligment/alignStageMotion.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/stageAligment/alignStageMotionSegwormFun.m" afterPath="$PROJECT_DIR$/MWTracker/analysis/stage_aligment/alignStageMotionSegwormFun.m" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/stageAligment/findStageMovement_ver2.m" afterPath="$PROJECT_DIR$/MWTracker/analysis/stage_aligment/findStageMovement_ver2.m" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/stageAligment/getFrameDiffVar.m" afterPath="$PROJECT_DIR$/MWTracker/analysis/stage_aligment/getFrameDiffVar.m" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/stageAligment/imMaskDiffVar.cpp" afterPath="$PROJECT_DIR$/MWTracker/analysis/stage_aligment/imMaskDiffVar.cpp" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/stageAligment/imMaskDiffVar.mexmaci64" afterPath="$PROJECT_DIR$/MWTracker/analysis/stage_aligment/imMaskDiffVar.mexmaci64" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/stageAligment/maxPeaksDistHeight.m" afterPath="$PROJECT_DIR$/MWTracker/analysis/stage_aligment/maxPeaksDistHeight.m" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/WormClass.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_orient/WormClass.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/__init__.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/contour_orient/__init__.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/checkHeadOrientation.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_orient/checkHeadOrientation.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/correctTrajectories.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/traj_join/correctTrajectories.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/getFilteredSkels.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_filt/getFilteredSkels.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/getSkeletonsTables.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/getSkeletonsTables.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/getWormTrajectories.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/traj_create/getWormTrajectories.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/__init__.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/feat_create/__init__.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cleanWorm.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cleanWorm.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/Makefile" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/Makefile" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/c_circCurvature.c" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/c_circCurvature.c" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/c_curvspace.c" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/c_curvspace.c" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/circCurvature.cp35-win_amd64.pyd" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/circCurvature.cp35-win_amd64.pyd" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/circCurvature.pyx" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/circCurvature.pyx" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/cleanWorm_cython.cp35-win_amd64.pyd" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/cleanWorm_cython.cp35-win_amd64.pyd" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/cleanWorm_cython.pyx" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/cleanWorm_cython.pyx" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/curvspace.pyx" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/curvspace.pyx" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/linearSkeleton_cython.cp35-win_amd64.pyd" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/linearSkeleton_cython.cp35-win_amd64.pyd" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/linearSkeleton_cython.pyx" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/linearSkeleton_cython.pyx" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/segWorm_cython.cp35-win_amd64.pyd" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/segWorm_cython.cp35-win_amd64.pyd" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/segWorm_cython.pyx" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/segWorm_cython.pyx" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/cythonFiles/setup.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/setup.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/getHeadTail.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/getHeadTail.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/linearSkeleton.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/linearSkeleton.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/trackWorms/segWormPython/mainSegworm.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/mainSegworm.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/zebrafishAnalysis/zebrafishAnalysis.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/zebrafishAnalysis/zebrafishAnalysis.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/zebrafishAnalysis/zebrafishSkeleton.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_create/zebrafishAnalysis/zebrafishSkeleton.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/__init__.py" afterPath="$PROJECT_DIR$/MWTracker/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker_GUI/HDF5VideoPlayer.py" afterPath="$PROJECT_DIR$/MWTracker_GUI/HDF5VideoPlayer.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker_GUI/MWConsole.py" afterPath="$PROJECT_DIR$/MWTracker_GUI/MWConsole.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd_scripts/compressMultipleFiles.py" afterPath="$PROJECT_DIR$/cmd_scripts/compressMultipleFiles.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd_scripts/trackMultipleFiles.py" afterPath="$PROJECT_DIR$/cmd_scripts/trackMultipleFiles.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/create_binaries/scripts/MWConsole.py" afterPath="$PROJECT_DIR$/create_binaries/scripts/MWConsole.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/create_binaries/scripts/compressSingleWorker.py" afterPath="$PROJECT_DIR$/create_binaries/scripts/compressSingleWorker.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/create_binaries/scripts/trackSingleWorker.py" afterPath="$PROJECT_DIR$/create_binaries/scripts/trackSingleWorker.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/create_binaries/test/test_pyinstaller_reader.py" afterPath="$PROJECT_DIR$/create_binaries/test/test_pyinstaller_reader.py" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FileEditorManager">
+    <leaf>
+      <file leaf-file-name="MWConsole.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/MWTracker_GUI/MWConsole.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="195">
+              <caret line="13" column="0" lean-forward="true" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TrackerViewerAux.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/MWTracker/gui/TrackerViewerAux.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="287">
+              <caret line="21" column="0" lean-forward="true" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#11#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="zebrafishSkeleton.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_create/zebrafishAnalysis/zebrafishSkeleton.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="300">
+              <caret line="20" column="0" lean-forward="true" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+              <folding>
+                <element signature="e#23#33#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="mainSegworm.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/mainSegworm.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="135">
+              <caret line="20" column="57" lean-forward="false" selection-start-line="20" selection-start-column="57" selection-end-line="20" selection-end-column="57" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="segWorm_cython.pyx" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/segWorm_cython.pyx">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="480">
+              <caret line="32" column="4" lean-forward="false" selection-start-line="32" selection-start-column="4" selection-end-line="32" selection-end-column="4" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="linearSkeleton.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/linearSkeleton.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-5250">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="getHeadTail.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/getHeadTail.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>FEAT_MANUAL_CREATE</find>
+      <find>contour_orient</find>
+      <find>isBadVentralOrient</find>
+      <find>circComputeChainCodeLengths</find>
+      <find>circCurvature</find>
+      <find>getSkeleton</find>
+      <find>switchCntSingleWorm</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>feat_manual_create</replace>
+    </replaceStrings>
+    <dirStrings>
+      <dir>$PROJECT_DIR$/MWTracker/analysis/contour_orient</dir>
+    </dirStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/MWTracker/intensityAnalysis/checkFinalOrientation.py" />
+        <option value="$PROJECT_DIR$/MWTracker/intensityAnalysis/correctHeadTailIntensity.py" />
+        <option value="$PROJECT_DIR$/MWTracker/intensityAnalysis/getIntensityProfile.py" />
+        <option value="$PROJECT_DIR$/MWTracker/analysisPoints/INT_PROFILE/getIntensityProfile.py" />
+        <option value="$PROJECT_DIR$/MWTracker/analysisPoints/int_profile/getIntensityProfile.py" />
+        <option value="$PROJECT_DIR$/MWTracker/analysis/int_profile/getIntensityProfile.py" />
+        <option value="$PROJECT_DIR$/MWTracker/batchProcessing/AnalysisPoints.py" />
+        <option value="$PROJECT_DIR$/MWTracker/batchProcessing/CheckFinished.py" />
+        <option value="$PROJECT_DIR$/MWTracker/batchProcessing/processMultipleFilesFun.py" />
+        <option value="$PROJECT_DIR$/MWTracker/gui/MWTrackerViewer.py" />
+        <option value="$PROJECT_DIR$/MWTracker/batch_processing/AnalysisPoints.py" />
+        <option value="$PROJECT_DIR$/MWTracker/gui/GetMaskParams.py" />
+        <option value="$PROJECT_DIR$/MWTracker/analysis/compress/compressVideo.py" />
+        <option value="$PROJECT_DIR$/MWTracker/analysis/feat_create/obtainFeatures.py" />
+        <option value="$PROJECT_DIR$/MWTracker/analysis/compress/processVideo.py" />
+        <option value="$PROJECT_DIR$/MWTracker/analysis/ske_create/getSkeletonsTables.py" />
+        <option value="$PROJECT_DIR$/MWTracker_GUI/MWConsole.py" />
+        <option value="$PROJECT_DIR$/MWTracker/analysis/ske_create/zebrafishAnalysis/zebrafishSkeleton.py" />
+        <option value="$PROJECT_DIR$/MWTracker/gui/TrackerViewerAux.py" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="168" />
+    <option name="y" value="23" />
+    <option name="width" value="1400" />
+    <option name="height" value="937" />
+  </component>
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="Scratches" />
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fluorescence" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="create_binaries" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cmd_scripts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MWTracker_GUI" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MWTracker" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MWTracker" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="batch_processing" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MWTracker" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="analysis" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MWTracker" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="analysis" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ske_create" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MWTracker" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="analysis" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ske_create" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="segWormPython" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="settings.editor.selected.configurable" value="editor.preferences.appearance" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/MWTracker/analysis/contour_orient" />
+      <recent name="$PROJECT_DIR$/MWTracker/analysis/ske_create" />
+      <recent name="$PROJECT_DIR$/MWTracker/analysis" />
+      <recent name="$PROJECT_DIR$/MWTracker/analysisPoints/COMPRESS_ADD_DATA" />
+      <recent name="$PROJECT_DIR$/MWTracker/analysisPoints/VID_SUBSAMPLE" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.MWConsole">
+    <configuration default="false" name="MWConsole" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/MWTracker_GUI" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Multiworm_Tracking" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/MWTracker_GUI/MWConsole.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Multiworm_Tracking" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="Tox" factoryName="Tox">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Multiworm_Tracking" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Attests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Multiworm_Tracking" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Doctests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Multiworm_Tracking" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Nosetests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Multiworm_Tracking" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Unittests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Multiworm_Tracking" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PUREUNITTEST" value="true" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="py.test">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Multiworm_Tracking" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="testToRun" value="" />
+      <option name="keywords" value="" />
+      <option name="params" value="" />
+      <option name="USE_PARAM" value="false" />
+      <option name="USE_KEYWORD" value="false" />
+      <method />
+    </configuration>
+    <list size="1">
+      <item index="0" class="java.lang.String" itemvalue="Python.MWConsole" />
+    </list>
+    <recent_temporary>
+      <list size="1">
+        <item index="0" class="java.lang.String" itemvalue="Python.MWConsole" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="09be277a-0def-4c61-9210-bf3a0766416c" name="Default" comment="" />
+      <created>1480607172751</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1480607172751</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="168" y="23" width="1400" height="937" extended-state="0" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32949308" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32949308" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39976957" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+      <option name="time" value="2" />
+    </breakpoint-manager>
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/int_ske_orient/checkFinalOrientation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1890">
+          <caret line="25" column="0" lean-forward="false" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/int_ske_orient/correctHeadTailIntensity.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="17" column="0" lean-forward="false" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/int_profile/getIntensityProfile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4395">
+          <caret line="293" column="0" lean-forward="false" selection-start-line="293" selection-start-column="0" selection-end-line="293" selection-end-column="0" />
+          <folding>
+            <element signature="e#86#95#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/batch_processing/ProcessMultipleFilesParser.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1575">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#15#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/batch_processing/ProcessWormsLocal.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2310">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/batch_processing/ProcessWormsWorker.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1006">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/batch_processing/CheckFinished.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="184">
+          <caret line="65" column="64" lean-forward="false" selection-start-line="65" selection-start-column="64" selection-end-line="65" selection-end-column="64" />
+          <folding>
+            <element signature="e#85#94#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/batch_processing/processMultipleFilesFun.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="184">
+          <caret line="97" column="58" lean-forward="false" selection-start-line="97" selection-start-column="58" selection-end-line="97" selection-end-column="58" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/gui/MWTrackerViewer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1830">
+          <caret line="140" column="34" lean-forward="true" selection-start-line="140" selection-start-column="34" selection-end-line="140" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_orient/checkHeadOrientation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="14" column="35" lean-forward="false" selection-start-line="14" selection-start-column="35" selection-end-line="14" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/compress/compressVideo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="24" column="15" lean-forward="true" selection-start-line="24" selection-start-column="15" selection-end-line="24" selection-end-column="15" />
+          <folding>
+            <element signature="e#85#94#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/gui/GetMaskParams.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="40" lean-forward="false" selection-start-line="15" selection-start-column="40" selection-end-line="15" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/feat_create/obtainFeatures.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="397">
+          <caret line="40" column="59" lean-forward="true" selection-start-line="40" selection-start-column="59" selection-end-line="40" selection-end-column="59" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/compress/processVideo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="28" column="34" lean-forward="true" selection-start-line="28" selection-start-column="34" selection-end-line="28" selection-end-column="34" />
+          <folding>
+            <element signature="e#88#99#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_create/getSkeletonsTables.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="23" lean-forward="true" selection-start-line="7" selection-start-column="23" selection-end-line="7" selection-end-column="23" />
+          <folding>
+            <element signature="e#171#180#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/contour_orient/correctVentralDorsal.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="47" lean-forward="false" selection-start-line="10" selection-start-column="47" selection-end-line="10" selection-end-column="47" />
+          <folding>
+            <element signature="e#0#11#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/batch_processing/batchProcHelperFunc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="24" column="34" lean-forward="true" selection-start-line="24" selection-start-column="34" selection-end-line="24" selection-end-column="34" />
+          <folding>
+            <element signature="e#85#94#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/batch_processing/AnalysisPoints.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1575">
+          <caret line="20" column="48" lean-forward="false" selection-start-line="20" selection-start-column="48" selection-end-line="20" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/getHeadTail.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/linearSkeleton.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-5250">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_create/zebrafishAnalysis/zebrafishSkeleton.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="20" column="0" lean-forward="true" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+          <folding>
+            <element signature="e#23#33#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/segWorm_cython.pyx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="32" column="4" lean-forward="false" selection-start-line="32" selection-start-column="4" selection-end-line="32" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/mainSegworm.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="20" column="57" lean-forward="false" selection-start-line="20" selection-start-column="57" selection-end-line="20" selection-end-column="57" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/gui/TrackerViewerAux.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="287">
+          <caret line="21" column="0" lean-forward="true" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker_GUI/MWConsole.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="13" column="0" lean-forward="true" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

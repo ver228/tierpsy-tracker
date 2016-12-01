@@ -5,7 +5,7 @@ Created on Tue Jun  9 12:59:25 2015
 @author: ajaver
 """
 import sys
-from MWTracker.batchProcessing.compressSingleWorker import compressSingleWorker
+from MWTracker.batch_processing.compressSingleWorker import compressSingleWorker
 
 
 if __name__ == '__main__':

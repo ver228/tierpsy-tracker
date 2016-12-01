@@ -7,7 +7,7 @@ else:
 
 
 import traceback
-from MWTracker.compressVideos.compressVideo import selectVideoReader
+from MWTracker.analysis.compress import selectVideoReader
 
 if __name__ == '__main__':
     print('HOLA')
