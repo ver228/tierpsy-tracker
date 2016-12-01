@@ -190,7 +190,7 @@ function install_opencv3_anaconda {
 }
 
 function compile_cython_files {
-	cd $MW_MAIN_DIR/MWTracker/trackWorms/segWormPython/cythonFiles/
+	cd $MW_MAIN_DIR/MWTracker/analysis/ske_create/segWormPython/cythonFiles/
 	make
 	make clean
 	cd $MW_MAIN_DIR

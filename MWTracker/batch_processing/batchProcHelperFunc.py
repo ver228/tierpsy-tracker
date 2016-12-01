@@ -79,37 +79,39 @@ def create_script(base_cmd, args, argkws):
 def getDefaultSequence(action, is_single_worm=False, use_skel_filter=True):
     assert any(action == x for x in ['Compress', 'Track', 'All'])
     if is_single_worm:
-        CHECKPOINTS_DFT = { 'Compress': ['compress',
-                                        'vid_subsample',
-                                        'compress_add_data'],
-                            'Track' : ['vid_subsample',
-                                        'traj_create',
-                                        'traj_join',
-                                        'ske_create',
-                                        'stage_aligment',
-                                        'ske_filt',
-                                        'ske_orient',
-                                        'int_profile',
-                                        'int_ske_orient',
-                                        'contour_orient',
-                                        'feat_create',
+        CHECKPOINTS_DFT = { 'Compress': ['COMPRESS',
+                                        'VID_SUBSAMPLE',
+                                        'COMPRESS_ADD_DATA'],
+                            'Track' : ['VID_SUBSAMPLE',
+                                        'TRAJ_CREATE',
+                                        'TRAJ_JOIN',
+                                        'SKE_INIT',
+                                        'SKE_CREATE',
+                                        'STAGE_ALIGMENT',
+                                        'SKE_FILT',
+                                        'SKE_ORIENT',
+                                        'INT_PROFILE',
+                                        'INT_SKE_ORIENT',
+                                        'CONTOUR_ORIENT',
+                                        'FEAT_CREATE',
                                         ]}
     else:
-        CHECKPOINTS_DFT = { 'Compress': ['compress',
-                                        'vid_subsample'],
-                            'Track' : ['vid_subsample',
-                                    'traj_create',
-                                    'traj_join',
-                                    'ske_create',
-                                    'ske_filt',
-                                    'ske_orient',
-                                    'int_profile',
-                                    'int_ske_orient',
-                                    'feat_create'
+        CHECKPOINTS_DFT = { 'Compress': ['COMPRESS',
+                                        'VID_SUBSAMPLE'],
+                            'Track' : ['VID_SUBSAMPLE',
+                                    'TRAJ_CREATE',
+                                    'TRAJ_JOIN',
+                                    'SKE_INIT',
+                                    'SKE_CREATE',
+                                    'SKE_FILT',
+                                    'SKE_ORIENT',
+                                    'INT_PROFILE',
+                                    'INT_SKE_ORIENT',
+                                    'FEAT_CREATE'
                                     ]}
     
     if not use_skel_filter:
-        CHECKPOINTS_DFT['Track'].remove('ske_filt')
+        CHECKPOINTS_DFT['Track'].remove('SKE_FILT')
     
     if action == 'All':
         points =  CHECKPOINTS_DFT['Compress'] + CHECKPOINTS_DFT['Track']

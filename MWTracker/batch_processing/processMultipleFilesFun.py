@@ -49,7 +49,7 @@ def compressMultipleFilesFun(
         is_copy_video,
         videos_list):
 
-    analysis_checkpoints = getDefaultSequence('Compress', 
+    analysis_checkpoints = getDefaultSequence('COMPRESS',
                                              is_single_worm=is_single_worm)
     
     walk_args = {'root_dir':video_dir_root, 
@@ -95,7 +95,7 @@ def trackMultipleFilesFun(
                                              is_single_worm=is_single_worm)
     if use_manual_join:
           #only execute the calculation of the manual features
-          analysis_checkpoints = analysis_checkpoints + ['feat_manual_create']
+          analysis_checkpoints = analysis_checkpoints + ['FEAT_MANUAL_CREATE']
           
     _removePointFromSide(analysis_checkpoints, force_start_point, 0)
     _removePointFromSide(analysis_checkpoints, end_point, -1)

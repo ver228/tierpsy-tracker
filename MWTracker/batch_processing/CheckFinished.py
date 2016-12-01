@@ -53,17 +53,17 @@ class CheckFinished(object):
         #I plan to check succesful processing using only provenance. I keep this for backwards compatibility.
         outf = lambda x : output_files[x][0]
         self._flag_funcs = {
-            'compress': partial(_checkFlagsFun, outf('compress'), '/mask', 1),
-            'compress_add_data': partial(_checkFlagsFun, outf('compress'), '/mask', 2),
-            'traj_create': partial(_checkFlagsFun, outf('traj_create'), '/plate_worms', 1),
-            'traj_join': partial(_checkFlagsFun, outf('traj_join'), '/plate_worms', 2),
-            'ske_create': partial(_checkFlagsFun, outf('ske_create'), '/skeleton', 1),
-            'ske_filt': partial(_checkFlagsFun, outf('ske_filt'), '/skeleton', 2),
-            'ske_orient': partial(_checkFlagsFun, outf('ske_orient'), '/skeleton', 3),
-            'int_profile': partial(_checkFlagsFun, outf('int_profile'), '/straighten_worm_intensity_median', 1),
-            'int_ske_orient': partial(_checkFlagsFun, outf('int_ske_orient'), '/skeleton', 4),
-            'feat_create': partial(_checkFlagsFun, outf('feat_create'), '/features_means', 1),
-            'feat_manual_create': partial(_checkFlagsFun, outf('feat_manual_create'), '/features_means', 1),
+            'COMPRESS': partial(_checkFlagsFun, outf('COMPRESS'), '/mask', 1),
+            'COMPRESS_ADD_DATA': partial(_checkFlagsFun, outf('COMPRESS'), '/mask', 2),
+            'TRAJ_CREATE': partial(_checkFlagsFun, outf('TRAJ_CREATE'), '/plate_worms', 1),
+            'TRAJ_JOIN': partial(_checkFlagsFun, outf('TRAJ_JOIN'), '/plate_worms', 2),
+            'SKE_CREATE': partial(_checkFlagsFun, outf('SKE_CREATE'), '/skeleton', 1),
+            'SKE_FILT': partial(_checkFlagsFun, outf('SKE_FILT'), '/skeleton', 2),
+            'SKE_ORIENT': partial(_checkFlagsFun, outf('SKE_ORIENT'), '/skeleton', 3),
+            'INT_PROFILE': partial(_checkFlagsFun, outf('INT_PROFILE'), '/straighten_worm_intensity_median', 1),
+            'INT_SKE_ORIENT': partial(_checkFlagsFun, outf('INT_SKE_ORIENT'), '/skeleton', 4),
+            'FEAT_CREATE': partial(_checkFlagsFun, outf('FEAT_CREATE'), '/features_means', 1),
+            'FEAT_MANUAL_CREATE': partial(_checkFlagsFun, outf('FEAT_MANUAL_CREATE'), '/features_means', 1),
         }
     
     def getUnfinishedPoints(self, checkpoints2process):

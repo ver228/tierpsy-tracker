@@ -6,6 +6,8 @@ Created on Thu Jun 25 12:44:07 2015
 """
 
 import json
+import os
+from MWTracker import AUX_FILES_DIR
 
 #deprecated variables that will be ignored
 deprecated_fields = ['has_timestamp', 'min_displacement']
@@ -47,7 +49,9 @@ dflt_param_list = [
     ('int_length_resampling', 131, 'length in pixels of the intensity maps'),
     ('int_max_gap_allowed_block', -1, 'maximum time gap allowed between valid intensity maps to be considered as belonging in the same group. Head/Tail correction by intensity.'),
     ('split_traj_time', 300, 'time in SECONDS that a trajectory will be subdivided to calculate the splitted features.'),
-    
+    ('roi_size', -1, ''),
+    ('filter_model_name', '', ''),
+
     #not tested (used for the zebra fish)
     ('use_background_subtraction', False, 'Flag to determine whether background should be subtracted from original frames.'),
     ('background_threshold', 1, 'Threshold value to use when applying background subtraction.'),
@@ -138,7 +142,9 @@ class tracker_param:
             zf_prune_retention,
             zf_test_width,
             zf_draw_width,
-            zf_auto_detect_tail_length):
+            zf_auto_detect_tail_length,
+            filter_model_name,
+            roi_size):
 
         if not isinstance(expected_fps, int):
             expected_fps = int(expected_fps)
@@ -206,20 +212,16 @@ class tracker_param:
             'min_track_size': min_track_size,
             'displacement_smooth_win': expected_fps + 1,
             'threshold_smooth_win': expected_fps * 20 + 1,
-            'roi_size': -1,
-            'analysis_type': analysis_type}
+            'roi_size': roi_size}
 
-        # trajectories2Skeletons
-        self.skeletons_param = {
-            'resampling_N': resampling_N,
-            'worm_midbody': (
-                0.33,
-                0.67),
-            'min_mask_area': min_area / 2,
+
+        assert os.path.exists(os.path.join(AUX_FILES_DIR, filter_model_name))
+        self.init_skel_param = {
             'smoothed_traj_param': self.smoothed_traj_param,
-            'strel_size': strel_size,
-            'analysis_type': analysis_type,
-            'zf_num_segments': zf_num_segments,
+            'filter_model_name' : filter_model_name
+            }
+
+        zf_skel_args = {'zf_num_segments': zf_num_segments,
             'zf_min_angle': zf_min_angle,
             'zf_max_angle': zf_max_angle,
             'zf_num_angles': zf_num_angles,
@@ -229,6 +231,17 @@ class tracker_param:
             'zf_test_width': zf_test_width,
             'zf_draw_width': zf_draw_width,
             'zf_auto_detect_tail_length': zf_auto_detect_tail_length}
+
+
+        # trajectories2Skeletons
+        self.skeletons_param = {
+            'resampling_N': resampling_N,
+            'worm_midbody': (0.33, 0.67),
+            'min_mask_area': min_area / 2,
+            'strel_size': strel_size,
+            'analysis_type': analysis_type,
+            'zf_skel_args' : zf_skel_args}
+            
 
         # correctHeadTail
         if max_gap_allowed_block < 0:

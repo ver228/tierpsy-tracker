@@ -8,19 +8,26 @@ Created on Mon Aug  8 17:24:27 2016
 import os
 from functools import partial
 
-from MWTracker.analysis.vid_subsample.createSampleVideo import createSampleVideo, getSubSampleVidName
 from MWTracker.analysis.compress.processVideo import processVideo, isGoodVideo
-from MWTracker.analysis.contour_orient.correctVentralDorsal import switchCntSingleWorm, hasExpCntInfo
-from MWTracker.analysis.int_ske_orient.correctHeadTailIntensity import correctHeadTailIntensity
 from MWTracker.analysis.compress_add_data.getAdditionalData import storeAdditionalDataSW, hasAdditionalFiles
-from MWTracker.analysis.feat_create.obtainFeatures import getWormFeaturesFilt, hasManualJoin
-from MWTracker.analysis.int_profile.getIntensityProfile import getIntensityProfile
+from MWTracker.analysis.vid_subsample.createSampleVideo import createSampleVideo, getSubSampleVidName
+
+from MWTracker.analysis.traj_create.getWormTrajectories import getWormTrajectories
+from MWTracker.analysis.traj_join.correctTrajectories import correctTrajectories
+
+from MWTracker.analysis.ske_init.processTrajectoryData import processTrajectoryData
 from MWTracker.analysis.ske_create.getSkeletonsTables import trajectories2Skeletons
 from MWTracker.analysis.ske_filt.getFilteredSkels import getFilteredSkels
 from MWTracker.analysis.ske_orient.checkHeadOrientation import correctHeadTail
+
 from MWTracker.analysis.stage_aligment.alignStageMotion import alignStageMotion, isGoodStageAligment
-from MWTracker.analysis.traj_create.getWormTrajectories import getWormTrajectories
-from MWTracker.analysis.traj_join.correctTrajectories import correctTrajectories
+
+from MWTracker.analysis.int_profile.getIntensityProfile import getIntensityProfile
+from MWTracker.analysis.int_ske_orient.correctHeadTailIntensity import correctHeadTailIntensity
+
+from MWTracker.analysis.contour_orient.correctVentralDorsal import switchCntSingleWorm, hasExpCntInfo
+from MWTracker.analysis.feat_create.obtainFeatures import getWormFeaturesFilt, hasManualJoin
+
 from MWTracker.batch_processing.CheckFinished import CheckFinished
 from MWTracker.helper.tracker_param import tracker_param
 
@@ -83,7 +90,7 @@ class AnalysisPoints(object):
         #STORE THE PROVENANCE TRACKING
         
         self.checkpoints = {
-            'compress' : {
+            'COMPRESS' : {
                 'func':processVideo,
                 'argkws' : {'video_file': fn['original_video'], 
                             'masked_image_file' : fn['masked_image'],
@@ -92,69 +99,81 @@ class AnalysisPoints(object):
                 'output_files': [fn['masked_image']],
                 'requirements' : [('can_read_video', partial(isGoodVideo, fn['original_video']))]
             },
-            'vid_subsample': {
+            'VID_SUBSAMPLE': {
                 'func':createSampleVideo,
                 'argkws' : {**{'masked_image_file': fn['masked_image'], 'sample_video_name':fn['subsample']}, 
                             **param.subsample_vid_param},
                 'input_files' : [fn['masked_image']],
                 'output_files': [fn['masked_image'], fn['subsample']],
-                'requirements' : ['compress']
+                'requirements' : ['COMPRESS']
             },
-            'traj_create': {
+            'TRAJ_CREATE': {
                 'func': getWormTrajectories,
                 'argkws': {**{'masked_image_file': fn['masked_image'], 'trajectories_file': fn['trajectories']},
                            **param.trajectories_param},
                 'input_files' : [fn['masked_image']],
                 'output_files': [fn['trajectories']],
-                'requirements' : ['compress']
+                'requirements' : ['COMPRESS']
             },
-            'traj_join': {
+            'TRAJ_JOIN': {
                 'func': correctTrajectories,
                 'argkws': {'trajectories_file': fn['trajectories'], 'is_single_worm': is_single_worm,
                            'join_traj_param': param.join_traj_param},
                 'input_files' : [fn['trajectories']],
                 'output_files': [fn['trajectories']],
-                'requirements' : ['traj_create']
+                'requirements' : ['TRAJ_CREATE']
             },
-            'ske_create': {
-                'func': trajectories2Skeletons,
-                'argkws': {**{'masked_image_file': fn['masked_image'], 'skeletons_file': fn['skeletons'],
-                              'trajectories_file': fn['trajectories']}, **param.skeletons_param},
-                'input_files' : [fn['trajectories'],fn['masked_image']],
+            'SKE_INIT': {
+                'func': processTrajectoryData,
+                'argkws': {**{'skeletons_file': fn['skeletons'], 
+                            'masked_image_file':fn['masked_image'],
+                            'trajectories_file': fn['trajectories']},
+                            **param.init_skel_param},
+
+                'input_files' : [fn['masked_image'], fn['trajectories']],
                 'output_files': [fn['skeletons']],
-                'requirements' : ['traj_join']
+                'requirements' : ['TRAJ_JOIN']
             },
-            'ske_orient': {
+            'SKE_CREATE': {
+                'func': trajectories2Skeletons,
+                'argkws': {**{'skeletons_file': fn['skeletons'], 
+                            'masked_image_file': fn['masked_image']}, 
+                            **param.skeletons_param},
+                'input_files' : [fn['masked_image']],
+                'output_files': [fn['skeletons']],
+                'requirements' : ['SKE_INIT']
+            },
+            'SKE_ORIENT': {
                 'func': correctHeadTail,
                 'argkws': {**{'skeletons_file': fn['skeletons']}, **param.head_tail_param},
                 'input_files' : [fn['skeletons']],
                 'output_files': [fn['skeletons']],
-                'requirements' : ['ske_create']
+                'requirements' : ['SKE_CREATE']
             },
-            'ske_filt': {
+            'SKE_FILT': {
                 'func': getFilteredSkels,
                 'argkws': {**{'skeletons_file': fn['skeletons']}, **param.feat_filt_param},
                 'input_files' : [fn['skeletons']],
                 'output_files': [fn['skeletons']],
-                'requirements' : ['ske_create']
+                'requirements' : ['SKE_CREATE']
             },
-            'int_profile': {
+            'INT_PROFILE': {
                 'func': getIntensityProfile,
                 'argkws': {**{'masked_image_file': fn['masked_image'], 'skeletons_file': fn['skeletons'],
                               'intensities_file': fn['intensities']}, **param.int_profile_param},
                 'input_files' : [fn['skeletons'],fn['masked_image']],
                 'output_files': [fn['intensities']],
-                'requirements' : ['ske_create']
+                'requirements' : ['SKE_CREATE']
             },
-            'int_ske_orient': {
+            'INT_SKE_ORIENT': {
                 'func': correctHeadTailIntensity,
                 'argkws': {**{'skeletons_file': fn['skeletons'], 'intensities_file': fn['intensities']},
                            **self.param.head_tail_int_param},
                 'input_files' : [fn['skeletons'], fn['intensities']],
                 'output_files': [fn['skeletons']],
-                'requirements' : ['int_profile']
+                'requirements' : ['INT_PROFILE']
             },
-            'feat_create': {
+            'FEAT_CREATE': {
                 'func': getWormFeaturesFilt,
                 'argkws': {'skeletons_file': fn['skeletons'], 'features_file': fn['features'],
                            **param.feats_param,
@@ -162,9 +181,9 @@ class AnalysisPoints(object):
                            },
                 'input_files' : [fn['skeletons']],
                 'output_files': [fn['features']],
-                'requirements' : ['ske_create']
+                'requirements' : ['SKE_CREATE']
             },
-            'feat_manual_create': {
+            'FEAT_MANUAL_CREATE': {
                 'func': getWormFeaturesFilt,
                 'argkws': {'skeletons_file': fn['skeletons'], 'features_file': fn['feat_manual'],
                            **param.feats_param,
@@ -172,43 +191,43 @@ class AnalysisPoints(object):
                            },
                 'input_files' : [fn['skeletons']],
                 'output_files': [fn['feat_manual']],
-                'requirements' : ['ske_create',
+                'requirements' : ['SKE_CREATE',
                                   ('has_manual_joined_traj', partial(hasManualJoin, fn['skeletons']))]
             },
         }
         
         # points only for single worm
         if is_single_worm:
-            self.checkpoints['compress_add_data'] = {
+            self.checkpoints['COMPRESS_ADD_DATA'] = {
                 'func':storeAdditionalDataSW,
                 'argkws' : {'video_file': fn['original_video'], 'masked_image_file': fn['masked_image']},
                 'input_files' : [fn['original_video'], fn['masked_image']],
                 'output_files': [fn['masked_image']],
-                'requirements' : ['compress']
+                'requirements' : ['COMPRESS']
             }
-            self.checkpoints['stage_aligment'] = {
+            self.checkpoints['STAGE_ALIGMENT'] = {
                 'func': alignStageMotion,
                 'argkws': {'masked_image_file': fn['masked_image'], 'skeletons_file': fn['skeletons']},
                 'input_files' : [fn['skeletons'], fn['masked_image']],
                 'output_files': [fn['skeletons']],
-                'requirements' : ['compress_add_data', 'ske_create']
+                'requirements' : ['COMPRESS_ADD_DATA', 'SKE_CREATE']
             }
-            self.checkpoints['contour_orient'] = {
+            self.checkpoints['CONTOUR_ORIENT'] = {
                 'func': switchCntSingleWorm,
                 'argkws': {'skeletons_file': fn['skeletons']},
                 'input_files' : [fn['skeletons']],
                 'output_files': [fn['skeletons']],
-                'requirements' : ['ske_create',
+                'requirements' : ['SKE_CREATE',
                                   ('has_contour_info', partial(hasExpCntInfo, fn['skeletons']))]
             }
             #make sure the file has the additional files, even before start compression
-            for key in ['compress', 'compress_add_data']:
+            for key in ['COMPRESS', 'COMPRESS_ADD_DATA']:
                 self.checkpoints[key]['requirements'] += \
             [('has_additional_files', partial(hasAdditionalFiles, fn['original_video']))]
             
             #make sure the stage was aligned correctly
-            for key in ['ske_filt', 'ske_orient', 'int_profile', 'int_ske_orient','feat_create']:
-                self.checkpoints['feat_create']['requirements'] += \
+            for key in ['SKE_FILT', 'SKE_ORIENT', 'INT_PROFILE', 'INT_SKE_ORIENT','FEAT_CREATE']:
+                self.checkpoints['FEAT_CREATE']['requirements'] += \
                         [('is_stage_aligned', partial(isGoodStageAligment, fn['skeletons']))]
             
             

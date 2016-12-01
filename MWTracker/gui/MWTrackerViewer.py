@@ -13,7 +13,7 @@ from MWTracker.gui.AnalysisProgress import WorkerFunQt, AnalysisProgress
 from MWTracker.gui.MWTrackerViewer_ui import Ui_MWTrackerViewer
 from MWTracker.gui.TrackerViewerAux import TrackerViewerAux_GUI
 from MWTracker.analysis.feat_create.obtainFeatures import getWormFeaturesFilt
-from MWTracker.analysis.ske_create.getSkeletonsTables import getWormROI
+from MWTracker.analysis.ske_create.helperIterROI import getWormROI
 from MWTracker.analysis.ske_filt.getFilteredSkels import getValidIndexes
 from MWTracker.helper.trackProvenance import getGitCommitHash, execThisPoint
 from MWTracker.helper.tracker_param import tracker_param
@@ -128,7 +128,7 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
 
         def featManualFun(point_argvs):
             commit_hash = getGitCommitHash()
-            execThisPoint('feat_manual_create', **point_argvs,
+            execThisPoint('FEAT_MANUAL_CREATE', **point_argvs,
                           commit_hash=commit_hash, cmd_original='GUI')
 
         trackpoint_worker = WorkerFunQt(

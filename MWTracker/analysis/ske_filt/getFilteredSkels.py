@@ -504,7 +504,6 @@ def getFilteredSkels(
     # check if the skeletonization finished succesfully
     with tables.File(skeletons_file, "r") as ske_file_id:
         skeleton_table = ske_file_id.get_node('/skeleton')
-        assert skeleton_table._v_attrs['has_finished'] >= 1
 
     #eliminate skeletons that do not match a decent head, tail and body ratio. Likely to be coils. Taken from Segworm.
     filterPossibleCoils(

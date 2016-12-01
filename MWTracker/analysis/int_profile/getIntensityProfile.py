@@ -14,7 +14,7 @@ from scipy.interpolate import RectBivariateSpline
 from scipy.interpolate import interp1d
 from scipy.signal import savgol_filter
 
-from MWTracker.analysis.ske_create.getSkeletonsTables import getWormROI
+from MWTracker.analysis.ske_create.helperIterROI import getWormROI
 from MWTracker.analysis.ske_filt.getFilteredSkels import saveModifiedTrajData
 from MWTracker.helper.misc import print_flush
 from MWTracker.helper.timeCounterStr import timeCounterStr
