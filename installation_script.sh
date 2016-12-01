@@ -57,30 +57,25 @@ function install_opencv3 {
 	#for some weird reason i have to execute make twice or it does not find the python libraries directory
 	for i in 1 2
 	do
-	cmake '"Unix Makefile"' -DBUILD_opencv_python3=ON \
-	-DBUILD_opencv_python2=OFF \
-	-DPYTHON_EXECUTABLE=`which python3` \
-	-DPYTHON3_INCLUDE_DIR=`python3 -c "import sysconfig; print(sysconfig.get_path('platinclude'))"` \
-	-DPYTHON3_LIBRARY=`python3 -c "import sysconfig; print(sysconfig.get_path('platstdlib'))"` \
-	-DPYTHON3_PACKAGES_PATH=`python3 -c "import sysconfig; print(sysconfig.get_path('platlib'))"` \
-	-DPYTHON3_NUMPY_INCLUDE_DIRS=`python3 -c "from numpy.distutils.misc_util import get_numpy_include_dirs; print(get_numpy_include_dirs()[0])"` \
-	-DBUILD_TIFF=ON 
-	-DBUILD_opencv_java=OFF 
-	-DWITH_CUDA=OFF 
-	-DENABLE_AVX=ON 
-	-DWITH_OPENGL=ON 
-	-DWITH_OPENCL=ON \
-	-DWITH_IPP=ON \
-	-DWITH_TBB=ON \
-	-DWITH_EIGEN=ON \
-	-DWITH_V4L=ON \
-	-DBUILD_TESTS=OFF \ 
-	-DBUILD_PERF_TESTS=OFF \
-	-DWITH_QT=OFF \
-	-DINSTALL_PYTHON_EXAMPLES=ON \
-	-D INSTALL_C_EXAMPLES=OFF \
-	-DCMAKE_BUILD_TYPE=RELEASE \
-	..
+		cmake '"Unix Makefile"' -DBUILD_opencv_python3=ON \
+		-DBUILD_opencv_python2=OFF \
+		-DPYTHON_EXECUTABLE=`which python3` \
+		-DPYTHON3_INCLUDE_DIR=`python3 -c "import sysconfig; print(sysconfig.get_path('platinclude'))"` \
+		-DPYTHON3_LIBRARY=`python3 -c "import sysconfig; print(sysconfig.get_path('platstdlib'))"` \
+		-DPYTHON3_PACKAGES_PATH=`python3 -c "import sysconfig; print(sysconfig.get_path('platlib'))"` \
+		-DPYTHON3_NUMPY_INCLUDE_DIRS=`python3 -c "from numpy.distutils.misc_util import get_numpy_include_dirs; print(get_numpy_include_dirs()[0])"` \
+		-DBUILD_TIFF=ON \
+		-DWITH_IPP=ON \
+		-DWITH_TBB=ON \
+		-DWITH_EIGEN=ON \
+		-DWITH_V4L=ON \
+		-DBUILD_TESTS=OFF \
+		-DBUILD_PERF_TESTS=OFF \
+		-DWITH_QT=OFF \
+		-DINSTALL_PYTHON_EXAMPLES=ON \
+		-D INSTALL_C_EXAMPLES=OFF \
+		-DCMAKE_BUILD_TYPE=RELEASE \
+		..
 	done
 	make -j24
 	make install
