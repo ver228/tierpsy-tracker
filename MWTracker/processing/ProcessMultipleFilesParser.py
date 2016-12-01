@@ -1,7 +1,7 @@
 import argparse
 import os
 
-from MWTracker.batch_processing.batchProcHelperFunc import getDefaultSequence
+from MWTracker.processing.batchProcHelperFunc import getDefaultSequence
 
 class BaseMultipleFilesParser(argparse.ArgumentParser):
     def __init__(self, description, dflt_vals):

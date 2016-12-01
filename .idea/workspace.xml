@@ -2,14 +2,25 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="09be277a-0def-4c61-9210-bf3a0766416c" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/codeStyleSettings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/AnalysisPoints.py" afterPath="$PROJECT_DIR$/MWTracker/batch_processing/AnalysisPoints.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/CheckFinished.py" afterPath="$PROJECT_DIR$/MWTracker/batch_processing/CheckFinished.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/batchProcHelperFunc.py" afterPath="$PROJECT_DIR$/MWTracker/batch_processing/batchProcHelperFunc.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/processMultipleFilesFun.py" afterPath="$PROJECT_DIR$/MWTracker/batch_processing/processMultipleFilesFun.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/gui/MWTrackerViewer.py" afterPath="$PROJECT_DIR$/MWTracker/gui/MWTrackerViewer.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/installation_script.sh" afterPath="$PROJECT_DIR$/installation_script.sh" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/AnalysisPoints.py" afterPath="$PROJECT_DIR$/MWTracker/processing/AnalysisPoints.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/CheckFilesForProcessing.py" afterPath="$PROJECT_DIR$/MWTracker/processing/CheckFilesForProcessing.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/CheckFinished.py" afterPath="$PROJECT_DIR$/MWTracker/processing/CheckFinished.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/ProcessMultipleFilesParser.py" afterPath="$PROJECT_DIR$/MWTracker/processing/ProcessMultipleFilesParser.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/ProcessWormsLocal.py" afterPath="$PROJECT_DIR$/MWTracker/processing/ProcessWormsLocal.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/ProcessWormsWorker.py" afterPath="$PROJECT_DIR$/MWTracker/processing/ProcessWormsWorker.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/__init__.py" afterPath="$PROJECT_DIR$/MWTracker/processing/__init__.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/batchProcHelperFunc.py" afterPath="$PROJECT_DIR$/MWTracker/processing/batchProcHelperFunc.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/processMultipleFilesFun.py" afterPath="$PROJECT_DIR$/MWTracker/processing/processMultipleFilesFun.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/tests/test_compress_mult.py" afterPath="$PROJECT_DIR$/MWTracker/processing/tests/test_compress_mult.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/tests/test_mult_cmd.py" afterPath="$PROJECT_DIR$/MWTracker/processing/tests/test_mult_cmd.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/tests/test_process.py" afterPath="$PROJECT_DIR$/MWTracker/processing/tests/test_process.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/gui/AnalysisProgress.py" afterPath="$PROJECT_DIR$/MWTracker/gui/AnalysisProgress.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/gui/BatchProcessing.py" afterPath="$PROJECT_DIR$/MWTracker/gui/BatchProcessing.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/gui/GetMaskParams.py" afterPath="$PROJECT_DIR$/MWTracker/gui/GetMaskParams.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd_scripts/compressMultipleFiles.py" afterPath="$PROJECT_DIR$/cmd_scripts/compressMultipleFiles.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd_scripts/trackMultipleFiles.py" afterPath="$PROJECT_DIR$/cmd_scripts/trackMultipleFiles.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/create_binaries/scripts/compressSingleWorker.py" afterPath="$PROJECT_DIR$/create_binaries/scripts/compressSingleWorker.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/create_binaries/scripts/trackSingleWorker.py" afterPath="$PROJECT_DIR$/create_binaries/scripts/trackSingleWorker.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -28,10 +39,10 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file leaf-file-name="AnalysisPoints.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MWTracker/batch_processing/AnalysisPoints.py">
+        <entry file="file://$PROJECT_DIR$/MWTracker/processing/AnalysisPoints.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2656">
-              <caret line="166" column="12" lean-forward="false" selection-start-line="166" selection-start-column="12" selection-end-line="166" selection-end-column="12" />
+            <state relative-caret-position="2384">
+              <caret line="185" column="12" lean-forward="false" selection-start-line="185" selection-start-column="12" selection-end-line="185" selection-end-column="12" />
               <folding>
                 <element signature="e#86#95#0" expanded="true" />
               </folding>
@@ -42,7 +53,7 @@
       <file leaf-file-name="MWTrackerViewer.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/MWTracker/gui/MWTrackerViewer.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="808">
+            <state relative-caret-position="1744">
               <caret line="127" column="0" lean-forward="false" selection-start-line="127" selection-start-column="0" selection-end-line="127" selection-end-column="0" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
@@ -54,21 +65,11 @@
       <file leaf-file-name="helperIterROI.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_create/helperIterROI.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="352">
+            <state relative-caret-position="336">
               <caret line="26" column="31" lean-forward="false" selection-start-line="26" selection-start-column="31" selection-end-line="26" selection-end-column="31" />
               <folding>
                 <element signature="e#109#122#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="getSkeletonsTables2.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_create/getSkeletonsTables2.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -86,8 +87,8 @@
       <file leaf-file-name="filterTrajectModel.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_init/filterTrajectModel.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="208">
-              <caret line="13" column="48" lean-forward="false" selection-start-line="13" selection-start-column="48" selection-end-line="13" selection-end-column="48" />
+            <state relative-caret-position="336">
+              <caret line="30" column="48" lean-forward="false" selection-start-line="30" selection-start-column="48" selection-end-line="30" selection-end-column="48" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -96,7 +97,7 @@
         </entry>
       </file>
       <file leaf-file-name="CheckFinished.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MWTracker/batch_processing/CheckFinished.py">
+        <entry file="file://$PROJECT_DIR$/MWTracker/processing/CheckFinished.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="992">
               <caret line="65" column="63" lean-forward="false" selection-start-line="65" selection-start-column="63" selection-end-line="65" selection-end-column="63" />
@@ -126,7 +127,7 @@
         </entry>
       </file>
       <file leaf-file-name="processMultipleFilesFun.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MWTracker/batch_processing/processMultipleFilesFun.py">
+        <entry file="file://$PROJECT_DIR$/MWTracker/processing/processMultipleFilesFun.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1456">
               <caret line="97" column="57" lean-forward="false" selection-start-line="97" selection-start-column="57" selection-end-line="97" selection-end-column="57" />
@@ -215,7 +216,6 @@
         <option value="$PROJECT_DIR$/MWTracker/analysis/compress/compressVideo.py" />
         <option value="$PROJECT_DIR$/MWTracker/analysis/feat_create/obtainFeatures.py" />
         <option value="$PROJECT_DIR$/MWTracker/analysis/compress/processVideo.py" />
-        <option value="$PROJECT_DIR$/MWTracker/analysis/ske_create/getSkeletonsTables.py" />
         <option value="$PROJECT_DIR$/MWTracker/gui/TrackerViewerAux.py" />
         <option value="$PROJECT_DIR$/MWTracker_GUI/MWConsole.py" />
         <option value="$PROJECT_DIR$/MWTracker/analysis/ske_create/zebrafishAnalysis/zebrafishSkeleton.py" />
@@ -227,11 +227,12 @@
         <option value="$PROJECT_DIR$/MWTracker/analysis/ske_create/helperIterROI.py" />
         <option value="$PROJECT_DIR$/MWTracker/analysis/ske_init/processTrajectoryData.py" />
         <option value="$PROJECT_DIR$/MWTracker/analysis/ske_init/filterTrajectModel.py" />
+        <option value="$PROJECT_DIR$/MWTracker/analysis/ske_create/getSkeletonsTables.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="402" />
+    <option name="x" value="476" />
     <option name="y" value="23" />
     <option name="width" value="1400" />
     <option name="height" value="937" />
@@ -254,8 +255,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -324,6 +323,8 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -522,10 +523,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="402" y="23" width="1400" height="937" extended-state="0" />
-    <editor active="true" />
+    <frame x="476" y="23" width="1400" height="937" extended-state="6" />
+    <editor active="false" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -561,7 +562,39 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/MWTracker/batch_processing/AnalysisPoints.py">
+    <entry file="file://$PROJECT_DIR$/MWTracker/processing/CheckFinished.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="992">
+          <caret line="65" column="63" lean-forward="false" selection-start-line="65" selection-start-column="63" selection-end-line="65" selection-end-column="63" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/feat_create/obtainFeatures.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="304">
+          <caret line="26" column="24" lean-forward="false" selection-start-line="26" selection-start-column="24" selection-end-line="26" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/vid_subsample/createSampleVideo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="192">
+          <caret line="12" column="24" lean-forward="false" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/processing/processMultipleFilesFun.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1456">
+          <caret line="97" column="57" lean-forward="false" selection-start-line="97" selection-start-column="57" selection-end-line="97" selection-end-column="57" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/processing/AnalysisPoints.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2656">
           <caret line="166" column="12" lean-forward="false" selection-start-line="166" selection-start-column="12" selection-end-line="166" selection-end-column="12" />
@@ -591,7 +624,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MWTracker/batch_processing/CheckFinished.py">
+    <entry file="file://$PROJECT_DIR$/MWTracker/processing/CheckFinished.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="992">
           <caret line="65" column="63" lean-forward="false" selection-start-line="65" selection-start-column="63" selection-end-line="65" selection-end-column="63" />
@@ -599,11 +632,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MWTracker/batch_processing/batchProcHelperFunc.py">
+    <entry file="file://$PROJECT_DIR$/MWTracker/processing/batchProcHelperFunc.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1680">
           <caret line="107" column="48" lean-forward="false" selection-start-line="107" selection-start-column="37" selection-end-line="107" selection-end-column="48" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -623,7 +655,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MWTracker/batch_processing/processMultipleFilesFun.py">
+    <entry file="file://$PROJECT_DIR$/MWTracker/processing/processMultipleFilesFun.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1456">
           <caret line="97" column="57" lean-forward="false" selection-start-line="97" selection-start-column="57" selection-end-line="97" selection-end-column="57" />
@@ -701,21 +733,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MWTracker/batch_processing/ProcessMultipleFilesParser.py">
+    <entry file="file://$PROJECT_DIR$/MWTracker/processing/ProcessMultipleFilesParser.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1575">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MWTracker/batch_processing/ProcessWormsLocal.py">
+    <entry file="file://$PROJECT_DIR$/MWTracker/processing/ProcessWormsLocal.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2310">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MWTracker/batch_processing/ProcessWormsWorker.py">
+    <entry file="file://$PROJECT_DIR$/MWTracker/processing/ProcessWormsWorker.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1006">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -814,11 +846,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MWTracker/batch_processing/batchProcHelperFunc.py">
+    <entry file="file://$PROJECT_DIR$/MWTracker/processing/batchProcHelperFunc.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1680">
           <caret line="107" column="48" lean-forward="false" selection-start-line="107" selection-start-column="37" selection-end-line="107" selection-end-column="48" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -845,17 +876,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MWTracker/batch_processing/AnalysisPoints.py">
+    <entry file="file://$PROJECT_DIR$/MWTracker/processing/AnalysisPoints.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2656">
-          <caret line="166" column="12" lean-forward="false" selection-start-line="166" selection-start-column="12" selection-end-line="166" selection-end-column="12" />
+        <state relative-caret-position="2384">
+          <caret line="185" column="12" lean-forward="false" selection-start-line="185" selection-start-column="12" selection-end-line="185" selection-end-column="12" />
           <folding>
             <element signature="e#86#95#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MWTracker/batch_processing/CheckFinished.py">
+    <entry file="file://$PROJECT_DIR$/MWTracker/processing/CheckFinished.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="992">
           <caret line="65" column="63" lean-forward="false" selection-start-line="65" selection-start-column="63" selection-end-line="65" selection-end-column="63" />
@@ -863,7 +894,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MWTracker/batch_processing/processMultipleFilesFun.py">
+    <entry file="file://$PROJECT_DIR$/MWTracker/processing/processMultipleFilesFun.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1456">
           <caret line="97" column="57" lean-forward="false" selection-start-line="97" selection-start-column="57" selection-end-line="97" selection-end-column="57" />
@@ -875,16 +906,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="704">
           <caret line="44" column="27" lean-forward="false" selection-start-line="44" selection-start-column="27" selection-end-line="44" selection-end-column="27" />
-          <folding>
-            <element signature="e#108#126#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_init/filterTrajectModel.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="208">
-          <caret line="13" column="48" lean-forward="false" selection-start-line="13" selection-start-column="48" selection-end-line="13" selection-end-column="48" />
+        <state relative-caret-position="336">
+          <caret line="30" column="48" lean-forward="false" selection-start-line="30" selection-start-column="48" selection-end-line="30" selection-end-column="48" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
@@ -893,7 +921,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/MWTracker/gui/MWTrackerViewer.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="808">
+        <state relative-caret-position="1744">
           <caret line="127" column="0" lean-forward="false" selection-start-line="127" selection-start-column="0" selection-end-line="127" selection-end-column="0" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
@@ -903,7 +931,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_create/helperIterROI.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
+        <state relative-caret-position="336">
           <caret line="26" column="31" lean-forward="false" selection-start-line="26" selection-start-column="31" selection-end-line="26" selection-end-column="31" />
           <folding>
             <element signature="e#109#122#0" expanded="true" />

@@ -7,9 +7,9 @@ Created on Tue Jun  9 15:12:48 2015
 
 import os
 from MWTracker.helper.timeCounterStr import timeCounterStr
-from MWTracker.batch_processing.batchProcHelperFunc import create_script
-from MWTracker.batch_processing.ProcessWormsLocal import SCRIPT_LOCAL
-from MWTracker.batch_processing.AnalysisPoints import AnalysisPoints
+from MWTracker.processing.batchProcHelperFunc import create_script
+from MWTracker.processing.ProcessWormsLocal import SCRIPT_LOCAL
+from MWTracker.processing.AnalysisPoints import AnalysisPoints
 
 
 class CheckFilesForProcessing(object):

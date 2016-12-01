@@ -10,9 +10,9 @@ import datetime
 import shutil
 
 from MWTracker.helper.misc import print_flush
-from MWTracker.batch_processing.AnalysisPoints import AnalysisPoints
-from MWTracker.batch_processing.ProcessWormsWorker import ProcessWormsWorkerParser, ProcessWormsWorker, SCRIPT_WORKER
-from MWTracker.batch_processing.batchProcHelperFunc import create_script, getRealPathName
+from MWTracker.processing.AnalysisPoints import AnalysisPoints
+from MWTracker.processing.ProcessWormsWorker import ProcessWormsWorkerParser, ProcessWormsWorker, SCRIPT_WORKER
+from MWTracker.processing.batchProcHelperFunc import create_script, getRealPathName
 
 SCRIPT_LOCAL = getRealPathName(__file__)
 

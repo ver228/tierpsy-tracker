@@ -15,8 +15,8 @@ from MWTracker.gui.GetAllParameters import GetAllParameters
 from MWTracker.gui.GetMaskParams_ui import Ui_GetMaskParams
 from MWTracker.gui.HDF5VideoPlayer import lineEditDragDrop, ViewsWithZoom, setChildrenFocusPolicy
 from MWTracker.analysis.compress import backgroundSubtraction
-from MWTracker.batch_processing.ProcessWormsWorker import ProcessWormsWorker
-from MWTracker.batch_processing.batchProcHelperFunc import getDefaultSequence
+from MWTracker.processing.ProcessWormsWorker import ProcessWormsWorker
+from MWTracker.processing.batchProcHelperFunc import getDefaultSequence
 from MWTracker.helper.tracker_param import tracker_param
 
 

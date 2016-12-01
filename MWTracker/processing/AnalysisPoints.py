@@ -28,7 +28,7 @@ from MWTracker.analysis.int_ske_orient.correctHeadTailIntensity import correctHe
 from MWTracker.analysis.contour_orient.correctVentralDorsal import switchCntSingleWorm, hasExpCntInfo
 from MWTracker.analysis.feat_create.obtainFeatures import getWormFeaturesFilt, hasManualJoin
 
-from MWTracker.batch_processing.CheckFinished import CheckFinished
+from MWTracker.processing.CheckFinished import CheckFinished
 from MWTracker.helper.tracker_param import tracker_param
 
 

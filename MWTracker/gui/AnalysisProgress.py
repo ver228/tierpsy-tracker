@@ -140,7 +140,7 @@ def dumfun(N):
 
 
 if __name__ == '__main__':
-    from MWTracker.batch_processing.trackSingleWorker import checkpoint
+    from MWTracker.processing.trackSingleWorker import checkpoint
 
     compress_argvs = {
         'video_file': '/Users/ajaver/OneDrive - Imperial College London/MWTracker/Tests/test_1/RawVideos/Capture_Ch1_18062015_140908.mjpg',

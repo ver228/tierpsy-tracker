@@ -4,14 +4,14 @@ import json
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 from PyQt5.QtCore import Qt
 
-from MWTracker.batch_processing.processMultipleFilesFun import processMultipleFiles, getResultsDir
-from MWTracker.batch_processing.batchProcHelperFunc import getDefaultSequence
+from MWTracker.processing.processMultipleFilesFun import processMultipleFiles, getResultsDir
+from MWTracker.processing.batchProcHelperFunc import getDefaultSequence
 
 from MWTracker.gui.AnalysisProgress import AnalysisProgress, WorkerFunQt
 from MWTracker.gui.HDF5VideoPlayer import lineEditDragDrop
 from MWTracker.gui.BatchProcessing_ui import Ui_BatchProcessing
 
-from MWTracker.batch_processing.ProcessMultipleFilesParser import CompressMultipleFilesParser, TrackMultipleFilesParser
+from MWTracker.processing.ProcessMultipleFilesParser import CompressMultipleFilesParser, TrackMultipleFilesParser
 compress_dflt_vals = CompressMultipleFilesParser.dflt_vals
 track_dflt_vals = TrackMultipleFilesParser.dflt_vals
 

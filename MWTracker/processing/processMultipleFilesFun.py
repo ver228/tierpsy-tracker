@@ -8,9 +8,9 @@ import os
 
 from MWTracker.helper.runMultiCMD import runMultiCMD, print_cmd_list
 
-from MWTracker.batch_processing.ProcessWormsLocal import ProcessWormsLocalParser
-from MWTracker.batch_processing.batchProcHelperFunc import getDefaultSequence, walkAndFindValidFiles
-from MWTracker.batch_processing.CheckFilesForProcessing import CheckFilesForProcessing
+from MWTracker.processing.ProcessWormsLocal import ProcessWormsLocalParser
+from MWTracker.processing.batchProcHelperFunc import getDefaultSequence, walkAndFindValidFiles
+from MWTracker.processing.CheckFilesForProcessing import CheckFilesForProcessing
 
 def processMultipleFiles(walk_args, check_args,
                          videos_list, only_summary, max_num_process, refresh_time):
