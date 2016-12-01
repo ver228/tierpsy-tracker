@@ -24,7 +24,8 @@ function install_homebrew_python {
 
 	#python dependencies
 	pip3 install -U numpy tables pandas h5py scipy scikit-learn \
-	scikit-image seaborn xlrd gitpython cython matplotlib pyqt5
+	scikit-image seaborn xlrd gitpython cython matplotlib pyqt5 \
+	keras tensorflow
 	
 	#i prefer to install matplotlib and numpy with homebrew it gives less problems of compatilibity down the road
 	#brew install homebrew/python/matplotlib --with-python3
@@ -48,7 +49,7 @@ function install_opencv3 {
 	fi
 	
 	cd $OPENCV_DIR
-	git checkout -f $OPENCV_VER
+	git checkout -f HEAD #$OPENCV_VER
 	
 	#remove build directory if it existed before
 	rm -rf build || : 
@@ -171,7 +172,7 @@ function install_anaconda {
 
 	conda install -y anaconda-client conda-build numpy matplotlib pytables pandas \
 	h5py scipy scikit-learn scikit-image seaborn xlrd cython
-	pip install gitpython pyqt5
+	pip install gitpython pyqt5 keras
 
 	install_opencv3_anaconda
 }
