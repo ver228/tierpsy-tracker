@@ -15,8 +15,10 @@ def shift_and_normalize(data):
     data_m = data.view(np.ma.MaskedArray)
     data_m.mask = data==0
     #sub_d = np.ma.median(data_m, axis=(1,2))
-    sub_d = np.squeeze(np.percentile(data, [95], axis=(1,2))) #let's use the 95th as the value of the background
+    sub_d = np.percentile(data, [95], axis=(1,2)) #let's use the 95th as the value of the background
+    sub_d = np.squeeze(sub_d, axis=0) #remove extra dimension imposed by np.percentile
     data_m -= sub_d[:, None, None]
+    
     data /= 255
     return data
 

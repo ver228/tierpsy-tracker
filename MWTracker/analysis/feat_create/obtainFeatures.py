@@ -300,8 +300,7 @@ def getWormFeaturesFilt(
         # initialize rec array with the averaged features of each worm
         stats_features_df = {stat:np.full(tot_worms, np.nan, dtype=wStats.feat_avg_dtype) for stat in FUNC_FOR_DIV}
     
-        return( header_timeseries, table_timeseries, group_events, 
-               skeletons_array, stats_features_df)
+        return header_timeseries, table_timeseries, group_events, skeletons_array, stats_features_df
     
     progress_timer = timeCounterStr('')
     def _displayProgress(n):
@@ -331,16 +330,24 @@ def getWormFeaturesFilt(
     # function to calculate the progress time. Useful to display progress
     base_name = skeletons_file.rpartition('.')[0].rpartition(os.sep)[-1].rpartition('_')[0]
     
-    #total number of worms
-    tot_worms = len(good_traj_index)
-    
-    # initialize by getting the specs data subdivision
-    wStats = WormStatsClass()
-    all_splitted_feats = {stat:[] for stat in FUNC_FOR_DIV}
-    
     with tables.File(features_file, 'w') as features_fid:
+
+        #total number of worms
+        tot_worms = len(good_traj_index)
+        if tot_worms == 0:
+            print_flush(base_name + ' No valid worms found to calculate features. Creating empty file.')
+            return
+
+        # initialize by getting the specs data subdivision
+        wStats = WormStatsClass()
+        all_splitted_feats = {stat:[] for stat in FUNC_FOR_DIV}
+    
+
+        #initialize file
         header_timeseries, table_timeseries, group_events, \
         skeletons_array, stats_features_df = _iniFileGroups()
+
+
 
         _displayProgress(0)
         # start to calculate features for each worm trajectory
@@ -427,10 +434,6 @@ def getWormFeaturesFilt(
             feat_stat_split = features_fid.create_table(
                 '/', 'features_{}_split'.format(stat), obj=np.array(all_splitted_feats[stat]), filters=TABLE_FILTERS)
             feat_stat_split._v_attrs['split_traj_frames'] = split_traj_frames
-        
-        # flag and report a success finish
-        features_fid.get_node('/', 'features_means')._v_attrs['has_finished'] = 1
-        
         
         print_flush(
             base_name +
