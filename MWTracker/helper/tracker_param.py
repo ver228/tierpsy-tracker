@@ -214,8 +214,8 @@ class tracker_param:
             'threshold_smooth_win': expected_fps * 20 + 1,
             'roi_size': roi_size}
 
-
-        assert os.path.exists(os.path.join(AUX_FILES_DIR, filter_model_name))
+        if filter_model_name:
+            assert os.path.exists(os.path.join(AUX_FILES_DIR, filter_model_name))
         self.init_skel_param = {
             'smoothed_traj_param': self.smoothed_traj_param,
             'filter_model_name' : filter_model_name

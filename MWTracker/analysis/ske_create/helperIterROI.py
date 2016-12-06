@@ -109,7 +109,7 @@ def generateMoviesROI(masked_file,
                     trajectories_data,
                     roi_size = -1, 
                     progress_prefix = '',
-                    progress_refresh_rate=500):
+                    progress_refresh_rate_s=20):
     
     traj_group_by_frame = trajectories_data.groupby('frame_number')
     
@@ -117,6 +117,13 @@ def generateMoviesROI(masked_file,
     
     
     with tables.File(masked_file, 'r') as fid:
+
+        try:
+            expected_fps = mask_fid.get_node('/', 'mask')._v_attrs['expected_fps']
+        except:
+            expected_fps = 25
+        progress_refresh_rate = expected_fps*progress_refresh_rate_s
+
         img_data = fid.get_node('/mask')
         for ii, (current_frame, frame_data) in enumerate(traj_group_by_frame):
             img = img_data[current_frame]
@@ -127,5 +134,5 @@ def generateMoviesROI(masked_file,
             if current_frame % progress_refresh_rate == 0:
                 print_flush(progress_time.getStr(current_frame))
             
-        
+        print_flush(progress_time.getStr(current_frame))
 

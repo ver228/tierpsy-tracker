@@ -507,5 +507,6 @@ def getWormTrajectories(
         # flag used to determine if the function finished correctly
         feature_fid.get_node('/plate_worms')._v_attrs['has_finished'] = 1
 
+    progress_str = progressTime.getStr(frame_number)
     print(base_name + ' ' + progress_str)
     sys.stdout.flush()

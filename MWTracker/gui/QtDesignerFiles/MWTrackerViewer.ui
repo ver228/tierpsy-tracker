@@ -308,7 +308,46 @@
       <property name="sizeConstraint">
        <enum>QLayout::SetMinimumSize</enum>
       </property>
-      <item row="0" column="5" colspan="6">
+      <item row="1" column="9">
+       <widget class="QCheckBox" name="checkBox_ROI1">
+        <property name="text">
+         <string>Skeleton</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="11">
+       <widget class="QPushButton" name="pushButton_ROI1_FF">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>&gt;&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="5">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Preferred</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>600</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="0" column="7" colspan="6">
        <widget class="QLabel" name="wormCanvas1">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
@@ -327,21 +366,21 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="5">
+      <item row="3" column="7">
        <widget class="QRadioButton" name="radioButton_ROI2">
         <property name="text">
          <string/>
         </property>
        </widget>
       </item>
-      <item row="4" column="9">
+      <item row="3" column="11">
        <widget class="QPushButton" name="pushButton_ROI2_FF">
         <property name="text">
          <string>&gt;&gt;</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="7">
+      <item row="3" column="9">
        <widget class="QCheckBox" name="checkBox_ROI2">
         <property name="text">
          <string>Skeleton</string>
@@ -351,24 +390,14 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="7">
-       <widget class="QCheckBox" name="checkBox_ROI1">
-        <property name="text">
-         <string>Skeleton</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="6">
+      <item row="1" column="8">
        <widget class="QComboBox" name="comboBox_ROI1">
         <property name="editable">
          <bool>true</bool>
         </property>
        </widget>
       </item>
-      <item row="2" column="5" colspan="6">
+      <item row="2" column="7" colspan="6">
        <widget class="QLabel" name="wormCanvas2">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
@@ -387,7 +416,7 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="5">
+      <item row="1" column="7">
        <widget class="QRadioButton" name="radioButton_ROI1">
         <property name="text">
          <string/>
@@ -397,21 +426,21 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="6">
+      <item row="3" column="8">
        <widget class="QComboBox" name="comboBox_ROI2">
         <property name="editable">
          <bool>true</bool>
         </property>
        </widget>
       </item>
-      <item row="1" column="8">
+      <item row="1" column="10">
        <widget class="QPushButton" name="pushButton_ROI1_RW">
         <property name="text">
          <string>&lt;&lt;</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="2">
+      <item row="3" column="3">
        <widget class="QComboBox" name="comboBox_labelType">
         <item>
          <property name="text">
@@ -425,43 +454,7 @@
         </item>
        </widget>
       </item>
-      <item row="4" column="3">
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Preferred</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>600</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="4" column="4">
-       <widget class="QPushButton" name="pushButton_feats">
-        <property name="text">
-         <string>Calculate Features</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="9">
-       <widget class="QPushButton" name="pushButton_ROI1_FF">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>&gt;&gt;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0" rowspan="3" colspan="5">
+      <item row="0" column="0" rowspan="3" colspan="7">
        <widget class="QGraphicsView" name="mainGraphicsView">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Ignored" vsizetype="Minimum">
@@ -492,14 +485,21 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="8">
+      <item row="3" column="6">
+       <widget class="QPushButton" name="pushButton_feats">
+        <property name="text">
+         <string>Calculate Features</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="10">
        <widget class="QPushButton" name="pushButton_ROI2_RW">
         <property name="text">
          <string>&lt;&lt;</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
+      <item row="3" column="1">
        <widget class="QComboBox" name="comboBox_showLabels">
         <item>
          <property name="text">
@@ -514,6 +514,20 @@
         <item>
          <property name="text">
           <string>Filtered Labels</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QComboBox" name="comboBox">
+        <item>
+         <property name="text">
+          <string>Boxes</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Trajectories</string>
          </property>
         </item>
        </widget>

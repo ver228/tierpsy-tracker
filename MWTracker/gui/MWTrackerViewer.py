@@ -5,8 +5,8 @@ from functools import partial
 import numpy as np
 import pandas as pd
 import tables
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QPainter, QFont, QPen
+from PyQt5.QtCore import Qt, QPointF
+from PyQt5.QtGui import QPixmap, QPainter, QFont, QPen, QPolygonF, QColor
 from PyQt5.QtWidgets import QApplication, QMessageBox
 
 from MWTracker.gui.AnalysisProgress import WorkerFunQt, AnalysisProgress
@@ -34,6 +34,8 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         self.fid = -1
         self.image_group = -1
         self.trajectories_data = -1
+        self.traj_for_plot = {}
+
 
         self.worm_index_roi1 = 1
         self.worm_index_roi2 = 1
@@ -232,7 +234,7 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         with tables.File(self.vfilename, 'r') as mask_fid:
             try:
                 self.expected_fps = int(mask_fid.get_node('/mask')._v_attrs['expected_fps'])
-            except (tables.exceptions.NoSuchNodeError, AttributeError):
+            except (tables.exceptions.NoSuchNodeError, AttributeError, KeyError):
                 self.expected_fps = self.param_default.expected_fps
 
         #TODO: THIS IS NOT REALLY THE INDEX I USE IN THE FEATURES FILES. I NEED A MORE CLEVER WAY TO SEE WHAT I AM REALLY FILTERING.
@@ -261,7 +263,7 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         if self.worm_index_type in self.frame_data: 
             # draw the boxes in each of the trajectories found
             if self.ui.comboBox_showLabels.currentIndex() != self.showT['Hide'] and self.label_type in self.frame_data:
-                self.drawROIBoxes(self.frame_qimg)
+                self.drawROI(self.frame_qimg)
             
             self.updateROIcanvasN(1)
             self.updateROIcanvasN(2)
@@ -269,9 +271,9 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         # create the pixmap for the label
         self.mainImage.setPixmap(self.frame_qimg)
 
-    def drawROIBoxes(self, image):
+    def drawROI(self, image):
         '''
-        Draw boxes around each worm trajectory.
+        Draw traj worm trajectory.
         '''
 
         #continue only if the frame_data is a pandas dataframe it is larger than 0 
@@ -282,15 +284,18 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         self.img_h_ratio = image.height() / self.image_height
         self.img_w_ratio = image.width() / self.image_width
 
+        
+        painter = QPainter()
+        painter.begin(image)
+
         fontsize = max(1, max(image.height(), image.width()) // 120)
         penwidth = max(1, max(image.height(), image.width()) // 800)
         penwidth = penwidth if penwidth % 2 == 1 else penwidth + 1
 
-        painter = QPainter()
-        painter.begin(image)
+        new_traj = {}
         for row_id, row_data in self.frame_data.iterrows():
-            x = row_data['coord_x'] * self.img_h_ratio
-            y = row_data['coord_y'] * self.img_w_ratio
+            x = row_data['coord_x']
+            y = row_data['coord_y']
             # check if the coordinates are nan
             if not (x == x) or not (y == y):
                 continue
@@ -299,19 +304,50 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
             if self.ui.comboBox_showLabels.currentIndex() == self.showT['Filter'] and not row_data['is_valid_index']:
                 continue
 
-            x = int(x)
-            y = int(y)
-            pen = QPen(self.wlabC[int(row_data[self.label_type])])
-            pen.setWidth(penwidth)
-            painter.setPen(pen)
+            traj_ind = int(row_data[self.worm_index_type])
+            x = int(round(x * self.img_h_ratio))
+            y = int(round(y * self.img_w_ratio))
+            label_type = self.wlabC[int(row_data[self.label_type])]
+            roi_size = row_data['roi_size']
 
-            painter.setFont(QFont('Decorative', fontsize))
-
-            painter.drawText(x, y, str(int(row_data[self.worm_index_type])))
-
-            bb = row_data['roi_size'] * self.img_w_ratio
-            painter.drawRect(x - bb / 2, y - bb / 2, bb, bb)
+            self._draw_boxes(painter, traj_ind, x, y, roi_size, label_type, penwidth, fontsize)
+            self._draw_trajectories(painter, new_traj, traj_ind, x, y, penwidth)
+            
         painter.end()
+        self.traj_for_plot = new_traj
+
+    def _draw_trajectories(self, painter, new_traj, traj_ind, x, y, penwidth):
+        if not traj_ind in self.traj_for_plot:
+            new_traj[traj_ind] = {'col':QColor(*np.random.randint(50, 230, 3)),
+                        'p':QPolygonF()}
+        else:
+            new_traj[traj_ind] = self.traj_for_plot[traj_ind]
+
+        new_traj[traj_ind]['p'].append(QPointF(x,y))
+            
+        col = new_traj[traj_ind]['col']
+        pen = QPen()
+        pen.setWidth(penwidth)
+        pen.setColor(col)
+        painter.setPen(pen)
+
+        painter.drawPolyline(new_traj[traj_ind]['p'])
+        painter.drawEllipse(x,y, penwidth, penwidth)
+
+    def _draw_boxes(self, painter, traj_ind, x, y, roi_size, label_type, penwidth, fontsize):
+        '''
+        Draw traj worm trajectory.
+        '''
+        pen = QPen(label_type)
+        pen.setWidth(penwidth)
+        painter.setPen(pen)
+        painter.setFont(QFont('Decorative', fontsize))
+
+        painter.drawText(x, y, str(traj_ind))
+
+        bb = roi_size * self.img_w_ratio
+        painter.drawRect(x - bb / 2, y - bb / 2, bb, bb)
+
 
     # update zoomed ROI
     def selectROI1(self, index):

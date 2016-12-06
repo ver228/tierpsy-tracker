@@ -224,11 +224,6 @@ def joinTrajectories(trajectories_file, min_track_size=50,
     max_time_gap -- time gap between joined trajectories
     '''
 
-    # check the previous step finished correctly
-    with tables.open_file(trajectories_file, mode='r') as fid:
-        traj_table = fid.get_node('/plate_worms')
-        assert traj_table._v_attrs['has_finished'] >= 1
-
     #%% get the first and last rows for each trajectory. Pandas is easier of manipulate than tables.
     with pd.HDFStore(trajectories_file, 'r') as fid:
         df = fid['plate_worms'][['worm_index_blob', 'frame_number',
