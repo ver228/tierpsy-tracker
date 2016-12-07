@@ -49,7 +49,7 @@ def compressMultipleFilesFun(
         is_copy_video,
         videos_list):
 
-    analysis_checkpoints = getDefaultSequence('COMPRESS',
+    analysis_checkpoints = getDefaultSequence('Compress',
                                              is_single_worm=is_single_worm)
     
     walk_args = {'root_dir':video_dir_root, 
