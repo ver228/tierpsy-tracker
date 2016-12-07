@@ -176,10 +176,8 @@ def getSmoothedTraj(trajectories_file,
 
         frame_number = np.arange(first_frame, last_frame + 1, dtype=np.int32)
         trajectories_df['frame_number'][skeleton_id] = frame_number
-        trajectories_df['timestamp_raw'][
-            skeleton_id] = timestamp_raw[frame_number]
-        trajectories_df['timestamp_time'][
-            skeleton_id] = timestamp_time[frame_number]
+        trajectories_df['timestamp_raw'][skeleton_id] = timestamp_raw[frame_number]
+        trajectories_df['timestamp_time'][skeleton_id] = timestamp_time[frame_number]
 
         trajectories_df['threshold'][skeleton_id] = threshnew
         trajectories_df['plate_worm_id'][skeleton_id] = plate_worm_id
@@ -216,17 +214,16 @@ def saveTrajData(trajectories_data, masked_image_file, skeletons_file):
         else:
             is_light_background = 1 #default value
     
-    assert not os.path.exists(skeletons_file)
-    
     #save data into the skeletons file
-    with tables.File(skeletons_file, "w") as ske_file_id:
+    with tables.File(skeletons_file, "a") as ske_file_id:
         ske_file_id.create_table(
             '/',
             'trajectories_data',
             obj=trajectories_data.to_records(index=False),
             filters=TABLE_FILTERS)
         
-        readAndSaveTimestamp(masked_image_file, skeletons_file)
+        if not '/timestamp' in ske_file_id:
+            readAndSaveTimestamp(masked_image_file, skeletons_file)
         
         #read and the pixel information
         trajectories_data = ske_file_id.get_node('/trajectories_data')
@@ -264,7 +261,7 @@ if __name__ == '__main__':
     
     masked_image_file = os.path.join(root_dir, ff)    
     skeletons_file = masked_image_file.replace('.hdf5', '_skeletons.hdf5')
-    trajectories_file = masked_image_file.replace('.hdf5', '_trajectories.hdf5')
+    trajectories_file = masked_image_file.replace('.hdf5', '_skeletons.hdf5')
     
     is_filter_valid_worms = True
     

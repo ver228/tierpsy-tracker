@@ -51,7 +51,7 @@ dflt_param_list = [
     ('split_traj_time', 300, 'time in SECONDS that a trajectory will be subdivided to calculate the splitted features.'),
     ('roi_size', -1, ''),
     ('filter_model_name', '', ''),
-
+    ('n_cores_used', 1, 'Number of core used. Currently it is only suported by TRAJ_CREATE and it is only recommended at high particle densities.'),
     #not tested (used for the zebra fish)
     ('use_background_subtraction', False, 'Flag to determine whether background should be subtracted from original frames.'),
     ('background_threshold', 1, 'Threshold value to use when applying background subtraction.'),
@@ -144,7 +144,8 @@ class tracker_param:
             zf_draw_width,
             zf_auto_detect_tail_length,
             filter_model_name,
-            roi_size):
+            roi_size,
+            n_cores_used):
 
         if not isinstance(expected_fps, int):
             expected_fps = int(expected_fps)
@@ -185,24 +186,20 @@ class tracker_param:
 
         # getWormTrajectories
         self.trajectories_param = {
-            'initial_frame': 0,
-            'last_frame': -1,
+            'buffer_size' : compression_buff,
             'min_area': min_area / 2,
             'min_box_width': min_box_width,
-            'max_allowed_dist': traj_max_allowed_dist,
-            'area_ratio_lim': traj_area_ratio_lim,
-            'buffer_size': compression_buff,
             'worm_bw_thresh_factor': worm_bw_thresh_factor,
-            'strel_size': (
-                strel_size,
-                strel_size),
-            'analysis_type': analysis_type,
-            'thresh_block_size': thresh_block_size}
+            'strel_size': (strel_size, strel_size),
+            'analysis_type' : analysis_type,
+            'thresh_block_size':thresh_block_size,
+            'n_cores_used': 1}
 
         # joinTrajectories
         min_track_size = max(1, fps_filter * 2)
         max_time_gap = max(0, fps_filter * 4)
         self.join_traj_param = {
+            'max_allowed_dist': traj_max_allowed_dist,
             'min_track_size': min_track_size,
             'max_time_gap': max_time_gap,
             'area_ratio_lim': traj_area_ratio_lim}

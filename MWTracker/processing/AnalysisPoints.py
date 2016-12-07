@@ -12,8 +12,8 @@ from MWTracker.analysis.compress.processVideo import processVideo, isGoodVideo
 from MWTracker.analysis.compress_add_data.getAdditionalData import storeAdditionalDataSW, hasAdditionalFiles
 from MWTracker.analysis.vid_subsample.createSampleVideo import createSampleVideo, getSubSampleVidName
 
-from MWTracker.analysis.traj_create.getWormTrajectories import getWormTrajectories
-from MWTracker.analysis.traj_join.correctTrajectories import correctTrajectories
+from MWTracker.analysis.traj_create.getBlobTrajectories import getBlobsTable
+from MWTracker.analysis.traj_join.joinBlobsTrajectories import joinBlobsTrajectories
 
 from MWTracker.analysis.ske_init.processTrajectoryData import processTrajectoryData
 from MWTracker.analysis.ske_create.getSkeletonsTables import trajectories2Skeletons
@@ -108,29 +108,30 @@ class AnalysisPoints(object):
                 'requirements' : ['COMPRESS']
             },
             'TRAJ_CREATE': {
-                'func': getWormTrajectories,
-                'argkws': {**{'masked_image_file': fn['masked_image'], 'trajectories_file': fn['trajectories']},
+                'func': getBlobsTable,
+                'argkws': {**{'masked_image_file': fn['masked_image'], 'trajectories_file': fn['skeletons']},
                            **param.trajectories_param},
                 'input_files' : [fn['masked_image']],
-                'output_files': [fn['trajectories']],
+                'output_files': [fn['skeletons']],
                 'requirements' : ['COMPRESS']
             },
             'TRAJ_JOIN': {
-                'func': correctTrajectories,
-                'argkws': {'trajectories_file': fn['trajectories'], 'is_single_worm': is_single_worm,
-                           'join_traj_param': param.join_traj_param},
-                'input_files' : [fn['trajectories']],
-                'output_files': [fn['trajectories']],
+                'func': joinBlobsTrajectories,
+                'argkws': {**{'trajectories_file': fn['skeletons'], 
+                            'is_single_worm': is_single_worm},
+                            **param.join_traj_param},
+                'input_files' : [fn['skeletons']],
+                'output_files': [fn['skeletons']],
                 'requirements' : ['TRAJ_CREATE']
             },
             'SKE_INIT': {
                 'func': processTrajectoryData,
                 'argkws': {**{'skeletons_file': fn['skeletons'], 
                             'masked_image_file':fn['masked_image'],
-                            'trajectories_file': fn['trajectories']},
+                            'trajectories_file': fn['skeletons']},
                             **param.init_skel_param},
 
-                'input_files' : [fn['masked_image'], fn['trajectories']],
+                'input_files' : [fn['masked_image'], fn['skeletons']],
                 'output_files': [fn['skeletons']],
                 'requirements' : ['TRAJ_JOIN']
             },
