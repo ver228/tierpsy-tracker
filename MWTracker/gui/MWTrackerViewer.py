@@ -244,6 +244,8 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         self.trajectories_data['is_valid_index'] = self.trajectories_data[self.worm_index_type].isin(good_traj_index)
         
         self.traj_time_grouped = self.trajectories_data.groupby('frame_number')
+
+        self.traj_for_plot = {} #delete previous plotted trajectories
         self.updateImage()
 
     # update image
@@ -257,8 +259,6 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
 
         # read the data of the particles that exists in the frame
         self.frame_data = self.getFrameData(self.frame_number)
-
-        
 
         #draw extra info only if the worm_index_type is valid
         if self.worm_index_type in self.frame_data: 
