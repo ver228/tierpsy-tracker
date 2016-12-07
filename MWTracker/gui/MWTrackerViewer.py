@@ -93,13 +93,14 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         self.ui.pushButton_join.clicked.connect(self.joinTraj)
         self.ui.pushButton_split.clicked.connect(self.splitTraj)
 
-        #
+        self.showT = {x: self.ui.comboBox_showLabels.findText(x , flags=Qt.MatchContains) 
+                                for x in ['hide', 'all', 'filter']}
+        self.ui.comboBox_showLabels.setCurrentIndex(self.showT['all'])
+        self.ui.comboBox_showLabels.currentIndexChanged.connect(self.updateImage)        
         
-        self.showT = {x: self.ui.comboBox_showLabels.findText(x , flags=Qt.MatchStartsWith) 
-                                for x in ['Hide', 'All', 'Filter']}
-        self.ui.comboBox_showLabels.setCurrentIndex(self.showT['All'])
-        self.ui.comboBox_showLabels.currentIndexChanged.connect(self.updateImage)
-
+        self.drawT = {x: self.ui.comboBox_drawType.findText(x , flags=Qt.MatchContains) 
+                                for x in ['boxes', 'traj']}
+        self.ui.comboBox_drawType.currentIndexChanged.connect(self._purge_draw_traj)
 
         # select worm ROI when doubleclick a worm
         self.mainImage._canvas.mouseDoubleClickEvent = self.selectWorm
@@ -262,7 +263,7 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         #draw extra info only if the worm_index_type is valid
         if self.worm_index_type in self.frame_data: 
             # draw the boxes in each of the trajectories found
-            if self.ui.comboBox_showLabels.currentIndex() != self.showT['Hide'] and self.label_type in self.frame_data:
+            if self.ui.comboBox_showLabels.currentIndex() != self.showT['hide'] and self.label_type in self.frame_data:
                 self.drawROI(self.frame_qimg)
             
             self.updateROIcanvasN(1)
@@ -301,7 +302,7 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
                 continue
 
             #if select between showing filtered index or not
-            if self.ui.comboBox_showLabels.currentIndex() == self.showT['Filter'] and not row_data['is_valid_index']:
+            if self.ui.comboBox_showLabels.currentIndex() == self.showT['filter'] and not row_data['is_valid_index']:
                 continue
 
             traj_ind = int(row_data[self.worm_index_type])
@@ -310,11 +311,19 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
             label_type = self.wlabC[int(row_data[self.label_type])]
             roi_size = row_data['roi_size']
 
-            self._draw_boxes(painter, traj_ind, x, y, roi_size, label_type, penwidth, fontsize)
-            self._draw_trajectories(painter, new_traj, traj_ind, x, y, penwidth)
+            cb_ind = self.ui.comboBox_drawType.currentIndex()
+            if cb_ind == self.drawT['boxes']:
+                self._draw_boxes(painter, traj_ind, x, y, roi_size, label_type, penwidth, fontsize)
+            elif cb_ind == self.drawT['traj']:
+                self._draw_trajectories(painter, new_traj, traj_ind, x, y, penwidth)
             
         painter.end()
         self.traj_for_plot = new_traj
+
+    def _purge_draw_traj(self):
+        self.traj_for_plot = {}
+        self.updateImage()
+        
 
     def _draw_trajectories(self, painter, new_traj, traj_ind, x, y, penwidth):
         if not traj_ind in self.traj_for_plot:

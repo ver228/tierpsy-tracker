@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>952</width>
+    <width>996</width>
     <height>851</height>
    </rect>
   </property>
@@ -444,12 +444,12 @@
        <widget class="QComboBox" name="comboBox_labelType">
         <item>
          <property name="text">
-          <string>Manual</string>
+          <string>manual index</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Auto</string>
+          <string>auto index</string>
          </property>
         </item>
        </widget>
@@ -503,31 +503,31 @@
        <widget class="QComboBox" name="comboBox_showLabels">
         <item>
          <property name="text">
-          <string>Hide Labels</string>
+          <string>hide labels</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>All Labels</string>
+          <string>all labels</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Filtered Labels</string>
+          <string>filtered labels</string>
          </property>
         </item>
        </widget>
       </item>
       <item row="3" column="2">
-       <widget class="QComboBox" name="comboBox">
+       <widget class="QComboBox" name="comboBox_drawType">
         <item>
          <property name="text">
-          <string>Boxes</string>
+          <string>draw boxes</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Trajectories</string>
+          <string>draw trajectories</string>
          </property>
         </item>
        </widget>
@@ -543,7 +543,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>952</width>
+     <width>996</width>
      <height>22</height>
     </rect>
    </property>
