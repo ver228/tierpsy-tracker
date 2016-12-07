@@ -148,11 +148,34 @@ def test6(script_dir, examples_dir):
         '*.raw_hdf5']
     execute_cmd(cmd)
 
+import argparse
+
+parser = argparse.ArgumentParser(description='Process some integers.')
+parser.add_argument('n_tests', metavar='N', type=int, nargs='*',
+                    help='Number of tests to be done. If it is empty it will execute all the tests.')
+parser.add_argument('--tests', dest='accumulate', action='store_const',
+                    const=sum, default=max,
+                    help='sum the integers (default: find the max)')
+
 if __name__ == '__main__':
+    args = parser.parse_args()
+    n_tests = args.n_tests
+    
+
     root_dir = os.path.abspath(os.path.join(os.path.dirname(MWTracker.__file__), '..')) 
 
     examples_dir = os.path.join(root_dir, 'Tests', 'Data')
     script_dir = os.path.join(root_dir, 'cmd_scripts')
 
-    for fun in [test1, test2, test6]:#:[test1, test2, test3, test4, test5]:
+    all_tests = [test1, test2, test3, test4, test5, test6] 
+    
+    tests_ind = [x-1 for x in n_tests]
+
+    if tests_ind:
+        test_to_exec = [all_tests[x] for x in tests_ind]
+    else:
+        test_to_exec = all_tests #execute all tests
+    
+    
+    for fun in test_to_exec:
         fun(script_dir, examples_dir)
