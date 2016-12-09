@@ -1,9 +1,11 @@
 # # -*- coding: utf-8 -*-
-__version__ = '1.1.1'
-
-
-
+__version__ = '1.2.1'
 '''
+ 1.2.1
+ - Major changes in internal organization of TRAJ_CREATE TRAJ_JOIN
+ - _trajectories.hdf5 is deprecated. The results of this file are going to be saved in _skeletons.hdf5
+ - GUI Multi-worm tracker add the option of show trajectories.
+
  1.2.0
  - Major refactoring
  - Add capability of identifying worms using a pre-trained neural network (not activated by default).
