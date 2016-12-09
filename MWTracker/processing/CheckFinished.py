@@ -52,19 +52,35 @@ class CheckFinished(object):
         
         #I plan to check succesful processing using only provenance. I keep this for backwards compatibility.
         outf = lambda x : output_files[x][0]
-        self._flag_funcs = {
-            'COMPRESS': partial(_checkFlagsFun, outf('COMPRESS'), '/mask', 1),
-            'COMPRESS_ADD_DATA': partial(_checkFlagsFun, outf('COMPRESS'), '/mask', 2),
-            'TRAJ_CREATE': partial(_checkFlagsFun, outf('TRAJ_CREATE'), '/plate_worms', 1),
-            'TRAJ_JOIN': partial(_checkFlagsFun, outf('TRAJ_JOIN'), '/plate_worms', 2),
-            'SKE_CREATE': partial(_checkFlagsFun, outf('SKE_CREATE'), '/skeleton', 1),
-            'SKE_FILT': partial(_checkFlagsFun, outf('SKE_FILT'), '/skeleton', 2),
-            'SKE_ORIENT': partial(_checkFlagsFun, outf('SKE_ORIENT'), '/skeleton', 3),
-            'INT_PROFILE': partial(_checkFlagsFun, outf('INT_PROFILE'), '/straighten_worm_intensity_median', 1),
-            'INT_SKE_ORIENT': partial(_checkFlagsFun, outf('INT_SKE_ORIENT'), '/skeleton', 4),
-            'FEAT_CREATE': partial(_checkFlagsFun, outf('FEAT_CREATE'), '/features_means', 1),
-            'FEAT_MANUAL_CREATE': partial(_checkFlagsFun, outf('FEAT_MANUAL_CREATE'), '/features_means', 1),
+
+        #has_finished flags were deprecated in favor of provenance tracking flags
+        self._deprec_check_funcs = {
+            'COMPRESS': [partial(_checkFlagsFun, outf('COMPRESS'), '/mask', 1)],
+            'COMPRESS_ADD_DATA': [partial(_checkFlagsFun, outf('COMPRESS'), '/mask', 2)],
+            'TRAJ_CREATE': [partial(_checkFlagsFun, outf('TRAJ_CREATE'), '/plate_worms', 1)],
+            'TRAJ_JOIN': [partial(_checkFlagsFun, outf('TRAJ_JOIN'), '/plate_worms', 2)],
+            'SKE_CREATE': [partial(_checkFlagsFun, outf('SKE_CREATE'), '/skeleton', 1)],
+            'SKE_FILT': [partial(_checkFlagsFun, outf('SKE_FILT'), '/skeleton', 2)],
+            'SKE_ORIENT': [partial(_checkFlagsFun, outf('SKE_ORIENT'), '/skeleton', 3)],
+            'INT_PROFILE': [partial(_checkFlagsFun, outf('INT_PROFILE'), '/straighten_worm_intensity_median', 1)],
+            'INT_SKE_ORIENT': [partial(_checkFlagsFun, outf('INT_SKE_ORIENT'), '/skeleton', 4)],
+            'FEAT_CREATE': [partial(_checkFlagsFun, outf('FEAT_CREATE'), '/features_means', 1)],
+            'FEAT_MANUAL_CREATE': [partial(_checkFlagsFun, outf('FEAT_MANUAL_CREATE'), '/features_means', 1)],
         }
+
+        #deprecated due to the removal of trajectories.hdf5 from the pipeline
+        traj_file = outf('TRAJ_CREATE').replace('_skeletons.hdf5', '_trajectories.hdf5')
+        for point in ['TRAJ_CREATE', 'TRAJ_JOIN']:
+            func = partial(_checkFlagsFun, 
+                            traj_file, 
+                            '/provenance_tracking', 
+                            point, 
+                            _isValidProvenance,
+                            extra_files)
+            self._deprec_check_funcs[point].append(func)
+        
+
+
     
     def getUnfinishedPoints(self, checkpoints2process):
         unfinished_points = checkpoints2process[:]
@@ -79,7 +95,10 @@ class CheckFinished(object):
         has_finished = self._provenance_funcs[point]()
         
         #we test flags for backwards compatibility
-        if not has_finished and point in self._flag_funcs:
-            has_finished = self._flag_funcs[point]()
+        if not has_finished and point in self._deprec_check_funcs:
+            for func in self._deprec_check_funcs[point]:
+                has_finished = func()
+                if has_finished:
+                    break
         
         return has_finished
