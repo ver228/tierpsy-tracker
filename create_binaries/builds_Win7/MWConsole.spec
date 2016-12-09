@@ -11,9 +11,9 @@ added_files = [
 'open_worm_analysis_toolbox\\features\\feature_metadata'),
 (os.path.join(open_worm_path, 'features\\master_eigen_worms_n2.mat'), 
 'open_worm_analysis_toolbox\\features'),
-(os.path.join(MWTracker_path, 'auxFiles\\features_names.csv'), 'auxFiles'),
-('C:\\ffmpeg\\bin\\ffmpeg.exe', 'auxFiles'),
-('C:\\ffmpeg\\bin\\ffprobe.exe', 'auxFiles'),
+(os.path.join(MWTracker_path, 'misc\\features_names.csv'), 'misc'),
+('C:\\ffmpeg\\bin\\ffmpeg.exe', 'misc'),
+('C:\\ffmpeg\\bin\\ffprobe.exe', 'misc'),
 ('.\\dist\\compressSingleWorker\\compressSingleWorker.exe', '.'),
 ('.\\dist\\trackSingleWorker\\trackSingleWorker.exe', '.')
 ]

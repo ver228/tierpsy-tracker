@@ -11,11 +11,11 @@ added_files = [
 'open_worm_analysis_toolbox/features/feature_metadata'),
 (os.path.join(open_worm_path, 'features/master_eigen_worms_n2.mat'), 
 'open_worm_analysis_toolbox/features'),
-(os.path.join(MWTracker_path, 'auxFiles/features_names.csv'), 
-'auxFiles'),
-(os.path.join(MWTracker_path, 'auxFiles/ffmpeg22'), 
-'auxFiles'),
-('/usr/local/bin/ffprobe', 'auxFiles'),
+(os.path.join(MWTracker_path, 'misc/features_names.csv'), 
+'misc'),
+(os.path.join(MWTracker_path, 'misc/ffmpeg22'), 
+'misc'),
+('/usr/local/bin/ffprobe', 'misc'),
 ('./dist/compressSingleWorker/compressSingleWorker', '.'),
 ('./dist/trackSingleWorker/trackSingleWorker', '.')
 ]

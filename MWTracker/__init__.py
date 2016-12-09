@@ -17,7 +17,7 @@ try:
 except Exception:
     base_path = os.path.dirname(__file__)
 
-AUX_FILES_DIR = os.path.abspath(os.path.join(base_path, 'aux'))
+AUX_FILES_DIR = os.path.abspath(os.path.join(base_path, 'misc'))
 
 if getattr(sys, 'frozen', False):
     # force qt5 to be the backend of matplotlib.
