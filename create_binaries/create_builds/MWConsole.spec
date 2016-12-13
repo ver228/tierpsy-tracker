@@ -18,7 +18,7 @@ def get_extra_files():
   open_worm_path = os.path.dirname(open_worm_analysis_toolbox.__file__)
 
   ow_feat_ori = os.path.join(open_worm_path, 'features', 'feature_metadata', 'features_list.csv')
-  ow_feat_dst = os.path.join('open_worm_analysis_toolbox', 'features','feature_metadata')
+  ow_feat_dst = os.path.join('open_worm_analysis_toolbox', 'features')
 
   ow_eigen_ori = os.path.join(open_worm_path, 'features', 'master_eigen_worms_n2.mat')
   ow_eigen_dst = os.path.join('open_worm_analysis_toolbox', 'features')

@@ -1,9 +1,10 @@
 # -*- mode: python -*-
-
-block_cipher = None
+import os
 
 SRC_SCRIPT_PATH = os.path.join('..', 'scripts', 'trackSingleWorker.py')
 DST_BUILD=os.path.abspath('.')
+
+block_cipher = None
 
 a = Analysis([SRC_SCRIPT_PATH],
              pathex=[DST_BUILD],
