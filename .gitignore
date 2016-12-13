@@ -1,10 +1,12 @@
 
-*.pyc
 create_binaries/*.app
+create_binaries/create_builds/build/*
+create_binaries/create_builds/dist/*
+Tests/Data/*
 MWTracker.egg-info/*
 
-Tests/Data/*
 *.hdf5
+*.pyc
 
 *.m~
 

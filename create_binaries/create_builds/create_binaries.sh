@@ -1,12 +1,7 @@
 function build {
-pyinstaller --noconfirm  --clean \
-compressSingleWorker.spec
-
-pyinstaller --noconfirm  --clean \
-trackSingleWorker.spec
-
-pyinstaller --noconfirm  --clean \
-MWConsole.spec
+pyinstaller --noconfirm  --clean compressSingleWorker.spec
+pyinstaller --noconfirm  --clean trackSingleWorker.spec
+pyinstaller --noconfirm  --clean MWConsole.spec
 }
 
 function build_spec {
