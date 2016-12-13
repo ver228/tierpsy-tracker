@@ -2,7 +2,7 @@
 
 block_cipher = None
 
-SRC_SCRIPT_PATH = os.path.join('scripts', 'compressSingleWorker.py')
+SRC_SCRIPT_PATH = os.path.join('..', scripts', 'compressSingleWorker.py')
 DST_BUILD=os.path.abspath('.')
 
 a = Analysis([SRC_SCRIPT_PATH],
