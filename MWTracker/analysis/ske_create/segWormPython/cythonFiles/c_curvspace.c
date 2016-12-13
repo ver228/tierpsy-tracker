@@ -1,5 +1,7 @@
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
+
 double distance(double *x, double *y, int p_dim);
 void interpintv(double *pt1, double *pt2, int p_dim, double intv, double *newpt);
 
@@ -25,8 +27,9 @@ double c_curvspace(double *points, int p_size, int p_dim, int N, double *output)
     double dum, R;
     int p_ind_first, kk, k0, k;
     
-    double ptnow[p_dim], newpt[p_dim], pttarget[p_dim];
-    
+    double *ptnow = malloc(sizeof (double)*p_dim);
+    double *newpt = malloc(sizeof (double)*p_dim);
+    double *pttarget = malloc(sizeof (double)*p_dim);
     
     //%% distance between points in p %%
     totaldist = 0;

@@ -1,4 +1,6 @@
+#define _USE_MATH_DEFINES
 #include <math.h>
+
 inline double getSign(double x) {
     return (double)((0 < x) - (x < 0));
 }
