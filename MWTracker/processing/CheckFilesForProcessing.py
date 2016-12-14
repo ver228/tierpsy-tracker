@@ -11,7 +11,6 @@ from MWTracker.processing.batchProcHelperFunc import create_script
 from MWTracker.processing.ProcessWormsLocal import BATCH_SCRIPT_LOCAL
 from MWTracker.processing.AnalysisPoints import AnalysisPoints
 
-
 class CheckFilesForProcessing(object):
     def __init__(self, video_dir_root, mask_dir_root, 
                  results_dir_root, tmp_dir_root='', 

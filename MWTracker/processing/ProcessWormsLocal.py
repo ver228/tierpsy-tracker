@@ -14,8 +14,8 @@ from MWTracker.processing.AnalysisPoints import AnalysisPoints
 from MWTracker.processing.ProcessWormsWorker import ProcessWormsWorkerParser, ProcessWormsWorker, BATCH_SCRIPT_WORKER
 from MWTracker.processing.batchProcHelperFunc import create_script, getRealPathName
 
-BATCH_SCRIPT_LOCAL = getRealPathName(__file__)
-
+#this path is not really going to be used if it is pyinstaller frozen (only the BATCH_SCRIPT_WORKER)
+BATCH_SCRIPT_LOCAL = [sys.executable, os.path.realpath(ProcessWormsLocal.__file__)]
 
 class ProcessWormsLocal(object):
     def __init__(self, main_file, masks_dir, results_dir, tmp_mask_dir='',
