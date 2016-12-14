@@ -11,7 +11,6 @@ from MWTracker.gui.BatchProcessing import BatchProcessing_GUI
 
 
 class SelectApp(QMainWindow):
-
     def __init__(self):
         super(SelectApp, self).__init__()
         self.ui = Ui_SelectApp()

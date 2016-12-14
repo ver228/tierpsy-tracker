@@ -51,21 +51,18 @@ class start_process():
                 self.cmd = self.obj_cmd.start()
             self.output += output
 
-            #print(self.cmd, type(self.cmd))
-            #import pdb
-            # pdb.set_trace()
-            # print(output[-1])
-
         else:
             self.obj_cmd = ''
             self.cmd = cmd
             self.output = ['Started\n']
 
+        self.output += [cmdlist2str(self.cmd) + '\n']
+
         self.pid = sp.Popen(self.cmd, stdout=sp.PIPE, stderr=sp.PIPE,
-                            bufsize=1, close_fds=ON_POSIX)
+                             bufsize=1, close_fds=ON_POSIX)
         self.queue = Queue()
         self.thread = Thread(target=enqueue_output,
-                             args=(self.pid.stdout, self.queue))
+                              args=(self.pid.stdout, self.queue))
         self.thread.start()
 
     def read_buff(self):
@@ -79,7 +76,6 @@ class start_process():
         self.output = self.output[-1:]
 
     def close(self):
-
         if self.pid.poll() != 0:
             # print errors details if there was any
             self.output[-1] += 'ERROR: \n'

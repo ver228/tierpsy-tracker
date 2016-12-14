@@ -54,13 +54,14 @@ def _walkAndFind(root_dir, pattern_include='*', pattern_exclude=''):
 def getRealPathName(fullfile):
     '''get the path name that works with pyinstaller binaries'''
     try:
-        base_name = os.path.splitext(os.path.basename(fullfile))
+        base_name = os.path.splitext(os.path.basename(fullfile))[0]
         # use this directory if it is a one-file produced by pyinstaller
         script_cmd = [os.path.join(sys._MEIPASS, base_name)]
         if os.name == 'nt':
             script_cmd[0] += '.exe'
         return script_cmd
-    except Exception:
+    
+    except AttributeError:
         return [sys.executable, os.path.realpath(fullfile)]
 
 def create_script(base_cmd, args, argkws):

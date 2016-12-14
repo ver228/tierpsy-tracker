@@ -14,7 +14,7 @@ from MWTracker.helper.trackProvenance import getGitCommitHash, execThisPoint
 from MWTracker.processing.AnalysisPoints import AnalysisPoints
 from MWTracker.processing.batchProcHelperFunc import getRealPathName
 
-SCRIPT_WORKER = getRealPathName(__file__)
+BATCH_SCRIPT_WORKER = getRealPathName(__file__)
 
 class ProcessWormsWorker(object):
     def __init__(self, main_file, masks_dir, results_dir, 

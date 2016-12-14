@@ -1,7 +1,9 @@
 # -*- mode: python -*-
 import os
 
-SRC_SCRIPT_PATH = os.path.join('..', 'scripts', 'compressSingleWorker.py')
+from MWTracker.processing.ProcessWormsWorker import BATCH_SCRIPT_WORKER
+
+SRC_SCRIPT_PATH = BATCH_SCRIPT_WORKER[1]
 DST_BUILD=os.path.abspath('.')
 
 block_cipher = None
@@ -22,15 +24,16 @@ pyz = PYZ(a.pure, a.zipped_data,
 exe = EXE(pyz,
           a.scripts,
           exclude_binaries=True,
-          name='compressSingleWorker',
+          name='ProcessWormsWorker',
           debug=False,
           strip=False,
           upx=True,
           console=True )
+
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,
                a.datas,
                strip=False,
                upx=True,
-               name='compressSingleWorker')
+               name='ProcessWormsWorker')

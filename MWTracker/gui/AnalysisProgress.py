@@ -67,7 +67,6 @@ class WorkerFunQt(QThread):
         try:
             self.worker_fun(**self.worker_args)
         except Exception as e:
-            print(e)
             exc_type, exc_value, exc_traceback = sys.exc_info()
             traceback.print_exception(
                 exc_type,

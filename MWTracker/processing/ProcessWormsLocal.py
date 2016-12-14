@@ -11,10 +11,11 @@ import shutil
 
 from MWTracker.helper.misc import print_flush
 from MWTracker.processing.AnalysisPoints import AnalysisPoints
-from MWTracker.processing.ProcessWormsWorker import ProcessWormsWorkerParser, ProcessWormsWorker, SCRIPT_WORKER
+from MWTracker.processing.ProcessWormsWorker import ProcessWormsWorkerParser, ProcessWormsWorker, BATCH_SCRIPT_WORKER
 from MWTracker.processing.batchProcHelperFunc import create_script, getRealPathName
 
-SCRIPT_LOCAL = getRealPathName(__file__)
+BATCH_SCRIPT_LOCAL = getRealPathName(__file__)
+
 
 class ProcessWormsLocal(object):
     def __init__(self, main_file, masks_dir, results_dir, tmp_mask_dir='',
@@ -75,7 +76,7 @@ class ProcessWormsLocal(object):
             'json_file':self.json_file, 'analysis_checkpoints':self.checkpoints2process,
             'is_single_worm':self.is_single_worm, 'use_skel_filter':self.use_skel_filter}
 
-        return create_script(SCRIPT_WORKER, args, argkws)
+        return create_script(BATCH_SCRIPT_WORKER, args, argkws)
 
     def clean(self):
         self._copyTmpToFinalAndClean()

@@ -11,8 +11,7 @@ goto:eof
 
 
 :build
-pyinstaller --noconfirm  --clean compressSingleWorker.spec
-pyinstaller --noconfirm  --clean trackSingleWorker.spec
+pyinstaller --noconfirm  --clean ProcessWormsWorker.spec
 pyinstaller --noconfirm --clean MWConsole.spec
 goto:eof
 

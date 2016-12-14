@@ -6,4 +6,5 @@ pyinstaller --noconfirm  --clean \
 --hidden-import=h5py.utils \
 --hidden-import=h5py.h5ac \
 --hidden-import='h5py._proxy' \
+--onefile \
 test_pyinstaller.py

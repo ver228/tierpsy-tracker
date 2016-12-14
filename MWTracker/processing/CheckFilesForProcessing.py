@@ -8,7 +8,7 @@ Created on Tue Jun  9 15:12:48 2015
 import os
 from MWTracker.helper.timeCounterStr import timeCounterStr
 from MWTracker.processing.batchProcHelperFunc import create_script
-from MWTracker.processing.ProcessWormsLocal import SCRIPT_LOCAL
+from MWTracker.processing.ProcessWormsLocal import BATCH_SCRIPT_LOCAL
 from MWTracker.processing.AnalysisPoints import AnalysisPoints
 
 
@@ -171,5 +171,5 @@ Files whose analysis is incompleted : {}'''.format(
                   'use_skel_filter':self.use_skel_filter,
                   'is_copy_video':self.is_copy_video}
         
-        cmd = create_script(SCRIPT_LOCAL, args, argkws)
+        cmd = create_script(BATCH_SCRIPT_LOCAL, args, argkws)
         return cmd
