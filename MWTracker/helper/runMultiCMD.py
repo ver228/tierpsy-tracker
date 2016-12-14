@@ -17,7 +17,6 @@ from io import StringIO
 
 GUI_CLEAR_SIGNAL = '+++++++++++++++++++++++++++++++++++++++++++++++++'
 
-
 class CapturingOutput(list):
     '''modified from http://stackoverflow.com/questions/1218933/can-i-redirect-the-stdout-in-python-into-some-sort-of-string-buffer'''
 
@@ -48,6 +47,7 @@ class start_process():
             with CapturingOutput() as output:
                 
                 self.obj_cmd = local_obj(cmd[1:])
+                
                 self.cmd = self.obj_cmd.start()
             self.output += output
 
@@ -96,9 +96,7 @@ class start_process():
 
 def runMultiCMD(cmd_list, local_obj='', max_num_process=3, refresh_time=10):
     '''Start different process using the command is cmd_list'''
-    cmd_list = cmd_list[
-        ::-
-        1]  # since I am using pop to get the next element i need to invert the list to get athe same order
+    cmd_list = cmd_list[::-1]  # since I am using pop to get the next element i need to invert the list to get athe same order
     tot_tasks = len(cmd_list)
     if tot_tasks < max_num_process:
         max_num_process = tot_tasks

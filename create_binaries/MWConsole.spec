@@ -14,6 +14,8 @@ IS_WIN = sys.platform == 'win32'
 DST_BUILD=os.path.abspath('.')
 CREATE_CONSOLE= IS_WIN #make a separated console only in windows. I have to do this due to a problem with pyinstaller
 
+DEBUG = False
+
 #get additional files
 #openworm additional files
 open_worm_path = os.path.dirname(open_worm_analysis_toolbox.__file__)
@@ -73,7 +75,7 @@ print(a.datas)
 pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
 
-DEBUG = False
+
 if not DEBUG:
 
   exe = EXE(pyz,

@@ -65,7 +65,6 @@ class BatchProcessing_GUI(QMainWindow):
             'max_num_process'] == track_dflt_vals['max_num_process']
         assert compress_dflt_vals[
             'tmp_dir_root'] == track_dflt_vals['tmp_dir_root']
-
         lineEditDragDrop(
             self.ui.lineEdit_txtFileList,
             self.updateTxtFileList,
@@ -167,27 +166,18 @@ class BatchProcessing_GUI(QMainWindow):
         if videos_dir:
             self.updateVideosDir(videos_dir)
 
+
     def updateVideosDir(self, videos_dir):
         self.videos_dir = videos_dir
         self.ui.lineEdit_videosDir.setText(self.videos_dir)
 
-        # replace Worm_Videos or add a directory for the Results and
-        # MaskedVideos directories
-        def _replacePart(part):
-            mask_files_dir = self.videos_dir.replace(
-                part, 'MaskedVideos')
-            results_dir = self.videos_dir.replace('Worm_Videos', 'Results')
-            return mask_files_dir, results_dir
-
-        if 'Worm_Videos' in self.videos_dir:
-            mask_files_dir, results_dir = _replacePart('Worm_Videos')
-        elif 'RawVideos' in self.videos_dir:
-            mask_files_dir, results_dir = _replacePart('RawVideos')
+        if 'Worm_Videos' in videos_dir:
+            mask_files_dir = videos_dir.replace('Worm_Videos', 'MaskedVideos')
+        elif 'RawVideos' in videos_dir:
+            mask_files_dir = videos_dir.replace('RawVideos', 'MaskedVideos')
         else:
-            mask_files_dir = os.path.join(self.videos_dir, 'MaskedVideos')
-            results_dir = os.path.join(self.videos_dir, 'Results')
+            mask_files_dir = os.path.join(videos_dir, 'MaskedVideos')
 
-        self.updateResultsDir(results_dir)
         self.updateMasksDir(mask_files_dir)
 
     def getResultsDir(self):
@@ -211,10 +201,15 @@ class BatchProcessing_GUI(QMainWindow):
             self.updateMasksDir(mask_files_dir)
 
     def updateMasksDir(self, mask_files_dir):
+        if 'MaskedVideos' in mask_files_dir:
+            results_dir = mask_files_dir.replace('MaskedVideos', 'Results')
+        else:
+            results_dir = os.path.join(mask_files_dir, 'Results')
+
+
         self.mask_files_dir = mask_files_dir
         self.ui.lineEdit_masksDir.setText(self.mask_files_dir)
-
-        results_dir = getResultsDir(mask_files_dir)
+        
         self.updateResultsDir(results_dir)
 
     def getParamFile(self):

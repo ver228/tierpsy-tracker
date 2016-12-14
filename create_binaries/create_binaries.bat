@@ -54,7 +54,7 @@ goto:eof
 for /f %%w in ('python -c "import MWTracker; print(MWTracker.__version__)"') do set MWVER=%%w
 for /f %%w in ('python -c "import platform; print(platform.platform())"') do set WINVER=%%w
 
-MOVE .\dist\MWConsole.exe "..\MWConsole %MWVER% - %WINVER%.exe"
+MOVE .\dist\MWConsole.exe ".\MWConsole %MWVER% - %WINVER%.exe"
 RMDIR /S /Q .\dist
 RMDIR /S /Q .\build	
 
