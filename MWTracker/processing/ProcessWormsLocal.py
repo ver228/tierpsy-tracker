@@ -4,6 +4,7 @@ Created on Tue Aug  9 00:26:10 2016
 
 @author: ajaver
 """
+import sys
 import os
 import time
 import datetime
@@ -15,7 +16,7 @@ from MWTracker.processing.ProcessWormsWorker import ProcessWormsWorkerParser, Pr
 from MWTracker.processing.batchProcHelperFunc import create_script, getRealPathName
 
 #this path is not really going to be used if it is pyinstaller frozen (only the BATCH_SCRIPT_WORKER)
-BATCH_SCRIPT_LOCAL = [sys.executable, os.path.realpath(ProcessWormsLocal.__file__)]
+BATCH_SCRIPT_LOCAL = [sys.executable, os.path.realpath(__file__)]
 
 class ProcessWormsLocal(object):
     def __init__(self, main_file, masks_dir, results_dir, tmp_mask_dir='',
