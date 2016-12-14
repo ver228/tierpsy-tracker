@@ -213,7 +213,12 @@ def saveTrajData(trajectories_data, masked_image_file, skeletons_file):
             is_light_background = mask_dataset._v_attrs['is_light_background']
         else:
             is_light_background = 1 #default value
-    
+
+        if 'expected_fps' in mask_dataset._v_attrs:
+            expected_fps = mask_dataset._v_attrs['expected_fps']
+        else:
+            expected_fps = 25 #default value
+
     #save data into the skeletons file
     with tables.File(skeletons_file, "a") as ske_file_id:
         ske_file_id.create_table(
@@ -232,6 +237,8 @@ def saveTrajData(trajectories_data, masked_image_file, skeletons_file):
 
         #find if it is a mask from fluorescence and save it in the new group
         trajectories_data._v_attrs['is_light_background'] = is_light_background
+
+        trajectories_data._v_attrs['expected_fps'] = expected_fps
 
 
 def processTrajectoryData(skeletons_file, masked_image_file, trajectories_file, smoothed_traj_param, filter_model_name = ''):

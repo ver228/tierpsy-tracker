@@ -322,6 +322,10 @@ def getBlobsTable(masked_image_file,
         is_light_background = _get_light_flag(masked_image_file)
         plate_worms._v_attrs['is_light_background'] = is_light_background
         
+        expected_fps = _get_fps(masked_image_file)
+        plate_worms._v_attrs['expected_fps'] = is_light_background
+        
+
         readAndSaveTimestamp(masked_image_file, trajectories_file)
         return plate_worms, is_light_background
         
