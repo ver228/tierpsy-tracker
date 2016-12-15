@@ -52,7 +52,6 @@ added_datas = [(ow_feat_dst, ow_feat_src, 'DATA'),
         (ffmpeg_dst, ffmpeg_src, 'DATA'),
         (ffprobe_dst, ffprobe_src, 'DATA')]
 
-
 #I add the file separator at the end, it makes my life easier later on
 MWTracker_path = os.path.dirname(MWTracker.__file__)
 MWTracker_path += os.sep
@@ -64,6 +63,18 @@ for (dirpath, dirnames, filenames) in os.walk(os.path.join(MWTracker_path, 'misc
       fname_src = os.path.join(dirpath, fname)
       fname_dst = fname_src.replace(MWTracker_path, '')
       added_datas.append((fname_dst, fname_src, 'DATA'))
+
+#copy additional dll in windows
+if IS_WIN:
+  py_path = sys.executable
+  conda_bin = os.path.join(os.path.dirname(py_path), 'Library', 'bin')
+  import glob
+  libopenh264_src = glob.glob(os.path.join(conda_bin, 'openh264*.dll'))
+  libopencv_ffmpeg_src = glob.glob(os.path.join(conda_bin, 'opencv_ffmpeg*.dll'))
+  
+  for src in libopenh264_src + libopencv_ffmpeg_src:
+    dst = os.path.basename(src)
+    added_datas.append((dst, src, 'DATA'))
 
 
 block_cipher = None

@@ -91,8 +91,9 @@ def createSampleVideo(masked_image_file, sample_video_name ='', time_factor = 8,
 if __name__ == '__main__':
 
     #mask_file_name = '/Volumes/behavgenom_archive$/Avelino/Worm_Rig_Tests/Agar_Test/MaskedVideos/Agar_Screening_101116/N2_N10_F1-3_Set1_Pos3_Ch6_12112016_002739.hdf5'
-    masked_image_file = '/Volumes/behavgenom_archive$/Avelino/Worm_Rig_Tests/Agar_Test/MaskedVideos/Agar_Screening_101116/unc-9_N3_F1-3_Set1_Pos3_Ch4_12112016_002739.hdf5'
-    addSampleVideo(masked_image_file)
+    #masked_image_file = '/Volumes/behavgenom_archive$/Avelino/Worm_Rig_Tests/Agar_Test/MaskedVideos/Agar_Screening_101116/unc-9_N3_F1-3_Set1_Pos3_Ch4_12112016_002739.hdf5'
+    masked_image_file = r"C:\Users\worm_rig.MRC-8985\Tmp\MaskedVideos\150422 AX5936 no1.hdf5"
+    createSampleVideo(masked_image_file)
 
     # from sqlalchemy.ext.automap import automap_base
     # from sqlalchemy import create_engine

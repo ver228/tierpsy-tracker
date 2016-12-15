@@ -46,6 +46,8 @@ cmake -LAH -G "NMake Makefiles"^
  -DWITH_CUDA=OFF^
  -DWITH_OPENCL=OFF^
  -DWITH_VTK=OFF^
+ -DWITH_FFMPEG=ON^
+ -DBUILD_TIFF=ON^
  -DWITH_OPENNI=OFF^
  -DCMAKE_BUILD_TYPE=Release^
  -DBUILD_TESTS=OFF^
@@ -64,17 +66,14 @@ cmake -LAH -G "NMake Makefiles"^
  ..
 
 if errorlevel 1 exit 1
-
-for /F "tokens=1" %%A in ("%VSTRING%") do set VC_VER=%%A
-
 cmake --build . --target INSTALL --config Release
 
 if errorlevel 1 exit 1
 
 if "%ARCH%" == "64" (
-     robocopy %LIBRARY_PREFIX%\x64\vc%VC_VER%\ %LIBRARY_PREFIX%\ *.* /E
+     robocopy %LIBRARY_PREFIX%\x64\vc%VS_MAJOR%\ %LIBRARY_PREFIX%\ *.* /E
    ) else (
-     robocopy %LIBRARY_PREFIX%\x86\vc%VC_VER%\ %LIBRARY_PREFIX%\ *.* /E
+     robocopy %LIBRARY_PREFIX%\x86\vc%VS_MAJOR%\ %LIBRARY_PREFIX%\ *.* /E
 )
 if %ERRORLEVEL% GEQ 8 exit 1
 
