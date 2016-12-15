@@ -16,7 +16,7 @@ from scipy.interpolate import interp1d
 
 from MWTracker.analysis.ske_init.filterTrajectModel import filterModelWorms
 from MWTracker.helper.misc import TABLE_FILTERS
-from MWTracker.analysis.compress.extractMetaData import readAndSaveTimestamp
+from MWTracker.analysis.compress.extractMetaData import read_and_save_timestamp
 
 def getSmoothedTraj(trajectories_file,
                     min_track_size=100,
@@ -228,7 +228,7 @@ def saveTrajData(trajectories_data, masked_image_file, skeletons_file):
             filters=TABLE_FILTERS)
         
         if not '/timestamp' in ske_file_id:
-            readAndSaveTimestamp(masked_image_file, skeletons_file)
+            read_and_save_timestamp(masked_image_file, skeletons_file)
         
         #read and the pixel information
         trajectories_data = ske_file_id.get_node('/trajectories_data')

@@ -1,5 +1,5 @@
 
-from .Readers.readVideoffmpeg import readVideoffmpeg
+from .Readers.ReadVideoFFMPEG import ReadVideoFFMPEG
 from .Readers.readVideoHDF5 import readVideoHDF5
 from .Readers.readDatFiles import readDatFiles
 from .Readers.readTifFiles import readTifFiles
@@ -19,7 +19,7 @@ def selectVideoReader(video_file):
     elif isMJPGvideo:
         # use previous ffmpeg that is more compatible with the Gecko MJPG
         # format
-        vid = readVideoffmpeg(video_file)
+        vid = ReadVideoFFMPEG(video_file)
     elif isDATfiles:
         video_dir = os.path.split(video_file)[0]
         vid = readDatFile(video_dir)

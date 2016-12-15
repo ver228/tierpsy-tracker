@@ -12,7 +12,7 @@ import h5py
 import tables
 from MWTracker.compressVideos.compressVideo import initMasksGroups
 
-from MWTracker.analysis.compress.extractMetaData import readAndSaveTimestamp
+from MWTracker.analysis.compress.extractMetaData import read_and_save_timestamp
 from MWTracker.helper.misc import print_flush
 from MWTracker.helper.timeCounterStr import timeCounterStr
 
@@ -123,7 +123,7 @@ def reformatRigMaskedVideo(original_file, new_file, plugin_param_file, expected_
                 progress_str = progress_timer.getStr(frame)
                 print_flush(base_name + ' ' + progress_str)
         
-        readAndSaveTimestamp(masked_image_file)
+        read_and_save_timestamp(masked_image_file)
         #tag as finished reformatting
         mask_new.attrs['has_finished'] = 1
 

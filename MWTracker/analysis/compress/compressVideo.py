@@ -10,7 +10,7 @@ import cv2
 import h5py
 import numpy as np
 from MWTracker.analysis.compress import backgroundSubtraction
-from  MWTracker.analysis.compress.extractMetaData import storeMetaData, readAndSaveTimestamp
+from  MWTracker.analysis.compress.extractMetaData import store_meta_data, read_and_save_timestamp
 from scipy.ndimage.filters import median_filter
 
 from  MWTracker.analysis.compress.selectVideoReader import selectVideoReader
@@ -217,7 +217,7 @@ def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
 
     # extract and store video metadata using ffprobe
     print_flush(base_name + ' Extracting video metadata...')
-    expected_frames = storeMetaData(video_file, masked_image_file)
+    expected_frames = store_meta_data(video_file, masked_image_file)
     
 
     # intialize some variables
@@ -364,7 +364,7 @@ def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
         # close the video
         vid.release()
 
-    readAndSaveTimestamp(masked_image_file)
+    read_and_save_timestamp(masked_image_file)
     # attribute to indicate the program finished correctly
     with h5py.File(masked_image_file, "r+") as mask_fid:
         mask_fid['/mask'].attrs['has_finished'] = 1

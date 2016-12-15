@@ -15,7 +15,7 @@ import pandas as pd
 import skimage.filters as skf
 import skimage.morphology as skm
 
-from MWTracker.analysis.compress.extractMetaData import readAndSaveTimestamp
+from MWTracker.analysis.compress.extractMetaData import read_and_save_timestamp
 from MWTracker.helper.timeCounterStr import timeCounterStr
 from MWTracker.helper.misc import TABLE_FILTERS, print_flush
 
@@ -326,7 +326,7 @@ def getBlobsTable(masked_image_file,
         plate_worms._v_attrs['expected_fps'] = is_light_background
         
 
-        readAndSaveTimestamp(masked_image_file, trajectories_file)
+        read_and_save_timestamp(masked_image_file, trajectories_file)
         return plate_worms, is_light_background
         
     

@@ -13,7 +13,7 @@ import numpy as np
 from threading import Thread
 from queue import Queue, Empty
 
-from MWTracker.helper.misc import get_local_or_sys_path
+from MWTracker.helper.misc import FFMPEG_CMD
 
 
 def enqueue_error(out, queue):
@@ -22,13 +22,13 @@ def enqueue_error(out, queue):
     out.close
 
 
-class readVideoffmpeg:
+class ReadVideoFFMPEG:
     '''
     Read video frame using ffmpeg. Assumes 8bits gray video.
     Requires that ffmpeg is installed in the computer.
     This class is an alternative of the captureframe of opencv since:
-    -> it can be a pain to compile opencv with ffmpeg compability.
-    -> this funciton is a bit faster (less overhead), but only works with gecko's mjpeg
+    -> it can be a pain to compile opencv with ffmpeg compatibility.
+    -> this function is a bit faster (less overhead), but only works with gecko's mjpeg
     '''
 
     def __init__(self, fileName):
@@ -36,22 +36,15 @@ class readVideoffmpeg:
         if not os.path.exists(fileName):
             raise FileNotFoundError(fileName)
 
-        if sys.platform == 'win32':
-            ffmpeg_cmd = get_local_or_sys_path('ffmpeg.exe')
-        elif sys.platform == 'darwin':
-            ffmpeg_cmd = get_local_or_sys_path('ffmpeg22')
-        elif sys.platform == 'linux':
-            ffmpeg_cmd = get_local_or_sys_path('ffmpeg')
-
         # try to open the file and determine the frame size. Raise an exception
         # otherwise.
+        command = [FFMPEG_CMD, '-i', fileName, '-']
+        pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.PIPE)
+        buff = pipe.stderr.read()
+        pipe.terminate()
 
         try:
-            command = [ffmpeg_cmd, '-i', fileName, '-']
-            pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.PIPE)
-            buff = pipe.stderr.read()
-            pipe.terminate()
-            # the frame size is somewhere printed at the beggining by ffmpeg
+            # the frame size is somewhere printed at the beginning by ffmpeg
             dd = str(buff).partition('Video: ')[2].split(',')[2]
             dd = re.findall(r'\d*x\d*', dd)[0].split('x')
             self.height = int(dd[1])
@@ -59,12 +52,11 @@ class readVideoffmpeg:
             self.dtype = np.uint8
 
         except (IndexError, ValueError):
-            raise OSError(
-                'Error while getting the width and height using ffmpeg. Buffer output:', buff)
+            raise OSError(('Error while getting the width and height using ffmpeg. Buffer output:', buff))
 
         self.tot_pix = self.height * self.width
 
-        command = [ffmpeg_cmd,
+        command = [FFMPEG_CMD,
                    '-i', fileName,
                    '-f', 'image2pipe',
                    '-vsync', 'drop',  # avoid repeating frames due to changes in the time stamp, it is better to solve those situations manually after

@@ -2,25 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="09be277a-0def-4c61-9210-bf3a0766416c" name="Default" comment="">
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/AnalysisPoints.py" afterPath="$PROJECT_DIR$/MWTracker/processing/AnalysisPoints.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/CheckFilesForProcessing.py" afterPath="$PROJECT_DIR$/MWTracker/processing/CheckFilesForProcessing.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/CheckFinished.py" afterPath="$PROJECT_DIR$/MWTracker/processing/CheckFinished.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/ProcessMultipleFilesParser.py" afterPath="$PROJECT_DIR$/MWTracker/processing/ProcessMultipleFilesParser.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/ProcessWormsLocal.py" afterPath="$PROJECT_DIR$/MWTracker/processing/ProcessWormsLocal.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/ProcessWormsWorker.py" afterPath="$PROJECT_DIR$/MWTracker/processing/ProcessWormsWorker.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/__init__.py" afterPath="$PROJECT_DIR$/MWTracker/processing/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/batchProcHelperFunc.py" afterPath="$PROJECT_DIR$/MWTracker/processing/batchProcHelperFunc.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/processMultipleFilesFun.py" afterPath="$PROJECT_DIR$/MWTracker/processing/processMultipleFilesFun.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/tests/test_compress_mult.py" afterPath="$PROJECT_DIR$/MWTracker/processing/tests/test_compress_mult.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/tests/test_mult_cmd.py" afterPath="$PROJECT_DIR$/MWTracker/processing/tests/test_mult_cmd.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/batch_processing/tests/test_process.py" afterPath="$PROJECT_DIR$/MWTracker/processing/tests/test_process.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/gui/AnalysisProgress.py" afterPath="$PROJECT_DIR$/MWTracker/gui/AnalysisProgress.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/gui/BatchProcessing.py" afterPath="$PROJECT_DIR$/MWTracker/gui/BatchProcessing.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/gui/GetMaskParams.py" afterPath="$PROJECT_DIR$/MWTracker/gui/GetMaskParams.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd_scripts/compressMultipleFiles.py" afterPath="$PROJECT_DIR$/cmd_scripts/compressMultipleFiles.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd_scripts/trackMultipleFiles.py" afterPath="$PROJECT_DIR$/cmd_scripts/trackMultipleFiles.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/create_binaries/scripts/compressSingleWorker.py" afterPath="$PROJECT_DIR$/create_binaries/scripts/compressSingleWorker.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/create_binaries/scripts/trackSingleWorker.py" afterPath="$PROJECT_DIR$/create_binaries/scripts/trackSingleWorker.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dictionaries/ajaver.xml" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/Readers/readVideoffmpeg.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/Readers/ReadVideoFFMPEG.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/compressVideo.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/compressVideo.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/extractMetaData.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/extractMetaData.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/reformatRigMaskedVideo.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/reformatRigMaskedVideo.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/selectVideoReader.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/selectVideoReader.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_init/processTrajectoryData.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_init/processTrajectoryData.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/analysis/traj_create/getBlobTrajectories.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/traj_create/getBlobTrajectories.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/helper/misc.py" afterPath="$PROJECT_DIR$/MWTracker/helper/misc.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/create_binaries/MWConsole.spec" afterPath="$PROJECT_DIR$/create_binaries/MWConsole.spec" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -38,11 +30,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="AnalysisPoints.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MWTracker/processing/AnalysisPoints.py">
+      <file leaf-file-name="ReadVideoFFMPEG.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/MWTracker/analysis/compress/Readers/ReadVideoFFMPEG.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2384">
-              <caret line="185" column="12" lean-forward="false" selection-start-line="185" selection-start-column="12" selection-end-line="185" selection-end-column="12" />
+            <state relative-caret-position="288">
+              <caret line="18" column="30" lean-forward="false" selection-start-line="18" selection-start-column="30" selection-end-line="18" selection-end-column="30" />
               <folding>
                 <element signature="e#86#95#0" expanded="true" />
               </folding>
@@ -50,88 +42,24 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MWTrackerViewer.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MWTracker/gui/MWTrackerViewer.py">
+      <file leaf-file-name="MWConsole.spec" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/create_binaries/MWConsole.spec">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1744">
-              <caret line="127" column="0" lean-forward="false" selection-start-line="127" selection-start-column="0" selection-end-line="127" selection-end-column="0" />
+            <state relative-caret-position="144">
+              <caret line="9" column="35" lean-forward="true" selection-start-line="9" selection-start-column="35" selection-end-line="9" selection-end-column="35" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="misc.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/MWTracker/helper/misc.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="432">
+              <caret line="31" column="0" lean-forward="false" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
               <folding>
-                <element signature="e#0#11#0" expanded="true" />
+                <element signature="e#0#13#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="helperIterROI.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_create/helperIterROI.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="336">
-              <caret line="26" column="31" lean-forward="false" selection-start-line="26" selection-start-column="31" selection-end-line="26" selection-end-column="31" />
-              <folding>
-                <element signature="e#109#122#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="getSkeletonsTables.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_create/getSkeletonsTables.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="16">
-              <caret line="7" column="23" lean-forward="false" selection-start-line="7" selection-start-column="23" selection-end-line="7" selection-end-column="23" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="filterTrajectModel.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_init/filterTrajectModel.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="336">
-              <caret line="30" column="48" lean-forward="false" selection-start-line="30" selection-start-column="48" selection-end-line="30" selection-end-column="48" />
-              <folding>
-                <element signature="e#0#19#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CheckFinished.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MWTracker/processing/CheckFinished.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="992">
-              <caret line="65" column="63" lean-forward="false" selection-start-line="65" selection-start-column="63" selection-end-line="65" selection-end-column="63" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="obtainFeatures.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MWTracker/analysis/feat_create/obtainFeatures.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="304">
-              <caret line="26" column="24" lean-forward="false" selection-start-line="26" selection-start-column="24" selection-end-line="26" selection-end-column="24" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="createSampleVideo.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MWTracker/analysis/vid_subsample/createSampleVideo.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="192">
-              <caret line="12" column="24" lean-forward="false" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="processMultipleFilesFun.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MWTracker/processing/processMultipleFilesFun.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1456">
-              <caret line="97" column="57" lean-forward="false" selection-start-line="97" selection-start-column="57" selection-end-line="97" selection-end-column="57" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -174,6 +102,8 @@
       <find>manual</find>
       <find>'feat_manual_create'</find>
       <find>helperFunctions</find>
+      <find>ffmpeg</find>
+      <find>get_local_or_sys_path</find>
     </findStrings>
     <replaceStrings>
       <replace>feat_manual_create</replace>
@@ -228,11 +158,16 @@
         <option value="$PROJECT_DIR$/MWTracker/analysis/ske_init/processTrajectoryData.py" />
         <option value="$PROJECT_DIR$/MWTracker/analysis/ske_init/filterTrajectModel.py" />
         <option value="$PROJECT_DIR$/MWTracker/analysis/ske_create/getSkeletonsTables.py" />
+        <option value="$PROJECT_DIR$/MWTracker/analysis/compress/Readers/readVideoffmpeg.py" />
+        <option value="$PROJECT_DIR$/MWTracker/helper/misc.py" />
+        <option value="$PROJECT_DIR$/MWTracker/analysis/compress/Readers/ReadVideoFFMPEG.py" />
+        <option value="$PROJECT_DIR$/MWTracker/analysis/compress/extractMetaData.py" />
+        <option value="$PROJECT_DIR$/create_binaries/MWConsole.spec" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="476" />
+    <option name="x" value="373" />
     <option name="y" value="23" />
     <option name="width" value="1400" />
     <option name="height" value="937" />
@@ -255,6 +190,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -277,6 +214,20 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="create_binaries" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="MWTracker" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -295,7 +246,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="analysis" />
+              <option name="myItemId" value="helper" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -313,18 +264,12 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="analysis" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ske_create" />
+              <option name="myItemId" value="gui" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -523,10 +468,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="476" y="23" width="1400" height="937" extended-state="6" />
-    <editor active="false" />
+    <frame x="373" y="23" width="1400" height="937" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -540,7 +485,7 @@
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32949308" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19815668" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19815668" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39976957" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
@@ -562,55 +507,10 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/MWTracker/processing/CheckFinished.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="992">
-          <caret line="65" column="63" lean-forward="false" selection-start-line="65" selection-start-column="63" selection-end-line="65" selection-end-column="63" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/feat_create/obtainFeatures.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="304">
-          <caret line="26" column="24" lean-forward="false" selection-start-line="26" selection-start-column="24" selection-end-line="26" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/vid_subsample/createSampleVideo.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="12" column="24" lean-forward="false" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MWTracker/processing/processMultipleFilesFun.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1456">
-          <caret line="97" column="57" lean-forward="false" selection-start-line="97" selection-start-column="57" selection-end-line="97" selection-end-column="57" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MWTracker/processing/AnalysisPoints.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2656">
-          <caret line="166" column="12" lean-forward="false" selection-start-line="166" selection-start-column="12" selection-end-line="166" selection-end-column="12" />
-          <folding>
-            <element signature="e#86#95#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/MWTracker/gui/MWTrackerViewer.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2032">
           <caret line="127" column="0" lean-forward="false" selection-start-line="127" selection-start-column="0" selection-end-line="127" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -618,9 +518,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -628,7 +525,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="992">
           <caret line="65" column="63" lean-forward="false" selection-start-line="65" selection-start-column="63" selection-end-line="65" selection-end-column="63" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -643,7 +539,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="304">
           <caret line="26" column="24" lean-forward="false" selection-start-line="26" selection-start-column="24" selection-end-line="26" selection-end-column="24" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -651,7 +546,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="192">
           <caret line="12" column="24" lean-forward="false" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -659,7 +553,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1456">
           <caret line="97" column="57" lean-forward="false" selection-start-line="97" selection-start-column="57" selection-end-line="97" selection-end-column="57" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -842,7 +735,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="344">
           <caret line="213" column="44" lean-forward="false" selection-start-line="213" selection-start-column="44" selection-end-line="213" selection-end-column="44" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -857,7 +749,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="304">
           <caret line="26" column="24" lean-forward="false" selection-start-line="26" selection-start-column="24" selection-end-line="26" selection-end-column="24" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -865,7 +756,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="192">
           <caret line="12" column="24" lean-forward="false" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -876,29 +766,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MWTracker/processing/AnalysisPoints.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2384">
-          <caret line="185" column="12" lean-forward="false" selection-start-line="185" selection-start-column="12" selection-end-line="185" selection-end-column="12" />
-          <folding>
-            <element signature="e#86#95#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/MWTracker/processing/CheckFinished.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="992">
           <caret line="65" column="63" lean-forward="false" selection-start-line="65" selection-start-column="63" selection-end-line="65" selection-end-column="63" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MWTracker/processing/processMultipleFilesFun.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1456">
-          <caret line="97" column="57" lean-forward="false" selection-start-line="97" selection-start-column="57" selection-end-line="97" selection-end-column="57" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -911,21 +782,23 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_init/filterTrajectModel.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="336">
-          <caret line="30" column="48" lean-forward="false" selection-start-line="30" selection-start-column="48" selection-end-line="30" selection-end-column="48" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="368">
+          <caret line="32" column="48" lean-forward="false" selection-start-line="32" selection-start-column="48" selection-end-line="32" selection-end-column="48" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MWTracker/gui/MWTrackerViewer.py">
+    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_create/getSkeletonsTables2.py" />
+    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_create/getSkeletonsTables.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1744">
-          <caret line="127" column="0" lean-forward="false" selection-start-line="127" selection-start-column="0" selection-end-line="127" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="266">
+          <caret line="42" column="72" lean-forward="false" selection-start-line="42" selection-start-column="71" selection-end-line="42" selection-end-column="72" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/compress/selectVideoReader.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="19" column="23" lean-forward="false" selection-start-line="19" selection-start-column="23" selection-end-line="19" selection-end-column="23" />
         </state>
       </provider>
     </entry>
@@ -933,24 +806,61 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="336">
           <caret line="26" column="31" lean-forward="false" selection-start-line="26" selection-start-column="31" selection-end-line="26" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/gui/MWTrackerViewer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="636">
+          <caret line="130" column="0" lean-forward="false" selection-start-line="130" selection-start-column="0" selection-end-line="130" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/processing/AnalysisPoints.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="16">
+          <caret line="186" column="12" lean-forward="false" selection-start-line="186" selection-start-column="12" selection-end-line="186" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/processing/processMultipleFilesFun.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="636">
+          <caret line="97" column="57" lean-forward="false" selection-start-line="97" selection-start-column="57" selection-end-line="97" selection-end-column="57" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/compress/extractMetaData.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1904">
+          <caret line="119" column="0" lean-forward="true" selection-start-line="119" selection-start-column="0" selection-end-line="119" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/compress/Readers/ReadVideoFFMPEG.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="288">
+          <caret line="18" column="30" lean-forward="false" selection-start-line="18" selection-start-column="30" selection-end-line="18" selection-end-column="30" />
           <folding>
-            <element signature="e#109#122#0" expanded="true" />
+            <element signature="e#86#95#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_create/getSkeletonsTables2.py">
+    <entry file="file://$PROJECT_DIR$/MWTracker/helper/misc.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="432">
+          <caret line="31" column="0" lean-forward="false" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MWTracker/analysis/ske_create/getSkeletonsTables.py">
+    <entry file="file://$PROJECT_DIR$/create_binaries/MWConsole.spec">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="16">
-          <caret line="7" column="23" lean-forward="false" selection-start-line="7" selection-start-column="23" selection-end-line="7" selection-end-column="23" />
+        <state relative-caret-position="144">
+          <caret line="9" column="35" lean-forward="true" selection-start-line="9" selection-start-column="35" selection-end-line="9" selection-end-column="35" />
           <folding />
         </state>
       </provider>

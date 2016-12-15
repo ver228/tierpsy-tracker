@@ -29,3 +29,19 @@ def get_local_or_sys_path(file_name):
     if not file_source:
         raise FileNotFoundError('command not found: %s' % file_name)
     return file_source
+
+
+if sys.platform == 'win32':
+    FFMPEG_CMD = get_local_or_sys_path('ffmpeg.exe')
+elif sys.platform == 'darwin':
+    FFMPEG_CMD = get_local_or_sys_path('ffmpeg22')
+elif sys.platform == 'linux':
+    FFMPEG_CMD = get_local_or_sys_path('ffmpeg')
+
+
+# get the correct path for ffprobe. First we look in the aux
+    # directory, otherwise we look in the system path.
+if os.name == 'nt':
+    FFPROBE_CMD = get_local_or_sys_path('ffprobe.exe')
+else:
+    FFPROBE_CMD = get_local_or_sys_path('ffprobe')

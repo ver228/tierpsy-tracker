@@ -6,11 +6,16 @@ import sys
 import MWTracker
 import open_worm_analysis_toolbox
 
-#get MWConsole main path
+from MWTracker.helper.misc import FFMPEG_CMD, FFPROBE_CMD
 from MWTracker.gui import SelectApp
+
+IS_WIN =  (sys.platform == 'win32')
+IS_MAC =  (sys.platform == 'darwin')
+IS_LINUX =  (sys.platform == 'linux')
+
+#get MWConsole main path
 SRC_SCRIPT_PATH = SelectApp.__file__
 
-IS_WIN = sys.platform == 'win32'
 DST_BUILD=os.path.abspath('.')
 CREATE_CONSOLE= IS_WIN #make a separated console only in windows. I have to do this due to a problem with pyinstaller
 
@@ -28,17 +33,24 @@ ow_eigen = os.path.join('features', 'master_eigen_worms_n2.mat')
 ow_eigen_src = os.path.join(open_worm_path, ow_eigen)
 ow_eigen_dst = os.path.join('open_worm_analysis_toolbox', ow_eigen)
 
-#add prev compiled binary (they should have been runned before)
+#add ffmpeg and ffprobe
+ffmpeg_src = FFMPEG_CMD
+ffmpeg_dst = os.path.join('misc', os.path.basename(FFMPEG_CMD))
+ffprobe_src = FFPROBE_CMD
+ffprobe_dst = os.path.join('misc', os.path.basename(FFPROBE_CMD))
+
+#add prev compiled binary (they should have been ran before)
 proccess_bin_dst = 'ProcessWormsWorker'
 if IS_WIN:
   proccess_bin_dst += '.exe'
 proccess_bin_src = os.path.join(DST_BUILD, 'dist', 'ProcessWormsWorker', proccess_bin_dst)
 
-
 #create added files
 added_datas = [(ow_feat_dst, ow_feat_src, 'DATA'),
         (ow_eigen_dst, ow_eigen_src, 'DATA'),
-        (proccess_bin_dst, proccess_bin_src, 'DATA')]
+        (proccess_bin_dst, proccess_bin_src, 'DATA'),
+        (ffmpeg_dst, ffmpeg_src, 'DATA'),
+        (ffprobe_dst, ffprobe_src, 'DATA')]
 
 
 #I add the file separator at the end, it makes my life easier later on
@@ -89,7 +101,8 @@ if not DEBUG:
             upx=True,
             console=CREATE_CONSOLE )
 
-  if not IS_WIN:
+  if IS_MAC:
+
     app = BUNDLE(exe,
                  name='MWConsole.app',
                  icon=None,

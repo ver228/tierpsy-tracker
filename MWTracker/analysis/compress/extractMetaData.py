@@ -12,7 +12,7 @@ import os
 import subprocess as sp
 from collections import OrderedDict
 
-from MWTracker.helper.misc import get_local_or_sys_path
+from MWTracker.helper.misc import FFPROBE_CMD
 
 
 def dict2recarray(dat):
@@ -27,19 +27,14 @@ def dict2recarray(dat):
     return recarray
 
 
-def ffprobeMetadata(video_file):
+def get_ffprobe_metadata(video_file):
     if not os.path.exists(video_file):
         raise FileNotFoundError(video_file)
 
-    # get the correct path for ffprobe. First we look in the aux
-    # directory, otherwise we look in the system path.
-    if os.name == 'nt':
-        ffprobe_cmd = get_local_or_sys_path('ffprobe.exe')
-    else:
-        ffprobe_cmd = get_local_or_sys_path('ffprobe')
+
 
     command = [
-        ffprobe_cmd,
+        FFPROBE_CMD,
         '-v',
         'error',
         '-show_frames',
@@ -81,9 +76,9 @@ def ffprobeMetadata(video_file):
     return video_metadata
 
 
-def storeMetaData(video_file, masked_image_file):
+def store_meta_data(video_file, masked_image_file):
 
-    video_metadata = ffprobeMetadata(video_file)
+    video_metadata = get_ffprobe_metadata(video_file)
     expected_frames = len(video_metadata)
 
     if expected_frames == 0:  # nothing to do here. return a dum number of frames
@@ -97,7 +92,7 @@ def storeMetaData(video_file, masked_image_file):
     return expected_frames
 
 
-def correctTimestamp(best_effort_timestamp, best_effort_timestamp_time):
+def correct_timestamp(best_effort_timestamp, best_effort_timestamp_time):
     # delta from the best effort indexes
     xx = np.diff(best_effort_timestamp)
     good_N = (xx != 0)  # & ~np.isnan(xx)
@@ -126,7 +121,7 @@ def correctTimestamp(best_effort_timestamp, best_effort_timestamp_time):
     return timestamp, timestamp_time
 
 
-def getTimestamp(masked_image_file):
+def get_timestamp(masked_image_file):
     '''
     Read the timestamp from the video_metadata, if this field does not exists return an array of nan
     '''
@@ -146,7 +141,7 @@ def getTimestamp(masked_image_file):
 
             assert timestamp.size == timestamp_time.size
             if timestamp.size != tot_frames:
-                timestamp, timestamp_time = correctTimestamp(
+                timestamp, timestamp_time = correct_timestamp(
                     timestamp, timestamp_time)
 
         else:
@@ -157,7 +152,7 @@ def getTimestamp(masked_image_file):
         return timestamp, timestamp_time
 
 
-def readAndSaveTimestamp(masked_image_file, dst_file=''):
+def read_and_save_timestamp(masked_image_file, dst_file=''):
     '''
         Read and save timestamp data in to the dst_file, if there is not a dst_file save it into the masked_image_file
     '''
@@ -165,7 +160,7 @@ def readAndSaveTimestamp(masked_image_file, dst_file=''):
         dst_file = masked_image_file
 
     # read timestamps from the masked_image_file
-    timestamp, timestamp_time = getTimestamp(masked_image_file)
+    timestamp, timestamp_time = get_timestamp(masked_image_file)
     with tables.File(masked_image_file, 'r') as mask_fid:
         tot_frames = mask_fid.get_node("/mask").shape[0]
 
@@ -190,8 +185,8 @@ if __name__ == '__main__':
     video_file = "/Users/ajaver/Desktop/Videos/Check_Align_samples/Videos/npr-13 (tm1504)V on food L_2010_01_25__11_56_02___4___2.avi"
     masked_file = "/Users/ajaver/Desktop/Videos/Check_Align_samples/MaskedVideos/npr-13 (tm1504)V on food L_2010_01_25__11_56_02___4___2.hdf5"
 
-    dat = ffprobeMetadata(video_file)
+    dat = get_ffprobe_metadata(video_file)
 
-    storeMetaData(video_file, masked_file)
+    store_meta_data(video_file, masked_file)
     import matplotlib.pylab as plt
     plt.plot(np.diff(dat['best_effort_timestamp']))
