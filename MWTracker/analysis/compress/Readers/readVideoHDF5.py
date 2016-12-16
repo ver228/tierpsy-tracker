@@ -23,8 +23,8 @@ class readVideoHDF5:
 
         self.tot_frames = self.dataset.shape[0]
 
-        self.width = self.dataset.shape[1]
-        self.height = self.dataset.shape[2]
+        self.width = self.dataset.shape[2]
+        self.height = self.dataset.shape[1]
         self.dtype = self.dataset.dtype
         
         self.tot_pix = self.height * self.width
