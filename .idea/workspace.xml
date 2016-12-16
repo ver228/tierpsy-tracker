@@ -1,19 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="09be277a-0def-4c61-9210-bf3a0766416c" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dictionaries/ajaver.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/Readers/readVideoffmpeg.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/Readers/ReadVideoFFMPEG.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/compressVideo.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/compressVideo.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/extractMetaData.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/extractMetaData.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/reformatRigMaskedVideo.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/reformatRigMaskedVideo.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/selectVideoReader.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/compress/selectVideoReader.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_init/processTrajectoryData.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/ske_init/processTrajectoryData.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/analysis/traj_create/getBlobTrajectories.py" afterPath="$PROJECT_DIR$/MWTracker/analysis/traj_create/getBlobTrajectories.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker/helper/misc.py" afterPath="$PROJECT_DIR$/MWTracker/helper/misc.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/create_binaries/MWConsole.spec" afterPath="$PROJECT_DIR$/create_binaries/MWConsole.spec" />
-    </list>
+    <list default="true" id="09be277a-0def-4c61-9210-bf3a0766416c" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -33,7 +21,7 @@
       <file leaf-file-name="ReadVideoFFMPEG.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/MWTracker/analysis/compress/Readers/ReadVideoFFMPEG.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="288">
+            <state relative-caret-position="160">
               <caret line="18" column="30" lean-forward="false" selection-start-line="18" selection-start-column="30" selection-end-line="18" selection-end-column="30" />
               <folding>
                 <element signature="e#86#95#0" expanded="true" />
@@ -42,12 +30,24 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MWConsole.spec" pinned="false" current-in-tab="true">
+      <file leaf-file-name="MWConsole.spec" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/create_binaries/MWConsole.spec">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="9" column="35" lean-forward="true" selection-start-line="9" selection-start-column="35" selection-end-line="9" selection-end-column="35" />
+            <state relative-caret-position="160">
+              <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="readVideoHDF5.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/MWTracker/analysis/compress/Readers/readVideoHDF5.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="120">
+              <caret line="15" column="26" lean-forward="false" selection-start-line="15" selection-start-column="26" selection-end-line="15" selection-end-column="26" />
+              <folding>
+                <element signature="e#85#98#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -167,7 +167,7 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="373" />
+    <option name="x" value="187" />
     <option name="y" value="23" />
     <option name="width" value="1400" />
     <option name="height" value="937" />
@@ -246,7 +246,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="helper" />
+              <option name="myItemId" value="analysis" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -264,7 +264,37 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="gui" />
+              <option name="myItemId" value="analysis" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="compress" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MWTracker" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="analysis" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="compress" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Readers" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -468,7 +498,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="373" y="23" width="1400" height="937" extended-state="0" />
+    <frame x="187" y="23" width="1400" height="937" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -839,7 +869,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/MWTracker/analysis/compress/Readers/ReadVideoFFMPEG.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
+        <state relative-caret-position="160">
           <caret line="18" column="30" lean-forward="false" selection-start-line="18" selection-start-column="30" selection-end-line="18" selection-end-column="30" />
           <folding>
             <element signature="e#86#95#0" expanded="true" />
@@ -859,8 +889,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/create_binaries/MWConsole.spec">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="9" column="35" lean-forward="true" selection-start-line="9" selection-start-column="35" selection-end-line="9" selection-end-column="35" />
+        <state relative-caret-position="160">
+          <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
           <folding />
         </state>
       </provider>
