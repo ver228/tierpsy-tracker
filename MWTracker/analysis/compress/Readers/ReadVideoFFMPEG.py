@@ -36,6 +36,9 @@ class ReadVideoFFMPEG:
         if not os.path.exists(fileName):
             raise FileNotFoundError(fileName)
 
+        if not FFMPEG_CMD:
+            raise FileNotFoundError('ffmpeg do not found. Cannot process this video.')
+
         # try to open the file and determine the frame size. Raise an exception
         # otherwise.
         command = [FFMPEG_CMD, '-i', fileName, '-']

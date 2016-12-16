@@ -12,6 +12,7 @@ import os
 import subprocess as sp
 from collections import OrderedDict
 
+import warnings
 from MWTracker.helper.misc import FFPROBE_CMD
 
 
@@ -31,7 +32,9 @@ def get_ffprobe_metadata(video_file):
     if not os.path.exists(video_file):
         raise FileNotFoundError(video_file)
 
-
+    if not FFPROBE_CMD:
+        warnings.warn('ffprobe do not found. Raw video metadata will not be extracted.')
+        return np.zeros(0)
 
     command = [
         FFPROBE_CMD,
