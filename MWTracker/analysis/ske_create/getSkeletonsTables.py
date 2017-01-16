@@ -54,7 +54,7 @@ def getWormMask(
         worm_img,
         threshold,
         strel_size=5,
-        min_mask_area=50,
+        min_blob_area=50,
         roi_center_x=-1,
         roi_center_y=-1,
         is_light_background=True):
@@ -90,7 +90,7 @@ def getWormMask(
 
     # then get the best contour to be the worm
     worm_cnt, _ = binaryMask2Contour(
-        worm_mask, min_mask_area=min_mask_area, roi_center_x=roi_center_x, roi_center_y=roi_center_y)
+        worm_mask, min_blob_area=min_blob_area, roi_center_x=roi_center_x, roi_center_y=roi_center_y)
 
     # create a new mask having only the best contour
     worm_mask = np.zeros_like(worm_mask)
@@ -107,7 +107,7 @@ def getWormMask(
 
     # finally get the contour from the last element
     worm_cnt, cnt_area = binaryMask2Contour(
-        worm_mask, min_mask_area=min_mask_area, roi_center_x=roi_center_x, roi_center_y=roi_center_y)
+        worm_mask, min_blob_area=min_blob_area, roi_center_x=roi_center_x, roi_center_y=roi_center_y)
 
     worm_mask = np.zeros_like(worm_mask)
     cv2.drawContours(worm_mask, [worm_cnt.astype(np.int32)], 0, 1, -1)
@@ -117,7 +117,7 @@ def getWormMask(
 
 def binaryMask2Contour(
         worm_mask,
-        min_mask_area=50,
+        min_blob_area=50,
         roi_center_x=-1,
         roi_center_y=-1,
         pick_center=True):
@@ -144,7 +144,7 @@ def binaryMask2Contour(
         contour = np.squeeze(contour[0], axis=1)
         # filter for small areas
         cnt_area = cv2.contourArea(contour)
-        if cnt_area < min_mask_area:
+        if cnt_area < min_blob_area:
             return np.zeros(0), cnt_area
 
     elif len(contour) > 1:
@@ -152,10 +152,10 @@ def binaryMask2Contour(
         # select the largest area  object
         cnt_areas = [cv2.contourArea(cnt) for cnt in contour]
 
-        # filter only contours with areas larger than min_mask_area and do not
+        # filter only contours with areas larger than min_blob_area and do not
         # consider contour with holes
         cnt_tuple = [(contour[ii], cnt_area) for ii, cnt_area in enumerate(
-            cnt_areas) if cnt_area >= min_mask_area and hierarchy[0][ii][3] == -1] # shouldn't the last condition be automatically satisified by using RETR_EXTERNAL in cv2.findContours?
+            cnt_areas) if cnt_area >= min_blob_area and hierarchy[0][ii][3] == -1] # shouldn't the last condition be automatically satisified by using RETR_EXTERNAL in cv2.findContours?
 
         # if there are not contour left continue
         if not cnt_tuple:
@@ -235,7 +235,7 @@ def _initSkeletonsArrays(ske_file_id, tot_rows, resampling_N, worm_midbody):
 def trajectories2Skeletons(skeletons_file, 
                             masked_image_file,
                             resampling_N=49, 
-                            min_mask_area=50, 
+                            min_blob_area=50, 
                             strel_size=5, 
                             worm_midbody=(0.35, 0.65),
                             analysis_type="WORM", 
@@ -295,7 +295,7 @@ def trajectories2Skeletons(skeletons_file,
                     _, worm_cnt, _ = getWormMask(worm_img, 
                                                  row_data['threshold'], 
                                                  strel_size,
-                                                 min_mask_area=row_data['area'] / 2, 
+                                                 min_blob_area=row_data['area'] / 2, 
                                                  is_light_background = is_light_background)
                     # get skeletons
                     output = getSkeleton(worm_cnt, prev_skeleton[worm_index], resampling_N)

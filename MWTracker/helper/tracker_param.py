@@ -18,11 +18,12 @@ deprecated_alias = {
     'threshold_factor': 'worm_bw_thresh_factor',
     'is_invert_thresh' : 'is_light_background',
     'is_fluorescence' : 'is_light_background',
-    'min_length' : 'min_box_width'}
+    'min_length' : 'min_box_width',
+    'max_area' : 'mask_max_area'}
 
 dflt_param_list = [
-    ('min_area', 50, 'minimum allowed area in pixels.'),
-    ('max_area', int(1e8), 'maximum allowed area in pixels.'),
+    ('mask_min_area', 50, 'minimum allowed area in pixels allowed for in the compression mask.'),
+    ('mask_max_area', int(1e8), 'maximum allowed area in pixels allowed for in the compression mask..'),
     ('min_box_width', 5, 'minimum allowed width of bounding box in pxels.'),
     ('thresh_C', 15, 'constant offset used by the adaptative thresholding to calculate the mask.'),
     ('thresh_block_size', 61, 'block size used by the adaptative thresholding.'),
@@ -31,6 +32,7 @@ dflt_param_list = [
     ('keep_border_data', False, 'set it to false if you want to remove any connected component that touches the border.'),
     ('is_light_background', True, 'set to true to indentify dark worms over a light background.'),
     ('expected_fps', 25, 'expected frame rate.'),
+    ('traj_min_area', 25, 'minimum allowed area in pixels allowed for the trajectories and the videos.'),
     ('traj_max_allowed_dist', 25, 'Maximum displacement expected between frames to be consider same track.'),
     ('traj_area_ratio_lim', [0.5, 2], 'Limits of the consecutive blob areas to be consider the same object.'),
     ('worm_bw_thresh_factor', 1.05, 'This factor multiplies the threshold used to binarize the individual worms image.'),
@@ -73,6 +75,7 @@ dflt_param_list = [
     ('zf_auto_detect_tail_length', True, 'Flag to determine whether zebrafish tail length detection is used. If set to True, values for zf_tail_length, zf_num_segments and zf_test_width are ignored.')
 ]
 
+#separate parameters default data into dictionaries for values and help
 default_param = {x: y for x, y, z in dflt_param_list}
 param_help = {x: z for x, y, z in dflt_param_list}
 
@@ -85,10 +88,19 @@ class tracker_param:
             with open(source_file) as fid:
                 param_in_file = json.load(fid)
             for key in param_in_file:
+
                 if key in deprecated_fields:
+                    #ignore deprecated fields
                     continue
                 elif key in deprecated_alias:
+                    #rename deprecated alias
                     input_param[deprecated_alias[key]] = param_in_file[key]
+                
+                elif key == 'min_area':
+                    #special case of deprecated alias
+                    input_param['mask_min_area'] = param_in_file['min_area']
+                    input_param['traj_min_area'] = param_in_file['min_area']/2
+
                 else:
                     input_param[key] = param_in_file[key]
 
@@ -97,8 +109,8 @@ class tracker_param:
 
     def _get_param(
             self,
-            min_area,
-            max_area,
+            mask_min_area,
+            mask_max_area,
             min_box_width,
             thresh_C,
             thresh_block_size,
@@ -109,6 +121,7 @@ class tracker_param:
             expected_fps,
             traj_max_allowed_dist,
             traj_area_ratio_lim,
+            traj_min_area,
             worm_bw_thresh_factor,
             resampling_N,
             max_gap_allowed_block,
@@ -154,8 +167,8 @@ class tracker_param:
 
         # getROIMask
         self.mask_param = {
-            'min_area': min_area,
-            'max_area': max_area,
+            'min_area': mask_min_area,
+            'max_area': mask_max_area,
             'thresh_block_size': thresh_block_size,
             'thresh_C': thresh_C,
             'dilation_size': dilation_size,
@@ -187,7 +200,7 @@ class tracker_param:
         # getWormTrajectories
         self.trajectories_param = {
             'buffer_size' : compression_buff,
-            'min_area': min_area / 2,
+            'min_area': traj_min_area,
             'min_box_width': min_box_width,
             'worm_bw_thresh_factor': worm_bw_thresh_factor,
             'strel_size': (strel_size, strel_size),
@@ -234,7 +247,7 @@ class tracker_param:
         self.skeletons_param = {
             'resampling_N': resampling_N,
             'worm_midbody': (0.33, 0.67),
-            'min_mask_area': min_area / 2,
+            'min_blob_area': traj_min_area,
             'strel_size': strel_size,
             'analysis_type': analysis_type,
             'zf_skel_args' : zf_skel_args}

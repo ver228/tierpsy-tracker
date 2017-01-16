@@ -219,15 +219,14 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
         #in very old versions of the tracker I didn't save the area in trajectories table, 
         #let's assign a default value to deal with this cases
         if 'area' in row_data:
-            min_mask_area = row_data['area'] / 2
+            min_blob_area = row_data['area'] / 2
         else:
-            min_mask_area = 10
+            min_blob_area = 10
         
         c1, c2 = (row_data['coord_x'], row_data[
                   'coord_y']) if read_center else (-1, -1)
 
         worm_mask, worm_cnt, _ = getWormMask(worm_img, row_data['threshold'], strel_size=self.strel_size,
-                                      roi_center_x=c1, roi_center_y=c2, min_mask_area=min_mask_area,
                                       is_light_background = self.is_light_background)
 
         #worm_mask = np.zeros_like(worm_mask)
