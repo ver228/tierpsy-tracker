@@ -227,6 +227,7 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
                   'coord_y']) if read_center else (-1, -1)
 
         worm_mask, worm_cnt, _ = getWormMask(worm_img, row_data['threshold'], strel_size=self.strel_size,
+                                      roi_center_x=c1, roi_center_y=c2, min_blob_area=min_blob_area,
                                       is_light_background = self.is_light_background)
 
         #worm_mask = np.zeros_like(worm_mask)
