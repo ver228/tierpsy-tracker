@@ -1,4 +1,6 @@
 
+import os
+
 from .Readers.ReadVideoFFMPEG import ReadVideoFFMPEG
 from .Readers.readVideoHDF5 import readVideoHDF5
 from .Readers.readDatFiles import readDatFiles
