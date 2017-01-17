@@ -12,8 +12,14 @@ from MWTracker.gui.HDF5VideoPlayer import lineEditDragDrop
 from MWTracker.gui.BatchProcessing_ui import Ui_BatchProcessing
 
 from MWTracker.processing.ProcessMultipleFilesParser import CompressMultipleFilesParser, TrackMultipleFilesParser
-compress_dflt_vals = CompressMultipleFilesParser.dflt_vals
-track_dflt_vals = TrackMultipleFilesParser.dflt_vals
+DFLT_COMPRESS_VALS = CompressMultipleFilesParser.dflt_vals
+DFLT_TRACK_VALS = TrackMultipleFilesParser.dflt_vals
+
+#get default parameters files
+from MWTracker import __file__ as MWTracker_INIT_F #useful to get the location of auxiliar files
+DFLT_PARAMS_PATH = os.path.join(os.path.split(MWTracker_INIT_F)[0], 'misc', 'param_files')
+DFLT_PARAMS_FILES = [x for x in os.listdir(DFLT_PARAMS_PATH) if x.endswith('.json')]
+
 
 class BatchProcessing_GUI(QMainWindow):
 
@@ -37,8 +43,8 @@ class BatchProcessing_GUI(QMainWindow):
         self.ui.pushButton_tmpDir.clicked.connect(self.getTmpDir)
         self.ui.pushButton_start.clicked.connect(self.startAnalysis)
 
-        # print(compress_dflt_vals)
-        # print(track_dflt_vals)
+        # print(DFLT_COMPRESS_VALS)
+        # print(DFLT_TRACK_VALS)
 
         self.mask_files_dir = ''
         self.results_dir = ''
@@ -54,24 +60,20 @@ class BatchProcessing_GUI(QMainWindow):
         self.ui.checkBox_isTrack.setChecked(True)
         self.enableTrackInput()
 
-        self.ui.spinBox_numMaxProc.setValue(track_dflt_vals['max_num_process'])
+        self.ui.spinBox_numMaxProc.setValue(DFLT_TRACK_VALS['max_num_process'])
         self.ui.lineEdit_patternIn.setText(
-            compress_dflt_vals['pattern_include'])
+            DFLT_COMPRESS_VALS['pattern_include'])
         self.ui.lineEdit_patternExc.setText(
-            compress_dflt_vals['pattern_exclude'])
+            DFLT_COMPRESS_VALS['pattern_exclude'])
 
 
-        assert compress_dflt_vals[
-            'max_num_process'] == track_dflt_vals['max_num_process']
-        assert compress_dflt_vals[
-            'tmp_dir_root'] == track_dflt_vals['tmp_dir_root']
+        assert DFLT_COMPRESS_VALS[
+            'max_num_process'] == DFLT_TRACK_VALS['max_num_process']
+        assert DFLT_COMPRESS_VALS[
+            'tmp_dir_root'] == DFLT_TRACK_VALS['tmp_dir_root']
         lineEditDragDrop(
             self.ui.lineEdit_txtFileList,
             self.updateTxtFileList,
-            os.path.isfile)
-        lineEditDragDrop(
-            self.ui.lineEdit_paramFile,
-            self.updateParamFile,
             os.path.isfile)
         lineEditDragDrop(
             self.ui.lineEdit_videosDir,
@@ -89,6 +91,14 @@ class BatchProcessing_GUI(QMainWindow):
             self.ui.lineEdit_tmpDir,
             self.updateTmpDir,
             os.path.isdir)
+
+        lineEditDragDrop(
+            self.ui.comboBox_paramFile,
+            self.updateParamFile,
+            os.path.isfile)
+
+        #add default parameters options. Empty list so no json file is select by default
+        self.ui.comboBox_paramFile.addItems([''] + DFLT_PARAMS_FILES)
 
     def enableTxtFileListButton(self):
         is_enable = self.ui.checkBox_txtFileList.isChecked()
@@ -117,7 +127,7 @@ class BatchProcessing_GUI(QMainWindow):
         self.ui.pushButton_tmpDir.setEnabled(is_enable)
         self.ui.lineEdit_tmpDir.setEnabled(is_enable)
 
-        tmp_dir_root = track_dflt_vals['tmp_dir_root'] if is_enable else ''
+        tmp_dir_root = DFLT_TRACK_VALS['tmp_dir_root'] if is_enable else ''
         self.updateTmpDir(tmp_dir_root)
 
     def getTmpDir(self):
@@ -138,14 +148,14 @@ class BatchProcessing_GUI(QMainWindow):
         self.ui.lineEdit_videosDir.setEnabled(is_enable)
         if is_enable:
             self.ui.lineEdit_patternIn.setText(
-            compress_dflt_vals['pattern_include'])
+            DFLT_COMPRESS_VALS['pattern_include'])
             self.ui.lineEdit_patternExc.setText(
-            compress_dflt_vals['pattern_exclude'])
+            DFLT_COMPRESS_VALS['pattern_exclude'])
         elif self.ui.checkBox_isTrack.isChecked():
             self.ui.lineEdit_patternIn.setText(
-            track_dflt_vals['pattern_include'])
+            DFLT_TRACK_VALS['pattern_include'])
             self.ui.lineEdit_patternExc.setText(
-            track_dflt_vals['pattern_exclude'])
+            DFLT_TRACK_VALS['pattern_exclude'])
         
 
     def enableTrackInput(self):
@@ -154,9 +164,9 @@ class BatchProcessing_GUI(QMainWindow):
         self.ui.lineEdit_resultsDir.setEnabled(is_enable)
         if is_enable and not self.ui.checkBox_isCompress.isChecked():
             self.ui.lineEdit_patternIn.setText(
-            track_dflt_vals['pattern_include'])
+            DFLT_TRACK_VALS['pattern_include'])
             self.ui.lineEdit_patternExc.setText(
-            track_dflt_vals['pattern_exclude'])
+            DFLT_TRACK_VALS['pattern_exclude'])
         
     def getVideosDir(self):
         videos_dir = QFileDialog.getExistingDirectory(
@@ -226,7 +236,7 @@ class BatchProcessing_GUI(QMainWindow):
                 with open(param_file, 'r') as fid:
                     json_str = fid.read()
                     json_param = json.loads(json_str)
-                    self.ui.lineEdit_paramFile.setText(param_file)
+                    self.ui.comboBox_paramFile.insertItem(-1, param_file)
 
             except (IOError, OSError, UnicodeDecodeError, json.decoder.JSONDecodeError):
                 QMessageBox.critical(
@@ -256,8 +266,13 @@ class BatchProcessing_GUI(QMainWindow):
         max_num_process = self.ui.spinBox_numMaxProc.value()
         tmp_dir_root = self.ui.lineEdit_tmpDir.text()
         is_single_worm = self.ui.checkBox_isSingleWorm.isChecked()
-        json_file = self.ui.lineEdit_paramFile.text()
         is_copy_video = self.ui.checkBox_isCopyVideo.isChecked()
+        
+        #append the root dir if we are using any of the default parameters files. I didn't add the dir before because it is easy to read them in this way.
+        json_file = self.ui.comboBox_paramFile.currentText()
+        if json_file in DFLT_PARAMS_FILES:
+            json_file = os.path.join(DFLT_PARAMS_PATH, json_file)
+
         
         if self.ui.checkBox_txtFileList.isChecked():
             videos_list = self.ui.lineEdit_txtFileList.value()
@@ -319,7 +334,7 @@ class BatchProcessing_GUI(QMainWindow):
                         'videos_list' : videos_list,
                         'only_summary' : False,
                         'max_num_process' : max_num_process,
-                        'refresh_time' : track_dflt_vals['refresh_time']}
+                        'refresh_time' : DFLT_TRACK_VALS['refresh_time']}
 
         analysis_worker = WorkerFunQt(processMultipleFiles, process_args)
         progress = AnalysisProgress(analysis_worker)
