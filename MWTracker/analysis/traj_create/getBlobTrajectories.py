@@ -378,61 +378,7 @@ def getBlobsTable(masked_image_file,
 
     
     
-#%% NEEDED TO BE IMPLEMENTED TO CALCULATE THE BLOB FEATURES
-def _getBlobFeatures(
-        worm_cnt,
-        ROI_image,
-        ROI_bbox,
-        current_frame):
-    
-    area = float(cv2.contourArea(worm_cnt))
-    # find use the best rotated bounding box, the fitEllipse function produces bad results quite often
-    # this method is better to obtain an estimate of the worm length than
-    # eccentricity
-    (CMx, CMy), (L, W), angle = cv2.minAreaRect(worm_cnt)
-    #adjust CM from the ROI reference frame to the image reference
-    CMx += ROI_bbox[0]
-    CMy += ROI_bbox[1]
 
-    if L == 0 or W == 0:
-        return None #something went wrong abort
-    
-    if W > L:
-        L, W = W, L  # switch if width is larger than length
-    quirkiness = sqrt(1 - W**2 / L**2)
-
-    hull = cv2.convexHull(worm_cnt)  # for the solidity
-    solidity = area / cv2.contourArea(hull)
-    perimeter = float(cv2.arcLength(worm_cnt, True))
-    compactness = 4 * np.pi * area / (perimeter**2)
-
-    # calculate the mean intensity of the worm
-    worm_mask = np.zeros(ROI_image.shape, dtype=np.uint8)
-    cv2.drawContours(worm_mask, [worm_cnt], 0, 255, -1)
-    intensity_mean, intensity_std = cv2.meanStdDev(ROI_image, mask=worm_mask)
-    intensity_mean = intensity_mean[0,0]
-    intensity_std = intensity_std[0,0]
-
-    # calculate hu moments, they are scale and rotation invariant
-    hu_moments = cv2.HuMoments(cv2.moments(worm_cnt))
-
-    
-    # save everything into the the proper output format
-    mask_feat = (CMx,
-                CMy,
-                area,
-                perimeter,
-                L,
-                W,
-                quirkiness,
-                compactness,
-                angle,
-                solidity,
-                intensity_mean,
-                intensity_std,
-                *hu_moments)
-
-    return mask_feat
 
     
 if __name__ == '__main__':

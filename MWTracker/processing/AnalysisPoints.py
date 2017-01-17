@@ -20,6 +20,9 @@ from MWTracker.analysis.ske_create.getSkeletonsTables import trajectories2Skelet
 from MWTracker.analysis.ske_filt.getFilteredSkels import getFilteredSkels
 from MWTracker.analysis.ske_orient.checkHeadOrientation import correctHeadTail
 
+from MWTracker.analysis.blob_feats.getBlobsFeats import getBlobsFeats
+
+
 from MWTracker.analysis.stage_aligment.alignStageMotion import alignStageMotion, isGoodStageAligment
 
 from MWTracker.analysis.int_profile.getIntensityProfile import getIntensityProfile
@@ -134,6 +137,15 @@ class AnalysisPoints(object):
                 'input_files' : [fn['masked_image'], fn['skeletons']],
                 'output_files': [fn['skeletons']],
                 'requirements' : ['TRAJ_JOIN']
+            },
+            'BLOB_FEATS': {
+                'func': getBlobsFeats,
+                'argkws': {**{'skeletons_file': fn['skeletons'], 
+                            'masked_image_file': fn['masked_image']}, 
+                            **param.blob_feats_param},
+                'input_files' : [fn['skeletons'], fn['masked_image']],
+                'output_files': [fn['skeletons']],
+                'requirements' : ['SKE_INIT']
             },
             'SKE_CREATE': {
                 'func': trajectories2Skeletons,
