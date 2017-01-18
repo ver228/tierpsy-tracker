@@ -115,7 +115,7 @@ class CheckFilesForProcessing(object):
                       len(valid_files), progress_timer.getTimeStr()))
 
         print('''Finished to check files.\nTotal time elapsed {}\n'''.format(progress_timer.getTimeStr()))
-        msg = '''Files to be proccesed :  {}
+        msg = '''Files to be processed :  {}
 Invalid source files  :  {}
 Files that were succesfully finished: {}
 Files whose analysis is incompleted : {}'''.format(
