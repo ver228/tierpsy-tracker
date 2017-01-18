@@ -110,7 +110,11 @@
          </widget>
         </item>
         <item row="4" column="2">
-         <widget class="QLineEdit" name="lineEdit_paramFile"/>
+         <widget class="QComboBox" name="comboBox_paramFile">
+          <property name="editable">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

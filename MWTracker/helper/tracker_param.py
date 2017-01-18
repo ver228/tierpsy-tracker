@@ -231,6 +231,11 @@ class tracker_param:
             'filter_model_name' : filter_model_name
             }
 
+        self.blob_feats_param =  {
+            'is_light_background' : is_light_background,
+            'strel_size' : strel_size
+            }
+
         zf_skel_args = {'zf_num_segments': zf_num_segments,
             'zf_min_angle': zf_min_angle,
             'zf_max_angle': zf_max_angle,
