@@ -110,29 +110,34 @@ def generateMoviesROI(masked_file,
                     roi_size = -1, 
                     progress_prefix = '',
                     progress_refresh_rate_s=20):
-    
-    traj_group_by_frame = trajectories_data.groupby('frame_number')
-    
-    progress_time = timeCounterStr(progress_prefix)
-    
-    
-    with tables.File(masked_file, 'r') as fid:
 
-        try:
-            expected_fps = mask_fid.get_node('/', 'mask')._v_attrs['expected_fps']
-        except:
-            expected_fps = 25
-        progress_refresh_rate = expected_fps*progress_refresh_rate_s
+    if len(trajectories_data) == 0:
+        print_flush(progress_prefix + ' No valid data. Exiting.')
+        
+    else:
+        traj_group_by_frame = trajectories_data.groupby('frame_number')
+        
+        progress_time = timeCounterStr(progress_prefix)
+        
+        
+        with tables.File(masked_file, 'r') as fid:
 
-        img_data = fid.get_node('/mask')
-        for ii, (current_frame, frame_data) in enumerate(traj_group_by_frame):
-            img = img_data[current_frame]
-            
-            #dictionary where keys are the table row and the values the worms ROIs
-            yield getAllImgROI(img, frame_data, roi_size)
-            
-            if current_frame % progress_refresh_rate == 0:
-                print_flush(progress_time.getStr(current_frame))
-            
-        print_flush(progress_time.getStr(current_frame))
+            try:
+                expected_fps = mask_fid.get_node('/', 'mask')._v_attrs['expected_fps']
+            except:
+                expected_fps = 25
+            progress_refresh_rate = expected_fps*progress_refresh_rate_s
+
+
+            img_data = fid.get_node('/mask')
+            for ii, (current_frame, frame_data) in enumerate(traj_group_by_frame):
+                img = img_data[current_frame]
+                
+                #dictionary where keys are the table row and the values the worms ROIs
+                yield getAllImgROI(img, frame_data, roi_size)
+                
+                if current_frame % progress_refresh_rate == 0:
+                    print_flush(progress_time.getStr(current_frame))
+                
+            print_flush(progress_time.getStr(current_frame))
 
