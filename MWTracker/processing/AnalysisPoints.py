@@ -36,8 +36,7 @@ from MWTracker.helper.tracker_param import tracker_param
 
 
 class AnalysisPoints(object):
-    def __init__(self, video_file, masks_dir, results_dir, json_file = '',
-                 is_single_worm = False, use_skel_filter=True):
+    def __init__(self, video_file, masks_dir, results_dir, json_file = ''):
         
         self.getFileNames(video_file, masks_dir, results_dir)
         
@@ -46,8 +45,8 @@ class AnalysisPoints(object):
         self.results_dir = results_dir
         
         self.param = tracker_param(json_file)
-        self.is_single_worm = is_single_worm
-        self.use_skel_filter = use_skel_filter
+        self.is_single_worm = self.param.is_single_worm
+        self.use_skel_filter = self.param.use_skel_filter
         
         self.buildPoints()
         self.checker = CheckFinished(output_files = self.getField('output_files'))
@@ -120,8 +119,7 @@ class AnalysisPoints(object):
             },
             'TRAJ_JOIN': {
                 'func': joinBlobsTrajectories,
-                'argkws': {**{'trajectories_file': fn['skeletons'], 
-                            'is_single_worm': is_single_worm},
+                'argkws': {**{'trajectories_file': fn['skeletons']},
                             **param.join_traj_param},
                 'input_files' : [fn['skeletons']],
                 'output_files': [fn['skeletons']],
@@ -190,7 +188,7 @@ class AnalysisPoints(object):
                 'func': getWormFeaturesFilt,
                 'argkws': {'skeletons_file': fn['skeletons'], 'features_file': fn['features'],
                            **param.feats_param,
-                           'is_single_worm': is_single_worm, 'use_skel_filter': use_skel_filter, 'use_manual_join': False
+                           'use_skel_filter': self.use_skel_filter, 'use_manual_join': False
                            },
                 'input_files' : [fn['skeletons']],
                 'output_files': [fn['features']],
@@ -200,7 +198,7 @@ class AnalysisPoints(object):
                 'func': getWormFeaturesFilt,
                 'argkws': {'skeletons_file': fn['skeletons'], 'features_file': fn['feat_manual'],
                            **param.feats_param,
-                           'is_single_worm': False, 'use_skel_filter': use_skel_filter, 'use_manual_join': True,
+                           'use_skel_filter': self.use_skel_filter, 'use_manual_join': True,
                            },
                 'input_files' : [fn['skeletons']],
                 'output_files': [fn['feat_manual']],

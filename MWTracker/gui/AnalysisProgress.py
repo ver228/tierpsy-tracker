@@ -145,14 +145,14 @@ if __name__ == '__main__':
         'video_file': '/Users/ajaver/OneDrive - Imperial College London/MWTracker/Tests/test_1/RawVideos/Capture_Ch1_18062015_140908.mjpg',
         'mask_dir': '/Users/ajaver/OneDrive - Imperial College London/MWTracker/Tests/test_1/RawVideos/MaskedVideos',
         'json_file': '/Users/ajaver/OneDrive - Imperial College London/MWTracker/Tests/test_1/RawVideos/Capture_Ch1_18062015_140908.json',
-        'is_single_worm': False}
+        }
 
     track_argvs = {
         'masked_image_file': '/Users/ajaver/OneDrive - Imperial College London/MWTracker/Tests/test_1/RawVideos/MaskedVideos/Capture_Ch1_18062015_140908.hdf5',
         'results_dir': '/Users/ajaver/OneDrive - Imperial College London/MWTracker/Tests/test_1/RawVideos/Results',
         'json_file': '/Users/ajaver/OneDrive - Imperial College London/MWTracker/Tests/test_1/RawVideos/Capture_Ch1_18062015_140908.json',
-        'is_single_worm': False, 'start_point': -1, 'end_point': checkpoint['END'],
-        'use_skel_filter': True, 'use_manual_join': False, 'cmd_original': 'GUI'}
+        'start_point': -1, 'end_point': checkpoint['END'],
+        'use_manual_join': False, 'cmd_original': 'GUI'}
 
     # Create Queue and redirect sys.stdout to this queue
 

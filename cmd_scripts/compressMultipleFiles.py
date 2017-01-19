@@ -9,5 +9,7 @@ from MWTracker.processing.processMultipleFilesFun import compressMultipleFilesFu
 from MWTracker.processing.ProcessMultipleFilesParser import CompressMultipleFilesParser
 
 if __name__ == '__main__':
+
     args = CompressMultipleFilesParser().parse_args()
+    print(args)
     compressMultipleFilesFun(**vars(args))

@@ -227,13 +227,13 @@ def getBlobsData(buff_data, blob_params):
             fin_y = ini_y + ROI_bbox[2]
             ROI_buffer = image_buffer[:, ini_x:fin_x, ini_y:fin_y]
     
-            # caculate threshold
-            if analysis_type == "WORM":
-                # caculate threshold using the values in the buffer this improve quality since there is more data.
-                thresh_buff = getBufferThresh(ROI_buffer, worm_bw_thresh_factor, is_light_background)
-            elif analysis_type == "ZEBRAFISH":
+            # calculate threshold
+            if analysis_type == "ZEBRA_FISH":
                 # Override threshold
                 thresh_buff = 255
+            else:
+                # caculate threshold using the values in the buffer this improve quality since there is more data.
+                thresh_buff = getBufferThresh(ROI_buffer, worm_bw_thresh_factor, is_light_background)
             
             for buff_ind in range(image_buffer.shape[0]):
                 curr_ROI = ROI_buffer[buff_ind, :, :]

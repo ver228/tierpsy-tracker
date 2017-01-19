@@ -18,16 +18,14 @@ BATCH_SCRIPT_WORKER = getRealPathName(__file__)
 
 class ProcessWormsWorker(object):
     def __init__(self, main_file, masks_dir, results_dir, 
-            json_file, analysis_checkpoints, is_single_worm,
-            use_skel_filter, cmd_original):
+            json_file, analysis_checkpoints, cmd_original):
         
         for dirname in [masks_dir, results_dir]:
             if not os.path.exists(dirname):
                 os.makedirs(dirname)
         
         
-        self.ap = AnalysisPoints(main_file, masks_dir, results_dir, json_file,
-                 is_single_worm, use_skel_filter)
+        self.ap = AnalysisPoints(main_file, masks_dir, results_dir, json_file)
         self.analysis_checkpoints = self.ap.getUnfinishedPoints(analysis_checkpoints)
         self.cmd_original = cmd_original
         self.execAllPoints()
@@ -87,14 +85,7 @@ class ProcessWormsWorkerParser(argparse.ArgumentParser):
         self.add_argument(
             '--analysis_checkpoints', nargs='*',
             help='Sequence of steps to be processed.')
-        self.add_argument(
-            '--is_single_worm',
-            action='store_true',
-            help='This flag indicates if the video corresponds to the single worm case.')
-        self.add_argument(
-            '--use_skel_filter',
-            action='store_true',
-            help='Flag to filter valid skeletons using the movie robust averages.')
+        
 
 
 if __name__ == '__main__':
