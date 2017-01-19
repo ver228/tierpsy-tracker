@@ -276,7 +276,7 @@ class BatchProcessing_GUI(QMainWindow):
 
         
         if self.ui.checkBox_txtFileList.isChecked():
-            videos_list = self.ui.lineEdit_txtFileList.value()
+            videos_list = self.ui.lineEdit_txtFileList.text()
             pattern_include = ''
             pattern_exclude = ''
         else:
