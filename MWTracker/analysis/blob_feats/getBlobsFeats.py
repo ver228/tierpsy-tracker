@@ -130,7 +130,8 @@ def getBlobsFeats(skeletons_file, masked_image_file, is_light_background, strel_
                 '/',
                 'blob_features',
                 obj=features_df,
-                filters=TABLE_FILTERS)    
+                filters=TABLE_FILTERS) 
+        assert all(x in feats_names for x in fid.get_node('/blob_features').colnames)
 
 if __name__ == '__main__':
     #masked_image_file = '/Volumes/behavgenom_archive$/Avelino/Worm_Rig_Tests/short_movies/MaskedVideos/double_pick_021216/N2_N6_Set4_Pos5_Ch5_02122016_160343.hdf5'
