@@ -44,11 +44,6 @@ class BaseMultipleFilesParser(argparse.ArgumentParser):
             help='Pattern used to exclude files in video_dir_root')
 
         self.add_argument(
-            '--is_single_worm',
-            action='store_true',
-            help='This flag indicates if the video corresponds to the single worm case.')
-
-        self.add_argument(
             '--only_summary',
             action='store_true',
             help='Use this flag if you only want to print a summary of the files in the directory.')
@@ -97,10 +92,7 @@ class TrackMultipleFilesParser(BaseMultipleFilesParser):
     'refresh_time': 10,
     'force_start_point': '',
     'end_point': '',
-    'is_single_worm': False,
-    'only_summary': False,
-    'use_manual_join': False,
-    'no_skel_filter': False}
+    'only_summary': False}
 
     def __init__(self):
         super().__init__(
@@ -116,11 +108,7 @@ class TrackMultipleFilesParser(BaseMultipleFilesParser):
             '--use_manual_join',
             action='store_true',
             help='Use this flag to calculate features on manually joined data.')
-        self.add_argument(
-            '--no_skel_filter',
-            action='store_true',
-            help='Use this flag to do NOT filter valid skeletons using the movie robust averages.')
-
+        
         checkpoints2process = getDefaultSequence('Track', is_single_worm=True, use_skel_filter=True)
         
         self.add_argument(

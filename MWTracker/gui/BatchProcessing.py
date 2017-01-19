@@ -15,6 +15,8 @@ from MWTracker.processing.ProcessMultipleFilesParser import CompressMultipleFile
 DFLT_COMPRESS_VALS = CompressMultipleFilesParser.dflt_vals
 DFLT_TRACK_VALS = TrackMultipleFilesParser.dflt_vals
 
+from MWTracker.helper.tracker_param import tracker_param
+
 #get default parameters files
 from MWTracker import __file__ as MWTracker_INIT_F #useful to get the location of auxiliar files
 DFLT_PARAMS_PATH = os.path.join(os.path.split(MWTracker_INIT_F)[0], 'misc', 'param_files')
@@ -265,7 +267,6 @@ class BatchProcessing_GUI(QMainWindow):
         results_dir_root = self.ui.lineEdit_resultsDir.text()
         max_num_process = self.ui.spinBox_numMaxProc.value()
         tmp_dir_root = self.ui.lineEdit_tmpDir.text()
-        is_single_worm = self.ui.checkBox_isSingleWorm.isChecked()
         is_copy_video = self.ui.checkBox_isCopyVideo.isChecked()
         
         #append the root dir if we are using any of the default parameters files. I didn't add the dir before because it is easy to read them in this way.
@@ -316,17 +317,15 @@ class BatchProcessing_GUI(QMainWindow):
             is_copy_video = True
             sequence_str = 'Track'
             video_dir_root = mask_dir_root  #overwrite the video_dir_root in order to copy the mask file to tmp
-        
-        analysis_checkpoints = getDefaultSequence(sequence_str, 
-                                             is_single_worm=is_single_worm)          
+
+        param = tracker_param(json_file)
+        analysis_checkpoints = getDefaultSequence(sequence_str, is_single_worm=param.is_single_worm)
         check_args = {'video_dir_root': video_dir_root,
                       'mask_dir_root': mask_dir_root,
                       'results_dir_root' : results_dir_root,
                       'tmp_dir_root' : tmp_dir_root,
                       'json_file' : json_file,
                       'analysis_checkpoints': analysis_checkpoints,
-                      'is_single_worm':is_single_worm,
-                      'no_skel_filter': False,
                       'is_copy_video': is_copy_video}
 
         process_args = {'check_args' : check_args,

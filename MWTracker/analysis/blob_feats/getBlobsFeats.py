@@ -129,7 +129,7 @@ def getBlobsFeats(skeletons_file, masked_image_file, is_light_background, strel_
         fid.create_table(
                 '/',
                 'blob_features',
-                obj=trajectories_data.to_records(index=False),
+                obj=features_df,
                 filters=TABLE_FILTERS)    
 
 if __name__ == '__main__':

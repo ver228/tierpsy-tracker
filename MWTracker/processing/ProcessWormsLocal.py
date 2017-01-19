@@ -20,8 +20,7 @@ BATCH_SCRIPT_LOCAL = [sys.executable, os.path.realpath(__file__)]
 
 class ProcessWormsLocal(object):
     def __init__(self, main_file, masks_dir, results_dir, tmp_mask_dir='',
-            tmp_results_dir='', json_file='', analysis_checkpoints = [], 
-            is_single_worm=False, use_skel_filter=True, is_copy_video = False):
+            tmp_results_dir='', json_file='', analysis_checkpoints = [], is_copy_video = False):
         
         assert os.path.exists(main_file)
         self.main_file = main_file
@@ -30,8 +29,6 @@ class ProcessWormsLocal(object):
         self.analysis_checkpoints = analysis_checkpoints
         
         self.json_file = json_file
-        self.is_single_worm = is_single_worm
-        self.use_skel_filter = use_skel_filter
         
         #we have both a mask and a results tmp directory because like that it is easy to asign them to the original if the are empty
         self.tmp_results_dir = tmp_results_dir if tmp_results_dir else results_dir
@@ -50,11 +47,9 @@ class ProcessWormsLocal(object):
                 os.makedirs(dirname)
         
         #create objects for analysis points using the source and the temporary directory
-        self.ap_src = AnalysisPoints(self.main_file, self.masks_dir, results_dir, self.json_file,
-                 self.is_single_worm, self.use_skel_filter)
+        self.ap_src = AnalysisPoints(self.main_file, self.masks_dir, results_dir, self.json_file)
         self.base_name = self.ap_src.file_names['base_name']
-        self.ap_tmp = AnalysisPoints(self.tmp_main_file, self.tmp_mask_dir, self.tmp_results_dir, self.json_file,
-                 self.is_single_worm, self.use_skel_filter)
+        self.ap_tmp = AnalysisPoints(self.tmp_main_file, self.tmp_mask_dir, self.tmp_results_dir, self.json_file)
         
         #find the progress time in the temporary and source directory
         self.unfinished_points_src = self.ap_src.getUnfinishedPoints(self.analysis_checkpoints)
@@ -74,8 +69,7 @@ class ProcessWormsLocal(object):
         
         args = [self.tmp_main_file]
         argkws = {'masks_dir':self.tmp_mask_dir, 'results_dir':self.tmp_results_dir, 
-            'json_file':self.json_file, 'analysis_checkpoints':self.checkpoints2process,
-            'is_single_worm':self.is_single_worm, 'use_skel_filter':self.use_skel_filter}
+            'json_file':self.json_file, 'analysis_checkpoints':self.checkpoints2process}
 
         return create_script(BATCH_SCRIPT_WORKER, args, argkws)
 

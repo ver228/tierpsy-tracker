@@ -54,6 +54,10 @@ dflt_param_list = [
     ('roi_size', -1, ''),
     ('filter_model_name', '', ''),
     ('n_cores_used', 1, 'Number of core used. Currently it is only suported by TRAJ_CREATE and it is only recommended at high particle densities.'),
+    
+    ('analysis_type', 'WORM', 'Analysis functions to use. Valid options: WORM, SINGLE_WORM_SHAFER, ZEBRA_FISH (broken)'),
+    
+
     #not tested (used for the zebra fish)
     ('use_background_subtraction', False, 'Flag to determine whether background should be subtracted from original frames.'),
     ('background_threshold', 1, 'Threshold value to use when applying background subtraction.'),
@@ -62,7 +66,6 @@ dflt_param_list = [
     ('background_frame_offset', 500, 'Number of frames offset from current frame used for generating background images.'),
     ('background_generation_function', 'MAXIMUM', 'Function to apply to frames in order to generate background images.'),
     ('background_file', '', 'Image file to use for background subtraction. If a filepath is set here, this file will be used instead of dynamically-generated background images.'),
-    ('analysis_type', 'WORM', 'Analysis functions to use.'),
     ('zf_num_segments', 12, 'Number of segments to use in tail model.'),
     ('zf_min_angle', -90, 'The lowest angle to test for each segment. Angles are set relative to the angle of the previous segment.'),
     ('zf_max_angle', 90, 'The highest angle to test for each segment.'),
@@ -164,6 +167,10 @@ class tracker_param:
             expected_fps = int(expected_fps)
 
         self.expected_fps = expected_fps
+        self.analysis_type = analysis_type
+
+        self.is_single_worm = analysis_type == 'SINGLE_WORM_SHAFER'
+        self.use_skel_filter = True #for the moment I don't give the option to skip this
 
         # getROIMask
         self.mask_param = {
@@ -215,7 +222,8 @@ class tracker_param:
             'max_allowed_dist': traj_max_allowed_dist,
             'min_track_size': min_track_size,
             'max_time_gap': max_time_gap,
-            'area_ratio_lim': traj_area_ratio_lim}
+            'area_ratio_lim': traj_area_ratio_lim,
+            'is_single_worm': self.is_single_worm}
 
         # getSmoothTrajectories
         self.smoothed_traj_param = {
@@ -303,7 +311,8 @@ class tracker_param:
         self.feats_param = {
             'expected_fps': expected_fps, 
             'feat_filt_param': self.feat_filt_param,
-            'split_traj_time' : split_traj_time
+            'split_traj_time' : split_traj_time,
+            'is_single_worm': self.is_single_worm
         }
 
 if __name__=='__main__':

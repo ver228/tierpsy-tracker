@@ -28,7 +28,7 @@ def alignStageMotion(
     with tables.File(skeletons_file, 'r+') as fid:
         try:
             has_finished = fid.get_node('/stage_movement')._v_attrs['has_finished'][:]
-        except (KeyError, IndexError):
+        except (KeyError, IndexError, tables.exceptions.NoSuchNodeError):
             has_finished = 0
     if has_finished > 0:
         print_flush('%s The stage motion was previously aligned.' % base_name)

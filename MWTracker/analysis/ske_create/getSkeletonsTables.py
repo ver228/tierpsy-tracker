@@ -290,8 +290,9 @@ def trajectories2Skeletons(skeletons_file,
                 if worm_index not in prev_skeleton:
                     prev_skeleton[worm_index] = np.zeros(0)
 
-
-                if analysis_type == "WORM":
+                if analysis_type == "ZEBRA_FISH":
+                     output = _zebra_func(worm_img, zf_skel_args, resampling_N)
+                else:
                     _, worm_cnt, _ = getWormMask(worm_img, 
                                                  row_data['threshold'], 
                                                  strel_size,
@@ -300,8 +301,7 @@ def trajectories2Skeletons(skeletons_file,
                     # get skeletons
                     output = getSkeleton(worm_cnt, prev_skeleton[worm_index], resampling_N)
 
-                elif analysis_type == "ZEBRAFISH":
-                     output = _zebra_func(worm_img, zf_skel_args, resampling_N)
+                
                 
                 
                 if output is not None and output[0].size > 0:

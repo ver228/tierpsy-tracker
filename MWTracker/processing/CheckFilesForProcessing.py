@@ -14,8 +14,7 @@ from MWTracker.processing.AnalysisPoints import AnalysisPoints
 class CheckFilesForProcessing(object):
     def __init__(self, video_dir_root, mask_dir_root, 
                  results_dir_root, tmp_dir_root='', 
-                 json_file='', analysis_checkpoints = [], 
-                 is_single_worm = False, no_skel_filter=False,
+                 json_file='', analysis_checkpoints = [],
                   is_copy_video = True):
         
         def _testFileExists(fname, type_str):
@@ -40,11 +39,9 @@ class CheckFilesForProcessing(object):
         self.json_file = _testFileExists(json_file, 'Parameters json file')
         
         self.tmp_dir_root = _makeDirIfNotExists(tmp_dir_root)
-        
-        self.is_single_worm = is_single_worm
+
         self.is_copy_video = is_copy_video
-        self.use_skel_filter = not no_skel_filter
-        
+
         self.analysis_checkpoints = analysis_checkpoints
         self.filtered_files = {}
     
@@ -57,8 +54,7 @@ class CheckFilesForProcessing(object):
         mask_dir = os.path.join(self.mask_dir_root, subdir_path)
         results_dir = os.path.join(self.results_dir_root, subdir_path)
         
-        ap_obj = AnalysisPoints(video_file, mask_dir, results_dir, self.json_file,
-                 self.is_single_worm, self.use_skel_filter)
+        ap_obj = AnalysisPoints(video_file, mask_dir, results_dir, self.json_file)
         
         unfinished_points = ap_obj.getUnfinishedPoints(self.analysis_checkpoints)
         
@@ -115,7 +111,7 @@ class CheckFilesForProcessing(object):
                       len(valid_files), progress_timer.getTimeStr()))
 
         print('''Finished to check files.\nTotal time elapsed {}\n'''.format(progress_timer.getTimeStr()))
-        msg = '''Files to be proccesed :  {}
+        msg = '''Files to be processed :  {}
 Invalid source files  :  {}
 Files that were succesfully finished: {}
 Files whose analysis is incompleted : {}'''.format(
@@ -166,8 +162,6 @@ Files whose analysis is incompleted : {}'''.format(
                   'tmp_results_dir':tmp_results_dir,
                   'json_file':self.json_file, 
                   'analysis_checkpoints': unfinished_points,#self.analysis_checkpoints,
-                  'is_single_worm':self.is_single_worm, 
-                  'use_skel_filter':self.use_skel_filter,
                   'is_copy_video':self.is_copy_video}
         
         cmd = create_script(BATCH_SCRIPT_LOCAL, args, argkws)
