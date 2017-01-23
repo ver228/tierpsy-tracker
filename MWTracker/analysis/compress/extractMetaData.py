@@ -54,7 +54,6 @@ def get_ffprobe_metadata(video_file):
     if not dat:
         print(buff_err)
         return np.zeros(0)
-
     # use the first frame as reference
     frame_fields = list(dat['frames'][0].keys())
 
@@ -67,12 +66,16 @@ def get_ffprobe_metadata(video_file):
     video_metadata = OrderedDict()
     for field in frame_fields:
         video_metadata[field] = [frame[field] for frame in valid_frames]
+        
+
         try:  # if possible convert the data into float
             video_metadata[field] = [float(dd) for dd in video_metadata[field]]
-        except ValueError:
+        except (ValueError, TypeError):
             # pytables does not support unicode strings (python3)
-            video_metadata[field] = [bytes(dd, 'utf-8')
+            #the str before is to convert a possible dictionary into a string before converting it to bytes
+            video_metadata[field] = [bytes(str(dd), 'utf-8')
                                      for dd in video_metadata[field]]
+
         video_metadata[field] = np.asarray(video_metadata[field])
 
     video_metadata = dict2recarray(video_metadata)

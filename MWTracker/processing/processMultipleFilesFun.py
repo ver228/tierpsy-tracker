@@ -21,6 +21,7 @@ def processMultipleFiles(walk_args, check_args,
     else:
         with open(videos_list, 'r') as fid:
             valid_files = fid.read().split('\n')
+            valid_files = [os.path.realpath(x) for x in valid_files]
     
     files_checker = CheckFilesForProcessing(**check_args)
 
