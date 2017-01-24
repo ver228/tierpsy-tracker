@@ -60,7 +60,6 @@ class CompressMultipleFilesParser(BaseMultipleFilesParser):
     'pattern_exclude': '',
     'max_num_process': 6,
     'refresh_time': 10,
-    'is_single_worm': False,
     'only_summary': False,
     'is_copy_video': False,
     'videos_list': ''}
