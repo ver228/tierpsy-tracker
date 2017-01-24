@@ -108,7 +108,7 @@ class TrackMultipleFilesParser(BaseMultipleFilesParser):
             action='store_true',
             help='Use this flag to calculate features on manually joined data.')
         
-        checkpoints2process = getDefaultSequence('Track', is_single_worm=True, use_skel_filter=True)
+        checkpoints2process = getDefaultSequence('Track', is_single_worm=True)
         
         self.add_argument(
             '--force_start_point',
