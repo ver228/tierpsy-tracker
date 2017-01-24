@@ -5,6 +5,7 @@ Created on Thu Apr  2 16:33:34 2015
 @author: ajaver
 """
 
+import os
 import numpy as np
 import pandas as pd
 import tables
@@ -62,7 +63,7 @@ def assignBlobTraj(trajectories_file, max_allowed_dist=20, area_ratio_lim=(0.5, 
         plate_worms = fid['/plate_worms']
     
     #loop, save data and display progress
-    base_name = trajectories_file.replace('_trajectories.hdf5', '').replace('_skeletons.hdf5', '')
+    base_name = os.path.basename(trajectories_file).replace('_trajectories.hdf5', '').replace('_skeletons.hdf5', '')
     progressTime = timeCounterStr(base_name + ' Assigning trajectories.')  
              
     frame_data_prev = None

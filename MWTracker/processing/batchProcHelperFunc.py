@@ -78,12 +78,14 @@ def create_script(base_cmd, args, argkws):
 
 
 def getDefaultSequence(action, is_single_worm=False):
-    assert any(action == x for x in ['Compress', 'Track', 'All'])
+    action = action.lower()
+    assert any(action == x for x in ['compress', 'track', 'all'])
     if is_single_worm:
-        CHECKPOINTS_DFT = { 'Compress': ['COMPRESS',
-                                        'COMPRESS_ADD_DATA'
+        CHECKPOINTS_DFT = { 'compress': ['COMPRESS',
+                                        'COMPRESS_ADD_DATA',
+                                        'VID_SUBSAMPLE'
                                         ],
-                            'Track' : ['VID_SUBSAMPLE',
+                            'track' : ['VID_SUBSAMPLE',
                                         'TRAJ_CREATE',
                                         'TRAJ_JOIN',
                                         'SKE_INIT',
@@ -98,9 +100,9 @@ def getDefaultSequence(action, is_single_worm=False):
                                         'FEAT_CREATE',
                                         ]}
     else:
-        CHECKPOINTS_DFT = { 'Compress': ['COMPRESS',
+        CHECKPOINTS_DFT = { 'compress': ['COMPRESS',
                                         'VID_SUBSAMPLE'],
-                            'Track' : ['VID_SUBSAMPLE',
+                            'track' : ['VID_SUBSAMPLE',
                                     'TRAJ_CREATE',
                                     'TRAJ_JOIN',
                                     'SKE_INIT',
@@ -113,8 +115,8 @@ def getDefaultSequence(action, is_single_worm=False):
                                     'FEAT_CREATE'
                                     ]}
     
-    if action == 'All':
-        points =  CHECKPOINTS_DFT['Compress'] + CHECKPOINTS_DFT['Track']
+    if action == 'all':
+        points =  CHECKPOINTS_DFT['compress'] + CHECKPOINTS_DFT['track']
 
         #remove duplicates while keeping the order (http://stackoverflow.com/questions/480214/how-do-you-remove-duplicates-from-a-list-in-whilst-preserving-order)
         seen = set()
@@ -127,4 +129,4 @@ def getDefaultSequence(action, is_single_worm=False):
         return CHECKPOINTS_DFT[action]
 
 if __name__ == '__main__':
-    print(getDefaultSequence('All'))
+    print(getDefaultSequence('all'))
