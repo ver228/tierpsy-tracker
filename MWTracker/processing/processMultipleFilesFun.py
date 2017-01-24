@@ -32,6 +32,9 @@ def processMultipleFilesFun(
         is_copy_video=False,
         analysis_checkpoints=[]):
 
+    if not video_dir_root:
+      video_dir_root = mask_dir_root #if not given use mask_dir_root as default
+
     # calculate the results_dir_root from the mask_dir_root if it was not given
     if not results_dir_root:
         results_dir_root = getResultsDir(mask_dir_root)
@@ -59,7 +62,7 @@ def processMultipleFilesFun(
                   'json_file' : json_file,
                   'analysis_checkpoints': analysis_checkpoints,
                   'is_copy_video': is_copy_video}
-
+    
     #get the list of valid videos
     if not videos_list:
         valid_files = walkAndFindValidFiles(**walk_args)
@@ -71,6 +74,7 @@ def processMultipleFilesFun(
     files_checker = CheckFilesForProcessing(**check_args)
 
     cmd_list = files_checker.filterFiles(valid_files)
+    #files_checker._printUnmetReq()
     
     if not only_summary:
         # run all the commands

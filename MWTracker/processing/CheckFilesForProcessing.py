@@ -124,13 +124,15 @@ Files whose analysis is incompleted : {}'''.format(
         return self.getCMDlist()
     
     def _printUnmetReq(self):
-        def _get_unmet_requirements(ap_obj):
+        def _get_unmet_requirements(input_data):
+            ap_obj, unfinished_points = input_data
             for requirement in ap_obj.unmet_requirements:
                 if requirement in ap_obj.checkpoints:
                     provenance_file = ap_obj.checkpoints[requirement]['provenance_file']
                     requirement = '{} : {}'.format(requirement, provenance_file)
                 return requirement
 
+        print(self.filtered_files['SOURCE_BAD'])
         dd = map(_get_unmet_requirements, self.filtered_files['SOURCE_BAD'])
         dd ='\n'.join(dd)
         print(dd)
