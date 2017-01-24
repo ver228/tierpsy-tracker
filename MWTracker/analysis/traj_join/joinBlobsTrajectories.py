@@ -100,14 +100,15 @@ def assignBlobTraj(trajectories_file, max_allowed_dist=20, area_ratio_lim=(0.5, 
             # calculate the progress and put it in a string
             print_flush(progressTime.getStr(frame))
     
-    row_ind, traj_ind = map(np.concatenate, zip(*all_indexes))
-    traj_ind = traj_ind[np.argsort(row_ind)]
-        
-    with tables.File(trajectories_file, 'r+') as fid:
-        tbl = fid.get_node('/', 'plate_worms')
-        tbl.modify_column(column=traj_ind, colname='worm_index_blob')
+    if all_indexes:
+        row_ind, traj_ind = map(np.concatenate, zip(*all_indexes))
+        traj_ind = traj_ind[np.argsort(row_ind)]
+            
+        with tables.File(trajectories_file, 'r+') as fid:
+            tbl = fid.get_node('/', 'plate_worms')
+            tbl.modify_column(column=traj_ind, colname='worm_index_blob')
     
-    print_flush(progressTime.getStr(frame))    
+        print_flush(progressTime.getStr(frame))    
     
 
 def _validRowsByArea(plate_worms):
