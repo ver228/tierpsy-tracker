@@ -77,12 +77,12 @@ def create_script(base_cmd, args, argkws):
     return cmd
 
 
-def getDefaultSequence(action, is_single_worm=False, use_skel_filter=True):
+def getDefaultSequence(action, is_single_worm=False):
     assert any(action == x for x in ['Compress', 'Track', 'All'])
     if is_single_worm:
         CHECKPOINTS_DFT = { 'Compress': ['COMPRESS',
-                                        'COMPRESS_ADD_DATA',
-                                        'VID_SUBSAMPLE'],
+                                        'COMPRESS_ADD_DATA'
+                                        ],
                             'Track' : ['VID_SUBSAMPLE',
                                         'TRAJ_CREATE',
                                         'TRAJ_JOIN',
@@ -112,9 +112,6 @@ def getDefaultSequence(action, is_single_worm=False, use_skel_filter=True):
                                     'INT_SKE_ORIENT',
                                     'FEAT_CREATE'
                                     ]}
-    
-    if not use_skel_filter:
-        CHECKPOINTS_DFT['Track'].remove('SKE_FILT')
     
     if action == 'All':
         points =  CHECKPOINTS_DFT['Compress'] + CHECKPOINTS_DFT['Track']
