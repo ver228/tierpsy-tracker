@@ -102,20 +102,25 @@ def _remove_corner_blobs(ROI_image):
 
     return ROI_image
 
-def _get_blob_mask(ROI_image, thresh, thresh_block_size, is_light_background):
+def _get_blob_mask(ROI_image, thresh, thresh_block_size, is_light_background, analysis_type):
     # get binary image, 
     if is_light_background:
         ## apply a median filter to reduce rough edges / sharpen the boundary btw worm and background
         ROI_image_th = cv2.medianBlur(ROI_image, 3)
         ROI_mask = ROI_image_th < thresh
     else:
-        # for fluorescent pharynx labeled images, refine the threshold with a local otsu (http://scikit-image.org/docs/dev/auto_examples/plot_local_otsu.html)
-        # this compensates for local variations in brightness in high density regions, when many worms are close to each other
-        # as a local threshold introcudes artifacts at the edge of the mask, also use a global threshold to cut these out
-        ROI_rank_otsu = skf.rank.otsu(ROI_image, skm.disk(thresh_block_size))
+        if analysis_type == "WORM":
+            # this case applies for example to worms where the whole body is fluorecently labeled
+            ROI_image_th = cv2.medianBlur(ROI_image, 3)
+            ROI_mask = ROI_image_th >= thresh
+        elif analysis_type == "PHARYNX":
+            # for fluorescent pharynx labeled images, refine the threshold with a local otsu (http://scikit-image.org/docs/dev/auto_examples/plot_local_otsu.html)
+            # this compensates for local variations in brightness in high density regions, when many worms are close to each other
+            # as a local threshold introcudes artifacts at the edge of the mask, also use a global threshold to cut these out
+            ROI_rank_otsu = skf.rank.otsu(ROI_image, skm.disk(thresh_block_size))
         
-        ROI_mask = (ROI_image>ROI_rank_otsu)
-        ROI_mask &= (ROI_image>=thresh)
+            ROI_mask = (ROI_image>ROI_rank_otsu)
+            ROI_mask &= (ROI_image>=thresh)
         
         
     ROI_mask &= (ROI_image != 0)
@@ -130,11 +135,12 @@ def getBlobContours(ROI_image,
                     thresh, 
                     strel_size=(5, 5), 
                     is_light_background=True, 
+                    analysis_type="WORM", 
                     thresh_block_size=15):
 
     
     ROI_image = _remove_corner_blobs(ROI_image)
-    ROI_mask, thresh = _get_blob_mask(ROI_image, thresh, thresh_block_size, is_light_background)
+    ROI_mask, thresh = _get_blob_mask(ROI_image, thresh, thresh_block_size, is_light_background, analysis_type)
 
     # clean it using morphological closing - make this optional by setting strel_size to 0
     if np.all(strel_size):
@@ -228,7 +234,7 @@ def getBlobsData(buff_data, blob_params):
             ROI_buffer = image_buffer[:, ini_x:fin_x, ini_y:fin_y]
     
             # caculate threshold
-            if analysis_type == "WORM":
+            if analysis_type == "WORM" or analysis_type == "PHARYNX":
                 # caculate threshold using the values in the buffer this improve quality since there is more data.
                 thresh_buff = getBufferThresh(ROI_buffer, worm_bw_thresh_factor, is_light_background)
             elif analysis_type == "ZEBRAFISH":
@@ -242,7 +248,8 @@ def getBlobsData(buff_data, blob_params):
                 ROI_worms, hierarchy = getBlobContours(curr_ROI, 
                                                         thresh_buff, 
                                                         strel_size, 
-                                                        is_light_background, 
+                                                        is_light_background,
+                                                        analysis_type, 
                                                         thresh_block_size)
                 current_frame = frame_number + buff_ind
         
