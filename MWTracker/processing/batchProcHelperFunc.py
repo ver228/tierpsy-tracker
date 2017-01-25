@@ -5,6 +5,7 @@ Created on Wed Aug 10 19:59:08 2016
 @author: ajaver
 """
 import os
+import errno
 import sys
 import fnmatch
 
@@ -28,8 +29,8 @@ def walkAndFindValidFiles(root_dir, pattern_include='*', pattern_exclude=''):
 
 def _walkAndFind(root_dir, pattern_include='*', pattern_exclude=''):
     root_dir = os.path.abspath(root_dir)
-    assert os.path.exists(root_dir)
-
+    if not os.path.exists(root_dir):
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), root_dir)
     # if there is only a string (only one pattern) let's make it a list to be
     # able to reuse the code
     if not isinstance(pattern_include, (list, tuple)):

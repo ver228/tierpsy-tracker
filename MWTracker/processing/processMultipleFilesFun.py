@@ -51,7 +51,7 @@ def processMultipleFilesFun(
     _removePointFromSide(analysis_checkpoints, force_start_point, 0)
     _removePointFromSide(analysis_checkpoints, end_point, -1)
 
-    walk_args = {'root_dir':mask_dir_root, 
+    walk_args = {'root_dir':video_dir_root, 
                  'pattern_include' : pattern_include,
                   'pattern_exclude' : pattern_exclude}
     
