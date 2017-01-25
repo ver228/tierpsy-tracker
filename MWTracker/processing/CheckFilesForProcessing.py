@@ -142,7 +142,7 @@ Files whose analysis is incompleted : {}'''.format(
     def getCMDlist(self):
         A = map(self.generateIndCMD, self.filtered_files['SOURCE_GOOD'])
         B = map(self.generateIndCMD, self.filtered_files['FINISHED_BAD'])
-        return list(A) + list(B)
+        return list(B) + list(A)
 
     def generateIndCMD(self, input_d):
         good_ap_obj, unfinished_points = input_d
