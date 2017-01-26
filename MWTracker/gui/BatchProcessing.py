@@ -238,7 +238,15 @@ class BatchProcessing_GUI(QMainWindow):
                 with open(param_file, 'r') as fid:
                     json_str = fid.read()
                     json_param = json.loads(json_str)
-                    self.ui.comboBox_paramFile.insertItem(-1, param_file)
+
+                    #find the current index in the combobox, if it preappend it.
+                    ind_comb = self.ui.comboBox_paramFile.findText(param_file)
+                    if ind_comb == -1:
+                        self.ui.comboBox_paramFile.insertItem(-1, param_file)
+                        ind_comb = 0
+
+                    self.ui.comboBox_paramFile.setCurrentIndex(ind_comb)
+
 
             except (IOError, OSError, UnicodeDecodeError, json.decoder.JSONDecodeError):
                 QMessageBox.critical(
