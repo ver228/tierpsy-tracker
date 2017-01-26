@@ -149,8 +149,8 @@ def getOpenWormData(worm, wStats=[]):
 
     # let's make a copy of the skeletons before chaning axis
     worm_coords = {'skeletons':worm.skeleton.copy(),
-                    'dorsal_contour':worm.dorsal_contour.copy(),
-                    'ventral_contour':worm.ventral_contour.copy()
+                    'dorsal_contours':worm.dorsal_contour.copy(),
+                    'ventral_contours':worm.ventral_contour.copy()
                     }
 
     # IMPORTANT change axis to an openworm format before calculating features
@@ -290,10 +290,13 @@ def getWormFeaturesFilt(
         with tables.File(skeletons_file, 'r') as ske_file_id:
             skel_shape = ske_file_id.get_node('/skeleton').shape
 
+        
+
         worm_coords_array = {}
-        for  array_name in ['skeletons', 'dorsal_contour', 'ventral_contour']:
+        w_node = features_fid.create_group('/', 'coordinates')
+        for  array_name in ['skeletons', 'dorsal_contours', 'ventral_contours']:
             worm_coords_array[array_name] = features_fid.create_earray(
-                '/',
+                w_node,
                 array_name,
                 shape=(
                     0,
@@ -435,13 +438,18 @@ def getWormFeaturesFilt(
         
         # create and save a table containing the averaged worm feature for each
         # worm
+        f_node = features_fid.create_group('/', 'features_summary')
         for stat in FUNC_FOR_DIV:
             features_fid.create_table(
-                '/', 'features_' + stat, obj = stats_features_df[stat], filters = TABLE_FILTERS)
+                f_node, stat, obj = stats_features_df[stat], filters = TABLE_FILTERS)
             
             feat_stat_split = features_fid.create_table(
-                '/', 'features_{}_split'.format(stat), obj=np.array(all_splitted_feats[stat]), filters=TABLE_FILTERS)
+                f_node, stat + '_split', obj=np.array(all_splitted_feats[stat]), filters=TABLE_FILTERS)
             feat_stat_split._v_attrs['split_traj_frames'] = split_traj_frames
+        
+        #FUTURE: I am duplicating this field for backward compatibility, I should remove it later on.
+        features_fid.create_table('/', 'features_means', obj = stats_features_df['means'], filters = TABLE_FILTERS)
+        feat_stat_split = features_fid.create_table('/', 'features_means_split', obj=np.array(all_splitted_feats['means']), filters=TABLE_FILTERS)
         
         print_flush(
             base_name +
