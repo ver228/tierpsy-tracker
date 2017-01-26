@@ -32,17 +32,17 @@ def processMultipleFilesFun(
         is_copy_video=False,
         analysis_checkpoints=[]):
 
-    if not video_dir_root:
-      video_dir_root = mask_dir_root #if not given use mask_dir_root as default
-
     # calculate the results_dir_root from the mask_dir_root if it was not given
     if not results_dir_root:
         results_dir_root = getResultsDir(mask_dir_root)
 
+    if not video_dir_root:
+        video_dir_root = mask_dir_root
+
     param = tracker_param(json_file)
 
     if not analysis_checkpoints:
-      analysis_checkpoints = getDefaultSequence(analysis_type, is_single_worm=param.is_single_worm)
+      analysis_checkpoints = getDefaultSequence(analysis_type, is_single_worm=param.is_single_worm, add_manual_feats=use_manual_join)
     
     if use_manual_join:
           #only execute the calculation of the manual features
@@ -51,7 +51,7 @@ def processMultipleFilesFun(
     _removePointFromSide(analysis_checkpoints, force_start_point, 0)
     _removePointFromSide(analysis_checkpoints, end_point, -1)
 
-    walk_args = {'root_dir':video_dir_root, 
+    walk_args = {'root_dir': video_dir_root, 
                  'pattern_include' : pattern_include,
                   'pattern_exclude' : pattern_exclude}
     

@@ -30,7 +30,7 @@ def remove_dir(dir2remove):
 
 
 def test1(script_dir, examples_dir):
-    print('%%%%%% TEST1 %%%%%%\nGenerate mask files from .mjpeg files.')
+    print('%%%%%% TEST1 %%%%%%\nGenerate mask files from .mjpg files.')
     main_dir = os.path.join(examples_dir, 'test_1')
     masked_files_dir = os.path.join(main_dir, 'MaskedVideos')
     raw_video_dir = os.path.join(main_dir, 'RawVideos')
@@ -41,9 +41,16 @@ def test1(script_dir, examples_dir):
         sys.executable,
         os.path.join(
             script_dir,
-            'compressMultipleFiles.py'),
+            'processMultipleFiles.py'),
+        '--video_dir_root',
         raw_video_dir,
-        masked_files_dir]
+        '--mask_dir_root',
+        masked_files_dir,
+        '--analysis_type',
+        'compress',
+        '--pattern_include',
+        '*.mjpg'
+        ]
     execute_cmd(cmd)
 
 
@@ -60,13 +67,18 @@ def test2(script_dir, examples_dir):
         sys.executable,
         os.path.join(
             script_dir,
-            'compressMultipleFiles.py'),
+            'processMultipleFiles.py'),
+        '--video_dir_root',
         raw_video_dir,
+        '--mask_dir_root',
         masked_files_dir,
+        '--analysis_type',
+        'compress',
         "--json_file",
         json_file,
         '--pattern_include',
-        "*.avi"]
+        '*.avi'
+        ]
     execute_cmd(cmd)
 
 
@@ -78,14 +90,20 @@ def test3(script_dir, examples_dir):
     json_file = os.path.join(main_dir, 'test3.json')
 
     remove_dir(results_dir)
+
     cmd = [
         sys.executable,
         os.path.join(
             script_dir,
-            'trackMultipleFiles.py'),
+            'processMultipleFiles.py'),
+        '--mask_dir_root',
         masked_files_dir,
-        '--json_file',
-        json_file]
+        '--analysis_type',
+        'track',
+        "--json_file",
+        json_file
+        ]
+
     execute_cmd(cmd)
 
 
@@ -106,11 +124,15 @@ def test4(script_dir, examples_dir):
         sys.executable,
         os.path.join(
             script_dir,
-            'trackMultipleFiles.py'),
+            'processMultipleFiles.py'),
+        '--mask_dir_root',
         masked_files_dir,
-        '--json_file',
-        json_file,
-        '--use_manual_join']
+        '--analysis_checkpoints',
+        'FEAT_MANUAL_CREATE',
+        "--json_file",
+        json_file
+        ]
+
     execute_cmd(cmd)
 
 
@@ -121,32 +143,35 @@ def test5(script_dir, examples_dir):
     masked_files_dir = main_dir
 
     remove_dir(results_dir)
-    cmd = [
+    cmd = cmd = [
         sys.executable,
         os.path.join(
             script_dir,
-            'trackMultipleFiles.py'),
-        masked_files_dir]
-    execute_cmd(cmd)
-
-def test6(script_dir, examples_dir):
-    print('%%%%%% TEST6 %%%%%%\nReformat mask file produced by the rig.')
-    main_dir = os.path.join(examples_dir, 'test_6')
-    masked_files_dir = os.path.join(main_dir, 'MaskedVideos')
-    raw_video_dir = os.path.join(main_dir, 'RawVideos')
-
-    #remove_dir(masked_files_dir)
-
-    cmd = [
-        sys.executable,
-        os.path.join(
-            script_dir,
-            'compressMultipleFiles.py'),
-        raw_video_dir,
+            'processMultipleFiles.py'),
+        '--mask_dir_root',
         masked_files_dir,
-        '--pattern_include', 
-        '*.raw_hdf5']
+        '--analysis_type',
+        'track']
     execute_cmd(cmd)
+
+# def test6(script_dir, examples_dir):
+#     print('%%%%%% TEST6 %%%%%%\nReformat mask file produced by the rig.')
+#     main_dir = os.path.join(examples_dir, 'test_6')
+#     masked_files_dir = os.path.join(main_dir, 'MaskedVideos')
+#     raw_video_dir = os.path.join(main_dir, 'RawVideos')
+
+#     #remove_dir(masked_files_dir)
+
+#     cmd = [
+#         sys.executable,
+#         os.path.join(
+#             script_dir,
+#             'compressMultipleFiles.py'),
+#         raw_video_dir,
+#         masked_files_dir,
+#         '--pattern_include', 
+#         '*.raw_hdf5']
+#     execute_cmd(cmd)
 
 import argparse
 
@@ -167,7 +192,7 @@ if __name__ == '__main__':
     examples_dir = os.path.join(root_dir, 'Tests', 'Data')
     script_dir = os.path.join(root_dir, 'cmd_scripts')
 
-    all_tests = [test1, test2, test3, test4, test5, test6] 
+    all_tests = [test1, test2, test3, test4, test5] 
     
     tests_ind = [x-1 for x in n_tests]
 

@@ -78,7 +78,7 @@ def create_script(base_cmd, args, argkws):
     return cmd
 
 
-def getDefaultSequence(action, is_single_worm=False):
+def getDefaultSequence(action, is_single_worm=False, add_manual_feats=''):
     action = action.lower()
     assert any(action == x for x in ['compress', 'track', 'all'])
     if is_single_worm:
@@ -116,6 +116,9 @@ def getDefaultSequence(action, is_single_worm=False):
                                     'FEAT_CREATE'
                                     ]}
     
+    if add_manual_feats:
+        CHECKPOINTS_DFT['track'].append('FEAT_MANUAL_CREATE') 
+
     if action == 'all':
         points =  CHECKPOINTS_DFT['compress'] + CHECKPOINTS_DFT['track']
 

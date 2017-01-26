@@ -97,7 +97,7 @@ class TrackMultipleFilesParser(BaseMultipleFilesParser):
         super().__init__(
             self.description, self.dflt_vals)
 
-        checkpoints2process = getDefaultSequence('track', is_single_worm=True)
+        checkpoints2process = getDefaultSequence('track', is_single_worm=True, use_manual_join=True)
 
         self.add_argument('mask_dir_root',
             help='Root directory with the masked videos. It must the hdf5 from a previous compression step.')    
@@ -154,7 +154,7 @@ class ProcessMultipleFilesParser(BaseMultipleFilesParser):
         super().__init__(
             self.description, self.dflt_vals)
         
-        checkpoints2process = getDefaultSequence('all', is_single_worm=True)
+        checkpoints2process = getDefaultSequence('all', is_single_worm=True, add_manual_feats=True)
 
         self.add_argument('--video_dir_root',
             default=self.dflt_vals['video_dir_root'],

@@ -26,9 +26,14 @@ class ProcessWormsLocal(object):
             tmp_results_dir='', json_file='', analysis_checkpoints = [], is_copy_video = False):
         
         assert os.path.exists(main_file)
-        self.main_file = main_file
-        self.results_dir = results_dir
-        self.masks_dir = masks_dir
+        self.main_file = os.path.realpath(main_file)
+
+        assert results_dir
+        self.results_dir = os.path.realpath(results_dir)
+
+        assert masks_dir
+        self.masks_dir = os.path.realpath(masks_dir)
+
         self.analysis_checkpoints = analysis_checkpoints
         
         self.json_file = json_file
@@ -36,18 +41,18 @@ class ProcessWormsLocal(object):
         self.is_single_worm = param.is_single_worm
         self.is_copy_video = is_copy_video
 
-
         #we have both a mask and a results tmp directory because like that it is easy to asign them to the original if the are empty
         self.tmp_results_dir = tmp_results_dir if tmp_results_dir else results_dir
         self.tmp_mask_dir = tmp_mask_dir if tmp_mask_dir else masks_dir
-        
-        #we change the name of the main_file to the tmp directory if the is_copy_video is set to true
-        #This flag should be optional in compress mode but true in track
-        if self.is_copy_video:
-            self.tmp_main_file = os.path.join(tmp_mask_dir, os.path.split(self.main_file)[1])
+
+        #we change the name of the main_file. 
+        #This flag should be optional in compress mode but true in track where teh src directory should be equal to the main_file
+        src_dir, src_name = os.path.split(self.main_file)
+        if self.is_copy_video or (src_dir == self.masks_dir):
+            self.tmp_main_file = os.path.join(self.tmp_mask_dir, src_name)
         else:
             self.tmp_main_file = self.main_file
-            
+        
         #make directories
         for dirname in [self.tmp_results_dir, self.tmp_mask_dir, self.results_dir, self.masks_dir]:
             if not os.path.exists(dirname):
@@ -137,6 +142,9 @@ class ProcessWormsLocal(object):
                                                self.ap_tmp.file2dir_dict)
 
         files2copy += self._getAddFilesForTmpSW()
+
+
+        print("(''>>>>>>>>>>>>", files2copy)
         self._copyFilesLocal(files2copy)
     
     def _getAddFilesForTmpSW(self):
@@ -149,6 +157,7 @@ class ProcessWormsLocal(object):
 
                 files2copy =  [(info_file, tmp_dir),
                 (stage_file, tmp_dir)]
+
 
             except FileNotFoundError:
                 pass
@@ -238,8 +247,7 @@ class ProcessWormsLocal(object):
             file_name, destination = files
             assert(os.path.exists(destination))
     
-            if os.path.abspath(os.path.dirname(file_name)
-                               ) != os.path.abspath(destination):
+            if os.path.abspath(os.path.dirname(file_name)) != os.path.abspath(destination):
                 print_flush('Copying %s to %s' % (file_name, destination))
                 shutil.copy(file_name, destination)
 

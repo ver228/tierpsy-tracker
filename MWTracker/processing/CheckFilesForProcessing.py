@@ -48,6 +48,8 @@ class CheckFilesForProcessing(object):
 
     def _checkIndFile(self, video_file):
         '''Check the progress in the file.'''
+        
+
         video_dir, video_file_name = os.path.split(video_file)
         subdir_path = self._getSubDirPath(video_dir, self.video_dir_root)
         
