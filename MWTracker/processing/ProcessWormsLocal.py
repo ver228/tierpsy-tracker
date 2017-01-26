@@ -14,6 +14,9 @@ from MWTracker.helper.misc import print_flush
 from MWTracker.processing.AnalysisPoints import AnalysisPoints
 from MWTracker.processing.ProcessWormsWorker import ProcessWormsWorkerParser, ProcessWormsWorker, BATCH_SCRIPT_WORKER
 from MWTracker.processing.batchProcHelperFunc import create_script, getRealPathName
+from MWTracker.analysis.compress_add_data.getAdditionalData import getAdditionalFiles
+from MWTracker.helper.tracker_param import tracker_param
+
 
 #this path is not really going to be used if it is pyinstaller frozen (only the BATCH_SCRIPT_WORKER)
 BATCH_SCRIPT_LOCAL = [sys.executable, os.path.realpath(__file__)]
@@ -29,14 +32,18 @@ class ProcessWormsLocal(object):
         self.analysis_checkpoints = analysis_checkpoints
         
         self.json_file = json_file
-        
+        param = tracker_param(json_file)
+        self.is_single_worm = param.is_single_worm
+        self.is_copy_video = is_copy_video
+
+
         #we have both a mask and a results tmp directory because like that it is easy to asign them to the original if the are empty
         self.tmp_results_dir = tmp_results_dir if tmp_results_dir else results_dir
         self.tmp_mask_dir = tmp_mask_dir if tmp_mask_dir else masks_dir
         
         #we change the name of the main_file to the tmp directory if the is_copy_video is set to true
         #This flag should be optional in compress mode but true in track
-        if is_copy_video:
+        if self.is_copy_video:
             self.tmp_main_file = os.path.join(tmp_mask_dir, os.path.split(self.main_file)[1])
         else:
             self.tmp_main_file = self.main_file
@@ -66,7 +73,7 @@ class ProcessWormsLocal(object):
 
         #copy tmp files
         self._copyFinaltoTmp()
-        
+
         args = [self.tmp_main_file]
         argkws = {'masks_dir':self.tmp_mask_dir, 'results_dir':self.tmp_results_dir, 
             'json_file':self.json_file, 'analysis_checkpoints':self.checkpoints2process}
@@ -128,8 +135,26 @@ class ProcessWormsLocal(object):
         files2copy = self._getFilesSrcDstPairs(filesnames2copy, 
                                                self.ap_src.file2dir_dict, 
                                                self.ap_tmp.file2dir_dict)
+
+        files2copy += self._getAddFilesForTmpSW()
         self._copyFilesLocal(files2copy)
     
+    def _getAddFilesForTmpSW(self):
+        #patch to copy additional files for the case of Single Worm. For the moment I am copying, not cleaning. 
+        files2copy = []
+        if self.is_single_worm and self.is_copy_video:
+            try:
+                info_file, stage_file = getAdditionalFiles(self.main_file)
+                tmp_dir = os.path.split(self.tmp_main_file)[0]
+
+                files2copy =  [(info_file, tmp_dir),
+                (stage_file, tmp_dir)]
+
+            except FileNotFoundError:
+                pass
+        return files2copy
+
+
     def _copyTmpToFinalAndClean(self):
         '''copy files to final directory and clean'''
         
