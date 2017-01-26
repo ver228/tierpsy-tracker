@@ -237,8 +237,7 @@ class AnalysisPoints(object):
             [('has_additional_files', partial(hasAdditionalFiles, fn['original_video']))]
             
             #make sure the stage was aligned correctly
-            for key in ['SKE_FILT', 'SKE_ORIENT', 'INT_PROFILE', 'INT_SKE_ORIENT','FEAT_CREATE']:
-                self.checkpoints['FEAT_CREATE']['requirements'] += \
+            self.checkpoints['FEAT_CREATE']['requirements'] += \
                         [('is_stage_aligned', partial(isGoodStageAligment, fn['skeletons']))]
             
             
