@@ -99,6 +99,7 @@ def getDefaultSequence(action, is_single_worm=False, add_manual_feats=''):
                                         'INT_SKE_ORIENT',
                                         'CONTOUR_ORIENT',
                                         'FEAT_CREATE',
+                                        'WCON_EXPORT'
                                         ]}
     else:
         CHECKPOINTS_DFT = { 'compress': ['COMPRESS',
