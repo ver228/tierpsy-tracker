@@ -16,14 +16,30 @@ import os
 from MWTracker.analysis.feat_create.obtainFeaturesHelper import WormStatsClass
 from MWTracker.helper.misc import print_flush
 
-def _getMetaData(features_file):
+def _getMetaData(features_file, READ_FEATURES=False):
     with tables.File(features_file, 'r') as fid:
         if not '/experiment_info' in fid:
             experiment_info = {}
         else:
             experiment_info = fid.get_node('/experiment_info').read()
             experiment_info = json.loads(experiment_info.decode('utf-8'))
-            
+        
+        
+        provenance_tracking = fid.get_node('/provenance_tracking/FEAT_CREATE').read()
+        provenance_tracking = json.loads(provenance_tracking.decode('utf-8'))
+        commit_hash = provenance_tracking['commit_hash']
+        
+        MWTracker_ver = {"name":"MWTracker (https://github.com/ver228/Multiworm_Tracking)",
+            "version":commit_hash['MWTracker'],
+            "featureID":"@OMG"}
+        
+        if not READ_FEATURES:
+            experiment_info["software"] = MWTracker_ver
+        else:
+            open_worm_ver = {"name":"open_worm_analysis_toolbox (https://github.com/openworm/open-worm-analysis-toolbox)",
+            "version":commit_hash['open_worm_analysis_toolbox'],
+            "featureID":""}
+            experiment_info["software"] = [MWTracker_ver, open_worm_ver]
         return experiment_info
 
 def __reformatForJson(A):
@@ -51,7 +67,7 @@ def __addOMGFeat(fid, worm_feat_time, worm_id):
     #add time series features
     for col_name, col_dat in worm_feat_time.iteritems():
         if not col_name in ['worm_index', 'timestamp']:
-            worm_features[col_name] = _reformatForJson(col_dat)
+            worm_features[col_name] = __reformatForJson(col_dat)
     
     worm_path = '/features_events/worm_%i' % worm_id
     worm_node = fid.get_node(worm_path)
@@ -177,7 +193,7 @@ def exportWCON(features_file):
 
 if __name__ == '__main__':
     features_file = 'N2 on food R_2011_02_24__16_35_59___2___9_features.hdf5'    
-    exportWCON(features_file)
+    #exportWCON(features_file)
 
     
     #%%
