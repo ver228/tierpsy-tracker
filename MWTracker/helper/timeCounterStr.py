@@ -7,7 +7,7 @@ Created on Tue Jun  9 11:51:28 2015
 
 import time
 import datetime
-
+import numpy as np
 
 def tictoc():
     tic = time.time()
@@ -32,8 +32,13 @@ class timeCounterStr:
                 seconds=round(
                     time.time() -
                     self.initial_time)))
-        fps = (frame_number - self.last_frame + 1) / \
-            (time.time() - self.fps_time)
+        
+        try:
+            fps = (frame_number - self.last_frame + 1) / \
+                (time.time() - self.fps_time)
+        except ZeroDivisionError:
+            fps = np.nan
+            
         progress_str = '%s Total time = %s, fps = %2.1f; Frame %i '\
             % (self.task_str, time_str, fps, frame_number)
         self.fps_time = time.time()
