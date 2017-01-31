@@ -1,6 +1,6 @@
 package:
   name: opencv3
-  version: 3.2
+  version: 3.2.0
 
 source:
   git_url: https://github.com/opencv/opencv.git

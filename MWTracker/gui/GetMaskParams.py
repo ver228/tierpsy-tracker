@@ -108,7 +108,7 @@ class twoViewsWithZoom():
 
 
 class ParamWidgetMapper():
-    # let's map a parameter name into a widget
+    # alows map a parameter name into a widget that allows to recieve user inputs
 
     def __init__(self, param2widget_dict):
         self.param2widget = param2widget_dict
@@ -707,14 +707,14 @@ class GetMaskParams_GUI(QMainWindow):
     def getBackgroundFile(self):
         # If a background image file has been loaded, return it. Otherwise return False
 
-        file = self.mapper.get("background_file")
+        fname = self.mapper.get("background_file")
 
-        if file == "" or file == "None":
+        if not fname:
             return False
 
         # If the background image file has not been loaded already, load it now
         if not hasattr(self, 'static_bg') or self.static_bg is None:
-            self.static_bg = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
+            self.static_bg = cv2.imread(fname, cv2.IMREAD_GRAYSCALE)
 
         return self.static_bg
 
