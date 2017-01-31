@@ -1,6 +1,5 @@
 package:
   name: opencv3
-  version: 3.1.0dev
 
 source:
   git_url: https://github.com/opencv/opencv.git
