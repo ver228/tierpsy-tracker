@@ -6,12 +6,6 @@ set "FORWARD_SLASHED_SRC_DIR=%SRC_DIR:\=/%"
 
 for /f "delims=" %%A in ('%PREFIX%\python -c "import sys; print(sys.version_info.major)"') DO SET PY_MAJOR=%%A
 
-git clone https://github.com/Itseez/opencv_contrib
-cd opencv_contrib
-git checkout tags/%PKG_VERSION%
-cd ..
-set "EXTRA=-DOPENCV_EXTRA_MODULES_PATH=%FORWARD_SLASHED_SRC_DIR%/opencv_contrib/modules"
-
 IF %PY_MAJOR% EQU 3 (GOTO :PY3) else (GOTO :PY2)
 
 :PY3
@@ -81,6 +75,5 @@ RD /S /Q "%LIBRARY_PREFIX%\bin\Release"
 RD /S /Q "%LIBRARY_PREFIX%\bin\Debug"
 RD /S /Q "%LIBRARY_PREFIX%\x64"
 RD /S /Q "%LIBRARY_PREFIX%\x86"
-RD /S /Q "%SRC_DIR%\opencv_contrib"
 exit 0
 

@@ -4,7 +4,7 @@ set -e
 MW_MAIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 OPENWORM_DIR=$MW_MAIN_DIR/../open-worm-analysis-toolbox
 OPENCV_DIR=$MW_MAIN_DIR/../opencv
-OPENCV_VER="3.1.0"
+OPENCV_VER="3.2.0"
 
 EXAMPLES_LINK="https://imperiallondon-my.sharepoint.com/personal/ajaver_ic_ac_uk/_layouts/15/guestaccess.aspx?guestaccesstoken=ldZ18fLY%2bzlu7XuO9mbKVdyiKoH4naiesqiLXWU4vGQ%3d&docid=0cec4e52f4ccf4d5b8bb3a737020fc12f&rev=1"
 EXAMPLES_DIR="$MW_MAIN_DIR/Tests/Data/"
@@ -171,7 +171,7 @@ function install_anaconda {
     fi
 
 	conda install -y anaconda-client conda-build numpy matplotlib pytables pandas \
-	h5py scipy scikit-learn scikit-image seaborn xlrd cython
+	h5py scipy scikit-learn scikit-image seaborn xlrd cython statsmodels
 	pip install gitpython pyqt5 keras
 
 	install_opencv3_anaconda
