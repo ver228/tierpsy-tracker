@@ -6,6 +6,7 @@ import sys
 import MWTracker
 import open_worm_analysis_toolbox
 
+
 from MWTracker.helper.misc import FFMPEG_CMD, FFPROBE_CMD
 from MWTracker.gui import SelectApp
 
@@ -66,15 +67,21 @@ for (dirpath, dirnames, filenames) in os.walk(os.path.join(MWTracker_path, 'misc
 
 #copy additional dll in windows
 if IS_WIN:
-  py_path = sys.executable
-  conda_bin = os.path.join(os.path.dirname(py_path), 'Library', 'bin')
   import glob
+  conda_bin = os.path.join(os.path.dirname(sys.executable), 'Library', 'bin')
   libopenh264_src = glob.glob(os.path.join(conda_bin, 'openh264*.dll'))
   libopencv_ffmpeg_src = glob.glob(os.path.join(conda_bin, 'opencv_ffmpeg*.dll'))
   
   for src in libopenh264_src + libopencv_ffmpeg_src:
     dst = os.path.basename(src)
     added_datas.append((dst, src, 'DATA'))
+else:
+  #copy some missing files from the library (at least in anaconda on OSX)
+  for dst in ['libmkl_avx2.dylib', 'libmkl_mc.dylib']:
+    src = os.path.realpath(os.path.join(os.path.dirname(sys.executable), '..', 'lib', dst))
+    added_datas.append((dst, src, 'DATA'))
+
+    print('<>><>>>>>>>>>>', dst)
 
 
 block_cipher = None
@@ -92,7 +99,7 @@ a = Analysis([SRC_SCRIPT_PATH],
              cipher=block_cipher)
 #i was having problems with adding datas using Analysis, i decided to add them directly to a.datas
 a.datas += added_datas
-print(a.datas)
+
 
 
 pyz = PYZ(a.pure, a.zipped_data,

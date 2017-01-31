@@ -1,5 +1,6 @@
 package:
   name: opencv3
+  version: 3.2.0
 
 source:
   git_url: https://github.com/opencv/opencv.git
@@ -14,7 +15,7 @@ source:
 
 requirements:
   build:
-   - python >3
+   - python 3.5.2
    - cmake
    - hdf5 1.8.*      # [osx]
    - numpy >=1.10
