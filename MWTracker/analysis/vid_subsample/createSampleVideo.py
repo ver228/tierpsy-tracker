@@ -30,7 +30,7 @@ def _getCorrectedTimeVec(fid, tot_frames):
     
     #remove any nan, I notice that sometimes the last number is a nan
     timestamp_ind = timestamp_ind[~np.isnan(timestamp_ind)]
-    if timestamp_ind.size == 0: #empty timestamp
+    if timestamp_ind.size < tot_frames-1: #invalid timestamp
         #if there is not valid frames skip
         return np.arange(tot_frames)
 
@@ -53,7 +53,7 @@ def createSampleVideo(masked_image_file, sample_video_name ='', time_factor = 8,
                      size_factor = 5, expected_fps=30):
     #%%
     if not sample_video_name:
-        sample_video_name, codec = getSubSampleVidName(masked_image_file)
+        sample_video_name = getSubSampleVidName(masked_image_file)
     
     # initialize timers
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
@@ -67,7 +67,6 @@ def createSampleVideo(masked_image_file, sample_video_name ='', time_factor = 8,
         fps, is_default_timestamp = getFPS(masked_image_file, expected_fps)
 
         tt_vec = _getCorrectedTimeVec(fid, tot_frames)
-        
         #%%
         #'H264' #'MPEG' #XVID
         vid_writer = cv2.VideoWriter(sample_video_name, \

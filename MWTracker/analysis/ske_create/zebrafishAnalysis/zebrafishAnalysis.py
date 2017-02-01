@@ -495,18 +495,24 @@ def getZebrafishMask(frame, config):
 
 	im, contours, hierarchy = cv2.findContours(cleaned_mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
+
 	if len(contours) == 0:
-		return None, None, None, None, None, None, None, None
+		output = None
+	else:
+		# Remove nesting from contour
+		worm_cnt = contours[0]
+		worm_cnt = np.vstack(worm_cnt).squeeze()
 
-	# Remove nesting from contour
-	worm_cnt = contours[0]
-	worm_cnt = np.vstack(worm_cnt).squeeze()
+		# Return None values if contour too small
+		if len(worm_cnt) < 3:
+			ouput = None
 
-	# Return None values if contour too small
-	if len(worm_cnt) < 3:
-		return None, None, None, None, None, None, None, None
+		cnt_area = cv2.contourArea(worm_cnt)
 
-	cnt_area = cv2.contourArea(worm_cnt)
+		output = worm_mask, worm_cnt, cnt_area, \
+			   cleaned_mask, head_point, smoothed_points
+	if output is None:
+		return [None]*6
+	else:
+		return output
 
-	return worm_mask, worm_cnt, cnt_area, \
-		   cleaned_mask, head_point, smoothed_points

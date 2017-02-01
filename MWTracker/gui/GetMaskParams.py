@@ -666,15 +666,13 @@ class GetMaskParams_GUI(QMainWindow):
                     self, field_name, getattr(
                         self, field_name).replace(
                         '/', os.sep))
-
+                
         analysis_argvs = {
             'main_file': self.video_file,
             'masks_dir': self.mask_files_dir,
             'results_dir': self.results_dir,
             'analysis_checkpoints' : getDefaultSequence('All'),
             'json_file': self.json_file,
-            'is_single_worm': False,
-            'use_skel_filter': True,
             'cmd_original': 'GUI'}
             
         analysis_worker = WorkerFunQt(
