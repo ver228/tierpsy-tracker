@@ -1,6 +1,6 @@
 :: Install additional python dependecies.
 conda install -y anaconda-client conda-build numpy matplotlib pytables pandas h5py scipy scikit-learn scikit-image seaborn xlrd statsmodels
-pip install gitpython pyqt5 keras
+pip install gitpython pyqt5 keras tensorflow
 
 conda install -y -c https://conda.binstar.org/ver228 opencv3
 

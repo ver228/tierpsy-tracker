@@ -173,7 +173,7 @@ function install_anaconda {
     conda install python=3.5.2
 	conda install -y anaconda-client conda-build numpy matplotlib pytables pandas \
 	h5py scipy scikit-learn scikit-image seaborn xlrd cython statsmodels
-	pip install gitpython pyqt5 keras
+	pip install gitpython pyqt5 keras tensorflow
 
 	install_opencv3_anaconda
 }
