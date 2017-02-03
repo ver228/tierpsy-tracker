@@ -51,31 +51,40 @@ def get_ffprobe_metadata(video_file):
     #from MWTracker.helper.runMultiCMD import cmdlist2str
     #print( cmdlist2str(command))
     
+    
     frame_number = 0
     buff = []
-    pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.PIPE)
-    
-    buf_reader = ReadEnqueue(pipe.stdout, timeout=1)
-    
-    
-    bad_lines = 0
-    while True:
+    buff_err = []
+    proc = sp.Popen(command, stdout=sp.PIPE, stderr=sp.PIPE)
+    buf_reader = ReadEnqueue(proc.stdout, timeout=1)
+    buf_reader_err = ReadEnqueue(proc.stderr)
+
+    while proc.poll() is None:
         # read line without blocking
         line = buf_reader.read()
         if line is None:
-            break
+            print('cannot read')
         else:
             buff.append(line)
             if "media_type" in line: #i use the filed "media_type" as a proxy for frame number (just in case the media does not have frame number)
                 frame_number += 1
                 if frame_number % 500 == 0:
                     print_flush(progressTime.getStr(frame_number))
+        
+        line = buf_reader_err.read()
+        if line is not None:
+            buff_err.append(None)
+
 
     buff = ''.join(buff)
-    dat = json.loads(buff)
+    #print(buff)
+
+    try:
+        dat = json.loads(buff)
+    except json.decoder.JSONDecodeError as e:
+        return np.zeros(0) 
 
     if not dat:
-        buff_err = pipe.stderr.read()
         print(buff_err)
         return np.zeros(0)
     

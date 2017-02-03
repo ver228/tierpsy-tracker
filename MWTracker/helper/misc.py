@@ -24,7 +24,7 @@ def print_flush(msg):
 
 
 class ReadEnqueue():
-    def __init__(self, pipe, timeout=0.1):
+    def __init__(self, pipe, timeout=-1):
         def _target_fun(out, queue):
             for line in iter(out.readline, b''):
                 queue.put(line)
@@ -37,8 +37,12 @@ class ReadEnqueue():
 
     def read(self):
         try:
-            line = self.queue.get(timeout=self.timeout).decode("utf-8")
-            # self.err_out.append(line)
+            if self.timeout > 0:
+                line = self.queue.get(timeout=self.timeout)
+            else:
+                line = self.queue.get_nowait()
+
+            line = line.decode("utf-8")
         except Empty:
             line  = None
         return line
