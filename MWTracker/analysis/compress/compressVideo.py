@@ -219,7 +219,6 @@ def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
     print_flush(base_name + ' Extracting video metadata...')
     expected_frames = store_meta_data(video_file, masked_image_file)
     
-
     # intialize some variables
     max_intensity, min_intensity = np.nan, np.nan
     frame_number = 0
@@ -227,6 +226,7 @@ def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
     image_prev = np.zeros([])
 
     # initialize timers
+    print_flush(base_name + ' Starting video compression.')
     progressTime = timeCounterStr('Compressing video.')
 
     with h5py.File(masked_image_file, "r+") as mask_fid:
