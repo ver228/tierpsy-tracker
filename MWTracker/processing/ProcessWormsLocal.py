@@ -25,14 +25,15 @@ class ProcessWormsLocal(object):
     def __init__(self, main_file, masks_dir, results_dir, tmp_mask_dir='',
             tmp_results_dir='', json_file='', analysis_checkpoints = [], is_copy_video = False):
         
-        assert os.path.exists(main_file)
         self.main_file = os.path.realpath(main_file)
-
-        assert results_dir
         self.results_dir = os.path.realpath(results_dir)
-
-        assert masks_dir
         self.masks_dir = os.path.realpath(masks_dir)
+
+        #check that the files do exists
+        for fname in [self.main_file, self.results_dir,  self.masks_dir]:
+            if not os.path.exists(fname):
+                raise FileNotFoundError(fname)
+        
 
         self.analysis_checkpoints = analysis_checkpoints
         
