@@ -68,7 +68,7 @@ class ReadVideoFFMPEG:
         self.proc = sp.Popen(command, stdout=sp.PIPE,
                              bufsize=self.tot_pix, stderr=sp.PIPE)
 
-        self.buf_reader = ReadEnqueue(self.proc.stdout)
+        self.buf_reader = ReadEnqueue(self.proc.stderr)
 
         # use a buffer size as small as possible (frame size), makes things
         # faster

@@ -41,7 +41,6 @@ class ReadEnqueue():
                 line = self.queue.get(timeout=self.timeout)
             else:
                 line = self.queue.get_nowait()
-
             line = line.decode("utf-8")
         except Empty:
             line  = None
