@@ -83,7 +83,8 @@ def getDefaultSequence(action, is_single_worm=False, add_manual_feats=''):
     assert any(action == x for x in ['compress', 'track', 'all'])
     if is_single_worm:
         CHECKPOINTS_DFT = { 'compress': ['COMPRESS',
-                                        'COMPRESS_ADD_DATA'],
+                                        'COMPRESS_ADD_DATA',
+										'VID_SUBSAMPLE'],
                             'track' : ['VID_SUBSAMPLE',
                                         'TRAJ_CREATE',
                                         'TRAJ_JOIN',
@@ -100,7 +101,8 @@ def getDefaultSequence(action, is_single_worm=False, add_manual_feats=''):
                                         'WCON_EXPORT'
                                         ]}
     else:
-        CHECKPOINTS_DFT = { 'compress': ['COMPRESS'],
+        CHECKPOINTS_DFT = { 'compress': ['COMPRESS',
+										'VID_SUBSAMPLE'],
                             'track' : ['VID_SUBSAMPLE',
                                     'TRAJ_CREATE',
                                     'TRAJ_JOIN',
