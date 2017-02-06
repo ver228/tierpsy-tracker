@@ -86,6 +86,7 @@ def get_ffprobe_metadata(video_file):
 
     if not dat:
         print(buff_err)
+        print(base_name + ' Could not read the metadata.')
         return np.zeros(0)
     
     # use the first frame as reference
