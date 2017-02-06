@@ -173,7 +173,9 @@ def _dict2recarray(csv_dict):
 
 
 def getAdditionalFiles(video_file):
-    assert(os.path.exists(video_file))
+    if not (os.path.exists(video_file)):
+        raise FileNotFoundError(video_file)
+    
     base_name = os.path.splitext(video_file)[0]
     info_file = base_name + '.info.xml'
     stage_file = base_name + '.log.csv'
