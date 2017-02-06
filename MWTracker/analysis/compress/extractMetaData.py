@@ -181,9 +181,7 @@ def get_timestamp(masked_image_file):
             timestamp_time = np.asarray(timestamp_time)
 
             assert timestamp.size == timestamp_time.size
-            if timestamp.size != tot_frames:
-                timestamp, timestamp_time = correct_timestamp(
-                    timestamp, timestamp_time)
+            timestamp, timestamp_time = correct_timestamp(timestamp, timestamp_time)
 
         else:
             timestamp = np.full(tot_frames, np.nan)
