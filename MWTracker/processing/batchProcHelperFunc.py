@@ -84,8 +84,7 @@ def getDefaultSequence(action, is_single_worm=False, add_manual_feats=''):
     if is_single_worm:
         CHECKPOINTS_DFT = { 'compress': ['COMPRESS',
                                         'COMPRESS_ADD_DATA',
-                                        'VID_SUBSAMPLE'
-                                        ],
+										'VID_SUBSAMPLE'],
                             'track' : ['VID_SUBSAMPLE',
                                         'TRAJ_CREATE',
                                         'TRAJ_JOIN',
@@ -103,7 +102,7 @@ def getDefaultSequence(action, is_single_worm=False, add_manual_feats=''):
                                         ]}
     else:
         CHECKPOINTS_DFT = { 'compress': ['COMPRESS',
-                                        'VID_SUBSAMPLE'],
+										'VID_SUBSAMPLE'],
                             'track' : ['VID_SUBSAMPLE',
                                     'TRAJ_CREATE',
                                     'TRAJ_JOIN',
