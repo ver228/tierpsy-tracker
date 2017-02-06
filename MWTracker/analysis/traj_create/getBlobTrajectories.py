@@ -234,7 +234,7 @@ def getBlobsData(buff_data, blob_params):
             ROI_buffer = image_buffer[:, ini_x:fin_x, ini_y:fin_y]
 
             # calculate threshold
-            if analysis_type == "ZEBRA_FISH":
+            if analysis_type == "ZEBRAFISH":
                 # Override threshold
                 thresh_buff = 255
             elif analysis_type == "WORM" or analysis_type == "PHARYNX":

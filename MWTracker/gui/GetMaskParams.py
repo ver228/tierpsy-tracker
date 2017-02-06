@@ -108,7 +108,7 @@ class twoViewsWithZoom():
 
 
 class ParamWidgetMapper():
-    # let's map a parameter name into a widget
+    # alows map a parameter name into a widget that allows to recieve user inputs
 
     def __init__(self, param2widget_dict):
         self.param2widget = param2widget_dict
@@ -165,7 +165,7 @@ class GetMaskParams_GUI(QMainWindow):
         self.ui.spinBox_buff_size.valueChanged.connect(self.updateBuffSize)
 
         self.ui.checkBox_keepBorderData.stateChanged.connect(self.updateMask)
-        self.ui.checkBox_isLightBgnd.stateChanged.connect(self.updateMask)
+        self.ui.checkBox_isLightBgnd.stateChanged.connect(self.updateReducedBuff)
 
         self.ui.pushButton_video.clicked.connect(self.getVideoFile)
         self.ui.pushButton_results.clicked.connect(self.getResultsDir)
@@ -179,24 +179,28 @@ class GetMaskParams_GUI(QMainWindow):
 
         self.ui.pushButton_moreParams.clicked.connect(self.getMoreParams)
 
+        
+        #remove tabs for the moment. I need to fix this it later
+        self.ui.tabWidget.setCurrentIndex(self.ui.tabWidget.indexOf(self.ui.tab_mask))
+        #self.ui.tabWidget.removeTab(self.ui.tabWidget.indexOf(self.ui.tab_background))
+        #self.ui.tabWidget.removeTab(self.ui.tabWidget.indexOf(self.ui.tab_analysis))
+        self.ui.tab_background.setEnabled(False)
+        self.ui.tab_analysis.setEnabled(False)
+
         self.ui.checkBox_subtractBackground.clicked.connect(self.updateMask)
         self.ui.checkBox_ignoreMask.clicked.connect(self.updateMask)
         self.ui.spinBox_backgroundThreshold.valueChanged.connect(self.updateMask)
         self.ui.spinBox_backgroundFrameOffset.valueChanged.connect(self.updateMask)
-
         self.ui.radioButton_backgroundGenerationFunction_minimum.clicked.connect(self.updateMask)
         self.ui.radioButton_backgroundGenerationFunction_maximum.clicked.connect(self.updateMask)
-
         self.ui.pushButton_backgroundFile.clicked.connect(self.loadBackgroundImage)
         self.ui.toolButton_clearBackgroundFile.clicked.connect(self.clearBackgroundImage)
-
         self.ui.radioButton_backgroundType_dynamic.clicked.connect(self.updateMask)
         self.ui.radioButton_backgroundType_file.clicked.connect(self.updateMask)
-
         self.ui.radioButton_analysisType_worm.clicked.connect(lambda: self.ui.groupBox_zebrafishOptions.hide())
         self.ui.radioButton_analysisType_zebrafish.clicked.connect(lambda: self.ui.groupBox_zebrafishOptions.show())
-
         self.ui.checkBox_autoDetectTailLength.clicked.connect(self.updateFishLengthOptions)
+
 
         self.mask_files_dir = ''
         self.results_dir = ''
@@ -205,6 +209,7 @@ class GetMaskParams_GUI(QMainWindow):
         self.json_file = ''
         self.json_param = {}
 
+        self.Ibuff = np.zeros(0)
         self.Ifull = np.zeros(0)
         self.vid = 0
 
@@ -285,7 +290,7 @@ class GetMaskParams_GUI(QMainWindow):
 
     # update image if the GUI is resized event
     def resizeEvent(self, event):
-        self.updateImage()
+        self.updateROIs()
         self.twoViews.zoomFitInView()
 
     def updateMaxArea(self):
@@ -479,12 +484,18 @@ class GetMaskParams_GUI(QMainWindow):
             # fit the image to the canvas size
             self.twoViews.zoomFitInView()
 
+    def updateReducedBuff(self):
+        if self.Ibuff.size > 0:
+            is_light_background = self.mapper.get('is_light_background')
+            self.Imin = reduceBuffer(self.Ibuff, is_light_background)
+            self.updateMask()
+
     def getNextChunk(self):
         if self.vid:
             # read the buffsize before getting the next chunk
             self.updateBuffSize()
 
-            Ibuff = np.zeros(
+            self.Ibuff = np.zeros(
                 (self.buffer_size,
                  self.im_height,
                  self.im_width),
@@ -503,83 +514,82 @@ class GetMaskParams_GUI(QMainWindow):
                 if image.ndim == 3:
                     image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 
-                Ibuff[ii] = image
+                self.Ibuff[ii] = image
 
                 tot += 1
 
             if tot == 0:
                 return
             elif tot < self.buffer_size:
-                Ibuff = Ibuff[:tot]
+                self.Ibuff = self.Ibuff[:tot]
 
-            is_light_background = self.mapper.get('is_light_background')
-            self.Imin = reduceBuffer(Ibuff, is_light_background)
+            self.Ifull = self.Ibuff[0]
 
-            self.Ifull = Ibuff[0]
-
-            self.updateMask()
+            self.updateReducedBuff()
+            
 
 
-    def updateIminBgSub(self):
+    # def updateIminBgSub(self):
 
-        if self.vid:
+    #     if self.vid:
 
-            th = self.mapper.get("background_threshold")
-            frame_offset = self.mapper.get("background_frame_offset")
-            generation_function = self.mapper.get('background_generation_function')
+    #         th = self.mapper.get("background_threshold")
+    #         frame_offset = self.mapper.get("background_frame_offset")
+    #         generation_function = self.mapper.get('background_generation_function')
 
-            # read the buffsize before getting the next chunk
-            self.updateBuffSize()
+    #         # read the buffsize before getting the next chunk
+    #         self.updateBuffSize()
 
-            Ibuff = np.zeros(
-                (self.buffer_size,
-                 self.im_height,
-                 self.im_width),
-                dtype=np.uint8)
+    #         Ibuff = np.zeros(
+    #             (self.buffer_size,
+    #              self.im_height,
+    #              self.im_width),
+    #             dtype=np.uint8)
 
-            # 'Rewind' video to read in frames again
-            current_frame_num = self.vid.get(cv2.CAP_PROP_POS_FRAMES)
-            self.vid.set(cv2.CAP_PROP_POS_FRAMES, current_frame_num - self.buffer_size)
+    #         # 'Rewind' video to read in frames again
+    #         current_frame_num = self.vid.get(cv2.CAP_PROP_POS_FRAMES)
+    #         self.vid.set(cv2.CAP_PROP_POS_FRAMES, current_frame_num - self.buffer_size)
 
-            tot = 0
-            for ii in range(self.buffer_size):
-                # get video frame, stop program when no frame is retrive (end
-                # of file)
-                ret, image = self.vid.read()
+    #         tot = 0
+    #         for ii in range(self.buffer_size):
+    #             # get video frame, stop program when no frame is retrive (end
+    #             # of file)
+    #             ret, image = self.vid.read()
 
-                if ret == 0:
-                    break
-                if image.ndim == 3:
-                    image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    #             if ret == 0:
+    #                 break
+    #             if image.ndim == 3:
+    #                 image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 
-                # If dynamic background subtraction selected
-                if self.ui.radioButton_backgroundType_dynamic.isChecked():
-                    bg_img = backgroundSubtraction.getBackground(self.vid, self.video_file, image, frame_offset, generation_function)
-                    Ibuff[ii] = backgroundSubtraction.applyBackgroundSubtraction(image, bg_img, th)
-                else:
-                    # Background from file
-                    bg_img = self.getBackgroundFile()
-                    if bg_img is False:
-                        Ibuff[ii] = image
-                    else:
-                        Ibuff[ii] = backgroundSubtraction.applyBackgroundSubtraction(image, bg_img, th)
+    #             # If dynamic background subtraction selected
+    #             if self.ui.radioButton_backgroundType_dynamic.isChecked():
+    #                 bg_img = backgroundSubtraction.getBackground(self.vid, self.video_file, image, frame_offset, generation_function)
+    #                 Ibuff[ii] = backgroundSubtraction.applyBackgroundSubtraction(image, bg_img, th)
+    #             else:
+    #                 # Background from file
+    #                 bg_img = self.getBackgroundFile()
+    #                 if bg_img is False:
+    #                     Ibuff[ii] = image
+    #                 else:
+    #                     Ibuff[ii] = backgroundSubtraction.applyBackgroundSubtraction(image, bg_img, th)
 
-                tot += 1
+    #             tot += 1
 
-            if tot < self.buffer_size:
-                return
+    #         if tot < self.buffer_size:
+    #             return
 
-            is_light_background = self.mapper.get('is_light_background')
-            self.Imin_bg_sub = reduceBuffer(Ibuff, is_light_background)
+    #         is_light_background = self.mapper.get('is_light_background')
+    #         self.Imin_bg_sub = reduceBuffer(Ibuff, is_light_background)
 
-            self.Ifull_bg_sub = Ibuff[0]
+    #         self.Ifull_bg_sub = Ibuff[0]
 
 
     def _numpy2qimage(self, im_ori):
         return QImage(im_ori.data, im_ori.shape[1], im_ori.shape[0],
                       im_ori.data.strides[0], QImage.Format_Indexed8)
 
-    def updateImage(self):
+    def updateROIs(self):
+        #useful for resizing events
         if self.Ifull.size == 0:
             self.twoViews.cleanCanvas()
         else:
@@ -591,53 +601,46 @@ class GetMaskParams_GUI(QMainWindow):
         if self.Ifull.size == 0:
             return
         # read parameters used to calculate the mask
-        mask_param = {}
-        for param_name in [
-            'max_area',
-            'min_area',
-            'thresh_block_size',
-            'thresh_C',
-            'dilation_size',
-            'keep_border_data',
-                'is_light_background']:
-            mask_param[param_name] = self.mapper.get(param_name)
+        roi_mask_params_str = ['max_area', 'min_area', 'thresh_block_size', 'thresh_C', 
+        'dilation_size', 'keep_border_data', 'is_light_background']
+        mask_param = {x:self.mapper.get(x) for x in roi_mask_params_str}
+        
+        mask = getROIMask(self.Imin.copy(), **mask_param)
+        self.Imask = mask * self.Ifull
+        self.updateROIs()
 
+        # # Background subtraction check
+        # if self.mapper.get('use_background_subtraction'):
 
-        # Background subtraction check
-        if self.mapper.get('use_background_subtraction'):
+        #     # Ignore mask check
+        #     if self.mapper.get('ignore_mask'):
 
-            # Ignore mask check
-            if self.mapper.get('ignore_mask'):
+        #         th = self.mapper.get("background_threshold")
+        #         frame_offset = self.mapper.get("background_frame_offset")
+        #         generation_function = self.mapper.get('background_generation_function')
 
-                th = self.mapper.get("background_threshold")
-                frame_offset = self.mapper.get("background_frame_offset")
-                generation_function = self.mapper.get('background_generation_function')
+        #         # If dynamic background subtraction is selected
+        #         if self.ui.radioButton_backgroundType_dynamic.isChecked():
+        #             bg_img = backgroundSubtraction.getBackground(self.vid, self.video_file, self.Ifull, frame_offset, generation_function)
+        #             self.Imask = backgroundSubtraction.applyBackgroundSubtraction(self.Ifull, bg_img, th)
+        #         else:
+        #             # Background from file
+        #             bg_img = self.getBackgroundFile()
+        #             if bg_img is False:
+        #                 self.Imask = self.Ifull
+        #             else:
+        #                 self.Imask = backgroundSubtraction.applyBackgroundSubtraction(self.Ifull, bg_img, th)
 
-                # If dynamic background subtraction is selected
-                if self.ui.radioButton_backgroundType_dynamic.isChecked():
-                    bg_img = backgroundSubtraction.getBackground(self.vid, self.video_file, self.Ifull, frame_offset, generation_function)
-                    self.Imask = backgroundSubtraction.applyBackgroundSubtraction(self.Ifull, bg_img, th)
-                else:
-                    # Background from file
-                    bg_img = self.getBackgroundFile()
-                    if bg_img is False:
-                        self.Imask = self.Ifull
-                    else:
-                        self.Imask = backgroundSubtraction.applyBackgroundSubtraction(self.Ifull, bg_img, th)
+        #     else:
 
-            else:
+        #         self.updateIminBgSub()
+        #         mask = getROIMask(self.Imin_bg_sub.copy(), **mask_param)
+        #         self.Imask = mask * self.Ifull_bg_sub
 
-                self.updateIminBgSub()
-                mask = getROIMask(self.Imin_bg_sub.copy(), **mask_param)
-                self.Imask = mask * self.Ifull_bg_sub
-
-        else:
-
-            mask = getROIMask(self.Imin.copy(), **mask_param)
-            self.Imask = mask * self.Ifull
-
-
-        self.updateImage()
+        # else:
+        #     mask = getROIMask(self.Imin.copy(), **mask_param)
+        #     self.Imask = mask * self.Ifull
+        # self.updateImage()
 
     def startAnalysis(self):
         if self.video_file == '' or self.Ifull.size == 0:
@@ -666,15 +669,13 @@ class GetMaskParams_GUI(QMainWindow):
                     self, field_name, getattr(
                         self, field_name).replace(
                         '/', os.sep))
-
+                
         analysis_argvs = {
             'main_file': self.video_file,
             'masks_dir': self.mask_files_dir,
             'results_dir': self.results_dir,
             'analysis_checkpoints' : getDefaultSequence('All'),
             'json_file': self.json_file,
-            'is_single_worm': False,
-            'use_skel_filter': True,
             'cmd_original': 'GUI'}
             
         analysis_worker = WorkerFunQt(
@@ -707,14 +708,14 @@ class GetMaskParams_GUI(QMainWindow):
     def getBackgroundFile(self):
         # If a background image file has been loaded, return it. Otherwise return False
 
-        file = self.mapper.get("background_file")
+        fname = self.mapper.get("background_file")
 
-        if file == "" or file == "None":
+        if not fname:
             return False
 
         # If the background image file has not been loaded already, load it now
         if not hasattr(self, 'static_bg') or self.static_bg is None:
-            self.static_bg = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
+            self.static_bg = cv2.imread(fname, cv2.IMREAD_GRAYSCALE)
 
         return self.static_bg
 

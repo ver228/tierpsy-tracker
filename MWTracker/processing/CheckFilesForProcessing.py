@@ -48,6 +48,8 @@ class CheckFilesForProcessing(object):
 
     def _checkIndFile(self, video_file):
         '''Check the progress in the file.'''
+        
+
         video_dir, video_file_name = os.path.split(video_file)
         subdir_path = self._getSubDirPath(video_dir, self.video_dir_root)
         
@@ -124,13 +126,15 @@ Files whose analysis is incompleted : {}'''.format(
         return self.getCMDlist()
     
     def _printUnmetReq(self):
-        def _get_unmet_requirements(ap_obj):
+        def _get_unmet_requirements(input_data):
+            ap_obj, unfinished_points = input_data
             for requirement in ap_obj.unmet_requirements:
                 if requirement in ap_obj.checkpoints:
                     provenance_file = ap_obj.checkpoints[requirement]['provenance_file']
                     requirement = '{} : {}'.format(requirement, provenance_file)
                 return requirement
 
+        print(self.filtered_files['SOURCE_BAD'])
         dd = map(_get_unmet_requirements, self.filtered_files['SOURCE_BAD'])
         dd ='\n'.join(dd)
         print(dd)
@@ -140,7 +144,7 @@ Files whose analysis is incompleted : {}'''.format(
     def getCMDlist(self):
         A = map(self.generateIndCMD, self.filtered_files['SOURCE_GOOD'])
         B = map(self.generateIndCMD, self.filtered_files['FINISHED_BAD'])
-        return list(A) + list(B)
+        return list(B) + list(A)
 
     def generateIndCMD(self, input_d):
         good_ap_obj, unfinished_points = input_d

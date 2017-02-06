@@ -290,7 +290,7 @@ def trajectories2Skeletons(skeletons_file,
                 if worm_index not in prev_skeleton:
                     prev_skeleton[worm_index] = np.zeros(0)
 
-                if analysis_type == "ZEBRA_FISH":
+                if analysis_type == "ZEBRAFISH":
                      output = _zebra_func(worm_img, zf_skel_args, resampling_N)
                 else:
                     _, worm_cnt, _ = getWormMask(worm_img, 
@@ -326,16 +326,22 @@ def trajectories2Skeletons(skeletons_file,
 
         
 if __name__ == '__main__':
-    root_dir = '/Users/ajaver/OneDrive - Imperial College London/Local_Videos/test_messy/'
+    root_dir = '/Volumes/behavgenom$/Andre/fishVideos/'
         
     #ff = 'N2_N10_F1-3_Set1_Pos7_Ch1_12112016_024337.hdf5'
     #ff = 'unc-9_N10_F1-3_Set1_Pos1_Ch5_17112016_193814.hdf5'
     #ff = 'trp-4_N1_Set3_Pos6_Ch1_19102016_172113.hdf5'
     #ff = 'trp-4_N10_F1-1_Set1_Pos2_Ch4_02112016_201534.hdf5'
-    ff = 'N2_N1_Set1_Pos6_Ch1_19102016_131015.hdf5'
-    masked_image_file = os.path.join(root_dir, ff)    
-    skeletons_file = masked_image_file.replace('.hdf5', '_skeletons.hdf5')
+    ff = 'f3_ss_uncompressed.hdf5'
+    masked_image_file = os.path.join(root_dir, 'MaskedVideos', ff)    
+    skeletons_file = os.path.join(root_dir, 'Results', ff.replace('.hdf5', '_skeletons.hdf5'))
     
+    json_file = os.path.join(root_dir, 'f3_ss_uncompressed.json')
 
-    trajectories2Skeletons2(skeletons_file, masked_image_file)
+    from MWTracker.helper.tracker_param import tracker_param
+    params = tracker_param(json_file)
+
+
+
+    trajectories2Skeletons(skeletons_file, masked_image_file, **params.skeletons_param)
 

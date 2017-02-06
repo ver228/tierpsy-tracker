@@ -14,6 +14,9 @@ from MWTracker.helper.misc import print_flush
 from MWTracker.processing.AnalysisPoints import AnalysisPoints
 from MWTracker.processing.ProcessWormsWorker import ProcessWormsWorkerParser, ProcessWormsWorker, BATCH_SCRIPT_WORKER
 from MWTracker.processing.batchProcHelperFunc import create_script, getRealPathName
+from MWTracker.analysis.compress_add_data.getAdditionalData import getAdditionalFiles
+from MWTracker.helper.tracker_param import tracker_param
+
 
 #this path is not really going to be used if it is pyinstaller frozen (only the BATCH_SCRIPT_WORKER)
 BATCH_SCRIPT_LOCAL = [sys.executable, os.path.realpath(__file__)]
@@ -22,25 +25,35 @@ class ProcessWormsLocal(object):
     def __init__(self, main_file, masks_dir, results_dir, tmp_mask_dir='',
             tmp_results_dir='', json_file='', analysis_checkpoints = [], is_copy_video = False):
         
-        assert os.path.exists(main_file)
-        self.main_file = main_file
-        self.results_dir = results_dir
-        self.masks_dir = masks_dir
+        self.main_file = os.path.realpath(main_file)
+        self.results_dir = os.path.realpath(results_dir)
+        self.masks_dir = os.path.realpath(masks_dir)
+
+        #check that the files do exists
+        for fname in [self.main_file, self.results_dir,  self.masks_dir]:
+            if not os.path.exists(fname):
+                raise FileNotFoundError(fname)
+        
+
         self.analysis_checkpoints = analysis_checkpoints
         
         self.json_file = json_file
-        
+        param = tracker_param(json_file)
+        self.is_single_worm = param.is_single_worm
+        self.is_copy_video = is_copy_video
+
         #we have both a mask and a results tmp directory because like that it is easy to asign them to the original if the are empty
         self.tmp_results_dir = tmp_results_dir if tmp_results_dir else results_dir
         self.tmp_mask_dir = tmp_mask_dir if tmp_mask_dir else masks_dir
-        
-        #we change the name of the main_file to the tmp directory if the is_copy_video is set to true
-        #This flag should be optional in compress mode but true in track
-        if is_copy_video:
-            self.tmp_main_file = os.path.join(tmp_mask_dir, os.path.split(self.main_file)[1])
+
+        #we change the name of the main_file. 
+        #This flag should be optional in compress mode but true in track where teh src directory should be equal to the main_file
+        src_dir, src_name = os.path.split(self.main_file)
+        if self.is_copy_video or (src_dir == self.masks_dir):
+            self.tmp_main_file = os.path.join(self.tmp_mask_dir, src_name)
         else:
             self.tmp_main_file = self.main_file
-            
+        
         #make directories
         for dirname in [self.tmp_results_dir, self.tmp_mask_dir, self.results_dir, self.masks_dir]:
             if not os.path.exists(dirname):
@@ -66,7 +79,7 @@ class ProcessWormsLocal(object):
 
         #copy tmp files
         self._copyFinaltoTmp()
-        
+
         args = [self.tmp_main_file]
         argkws = {'masks_dir':self.tmp_mask_dir, 'results_dir':self.tmp_results_dir, 
             'json_file':self.json_file, 'analysis_checkpoints':self.checkpoints2process}
@@ -128,8 +141,30 @@ class ProcessWormsLocal(object):
         files2copy = self._getFilesSrcDstPairs(filesnames2copy, 
                                                self.ap_src.file2dir_dict, 
                                                self.ap_tmp.file2dir_dict)
+
+        files2copy += self._getAddFilesForTmpSW()
+
+
+        print("(''>>>>>>>>>>>>", files2copy)
         self._copyFilesLocal(files2copy)
     
+    def _getAddFilesForTmpSW(self):
+        #patch to copy additional files for the case of Single Worm. For the moment I am copying, not cleaning. 
+        files2copy = []
+        if self.is_single_worm and self.is_copy_video:
+            try:
+                info_file, stage_file = getAdditionalFiles(self.main_file)
+                tmp_dir = os.path.split(self.tmp_main_file)[0]
+
+                files2copy =  [(info_file, tmp_dir),
+                (stage_file, tmp_dir)]
+
+
+            except FileNotFoundError:
+                pass
+        return files2copy
+
+
     def _copyTmpToFinalAndClean(self):
         '''copy files to final directory and clean'''
         
@@ -213,8 +248,7 @@ class ProcessWormsLocal(object):
             file_name, destination = files
             assert(os.path.exists(destination))
     
-            if os.path.abspath(os.path.dirname(file_name)
-                               ) != os.path.abspath(destination):
+            if os.path.abspath(os.path.dirname(file_name)) != os.path.abspath(destination):
                 print_flush('Copying %s to %s' % (file_name, destination))
                 shutil.copy(file_name, destination)
 

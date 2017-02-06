@@ -5,6 +5,7 @@ Created on Thu Apr  2 16:33:34 2015
 @author: ajaver
 """
 
+import os
 import numpy as np
 import pandas as pd
 import tables
@@ -62,7 +63,7 @@ def assignBlobTraj(trajectories_file, max_allowed_dist=20, area_ratio_lim=(0.5, 
         plate_worms = fid['/plate_worms']
     
     #loop, save data and display progress
-    base_name = trajectories_file.replace('_trajectories.hdf5', '').replace('_skeletons.hdf5', '')
+    base_name = os.path.basename(trajectories_file).replace('_trajectories.hdf5', '').replace('_skeletons.hdf5', '')
     progressTime = timeCounterStr(base_name + ' Assigning trajectories.')  
              
     frame_data_prev = None
@@ -100,14 +101,15 @@ def assignBlobTraj(trajectories_file, max_allowed_dist=20, area_ratio_lim=(0.5, 
             # calculate the progress and put it in a string
             print_flush(progressTime.getStr(frame))
     
-    row_ind, traj_ind = map(np.concatenate, zip(*all_indexes))
-    traj_ind = traj_ind[np.argsort(row_ind)]
-        
-    with tables.File(trajectories_file, 'r+') as fid:
-        tbl = fid.get_node('/', 'plate_worms')
-        tbl.modify_column(column=traj_ind, colname='worm_index_blob')
+    if all_indexes:
+        row_ind, traj_ind = map(np.concatenate, zip(*all_indexes))
+        traj_ind = traj_ind[np.argsort(row_ind)]
+            
+        with tables.File(trajectories_file, 'r+') as fid:
+            tbl = fid.get_node('/', 'plate_worms')
+            tbl.modify_column(column=traj_ind, colname='worm_index_blob')
     
-    print_flush(progressTime.getStr(frame))    
+        print_flush(progressTime.getStr(frame))    
     
 
 def _validRowsByArea(plate_worms):

@@ -17,7 +17,7 @@ from MWTracker.helper.timeCounterStr import timeCounterStr
 
 def getSubSampleVidName(masked_image_file):
     #used by AnalysisPoints.py and CheckFinished.py
-    return masked_image_file.replace('.hdf5', '_subsample.mp4')
+    return masked_image_file.replace('.hdf5', '_subsample.avi')
 
 
 def _getCorrectedTimeVec(fid, tot_frames):
@@ -30,7 +30,7 @@ def _getCorrectedTimeVec(fid, tot_frames):
     
     #remove any nan, I notice that sometimes the last number is a nan
     timestamp_ind = timestamp_ind[~np.isnan(timestamp_ind)]
-    if timestamp_ind.size == 0: #empty timestamp
+    if timestamp_ind.size < tot_frames-1: #invalid timestamp
         #if there is not valid frames skip
         return np.arange(tot_frames)
 
@@ -67,11 +67,11 @@ def createSampleVideo(masked_image_file, sample_video_name ='', time_factor = 8,
         fps, is_default_timestamp = getFPS(masked_image_file, expected_fps)
 
         tt_vec = _getCorrectedTimeVec(fid, tot_frames)
-        
         #%%
         #'H264' #'MPEG' #XVID
         vid_writer = cv2.VideoWriter(sample_video_name, \
-                            cv2.VideoWriter_fourcc(*'H264'), fps/2, (im_w,im_h), isColor=False)
+                            cv2.VideoWriter_fourcc(*'MPEG'), fps/2, (im_w,im_h), isColor=False)
+        assert vid_writer.isOpened()
         
         for frame_number in range(0, tot_frames, time_factor*2):
             current_frame = tt_vec[frame_number]
@@ -92,34 +92,8 @@ if __name__ == '__main__':
 
     #mask_file_name = '/Volumes/behavgenom_archive$/Avelino/Worm_Rig_Tests/Agar_Test/MaskedVideos/Agar_Screening_101116/N2_N10_F1-3_Set1_Pos3_Ch6_12112016_002739.hdf5'
     #masked_image_file = '/Volumes/behavgenom_archive$/Avelino/Worm_Rig_Tests/Agar_Test/MaskedVideos/Agar_Screening_101116/unc-9_N3_F1-3_Set1_Pos3_Ch4_12112016_002739.hdf5'
-    masked_image_file = r"C:\Users\worm_rig.MRC-8985\Tmp\MaskedVideos\150422 AX5936 no1.hdf5"
+    masked_image_file = r'C:\Users\wormrig\Documents\GitHub\Multiworm_Tracking\Tests\data\test_1\MaskedVideos\Capture_Ch1_18062015_140908.hdf5'
     createSampleVideo(masked_image_file)
 
-    # from sqlalchemy.ext.automap import automap_base
-    # from sqlalchemy import create_engine
-    # from sqlalchemy.orm import Session
-    # if True:
-    #     engine_v2 = create_engine(r'mysql+pymysql://ajaver:@localhost/single_worm_db_v2')
-    #     Base = automap_base()
-    #     Base.prepare(engine_v2, reflect=True)
-    #     ProgressMask = Base.classes.progress_masks
-        
-    #     session_v2 = Session(engine_v2)
-        
-    #     all_mask_files = session_v2.query(ProgressMask.mask_file).all()
-    #     all_mask_files = [x for x, in all_mask_files]
-    # else:
-    #     import glob
-    #     main_dir = '/Users/ajaver/Desktop/Videos/single_worm/global_sample_v2/'
-    #     all_mask_files = [x for x in glob.glob(main_dir + '*.hdf5')  \
-    #     if not any(y in x for y in ['_trajectories', '_skeletons', '_intensities', '_features'])]
-    
-    # for ii, fname in enumerate(all_mask_files):
-    #     if fname is not None:
-    #         print(ii, os.path.split(fname)[-1])
-    #         addSampleVideo(fname)
-        
-        
-            
-        
+
     

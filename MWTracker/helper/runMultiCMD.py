@@ -11,9 +11,8 @@ import sys
 import os
 import time
 import subprocess as sp
-from threading import Thread
-from queue import Queue, Empty
 from io import StringIO
+from MWTracker.helper.misc import ReadEnqueue
 
 GUI_CLEAR_SIGNAL = '+++++++++++++++++++++++++++++++++++++++++++++++++'
 
@@ -31,11 +30,6 @@ class CapturingOutput(list):
 
 ON_POSIX = 'posix' in sys.builtin_module_names
 
-
-def enqueue_output(out, queue):
-    for line in iter(out.readline, b''):
-        queue.put(line)
-    out.close()
 
 
 class start_process():
@@ -58,40 +52,39 @@ class start_process():
 
         self.output += [cmdlist2str(self.cmd) + '\n']
 
-        self.pid = sp.Popen(self.cmd, stdout=sp.PIPE, stderr=sp.PIPE,
+        self.proc = sp.Popen(self.cmd, stdout=sp.PIPE, stderr=sp.PIPE,
                              bufsize=1, close_fds=ON_POSIX)
-        self.queue = Queue()
-        self.thread = Thread(target=enqueue_output,
-                              args=(self.pid.stdout, self.queue))
-        self.thread.start()
+        self.buf_reader = ReadEnqueue(self.proc .stdout)
+
 
     def read_buff(self):
         while True:
             # read line without blocking
-            try:
-                self.output.append(self.queue.get_nowait().decode("utf-8"))
-            except Empty:
+            line = self.buf_reader.read()
+            if line is not None:
+                self.output.append(line)
+            else:
                 break
         # store only the last line
         self.output = self.output[-1:]
 
     def close(self):
-        if self.pid.poll() != 0:
+        if self.proc.poll() != 0:
             # print errors details if there was any
             self.output[-1] += 'ERROR: \n'
 
             self.output[-1] += cmdlist2str(self.cmd) + '\n'
-            self.output[-1] += self.pid.stderr.read().decode("utf-8")
-            self.pid.stderr.flush()
+            self.output[-1] += self.proc.stderr.read().decode("utf-8")
+            self.proc.stderr.flush()
 
-        if self.obj_cmd and self.pid.poll() == 0:
+        if self.obj_cmd and self.proc.poll() == 0:
             with CapturingOutput() as output:
                 self.obj_cmd.clean()
             self.output += output
 
-        self.pid.wait()
-        self.pid.stdout.close()
-        self.pid.stderr.close()
+        self.proc.wait()
+        self.proc.stdout.close()
+        self.proc.stderr.close()
 
 
 def runMultiCMD(cmd_list, local_obj='', max_num_process=3, refresh_time=10):
@@ -112,7 +105,7 @@ def runMultiCMD(cmd_list, local_obj='', max_num_process=3, refresh_time=10):
 
     # keep loop tasks as long as there is any task alive and
     # the number of tasks stated is less than the total number of tasks
-    while cmd_list or any(tasks.pid.poll() is None for tasks in current_tasks):
+    while cmd_list or any(tasks.proc.poll() is None for tasks in current_tasks):
         time.sleep(refresh_time)
 
         print(GUI_CLEAR_SIGNAL)
@@ -133,7 +126,7 @@ def runMultiCMD(cmd_list, local_obj='', max_num_process=3, refresh_time=10):
         
         for task in current_tasks:
             task.read_buff()
-            if task.pid.poll() is None:
+            if task.proc.poll() is None:
                 # add task to the new list if it hasn't complete
                 next_tasks.append(task)
                 sys.stdout.write(task.output[-1])
@@ -174,6 +167,8 @@ def cmdlist2str(cmdlist):
             if os.name != 'nt':
             	dd = "'" + dd + "'"
             else:
+                if dd.endswith(os.sep):
+                    dd = dd[:-1]
                 dd = '"' + dd + '"'
 
         if ii == 0:

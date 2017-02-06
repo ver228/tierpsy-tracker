@@ -19,13 +19,19 @@
      <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="0,8">
       <item>
        <widget class="QTabWidget" name="tabWidget">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="styleSheet">
          <string notr="true"/>
         </property>
         <property name="currentIndex">
          <number>0</number>
         </property>
-        <widget class="QWidget" name="tab">
+        <widget class="QWidget" name="tab_mask">
          <attribute name="title">
           <string>Mask</string>
          </attribute>
@@ -35,11 +41,11 @@
             <x>-5</x>
             <y>10</y>
             <width>237</width>
-            <height>619</height>
+            <height>691</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_3">
-           <item row="0" column="1">
+           <item row="1" column="1">
             <widget class="QDial" name="dial_min_area">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
@@ -55,7 +61,7 @@
              </property>
             </widget>
            </item>
-           <item row="8" column="0" colspan="2">
+           <item row="9" column="0" colspan="2">
             <widget class="QCheckBox" name="checkBox_isLightBgnd">
              <property name="text">
               <string>is light background?</string>
@@ -65,7 +71,7 @@
              </property>
             </widget>
            </item>
-           <item row="4" column="0">
+           <item row="5" column="0">
             <widget class="QLabel" name="label_6">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -78,7 +84,7 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="0">
+           <item row="1" column="0">
             <layout class="QVBoxLayout" name="verticalLayout">
              <item>
               <widget class="QLabel" name="label">
@@ -99,7 +105,7 @@
              </item>
             </layout>
            </item>
-           <item row="3" column="1">
+           <item row="4" column="1">
             <widget class="QDial" name="dial_block_size">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
@@ -118,7 +124,7 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
+           <item row="2" column="0">
             <layout class="QVBoxLayout" name="verticalLayout_2">
              <item>
               <widget class="QLabel" name="label_4">
@@ -142,14 +148,14 @@
              </item>
             </layout>
            </item>
-           <item row="6" column="1">
+           <item row="7" column="1">
             <widget class="QDoubleSpinBox" name="spinBox_fps">
              <property name="value">
               <double>25.000000000000000</double>
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
+           <item row="3" column="1">
             <widget class="QDial" name="dial_thresh_C">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
@@ -168,7 +174,7 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
+           <item row="3" column="0">
             <layout class="QVBoxLayout" name="verticalLayout_4">
              <item>
               <widget class="QLabel" name="label_2">
@@ -192,28 +198,28 @@
              </item>
             </layout>
            </item>
-           <item row="10" column="0" colspan="2">
+           <item row="11" column="0" colspan="2">
             <widget class="QPushButton" name="pushButton_moreParams">
              <property name="text">
               <string>Edit more parameters</string>
              </property>
             </widget>
            </item>
-           <item row="9" column="0" colspan="2">
+           <item row="10" column="0" colspan="2">
             <widget class="QCheckBox" name="checkBox_keepBorderData">
              <property name="text">
               <string>keep border data?</string>
              </property>
             </widget>
            </item>
-           <item row="6" column="0">
+           <item row="7" column="0">
             <widget class="QLabel" name="label_fps">
              <property name="text">
               <string>Expected FPS</string>
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
+           <item row="5" column="1">
             <widget class="QSpinBox" name="spinBox_dilation_size">
              <property name="minimum">
               <number>1</number>
@@ -226,27 +232,7 @@
              </property>
             </widget>
            </item>
-           <item row="7" column="1">
-            <widget class="QSpinBox" name="spinBox_buff_size">
-             <property name="minimum">
-              <number>1</number>
-             </property>
-             <property name="maximum">
-              <number>1000</number>
-             </property>
-             <property name="value">
-              <number>25</number>
-             </property>
-            </widget>
-           </item>
-           <item row="7" column="0">
-            <widget class="QLabel" name="label_5">
-             <property name="text">
-              <string>Frames to average</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
+           <item row="2" column="1">
             <widget class="QDial" name="dial_max_area">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
@@ -265,7 +251,27 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
+           <item row="8" column="1">
+            <widget class="QSpinBox" name="spinBox_buff_size">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>1000</number>
+             </property>
+             <property name="value">
+              <number>25</number>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="0">
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>Frames to average</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
             <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
               <widget class="QLabel" name="label_3">
@@ -298,7 +304,7 @@
           </layout>
          </widget>
         </widget>
-        <widget class="QWidget" name="tab_2">
+        <widget class="QWidget" name="tab_background">
          <attribute name="title">
           <string>Background</string>
          </attribute>
@@ -549,7 +555,10 @@
           </attribute>
          </widget>
         </widget>
-        <widget class="QWidget" name="tab_3">
+        <widget class="QWidget" name="tab_analysis">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
          <attribute name="title">
           <string>Analysis</string>
          </attribute>
@@ -950,7 +959,7 @@
           <item>
            <widget class="QGraphicsView" name="graphicsView_full">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -1006,8 +1015,8 @@
              </property>
              <item>
               <layout class="QGridLayout" name="gridLayout">
-               <item row="2" column="0">
-                <widget class="QPushButton" name="pushButton_results">
+               <item row="0" column="0">
+                <widget class="QPushButton" name="pushButton_video">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -1015,12 +1024,15 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Results Dir</string>
+                  <string>Video File</string>
                  </property>
                 </widget>
                </item>
                <item row="2" column="1">
                 <widget class="QLineEdit" name="lineEdit_results"/>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLineEdit" name="lineEdit_video"/>
                </item>
                <item row="3" column="1">
                 <widget class="QLineEdit" name="lineEdit_mask">
@@ -1028,9 +1040,6 @@
                   <bool>false</bool>
                  </property>
                 </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QLineEdit" name="lineEdit_video"/>
                </item>
                <item row="3" column="0">
                 <widget class="QPushButton" name="pushButton_mask">
@@ -1045,9 +1054,6 @@
                  </property>
                 </widget>
                </item>
-               <item row="1" column="1">
-                <widget class="QLineEdit" name="lineEdit_paramFile"/>
-               </item>
                <item row="1" column="0">
                 <widget class="QPushButton" name="pushButton_paramFile">
                  <property name="sizePolicy">
@@ -1061,8 +1067,11 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="0">
-                <widget class="QPushButton" name="pushButton_video">
+               <item row="1" column="1">
+                <widget class="QLineEdit" name="lineEdit_paramFile"/>
+               </item>
+               <item row="2" column="0">
+                <widget class="QPushButton" name="pushButton_results">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -1070,7 +1079,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Video File</string>
+                  <string>Results Dir</string>
                  </property>
                 </widget>
                </item>
@@ -1177,9 +1186,9 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_backgroundGenerationFunction"/>
   <buttongroup name="buttonGroup_backgroundType"/>
-  <buttongroup name="buttonGroup_zf_tailPointDetectionAlgorithm"/>
   <buttongroup name="buttonGroup_analysisType"/>
+  <buttongroup name="buttonGroup_zf_tailPointDetectionAlgorithm"/>
+  <buttongroup name="buttonGroup_backgroundGenerationFunction"/>
  </buttongroups>
 </ui>

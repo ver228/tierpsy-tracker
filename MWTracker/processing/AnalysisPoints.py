@@ -31,6 +31,8 @@ from MWTracker.analysis.int_ske_orient.correctHeadTailIntensity import correctHe
 from MWTracker.analysis.contour_orient.correctVentralDorsal import switchCntSingleWorm, hasExpCntInfo
 from MWTracker.analysis.feat_create.obtainFeatures import getWormFeaturesFilt, hasManualJoin
 
+from MWTracker.analysis.wcon_export.exportWCON import getWCOName, exportWCON
+
 from MWTracker.processing.CheckFinished import CheckFinished
 from MWTracker.helper.tracker_param import tracker_param
 
@@ -69,6 +71,7 @@ class AnalysisPoints(object):
             output[ext] = os.path.join(results_dir, base_name + '_' + ext + '.hdf5')
         
         output['subsample'] = getSubSampleVidName(output['masked_image'])
+        output['wcon'] = getWCOName(output['features'])
 
         self.file_names =  output
         self.file2dir_dict = {fname:dname for dname, fname in map(os.path.split, self.file_names.values())}
@@ -205,6 +208,13 @@ class AnalysisPoints(object):
                 'requirements' : ['SKE_CREATE',
                                   ('has_manual_joined_traj', partial(hasManualJoin, fn['skeletons']))]
             },
+            'WCON_EXPORT': {
+                'func': exportWCON,
+                'argkws': {'features_file': fn['features']},
+                'input_files' : [fn['features']],
+                'output_files': [fn['features'], fn['wcon']],
+                'requirements' : ['FEAT_CREATE']
+            },
         }
         
         # points only for single worm
@@ -237,8 +247,7 @@ class AnalysisPoints(object):
             [('has_additional_files', partial(hasAdditionalFiles, fn['original_video']))]
             
             #make sure the stage was aligned correctly
-            for key in ['SKE_FILT', 'SKE_ORIENT', 'INT_PROFILE', 'INT_SKE_ORIENT','FEAT_CREATE']:
-                self.checkpoints['FEAT_CREATE']['requirements'] += \
+            self.checkpoints['FEAT_CREATE']['requirements'] += \
                         [('is_stage_aligned', partial(isGoodStageAligment, fn['skeletons']))]
             
             

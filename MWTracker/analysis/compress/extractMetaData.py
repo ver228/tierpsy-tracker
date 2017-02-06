@@ -13,8 +13,8 @@ import subprocess as sp
 from collections import OrderedDict
 
 import warnings
-from MWTracker.helper.misc import FFPROBE_CMD
-
+from MWTracker.helper.timeCounterStr import timeCounterStr
+from MWTracker.helper.misc import print_flush, ReadEnqueue, FFPROBE_CMD
 
 def dict2recarray(dat):
     '''convert into recarray (pytables friendly)'''
@@ -45,15 +45,49 @@ def get_ffprobe_metadata(video_file):
         'json',
         video_file]
     
-    FNULL = open(os.devnull, 'w')
-    pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.PIPE)
-    buff = pipe.stdout.read()
-    buff_err = pipe.stderr.read()
+    base_name = video_file.rpartition('.')[0].rpartition(os.sep)[-1]
+    progressTime = timeCounterStr(base_name + ' Extracting video metadata.')
+    
+    #from MWTracker.helper.runMultiCMD import cmdlist2str
+    #print( cmdlist2str(command))
+    
+    
+    frame_number = 0
+    buff = []
+    buff_err = []
+    proc = sp.Popen(command, stdout=sp.PIPE, stderr=sp.PIPE)
+    buf_reader = ReadEnqueue(proc.stdout, timeout=1)
+    buf_reader_err = ReadEnqueue(proc.stderr)
 
-    dat = json.loads(buff.decode('utf-8'))
+    while proc.poll() is None:
+        # read line without blocking
+        line = buf_reader.read()
+        if line is None:
+            print('cannot read')
+        else:
+            buff.append(line)
+            if "media_type" in line: #i use the filed "media_type" as a proxy for frame number (just in case the media does not have frame number)
+                frame_number += 1
+                if frame_number % 500 == 0:
+                    print_flush(progressTime.getStr(frame_number))
+        
+        line = buf_reader_err.read()
+        if line is not None:
+            buff_err.append(None)
+
+
+    buff = ''.join(buff)
+    #print(buff)
+
+    try:
+        dat = json.loads(buff)
+    except json.decoder.JSONDecodeError as e:
+        return np.zeros(0) 
+
     if not dat:
         print(buff_err)
         return np.zeros(0)
+    
     # use the first frame as reference
     frame_fields = list(dat['frames'][0].keys())
 
@@ -88,7 +122,7 @@ def store_meta_data(video_file, masked_image_file):
     expected_frames = len(video_metadata)
 
     if expected_frames == 0:  # nothing to do here. return a dum number of frames
-        return 1 
+        return 1
 
     with tables.File(masked_image_file, 'r+') as mask_fid:
         if '/video_metadata' in mask_fid:

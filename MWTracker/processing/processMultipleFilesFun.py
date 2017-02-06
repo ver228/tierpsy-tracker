@@ -13,8 +13,56 @@ from MWTracker.processing.ProcessWormsLocal import ProcessWormsLocalParser
 from MWTracker.processing.batchProcHelperFunc import getDefaultSequence, walkAndFindValidFiles
 from MWTracker.processing.CheckFilesForProcessing import CheckFilesForProcessing
 
-def processMultipleFiles(walk_args, check_args,
-                         videos_list, only_summary, max_num_process, refresh_time):
+def processMultipleFilesFun(
+        video_dir_root,
+        mask_dir_root,
+        results_dir_root,
+        tmp_dir_root,
+        json_file,
+        videos_list,
+        pattern_include,
+        pattern_exclude,
+        max_num_process,
+        refresh_time,
+        only_summary,
+        analysis_type='',
+        force_start_point='',
+        end_point='',
+        use_manual_join=False,
+        is_copy_video=False,
+        analysis_checkpoints=[]):
+
+    # calculate the results_dir_root from the mask_dir_root if it was not given
+    if not results_dir_root:
+        results_dir_root = getResultsDir(mask_dir_root)
+
+    if not video_dir_root:
+        video_dir_root = mask_dir_root
+
+    param = tracker_param(json_file)
+
+    if not analysis_checkpoints:
+      analysis_checkpoints = getDefaultSequence(analysis_type, is_single_worm=param.is_single_worm, add_manual_feats=use_manual_join)
+    
+    if use_manual_join:
+          #only execute the calculation of the manual features
+          analysis_checkpoints = analysis_checkpoints + ['FEAT_MANUAL_CREATE']
+          
+    _removePointFromSide(analysis_checkpoints, force_start_point, 0)
+    _removePointFromSide(analysis_checkpoints, end_point, -1)
+
+    walk_args = {'root_dir': video_dir_root, 
+                 'pattern_include' : pattern_include,
+                  'pattern_exclude' : pattern_exclude}
+    
+    check_args = {'video_dir_root': video_dir_root,
+                  'mask_dir_root': mask_dir_root,
+                  'results_dir_root' : results_dir_root,
+                  'tmp_dir_root' : tmp_dir_root,
+                  'json_file' : json_file,
+                  'analysis_checkpoints': analysis_checkpoints,
+                  'is_copy_video': is_copy_video}
+    
     #get the list of valid videos
     if not videos_list:
         valid_files = walkAndFindValidFiles(**walk_args)
@@ -26,6 +74,7 @@ def processMultipleFiles(walk_args, check_args,
     files_checker = CheckFilesForProcessing(**check_args)
 
     cmd_list = files_checker.filterFiles(valid_files)
+    #files_checker._printUnmetReq()
     
     if not only_summary:
         # run all the commands
@@ -48,26 +97,24 @@ def compressMultipleFilesFun(
         refresh_time,
         only_summary,
         is_copy_video,
-        videos_list):
+        videos_list
+        ):
 
-    param = tracker_param(json_file)
-    analysis_checkpoints = getDefaultSequence('Compress',
-                                             is_single_worm=param.is_single_worm)
-    
-    walk_args = {'root_dir':video_dir_root, 
-                 'pattern_include' : pattern_include,
-                  'pattern_exclude' : pattern_exclude}
-    
-    check_args = {'video_dir_root': video_dir_root,
-                  'mask_dir_root': mask_dir_root,
-                  'results_dir_root' : mask_dir_root,
-                  'tmp_dir_root' : tmp_dir_root,
-                  'json_file' : json_file,
-                  'analysis_checkpoints': analysis_checkpoints,
-                  'is_copy_video': is_copy_video}
-
-    processMultipleFiles(walk_args, check_args,
-                         videos_list, only_summary, max_num_process, refresh_time)
+  processMultipleFilesFun(
+        video_dir_root,
+        mask_dir_root,
+        mask_dir_root,
+        tmp_dir_root,
+        json_file,
+        videos_list,
+        pattern_include,
+        pattern_exclude,
+        max_num_process,
+        refresh_time,
+        only_summary,
+        analysis_type='compress',
+        is_copy_video=is_copy_video
+        )
 
 def trackMultipleFilesFun(
         mask_dir_root,
@@ -82,41 +129,26 @@ def trackMultipleFilesFun(
         end_point,
         only_summary,
         use_manual_join,
-        videos_list):
-        
-    # calculate the results_dir_root from the mask_dir_root if it was not given
-    if not results_dir_root:
-        results_dir_root = getResultsDir(mask_dir_root)
+        videos_list
+        ):
 
-    param = tracker_param(json_file)
-    analysis_checkpoints = getDefaultSequence('Track', 
-                                             is_single_worm=param.is_single_worm)
-    if use_manual_join:
-          #only execute the calculation of the manual features
-          analysis_checkpoints = analysis_checkpoints + ['FEAT_MANUAL_CREATE']
-          
-    _removePointFromSide(analysis_checkpoints, force_start_point, 0)
-    _removePointFromSide(analysis_checkpoints, end_point, -1)
-    
-    
-    
-    walk_args = {'root_dir':mask_dir_root, 
-                 'pattern_include' : pattern_include,
-                  'pattern_exclude' : pattern_exclude}
-    
-    check_args = {'video_dir_root': mask_dir_root,
-                  'mask_dir_root': mask_dir_root,
-                  'results_dir_root' : results_dir_root,
-                  'tmp_dir_root' : tmp_dir_root,
-                  'json_file' : json_file,
-                  'analysis_checkpoints': analysis_checkpoints,
-                  'is_copy_video': True}
-
-    processMultipleFiles(walk_args, check_args,
-                         videos_list, only_summary, max_num_process, refresh_time)
-
-
-
+  processMultipleFilesFun(
+        mask_dir_root,
+        mask_dir_root,
+        results_dir_root,
+        tmp_dir_root,
+        json_file,
+        videos_list,
+        pattern_include,
+        pattern_exclude,
+        max_num_process,
+        refresh_time,
+        only_summary,
+        analysis_type='track',
+        force_start_point=force_start_point,
+        end_point=end_point,
+        use_manual_join=use_manual_join
+        )        
 
 def getResultsDir(mask_dir_root):
     # construct the results dir on base of the mask_dir_root

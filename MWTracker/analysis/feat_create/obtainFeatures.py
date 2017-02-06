@@ -148,7 +148,10 @@ def getOpenWormData(worm, wStats=[]):
         wStats = WormStatsClass()
 
     # let's make a copy of the skeletons before chaning axis
-    skeletons = worm.skeleton.copy()
+    worm_coords = {'skeletons':worm.skeleton.copy(),
+                    'dorsal_contours':worm.dorsal_contour.copy(),
+                    'ventral_contours':worm.ventral_contour.copy()
+                    }
 
     # IMPORTANT change axis to an openworm format before calculating features
     assert worm.skeleton.shape[2] == 2
@@ -177,7 +180,7 @@ def getOpenWormData(worm, wStats=[]):
 
     
 
-    return timeseries_data, events_data, worm_stats, skeletons
+    return timeseries_data, events_data, worm_stats, worm_coords
 
 def getGoodTrajIndexes(skeletons_file,
         use_skel_filter = True,
@@ -286,21 +289,27 @@ def getWormFeaturesFilt(
         # save the skeletons
         with tables.File(skeletons_file, 'r') as ske_file_id:
             skel_shape = ske_file_id.get_node('/skeleton').shape
-        skeletons_array = features_fid.create_earray(
-            '/',
-            'skeletons',
-            shape=(
-                0,
-                skel_shape[1],
-                skel_shape[2]),
-            atom=tables.Float32Atom(
-                shape=()),
-            filters=TABLE_FILTERS)
+
+        
+
+        worm_coords_array = {}
+        w_node = features_fid.create_group('/', 'coordinates')
+        for  array_name in ['skeletons', 'dorsal_contours', 'ventral_contours']:
+            worm_coords_array[array_name] = features_fid.create_earray(
+                w_node,
+                array_name,
+                shape=(
+                    0,
+                    skel_shape[1],
+                    skel_shape[2]),
+                atom=tables.Float32Atom(
+                    shape=()),
+                filters=TABLE_FILTERS)
         
         # initialize rec array with the averaged features of each worm
         stats_features_df = {stat:np.full(tot_worms, np.nan, dtype=wStats.feat_avg_dtype) for stat in FUNC_FOR_DIV}
     
-        return header_timeseries, table_timeseries, group_events, skeletons_array, stats_features_df
+        return header_timeseries, table_timeseries, group_events, worm_coords_array, stats_features_df
     
     progress_timer = timeCounterStr('')
     def _displayProgress(n):
@@ -345,7 +354,7 @@ def getWormFeaturesFilt(
 
         #initialize file
         header_timeseries, table_timeseries, group_events, \
-        skeletons_array, stats_features_df = _iniFileGroups()
+        worm_coords_array, stats_features_df = _iniFileGroups()
 
 
 
@@ -378,7 +387,7 @@ def getWormFeaturesFilt(
                     return
 
             # calculate features
-            timeseries_data, events_data, worm_stats, skeletons = \
+            timeseries_data, events_data, worm_stats, worm_coords= \
                 getOpenWormData(worm, wStats)
             
             #get splitted features
@@ -392,9 +401,11 @@ def getWormFeaturesFilt(
             table_timeseries.append(timeseries_data)
             table_timeseries.flush()
 
+
             # save skeletons
-            skeletons_array.append(skeletons)
-            skeletons_array.flush()
+            for key in worm_coords_array:
+                worm_coords_array[key].append(worm_coords[key])
+                worm_coords_array[key].flush()
 
             # save event data as a subgroup per worm
             worm_node = features_fid.create_group(
@@ -427,13 +438,18 @@ def getWormFeaturesFilt(
         
         # create and save a table containing the averaged worm feature for each
         # worm
+        f_node = features_fid.create_group('/', 'features_summary')
         for stat in FUNC_FOR_DIV:
             features_fid.create_table(
-                '/', 'features_' + stat, obj = stats_features_df[stat], filters = TABLE_FILTERS)
+                f_node, stat, obj = stats_features_df[stat], filters = TABLE_FILTERS)
             
             feat_stat_split = features_fid.create_table(
-                '/', 'features_{}_split'.format(stat), obj=np.array(all_splitted_feats[stat]), filters=TABLE_FILTERS)
+                f_node, stat + '_split', obj=np.array(all_splitted_feats[stat]), filters=TABLE_FILTERS)
             feat_stat_split._v_attrs['split_traj_frames'] = split_traj_frames
+        
+        #FUTURE: I am duplicating this field for backward compatibility, I should remove it later on.
+        features_fid.create_table('/', 'features_means', obj = stats_features_df['means'], filters = TABLE_FILTERS)
+        feat_stat_split = features_fid.create_table('/', 'features_means_split', obj=np.array(all_splitted_feats['means']), filters=TABLE_FILTERS)
         
         print_flush(
             base_name +

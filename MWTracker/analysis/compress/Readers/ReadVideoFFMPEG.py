@@ -10,16 +10,9 @@ import sys
 import re
 import subprocess as sp
 import numpy as np
-from threading import Thread
-from queue import Queue, Empty
+from queue import Empty
 
-from MWTracker.helper.misc import FFMPEG_CMD
-
-
-def enqueue_error(out, queue):
-    for line in iter(out.readline, b''):
-        queue.put(line)
-    out.close
+from MWTracker.helper.misc import FFMPEG_CMD, ReadEnqueue
 
 
 class ReadVideoFFMPEG:
@@ -42,9 +35,9 @@ class ReadVideoFFMPEG:
         # try to open the file and determine the frame size. Raise an exception
         # otherwise.
         command = [FFMPEG_CMD, '-i', fileName, '-']
-        pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.PIPE)
-        buff = pipe.stderr.read()
-        pipe.terminate()
+        proc = sp.Popen(command, stdout=sp.PIPE, stderr=sp.PIPE)
+        buff = proc.stderr.read()
+        proc.terminate()
 
         try:
             # the frame size is somewhere printed at the beginning by ffmpeg
@@ -72,37 +65,36 @@ class ReadVideoFFMPEG:
 
         # devnull = open(os.devnull, 'w') #use devnull to avoid printing the
         # ffmpeg command output in the screen
-        self.pipe = sp.Popen(command, stdout=sp.PIPE,
+        self.proc = sp.Popen(command, stdout=sp.PIPE,
                              bufsize=self.tot_pix, stderr=sp.PIPE)
 
-        self.queue = Queue()
-        self.thread = Thread(
-            target=enqueue_error, args=(
-                self.pipe.stderr, self.queue))
-        self.thread.start()
+        self.buf_reader = ReadEnqueue(self.proc.stdout)
 
         # use a buffer size as small as possible (frame size), makes things
         # faster
 
+
+        
+
     def get_timestamp(self):
         while True:
             # read line without blocking
-            try:
-                line = self.queue.get_nowait().decode("utf-8")
-                # self.err_out.append(line)
-
-                frame_N = line.partition(' n:')[-1].partition(' ')[0]
-                timestamp = line.partition(' pts_time:')[-1].partition(' ')[0]
-
-                if frame_N and timestamp:
-                    self.vid_frame_pos.append(int(frame_N))
-                    self.vid_time_pos.append(float(timestamp))
-            except Empty:
+            line = self.buf_reader.read()
+            if line is None:
                 break
+            # self.err_out.append(line)
+
+            frame_N = line.partition(' n:')[-1].partition(' ')[0]
+            timestamp = line.partition(' pts_time:')[-1].partition(' ')[0]
+
+            if frame_N and timestamp:
+                self.vid_frame_pos.append(int(frame_N))
+                self.vid_time_pos.append(float(timestamp))
+
 
     def read(self):
         # retrieve an image as numpy array
-        raw_image = self.pipe.stdout.read(self.tot_pix)
+        raw_image = self.proc.stdout.read(self.tot_pix)
         if len(raw_image) < self.tot_pix:
             return (0, [])
 
@@ -117,10 +109,10 @@ class ReadVideoFFMPEG:
 
     def release(self):
         # close the buffer
-        self.pipe.stdout.flush()
-        self.pipe.stderr.flush()
+        self.proc.stdout.flush()
+        self.proc.stderr.flush()
         self.get_timestamp()
 
-        self.pipe.terminate()
-        self.pipe.stdout.close()
-        self.pipe.wait()
+        self.proc.terminate()
+        self.proc.stdout.close()
+        self.proc.wait()

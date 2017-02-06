@@ -55,7 +55,7 @@ dflt_param_list = [
     ('filter_model_name', '', ''),
     ('n_cores_used', 1, 'Number of core used. Currently it is only suported by TRAJ_CREATE and it is only recommended at high particle densities.'),
     
-    ('analysis_type', 'WORM', 'Analysis functions to use. Valid options: WORM, SINGLE_WORM_SHAFER, ZEBRA_FISH (broken)'),
+    ('analysis_type', 'WORM', 'Analysis functions to use. Valid options: WORM, SINGLE_WORM_SHAFER, ZEBRAFISH (broken)'),
     
 
     #not tested (used for the zebra fish)
@@ -204,6 +204,7 @@ class tracker_param:
             'expected_fps' : 30
         }
 
+
         # getWormTrajectories
         self.trajectories_param = {
             'buffer_size' : compression_buff,
@@ -244,16 +245,16 @@ class tracker_param:
             'strel_size' : strel_size
             }
 
-        zf_skel_args = {'zf_num_segments': zf_num_segments,
-            'zf_min_angle': zf_min_angle,
-            'zf_max_angle': zf_max_angle,
-            'zf_num_angles': zf_num_angles,
-            'zf_tail_length': zf_tail_length,
-            'zf_tail_detection': zf_tail_detection,
-            'zf_prune_retention': zf_prune_retention,
-            'zf_test_width': zf_test_width,
-            'zf_draw_width': zf_draw_width,
-            'zf_auto_detect_tail_length': zf_auto_detect_tail_length}
+        zf_skel_args = {'num_segments': zf_num_segments,
+            'min_angle': zf_min_angle,
+            'max_angle': zf_max_angle,
+            'num_angles': zf_num_angles,
+            'tail_length': zf_tail_length,
+            'tail_detection': zf_tail_detection,
+            'prune_retention': zf_prune_retention,
+            'test_width': zf_test_width,
+            'draw_width': zf_draw_width,
+            'auto_detect_tail_length': zf_auto_detect_tail_length}
 
 
         # trajectories2Skeletons

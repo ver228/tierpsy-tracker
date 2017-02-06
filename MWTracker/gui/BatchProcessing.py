@@ -4,7 +4,7 @@ import json
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 from PyQt5.QtCore import Qt
 
-from MWTracker.processing.processMultipleFilesFun import processMultipleFiles, getResultsDir
+from MWTracker.processing.processMultipleFilesFun import processMultipleFilesFun, getResultsDir
 from MWTracker.processing.batchProcHelperFunc import getDefaultSequence
 
 from MWTracker.gui.AnalysisProgress import AnalysisProgress, WorkerFunQt
@@ -18,8 +18,8 @@ DFLT_TRACK_VALS = TrackMultipleFilesParser.dflt_vals
 from MWTracker.helper.tracker_param import tracker_param
 
 #get default parameters files
-from MWTracker import __file__ as MWTracker_INIT_F #useful to get the location of auxiliar files
-DFLT_PARAMS_PATH = os.path.join(os.path.split(MWTracker_INIT_F)[0], 'misc', 'param_files')
+from MWTracker import AUX_FILES_DIR
+DFLT_PARAMS_PATH = os.path.join(AUX_FILES_DIR, 'param_files')
 DFLT_PARAMS_FILES = [x for x in os.listdir(DFLT_PARAMS_PATH) if x.endswith('.json')]
 
 
@@ -238,7 +238,15 @@ class BatchProcessing_GUI(QMainWindow):
                 with open(param_file, 'r') as fid:
                     json_str = fid.read()
                     json_param = json.loads(json_str)
-                    self.ui.comboBox_paramFile.insertItem(-1, param_file)
+
+                    #find the current index in the combobox, if it preappend it.
+                    ind_comb = self.ui.comboBox_paramFile.findText(param_file)
+                    if ind_comb == -1:
+                        self.ui.comboBox_paramFile.insertItem(-1, param_file)
+                        ind_comb = 0
+
+                    self.ui.comboBox_paramFile.setCurrentIndex(ind_comb)
+
 
             except (IOError, OSError, UnicodeDecodeError, json.decoder.JSONDecodeError):
                 QMessageBox.critical(
@@ -302,40 +310,38 @@ class BatchProcessing_GUI(QMainWindow):
                     "The masks directory does not exist. Please select a valid directory.",
                     QMessageBox.Ok)
                 return
-
-        walk_path = video_dir_root if is_compress else mask_dir_root
-        walk_args = {'root_dir' : walk_path, 
-                 'pattern_include' : pattern_include,
-                  'pattern_exclude' : pattern_exclude}
         
         if is_compress and is_track:
-            sequence_str = 'All'
+            sequence_str = 'all'
         elif is_compress:
-            sequence_str = 'Compress'
+            sequence_str = 'compress'
             results_dir_root = mask_dir_root #overwrite the results_dir_root since it will not be used
         elif is_track:
             is_copy_video = True
-            sequence_str = 'Track'
+            sequence_str = 'track'
             video_dir_root = mask_dir_root  #overwrite the video_dir_root in order to copy the mask file to tmp
 
         param = tracker_param(json_file)
         analysis_checkpoints = getDefaultSequence(sequence_str, is_single_worm=param.is_single_worm)
-        check_args = {'video_dir_root': video_dir_root,
-                      'mask_dir_root': mask_dir_root,
-                      'results_dir_root' : results_dir_root,
-                      'tmp_dir_root' : tmp_dir_root,
-                      'json_file' : json_file,
-                      'analysis_checkpoints': analysis_checkpoints,
-                      'is_copy_video': is_copy_video}
+        
+        process_args = {
+          'video_dir_root': video_dir_root,
+          'mask_dir_root': mask_dir_root,
+          'results_dir_root' : results_dir_root,
+          'tmp_dir_root' : tmp_dir_root,
+          'json_file' : json_file,
+          'videos_list' : videos_list,
+          'analysis_checkpoints': analysis_checkpoints,
+          'is_copy_video': is_copy_video,
+          'pattern_include' : pattern_include,
+          'pattern_exclude' : pattern_exclude,
+          'max_num_process' : max_num_process,
+          'refresh_time' : DFLT_TRACK_VALS['refresh_time'],
+          'only_summary' : False,
+          'analysis_checkpoints' : analysis_checkpoints
+        }
 
-        process_args = {'check_args' : check_args,
-                        'walk_args' : walk_args,
-                        'videos_list' : videos_list,
-                        'only_summary' : False,
-                        'max_num_process' : max_num_process,
-                        'refresh_time' : DFLT_TRACK_VALS['refresh_time']}
-
-        analysis_worker = WorkerFunQt(processMultipleFiles, process_args)
+        analysis_worker = WorkerFunQt(processMultipleFilesFun, process_args)
         progress = AnalysisProgress(analysis_worker)
         progress.exec_()
 

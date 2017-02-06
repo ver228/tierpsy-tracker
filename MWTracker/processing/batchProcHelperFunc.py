@@ -5,6 +5,7 @@ Created on Wed Aug 10 19:59:08 2016
 @author: ajaver
 """
 import os
+import errno
 import sys
 import fnmatch
 
@@ -28,8 +29,8 @@ def walkAndFindValidFiles(root_dir, pattern_include='*', pattern_exclude=''):
 
 def _walkAndFind(root_dir, pattern_include='*', pattern_exclude=''):
     root_dir = os.path.abspath(root_dir)
-    assert os.path.exists(root_dir)
-
+    if not os.path.exists(root_dir):
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), root_dir)
     # if there is only a string (only one pattern) let's make it a list to be
     # able to reuse the code
     if not isinstance(pattern_include, (list, tuple)):
@@ -77,8 +78,9 @@ def create_script(base_cmd, args, argkws):
     return cmd
 
 
-def getDefaultSequence(action, is_single_worm=False, use_skel_filter=True):
-    assert any(action == x for x in ['Compress', 'Track', 'All'])
+def getDefaultSequence(action, is_single_worm=False, add_manual_feats=''):
+    action = action.lower()
+    assert any(action == x for x in ['compress', 'track', 'all'])
     if is_single_worm:
         CHECKPOINTS_DFT = { 'Compress': ['COMPRESS',
                                         'COMPRESS_ADD_DATA'],
@@ -95,6 +97,7 @@ def getDefaultSequence(action, is_single_worm=False, use_skel_filter=True):
                                         'INT_SKE_ORIENT',
                                         'CONTOUR_ORIENT',
                                         'FEAT_CREATE',
+                                        'WCON_EXPORT'
                                         ]}
     else:
         CHECKPOINTS_DFT = { 'Compress': ['COMPRESS'],
@@ -111,11 +114,11 @@ def getDefaultSequence(action, is_single_worm=False, use_skel_filter=True):
                                     'FEAT_CREATE'
                                     ]}
     
-    if not use_skel_filter:
-        CHECKPOINTS_DFT['Track'].remove('SKE_FILT')
-    
-    if action == 'All':
-        points =  CHECKPOINTS_DFT['Compress'] + CHECKPOINTS_DFT['Track']
+    if add_manual_feats:
+        CHECKPOINTS_DFT['track'].append('FEAT_MANUAL_CREATE') 
+
+    if action == 'all':
+        points =  CHECKPOINTS_DFT['compress'] + CHECKPOINTS_DFT['track']
 
         #remove duplicates while keeping the order (http://stackoverflow.com/questions/480214/how-do-you-remove-duplicates-from-a-list-in-whilst-preserving-order)
         seen = set()
@@ -128,4 +131,4 @@ def getDefaultSequence(action, is_single_worm=False, use_skel_filter=True):
         return CHECKPOINTS_DFT[action]
 
 if __name__ == '__main__':
-    print(getDefaultSequence('All'))
+    print(getDefaultSequence('all'))
