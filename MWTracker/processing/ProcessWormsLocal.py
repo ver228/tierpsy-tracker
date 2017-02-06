@@ -30,9 +30,13 @@ class ProcessWormsLocal(object):
         self.masks_dir = os.path.realpath(masks_dir)
 
         #check that the files do exists
-        for fname in [self.main_file, self.results_dir,  self.masks_dir]:
-            if not os.path.exists(fname):
-                raise FileNotFoundError(fname)
+        if not os.path.exists(self.main_file):
+            raise FileNotFoundError(self.main_file)
+
+        for dname in [self.results_dir,  self.masks_dir]:
+            if not os.path.exists(dname):
+                os.makedirs(dname)
+                
         
 
         self.analysis_checkpoints = analysis_checkpoints
