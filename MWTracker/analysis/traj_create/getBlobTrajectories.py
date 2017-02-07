@@ -237,7 +237,7 @@ def getBlobsData(buff_data, blob_params):
             if analysis_type == "ZEBRAFISH":
                 # Override threshold
                 thresh_buff = 255
-            elif analysis_type == "WORM" or analysis_type == "PHARYNX":
+            else: 
                 # caculate threshold using the values in the buffer this improve quality since there is more data.
                 thresh_buff = getBufferThresh(ROI_buffer, worm_bw_thresh_factor, is_light_background)
             
