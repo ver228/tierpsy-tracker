@@ -6,6 +6,7 @@ import stat
 import glob
 
 import MWTracker
+from MWTracker import DFLT_PARAMS_PATH
 
 def execute_cmd(command):
     cmd_dd = []
@@ -154,24 +155,48 @@ def test5(script_dir, examples_dir):
         'track']
     execute_cmd(cmd)
 
-# def test6(script_dir, examples_dir):
-#     print('%%%%%% TEST6 %%%%%%\nReformat mask file produced by the rig.')
-#     main_dir = os.path.join(examples_dir, 'test_6')
-#     masked_files_dir = os.path.join(main_dir, 'MaskedVideos')
-#     raw_video_dir = os.path.join(main_dir, 'RawVideos')
 
-#     #remove_dir(masked_files_dir)
 
-#     cmd = [
-#         sys.executable,
-#         os.path.join(
-#             script_dir,
-#             'compressMultipleFiles.py'),
-#         raw_video_dir,
-#         masked_files_dir,
-#         '--pattern_include', 
-#         '*.raw_hdf5']
-#     execute_cmd(cmd)
+
+def test6(script_dir, examples_dir):
+    print('%%%%%% TEST6 %%%%%%\nReformat mask file produced by the rig.')
+    main_dir = os.path.join(examples_dir, 'test_6')
+    masked_files_dir = os.path.join(main_dir, 'MaskedVideos')
+    raw_video_dir = os.path.join(main_dir, 'RawVideos')
+
+    json_file = os.path.join(DFLT_PARAMS_PATH, 'single_worm_on_food.json')
+    #remove_dir(masked_files_dir)
+
+    extra_cmd = ['STAGE_ALIGMENT', 'CONTOUR_ORIENT', 'FEAT_CREATE', 'WCON_EXPORT']
+    
+    cmd = [
+        sys.executable,
+        os.path.join(
+            script_dir,
+            'processMultipleFiles.py'),
+        '--video_dir_root',
+        raw_video_dir,
+        '--mask_dir_root',
+        masked_files_dir,
+        '--json_file',
+        json_file,
+        '--pattern_include', 
+        '*.avi',
+        '--analysis_checkpoints',
+        'COMPRESS',
+        'COMPRESS_ADD_DATA',
+        'VID_SUBSAMPLE',
+        'TRAJ_CREATE',
+        'TRAJ_JOIN',
+        'SKE_INIT',
+        'BLOB_FEATS',
+        'SKE_CREATE',
+        'SKE_FILT',
+        'SKE_ORIENT',
+        'INT_PROFILE',
+        'INT_SKE_ORIENT',
+        ]
+    execute_cmd(cmd)
 
 import argparse
 
@@ -192,7 +217,7 @@ if __name__ == '__main__':
     examples_dir = os.path.join(root_dir, 'Tests', 'Data')
     script_dir = os.path.join(root_dir, 'cmd_scripts')
 
-    all_tests = [test1, test2, test3, test4, test5] 
+    all_tests = [test1, test2, test3, test4, test5, test6] 
     
     tests_ind = [x-1 for x in n_tests]
 

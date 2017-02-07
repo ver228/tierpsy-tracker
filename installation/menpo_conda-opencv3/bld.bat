@@ -5,29 +5,8 @@ set "FORWARD_SLASHED_LIBRARY_PREFIX=%LIBRARY_PREFIX:\=/%"
 set "FORWARD_SLASHED_SRC_DIR=%SRC_DIR:\=/%"
 
 for /f "delims=" %%A in ('%PREFIX%\python -c "import sys; print(sys.version_info.major)"') DO SET PY_MAJOR=%%A
+for /f "delims=" %%A in ('%PREFIX%\python -c "import sys; print(sys.version_info.minor)"') DO SET PY_MINOR=%%A
 
-IF %PY_MAJOR% EQU 3 (GOTO :PY3) else (GOTO :PY2)
-
-:PY3
-    REM Get python minor version by running a short script:
-    for /f "delims=" %%A in ('%PREFIX%\python -c "import sys; print(sys.version_info.minor)"') DO SET PY_MINOR=%%A
-    GOTO :NOTCPP11
-
-:PY2
-    REM Assume 2.7
-    set PY_MINOR=7
-    
-    echo "Copying stdint.h for windows"
-    copy "%LIBRARY_INC%\stdint.h" %SRC_DIR%\modules\calib3d\include\stdint.h
-    copy "%LIBRARY_INC%\stdint.h" %SRC_DIR%\modules\videoio\include\stdint.h
-    copy "%LIBRARY_INC%\stdint.h" %SRC_DIR%\modules\highgui\include\stdint.h
-    
-    GOTO :NOTCPP11
-    
-:NOTCPP11
-    git apply --whitespace=fix -p0 "%RECIPE_DIR%\kcftracker.patch"
-    git apply --whitespace=fix -p0 "%RECIPE_DIR%\ocr_beamsearch_decoder.patch"
-    git apply --whitespace=fix -p0 "%RECIPE_DIR%\ocr_hmm_decoder.patch"
 
 :PYTHON_SETUP
 

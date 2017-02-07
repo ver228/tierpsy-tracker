@@ -57,7 +57,6 @@ dflt_param_list = [
     
     ('analysis_type', 'WORM', 'Analysis functions to use. Valid options: WORM, SINGLE_WORM_SHAFER, ZEBRAFISH (broken)'),
     
-
     #not tested (used for the zebra fish)
     ('use_background_subtraction', False, 'Flag to determine whether background should be subtracted from original frames.'),
     ('background_threshold', 1, 'Threshold value to use when applying background subtraction.'),
@@ -163,6 +162,13 @@ class tracker_param:
             roi_size,
             n_cores_used):
 
+        
+        if filter_model_name:
+            if not os.path.exists(filter_model_name):
+                #try to look for the file in the AUX_FILES_DIR
+                filter_model_name = os.path.join(AUX_FILES_DIR, filter_model_name)
+            assert  os.path.exists(filter_model_name)
+
         if not isinstance(expected_fps, int):
             expected_fps = int(expected_fps)
 
@@ -204,7 +210,6 @@ class tracker_param:
             'expected_fps' : 30
         }
 
-
         # getWormTrajectories
         self.trajectories_param = {
             'buffer_size' : compression_buff,
@@ -233,8 +238,7 @@ class tracker_param:
             'threshold_smooth_win': expected_fps * 20 + 1,
             'roi_size': roi_size}
 
-        if filter_model_name:
-            assert os.path.exists(os.path.join(AUX_FILES_DIR, filter_model_name))
+        
         self.init_skel_param = {
             'smoothed_traj_param': self.smoothed_traj_param,
             'filter_model_name' : filter_model_name
