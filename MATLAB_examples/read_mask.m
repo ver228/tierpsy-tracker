@@ -13,4 +13,10 @@ for frame_number = 1:25:200
     figure, imshow(imcrop(image, rect))
 end
 
+
+timestamp_time = h5read(mask_file, '/timestamp/time');
+timestamp_raw = h5read(mask_file, '/timestamp/raw');
+
+stage_data = h5read(mask_file, '/stage_data');
+h5read(mask_file, '/xml_info')
 %imshow(image)

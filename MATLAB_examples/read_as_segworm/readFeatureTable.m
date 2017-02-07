@@ -13,15 +13,15 @@ try
 catch err
     experiment_info = '';
 end
-
-features_means = h5read(features_file, '/features_means');
+%/features_means was deprecated
+features_means = h5read(features_file, '/features_summary/means');
 
 %% now let's read the features data
 features = struct();
 
 %% add timeseries features and skeletons
 features_timeseries = h5read(features_file, '/features_timeseries');
-skeletons = h5read(features_file, '/skeletons');
+skeletons = h5read(features_file, '/coordinates/skeletons');
 
 u_worms = unique(features_timeseries.worm_index);
 
@@ -33,6 +33,14 @@ for worm_ind = u_worms'
     for fn = 1:numel(timeseries_fields)
         field_name = timeseries_fields{fn};
         features.(worm_name).(field_name) = features_timeseries.(field_name)(good_ind);
+    
+        if strcmp(field_name, 'timestamp')
+            field_data = features.(worm_name).(field_name);
+            field_data = double(field_data); 
+            field_data(field_data<0) = nan;
+            features.(worm_name).(field_name) = field_data;
+        end
+        
     end
     
     features.(worm_name).skeletons_x = squeeze(skeletons(1, :, good_ind));
@@ -49,7 +57,12 @@ for ig = 1:numel(events_groups.Groups)
     for fn = 1:numel(events_groups.Groups(ig).Datasets);
         field_name = events_groups.Groups(ig).Datasets(fn).Name;
         field_data = h5read(features_file, [path, '/' field_name]);
+        
+        
+        
+        
         features.(worm_name).(field_name) = field_data;
+        
     end
         
 end
