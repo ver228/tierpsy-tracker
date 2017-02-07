@@ -17,3 +17,9 @@ hiddenimports=['h5py.defs', 'h5py.utils', 'h5py.h5ac', 'h5py._proxy',
              'cython', 'sklearn', 'sklearn.neighbors.typedefs'],
 
 * For some reason the 'datas' parameter in analysis is not working. I have to add data to a.datas directly.
+
+
+* I recieve a Intel MKL FATAL ERROR. Solution remove mkl from anaconda (https://github.com/pyinstaller/pyinstaller/issues/2175).
+	conda install nomkl numpy scipy scikit-learn numexpr
+	conda remove mkl mkl-service
+
