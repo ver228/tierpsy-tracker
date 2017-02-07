@@ -211,9 +211,7 @@ class WormFromTable(mv.NormalizedWorm):
                 # try to read the time stamps, if there are repeated or not a
                 # number use the frame nuber instead
                 timestamp_raw = trajectories_data['timestamp_raw'].values
-                if np.any(
-                        np.isnan(timestamp_raw)) or np.any(
-                        np.diff(timestamp_raw) == 0):
+                if np.any(np.isnan(timestamp_raw)) or np.any(np.diff(timestamp_raw) == 0):
                     raise ValueError
                 else:
                     timestamp_raw = timestamp_raw.astype(np.int)
@@ -258,7 +256,7 @@ class WormFromTable(mv.NormalizedWorm):
         # flag as segmented flags should be marked by the has_skeletons column
         self.video_info.frame_code = np.zeros(self.n_frames, np.int32)
         self.video_info.frame_code[ind_ff] = 1
-
+        
         # initialize the rest of the arrays
         self.skeleton = np.full((self.n_frames, self.n_segments, 2), np.nan)
         self.ventral_contour = np.full(

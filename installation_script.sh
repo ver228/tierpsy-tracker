@@ -170,10 +170,11 @@ function install_anaconda {
         hash -r
     fi
 
-    conda install python=3.5.2
+    conda install -y python=3.5.2 pip
 	conda install -y anaconda-client conda-build numpy matplotlib pytables pandas \
 	h5py scipy scikit-learn scikit-image seaborn xlrd cython statsmodels
-	pip install gitpython pyqt5 keras tensorflow
+	pip install gitpython pyqt5 keras 
+	conda install -y -c conda-forge tensorflow
 
 	install_opencv3_anaconda
 }
