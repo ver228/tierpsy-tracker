@@ -187,6 +187,7 @@ function install_opencv3_anaconda {
 	python3 -c "import cv2; print(cv2.__version__)"
 }
 
+
 function compile_cython_files {
 	cd $MW_MAIN_DIR/MWTracker/analysis/ske_create/segWormPython/cythonFiles/
 	make

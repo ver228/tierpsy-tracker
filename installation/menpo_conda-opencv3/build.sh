@@ -9,6 +9,7 @@ if [ "${SHORT_OS_STR:0:5}" == "Linux" ]; then
     DYNAMIC_EXT="so"
     TBB=""
     OPENMP="-DWITH_OPENMP=1"
+    FFMPEG_EXTRA="-DCMAKE_CXX_FLAGS=-D__STDC_CONSTANT_MACROS"
     IS_OSX=0
     # There's a bug with CMake at the moment whereby it can't download
     # using HTTPS - so we use curl to download the IPP library
@@ -20,7 +21,7 @@ if [ "${SHORT_OS_STR}" == "Darwin" ]; then
     DYNAMIC_EXT="dylib"
     OPENMP=""
     TBB="-DWITH_TBB=1 -DTBB_LIB_DIR=$PREFIX/lib -DTBB_INCLUDE_DIRS=$PREFIX/include -DTBB_STDDEF_PATH=$PREFIX/include/tbb/tbb_stddef.h"
-
+    FFMPEG_EXTRA=""
     # Apparently there is a bug in pthreads that is specific to the case of
     # building something with a deployment target of 10.6 but with an SDK
     # that is higher than 10.6. At the moment, on my laptop, I don't have the 10.6
@@ -50,6 +51,7 @@ cmake .. -G"$CMAKE_GENERATOR"                                            \
     $TBB                                                                 \
     $OPENMP                                                              \
     $OCV_PYTHON                                                          \
+    $FFMPEG_EXTRA                                                         \
     -DWITH_EIGEN=1                                                       \
     -DWITH_TBB=1                                                         \
     -DBUILD_TESTS=0                                                      \
