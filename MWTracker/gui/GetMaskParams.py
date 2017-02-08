@@ -257,23 +257,15 @@ class GetMaskParams_GUI(QMainWindow):
             self.ui.graphicsView_full,
             self.ui.graphicsView_mask)
 
-        # let drag and drop a file into the video file line edit
-        lineEditDragDrop(
-            self.ui.lineEdit_video,
-            self.updateVideoFile,
-            os.path.isfile)
-        lineEditDragDrop(
-            self.ui.lineEdit_results,
-            self.updateResultsDir,
-            os.path.isdir)
-        lineEditDragDrop(
-            self.ui.lineEdit_mask,
-            self.updateMasksDir,
-            os.path.isdir)
-        lineEditDragDrop(
-            self.ui.lineEdit_paramFile,
-            self.updateParamFile,
-            os.path.isfile)
+        dd_args = [
+            (self.ui.lineEdit_video, self.updateVideoFile, os.path.isfile),
+            (self.ui.lineEdit_results, self.updateResultsDir, os.path.isdir),
+            (self.ui.lineEdit_mask, self.updateMasksDir, os.path.isdir),
+            (self.ui.lineEdit_paramFile, self.updateParamFile, os.path.isfile),
+        ]
+        for dd_arg in dd_args:
+            # let drag and drop a file into the video file line edit
+            lineEditDragDrop(*dd_arg)
 
         # make sure the childrenfocus policy is none in order to be able to use
         # the arrow keys
