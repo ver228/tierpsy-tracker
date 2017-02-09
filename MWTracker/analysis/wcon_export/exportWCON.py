@@ -16,8 +16,23 @@ import os
 from MWTracker.analysis.feat_create.obtainFeaturesHelper import WormStatsClass
 from MWTracker.helper.misc import print_flush
 
-def _getMetaData(features_file, READ_FEATURES=False):
-    with tables.File(features_file, 'r') as fid:
+def getWCONMetaData(fname, READ_FEATURES=False, provenance_step='FEAT_CREATE'):
+    def _order_metadata(metadata_dict):
+        ordered_fields = ['strain', 'timestamp', 'gene', 'chromosome', 'allele', 
+        'genotype', 'sex', 'stage', 'ventral_side', 'media', 'arena', 'food', 
+        'habituation', 'who', 'protocol', 'lab', 'software']
+        
+        extra_fields = metadata_dict.keys() - set(ordered_fields)
+        ordered_fields += sorted(extra_fields)
+        
+        ordered_metadata = OrderedDict()
+        for field in ordered_fields:
+            if field in metadata_dict:
+                ordered_metadata[field] = metadata_dict[field]
+        return ordered_metadata
+    
+    
+    with tables.File(fname, 'r') as fid:
         if not '/experiment_info' in fid:
             experiment_info = {}
         else:
@@ -25,7 +40,7 @@ def _getMetaData(features_file, READ_FEATURES=False):
             experiment_info = json.loads(experiment_info.decode('utf-8'))
         
         
-        provenance_tracking = fid.get_node('/provenance_tracking/FEAT_CREATE').read()
+        provenance_tracking = fid.get_node('/provenance_tracking/' + provenance_step).read()
         provenance_tracking = json.loads(provenance_tracking.decode('utf-8'))
         commit_hash = provenance_tracking['commit_hash']
         
@@ -36,11 +51,13 @@ def _getMetaData(features_file, READ_FEATURES=False):
         if not READ_FEATURES:
             experiment_info["software"] = MWTracker_ver
         else:
+            #add open_worm_analysis_toolbox info and save as a list of "softwares"
             open_worm_ver = {"name":"open_worm_analysis_toolbox (https://github.com/openworm/open-worm-analysis-toolbox)",
             "version":commit_hash['open_worm_analysis_toolbox'],
             "featureID":""}
             experiment_info["software"] = [MWTracker_ver, open_worm_ver]
-        return experiment_info
+    
+    return _order_metadata(experiment_info)
 
 def __reformatForJson(A):
     try:
@@ -159,7 +176,7 @@ def _getUnits(features_file, READ_FEATURES=False):
     
     
 def exportWCONdict(features_file):
-    metadata = _getMetaData(features_file)
+    metadata = getWCONMetaData(features_file)
     data = _getData(features_file)
     units = _getUnits(features_file)
     
