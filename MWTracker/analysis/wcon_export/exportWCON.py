@@ -117,7 +117,6 @@ def _getData(features_file, READ_FEATURES=False):
         #group by iterator will return sorted worm indexes
         for worm_id, worm_feat_time in feat_time_group_by_worm:
             worm_id = int(worm_id)
-            
             #read worm skeletons data
             worm_skel = skeletons[worm_feat_time.index]
             worm_dor_cnt = dorsal_contours[worm_feat_time.index]
@@ -130,17 +129,13 @@ def _getData(features_file, READ_FEATURES=False):
             worm_basic['t'] = __reformatForJson(worm_feat_time['timestamp'].values/fps)
             worm_basic['x'] = __reformatForJson(worm_skel[:, :, 0])
             worm_basic['y'] = __reformatForJson(worm_skel[:, :, 1])
-            worm_basic['x_ventral_contour'] = __reformatForJson(worm_ven_cnt[:, :, 0])
-            worm_basic['y_ventral_contour'] = __reformatForJson(worm_ven_cnt[:, :, 1])
-            worm_basic['x_dorsal_contour'] = __reformatForJson(worm_dor_cnt[:, :, 0])
-            worm_basic['y_dorsal_contour'] = __reformatForJson(worm_dor_cnt[:, :, 1])
+            
             
             worm_basic['@OMG'] = OrderedDict()
             worm_basic['@OMG']['x_ventral_contour'] = __reformatForJson(worm_ven_cnt[:, :, 0])
             worm_basic['@OMG']['y_ventral_contour'] = __reformatForJson(worm_ven_cnt[:, :, 1])
             worm_basic['@OMG']['x_dorsal_contour'] = __reformatForJson(worm_dor_cnt[:, :, 0])
             worm_basic['@OMG']['y_dorsal_contour'] = __reformatForJson(worm_dor_cnt[:, :, 1])
-            
             
             if READ_FEATURES:
                 worm_features = __addOMGFeat(fid, worm_feat_time, worm_id)
@@ -153,22 +148,28 @@ def _getData(features_file, READ_FEATURES=False):
     return all_worms_feats
 
 def _getUnits(features_file, READ_FEATURES=False):
+    def _pixels_or_microns(micronsPerPixel):
+        #if this number is 1 and it is an integer there was not conversion given and the unit is pixels
+        if isinstance(micronsPerPixel, (float, np.float64)) and micronsPerPixel == 1:
+            unit_str = 'pixels'
+        else:
+            unit_str = 'microns'
+        return unit_str
     
     with tables.File(features_file, 'r') as fid:
         micronsPerPixel = fid.get_node('/features_timeseries').attrs['micronsPerPixel']
-    
+        
+        
     units = OrderedDict()
     units['t'] = 'seconds'
-    field_names = ['x', 'y', 'x_ventral_contour', 'y_ventral_contour', 'x_dorsal_contour', 'y_dorsal_contour']
-    if isinstance(micronsPerPixel, (float, np.float64)) and micronsPerPixel == 1:
-        for field in field_names:
-            units[field] = 'pixels'
-    else:
-        for field in field_names:
-            units[field] = 'microns'
-    units["size"] = "mm"
+    units["size"] = "mm" #size of the plate
+    
+    unit_l_str = _pixels_or_microns(micronsPerPixel)
+    for field in ['x', 'y', 'x_ventral_contour', 'y_ventral_contour', 'x_dorsal_contour', 'y_dorsal_contour']:
+        units[field] = unit_l_str
     
     if READ_FEATURES:
+        #TODO double check the units
         ws = WormStatsClass()
         units.update(ws.features_info['units'].to_dict())
     
@@ -209,9 +210,20 @@ def exportWCON(features_file):
     print_flush("{} Finised to export to WCON.".format(base_name))
 
 if __name__ == '__main__':
-    features_file = 'N2 on food R_2011_02_24__16_35_59___2___9_features.hdf5'    
+    
+    features_file = '/Volumes/behavgenom_archive$/single_worm/Results/Laura-phase1/phase 1 pc207-12/Laura/31-03-10/3/T28138.5 (ok1014) on food L_2010_03_31__12_13_55___6___5_features.hdf5'
     #exportWCON(features_file)
-
+    
+    wcon_file = getWCOName(features_file)
+    wcon_dict = exportWCONdict(features_file)
+    wcon_txt = json.dumps(wcon_dict, allow_nan=False)
+    #%%
+    import zipfile
+    with zipfile.ZipFile(wcon_file, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
+        zip_name = os.path.basename(wcon_file).replace('.zip', '')
+        zf.writestr(zip_name, wcon_txt)
+        
+    
     
     #%%
 #    import wcon
