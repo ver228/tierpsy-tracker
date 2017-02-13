@@ -7,7 +7,7 @@ Created on Mon Oct 19 2015
 
 import copy
 import os
-
+import math
 import numpy as np
 import pandas as pd
 import tables
@@ -34,8 +34,8 @@ def calWormAngles(x, y, segment_size):
     dx = x[segment_size:] - x[:-segment_size]
     dy = y[segment_size:] - y[:-segment_size]
 
-    pad_down = np.floor(segment_size / 2)
-    pad_up = np.ceil(segment_size / 2)
+    pad_down = math.floor(segment_size / 2)
+    pad_up = math.ceil(segment_size / 2)
 
     # pad the rest of the array with delta of one segment
     #dx = np.hstack((np.diff(x[0:pad_down]), dx, np.diff(x[-pad_up:])))
@@ -71,10 +71,9 @@ def calWormAngles(x, y, segment_size):
     meanAngle = np.mean(angles)
     angles = angles - meanAngle
 
-    angles = np.hstack(
-        (np.full(
-            pad_down, np.nan), angles, np.full(
-            pad_up, np.nan)))
+    pad_left = np.full(pad_down, np.nan)
+    pad_right = np.full(pad_up, np.nan)
+    angles = np.hstack((pad_left, angles, pad_right))
     return (angles, meanAngle)
 
 

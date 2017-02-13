@@ -189,16 +189,19 @@ def resample_curve(curve, resampling_N=49, widths=np.zeros(0)):
     fy = interp1d(lengths, curve[:, 1])
 
     subLengths = np.linspace(0 + np.finfo(float).eps, tot_length, resampling_N)
+
     # I add the epsilon because otherwise the interpolation will produce nan
     # for zero
-
-    resampled_curve = np.zeros((resampling_N, 2))
-    resampled_curve[:, 0] = fx(subLengths)
-    resampled_curve[:, 1] = fy(subLengths)
-
-    if widths.size > 0:
-        fw = interp1d(lengths, widths)
-        widths = fw(subLengths)
+    try:
+        resampled_curve = np.zeros((resampling_N, 2))
+        resampled_curve[:, 0] = fx(subLengths)
+        resampled_curve[:, 1] = fy(subLengths)
+        if widths.size > 0:
+            fw = interp1d(lengths, widths)
+            widths = fw(subLengths)
+    except ValueError:
+        resampled_curve = np.full((resampling_N, 2), np.nan)
+        widths = np.full(resampling_N, np.nan)
 
     return resampled_curve, tot_length, widths
 

@@ -55,16 +55,13 @@ dflt_param_list = [
     ('filter_model_name', '', ''),
     ('n_cores_used', 1, 'Number of core used. Currently it is only suported by TRAJ_CREATE and it is only recommended at high particle densities.'),
     
+    ('is_bgnd_subtraction', False, 'Do the background subtraction step'),
+    ('bgnd_buff_size', 25, 'Number of image to keep to calculate the background'),
+    ('bgnd_frame_gap', 250, 'Frame gap between images used to calculate the background.'),
+
     ('analysis_type', 'WORM', 'Analysis functions to use. Valid options: WORM, SINGLE_WORM_SHAFER, ZEBRAFISH (broken)'),
     
     #not tested (used for the zebra fish)
-    ('use_background_subtraction', False, 'Flag to determine whether background should be subtracted from original frames.'),
-    ('background_threshold', 1, 'Threshold value to use when applying background subtraction.'),
-    ('ignore_mask', False, 'Mask is not used if set to True. Only applies if background subtraction is also active.'),
-    ('background_type', 'GENERATE_DYNAMICALLY', 'If background subtraction is enabled, determines whether background is generated dynamically or loaded from a file'),
-    ('background_frame_offset', 500, 'Number of frames offset from current frame used for generating background images.'),
-    ('background_generation_function', 'MAXIMUM', 'Function to apply to frames in order to generate background images.'),
-    ('background_file', '', 'Image file to use for background subtraction. If a filepath is set here, this file will be used instead of dynamically-generated background images.'),
     ('zf_num_segments', 12, 'Number of segments to use in tail model.'),
     ('zf_min_angle', -90, 'The lowest angle to test for each segment. Angles are set relative to the angle of the previous segment.'),
     ('zf_max_angle', 90, 'The highest angle to test for each segment.'),
@@ -106,6 +103,7 @@ class tracker_param:
                 else:
                     input_param[key] = param_in_file[key]
 
+        self.input_param = input_param
         self._get_param(**input_param)
         # print(input_param)
 
@@ -140,13 +138,9 @@ class tracker_param:
             int_length_resampling,
             int_max_gap_allowed_block,
             split_traj_time,
-            use_background_subtraction,
-            ignore_mask,
-            background_type,
-            background_threshold,
-            background_frame_offset,
-            background_generation_function,
-            background_file,
+            is_bgnd_subtraction,
+            bgnd_buff_size,
+            bgnd_frame_gap,
             analysis_type,
             zf_num_segments,
             zf_min_angle,
@@ -186,7 +180,14 @@ class tracker_param:
             'thresh_C': thresh_C,
             'dilation_size': dilation_size,
             'keep_border_data': keep_border_data,
-            'is_light_background': is_light_background}
+            'is_light_background': is_light_background
+            }
+
+        self.bgnd_param = {
+            'is_subtraction' : is_bgnd_subtraction, 
+            'buff_size' : bgnd_buff_size, 
+            'frame_gap' : bgnd_frame_gap
+            }
 
         # compressVideo
         self.compress_vid_param = {
@@ -194,14 +195,9 @@ class tracker_param:
             'save_full_interval': 200 * expected_fps,
             'max_frame': 1e32,
             'mask_param': self.mask_param,
-            'expected_fps': expected_fps,
-            'use_background_subtraction': use_background_subtraction,
-            'ignore_mask': ignore_mask,
-            'background_type': background_type,
-            'background_threshold': background_threshold,
-            'background_frame_offset': background_frame_offset,
-            'background_generation_function': background_generation_function,
-            'background_file': background_file}
+            'bgnd_param': self.bgnd_param,
+            'expected_fps': expected_fps
+        }
 
         # parameters for a subsampled video
         self.subsample_vid_param = {

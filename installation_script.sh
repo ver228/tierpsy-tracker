@@ -132,7 +132,7 @@ function install_dependencies_osx {
 	#sudo chown -R `whoami`:admin /usr/local/bin
 	#sudo chown -R `whoami`:admin /usr/local/share
 	brew update
-	brew upgrade --verbose
+	brew upgrade
 
 	brew install git
 	
@@ -143,6 +143,8 @@ function install_dependencies_osx {
 	#image libraries for opencv
 	brew install jpeg libpng libtiff openexr eigen tbb
 }
+
+
 
 function install_anaconda {
 	case "${OS}" in
@@ -169,17 +171,19 @@ function install_anaconda {
         export PATH=$CONDA_PATH:$PATH
         hash -r
     fi
+}
 
-    conda install -y python=3.5.2 pip
+function install_anaconda_pkgs {
+	echo "Installing anaconda extra packages..."
+	conda install -y python=3.5.2 pip
 	conda install -y anaconda-client conda-build numpy matplotlib pytables pandas \
 	h5py scipy scikit-learn scikit-image seaborn xlrd cython statsmodels
 	pip install gitpython pyqt5 keras 
 	conda install -y -c conda-forge tensorflow
-
-	install_opencv3_anaconda
 }
 
-function install_opencv3_anaconda {	
+function install_opencv3_anaconda {
+	echo "Installing openCV..."
 	conda install -y conda-build
 	conda config --add channels menpo
 	conda build --no-anaconda-upload installation/menpo_conda-opencv3
@@ -187,6 +191,34 @@ function install_opencv3_anaconda {
 	python3 -c "import cv2; print(cv2.__version__)"
 }
 
+function install_opencv3_anaconda_checked {	
+	OPENCV_CUR_VER=`python3 -c "import cv2; print(cv2.__version__)" 2>/dev/null` || true
+	if [[ ! -z "$OPENCV_CUR_VER" ]]; then
+		read -r -p "A previous installation of openCV ($OPENCV_CUR_VER) exists. Do you wish to replace it? [y/N] " response
+		case "$response" in [yY][eE][sS]|[yY]) 
+        	install_opencv3_anaconda
+        	;;
+        esac
+    else
+        install_opencv3_anaconda
+    fi
+}
+
+function install_anaconda_checked {
+	if hash conda 2>/dev/null; then
+		CONDA_VER=`conda -V`
+        read -r -p "A previous installation of anaconda ($CONDA_VER) exists. Do you wish to overwrite it? [y/N] " response
+		case "$response" in [yY][eE][sS]|[yY]) 
+        	install_anaconda
+        	;;
+        esac
+    else
+        install_anaconda
+    fi
+
+    install_anaconda_pkgs
+    install_opencv3_anaconda_checked
+}
 
 function compile_cython_files {
 	cd $MW_MAIN_DIR/MWTracker/analysis/ske_create/segWormPython/cythonFiles/
@@ -224,8 +256,6 @@ function download_examples {
 }
 
 ##########
-
-
 case "${OS}" in
 	"Darwin")
 	install_dependencies_osx || :
@@ -239,7 +269,7 @@ esac
 if [[ $1 == 'brew' ]]; then
 	install_homebrew_python
 else
-	install_anaconda
+	install_anaconda_checked
 fi
 
 compile_cython_files

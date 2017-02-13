@@ -24,7 +24,7 @@ requirements:
    - msinttypes r26  # [win and py<35]
 
   run:
-   - python
+   - python >=3.5
    - numpy >=1.10
    - hdf5 1.8.*  # [osx]
    - tbb 4.3*    # [osx]
