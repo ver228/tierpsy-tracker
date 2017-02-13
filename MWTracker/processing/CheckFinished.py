@@ -35,7 +35,7 @@ def _checkFlagsFun(fname, field_name, test_value, test_func=_isValidFlag, extra_
 
 
 class CheckFinished(object):
-    def __init__(self, output_files):
+    def __init__(self, output_files, extra_check_finished):
         
         #check that the correct provenance point is stored in the corresponding file
         self._provenance_funcs = {}
@@ -49,7 +49,10 @@ class CheckFinished(object):
                 point, 
                 _isValidProvenance,
                 extra_files)
-        
+        #additional functions to check if it really finished
+        self._extra_check_finished = extra_check_finished
+
+
         #I plan to check succesful processing using only provenance. I keep this for backwards compatibility.
         outf = lambda x : output_files[x][0]
 
@@ -93,7 +96,7 @@ class CheckFinished(object):
     
     def get(self, point):
         has_finished = self._provenance_funcs[point]()
-        
+
         #we test flags for backwards compatibility
         if not has_finished and point in self._deprec_check_funcs:
             for func in self._deprec_check_funcs[point]:
@@ -101,4 +104,8 @@ class CheckFinished(object):
                 if has_finished:
                     break
         
+        if len(self._extra_check_finished[point]) > 0:
+            #check all the extra functions are valid
+            has_finished = has_finished and all(x() for x in self._extra_check_finished[point])
+
         return has_finished
