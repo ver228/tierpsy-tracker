@@ -167,8 +167,8 @@ def initMasksGroups(fid, expected_frames, im_height, im_width,
 
     # open node to store the compressed (masked) data
     mask_dataset = createImgGroup(fid, "/mask", expected_frames, im_height, im_width)
-    mask_dataset.attrs['has_finished'] = 0
-    mask_dataset.attrs['expected_fps'] = expected_fps # flag to indicate if the conversion finished succesfully
+    mask_dataset.attrs['has_finished'] = 0 # flag to indicate if the conversion finished succesfully
+    mask_dataset.attrs['expected_fps'] = expected_fps # setting the expected_fps attribute so it can be read later
     mask_dataset.attrs['is_light_background'] = int(is_light_background)
     
 

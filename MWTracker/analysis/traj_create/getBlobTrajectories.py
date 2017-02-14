@@ -54,30 +54,45 @@ def _thresh_bw(pix_valid):
     else:
         # if otsu is larger than the maximum peak keep otsu threshold
         thresh = otsu_thresh
-
     return thresh
 
-def getBufferThresh(ROI_buffer, worm_bw_thresh_factor, is_light_background):
+def _thresh_bodywallmuscle(pix_valid):
+    pix_mean = np.mean(pix_valid)
+    pix_median = np.median(pix_valid)
+    # when fluorescent worms are present, the distribution of pixels should be asymmetric, with a peak at low values corresponding to the background
+    if pix_mean > pix_median*1.1: # alternatively, could use scipy.stats.skew and some threshold, like >1/2
+        thresh = pix_mean
+    else: # try usual thresholding otherwise
+        thresh = 255 - _thresh_bw(255 - pix_valid) #correct for fluorescence images
+    return thresh
+
+def getBufferThresh(ROI_buffer, worm_bw_thresh_factor, is_light_background, analysis_type):
     ''' calculate threshold using the nonzero pixels.  Using the
      buffer instead of a single image, improves the threshold
-     calculation, since better statistics are recoverd'''
+     calculation, since better statistics are recovered'''
      
-     
-    pix_valid = ROI_buffer[ROI_buffer != 0]
+    if analysis_type == "ZEBRAFISH":
+        # Override threshold
+        thresh = 255
+    else: 
+        pix_valid = ROI_buffer[ROI_buffer != 0]
 
 
-    if pix_valid.size > 0:
-        if is_light_background:
-            thresh = _thresh_bw(pix_valid)
+        if pix_valid.size > 0:
+            if is_light_background:
+                thresh = _thresh_bw(pix_valid)
+            else:
+                if if analysis_type == "WORM":
+                    thresh = _thresh_bodywallmuscle(pix_valid)
+                else:
+                    #correct for fluorescence images
+                    MAX_PIX = 255 #for uint8 images
+                    thresh = _thresh_bw(MAX_PIX - pix_valid)
+                    thresh = MAX_PIX - thresh
+
+            thresh *= worm_bw_thresh_factor
         else:
-            #correct for fluorescence images
-            MAX_PIX = 255 #for uint8 images
-            thresh = _thresh_bw(MAX_PIX - pix_valid)
-            thresh = MAX_PIX - thresh
-
-        thresh *= worm_bw_thresh_factor
-    else:
-        thresh = np.nan
+            thresh = np.nan
     
     return thresh
 
@@ -109,25 +124,22 @@ def _get_blob_mask(ROI_image, thresh, thresh_block_size, is_light_background, an
         ROI_image_th = cv2.medianBlur(ROI_image, 3)
         ROI_mask = ROI_image_th < thresh
     else:
-        if analysis_type == "WORM":
+        if analysis_type == "PHARYNX":
+            # for fluorescent pharynx labeled images, refine the threshold with a local otsu (http://scikit-image.org/docs/dev/auto_examples/plot_local_otsu.html)
+            # this compensates for local variations in brightness in high density regions, when many worms are close to each other
+            ROI_rank_otsu = skf.rank.otsu(ROI_image, skm.disk(thresh_block_size))
+            ROI_mask = (ROI_image>ROI_rank_otsu)
+            # as a local threshold introcudes artifacts at the edge of the mask, also use a global threshold to cut these out
+            ROI_mask &= (ROI_image>=thresh)
+        else:
             # this case applies for example to worms where the whole body is fluorecently labeled
             ROI_image_th = cv2.medianBlur(ROI_image, 3)
             ROI_mask = ROI_image_th >= thresh
-        elif analysis_type == "PHARYNX":
-            # for fluorescent pharynx labeled images, refine the threshold with a local otsu (http://scikit-image.org/docs/dev/auto_examples/plot_local_otsu.html)
-            # this compensates for local variations in brightness in high density regions, when many worms are close to each other
-            # as a local threshold introcudes artifacts at the edge of the mask, also use a global threshold to cut these out
-            ROI_rank_otsu = skf.rank.otsu(ROI_image, skm.disk(thresh_block_size))
-        
-            ROI_mask = (ROI_image>ROI_rank_otsu)
-            ROI_mask &= (ROI_image>=thresh)
-        
         
     ROI_mask &= (ROI_image != 0)
     ROI_mask = ROI_mask.astype(np.uint8)
 
-    return ROI_mask, thresh
-
+    return ROI_mask, thresh # returning thresh here seems redundant, as it isn't actually changed
 
 
 
@@ -141,7 +153,7 @@ def getBlobContours(ROI_image,
     
     ROI_image = _remove_corner_blobs(ROI_image)
     ROI_mask, thresh = _get_blob_mask(ROI_image, thresh, thresh_block_size, is_light_background, analysis_type)
-
+    
     # clean it using morphological closing - make this optional by setting strel_size to 0
     if np.all(strel_size):
         strel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, strel_size)
@@ -234,12 +246,7 @@ def getBlobsData(buff_data, blob_params):
             ROI_buffer = image_buffer[:, ini_x:fin_x, ini_y:fin_y]
 
             # calculate threshold
-            if analysis_type == "ZEBRAFISH":
-                # Override threshold
-                thresh_buff = 255
-            else: 
-                # caculate threshold using the values in the buffer this improve quality since there is more data.
-                thresh_buff = getBufferThresh(ROI_buffer, worm_bw_thresh_factor, is_light_background)
+            thresh_buff = getBufferThresh(ROI_buffer, worm_bw_thresh_factor, is_light_background, analysis_type)
             
             for buff_ind in range(image_buffer.shape[0]):
                 curr_ROI = ROI_buffer[buff_ind, :, :]
@@ -352,10 +359,6 @@ def getBlobsTable(masked_image_file,
         read_and_save_timestamp(masked_image_file, trajectories_file)
         return plate_worms, is_light_background
     
-
-    
-    
-
 
     blob_params = (is_light_background,
                   min_area,
