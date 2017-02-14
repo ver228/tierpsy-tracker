@@ -1,4 +1,4 @@
-ƒ# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Created on Thu Jun 25 12:44:07 2015
 
@@ -45,7 +45,7 @@ dflt_param_list = [
     ('strel_size', 5, 'Structural element size. Used to calculate skeletons and trajectories.'),
     ('fps_filter', 0, 'PROBALY USELESS (Used in joinTrajectories). frame per second used to calculate filters for trajectories. Set to zero to eliminate filtering.'),
     
-    ('ht_orient_segment', -1, ''),
+    ('ht_orient_segment', -1, 'Segment size to calculate the head_tail.'),
 
     ('filt_bad_seg_thresh', 0.8, 'minimum fraction of succesfully skeletonized frames in a worm trajectory to be considered valid'),
     ('filt_min_displacement', 10, 'minimum total displacement of a trajectory to be used to calculate the threshold to dectect bad skeletons.'),
@@ -118,12 +118,12 @@ class tracker_param:
     def __init__(self, source_file=''):
         p = self._read_clean_input(source_file)
 
-         self.expected_fps = _correct_fps(p['expected_fps'])
+        self.expected_fps = _correct_fps(p['expected_fps'])
         self.analysis_type = p['analysis_type']
         self.is_single_worm = self.analysis_type == 'SINGLE_WORM_SHAFER'
         self.use_skel_filter = True #useless but important in other functions
 
-        # correctHeadTail
+        #default parameters that depend on other properties
         if p['max_gap_allowed_block'] < 0:
             p['max_gap_allowed_block'] = self.expected_fps // 2
         
@@ -148,7 +148,7 @@ class tracker_param:
         # compressVideo
         self.compress_vid_param = {
             'buffer_size': p['compression_buff'],
-            'save_full_interval': 200 * self.expected_fps,
+            'save_full_interval': -1,
             'max_frame': 1e32,
             'mask_param': self.mask_param,
             'bgnd_param': self.bgnd_param,
@@ -253,6 +253,9 @@ class tracker_param:
             'split_traj_time' : p['split_traj_time'],
             'is_single_worm': self.is_single_worm
         }
+
+        self.p_dict = p
+
 
     def _read_clean_input(self, source_file):
         self.json_file = _correct_json_path(source_file)
