@@ -5,8 +5,8 @@ import shutil
 import stat
 import glob
 
-import MWTracker
-from MWTracker import DFLT_PARAMS_PATH
+import tierpsy
+from tierpsy import DFLT_PARAMS_PATH
 
 def execute_cmd(command):
     cmd_dd = []
@@ -212,7 +212,7 @@ if __name__ == '__main__':
     n_tests = args.n_tests
     
 
-    root_dir = os.path.abspath(os.path.join(os.path.dirname(MWTracker.__file__), '..')) 
+    root_dir = os.path.abspath(os.path.join(os.path.dirname(tierpsy.__file__), '..'))
 
     examples_dir = os.path.join(root_dir, 'Tests', 'Data')
     script_dir = os.path.join(root_dir, 'cmd_scripts')

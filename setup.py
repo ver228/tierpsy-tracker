@@ -3,12 +3,12 @@
 from setuptools import setup
 
 
-exec(open('MWTracker/version.py').read())
-setup(name='MWTracker',
+exec(open('tierpsy/version.py').read())
+setup(name='tierpsy',
       version=__version__,
       description='Multiworm Tracker',
       author='Avelino Javer',
       author_email='avelino.javer@imperial.ac.uk',
       url='https://github.com/ver228/Multiworm_Tracking',
-      packages=['MWTracker'],
+      packages=['tierpsy'],
       )
