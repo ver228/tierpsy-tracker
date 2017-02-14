@@ -82,7 +82,7 @@ def getBufferThresh(ROI_buffer, worm_bw_thresh_factor, is_light_background, anal
             if is_light_background:
                 thresh = _thresh_bw(pix_valid)
             else:
-                if if analysis_type == "WORM":
+                if analysis_type == "WORM":
                     thresh = _thresh_bodywallmuscle(pix_valid)
                 else:
                     #correct for fluorescence images
