@@ -167,8 +167,8 @@ def initMasksGroups(fid, expected_frames, im_height, im_width,
 
     # open node to store the compressed (masked) data
     mask_dataset = createImgGroup(fid, "/mask", expected_frames, im_height, im_width)
-    mask_dataset.attrs['has_finished'] = 0
-    mask_dataset.attrs['expected_fps'] = expected_fps # flag to indicate if the conversion finished succesfully
+    mask_dataset.attrs['has_finished'] = 0 # flag to indicate if the conversion finished succesfully
+    mask_dataset.attrs['expected_fps'] = expected_fps # setting the expected_fps attribute so it can be read later
     mask_dataset.attrs['is_light_background'] = int(is_light_background)
     
 
@@ -325,7 +325,7 @@ def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
             # mask buffer and save data into the hdf5 file
             if (ind_buff == buffer_size - 1 or ret == 0) and Ibuff.size > 0:
 
-                #calculate the max/min in the of the buffer
+                #calculate the max/min of the buffer
                 img_reduce = reduceBuffer(Ibuff, mask_param['is_light_background'])
 
                 # calculate the mask only when the buffer is full or there are
