@@ -8,6 +8,9 @@ Created on Thu Jun 25 12:44:07 2015
 import json
 import os
 from MWTracker import AUX_FILES_DIR
+#get default parameters files
+from MWTracker import DFLT_PARAMS_PATH, DFLT_PARAMS_FILES
+
 
 #deprecated variables that will be ignored
 deprecated_fields = ['has_timestamp', 'min_displacement']
@@ -29,10 +32,10 @@ dflt_param_list = [
     ('thresh_C', 15, 'constant offset used by the adaptative thresholding to calculate the mask.'),
     ('thresh_block_size', 61, 'block size used by the adaptative thresholding.'),
     ('dilation_size', 9, 'size of the structural element used in morphological operations to calculate the worm mask.'),
-    ('compression_buff', 25, 'number of images "min-averaged" to calculate the image mask.'),
+    ('expected_fps', 25, 'expected frame rate.'),
+    ('compression_buff', -1, 'number of images "min-averaged" to calculate the image mask. If it is -1 the program will read the expected_fps from the file.'),
     ('keep_border_data', False, 'set it to false if you want to remove any connected component that touches the border.'),
     ('is_light_background', True, 'set to true to indentify dark worms over a light background.'),
-    ('expected_fps', 25, 'expected frame rate.'),
     ('traj_min_area', 25, 'minimum allowed area in pixels allowed for the trajectories and the videos.'),
     ('traj_max_allowed_dist', 25, 'Maximum displacement expected between frames to be consider same track.'),
     ('traj_area_ratio_lim', [0.5, 2], 'Limits of the consecutive blob areas to be consider the same object.'),
@@ -40,9 +43,9 @@ dflt_param_list = [
     ('resampling_N', 49, 'number of segments used to renormalize the worm skeleton and contours.'),
     ('max_gap_allowed_block', 10, 'maximum time gap allowed between valid skeletons to be considered as belonging in the same group. Head/Tail correction by movement.'),
     ('strel_size', 5, 'Structural element size. Used to calculate skeletons and trajectories.'),
-    ('fps_filter', -1, 'frame per second used to calculate filters for trajectories. As default it will have the same value as expected_fps. Set to zero to eliminate filtering.'),
+    ('fps_filter', 0, 'PROBALY USELESS (Used in joinTrajectories). frame per second used to calculate filters for trajectories. Set to zero to eliminate filtering.'),
     
-    ('ht_orient_segment', -1, ''),
+    ('ht_orient_segment', -1, 'Segment size to calculate the head_tail.'),
 
     ('filt_bad_seg_thresh', 0.8, 'minimum fraction of succesfully skeletonized frames in a worm trajectory to be considered valid'),
     ('filt_min_displacement', 10, 'minimum total displacement of a trajectory to be used to calculate the threshold to dectect bad skeletons.'),
@@ -103,6 +106,13 @@ def _correct_fps(expected_fps):
 def get_all_prefix(input_params, prefix):
     return {x.replace(prefix, ''):input_params[x] for x in input_params if x.startswith(prefix)}
 
+
+def _correct_json_path(json_file):
+    if json_file in DFLT_PARAMS_FILES:
+        json_file = os.path.join(DFLT_PARAMS_PATH, json_file)
+    return json_file
+
+
 class tracker_param:
 
     def __init__(self, source_file=''):
@@ -113,6 +123,18 @@ class tracker_param:
         self.is_single_worm = self.analysis_type == 'SINGLE_WORM_SHAFER'
         self.use_skel_filter = True #useless but important in other functions
 
+        #default parameters that depend on other properties
+        if p['max_gap_allowed_block'] < 0:
+            p['max_gap_allowed_block'] = self.expected_fps // 2
+        
+        if p['ht_orient_segment'] > 0:
+            p['ht_orient_segment'] = round(p['resampling_N'] / 10)
+        
+        if p['int_max_gap_allowed_block'] < 0:
+            p['int_max_gap_allowed_block'] = p['max_gap_allowed_block'] / 2
+       
+
+
         # getROIMask
         mask_param_f = ['mask_min_area', 'mask_max_area', 'thresh_block_size', 
         'thresh_C', 'dilation_size', 'keep_border_data', 'is_light_background']
@@ -122,10 +144,11 @@ class tracker_param:
         bgnd_param_f = ['is_bgnd_subtraction', 'bgnd_buff_size', 'bgnd_frame_gap']
         self.bgnd_param = {x.replace('bgnd_', ''):p[x] for x in bgnd_param_f}
 
+        
         # compressVideo
         self.compress_vid_param = {
             'buffer_size': p['compression_buff'],
-            'save_full_interval': 200 * self.expected_fps,
+            'save_full_interval': -1,
             'max_frame': 1e32,
             'mask_param': self.mask_param,
             'bgnd_param': self.bgnd_param,
@@ -139,7 +162,7 @@ class tracker_param:
             'expected_fps' : self.expected_fps
         }
 
-        # getWormTrajectories
+        # getBlobsTable
         trajectories_param_f = ['traj_min_area', 'min_box_width',
         'worm_bw_thresh_factor', 'strel_size', 'analysis_type', 'thresh_block_size',
         'n_cores_used']
@@ -192,12 +215,6 @@ class tracker_param:
             'skel_args' : skel_args}
             
 
-        # correctHeadTail
-        if p['max_gap_allowed_block'] < 0:
-            p['max_gap_allowed_block'] = self.expected_fps // 2
-        
-        if p['ht_orient_segment'] > 0:
-            p['ht_orient_segment'] = round(p['resampling_N'] / 10)
         
         self.head_tail_param = {
             'max_gap_allowed': p['max_gap_allowed_block'],
@@ -219,8 +236,7 @@ class tracker_param:
             'width_percentage': p['int_avg_width_frac'],
             'save_maps': p['int_save_maps']}
 
-        if p['int_max_gap_allowed_block'] < 0:
-            p['int_max_gap_allowed_block'] = p['max_gap_allowed_block'] / 2
+        
         
         smooth_W = max(1, round(self.expected_fps / 5))
         self.head_tail_int_param = {
@@ -238,10 +254,15 @@ class tracker_param:
             'is_single_worm': self.is_single_worm
         }
 
+        self.p_dict = p
+
+
     def _read_clean_input(self, source_file):
+        self.json_file = _correct_json_path(source_file)
+
         input_param = default_param.copy()
-        if source_file:
-            with open(source_file) as fid:
+        if self.json_file:
+            with open(self.json_file) as fid:
                 param_in_file = json.load(fid)
             for key in param_in_file:
 
