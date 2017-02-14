@@ -308,8 +308,8 @@ def getBlobsTable(masked_image_file,
     is_light_background = _get_light_flag(masked_image_file)
     expected_fps = _get_fps(masked_image_file)
     
-    if buff_size < 0: #invalid value of buff size, expected_fps instead
-        buff_size = expected_fps
+    if buffer_size < 0: #invalid value of buff size, expected_fps instead
+        buffer_size = expected_fps
 
 
     def _ini_plate_worms(traj_fid, masked_image_file):
