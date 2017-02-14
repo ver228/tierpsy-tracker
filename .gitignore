@@ -17,4 +17,4 @@ MWTracker.egg-info/*
 *.so
 *.exe
 
-*.cpython-35m-darwin.so
+MWTracker/analysis/ske_create/segWormPython/cythonFiles/*.cpython-35m-darwin.so
