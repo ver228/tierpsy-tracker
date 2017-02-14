@@ -51,7 +51,7 @@ class AnalysisPoints(object):
         self.use_skel_filter = self.param.use_skel_filter
         
         self.buildPoints()
-        self.checker = CheckFinished(output_files = self.getField('output_files'), extra_check_finished=self.getField('extra_check_finished'))
+        self.checker = CheckFinished(output_files = self.getField('output_files'))
         
     def getFileNames(self, video_file, masks_dir, results_dir):
         base_name = video_file.rpartition('.')[0].rpartition(os.sep)[-1]
@@ -96,7 +96,6 @@ class AnalysisPoints(object):
         #THE FIRST ELEMENT IN OUTPUT_FILES MUST BE AND HDF5 AND WILL BE USED AS FLAG TO 
         #STORE THE PROVENANCE TRACKING
         
-        #NOTE: if you want to add an extra functions to check if the analysis really finished add list in the variable extra_check_finished 
         self.checkpoints = {
             'COMPRESS' : {
                 'func':processVideo,
@@ -106,7 +105,6 @@ class AnalysisPoints(object):
                 'input_files' : [fn['original_video']],
                 'output_files': [fn['masked_image']],
                 'requirements' : [('can_read_video', partial(isGoodVideo, fn['original_video']))],
-                'extra_check_finished' : []
             },
             'VID_SUBSAMPLE': {
                 'func':createSampleVideo,
@@ -115,7 +113,6 @@ class AnalysisPoints(object):
                 'input_files' : [fn['masked_image']],
                 'output_files': [fn['masked_image'], fn['subsample']],
                 'requirements' : ['COMPRESS'],
-                'extra_check_finished' : [partial(os.path.exists, fn['subsample'])] #this function is redundant (existance was already checked in output files, but i want to make a point)
             },
             'TRAJ_CREATE': {
                 'func': getBlobsTable,
@@ -124,7 +121,6 @@ class AnalysisPoints(object):
                 'input_files' : [fn['masked_image']],
                 'output_files': [fn['skeletons']],
                 'requirements' : ['COMPRESS'],
-                'extra_check_finished' : []
             },
             'TRAJ_JOIN': {
                 'func': joinBlobsTrajectories,
@@ -133,7 +129,6 @@ class AnalysisPoints(object):
                 'input_files' : [fn['skeletons']],
                 'output_files': [fn['skeletons']],
                 'requirements' : ['TRAJ_CREATE'],
-                'extra_check_finished' : []
             },
             'SKE_INIT': {
                 'func': processTrajectoryData,
@@ -145,7 +140,6 @@ class AnalysisPoints(object):
                 'input_files' : [fn['masked_image'], fn['skeletons']],
                 'output_files': [fn['skeletons']],
                 'requirements' : ['TRAJ_JOIN'],
-                'extra_check_finished' : []
             },
             'BLOB_FEATS': {
                 'func': getBlobsFeats,
@@ -155,7 +149,6 @@ class AnalysisPoints(object):
                 'input_files' : [fn['skeletons'], fn['masked_image']],
                 'output_files': [fn['skeletons']],
                 'requirements' : ['SKE_INIT'],
-                'extra_check_finished' : []
             },
             'SKE_CREATE': {
                 'func': trajectories2Skeletons,
@@ -165,7 +158,6 @@ class AnalysisPoints(object):
                 'input_files' : [fn['masked_image']],
                 'output_files': [fn['skeletons']],
                 'requirements' : ['SKE_INIT'],
-                'extra_check_finished' : []
             },
             'SKE_ORIENT': {
                 'func': correctHeadTail,
@@ -173,7 +165,6 @@ class AnalysisPoints(object):
                 'input_files' : [fn['skeletons']],
                 'output_files': [fn['skeletons']],
                 'requirements' : ['SKE_CREATE'],
-                'extra_check_finished' : []
             },
             'SKE_FILT': {
                 'func': getFilteredSkels,
@@ -181,7 +172,6 @@ class AnalysisPoints(object):
                 'input_files' : [fn['skeletons']],
                 'output_files': [fn['skeletons']],
                 'requirements' : ['SKE_CREATE'],
-                'extra_check_finished' : []
             },
             'INT_PROFILE': {
                 'func': getIntensityProfile,
@@ -190,7 +180,6 @@ class AnalysisPoints(object):
                 'input_files' : [fn['skeletons'],fn['masked_image']],
                 'output_files': [fn['intensities']],
                 'requirements' : ['SKE_CREATE'],
-                'extra_check_finished' : []
             },
             'INT_SKE_ORIENT': {
                 'func': correctHeadTailIntensity,
@@ -199,7 +188,6 @@ class AnalysisPoints(object):
                 'input_files' : [fn['skeletons'], fn['intensities']],
                 'output_files': [fn['skeletons']],
                 'requirements' : ['INT_PROFILE'],
-                'extra_check_finished' : []
             },
             'FEAT_CREATE': {
                 'func': getWormFeaturesFilt,
@@ -210,7 +198,6 @@ class AnalysisPoints(object):
                 'input_files' : [fn['skeletons']],
                 'output_files': [fn['features']],
                 'requirements' : ['SKE_CREATE'],
-                'extra_check_finished' : []
             },
             'FEAT_MANUAL_CREATE': {
                 'func': getWormFeaturesFilt,
@@ -222,7 +209,6 @@ class AnalysisPoints(object):
                 'output_files': [fn['feat_manual']],
                 'requirements' : ['SKE_CREATE',
                                   ('has_manual_joined_traj', partial(hasManualJoin, fn['skeletons']))],
-                'extra_check_finished' : []
             },
             'WCON_EXPORT': {
                 'func': exportWCON,
@@ -230,7 +216,6 @@ class AnalysisPoints(object):
                 'input_files' : [fn['features']],
                 'output_files': [fn['features'], fn['wcon']],
                 'requirements' : ['FEAT_CREATE'],
-                'extra_check_finished' : []
             },
         }
         
@@ -242,7 +227,6 @@ class AnalysisPoints(object):
                 'input_files' : [fn['original_video'], fn['masked_image']],
                 'output_files': [fn['masked_image']],
                 'requirements' : ['COMPRESS'],
-                'extra_check_finished' : []
             }
             self.checkpoints['STAGE_ALIGMENT'] = {
                 'func': alignStageMotion,
@@ -250,7 +234,6 @@ class AnalysisPoints(object):
                 'input_files' : [fn['skeletons'], fn['masked_image']],
                 'output_files': [fn['skeletons']],
                 'requirements' : ['COMPRESS_ADD_DATA', 'SKE_CREATE'],
-                'extra_check_finished' : [partial(isGoodStageAligment, fn['skeletons'])]
             }
             self.checkpoints['CONTOUR_ORIENT'] = {
                 'func': switchCntSingleWorm,
@@ -259,7 +242,6 @@ class AnalysisPoints(object):
                 'output_files': [fn['skeletons']],
                 'requirements' : ['SKE_CREATE',
                                   ('has_contour_info', partial(hasExpCntInfo, fn['skeletons']))],
-                'extra_check_finished' : []
             }
             #make sure the file has the additional files, even before start compression
             for key in ['COMPRESS', 'COMPRESS_ADD_DATA']:
