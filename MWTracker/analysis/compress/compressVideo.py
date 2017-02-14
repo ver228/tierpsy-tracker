@@ -9,7 +9,7 @@ import os
 import cv2
 import h5py
 import numpy as np
-from MWTracker.analysis.compress import backgroundSubtraction
+from MWTracker.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
 from  MWTracker.analysis.compress.extractMetaData import store_meta_data, read_and_save_timestamp
 from scipy.ndimage.filters import median_filter
 
@@ -180,11 +180,9 @@ def initMasksGroups(fid, expected_frames, im_height, im_width,
 
     return mask_dataset, full_dataset
 
-
-def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
-                  save_full_interval=5000, max_frame=1e32, expected_fps=25,
-                  use_background_subtraction=False, ignore_mask=False, background_type='GENERATE_DYNAMICALLY',
-                  background_threshold=15, background_frame_offset=500, background_generation_function='MAXIMUM', background_file=''):
+def compressVideo(video_file, masked_image_file, mask_param, bgnd_param, buffer_size=-1,
+                  save_full_interval=-1, max_frame=1e32, expected_fps=25,
+                  is_light_background=True):
     '''
     Compresses video by selecting pixels that are likely to have worms on it and making the rest of
     the image zero. By creating a large amount of redundant data, any lossless compression
@@ -200,6 +198,12 @@ def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
      max_frame -- last frame saved (default a very large number, so it goes until the end of the video)
      mask_param -- parameters used to calculate the mask
     '''
+
+    if buffer_size < 0:
+        buffer_size = expected_fps
+
+    if save_full_interval < 0:
+        save_full_interval = 200 * expected_fps
 
     # processes identifier.
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
@@ -219,6 +223,10 @@ def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
     print_flush(base_name + ' Extracting video metadata...')
     expected_frames = store_meta_data(video_file, masked_image_file)
     
+    if bgnd_param['is_subtraction']:
+        print_flush(base_name + ' Initializing background subtraction.')
+        bgnd_subtractor = BackgroundSubtractor(video_file, bgnd_param['buff_size'], bgnd_param['frame_gap'], mask_param['is_light_background'])
+
     # intialize some variables
     max_intensity, min_intensity = np.nan, np.nan
     frame_number = 0
@@ -235,13 +243,6 @@ def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
         mask_dataset, full_dataset = initMasksGroups(mask_fid, 
             expected_frames, vid.height, vid.width, expected_fps, 
             mask_param['is_light_background'], save_full_interval)
-        
-        # If set from file, load background image and save it to the HDF5 file
-        if use_background_subtraction:
-            if not background_file is None:
-                background_dataset = createImgGroup(mask_fid, "/background", 1, vid.height, vid.width)
-                bg_img = cv2.imread(background_file, cv2.IMREAD_GRAYSCALE)
-                background_dataset[0] = bg_img
         
         if vid.dtype != np.uint8:
             # this will worm as flags to be sure that the normalization took place.
@@ -304,12 +305,6 @@ def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
                     Ibuff = np.zeros(
                         (buffer_size, vid.height, vid.width), dtype=np.uint8)
 
-                # Subtract background if flag set
-                if use_background_subtraction:
-                    if background_type == 'GENERATE_DYNAMICALLY':
-                        bg_img = backgroundSubtraction.getBackground(vid, video_file, image, background_frame_offset, background_generation_function)
-                    image = backgroundSubtraction.applyBackgroundSubtraction(image, bg_img, background_threshold)
-
                 # add image to the buffer
                 Ibuff[ind_buff, :, :] = image.copy()
 
@@ -325,16 +320,22 @@ def compressVideo(video_file, masked_image_file, mask_param, buffer_size=25,
             # mask buffer and save data into the hdf5 file
             if (ind_buff == buffer_size - 1 or ret == 0) and Ibuff.size > 0:
 
-                #calculate the max/min of the buffer
-                img_reduce = reduceBuffer(Ibuff, mask_param['is_light_background'])
+                #TODO this can be done in a more clever way
+                
+                # Subtract background if flag set
+                if bgnd_param['is_subtraction']:
+                    #use the oposite (like that we can avoid an unecessary subtraction)
+                    oposite_flag = not mask_param['is_light_background']
+                    Ibuff_b  = bgnd_subtractor.apply(Ibuff)
+                    img_reduce = 255 - reduceBuffer(Ibuff_b, oposite_flag)
+                else:
+                    #calculate the max/min in the of the buffer
+                    img_reduce = reduceBuffer(Ibuff, mask_param['is_light_background'])
 
-                # calculate the mask only when the buffer is full or there are
-                # no more frames left
 
-                # Mask all the images in the buffer, as long as both 'Use Background Subtraction' and 'Ignore Mask' are not both set
-                if not (use_background_subtraction and ignore_mask):
-                    mask = getROIMask(img_reduce, **mask_param)
-                    Ibuff *= mask
+                
+                mask = getROIMask(img_reduce, **mask_param)
+                Ibuff *= mask
 
                 # add buffer to the hdf5 file
                 frame_first_buff = frame_number - Ibuff.shape[0]

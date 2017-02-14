@@ -274,11 +274,7 @@ class BatchProcessing_GUI(QMainWindow):
         tmp_dir_root = self.ui.lineEdit_tmpDir.text()
         is_copy_video = self.ui.checkBox_isCopyVideo.isChecked()
         
-        #append the root dir if we are using any of the default parameters files. I didn't add the dir before because it is easy to read them in this way.
-        json_file = self.ui.comboBox_paramFile.currentText()
-        if json_file in DFLT_PARAMS_FILES:
-            json_file = os.path.join(DFLT_PARAMS_PATH, json_file)
-
+        
         
         if self.ui.checkBox_txtFileList.isChecked():
             videos_list = self.ui.lineEdit_txtFileList.text()
@@ -318,6 +314,8 @@ class BatchProcessing_GUI(QMainWindow):
             sequence_str = 'track'
             video_dir_root = mask_dir_root  #overwrite the video_dir_root in order to copy the mask file to tmp
 
+        #append the root dir if we are using any of the default parameters files. I didn't add the dir before because it is easy to read them in this way.
+        json_file = self.ui.comboBox_paramFile.currentText()
         param = tracker_param(json_file)
         analysis_checkpoints = getDefaultSequence(sequence_str, is_single_worm=param.is_single_worm)
         

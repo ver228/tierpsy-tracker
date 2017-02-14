@@ -239,7 +239,8 @@ def trajectories2Skeletons(skeletons_file,
                             strel_size=5, 
                             worm_midbody=(0.35, 0.65),
                             analysis_type="WORM", 
-                            zf_skel_args = {}):
+                            skel_args = {'num_segments' : 24, 
+                                         'head_angle_thresh' : 60}):
     
     #get the index number for the width limit
     midbody_ind = (int(np.floor(
@@ -299,7 +300,7 @@ def trajectories2Skeletons(skeletons_file,
                                                  min_blob_area=row_data['area'] / 2, 
                                                  is_light_background = is_light_background)
                     # get skeletons
-                    output = getSkeleton(worm_cnt, prev_skeleton[worm_index], resampling_N)
+                    output = getSkeleton(worm_cnt, prev_skeleton[worm_index], resampling_N, **skel_args)
 
                 
                 

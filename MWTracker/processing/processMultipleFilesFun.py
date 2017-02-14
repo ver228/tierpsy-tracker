@@ -40,7 +40,8 @@ def processMultipleFilesFun(
         video_dir_root = mask_dir_root
 
     param = tracker_param(json_file)
-
+    json_file = param.json_file
+    
     if not analysis_checkpoints:
       analysis_checkpoints = getDefaultSequence(analysis_type, is_single_worm=param.is_single_worm, add_manual_feats=use_manual_join)
     

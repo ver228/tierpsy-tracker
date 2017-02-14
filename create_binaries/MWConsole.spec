@@ -28,7 +28,7 @@ ow_feat = os.path.join('features', 'feature_metadata', 'features_list.csv')
 ow_feat_src = os.path.join(open_worm_path, ow_feat)
 ow_feat_dst = os.path.join('open_worm_analysis_toolbox', ow_feat)
 
-ow_eigen = os.path.join('features', 'master_eigen_worms_n2.mat')
+ow_eigen = os.path.join('features', 'master_eigen_worms_N2.mat')
 ow_eigen_src = os.path.join(open_worm_path, ow_eigen)
 ow_eigen_dst = os.path.join('open_worm_analysis_toolbox', ow_eigen)
 
@@ -77,9 +77,10 @@ else:
   #copy some missing files from the library (at least in anaconda on OSX)
   for dst in ['libmkl_avx2.dylib', 'libmkl_mc.dylib']:
     src = os.path.realpath(os.path.join(os.path.dirname(sys.executable), '..', 'lib', dst))
-    added_datas.append((dst, src, 'DATA'))
-
-    print('<>><>>>>>>>>>>', dst)
+    
+    if os.path.exists(src):
+      added_datas.append((dst, src, 'DATA'))
+      print('<>><>>>>>>>>>>', dst)
 
 
 block_cipher = None

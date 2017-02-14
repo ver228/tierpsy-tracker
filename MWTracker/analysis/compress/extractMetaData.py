@@ -133,28 +133,39 @@ def store_meta_data(video_file, masked_image_file):
     return expected_frames
 
 
-def correct_timestamp(best_effort_timestamp, best_effort_timestamp_time):
+def _correct_timestamp(best_effort_timestamp, best_effort_timestamp_time):
+    
+    def _get_deltas(v_timestamp):
+        # delta from the best effort indexes
+        delta_vec = np.diff(v_timestamp)
+        good = (delta_vec != 0)  # & ~np.isnan(xx)
+        delta = np.median(delta_vec[good])
+        return delta_vec, delta, good
+    
+    def _normalize_delta(delta_vec, delta):
+        return np.round(delta_vec / delta).astype(np.int)
+    
+        
     # delta from the best effort indexes
-    xx = np.diff(best_effort_timestamp)
-    good_N = (xx != 0)  # & ~np.isnan(xx)
-    delta_x = np.median(xx[good_N])
-
+    delta_step_vec, delta_step, good_step = _get_deltas(best_effort_timestamp)
+    
     # delta from the best effort times
-    xx_t = np.diff(best_effort_timestamp_time)
-    good_Nt = xx_t != 0  # & ~np.isnan(xx)
-    delta_t = np.median(xx_t[good_Nt])
-
-    # test that the zero delta from the index and time are the same
-    assert np.all(good_N == good_Nt)
+    delta_t_vec, delta_t, good_t = _get_deltas(best_effort_timestamp_time)
+    
+    if not np.all(good_t == good_step):
+        raise ValueError('The zero delta from the index and time timestamps are not the same.')
 
     # check that the normalization factors make sense
-    xx_N = np.round(xx / delta_x).astype(np.int)
-    assert np.all(xx_N == np.round(xx_t / delta_t).astype(np.int))
+    delta_step_normalized = _normalize_delta(delta_step_vec, delta_step)
+    delta_t_normalized = _normalize_delta(delta_t_vec, delta_t)
+    
+    if not np.all(delta_step_normalized == delta_t_normalized):
+        raise ValueError('The normalization in time or in index does not match.')
 
     # get the indexes with a valid frame
     # add one to consider compensate for the np.diff
-    timestamp = np.arange(1, len(xx_N) + 1)
-    timestamp = timestamp[good_N] + xx_N[good_N] - 1
+    timestamp = np.arange(1, len(delta_t_normalized) + 1)
+    timestamp = timestamp[good_step] + delta_t_normalized[good_step] - 1
     timestamp = np.hstack((0, timestamp))
 
     timestamp_time = timestamp * delta_t
@@ -162,12 +173,12 @@ def correct_timestamp(best_effort_timestamp, best_effort_timestamp_time):
     return timestamp, timestamp_time
 
 
-def get_timestamp(masked_image_file):
+def get_timestamp(masked_file):
     '''
     Read the timestamp from the video_metadata, if this field does not exists return an array of nan
     '''
-
-    with tables.File(masked_image_file, 'r') as mask_fid:
+#%%
+    with tables.File(masked_file, 'r') as mask_fid:
         # get the total number of frmes previously processed
         tot_frames = mask_fid.get_node("/mask").shape[0]
 
@@ -176,18 +187,22 @@ def get_timestamp(masked_image_file):
             dd = [(row['best_effort_timestamp'], row['best_effort_timestamp_time'])
                   for row in mask_fid.get_node('/video_metadata/')]
 
-            timestamp, timestamp_time = list(zip(*dd))
-            timestamp = np.asarray(timestamp)
-            timestamp_time = np.asarray(timestamp_time)
-
-            assert timestamp.size == timestamp_time.size
-            timestamp, timestamp_time = correct_timestamp(timestamp, timestamp_time)
-
+            best_effort_timestamp, best_effort_timestamp_time = list(map(np.asarray, zip(*dd)))
+            
+            assert best_effort_timestamp.size == best_effort_timestamp_time.size
+            
+            try:
+                timestamp, timestamp_time = _correct_timestamp(best_effort_timestamp, best_effort_timestamp_time)
+            except ValueError:
+                #there was a problem in the normalization, return the original timestamps 
+                timestamp, timestamp_time = best_effort_timestamp.astype(np.int), best_effort_timestamp_time
         else:
+            #no metadata return empty frames
             timestamp = np.full(tot_frames, np.nan)
             timestamp_time = np.full(tot_frames, np.nan)
 
         assert timestamp.size == timestamp_time.size
+#%%
         return timestamp, timestamp_time
 
 
@@ -221,11 +236,12 @@ def read_and_save_timestamp(masked_image_file, dst_file=''):
 
 
 if __name__ == '__main__':
-    video_file = "/Users/ajaver/Desktop/Videos/Check_Align_samples/Videos/npr-13 (tm1504)V on food L_2010_01_25__11_56_02___4___2.avi"
-    masked_file = "/Users/ajaver/Desktop/Videos/Check_Align_samples/MaskedVideos/npr-13 (tm1504)V on food L_2010_01_25__11_56_02___4___2.hdf5"
+    masked_file = '/Users/ajaver/Tmp/MaskedVideos/Laura-phase2/tracker 3/Laura-phase2/other labs/06-11-15/N2 con_2016_01_13__12_43_02___3___2.hdf5'
+    # video_file = "/Users/ajaver/Desktop/Videos/Check_Align_samples/Videos/npr-13 (tm1504)V on food L_2010_01_25__11_56_02___4___2.avi"
+    # masked_file = "/Users/ajaver/Desktop/Videos/Check_Align_samples/MaskedVideos/npr-13 (tm1504)V on food L_2010_01_25__11_56_02___4___2.hdf5"
 
-    dat = get_ffprobe_metadata(video_file)
+    # dat = get_ffprobe_metadata(video_file)
 
-    store_meta_data(video_file, masked_file)
-    import matplotlib.pylab as plt
-    plt.plot(np.diff(dat['best_effort_timestamp']))
+    # store_meta_data(video_file, masked_file)
+    # import matplotlib.pylab as plt
+    # plt.plot(np.diff(dat['best_effort_timestamp']))

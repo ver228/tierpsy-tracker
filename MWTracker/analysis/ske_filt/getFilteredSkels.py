@@ -272,11 +272,13 @@ def filterPossibleCoils(
             contour_side2 = contour_side2s[skel_id]
             skeleton = skeletons[skel_id]
 
+
             #%%
             edge_length = 8
             p1 = contour_side1[:-edge_length]
             p2 = contour_side1[edge_length:]
-            points = contour_side1[edge_length / 2:-edge_length / 2]
+
+            points = contour_side1[edge_length // 2:-edge_length // 2]
             ang2 = np.arctan2(points[:, 0] - p2[:, 0], points[:, 1] - p2[:, 1])
             ang1 = np.arctan2(p1[:, 0] - points[:, 0], p1[:, 1] - points[:, 1])
             angles = ang2 - ang1

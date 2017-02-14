@@ -15,7 +15,7 @@ pyinstaller --noconfirm  --clean \
 ../scripts/compressSingleWorker.py
 
 
-pyinstaller --noconfirm  --clean --onefile --windowed \
+pyinstaller --noconfirm  --onefile --windowed --clean\
 --exclude-module PyQt4 \
 --exclude-module PyQt4.QtCore \
 --exclude-module PyQt4.QtGui \
@@ -24,7 +24,6 @@ pyinstaller --noconfirm  --clean --onefile --windowed \
 --hidden-import=h5py.h5ac \
 --hidden-import='h5py._proxy' \
 ../scripts/MWConsole.py
-
 }
 
 function clean {
@@ -37,4 +36,3 @@ function clean {
 
 build
 clean
-
