@@ -60,7 +60,7 @@ def _thresh_bodywallmuscle(pix_valid):
     pix_mean = np.mean(pix_valid)
     pix_median = np.median(pix_valid)
     # when fluorescent worms are present, the distribution of pixels should be asymmetric, with a peak at low values corresponding to the background
-    if pix_mean > pix_median*1.1:
+    if pix_mean > pix_median*1.1: # alternatively, could use scipy.stats.skew and some threshold, like >1/2
         thresh = pix_mean
     else: # try usual thresholding otherwise
         thresh = 255 - _thresh_bw(255 - pix_valid) #correct for fluorescence images
@@ -151,6 +151,7 @@ def getBlobContours(ROI_image,
     
     ROI_image = _remove_corner_blobs(ROI_image)
     ROI_mask, thresh = _get_blob_mask(ROI_image, thresh, thresh_block_size, is_light_background, analysis_type)
+    
     # clean it using morphological closing - make this optional by setting strel_size to 0
     if np.all(strel_size):
         strel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, strel_size)
