@@ -124,18 +124,17 @@ def _get_blob_mask(ROI_image, thresh, thresh_block_size, is_light_background, an
         ROI_image_th = cv2.medianBlur(ROI_image, 3)
         ROI_mask = ROI_image_th < thresh
     else:
-        if analysis_type == "WORM":
-            # this case applies for example to worms where the whole body is fluorecently labeled
-            ROI_image_th = cv2.medianBlur(ROI_image, 3)
-            ROI_mask = ROI_image_th >= thresh
-        elif analysis_type == "PHARYNX":
+        if analysis_type == "PHARYNX":
             # for fluorescent pharynx labeled images, refine the threshold with a local otsu (http://scikit-image.org/docs/dev/auto_examples/plot_local_otsu.html)
             # this compensates for local variations in brightness in high density regions, when many worms are close to each other
             ROI_rank_otsu = skf.rank.otsu(ROI_image, skm.disk(thresh_block_size))
             ROI_mask = (ROI_image>ROI_rank_otsu)
             # as a local threshold introcudes artifacts at the edge of the mask, also use a global threshold to cut these out
             ROI_mask &= (ROI_image>=thresh)
-        
+        else:
+            # this case applies for example to worms where the whole body is fluorecently labeled
+            ROI_image_th = cv2.medianBlur(ROI_image, 3)
+            ROI_mask = ROI_image_th >= thresh
         
     ROI_mask &= (ROI_image != 0)
     ROI_mask = ROI_mask.astype(np.uint8)
@@ -360,10 +359,6 @@ def getBlobsTable(masked_image_file,
         read_and_save_timestamp(masked_image_file, trajectories_file)
         return plate_worms, is_light_background
     
-
-    
-    
-
 
     blob_params = (is_light_background,
                   min_area,
