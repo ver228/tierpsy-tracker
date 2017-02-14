@@ -48,14 +48,17 @@ def getHeadTail(
         maxima_low_freq_ind,
         cnt_ang_hi_freq,
         maxima_hi_freq_ind,
-        cnt_chain_code_len):
+        cnt_chain_code_len,
+        angle_thresh_hi_freq=60):
+    
+    angle_thresh_low_freq = angle_thresh_hi_freq*1.5
     # We will consider only possible head/tail points
     # values larger than 90 for the low freqency sampling
     # and 60 for the high frequency sampling
-    good = cnt_ang_hi_freq[maxima_hi_freq_ind] > 60
+    good = cnt_ang_hi_freq[maxima_hi_freq_ind] > angle_thresh_hi_freq
     maxima_hi_freq_ind = maxima_hi_freq_ind[good]
 
-    good = cnt_ang_low_freq[maxima_low_freq_ind] > 90
+    good = cnt_ang_low_freq[maxima_low_freq_ind] > angle_thresh_low_freq
     maxima_low_freq_ind = maxima_low_freq_ind[good]
 
     #% Are there too many possible head/tail points?

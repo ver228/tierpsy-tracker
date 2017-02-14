@@ -50,7 +50,7 @@ def _getCorrectedTimeVec(fid, tot_frames):
     return tt_vec
 
 def createSampleVideo(masked_image_file, sample_video_name ='', time_factor = 8, 
-                     size_factor = 5, expected_fps=30):
+                     size_factor = 5, expected_fps=30, codec='MPEG'):
     #%%
     if not sample_video_name:
         sample_video_name = getSubSampleVidName(masked_image_file)
@@ -68,9 +68,9 @@ def createSampleVideo(masked_image_file, sample_video_name ='', time_factor = 8,
 
         tt_vec = _getCorrectedTimeVec(fid, tot_frames)
         #%%
-        #'H264' #'MPEG' #XVID
+        #codec values that work 'H264' #'MPEG' #XVID
         vid_writer = cv2.VideoWriter(sample_video_name, \
-                            cv2.VideoWriter_fourcc(*'MPEG'), fps/2, (im_w,im_h), isColor=False)
+                            cv2.VideoWriter_fourcc(*codec), fps/2, (im_w,im_h), isColor=False)
         assert vid_writer.isOpened()
         
         for frame_number in range(0, tot_frames, time_factor*2):

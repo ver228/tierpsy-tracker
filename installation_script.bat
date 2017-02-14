@@ -2,8 +2,7 @@
 conda install -y anaconda-client conda-build numpy matplotlib pytables pandas h5py scipy scikit-learn scikit-image seaborn xlrd statsmodels
 pip install gitpython pyqt5 keras tensorflow
 
-conda install -y -c https://conda.binstar.org/ver228 opencv3
-
+conda install --channel https://conda.anaconda.org/ver228 opencv3
 :: conda config --add channels menpo
 :: conda build --no-anaconda-upload installation/menpo_conda-opencv3
 :: conda install -y --use-local opencv3

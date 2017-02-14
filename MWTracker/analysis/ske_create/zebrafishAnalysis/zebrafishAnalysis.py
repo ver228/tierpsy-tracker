@@ -105,17 +105,22 @@ def rotateFishImage(img, angle_degrees, config):
 
 	input_image = np.zeros((config.rotated_img_size, config.rotated_img_size), np.uint8)
 
-	h, w = img.shape
+	y_mid = config.rotated_img_size // 2
+	def _get_range(l):
+		bot = math.floor(y_mid - l/2)
+		top = math.floor(y_mid + l/2)
+		return bot, top
 
-	input_image[(config.rotated_img_size/2)-(h/2):(config.rotated_img_size/2)+(h/2), (config.rotated_img_size/2)-(w/2):(config.rotated_img_size/2)+(w/2)] = img
+	h_ran, w_ran = list(map(_get_range, img.shape))
+	input_image[h_ran[0]:h_ran[1], w_ran[0]:w_ran[1]] = img
 
 	rows, cols = input_image.shape
-	center = (rows/2, cols/2)
+	center = (rows//2, cols//2)
 
 	M = cv2.getRotationMatrix2D(center, angle_degrees, 1.0)
 	rotated_img = cv2.warpAffine(input_image, M, (cols, rows))
 
-	y_mid = config.rotated_img_size / 2
+	
 
 	img_top = rotated_img[0:y_mid, 0:config.rotated_img_size]
 	img_bottom = rotated_img[y_mid:config.rotated_img_size, 0:config.rotated_img_size]
@@ -498,6 +503,7 @@ def getZebrafishMask(frame, config):
 
 	if len(contours) == 0:
 		output = None
+
 	else:
 		# Remove nesting from contour
 		worm_cnt = contours[0]
@@ -505,12 +511,12 @@ def getZebrafishMask(frame, config):
 
 		# Return None values if contour too small
 		if len(worm_cnt) < 3:
-			ouput = None
-
-		cnt_area = cv2.contourArea(worm_cnt)
-
-		output = worm_mask, worm_cnt, cnt_area, \
-			   cleaned_mask, head_point, smoothed_points
+			output = None
+		else:
+			cnt_area = cv2.contourArea(worm_cnt)
+			output = worm_mask, worm_cnt, cnt_area, \
+				   cleaned_mask, head_point, smoothed_points
+	
 	if output is None:
 		return [None]*6
 	else:

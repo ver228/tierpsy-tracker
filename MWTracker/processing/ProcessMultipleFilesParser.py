@@ -181,9 +181,10 @@ class ProcessMultipleFilesParser(BaseMultipleFilesParser):
 
         group.add_argument(
             '--analysis_type',
-            default=self.dflt_vals['analysis_type'],
+            default = 'all',
             choices = ['compress', 'track', 'all'],
-            help='Type of analysis to be processed.')
+            help='Type of analysis to be processed.',
+            )
 
         group.add_argument(
             '--analysis_checkpoints',

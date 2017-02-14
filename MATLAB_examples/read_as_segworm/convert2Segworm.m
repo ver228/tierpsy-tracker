@@ -1,4 +1,4 @@
-function [features_segworm] = convert2Segworm(features)
+function [features_segworm, conversions] = convert2Segworm(features)
 %read an hdf5 features file produced by MWTracker
 %features  - structure with all the individual worm tracks and their
 %                       respective features in the MWTracker format (see readFeatureTable).
@@ -49,7 +49,6 @@ for iw = 1:numel(worm_names)
         end
         
         segworm_fields = strsplit(segworm_field_str, '.');
-        
         data = old_worm.(old_field);
         new_worm = addField(new_worm, segworm_fields, data);
         

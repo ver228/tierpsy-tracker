@@ -76,10 +76,12 @@ class AnalysisPoints(object):
         self.file_names =  output
         self.file2dir_dict = {fname:dname for dname, fname in map(os.path.split, self.file_names.values())}
     
-    def getField(self, key, points2get = 0):
-        if isinstance(points2get, int):
+    def getField(self, key, points2get = None):
+        if points2get is None:
             points2get = self.checkpoints
-        return {x:self.checkpoints[x][key] for x in points2get}
+
+        #return None if the field is not in point
+        return {x : self.checkpoints[x][key] for x in points2get}
         
     def getArgs(self, point):
         return {x:self.checkpoints[point][x] for x in ['func', 'argkws', 'provenance_file']}
@@ -102,7 +104,7 @@ class AnalysisPoints(object):
                             'compress_vid_param' : param.compress_vid_param},
                 'input_files' : [fn['original_video']],
                 'output_files': [fn['masked_image']],
-                'requirements' : [('can_read_video', partial(isGoodVideo, fn['original_video']))]
+                'requirements' : [('can_read_video', partial(isGoodVideo, fn['original_video']))],
             },
             'VID_SUBSAMPLE': {
                 'func':createSampleVideo,
@@ -110,7 +112,7 @@ class AnalysisPoints(object):
                             **param.subsample_vid_param},
                 'input_files' : [fn['masked_image']],
                 'output_files': [fn['masked_image'], fn['subsample']],
-                'requirements' : ['COMPRESS']
+                'requirements' : ['COMPRESS'],
             },
             'TRAJ_CREATE': {
                 'func': getBlobsTable,
@@ -118,7 +120,7 @@ class AnalysisPoints(object):
                            **param.trajectories_param},
                 'input_files' : [fn['masked_image']],
                 'output_files': [fn['skeletons']],
-                'requirements' : ['COMPRESS']
+                'requirements' : ['COMPRESS'],
             },
             'TRAJ_JOIN': {
                 'func': joinBlobsTrajectories,
@@ -126,7 +128,7 @@ class AnalysisPoints(object):
                             **param.join_traj_param},
                 'input_files' : [fn['skeletons']],
                 'output_files': [fn['skeletons']],
-                'requirements' : ['TRAJ_CREATE']
+                'requirements' : ['TRAJ_CREATE'],
             },
             'SKE_INIT': {
                 'func': processTrajectoryData,
@@ -137,7 +139,7 @@ class AnalysisPoints(object):
 
                 'input_files' : [fn['masked_image'], fn['skeletons']],
                 'output_files': [fn['skeletons']],
-                'requirements' : ['TRAJ_JOIN']
+                'requirements' : ['TRAJ_JOIN'],
             },
             'BLOB_FEATS': {
                 'func': getBlobsFeats,
@@ -146,7 +148,7 @@ class AnalysisPoints(object):
                             **param.blob_feats_param},
                 'input_files' : [fn['skeletons'], fn['masked_image']],
                 'output_files': [fn['skeletons']],
-                'requirements' : ['SKE_INIT']
+                'requirements' : ['SKE_INIT'],
             },
             'SKE_CREATE': {
                 'func': trajectories2Skeletons,
@@ -155,21 +157,21 @@ class AnalysisPoints(object):
                             **param.skeletons_param},
                 'input_files' : [fn['masked_image']],
                 'output_files': [fn['skeletons']],
-                'requirements' : ['SKE_INIT']
+                'requirements' : ['SKE_INIT'],
             },
             'SKE_ORIENT': {
                 'func': correctHeadTail,
                 'argkws': {**{'skeletons_file': fn['skeletons']}, **param.head_tail_param},
                 'input_files' : [fn['skeletons']],
                 'output_files': [fn['skeletons']],
-                'requirements' : ['SKE_CREATE']
+                'requirements' : ['SKE_CREATE'],
             },
             'SKE_FILT': {
                 'func': getFilteredSkels,
                 'argkws': {**{'skeletons_file': fn['skeletons']}, **param.feat_filt_param},
                 'input_files' : [fn['skeletons']],
                 'output_files': [fn['skeletons']],
-                'requirements' : ['SKE_CREATE']
+                'requirements' : ['SKE_CREATE'],
             },
             'INT_PROFILE': {
                 'func': getIntensityProfile,
@@ -177,7 +179,7 @@ class AnalysisPoints(object):
                               'intensities_file': fn['intensities']}, **param.int_profile_param},
                 'input_files' : [fn['skeletons'],fn['masked_image']],
                 'output_files': [fn['intensities']],
-                'requirements' : ['SKE_CREATE']
+                'requirements' : ['SKE_CREATE'],
             },
             'INT_SKE_ORIENT': {
                 'func': correctHeadTailIntensity,
@@ -185,7 +187,7 @@ class AnalysisPoints(object):
                            **self.param.head_tail_int_param},
                 'input_files' : [fn['skeletons'], fn['intensities']],
                 'output_files': [fn['skeletons']],
-                'requirements' : ['INT_PROFILE']
+                'requirements' : ['INT_PROFILE'],
             },
             'FEAT_CREATE': {
                 'func': getWormFeaturesFilt,
@@ -195,7 +197,7 @@ class AnalysisPoints(object):
                            },
                 'input_files' : [fn['skeletons']],
                 'output_files': [fn['features']],
-                'requirements' : ['SKE_CREATE']
+                'requirements' : ['SKE_CREATE'],
             },
             'FEAT_MANUAL_CREATE': {
                 'func': getWormFeaturesFilt,
@@ -206,14 +208,14 @@ class AnalysisPoints(object):
                 'input_files' : [fn['skeletons']],
                 'output_files': [fn['feat_manual']],
                 'requirements' : ['SKE_CREATE',
-                                  ('has_manual_joined_traj', partial(hasManualJoin, fn['skeletons']))]
+                                  ('has_manual_joined_traj', partial(hasManualJoin, fn['skeletons']))],
             },
             'WCON_EXPORT': {
                 'func': exportWCON,
                 'argkws': {'features_file': fn['features']},
                 'input_files' : [fn['features']],
                 'output_files': [fn['features'], fn['wcon']],
-                'requirements' : ['FEAT_CREATE']
+                'requirements' : ['FEAT_CREATE'],
             },
         }
         
@@ -224,14 +226,14 @@ class AnalysisPoints(object):
                 'argkws' : {'video_file': fn['original_video'], 'masked_image_file': fn['masked_image']},
                 'input_files' : [fn['original_video'], fn['masked_image']],
                 'output_files': [fn['masked_image']],
-                'requirements' : ['COMPRESS']
+                'requirements' : ['COMPRESS'],
             }
             self.checkpoints['STAGE_ALIGMENT'] = {
                 'func': alignStageMotion,
                 'argkws': {'masked_image_file': fn['masked_image'], 'skeletons_file': fn['skeletons']},
                 'input_files' : [fn['skeletons'], fn['masked_image']],
                 'output_files': [fn['skeletons']],
-                'requirements' : ['COMPRESS_ADD_DATA', 'SKE_CREATE']
+                'requirements' : ['COMPRESS_ADD_DATA', 'SKE_CREATE'],
             }
             self.checkpoints['CONTOUR_ORIENT'] = {
                 'func': switchCntSingleWorm,
@@ -239,7 +241,7 @@ class AnalysisPoints(object):
                 'input_files' : [fn['skeletons']],
                 'output_files': [fn['skeletons']],
                 'requirements' : ['SKE_CREATE',
-                                  ('has_contour_info', partial(hasExpCntInfo, fn['skeletons']))]
+                                  ('has_contour_info', partial(hasExpCntInfo, fn['skeletons']))],
             }
             #make sure the file has the additional files, even before start compression
             for key in ['COMPRESS', 'COMPRESS_ADD_DATA']:
@@ -247,8 +249,7 @@ class AnalysisPoints(object):
             [('has_additional_files', partial(hasAdditionalFiles, fn['original_video']))]
             
             #make sure the stage was aligned correctly
-            self.checkpoints['FEAT_CREATE']['requirements'] += \
-                        [('is_stage_aligned', partial(isGoodStageAligment, fn['skeletons']))]
+            self.checkpoints['FEAT_CREATE']['requirements'] += ['STAGE_ALIGMENT']
             
             
         

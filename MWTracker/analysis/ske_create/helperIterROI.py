@@ -54,9 +54,9 @@ def getAllImgROI(img, frame_data, roi_size=-1):
     #more generic function that tolerates different ROI size
     worms_in_frame = {}
     for irow, row in frame_data.iterrows():
-        worm_roi = roi_size if roi_size > 0 else row['roi_size']
+        worm_roi_size = roi_size if roi_size > 0 else row['roi_size']
         
-        worms_in_frame[irow] = getWormROI(img, row['coord_x'], row['coord_y'], worm_roi)
+        worms_in_frame[irow] = getWormROI(img, row['coord_x'], row['coord_y'], worm_roi_size)
     return worms_in_frame
 
     
@@ -140,4 +140,20 @@ def generateMoviesROI(masked_file,
                     print_flush(progress_time.getStr(current_frame))
                 
             print_flush(progress_time.getStr(current_frame))
+
+def getROIfromInd(masked_file, trajectories_data, frame_number, worm_index):
+    good = (trajectories_data['frame_number']==frame_number) & (trajectories_data['worm_index_joined']==worm_index)
+    row = trajectories_data[good]
+    assert len(row) == 1
+    row = row.iloc[0]
+    
+    with tables.File(masked_file, 'r') as fid:
+        img_data = fid.get_node('/mask')
+        img = img_data[frame_number]
+
+    worm_roi, roi_corner = getWormROI(img, row['coord_x'], row['coord_y'], row['roi_size'])
+
+    row, worm_roi, roi_corner 
+    return row, worm_roi, roi_corner 
+
 

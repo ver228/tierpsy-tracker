@@ -49,7 +49,8 @@ class CheckFinished(object):
                 point, 
                 _isValidProvenance,
                 extra_files)
-        
+
+
         #I plan to check succesful processing using only provenance. I keep this for backwards compatibility.
         outf = lambda x : output_files[x][0]
 
@@ -93,7 +94,7 @@ class CheckFinished(object):
     
     def get(self, point):
         has_finished = self._provenance_funcs[point]()
-        
+
         #we test flags for backwards compatibility
         if not has_finished and point in self._deprec_check_funcs:
             for func in self._deprec_check_funcs[point]:
@@ -101,4 +102,5 @@ class CheckFinished(object):
                 if has_finished:
                     break
         
+
         return has_finished

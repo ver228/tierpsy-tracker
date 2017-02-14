@@ -21,8 +21,7 @@ class CheckFilesForProcessing(object):
             if fname:
                 fname =  os.path.abspath(fname)
                 if not os.path.exists(fname):
-                    raise FileNotFoundError(
-                    '%s, %s does not exist.' % fname)
+                    raise FileNotFoundError('%s does not exist.' % fname)
             return fname
         
         def _makeDirIfNotExists(fname):

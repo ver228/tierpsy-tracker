@@ -297,7 +297,7 @@ def _get_fps(masked_image_file):
 
 def getBlobsTable(masked_image_file, 
                   trajectories_file,
-                  buffer_size = 9,
+                  buffer_size = -1,
                     min_area=25,
                     min_box_width=5,
                     worm_bw_thresh_factor=1.,
@@ -305,6 +305,22 @@ def getBlobsTable(masked_image_file,
                     analysis_type="WORM",
                     thresh_block_size=15,
                     n_cores_used = 2):
+
+
+
+    #correct strel if it is not a tuple or list
+    if not isinstance(strel_size, (tuple,list)):
+        strel_size = (strel_size, strel_size)
+    assert len(strel_size) == 2
+
+
+    #create generators
+    is_light_background = _get_light_flag(masked_image_file)
+    expected_fps = _get_fps(masked_image_file)
+    
+    if buff_size < 0: #invalid value of buff size, expected_fps instead
+        buff_size = expected_fps
+
 
     def _ini_plate_worms(traj_fid, masked_image_file):
         # intialize main table
@@ -340,18 +356,17 @@ def getBlobsTable(masked_image_file,
         plate_worms._v_attrs['is_light_background'] = is_light_background
         
         expected_fps = _get_fps(masked_image_file)
-        plate_worms._v_attrs['expected_fps'] = is_light_background
+        plate_worms._v_attrs['expected_fps'] = expected_fps
         
 
         read_and_save_timestamp(masked_image_file, trajectories_file)
         return plate_worms, is_light_background
-        
     
-    #create generators
-    is_light_background = _get_light_flag(masked_image_file)
-    expected_fps = _get_fps(masked_image_file)
+
     
     
+
+
     blob_params = (is_light_background,
                   min_area,
                   min_box_width,
