@@ -1,171 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="09be277a-0def-4c61-9210-bf3a0766416c" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/MWTracker/analysis/ske_create/segWormPython/cythonFiles/cleanWorm_cython.cpython-35m-darwin.so" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/MWTracker/analysis/ske_create/segWormPython/cythonFiles/linearSkeleton_cython.cpython-35m-darwin.so" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/MWTracker/analysis/ske_create/segWormPython/cythonFiles/segWorm_cython.cpython-35m-darwin.so" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/circCurvature.cpython-35m-darwin.so" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/circCurvature.cpython-35m-x86_64-linux-gnu.so" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/cleanWorm_cython.cpython-35m-darwin.so" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/cleanWorm_cython.cpython-35m-x86_64-linux-gnu.so" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/curvspace.cpython-35m-darwin.so" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/curvspace.cpython-35m-x86_64-linux-gnu.so" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/linearSkeleton_cython.cpython-35m-darwin.so" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/linearSkeleton_cython.cpython-35m-x86_64-linux-gnu.so" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/segWorm_cython.cpython-35m-darwin.so" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/segWorm_cython.cpython-35m-x86_64-linux-gnu.so" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/misc/ffmpeg.exe" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/MWTracker/misc/ffprobe.exe" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/__init__.py" afterPath="$PROJECT_DIR$/tierpsy/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/blob_feats/getBlobsFeats.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/blob_feats/getBlobsFeats.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/BackgroundSubtractor.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/compress/BackgroundSubtractor.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/Readers/ReadVideoFFMPEG.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/compress/Readers/ReadVideoFFMPEG.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/Readers/__init__.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/compress/Readers/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/Readers/readDatFiles.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/compress/Readers/readDatFiles.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/Readers/readTifFiles.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/compress/Readers/readTifFiles.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/Readers/readTifStack.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/compress/Readers/readTifStack.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/Readers/readVideoCapture.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/compress/Readers/readVideoCapture.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/Readers/readVideoHDF5.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/compress/Readers/readVideoHDF5.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/__init__.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/compress/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/compressVideo.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/compress/compressVideo.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/extractMetaData.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/compress/extractMetaData.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/processVideo.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/compress/processVideo.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/reformatRigMaskedVideo.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/compress/reformatRigMaskedVideo.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress/selectVideoReader.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/compress/selectVideoReader.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress_add_data/__init__.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/compress_add_data/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/compress_add_data/getAdditionalData.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/compress_add_data/getAdditionalData.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/contour_orient/__init__.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/contour_orient/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/contour_orient/correctVentralDorsal.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/contour_orient/correctVentralDorsal.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/feat_create/__init__.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/feat_create/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/feat_create/obtainFeatures.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/feat_create/obtainFeatures.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/feat_create/obtainFeaturesHelper.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/feat_create/obtainFeaturesHelper.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/int_profile/__init__.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/int_profile/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/int_profile/getIntensityProfile.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/int_profile/getIntensityProfile.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/int_ske_orient/__init__.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/int_ske_orient/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/int_ske_orient/checkFinalOrientation.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/int_ske_orient/checkFinalOrientation.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/int_ske_orient/correctHeadTailIntensity.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/int_ske_orient/correctHeadTailIntensity.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/__init__.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/getSkeletonsTables.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/getSkeletonsTables.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/helperIterROI.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/helperIterROI.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/__init__.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cleanWorm.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/cleanWorm.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/MWTracker/analysis/ske_create/segWormPython/cythonFiles/cleanWorm_cython.cp35-win_amd64.pyd" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/cythonFiles/MWTracker/analysis/ske_create/segWormPython/cythonFiles/cleanWorm_cython.cp35-win_amd64.pyd" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/MWTracker/analysis/ske_create/segWormPython/cythonFiles/linearSkeleton_cython.cp35-win_amd64.pyd" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/cythonFiles/MWTracker/analysis/ske_create/segWormPython/cythonFiles/linearSkeleton_cython.cp35-win_amd64.pyd" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/MWTracker/analysis/ske_create/segWormPython/cythonFiles/segWorm_cython.cp35-win_amd64.pyd" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/cythonFiles/MWTracker/analysis/ske_create/segWormPython/cythonFiles/segWorm_cython.cp35-win_amd64.pyd" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/Makefile" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/cythonFiles/Makefile" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/__init__.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/cythonFiles/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/c_circCurvature.c" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/cythonFiles/c_circCurvature.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/c_curvspace.c" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/cythonFiles/c_curvspace.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/circCurvature.cp35-win_amd64.pyd" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/cythonFiles/circCurvature.cp35-win_amd64.pyd" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/circCurvature.pyx" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/cythonFiles/circCurvature.pyx" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/cleanWorm_cython.cp35-win_amd64.pyd" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/cythonFiles/cleanWorm_cython.cp35-win_amd64.pyd" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/cleanWorm_cython.pyx" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/cythonFiles/cleanWorm_cython.pyx" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/curvspace.cp35-win_amd64.pyd" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/cythonFiles/curvspace.cp35-win_amd64.pyd" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/curvspace.pyx" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/cythonFiles/curvspace.pyx" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/linearSkeleton_cython.cp35-win_amd64.pyd" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/cythonFiles/linearSkeleton_cython.cp35-win_amd64.pyd" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/linearSkeleton_cython.pyx" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/cythonFiles/linearSkeleton_cython.pyx" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/segWorm_cython.cp35-win_amd64.pyd" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/cythonFiles/segWorm_cython.cp35-win_amd64.pyd" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/segWorm_cython.pyx" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/cythonFiles/segWorm_cython.pyx" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/cythonFiles/setup.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/cythonFiles/setup.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/getHeadTail.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/getHeadTail.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/linearSkeleton.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/linearSkeleton.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/segWormPython/mainSegworm.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/segWormPython/mainSegworm.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/zebrafishAnalysis/__init__.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/zebrafishAnalysis/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/zebrafishAnalysis/zebrafishAnalysis.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/zebrafishAnalysis/zebrafishAnalysis.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_create/zebrafishAnalysis/zebrafishSkeleton.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_create/zebrafishAnalysis/zebrafishSkeleton.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_filt/__init__.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_filt/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_filt/getFilteredSkels.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_filt/getFilteredSkels.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_init/filterTrajectModel.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_init/filterTrajectModel.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_init/processTrajectoryData.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_init/processTrajectoryData.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_orient/WormClass.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_orient/WormClass.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_orient/__init__.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_orient/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/ske_orient/checkHeadOrientation.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/ske_orient/checkHeadOrientation.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/stage_aligment/__init__.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/stage_aligment/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/stage_aligment/alignStageMotion.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/stage_aligment/alignStageMotion.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/stage_aligment/alignStageMotionSegwormFun.m" afterPath="$PROJECT_DIR$/tierpsy/analysis/stage_aligment/alignStageMotionSegwormFun.m" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/stage_aligment/findStageMovement_ver2.m" afterPath="$PROJECT_DIR$/tierpsy/analysis/stage_aligment/findStageMovement_ver2.m" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/stage_aligment/getFrameDiffVar.m" afterPath="$PROJECT_DIR$/tierpsy/analysis/stage_aligment/getFrameDiffVar.m" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/stage_aligment/imMaskDiffVar.cpp" afterPath="$PROJECT_DIR$/tierpsy/analysis/stage_aligment/imMaskDiffVar.cpp" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/stage_aligment/imMaskDiffVar.mexmaci64" afterPath="$PROJECT_DIR$/tierpsy/analysis/stage_aligment/imMaskDiffVar.mexmaci64" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/stage_aligment/maxPeaksDistHeight.m" afterPath="$PROJECT_DIR$/tierpsy/analysis/stage_aligment/maxPeaksDistHeight.m" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/traj_create/__init__.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/traj_create/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/traj_create/getBlobTrajectories.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/traj_create/getBlobTrajectories.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/traj_join/__init__.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/traj_join/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/traj_join/joinBlobsTrajectories.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/traj_join/joinBlobsTrajectories.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/vid_subsample/__init__.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/vid_subsample/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/vid_subsample/createSampleVideo.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/vid_subsample/createSampleVideo.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/wcon_export/__init__.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/wcon_export/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/analysis/wcon_export/exportWCON.py" afterPath="$PROJECT_DIR$/tierpsy/analysis/wcon_export/exportWCON.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/AnalysisProgress.py" afterPath="$PROJECT_DIR$/tierpsy/gui/AnalysisProgress.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/AnalysisProgress_ui.py" afterPath="$PROJECT_DIR$/tierpsy/gui/AnalysisProgress_ui.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/BatchProcessing.py" afterPath="$PROJECT_DIR$/tierpsy/gui/BatchProcessing.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/BatchProcessing_ui.py" afterPath="$PROJECT_DIR$/tierpsy/gui/BatchProcessing_ui.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/GetAllParameters.py" afterPath="$PROJECT_DIR$/tierpsy/gui/GetAllParameters.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/GetMaskParams.py" afterPath="$PROJECT_DIR$/tierpsy/gui/GetMaskParams.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/GetMaskParams_ui.py" afterPath="$PROJECT_DIR$/tierpsy/gui/GetMaskParams_ui.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/HDF5VideoPlayer.py" afterPath="$PROJECT_DIR$/tierpsy/gui/HDF5VideoPlayer.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/HDF5VideoPlayer_ui.py" afterPath="$PROJECT_DIR$/tierpsy/gui/HDF5VideoPlayer_ui.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/MWTrackerViewer.py" afterPath="$PROJECT_DIR$/tierpsy/gui/MWTrackerViewer.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/MWTrackerViewer_ui.py" afterPath="$PROJECT_DIR$/tierpsy/gui/MWTrackerViewer_ui.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/ProgressDialog_ui.py" afterPath="$PROJECT_DIR$/tierpsy/gui/ProgressDialog_ui.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/QtDesignerFiles/AnalysisProgress.ui" afterPath="$PROJECT_DIR$/tierpsy/gui/QtDesignerFiles/AnalysisProgress.ui" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/QtDesignerFiles/BatchProcessing.ui" afterPath="$PROJECT_DIR$/tierpsy/gui/QtDesignerFiles/BatchProcessing.ui" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/QtDesignerFiles/GetMaskParams.ui" afterPath="$PROJECT_DIR$/tierpsy/gui/QtDesignerFiles/GetMaskParams.ui" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/QtDesignerFiles/HDF5VideoPlayer.ui" afterPath="$PROJECT_DIR$/tierpsy/gui/QtDesignerFiles/HDF5VideoPlayer.ui" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/QtDesignerFiles/MWTrackerViewer.ui" afterPath="$PROJECT_DIR$/tierpsy/gui/QtDesignerFiles/MWTrackerViewer.ui" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/QtDesignerFiles/Makefile" afterPath="$PROJECT_DIR$/tierpsy/gui/QtDesignerFiles/Makefile" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/QtDesignerFiles/SWTrackerViewer.ui" afterPath="$PROJECT_DIR$/tierpsy/gui/QtDesignerFiles/SWTrackerViewer.ui" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/QtDesignerFiles/SelectApp.ui" afterPath="$PROJECT_DIR$/tierpsy/gui/QtDesignerFiles/SelectApp.ui" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/QtDesignerFiles/TrackerViewerAux.ui" afterPath="$PROJECT_DIR$/tierpsy/gui/QtDesignerFiles/TrackerViewerAux.ui" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/SWTrackerViewer.py" afterPath="$PROJECT_DIR$/tierpsy/gui/SWTrackerViewer.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/SWTrackerViewer_ui.py" afterPath="$PROJECT_DIR$/tierpsy/gui/SWTrackerViewer_ui.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/SelectApp.py" afterPath="$PROJECT_DIR$/tierpsy/gui/SelectApp.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/SelectApp_ui.py" afterPath="$PROJECT_DIR$/tierpsy/gui/SelectApp_ui.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/TrackerViewerAux.py" afterPath="$PROJECT_DIR$/tierpsy/gui/TrackerViewerAux.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/TrackerViewerAux_ui.py" afterPath="$PROJECT_DIR$/tierpsy/gui/TrackerViewerAux_ui.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/gui/__init__.py" afterPath="$PROJECT_DIR$/tierpsy/gui/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/helper/__init__.py" afterPath="$PROJECT_DIR$/tierpsy/helper/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/helper/misc.py" afterPath="$PROJECT_DIR$/tierpsy/helper/misc.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/helper/runMultiCMD.py" afterPath="$PROJECT_DIR$/tierpsy/helper/runMultiCMD.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/helper/timeCounterStr.py" afterPath="$PROJECT_DIR$/tierpsy/helper/timeCounterStr.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/helper/trackProvenance.py" afterPath="$PROJECT_DIR$/tierpsy/helper/trackProvenance.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/helper/tracker_param.py" afterPath="$PROJECT_DIR$/tierpsy/helper/tracker_param.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/misc/features_names.csv" afterPath="$PROJECT_DIR$/tierpsy/misc/features_names.csv" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/misc/ffmpeg22" afterPath="$PROJECT_DIR$/tierpsy/misc/ffmpeg22" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/misc/model_isworm_20161130_002654.h5" afterPath="$PROJECT_DIR$/tierpsy/misc/model_isworm_20161130_002654.h5" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/misc/param_files/bodywallmuscle.json" afterPath="$PROJECT_DIR$/tierpsy/misc/param_files/bodywallmuscle.json" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/misc/param_files/filter_worms.json" afterPath="$PROJECT_DIR$/tierpsy/misc/param_files/filter_worms.json" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/misc/param_files/pharynx_3fps.json" afterPath="$PROJECT_DIR$/tierpsy/misc/param_files/pharynx_3fps.json" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/misc/param_files/pharynx_9fps.json" afterPath="$PROJECT_DIR$/tierpsy/misc/param_files/pharynx_9fps.json" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/misc/param_files/single_worm_on_food.json" afterPath="$PROJECT_DIR$/tierpsy/misc/param_files/single_worm_on_food.json" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/misc/param_files/single_worm_swimming.json" afterPath="$PROJECT_DIR$/tierpsy/misc/param_files/single_worm_swimming.json" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/processing/AnalysisPoints.py" afterPath="$PROJECT_DIR$/tierpsy/processing/AnalysisPoints.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/processing/CheckFilesForProcessing.py" afterPath="$PROJECT_DIR$/tierpsy/processing/CheckFilesForProcessing.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/processing/CheckFinished.py" afterPath="$PROJECT_DIR$/tierpsy/processing/CheckFinished.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/processing/ProcessMultipleFilesParser.py" afterPath="$PROJECT_DIR$/tierpsy/processing/ProcessMultipleFilesParser.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/processing/ProcessWormsLocal.py" afterPath="$PROJECT_DIR$/tierpsy/processing/ProcessWormsLocal.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/processing/ProcessWormsWorker.py" afterPath="$PROJECT_DIR$/tierpsy/processing/ProcessWormsWorker.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/processing/__init__.py" afterPath="$PROJECT_DIR$/tierpsy/processing/__init__.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/processing/batchProcHelperFunc.py" afterPath="$PROJECT_DIR$/tierpsy/processing/batchProcHelperFunc.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/processing/processMultipleFilesFun.py" afterPath="$PROJECT_DIR$/tierpsy/processing/processMultipleFilesFun.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/processing/tests/test_compress_mult.py" afterPath="$PROJECT_DIR$/tierpsy/processing/tests/test_compress_mult.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/processing/tests/test_mult_cmd.py" afterPath="$PROJECT_DIR$/tierpsy/processing/tests/test_mult_cmd.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/processing/tests/test_process.py" afterPath="$PROJECT_DIR$/tierpsy/processing/tests/test_process.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MWTracker/version.py" afterPath="$PROJECT_DIR$/tierpsy/version.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/Multiworm_Tracking.iml" afterPath="$PROJECT_DIR$/.idea/Multiworm_Tracking.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker_GUI/HDF5VideoPlayer.py" afterPath="$PROJECT_DIR$/MWTracker_GUI/HDF5VideoPlayer.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWTracker_GUI/MWConsole.py" afterPath="$PROJECT_DIR$/MWTracker_GUI/MWConsole.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Tests/run_tests.py" afterPath="$PROJECT_DIR$/Tests/run_tests.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd_scripts/compressMultipleFiles.py" afterPath="$PROJECT_DIR$/cmd_scripts/compressMultipleFiles.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd_scripts/processMultipleFiles.py" afterPath="$PROJECT_DIR$/cmd_scripts/processMultipleFiles.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmd_scripts/trackMultipleFiles.py" afterPath="$PROJECT_DIR$/cmd_scripts/trackMultipleFiles.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/create_binaries/_test/test_pyinstaller_reader.py" afterPath="$PROJECT_DIR$/create_binaries/_test/test_pyinstaller_reader.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/installation/installation_test.py" afterPath="$PROJECT_DIR$/installation/installation_test.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/setup.py" afterPath="$PROJECT_DIR$/setup.py" />
-    </list>
+    <list default="true" id="09be277a-0def-4c61-9210-bf3a0766416c" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -185,7 +21,7 @@
       <file leaf-file-name="batchProcHelperFunc.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tierpsy/processing/batchProcHelperFunc.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="746">
+            <state relative-caret-position="1200">
               <caret line="83" column="22" lean-forward="false" selection-start-line="83" selection-start-column="22" selection-end-line="83" selection-end-column="22" />
               <folding />
             </state>
@@ -196,7 +32,7 @@
         <entry file="file://$PROJECT_DIR$/installation_script.sh">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="180">
-              <caret line="12" column="0" lean-forward="true" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+              <caret line="12" column="0" lean-forward="false" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -380,8 +216,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -391,6 +227,20 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Multiworm_Tracking" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Tests" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -596,12 +446,11 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="108" y="23" width="1332" height="873" extended-state="0" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26276276" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26276276" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1977612" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -613,6 +462,7 @@
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32949308" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1977612" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39976957" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
@@ -948,9 +798,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="870">
           <caret line="65" column="4" lean-forward="false" selection-start-line="65" selection-start-column="4" selection-end-line="65" selection-end-column="4" />
-          <folding>
-            <element signature="e#85#94#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -990,13 +837,12 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="311">
           <caret line="101" column="12" lean-forward="false" selection-start-line="101" selection-start-column="12" selection-end-line="101" selection-end-column="12" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tierpsy/processing/batchProcHelperFunc.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="746">
+        <state relative-caret-position="1200">
           <caret line="83" column="22" lean-forward="false" selection-start-line="83" selection-start-column="22" selection-end-line="83" selection-end-column="22" />
           <folding />
         </state>
@@ -1005,7 +851,7 @@
     <entry file="file://$PROJECT_DIR$/installation_script.sh">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
-          <caret line="12" column="0" lean-forward="true" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+          <caret line="12" column="0" lean-forward="false" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
           <folding />
         </state>
       </provider>
