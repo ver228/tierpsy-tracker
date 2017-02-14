@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+ƒ# -*- coding: utf-8 -*-
 """
 Created on Thu Jun 25 12:44:07 2015
 
@@ -8,6 +8,9 @@ Created on Thu Jun 25 12:44:07 2015
 import json
 import os
 from MWTracker import AUX_FILES_DIR
+#get default parameters files
+from MWTracker import DFLT_PARAMS_PATH, DFLT_PARAMS_FILES
+
 
 #deprecated variables that will be ignored
 deprecated_fields = ['has_timestamp', 'min_displacement']
@@ -29,7 +32,7 @@ dflt_param_list = [
     ('thresh_C', 15, 'constant offset used by the adaptative thresholding to calculate the mask.'),
     ('thresh_block_size', 61, 'block size used by the adaptative thresholding.'),
     ('dilation_size', 9, 'size of the structural element used in morphological operations to calculate the worm mask.'),
-    ('compression_buff', 25, 'number of images "min-averaged" to calculate the image mask.'),
+    ('compression_buff', -1, 'number of images "min-averaged" to calculate the image mask.'),
     ('keep_border_data', False, 'set it to false if you want to remove any connected component that touches the border.'),
     ('is_light_background', True, 'set to true to indentify dark worms over a light background.'),
     ('expected_fps', 25, 'expected frame rate.'),
@@ -103,6 +106,13 @@ def _correct_fps(expected_fps):
 def get_all_prefix(input_params, prefix):
     return {x.replace(prefix, ''):input_params[x] for x in input_params if x.startswith(prefix)}
 
+
+def _correct_json_path(json_file):
+    if json_file in DFLT_PARAMS_FILES:
+        json_file = os.path.join(DFLT_PARAMS_PATH, json_file)
+    return json_file
+
+
 class tracker_param:
 
     def __init__(self, source_file=''):
@@ -121,6 +131,9 @@ class tracker_param:
         #background subtraction
         bgnd_param_f = ['is_bgnd_subtraction', 'bgnd_buff_size', 'bgnd_frame_gap']
         self.bgnd_param = {x.replace('bgnd_', ''):p[x] for x in bgnd_param_f}
+
+        if p['compression_buff'] < 0:
+            p['compression_buff'] = p['expected_fps']
 
         # compressVideo
         self.compress_vid_param = {
@@ -239,9 +252,11 @@ class tracker_param:
         }
 
     def _read_clean_input(self, source_file):
+        self.json_file = _correct_json_path(source_file)
+
         input_param = default_param.copy()
-        if source_file:
-            with open(source_file) as fid:
+        if self.json_file:
+            with open(self.json_file) as fid:
                 param_in_file = json.load(fid)
             for key in param_in_file:
 
