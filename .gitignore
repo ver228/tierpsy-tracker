@@ -16,3 +16,5 @@ MWTracker.egg-info/*
 
 *.so
 *.exe
+
+*.cpython-35m-darwin.so
