@@ -228,6 +228,9 @@ class GetMaskParams_GUI(QMainWindow):
         widget_param['fps'] = param.compress_vid_param['expected_fps']
         widget_param['compression_buff'] = param.compress_vid_param['buffer_size']
 
+        if widget_param['compression_buff'] < 0:
+            param.compress_vid_param['expected_fps']
+
         for param_name in widget_param:
             self.mapper.set(param_name, widget_param[param_name])
 
