@@ -10,13 +10,13 @@ import numpy as np
 from scipy.interpolate import interp1d
 from scipy.signal import savgol_filter
 
-from .linearSkeleton import linearSkeleton
-from .getHeadTail import getHeadTail, rollHead2FirstIndex
-from .cythonFiles.segWorm_cython import circComputeChainCodeLengths
-from .cleanWorm import circSmooth, extremaPeaksCircDist
+from MWTracker.analysis.ske_create.segWormPython.linearSkeleton import linearSkeleton
+from MWTracker.analysis.ske_create.segWormPython.getHeadTail import getHeadTail, rollHead2FirstIndex
+from MWTracker.analysis.ske_create.segWormPython.cythonFiles.segWorm_cython import circComputeChainCodeLengths
+from MWTracker.analysis.ske_create.segWormPython.cleanWorm import circSmooth, extremaPeaksCircDist
 
 # wrappers around C functions
-from .cythonFiles.circCurvature import circCurvature
+from MWTracker.analysis.ske_create.segWormPython.cythonFiles.circCurvature import circCurvature
 
 errMsg = {104 : '''The worm has 3 or more low-frequency sampled convexities
         sharper than 90 degrees (possible head/tail points).''',
@@ -29,7 +29,40 @@ errMsg = {104 : '''The worm has 3 or more low-frequency sampled convexities
           }
 
 
-def contour2Skeleton(contour):
+def get_contour_angles(contour, cnt_chain_code_len, cnt_worm_segments, edge_len_hi_freq):
+    
+    cnt_ang_hi_freq = circCurvature(
+        contour, edge_len_hi_freq, cnt_chain_code_len)
+
+    edge_len_low_freq = 2 * edge_len_hi_freq
+    cnt_ang_low_freq = circCurvature(
+        contour, edge_len_low_freq, cnt_chain_code_len)
+
+    #% Blur the contour's local high-frequency curvature.
+    #% Note: on a small scale, noise causes contour imperfections that shift an
+    #% angle from its correct location. Therefore, blurring angles by averaging
+    #% them with their neighbors can localize them better.
+    worm_seg_size = contour.shape[0] / cnt_worm_segments
+    blur_size_hi_freq = np.ceil(worm_seg_size / 2)
+    cnt_ang_hi_freq = circSmooth(cnt_ang_hi_freq, blur_size_hi_freq)
+    
+    #% Compute the contour's local high/low-frequency curvature maxima.
+    maxima_hi_freq, maxima_hi_freq_ind = extremaPeaksCircDist(
+        1, cnt_ang_hi_freq, edge_len_hi_freq, cnt_chain_code_len)
+
+    maxima_low_freq, maxima_low_freq_ind = extremaPeaksCircDist(
+        1, cnt_ang_low_freq, edge_len_low_freq, cnt_chain_code_len)
+
+    
+    #pack output
+    
+    hi_freq_output = cnt_ang_hi_freq, maxima_hi_freq, maxima_hi_freq_ind, edge_len_hi_freq
+    low_freq_output = cnt_ang_low_freq, maxima_low_freq, maxima_low_freq_ind, edge_len_low_freq
+    
+    return hi_freq_output, low_freq_output
+
+
+def contour2Skeleton(contour, ske_worm_segments = 24, head_angle_thresh=60):
     # contour must be a Nx2 numpy array
     assert isinstance(
         contour,
@@ -45,8 +78,7 @@ def contour2Skeleton(contour):
     #% arranged as staggered pairs in four longitudinal bundles located in four
     #% quadrants. Three of these bundles (DL, DR, VR) contain 24 cells each,
     #% whereas VL bundle contains 23 cells." - www.wormatlas.org
-    ske_worm_segments = 24.
-    cnt_worm_segments = 2. * ske_worm_segments
+    cnt_worm_segments = 2 * ske_worm_segments
 
     # this line does not really seem to be useful
     #contour = cleanWorm(contour, cnt_worm_segments)
@@ -82,46 +114,52 @@ def contour2Skeleton(contour):
     worm_seg_length = (cnt_chain_code_len[
                        0] + cnt_chain_code_len[-1]) / cnt_worm_segments
 
-    edge_len_hi_freq = worm_seg_length
-    cnt_ang_hi_freq = circCurvature(
-        contour, edge_len_hi_freq, cnt_chain_code_len)
+    #calculate contour angles
+    hi_freq_output, low_freq_output = get_contour_angles(contour, 
+                                                         cnt_chain_code_len, 
+                                                         cnt_worm_segments, 
+                                                         worm_seg_length)
 
-    edge_len_low_freq = 2 * edge_len_hi_freq
-    cnt_ang_low_freq = circCurvature(
-        contour, edge_len_low_freq, cnt_chain_code_len)
-
-    #% Blur the contour's local high-frequency curvature.
-    #% Note: on a small scale, noise causes contour imperfections that shift an
-    #% angle from its correct location. Therefore, blurring angles by averaging
-    #% them with their neighbors can localize them better.
-    worm_seg_size = contour.shape[0] / cnt_worm_segments
-    blur_size_hi_freq = np.ceil(worm_seg_size / 2)
-    cnt_ang_hi_freq = circSmooth(cnt_ang_hi_freq, blur_size_hi_freq)
-
-    #% Compute the contour's local high/low-frequency curvature maxima.
-    maxima_hi_freq, maxima_hi_freq_ind = extremaPeaksCircDist(
-        1, cnt_ang_hi_freq, edge_len_hi_freq, cnt_chain_code_len)
-
-    maxima_low_freq, maxima_low_freq_ind = extremaPeaksCircDist(
-        1, cnt_ang_low_freq, edge_len_low_freq, cnt_chain_code_len)
-
-    head_ind, tail_ind, err_msg = getHeadTail(
-        cnt_ang_low_freq, maxima_low_freq_ind, cnt_ang_hi_freq, maxima_hi_freq_ind, cnt_chain_code_len)
+    #unpack data
+    cnt_ang_hi_freq, maxima_hi_freq, maxima_hi_freq_ind, edge_len_hi_freq = hi_freq_output
+    cnt_ang_low_freq, maxima_low_freq, maxima_low_freq_ind, edge_len_low_freq = low_freq_output
+    
+    #identify head/tail
+    head_ind, tail_ind, err_msg = getHeadTail(cnt_ang_low_freq, 
+                                              maxima_low_freq_ind, 
+                                              cnt_ang_hi_freq, 
+                                              maxima_hi_freq_ind, 
+                                              cnt_chain_code_len, 
+                                              head_angle_thresh)
 
     if err_msg != 0:
         return 4 * [np.zeros(0)] + [err_msg]
 
     # change arrays so the head correspond to the first position
     head_ind, tail_ind, contour, cnt_chain_code_len, cnt_ang_low_freq, maxima_low_freq_ind = \
-        rollHead2FirstIndex(head_ind, tail_ind, contour, cnt_chain_code_len, cnt_ang_low_freq, maxima_low_freq_ind)
+        rollHead2FirstIndex(head_ind, 
+                            tail_ind, 
+                            contour, 
+                            cnt_chain_code_len, 
+                            cnt_ang_low_freq, 
+                            maxima_low_freq_ind)
 
     #% Compute the contour's local low-frequency curvature minima.
-    minima_low_freq, minima_low_freq_ind = \
-        extremaPeaksCircDist(-1, cnt_ang_low_freq, edge_len_low_freq, cnt_chain_code_len)
+    minima_low_freq, minima_low_freq_ind = extremaPeaksCircDist(-1, 
+                                                                cnt_ang_low_freq, 
+                                                                edge_len_low_freq, 
+                                                                cnt_chain_code_len)
 
     #% Compute the worm's skeleton.
-    skeleton, cnt_widths = linearSkeleton(head_ind, tail_ind, minima_low_freq, minima_low_freq_ind,
-                                          maxima_low_freq, maxima_low_freq_ind, contour.copy(), worm_seg_length, cnt_chain_code_len)
+    skeleton, cnt_widths = linearSkeleton(head_ind, 
+                                          tail_ind, 
+                                          minima_low_freq, 
+                                          minima_low_freq_ind,
+                                          maxima_low_freq, 
+                                          maxima_low_freq_ind, 
+                                          contour.copy(), 
+                                          worm_seg_length, 
+                                          cnt_chain_code_len)
 
     # The head must be in position 0
     assert head_ind == 0
@@ -241,8 +279,16 @@ def resampleAll(skeleton, cnt_side1, cnt_side2, cnt_widths, resampling_N):
     return skeleton, ske_len, cnt_side1, cnt_side2, cnt_widths
 
 
-def getSkeleton(worm_cnt, prev_skeleton=np.zeros(0), resampling_N=49):
-
+def getSkeleton(worm_cnt, prev_skeleton=np.zeros(0), resampling_N=49, 
+                num_segments = 24, head_angle_thresh=60):
+    '''
+    resampling_N -> The final number of points the skeleton, and each contour will have.
+    num_segments -> number of segments used to calculate the skeleton curvature 
+        (or half the number of segments used for the contour curvature). 
+        Reduced for rounder objects and decreased for sharper organisms.
+        
+    head_angle_thresh -> the threshold to consider a peak on the curvature as the head or tail.
+    '''
     n_output_param = 6  # number of expected output parameters
 
     if worm_cnt.size == 0:
@@ -254,8 +300,8 @@ def getSkeleton(worm_cnt, prev_skeleton=np.zeros(0), resampling_N=49):
 
     # make sure the worm contour is float
     worm_cnt = worm_cnt.astype(np.float32)
-    skeleton, cnt_side1, cnt_side2, cnt_widths, err_msg = contour2Skeleton(
-        worm_cnt)
+    skeleton, cnt_side1, cnt_side2, cnt_widths, err_msg = \
+    contour2Skeleton(worm_cnt, num_segments, head_angle_thresh)
 
     if skeleton.size == 0:
         return (n_output_param) * [np.zeros(0)]

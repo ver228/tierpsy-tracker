@@ -296,6 +296,14 @@ def getBlobsTable(masked_image_file,
                     thresh_block_size=15,
                     n_cores_used = 2):
 
+
+
+    #correct strel if it is not a tuple or list
+    if not isinstance(strel_size, (tuple,list)):
+        strel_size = (strel_size, strel_size)
+    assert len(strel_size) == 2
+
+
     def _ini_plate_worms(traj_fid, masked_image_file):
         # intialize main table
     
@@ -335,7 +343,8 @@ def getBlobsTable(masked_image_file,
 
         read_and_save_timestamp(masked_image_file, trajectories_file)
         return plate_worms, is_light_background
-        
+    
+
     
     #create generators
     is_light_background = _get_light_flag(masked_image_file)

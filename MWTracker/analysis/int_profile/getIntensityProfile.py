@@ -154,7 +154,7 @@ def getIntensityProfile(
         smooth_win=11,
         pol_degree=3,
         width_percentage=0.5,
-        save_int_maps=False):
+        save_maps=False):
 
     assert smooth_win > pol_degree
     assert min_num_skel > 0
@@ -167,7 +167,7 @@ def getIntensityProfile(
         width_resampling += 1
 
     # get the limits to be averaged from the intensity map
-    if save_int_maps:
+    if save_maps:
         width_win_ind = getWidthWinLimits(width_resampling, width_percentage)
     else:
         width_win_ind = (0, width_resampling)
@@ -228,7 +228,7 @@ def getIntensityProfile(
         worm_int_avg_tab._v_attrs['has_finished'] = 0
         worm_int_avg_tab.attrs['width_win_ind'] = width_win_ind
 
-        if save_int_maps:
+        if save_maps:
             worm_int_tab = int_file_id.create_carray(
                 "/",
                 "straighten_worm_intensity",
@@ -283,7 +283,7 @@ def getIntensityProfile(
                 worm_int_avg_tab[int_map_id] = int_avg
 
                 # only save the full map if it is specified by the user
-                if save_int_maps:
+                if save_maps:
                     worm_int_tab[int_map_id] = straighten_worm.T
 
             if frame % 500 == 0:
