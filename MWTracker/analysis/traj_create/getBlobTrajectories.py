@@ -71,25 +71,28 @@ def getBufferThresh(ROI_buffer, worm_bw_thresh_factor, is_light_background, anal
      buffer instead of a single image, improves the threshold
      calculation, since better statistics are recovered'''
      
-     
-    pix_valid = ROI_buffer[ROI_buffer != 0]
+    if analysis_type == "ZEBRAFISH":
+        # Override threshold
+        thresh = 255
+    else: 
+        pix_valid = ROI_buffer[ROI_buffer != 0]
 
 
-    if pix_valid.size > 0:
-        if is_light_background:
-            thresh = _thresh_bw(pix_valid)
+        if pix_valid.size > 0:
+            if is_light_background:
+                thresh = _thresh_bw(pix_valid)
+            else:
+                if if analysis_type == "WORM":
+                    thresh = _thresh_bodywallmuscle(pix_valid)
+                else:
+                    #correct for fluorescence images
+                    MAX_PIX = 255 #for uint8 images
+                    thresh = _thresh_bw(MAX_PIX - pix_valid)
+                    thresh = MAX_PIX - thresh
+
+            thresh *= worm_bw_thresh_factor
         else:
-            if analysis_type == "PHARYNX":
-                #correct for fluorescence images
-                MAX_PIX = 255 #for uint8 images
-                thresh = _thresh_bw(MAX_PIX - pix_valid)
-                thresh = MAX_PIX - thresh
-            elif analysis_type == "WORM":
-                thresh = _thresh_bodywallmuscle(pix_valid)
-
-        thresh *= worm_bw_thresh_factor
-    else:
-        thresh = np.nan
+            thresh = np.nan
     
     return thresh
 
@@ -244,12 +247,7 @@ def getBlobsData(buff_data, blob_params):
             ROI_buffer = image_buffer[:, ini_x:fin_x, ini_y:fin_y]
 
             # calculate threshold
-            if analysis_type == "ZEBRAFISH":
-                # Override threshold
-                thresh_buff = 255
-            else: 
-                # caculate threshold using the values in the buffer this improve quality since there is more data.
-                thresh_buff = getBufferThresh(ROI_buffer, worm_bw_thresh_factor, is_light_background, analysis_type)
+            thresh_buff = getBufferThresh(ROI_buffer, worm_bw_thresh_factor, is_light_background, analysis_type)
             
             for buff_ind in range(image_buffer.shape[0]):
                 curr_ROI = ROI_buffer[buff_ind, :, :]
