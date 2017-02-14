@@ -2,7 +2,7 @@
 create_binaries/*.app
 create_binaries/create_builds/build/*
 create_binaries/create_builds/dist/*
-tests_t/Data/*
+tests/data/*
 MWTracker.egg-info/*
 
 *.hdf5

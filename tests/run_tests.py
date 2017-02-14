@@ -214,7 +214,7 @@ if __name__ == '__main__':
 
     root_dir = os.path.abspath(os.path.join(os.path.dirname(tierpsy.__file__), '..'))
 
-    examples_dir = os.path.join(root_dir, 'Tests', 'Data')
+    examples_dir = os.path.join(root_dir, 'tests', 'data')
     script_dir = os.path.join(root_dir, 'cmd_scripts')
 
     all_tests = [test1, test2, test3, test4, test5, test6] 
