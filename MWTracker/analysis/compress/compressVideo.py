@@ -180,7 +180,7 @@ def initMasksGroups(fid, expected_frames, im_height, im_width,
 
     return mask_dataset, full_dataset
 
-def compressVideo(video_file, masked_image_file, mask_param, bgnd_param, buffer_size=25,
+def compressVideo(video_file, masked_image_file, mask_param, bgnd_param, buffer_size=-1,
                   save_full_interval=5000, max_frame=1e32, expected_fps=25,
                   is_light_background=True):
     '''
@@ -216,7 +216,9 @@ def compressVideo(video_file, masked_image_file, mask_param, bgnd_param, buffer_
     # extract and store video metadata using ffprobe
     print_flush(base_name + ' Extracting video metadata...')
     expected_frames = store_meta_data(video_file, masked_image_file)
-    
+    if buffer_size < 0:
+        buffer_size = expected_frames
+
     
     if bgnd_param['is_subtraction']:
         print_flush(base_name + ' Initializing background subtraction.')
