@@ -286,10 +286,14 @@ function exec_all {
 	compile_cython
 	setup_modules
 	download_examples
+	link_desktop
 }
 
 
-case $1 in 
+case $1 in
+	""|"--all")
+	"exec_all"
+	;;
 	"--compile_cython")
 	compile_cython
 	;;
@@ -306,9 +310,11 @@ case $1 in
 	link_desktop
 	;;
 	*)
-	echo "exec_all"
+	echo "Exiting... Unrecognized argument: $1"
+	exit 1
 	;;
 esac
+
 
 
 
