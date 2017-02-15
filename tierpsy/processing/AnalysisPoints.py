@@ -249,8 +249,10 @@ class AnalysisPoints(object):
             [('has_additional_files', partial(hasAdditionalFiles, fn['original_video']))]
             
             #make sure the stage was aligned correctly
-            self.checkpoints['FEAT_CREATE']['requirements'] += ['STAGE_ALIGMENT']
+            self.checkpoints['FEAT_CREATE']['requirements'] += ['STAGE_ALIGMENT', 'CONTOUR_ORIENT']
             
+            #the skeleton must be oriented to save a correct map. For this dataset I am expecting to save the profile map.
+            self.checkpoints['INT_PROFILE']['requirements'] += ['CONTOUR_ORIENT']
             
         
         #add provenance file field if it is not explicity added

@@ -93,10 +93,10 @@ def getDefaultSequence(action, is_single_worm=False, add_manual_feats=''):
                                         'SKE_CREATE',
                                         'SKE_FILT',
                                         'SKE_ORIENT',
+                                        'CONTOUR_ORIENT', #orientation must occur before the intensity map calculation.
                                         'INT_PROFILE',
                                         'INT_SKE_ORIENT',
                                         'STAGE_ALIGMENT',
-                                        'CONTOUR_ORIENT',
                                         'FEAT_CREATE',
                                         'WCON_EXPORT'
                                         ]}
