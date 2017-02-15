@@ -9,5 +9,6 @@ tests/data/*
 *.m~
 *.DS_Store
 *.exe
+*.so
 
 tierpsy.egg-info/
