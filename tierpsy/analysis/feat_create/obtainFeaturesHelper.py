@@ -348,7 +348,7 @@ class WormFromTable(mv.NormalizedWorm):
     def splitWormTraj(self, split_size):
 
         #get the indexes to made the splits
-        split_ind = np.arange(split_size, self.n_frames, split_size)
+        split_ind = np.arange(split_size, self.n_frames, split_size, dtype=np.int)
         n_splits = split_ind.size + 1
 
         #get the fields that will be splitted, they should be ndarrays with the same number of elements in the fisrt dimension
