@@ -98,6 +98,7 @@ def __addOMGFeat(fid, worm_feat_time, worm_id):
 def _getData(features_file, READ_FEATURES=False):
     with pd.HDFStore(features_file, 'r') as fid:
         features_timeseries = fid['/features_timeseries']
+        features_timeseries = features_timeseries[0:3]
         feat_time_group_by_worm = features_timeseries.groupby('worm_index');
         
         
@@ -116,6 +117,7 @@ def _getData(features_file, READ_FEATURES=False):
         
         #group by iterator will return sorted worm indexes
         for worm_id, worm_feat_time in feat_time_group_by_worm:
+            
             worm_id = int(worm_id)
             #read worm skeletons data
             worm_skel = skeletons[worm_feat_time.index]
@@ -131,16 +133,16 @@ def _getData(features_file, READ_FEATURES=False):
             worm_basic['y'] = __reformatForJson(worm_skel[:, :, 1])
             
             
-            worm_basic['@OMG'] = OrderedDict()
-            worm_basic['@OMG']['x_ventral_contour'] = __reformatForJson(worm_ven_cnt[:, :, 0])
-            worm_basic['@OMG']['y_ventral_contour'] = __reformatForJson(worm_ven_cnt[:, :, 1])
-            worm_basic['@OMG']['x_dorsal_contour'] = __reformatForJson(worm_dor_cnt[:, :, 0])
-            worm_basic['@OMG']['y_dorsal_contour'] = __reformatForJson(worm_dor_cnt[:, :, 1])
+            
+            worm_basic['@OMG x_ventral_contour'] = __reformatForJson(worm_ven_cnt[:, :, 0])
+            worm_basic['@OMG y_ventral_contour'] = __reformatForJson(worm_ven_cnt[:, :, 1])
+            worm_basic['@OMG x_dorsal_contour'] = __reformatForJson(worm_dor_cnt[:, :, 0])
+            worm_basic['@OMG y_dorsal_contour'] = __reformatForJson(worm_dor_cnt[:, :, 1])
             
             if READ_FEATURES:
                 worm_features = __addOMGFeat(fid, worm_feat_time, worm_id)
                 for feat in worm_features:
-                     worm_basic['@OMG'][feat] = worm_features[feat]
+                     worm_basic['@OMG ' + feat] = worm_features[feat]
 
             #append features
             all_worms_feats.append(worm_basic)
@@ -164,15 +166,19 @@ def _getUnits(features_file, READ_FEATURES=False):
     units['t'] = 'seconds'
     units["size"] = "mm" #size of the plate
     
+    extra = ['x_ventral_contour', 'y_ventral_contour', 'x_dorsal_contour', 'y_dorsal_contour']
+    extra = ['@OMG ' + x for x in extra]
+    
     unit_l_str = _pixels_or_microns(micronsPerPixel)
-    for field in ['x', 'y', 'x_ventral_contour', 'y_ventral_contour', 'x_dorsal_contour', 'y_dorsal_contour']:
+    for field in ['x', 'y'] + extra:
         units[field] = unit_l_str
     
     if READ_FEATURES:
         #TODO double check the units
         ws = WormStatsClass()
-        units.update(ws.features_info['units'].to_dict())
-    
+        for field, unit in ws.features_info['units'].iteritems():
+            units['@OMG ' + field] = unit
+        
     return units
     
     
@@ -216,7 +222,7 @@ if __name__ == '__main__':
     
     wcon_file = getWCOName(features_file)
     wcon_dict = exportWCONdict(features_file)
-    wcon_txt = json.dumps(wcon_dict, allow_nan=False)
+    wcon_txt = json.dumps(wcon_dict, allow_nan=False, indent=4)
     #%%
     import zipfile
     with zipfile.ZipFile(wcon_file, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
