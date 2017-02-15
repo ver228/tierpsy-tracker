@@ -7,7 +7,7 @@ OPENCV_DIR=$MW_MAIN_DIR/../opencv
 OPENCV_VER="3.2.0"
 
 EXAMPLES_LINK="https://imperiallondon-my.sharepoint.com/personal/ajaver_ic_ac_uk/_layouts/15/guestaccess.aspx?guestaccesstoken=ldZ18fLY%2bzlu7XuO9mbKVdyiKoH4naiesqiLXWU4vGQ%3d&docid=0cec4e52f4ccf4d5b8bb3a737020fc12f&rev=1"
-EXAMPLES_DIR="$MW_MAIN_DIR/Tests/Data/"
+EXAMPLES_DIR="$MW_MAIN_DIR/tests/data/"
 
 OS=$(uname -s)
 
