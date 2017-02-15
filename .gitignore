@@ -8,8 +8,6 @@ tests/data/*
 *.pyc
 *.m~
 *.DS_Store
-*.so
 *.exe
 
-*.cpython-35m-darwin.so
 tierpsy.egg-info/

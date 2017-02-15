@@ -5,8 +5,8 @@ import cv2
 import numpy as np
 from scipy.spatial import KDTree
 
-from tierpsy.analysis.ske_create.segWormPython.cythonFiles.segWorm_cython import circComputeChainCodeLengths
-from tierpsy.analysis.ske_create.segWormPython.cythonFiles.circCurvature import circCurvature
+from tierpsy.analysis.ske_create.segWormPython.cython_files.segWorm_cython import circComputeChainCodeLengths
+from tierpsy.analysis.ske_create.segWormPython.cython_files.circCurvature import circCurvature
 from tierpsy.analysis.ske_create.segWormPython.cleanWorm import extremaPeaksCircDist
 
 

@@ -12,6 +12,33 @@ EXAMPLES_DIR="$MW_MAIN_DIR/Tests/Data/"
 OS=$(uname -s)
 
 #############
+function osx_dependencies {
+	xcode-select --install
+	#install homebrew and other software used
+	ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+	
+	#make the current user the owner of homebrew otherewise it can cause some problems
+	#sudo chown -R `whoami`:admin /usr/local/bin
+	#sudo chown -R `whoami`:admin /usr/local/share
+	#brew update
+	#brew upgrade
+
+	brew install git
+	
+	#ffmpeg libraries, needed to install opencv
+	brew install ffmpeg --verbose --with-fdk-aac --with-libass --with-libquvi \
+	--with-libvorbis --with-libvpx --with-x265 --with-openh264 --with-tools --with-fdk-aac
+
+	#image libraries for opencv
+	brew install jpeg libpng libtiff openexr eigen tbb
+}
+
+function force_clean_osx {
+	rm -Rf $OPENCV_DIR
+	rm -Rf $OPENWORM_DIR
+	brew uninstall --force cmake python3 git ffmpeg homebrew/science/hdf5 sip pyqt5
+}
+
 function brew_python {
 	if [[ -z `brew ls --versions python3` ]]; then
 		brew install python3
@@ -86,13 +113,6 @@ function opencv3_cmake {
 	python3 -c "import cv2; print(cv2.__version__)"
 }
 
-function force_clean_osx {
-	rm -Rf $OPENCV_DIR
-	rm -Rf $OPENWORM_DIR
-	brew uninstall --force cmake python3 git ffmpeg homebrew/science/hdf5 sip pyqt5
-}
-
-
 function linux_dependencies {
 	case `lsb_release -si` in
 		"Ubuntu")
@@ -123,57 +143,42 @@ function redhat_dependencies {
 	libtiff-devel libwebp-devel tbb-devel eigen3-devel
 }
 
-function osx_dependencies {
-	xcode-select --install
-	#install homebrew and other software used
-	ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-	
-	#make the current user the owner of homebrew otherewise it can cause some problems
-	#sudo chown -R `whoami`:admin /usr/local/bin
-	#sudo chown -R `whoami`:admin /usr/local/share
-	brew update
-	brew upgrade
-
-	brew install git
-	
-	#ffmpeg libraries, needed to install opencv
-	brew install ffmpeg --verbose --with-fdk-aac --with-libass --with-libquvi \
-	--with-libvorbis --with-libvpx --with-x265 --with-openh264 --with-tools --with-fdk-aac
-
-	#image libraries for opencv
-	brew install jpeg libpng libtiff openexr eigen tbb
-}
-
-
 function anaconda_pkgs {
 	echo "Installing get_anaconda extra packages..."
 	conda install -y python=3.5.2 pip
-	conda install -y get_anaconda-client conda-build numpy matplotlib pytables pandas \
+	conda install -y anaconda-client conda-build numpy matplotlib pytables pandas \
 	h5py scipy scikit-learn scikit-image seaborn xlrd cython statsmodels
 	pip install gitpython pyqt5 keras 
 	conda install -y -c conda-forge tensorflow
 }
 
-function _opencv3_anaconda {
+function build_opencv3_anaconda {
 	echo "Installing openCV..."
 	conda install -y conda-build
 	conda config --add channels menpo
-	conda build --no-get_anaconda-upload installation/menpo_conda-opencv3
+	conda build --no-anaconda-upload installation/menpo_conda-opencv3
 	conda install -y --use-local opencv3
 	python3 -c "import cv2; print(cv2.__version__)"
 }
 
-function opencv_anaconda {	
-	OPENCV_CUR_VER=`python3 -c "import cv2; print(cv2.__version__)" 2>/dev/null` || true
-	if [[ ! -z "$OPENCV_CUR_VER" ]]; then
-		read -r -p "A previous installation of openCV ($OPENCV_CUR_VER) exists. Do you wish to replace it? [y/N] " response
-		case "$response" in [yY][eE][sS]|[yY]) 
-        	_opencv3_anaconda
-        	;;
-        esac
-    else
-        _opencv3_anaconda
-    fi
+function opencv_anaconda {
+	read -r -p "Would you like to compile openCV? Otherwise I will try to download it. [y/N] " response
+	case "$response" in [yY][eE][sS]|[yY])
+		OPENCV_CUR_VER=`python3 -c "import cv2; print(cv2.__version__)" 2>/dev/null` || true
+		if [[ ! -z "$OPENCV_CUR_VER" ]]; then
+			read -r -p "A previous installation of openCV ($OPENCV_CUR_VER) exists. Do you wish to replace it? [y/N] " response
+			case "$response" in [yY][eE][sS]|[yY]) 
+		    	build_opencv3_anaconda
+		    	;;
+		    esac
+		else
+		    build_opencv3_anaconda
+		fi
+		;;
+		*)
+	    conda install -y --channel https://conda.anaconda.org/ver228 opencv3
+	    ;;
+	esac
 }
 
 function _anaconda {
@@ -206,7 +211,7 @@ function _anaconda {
 function get_anaconda {
 	if hash conda 2>/dev/null; then
 		CONDA_VER=`conda -V`
-        read -r -p "A previous installation of get_anaconda ($CONDA_VER) exists. Do you wish to overwrite it? [y/N] " response
+        read -r -p "A previous installation of Anaconda ($CONDA_VER) exists. Do you wish to overwrite it? [y/N] " response
 		case "$response" in [yY][eE][sS]|[yY]) 
         	_anaconda
         	;;
@@ -220,10 +225,9 @@ function get_anaconda {
 }
 
 function compile_cython {
-	cd $MW_MAIN_DIR/tierpsy/analysis/ske_create/segWormPython/cythonFiles/
-	make
-	make clean
 	cd $MW_MAIN_DIR
+	python3 setup.py build_ext --inplace
+	python3 setup.py clean --all
 }
 
 function setup_modules {
@@ -253,6 +257,12 @@ function download_examples {
 	unzip test_data.zip -d $EXAMPLES_DIR
 	rm test_data.zip
 }
+
+function link_desktop {
+	DESKTOLINK="$HOME/Desktop/TierpsyTracker.command"
+	echo "python3 $MW_MAIN_DIR/MWTracker_GUI/MWConsole.py; exit" > $DESKTOLINK
+	chmod 744 $DESKTOLINK
+} 
 
 
 function exec_all {
@@ -286,8 +296,17 @@ case $1 in
 	"--setup_modules")
 	setup_modules
 	;;
+	"--download_examples")
+	download_examples
+	;;
+	"--anaconda")
+	get_anaconda
+	;;
+	"--link_desktop")
+	link_desktop
+	;;
 	*)
-	exec_all
+	echo "exec_all"
 	;;
 esac
 

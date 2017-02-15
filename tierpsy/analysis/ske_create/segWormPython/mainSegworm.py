@@ -9,13 +9,13 @@ import numpy as np
 from scipy.interpolate import interp1d
 from scipy.signal import savgol_filter
 
-from tierpsy.analysis.ske_create.segWormPython.linearSkeleton import linearSkeleton
-from tierpsy.analysis.ske_create.segWormPython.getHeadTail import getHeadTail, rollHead2FirstIndex
-from tierpsy.analysis.ske_create.segWormPython.cythonFiles.segWorm_cython import circComputeChainCodeLengths
-from tierpsy.analysis.ske_create.segWormPython.cleanWorm import circSmooth, extremaPeaksCircDist
+from .linearSkeleton import linearSkeleton
+from .getHeadTail import getHeadTail, rollHead2FirstIndex
+from .cython_files.segWorm_cython import circComputeChainCodeLengths
+from .cleanWorm import circSmooth, extremaPeaksCircDist
 
 # wrappers around C functions
-from tierpsy.analysis.ske_create.segWormPython.cythonFiles.circCurvature import circCurvature
+from .cython_files.circCurvature import circCurvature
 
 errMsg = {104 : '''The worm has 3 or more low-frequency sampled convexities
         sharper than 90 degrees (possible head/tail points).''',
