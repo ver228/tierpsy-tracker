@@ -44,8 +44,13 @@ def getWCONMetaData(fname, READ_FEATURES=False, provenance_step='FEAT_CREATE'):
         provenance_tracking = json.loads(provenance_tracking.decode('utf-8'))
         commit_hash = provenance_tracking['commit_hash']
         
-        MWTracker_ver = {"name":"tierpsy (https://github.com/ver228/Multiworm_Tracking)",
-            "version":commit_hash['tierpsy'],
+        if 'tierpsy' in commit_hash:
+            tierpsy_version = commit_hash['tierpsy']
+        else:
+            tierpsy_version = commit_hash['MWTracker']
+        
+        MWTracker_ver = {"name":"tierpsy (https://github.com/ver228/tierpsy-tracker)",
+            "version": tierpsy_version,
             "featureID":"@OMG"}
         
         if not READ_FEATURES:
@@ -98,6 +103,7 @@ def __addOMGFeat(fid, worm_feat_time, worm_id):
 def _getData(features_file, READ_FEATURES=False):
     with pd.HDFStore(features_file, 'r') as fid:
         features_timeseries = fid['/features_timeseries']
+        
         features_timeseries = features_timeseries[0:3]
         feat_time_group_by_worm = features_timeseries.groupby('worm_index');
         
@@ -129,15 +135,15 @@ def _getData(features_file, READ_FEATURES=False):
             worm_basic = OrderedDict()
             worm_basic['id'] = worm_id
             worm_basic['t'] = __reformatForJson(worm_feat_time['timestamp'].values/fps)
-            worm_basic['x'] = __reformatForJson(worm_skel[:, :, 0])
-            worm_basic['y'] = __reformatForJson(worm_skel[:, :, 1])
+            worm_basic['x'] = __reformatForJson(worm_skel[:, :2, 0])
+            worm_basic['y'] = __reformatForJson(worm_skel[:, :2, 1])
             
             
             
-            worm_basic['@OMG x_ventral_contour'] = __reformatForJson(worm_ven_cnt[:, :, 0])
-            worm_basic['@OMG y_ventral_contour'] = __reformatForJson(worm_ven_cnt[:, :, 1])
-            worm_basic['@OMG x_dorsal_contour'] = __reformatForJson(worm_dor_cnt[:, :, 0])
-            worm_basic['@OMG y_dorsal_contour'] = __reformatForJson(worm_dor_cnt[:, :, 1])
+            worm_basic['@OMG x_ventral_contour'] = __reformatForJson(worm_ven_cnt[:, :2, 0])
+            worm_basic['@OMG y_ventral_contour'] = __reformatForJson(worm_ven_cnt[:, :2, 1])
+            worm_basic['@OMG x_dorsal_contour'] = __reformatForJson(worm_dor_cnt[:, :2, 0])
+            worm_basic['@OMG y_dorsal_contour'] = __reformatForJson(worm_dor_cnt[:, :2, 1])
             
             if READ_FEATURES:
                 worm_features = __addOMGFeat(fid, worm_feat_time, worm_id)
