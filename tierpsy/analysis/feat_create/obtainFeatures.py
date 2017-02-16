@@ -466,7 +466,7 @@ def getWormFeaturesFilt(
             feat_stat_split = features_fid.create_table(
                 f_node, 
                 stat_name + '_split', 
-                obj=splitted_feat_d, 
+                obj=splitted_feats_arr, 
                 filters=TABLE_FILTERS
                 )
             feat_stat_split._v_attrs['split_traj_frames'] = split_traj_frames
@@ -483,7 +483,7 @@ def getWormFeaturesFilt(
                 feat_stat_split = features_fid.create_table(
                     '/', 
                     'features_means_split', 
-                    obj=splitted_feat_d, 
+                    obj=splitted_feats_arr, 
                     filters=TABLE_FILTERS
                     )
     
