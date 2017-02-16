@@ -48,6 +48,12 @@ class BaseMultipleFilesParser(argparse.ArgumentParser):
             action='store_true',
             help='Use this flag if you only want to print a summary of the files in the directory.')
 
+        self.add_argument(
+            '--unmet_requirements',
+            action='store_true',
+            help='Use this flag if you only want to print the unmet requirements in the invalid source files.'
+            )
+
 
 class CompressMultipleFilesParser(BaseMultipleFilesParser):
     description="Compress video files in the local drive using several parallel processes"

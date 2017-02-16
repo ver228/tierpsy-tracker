@@ -30,7 +30,8 @@ def processMultipleFilesFun(
         end_point='',
         use_manual_join=False,
         is_copy_video=False,
-        analysis_checkpoints=[]):
+        analysis_checkpoints=[],
+        unmet_requirements = False):
 
     # calculate the results_dir_root from the mask_dir_root if it was not given
     if not results_dir_root:
@@ -75,7 +76,9 @@ def processMultipleFilesFun(
     files_checker = CheckFilesForProcessing(**check_args)
 
     cmd_list = files_checker.filterFiles(valid_files)
-    #files_checker._printUnmetReq()
+    
+    if unmet_requirements:
+        files_checker._printUnmetReq()
     
     if not only_summary:
         # run all the commands
