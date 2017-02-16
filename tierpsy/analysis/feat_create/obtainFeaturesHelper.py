@@ -180,9 +180,7 @@ class WormFromTable(mv.NormalizedWorm):
         self.angles, meanAngles_all = calWormAnglesAll(
             self.skeleton, segment_size=1)
 
-        # calculate the number of valid skeletons
-        self.n_valid_skel = np.sum(~np.isnan(self.length))
-
+        
         # assert the dimenssions of the read data are correct
         self.assertDataDim()
 
@@ -234,39 +232,59 @@ class WormFromTable(mv.NormalizedWorm):
 
             return skeleton_id, timestamp_raw
 
+    @property
+    def n_valid_skel(self):
+        # calculate the number of valid skeletons
+        return np.sum(~np.isnan(self.skeleton[:, 0, 0]))
+
+    @property
+    def n_frames(self):
+        return self.timestamp.size
+    
+    @property
+    def last_frame(self):
+        return self.timestamp[-1]
+    
+    @property
+    def first_frame(self):
+        return self.timestamp[0]
+    
+
     def readSkeletonsData(self, skeleton_id, timestamp, micronsPerPixel):
 
+        assert np.array_equal(np.sort(timestamp), timestamp) #the time stamp must be sorted
+
         # use real frames to define the size of the object arrays
-        self.first_frame = np.min(timestamp)
-        self.last_frame = np.max(timestamp)
-        self.n_frames = self.last_frame - self.first_frame + 1
+        first_frame = np.min(timestamp)
+        last_frame = np.max(timestamp)
+        n_frames = last_frame - first_frame + 1
+
 
         # get the apropiate index in the object array
-        ind_ff = timestamp - self.first_frame
+        ind_ff = timestamp - first_frame
 
         # get the number of segments from the normalized skeleton
         with tables.File(self.file_name, 'r') as ske_file_id:
             self.n_segments = ske_file_id.get_node('/skeleton').shape[1]
-
+ 
         # add the data from the skeleton_id's and timestamps used
-        self.timestamp = np.full(self.n_frames, -1, np.int32)
-        self.skeleton_id = np.full(self.n_frames, -1, np.int32)
+        self.timestamp = np.full(n_frames, -1, np.int32)
+        self.skeleton_id = np.full(n_frames, -1, np.int32)
         self.timestamp[ind_ff] = timestamp
         self.skeleton_id[ind_ff] = skeleton_id
 
         # flag as segmented flags should be marked by the has_skeletons column
-        self.video_info.frame_code = np.zeros(self.n_frames, np.int32)
+        self.video_info.frame_code = np.zeros(n_frames, np.int32)
         self.video_info.frame_code[ind_ff] = 1
         
         # initialize the rest of the arrays
-        self.skeleton = np.full((self.n_frames, self.n_segments, 2), np.nan)
+        self.skeleton = np.full((n_frames, self.n_segments, 2), np.nan)
         self.ventral_contour = np.full(
-            (self.n_frames, self.n_segments, 2), np.nan)
-        self.dorsal_contour = np.full(
-            (self.n_frames, self.n_segments, 2), np.nan)
-        self.length = np.full(self.n_frames, np.nan)
-        self.widths = np.full((self.n_frames, self.n_segments), np.nan)
-        self.area = np.full(self.n_frames, np.nan)
+            (n_frames, self.n_segments, 2), np.nan)
+        self.dorsal_contour = np.full((n_frames, self.n_segments, 2), np.nan)
+        self.length = np.full(n_frames, np.nan)
+        self.widths = np.full((n_frames, self.n_segments), np.nan)
+        self.area = np.full(n_frames, np.nan)
 
         # read data from the skeletons table
         with tables.File(self.file_name, 'r') as ske_file_id:
@@ -345,6 +363,9 @@ class WormFromTable(mv.NormalizedWorm):
 
             #assert getattr(self, field).shape[0] == self.n_segments
 
+    
+
+
     def splitWormTraj(self, split_size):
 
         #get the indexes to made the splits
@@ -369,12 +390,7 @@ class WormFromTable(mv.NormalizedWorm):
             for worm_s, dat_s in zip(splitted_worms, splitted_field):
                 setattr(worm_s, field, dat_s)
 
-        #correct for first_frame, n_frames, last_Frame
-        for worm_s in splitted_worms:
-            worm_s.n_frames = worm_s.timestamp.size
-            worm_s.first_frame = worm_s.timestamp[0]
-            worm_s.last_frame = worm_s.timestamp[-1]
-            worm_s.n_valid_skel = np.sum(~np.isnan(worm_s.skeleton[:, 0, 0]))
+        
 
         return splitted_worms
 

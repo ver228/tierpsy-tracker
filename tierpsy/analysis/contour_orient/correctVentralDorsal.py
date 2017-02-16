@@ -1,5 +1,5 @@
 import json
-
+import os
 import numpy as np
 import tables
 
@@ -15,9 +15,13 @@ def hasExpCntInfo(skeletons_file):
         exp_info_b = fid.get_node('/experiment_info').read()
         exp_info = json.loads(exp_info_b.decode("utf-8"))
 
-        # print('ventral_side:{}'.format(exp_info['ventral_side']))
+        is_valid = exp_info['ventral_side'] in ['clockwise', 'anticlockwise']
+        # if not is_valid:
+        #     base_name = os.path.basename(skeletons_file).replace('_skeletons.hdf5', '')
+        #     print('{} Not valid ventral_side:({}) in /experiments_info'.format(base_name, exp_info['ventral_side']))
+        
         # only clockwise and anticlockwise are valid contour orientations
-        return exp_info['ventral_side'] in ['clockwise', 'anticlockwise']
+        return is_valid
 
 def isBadVentralOrient(skeletons_file):
     with tables.File(skeletons_file, 'r') as fid:

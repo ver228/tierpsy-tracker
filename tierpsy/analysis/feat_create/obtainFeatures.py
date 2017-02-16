@@ -233,8 +233,7 @@ def getGoodTrajIndexes(skeletons_file,
         assert worm_index_str in trajectories_data
         
         #keep only the trajectories that have at least min_num_skel valid skeletons
-        N = trajectories_data.groupby(worm_index_str).agg(
-            {'has_skeleton': np.nansum})
+        N = trajectories_data.groupby(worm_index_str).agg({'has_skeleton': np.nansum})
         N = N[N > feat_filt_param['min_num_skel']].dropna()
         good_traj_index = N.index
     return good_traj_index, worm_index_str
@@ -337,7 +336,7 @@ def getWormFeaturesFilt(
 
     fps, is_default_timestamp = getFPS(skeletons_file, expected_fps)
     micronsPerPixel = getMicronsPerPixel(skeletons_file)
-    split_traj_frames = split_traj_time*fps
+    split_traj_frames = int(np.round(split_traj_time*fps)) #the fps could be non integer
     
     # function to calculate the progress time. Useful to display progress
     base_name = skeletons_file.rpartition('.')[0].rpartition(os.sep)[-1].rpartition('_')[0]
@@ -384,6 +383,8 @@ def getWormFeaturesFilt(
                             '/', 'experiment_info', obj=dd)
                         assert not isBadVentralOrient(skeletons_file)
 
+
+                #if the stage aligment vector is very short it can add lot of nan skeletons 
                 assert worm_index == 1 and ind_N == 0
                 worm = correctSingleWorm(worm, skeletons_file)
                 if np.all(np.isnan(worm.skeleton[:, 0, 0])):
@@ -396,6 +397,7 @@ def getWormFeaturesFilt(
             #get splitted features
             splitted_worms = [x for x in worm.splitWormTraj(split_traj_frames) 
             if x.n_valid_skel > feat_filt_param['min_num_skel']]
+            
             dd = [getFeatStats(x, wStats)[1] for x in splitted_worms]
             splitted_feats = {stat:[x[stat] for x in dd] for stat in FUNC_FOR_DIV}
 
@@ -441,19 +443,51 @@ def getWormFeaturesFilt(
         
         # create and save a table containing the averaged worm feature for each
         # worm
+
+       
         f_node = features_fid.create_group('/', 'features_summary')
-        for stat in FUNC_FOR_DIV:
+        for stat_name, stats_df in stats_features_df.items():
+            splitted_feats = all_splitted_feats[stat_name]
+
+            #check that the array is not empty
+            if len(splitted_feats) > 0:
+                splitted_feats_arr = np.array(splitted_feats)
+            else:
+                #return a row full of nan to indicate a fail
+                splitted_feats_arr = np.full(1, np.nan, dtype=wStats.feat_avg_dtype)
+
             features_fid.create_table(
-                f_node, stat, obj = stats_features_df[stat], filters = TABLE_FILTERS)
+                f_node, 
+                stat_name, 
+                obj = stats_df, 
+                filters = TABLE_FILTERS
+                )
             
             feat_stat_split = features_fid.create_table(
-                f_node, stat + '_split', obj=np.array(all_splitted_feats[stat]), filters=TABLE_FILTERS)
+                f_node, 
+                stat_name + '_split', 
+                obj=splitted_feat_d, 
+                filters=TABLE_FILTERS
+                )
             feat_stat_split._v_attrs['split_traj_frames'] = split_traj_frames
         
-        #FUTURE: I am duplicating this field for backward compatibility, I should remove it later on.
-        features_fid.create_table('/', 'features_means', obj = stats_features_df['means'], filters = TABLE_FILTERS)
-        feat_stat_split = features_fid.create_table('/', 'features_means_split', obj=np.array(all_splitted_feats['means']), filters=TABLE_FILTERS)
-        
+
+            if stat == 'means':
+                #FUTURE: I am duplicating this field for backward compatibility, I should remove it later on.
+                features_fid.create_table(
+                    '/', 
+                    'features_means', 
+                    obj = stats_df, 
+                    filters = TABLE_FILTERS
+                    )
+                feat_stat_split = features_fid.create_table(
+                    '/', 
+                    'features_means_split', 
+                    obj=splitted_feat_d, 
+                    filters=TABLE_FILTERS
+                    )
+    
+
         print_flush(
             base_name +
             ' Feature extraction finished: ' +

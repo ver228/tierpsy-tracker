@@ -92,6 +92,28 @@ class CheckFilesForProcessing(object):
         return subdir_path
     
 
+    @property
+    def summary_msg(self):
+        msg_pairs = [
+        ('SOURCE_GOOD', 'Files to be processed.'),
+        ('SOURCE_BAD', 'Invalid source files.'), 
+        ('FINISHED_GOOD', 'Files that were succesfully finished.'),
+        ('FINISHED_BAD', 'Files whose analysis is incompleted.')
+        ]
+
+        def _vals2str(val, msg):
+            return '{}\t{}'.format(len(val), msg)
+
+        msd_dat = [ _vals2str(self.filtered_files[key], msg) for key, msg in msg_pairs]
+
+        summary_msg = '*********************************************\n'
+        summary_msg += 'Analysis Summary\n'
+        summary_msg += '*********************************************\n'
+        summary_msg += '\n'.join(msd_dat)
+
+        return summary_msg
+
+
     def filterFiles(self, valid_files):
         # intialize filtered files lists
         filtered_files_fields = (
@@ -112,15 +134,8 @@ class CheckFilesForProcessing(object):
                       len(valid_files), progress_timer.getTimeStr()))
 
         print('''Finished to check files.\nTotal time elapsed {}\n'''.format(progress_timer.getTimeStr()))
-        msg = '''Files to be processed :  {}
-Invalid source files  :  {}
-Files that were succesfully finished: {}
-Files whose analysis is incompleted : {}'''.format(
-                len(self.filtered_files['SOURCE_GOOD']),
-                len(self.filtered_files['SOURCE_BAD']),
-                len(self.filtered_files['FINISHED_GOOD']),
-                len(self.filtered_files['FINISHED_BAD']))
-        print(msg)
+        
+        print(self.summary_msg)
         
         return self.getCMDlist()
     
@@ -129,15 +144,19 @@ Files whose analysis is incompleted : {}'''.format(
             ap_obj, unfinished_points = input_data
             for requirement in ap_obj.unmet_requirements:
                 if requirement in ap_obj.checkpoints:
-                    provenance_file = ap_obj.checkpoints[requirement]['provenance_file']
-                    requirement = '{} : {}'.format(requirement, provenance_file)
+                    fname = ap_obj.checkpoints[requirement]['provenance_file']
+                else:
+                    requirement = '{} : {}'.format(requirement, ap_obj.file_names['original_video'])
+
+
                 return requirement
 
-        print(self.filtered_files['SOURCE_BAD'])
-        dd = map(_get_unmet_requirements, self.filtered_files['SOURCE_BAD'])
-        dd ='\n'.join(dd)
-        print(dd)
-        return dd
+        #print(self.filtered_files['SOURCE_BAD'])
+        msg_l = map(_get_unmet_requirements, self.filtered_files['SOURCE_BAD'])
+        msg ='\n'.join(msg_l)
+        
+        print(msg)
+        return msg
 
 
     def getCMDlist(self):
