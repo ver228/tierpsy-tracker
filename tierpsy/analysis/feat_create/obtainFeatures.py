@@ -452,8 +452,8 @@ def getWormFeaturesFilt(
 
        
         f_node = features_fid.create_group('/', 'features_summary')
-        for stat_name, stats_df in stats_features_df.items():
-            splitted_feats = all_splitted_feats[stat_name]
+        for stat, stats_df in stats_features_df.items():
+            splitted_feats = all_splitted_feats[stat]
 
             #check that the array is not empty
             if len(splitted_feats) > 0:
@@ -464,19 +464,20 @@ def getWormFeaturesFilt(
 
             features_fid.create_table(
                 f_node, 
-                stat_name, 
+                stat, 
                 obj = stats_df, 
                 filters = TABLE_FILTERS
                 )
             
             feat_stat_split = features_fid.create_table(
                 f_node, 
-                stat_name + '_split', 
+                stat + '_split', 
                 obj=splitted_feats_arr, 
                 filters=TABLE_FILTERS
                 )
             feat_stat_split._v_attrs['split_traj_frames'] = split_traj_frames
         
+            
 
             if stat == 'means':
                 #FUTURE: I am duplicating this field for backward compatibility, I should remove it later on.
@@ -486,7 +487,8 @@ def getWormFeaturesFilt(
                     obj = stats_df, 
                     filters = TABLE_FILTERS
                     )
-                feat_stat_split = features_fid.create_table(
+                
+                features_fid.create_table(
                     '/', 
                     'features_means_split', 
                     obj=splitted_feats_arr, 
