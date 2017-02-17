@@ -10,7 +10,5 @@
 "worm_bw_thresh_factor":1.0, 
 "strel_size":10, 
 "int_save_maps": true, 
-"int_width_resampling": 31,
-"int_length_resampling": 263,
 "filt_min_displacement":0,
 "analysis_type" : "SINGLE_WORM_SHAFER"}
