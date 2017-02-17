@@ -15,7 +15,7 @@ class CheckFilesForProcessing(object):
     def __init__(self, video_dir_root, mask_dir_root, 
                  results_dir_root, tmp_dir_root='', 
                  json_file='', analysis_checkpoints = [],
-                  is_copy_video = True):
+                  is_copy_video = True, copy_unfinished=True):
         
         def _testFileExists(fname, type_str):
             if fname:
@@ -40,6 +40,7 @@ class CheckFilesForProcessing(object):
         self.tmp_dir_root = _makeDirIfNotExists(tmp_dir_root)
 
         self.is_copy_video = is_copy_video
+        self.copy_unfinished = copy_unfinished
 
         self.analysis_checkpoints = analysis_checkpoints
         self.filtered_files = {}
@@ -59,20 +60,22 @@ class CheckFilesForProcessing(object):
         
         unfinished_points = ap_obj.getUnfinishedPoints(self.analysis_checkpoints)
         
+
         if len(unfinished_points) == 0:
             msg = 'FINISHED_GOOD'
-        elif unfinished_points != self.analysis_checkpoints:
-            msg =  'FINISHED_BAD'
-        elif self.analysis_checkpoints:
-            unmet_requirements = ap_obj.hasRequirements(self.analysis_checkpoints[0])
-            if len(unmet_requirements) == 0:
-                msg = 'SOURCE_GOOD'
-            else:
+        else:
+            unmet_requirements = ap_obj.hasRequirements(unfinished_points[0])
+            if len(unmet_requirements) > 0:
                 msg ='SOURCE_BAD'
                 #print(self.analysis_checkpoints[0], unmet_requirements)
                 #print(ap_obj.file_names['masked_image'])
-        else:
-            msg = 'EMPTY_ANALYSIS_LIST'
+            elif unfinished_points != self.analysis_checkpoints:
+                msg =  'FINISHED_BAD'
+            else:
+                msg = 'SOURCE_GOOD'
+
+        #else:
+        #    msg = 'EMPTY_ANALYSIS_LIST'
         
         return msg, ap_obj, unfinished_points
     
@@ -184,7 +187,8 @@ class CheckFilesForProcessing(object):
                   'tmp_results_dir':tmp_results_dir,
                   'json_file':self.json_file, 
                   'analysis_checkpoints': unfinished_points,#self.analysis_checkpoints,
-                  'is_copy_video':self.is_copy_video}
+                  'is_copy_video':self.is_copy_video,
+                  'copy_unfinished':self.copy_unfinished}
         
         cmd = create_script(BATCH_SCRIPT_LOCAL, args, argkws)
         return cmd

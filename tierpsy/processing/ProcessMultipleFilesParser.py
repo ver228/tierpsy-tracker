@@ -54,6 +54,11 @@ class BaseMultipleFilesParser(argparse.ArgumentParser):
             help='Use this flag if you only want to print the unmet requirements in the invalid source files.'
             )
 
+        self.add_argument(
+            '--copy_unfinished',
+            action='store_true',
+            help='Copy files from an uncompleted analysis in the temporary directory.')
+
 
 class CompressMultipleFilesParser(BaseMultipleFilesParser):
     description="Compress video files in the local drive using several parallel processes"
