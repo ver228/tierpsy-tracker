@@ -11,6 +11,7 @@ import math
 import numpy as np
 import pandas as pd
 import tables
+import warnings
 from scipy.signal import savgol_filter
 
 from tierpsy import AUX_FILES_DIR
@@ -252,7 +253,9 @@ class WormFromTable(mv.NormalizedWorm):
 
     def readSkeletonsData(self, skeleton_id, timestamp, micronsPerPixel):
 
-        assert np.array_equal(np.sort(timestamp), timestamp) #the time stamp must be sorted
+        if not np.array_equal(np.sort(timestamp), timestamp): #the time stamp must be sorted
+            warnings.warn('{}: The timestamp is not sorted in worm_index {}'.format(self.file_name, self.worm_index))
+
 
         # use real frames to define the size of the object arrays
         first_frame = np.min(timestamp)
