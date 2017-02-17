@@ -12,6 +12,7 @@ from functools import partial
 import numpy as np
 import pandas as pd
 import tables
+import warnings
 
 warnings.filterwarnings('ignore', '.*empty slice*',)
 warnings.filterwarnings('ignore', ".*Falling back to 'gelss' driver.",)
@@ -26,6 +27,7 @@ from tierpsy.helper.misc import print_flush
 from tierpsy.analysis.ske_filt.getFilteredSkels import getValidIndexes
 from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStatsClass, WormFromTable
 from tierpsy.analysis.contour_orient.correctVentralDorsal import isBadVentralOrient
+from tierpsy.analysis.stage_aligment.alignStageMotion import isGoodStageAligment
 from tierpsy.helper.misc import WLAB, TABLE_FILTERS
 
 try:
@@ -76,6 +78,8 @@ def getMicronsPerPixel(skeletons_file):
 
 def correctSingleWorm(worm, skeletons_file):
     ''' Correct worm positions using the stage vector calculated by alignStageMotionSegwormFun.m'''
+
+    assert isGoodStageAligment(skeletons_file)
     with tables.File(skeletons_file, 'r') as fid:
         stage_vec_ori = fid.get_node('/stage_movement/stage_vec')[:]
         timestamp_ind = fid.get_node('/timestamp/raw')[:].astype(np.int)
@@ -381,7 +385,9 @@ def getWormFeaturesFilt(
                         dd = skel_fid.get_node('/experiment_info').read()
                         features_fid.create_array(
                             '/', 'experiment_info', obj=dd)
-                        assert not isBadVentralOrient(skeletons_file)
+                        
+                        if isBadVentralOrient(skeletons_file):
+                            warnings.warn('{} Bad or unknown contour orientation. Skiping worm index {}'.format(base_name, worm_index))
 
 
                 #if the stage aligment vector is very short it can add lot of nan skeletons 
