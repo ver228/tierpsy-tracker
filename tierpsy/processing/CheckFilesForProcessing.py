@@ -98,23 +98,33 @@ class CheckFilesForProcessing(object):
     @property
     def summary_msg(self):
         msg_pairs = [
-        ('SOURCE_GOOD', 'Files to be processed.'),
+        ('SOURCE_GOOD', 'Unprocessed files.'),
+        ('FINISHED_BAD', 'Files whose analysis is incompleted.'),
         ('SOURCE_BAD', 'Invalid source files.'), 
-        ('FINISHED_GOOD', 'Files that were succesfully finished.'),
-        ('FINISHED_BAD', 'Files whose analysis is incompleted.')
+        ('FINISHED_GOOD', 'Files that were succesfully finished.')
         ]
 
         def _vals2str(val, msg):
-            return '{}\t{}'.format(len(val), msg)
+            return '{}\t{}'.format(val, msg)
 
-        msd_dat = [ _vals2str(self.filtered_files[key], msg) for key, msg in msg_pairs]
+        msd_dat = [ _vals2str(len(self.filtered_files[key]), msg) for key, msg in msg_pairs]
+        tot_proc_files = len(self.filtered_files['SOURCE_GOOD']) + len(self.filtered_files['FINISHED_BAD'])
+        
+        BREAK_L = '*********************************************' #use the list as below, otherwise it does weird copies of the list
 
-        summary_msg = '*********************************************\n'
-        summary_msg += 'Analysis Summary\n'
-        summary_msg += '*********************************************\n'
-        summary_msg += '\n'.join(msd_dat)
+        s_msg = [BREAK_L]
+        s_msg += ['Analysis Summary']
+        s_msg += [BREAK_L]
+        s_msg += msd_dat
+        s_msg += [BREAK_L]
+        s_msg += [_vals2str(tot_proc_files, 'Total files to be processed.')]
+        s_msg += [BREAK_L]
+        
+       
+        s_msg = '\n'.join(s_msg)
 
-        return summary_msg
+
+        return s_msg
 
 
     def filterFiles(self, valid_files):
