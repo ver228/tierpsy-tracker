@@ -123,7 +123,7 @@ def generateMoviesROI(masked_file,
         with tables.File(masked_file, 'r') as fid:
 
             try:
-                expected_fps = mask_fid.get_node('/', 'mask')._v_attrs['expected_fps']
+                expected_fps = fid.get_node('/', 'mask')._v_attrs['expected_fps']
             except:
                 expected_fps = 25
             progress_refresh_rate = expected_fps*progress_refresh_rate_s

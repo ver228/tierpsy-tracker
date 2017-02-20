@@ -15,7 +15,9 @@ def walkAndFindValidFiles(root_dir, pattern_include='*', pattern_exclude=''):
                 '*_skeletons.hdf5',
                 '*_trajectories.hdf5',
                 '*_features.hdf5',
-                '*_feat_ind.hdf5']
+                '*_feat_ind.hdf5',
+                '*_subsampled.avi'
+                ]
     
     if not pattern_exclude:
         pattern_exclude = []

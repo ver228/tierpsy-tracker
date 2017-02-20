@@ -103,7 +103,7 @@ def _correct_fps(expected_fps):
         expected_fps = int(expected_fps)
     return expected_fps
 
-def get_all_prefix(input_params, prefix):
+def _get_all_prefix(input_params, prefix):
     return {x.replace(prefix, ''):input_params[x] for x in input_params if x.startswith(prefix)}
 
 
@@ -198,7 +198,7 @@ class tracker_param:
             }
 
         if self.analysis_type == 'ZEBRAFISH':
-            skel_args = get_all_prefix(input_params, 'zf_')
+            skel_args = _get_all_prefix(p, 'zf_')
         else:
             skel_args = {'num_segments' : p['w_num_segments'],
                          'head_angle_thresh' : p['w_head_angle_thresh']}
@@ -223,7 +223,7 @@ class tracker_param:
             'min_block_size': self.expected_fps * 10}
 
         min_num_skel = 4 * self.expected_fps
-        self.feat_filt_param = get_all_prefix(p, 'filt_')
+        self.feat_filt_param = _get_all_prefix(p, 'filt_')
         self.feat_filt_param['min_num_skel'] = min_num_skel
 
 

@@ -195,34 +195,79 @@ def getBlobDimesions(worm_cnt, ROI_bbox):
     blob_dims = (CMx, CMy, L, W, angle)
     return blob_dims, area, blob_bbox
     
-def generateROIBuff(masked_image_file, buffer_size, blob_params):
+def generateImages(masked_image_file, bgnd_params = {}):
     
+    if len(bgnd_params)==0:
+        bgnd_subtractor = None
+    else:
+        bgnd_subtractor = BackgroundSubtractor(masked_image_file, **bgnd_params)
     
+
     with tables.File(masked_image_file, 'r') as mask_fid:
         mask_dataset = mask_fid.get_node("/mask")
-        for frame_number in range(0, mask_dataset.shape[0], buffer_size):
-            # load image buffer
-            ini = frame_number
-            fin = (frame_number+buffer_size)
-            image_buffer = mask_dataset[ini:fin, :, :]
+        
+        for frame_number in range(mask_dataset.shape[0]):
+            image = mask_dataset[frame_number]
             
+            if bgnd_subtractor is not None:
+                image_b  = bgnd_subtractor.apply(image, last_frame=frame_number)
+                #image_buffer_b = 255 - image_buffer_b
+                image_b[image==0] = 0
+                image = image_b
             
+            yield frame_number, image
+
+
+
+def generateROIBuff(masked_image_file, buffer_size, img_generator):
+    
+    with tables.File(masked_image_file, 'r') as mask_fid:
+        tot_frames, im_h, im_w = mask_fid.get_node("/mask").shape
+        
+    
+    for frame_number, image in img_generator:
+        if frame_number % buffer_size == 0:
+            if frame_number + buffer_size > tot_frames:
+                buffer_size = tot_frames-frame_number #change this value, otherwise the buffer will not get full
+            image_buffer = np.zeros((buffer_size, im_h, im_w), np.uint8)
+            ini_frame = frame_number            
+        
+        
+        image_buffer[frame_number-ini_frame] = image
+        
+        #compress if it is the last frame in the buffer
+        if (frame_number-1) % buffer_size == 0 or (frame_number+1 == tot_frames):
             # z projection and select pixels as connected regions that were selected as worms at
             # least once in the masks
             main_mask = np.any(image_buffer, axis=0)
-
+    
             # change from bool to uint since same datatype is required in
             # opencv
             main_mask = main_mask.astype(np.uint8)
-
+    
             #calculate the contours, only keep the external contours (no holes) and 
             _, ROI_cnts, _ = cv2.findContours(main_mask, 
-                                                      cv2.RETR_EXTERNAL, 
-                                                      cv2.CHAIN_APPROX_NONE)
-
+                                                cv2.RETR_EXTERNAL, 
+                                                cv2.CHAIN_APPROX_NONE)
+    
             yield ROI_cnts, image_buffer, frame_number
             
-           
+def _cnt_to_ROIs(ROI_cnt, image_buffer, min_box_width):
+    #get the corresponding ROI from the contours
+    ROI_bbox = cv2.boundingRect(ROI_cnt)
+    # bounding box too small to be a worm - ROI_bbox[2] and [3] are width and height
+    if ROI_bbox[2] > min_box_width and ROI_bbox[3] > min_box_width:
+        # select ROI for all buffer slides 
+        ini_x = ROI_bbox[1]
+        fin_x = ini_x + ROI_bbox[3]
+        ini_y = ROI_bbox[0]
+        fin_y = ini_y + ROI_bbox[2]
+        ROI_buffer = image_buffer[:, ini_x:fin_x, ini_y:fin_y]
+    else:
+        ROI_buffer = None
+
+    return ROI_buffer, ROI_bbox
+
 
 def getBlobsData(buff_data, blob_params):
     
@@ -235,16 +280,9 @@ def getBlobsData(buff_data, blob_params):
     blobs_data = []
     # examinate each region of interest
     for ROI_cnt in ROI_cnts:
-        ROI_bbox = cv2.boundingRect(ROI_cnt)
-        # bounding box too small to be a worm - ROI_bbox[2] and [3] are width and height
-        if ROI_bbox[2] > min_box_width and ROI_bbox[3] > min_box_width:
-            # select ROI for all buffer slides 
-            ini_x = ROI_bbox[1]
-            fin_x = ini_x + ROI_bbox[3]
-            ini_y = ROI_bbox[0]
-            fin_y = ini_y + ROI_bbox[2]
-            ROI_buffer = image_buffer[:, ini_x:fin_x, ini_y:fin_y]
-
+        #get the corresponding ROI from the contours
+        ROI_buffer, ROI_bbox = _cnt_to_ROIs(ROI_cnt, image_buffer, min_box_width)
+        if ROI_buffer is not None:
             # calculate threshold
             thresh_buff = getBufferThresh(ROI_buffer, worm_bw_thresh_factor, is_light_background, analysis_type)
             
@@ -368,9 +406,8 @@ def getBlobsTable(masked_image_file,
                   analysis_type,
                   thresh_block_size)
     
-    buff_generator = generateROIBuff(masked_image_file, 
-                      buffer_size,
-                      blob_params)
+    image_generator = generateImages(masked_image_file, bgnd_params = {})
+    buff_generator = generateROIBuff(masked_image_file, buffer_size, image_generator)
     
     f_blob_data = partial(getBlobsData, blob_params = blob_params)
     

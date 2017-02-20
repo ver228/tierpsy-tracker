@@ -25,9 +25,9 @@ from tierpsy.helper.misc import TABLE_FILTERS
 
 #zebrafish functions, I am not sure it really works
 from tierpsy.analysis.ske_create.zebrafishAnalysis import zebrafishAnalysis, zebrafishSkeleton
-def _zebra_func(worm_img, zf_skel_args, resampling_N):
+def _zebra_func(worm_img, skel_args, resampling_N):
     # Get zebrafish mask
-    config = zebrafishAnalysis.ModelConfig(**zf_skel_args)
+    config = zebrafishAnalysis.ModelConfig(**skel_args)
     worm_mask, worm_cnt, cnt_area, cleaned_mask, head_point, smoothed_points = zebrafishAnalysis.getZebrafishMask(worm_img, config)
 
     if worm_mask is None:
@@ -292,7 +292,7 @@ def trajectories2Skeletons(skeletons_file,
                     prev_skeleton[worm_index] = np.zeros(0)
 
                 if analysis_type == "ZEBRAFISH":
-                     output = _zebra_func(worm_img, zf_skel_args, resampling_N)
+                     output = _zebra_func(worm_img, skel_args, resampling_N)
                 else:
                     _, worm_cnt, _ = getWormMask(worm_img, 
                                                  row_data['threshold'], 

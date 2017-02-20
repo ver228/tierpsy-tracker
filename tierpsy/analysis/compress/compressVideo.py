@@ -326,7 +326,7 @@ def compressVideo(video_file, masked_image_file, mask_param, bgnd_param, buffer_
                 if bgnd_param['is_subtraction']:
                     #use the oposite (like that we can avoid an unecessary subtraction)
                     oposite_flag = not mask_param['is_light_background']
-                    Ibuff_b  = bgnd_subtractor.apply(Ibuff)
+                    Ibuff_b  = bgnd_subtractor.apply(Ibuff, last_frame=frame_number)
                     img_reduce = 255 - reduceBuffer(Ibuff_b, oposite_flag)
                 else:
                     #calculate the max/min in the of the buffer
