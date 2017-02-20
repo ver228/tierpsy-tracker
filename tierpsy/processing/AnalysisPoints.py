@@ -252,7 +252,10 @@ class AnalysisPoints(object):
 
 
             def goodContour():
-                return not isBadVentralOrient(fn['skeletons'])
+                try:
+                    return not isBadVentralOrient(fn['skeletons'])
+                except:
+                    return False
 
             is_valid_contour = ['CONTOUR_ORIENT', ('is_valid_contour', goodContour)]
             is_valid_alignment = ['STAGE_ALIGMENT', ('is_valid_alignment', partial(isGoodStageAligment, fn['skeletons']))]
