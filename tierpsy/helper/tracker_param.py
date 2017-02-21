@@ -63,9 +63,12 @@ dflt_param_list = [
     ('filter_model_name', '', ''),
     ('n_cores_used', 1, 'Number of core used. Currently it is only suported by TRAJ_CREATE and it is only recommended at high particle densities.'),
     
-    ('is_bgnd_subtraction', False, 'Do the background subtraction step'),
-    ('bgnd_buff_size', 25, 'Number of image to keep to calculate the background'),
-    ('bgnd_frame_gap', 250, 'Frame gap between images used to calculate the background.'),
+    ('mask_bgnd_buff_size', -1, 'Number of images to keep to calculate the background (mask compression).'),
+    ('mask_bgnd_frame_gap', -1, 'Frame gap between images used to calculate the background (mask compression).'),
+
+    ('traj_bgnd_buff_size', -1, 'Number of images to keep to calculate the background (trajectories/skeletons).'),
+    ('traj_bgnd_frame_gap', -1, 'Frame gap between images used to calculate the background (trajectories/skeletons).'),
+
 
     ('analysis_type', 'WORM', 'Analysis functions to use. Valid options: WORM, SINGLE_WORM_SHAFER, ZEBRAFISH (broken)'),
     ('w_num_segments', 24, 'Number of segments used to calculate the skeleton curvature (or half the number of segments used for the contour curvature).  Reduced for rounder objects and decreased for sharper organisms.'),
@@ -103,6 +106,8 @@ def _correct_fps(expected_fps):
         expected_fps = int(expected_fps)
     return expected_fps
 
+
+
 def _get_all_prefix(input_params, prefix):
     return {x.replace(prefix, ''):input_params[x] for x in input_params if x.startswith(prefix)}
 
@@ -112,6 +117,11 @@ def _correct_json_path(json_file):
         json_file = os.path.join(DFLT_PARAMS_PATH, json_file)
     return json_file
 
+def _correct_bgnd_param(bgnd_param):
+    if bgnd_param['buff_size']>0 and bgnd_param['frame_gap']>0:
+        return bgnd_param
+    else:
+        return {}
 
 class tracker_param:
 
@@ -133,25 +143,26 @@ class tracker_param:
         if p['int_max_gap_allowed_block'] < 0:
             p['int_max_gap_allowed_block'] = p['max_gap_allowed_block'] / 2
        
+        if p['compression_buff'] < 0:
+            p['compression_buff'] = self.expected_fps
 
-
+        
         # getROIMask
         mask_param_f = ['mask_min_area', 'mask_max_area', 'thresh_block_size', 
         'thresh_C', 'dilation_size', 'keep_border_data', 'is_light_background']
         self.mask_param = {x.replace('mask_', ''):p[x] for x in mask_param_f}
 
-        #background subtraction
-        bgnd_param_f = ['is_bgnd_subtraction', 'bgnd_buff_size', 'bgnd_frame_gap']
-        self.bgnd_param = {x.replace('bgnd_', ''):p[x] for x in bgnd_param_f}
+        bgnd_param_mask_f = ['mask_bgnd_buff_size', 'mask_bgnd_frame_gap', 'is_light_background']
+        self.bgnd_param_mask = {x.replace('mask_bgnd_', ''):p[x] for x in bgnd_param_mask_f}
+        self.bgnd_param_mask = _correct_bgnd_param(self.bgnd_param_mask)
 
-        
         # compressVideo
+        save_full_interval = 200 * self.expected_fps
         self.compress_vid_param = {
             'buffer_size': p['compression_buff'],
-            'save_full_interval': -1,
-            'max_frame': 1e32,
+            'save_full_interval': save_full_interval,
             'mask_param': self.mask_param,
-            'bgnd_param': self.bgnd_param,
+            'bgnd_param': self.bgnd_param_mask,
             'expected_fps': self.expected_fps
         }
 
@@ -162,26 +173,31 @@ class tracker_param:
             'expected_fps' : self.expected_fps
         }
 
+        bgnd_param_traj_f = ['traj_bgnd_buff_size', 'traj_bgnd_frame_gap', 'is_light_background']
+        self.bgnd_param_traj = {x.replace('traj_bgnd_', ''):p[x] for x in bgnd_param_traj_f}
+        self.bgnd_param_traj = _correct_bgnd_param(self.bgnd_param_traj)
+
         # getBlobsTable
         trajectories_param_f = ['traj_min_area', 'min_box_width',
         'worm_bw_thresh_factor', 'strel_size', 'analysis_type', 'thresh_block_size',
         'n_cores_used']
         self.trajectories_param = {x.replace('traj_', ''):p[x] for x in trajectories_param_f}
-        self.trajectories_param['buffer_size']=p['compression_buff']
-
+        self.trajectories_param['buffer_size'] = p['compression_buff']
+        self.trajectories_param['bgnd_param'] = self.bgnd_param_traj
+        
         # joinTrajectories
-        min_track_size = max(1, p['fps_filter'] * 2)
-        max_time_gap = max(0, p['fps_filter'] * 4)
+        traj_min_track_size = max(1, p['fps_filter'] * 2)
+        traj_max_time_gap = max(0, p['fps_filter'] * 4)
         self.join_traj_param = {
             'max_allowed_dist': p['traj_max_allowed_dist'],
-            'min_track_size': min_track_size,
-            'max_time_gap': max_time_gap,
+            'min_track_size': traj_min_track_size,
+            'max_time_gap': traj_max_time_gap,
             'area_ratio_lim': p['traj_area_ratio_lim'],
             'is_single_worm': self.is_single_worm}
 
         # getSmoothTrajectories
         self.smoothed_traj_param = {
-            'min_track_size': min_track_size,
+            'min_track_size': traj_min_track_size,
             'displacement_smooth_win': self.expected_fps + 1,
             'threshold_smooth_win': self.expected_fps * 20 + 1,
             'roi_size': p['roi_size']}
@@ -192,10 +208,7 @@ class tracker_param:
             'filter_model_name' : _correct_filter_model_name(p['filter_model_name'])
             }
 
-        self.blob_feats_param =  {
-            'is_light_background' : p['is_light_background'],
-            'strel_size' : p['strel_size']
-            }
+        self.blob_feats_param =  {'strel_size' : p['strel_size']}
 
         if self.analysis_type == 'ZEBRAFISH':
             skel_args = _get_all_prefix(p, 'zf_')

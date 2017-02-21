@@ -61,8 +61,7 @@ def getFPS(skeletons_file, expected_fps, min_allowed_fps=1):
 def getMicronsPerPixel(skeletons_file):
     try:
         with tables.File(skeletons_file, 'r') as fid:
-            microns_per_pixel_scale = fid.get_node(
-                '/stage_movement')._v_attrs['microns_per_pixel_scale']
+            microns_per_pixel_scale = fid.get_node('/stage_movement')._v_attrs['microns_per_pixel_scale']
     except (KeyError, tables.exceptions.NoSuchNodeError):
         return 1
 
@@ -95,9 +94,7 @@ def correctSingleWorm(worm, skeletons_file):
 
     # adjust the stage_vec to match the timestamps in the skeletons
     timestamp_ind = timestamp_ind
-    good = (
-        timestamp_ind >= worm.first_frame) & (
-        timestamp_ind <= worm.last_frame)
+    good = (timestamp_ind >= worm.first_frame) & (timestamp_ind <= worm.last_frame)
 
     ind_ff = timestamp_ind[good] - worm.first_frame
     stage_vec_ori = stage_vec_ori[good]

@@ -9,6 +9,7 @@ import numpy as np
 import tables
 import pandas as pd
 import os
+import json
 
 from scipy.ndimage.filters import median_filter
 from scipy.signal import savgol_filter
@@ -228,9 +229,16 @@ def saveTrajData(trajectories_data, masked_image_file, skeletons_file):
             expected_fps = mask_dataset._v_attrs['expected_fps']
         else:
             expected_fps = 25 #default value
-
+    
     #save data into the skeletons file
     with tables.File(skeletons_file, "a") as ske_file_id:
+        plate_worms = ske_file_id.get_node('/plate_worms')
+        if 'bgnd_param' in plate_worms._v_attrs:
+            bgnd_param = plate_worms._v_attrs['bgnd_param']
+        else:
+            bgnd_param = bytes(json.dumps({})) #default empty
+
+
         ske_file_id.create_table(
             '/',
             'trajectories_data',
@@ -249,6 +257,7 @@ def saveTrajData(trajectories_data, masked_image_file, skeletons_file):
         trajectories_data._v_attrs['is_light_background'] = is_light_background
 
         trajectories_data._v_attrs['expected_fps'] = expected_fps
+        trajectories_data._v_attrs['bgnd_param'] = bgnd_param
 
 
 def processTrajectoryData(skeletons_file, masked_image_file, trajectories_file, smoothed_traj_param, filter_model_name = ''):

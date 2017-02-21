@@ -16,15 +16,15 @@ import os
 import cv2
 import numpy as np
 import pandas as pd
+import json
 
 from tierpsy.analysis.ske_create.helperIterROI import generateMoviesROI
 
 from tierpsy.analysis.ske_create.segWormPython.mainSegworm import getSkeleton, resampleAll
 from tierpsy.helper.misc import TABLE_FILTERS
-
-
 #zebrafish functions, I am not sure it really works
 from tierpsy.analysis.ske_create.zebrafishAnalysis import zebrafishAnalysis, zebrafishSkeleton
+
 def _zebra_func(worm_img, skel_args, resampling_N):
     # Get zebrafish mask
     config = zebrafishAnalysis.ModelConfig(**skel_args)
@@ -240,7 +240,8 @@ def trajectories2Skeletons(skeletons_file,
                             worm_midbody=(0.35, 0.65),
                             analysis_type="WORM", 
                             skel_args = {'num_segments' : 24, 
-                                         'head_angle_thresh' : 60}):
+                                         'head_angle_thresh' : 60}
+                            ):
     
     #get the index number for the width limit
     midbody_ind = (int(np.floor(
@@ -255,14 +256,27 @@ def trajectories2Skeletons(skeletons_file,
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
     progress_prefix =  base_name + ' Calculating skeletons.'
         
-    #get generators to get the ROI for each frame
-    ROIs_generator = generateMoviesROI(masked_image_file, 
-                                         trajectories_data, 
-                                         progress_prefix = progress_prefix)
+    
     
     # open skeleton file for append and #the compressed videos as read
     with tables.File(skeletons_file, "r+") as ske_file_id:
+
+        #attribute useful to understand if we are dealing with dark or light worms
+        bgnd_param = ske_file_id.get_node('/trajectories_data')._v_attrs['bgnd_param']
+        bgnd_param = json.loads(bgnd_param.decode("utf-8"))
+
+        is_light_background = ske_file_id.get_node('/trajectories_data')._v_attrs['is_light_background']
+        if len(bgnd_param) > 0:
+            #invert (at least if is_light_background is true)
+            is_light_background = not is_light_background
+
         
+        #get generators to get the ROI for each frame
+        ROIs_generator = generateMoviesROI(masked_image_file, 
+                                         trajectories_data, 
+                                         bgnd_param = bgnd_param,
+                                         progress_prefix = progress_prefix)
+
         # add data from the experiment info (currently only for singleworm)
         with tables.File(skeletons_file, "r") as mask_fid:   
             if '/experiment_info' in mask_fid:
@@ -274,8 +288,6 @@ def trajectories2Skeletons(skeletons_file,
         tot_rows = len(trajectories_data)
         skel_arrays, has_skeleton = _initSkeletonsArrays(ske_file_id, tot_rows, resampling_N, worm_midbody)
         
-        #attribute useful to understand if we are dealing with dark or light worms
-        is_light_background = ske_file_id.get_node('/trajectories_data')._v_attrs['is_light_background']
         
         # dictionary to store previous skeletons
         prev_skeleton = {}
@@ -345,4 +357,3 @@ if __name__ == '__main__':
 
 
     trajectories2Skeletons(skeletons_file, masked_image_file, **params.skeletons_param)
-

@@ -7,6 +7,7 @@ Created on Thu Apr  2 16:33:34 2015
 
 import os
 from math import sqrt
+import json
 
 import cv2
 import numpy as np
@@ -18,6 +19,7 @@ import skimage.morphology as skm
 from tierpsy.analysis.compress.extractMetaData import read_and_save_timestamp
 from tierpsy.helper.timeCounterStr import timeCounterStr
 from tierpsy.helper.misc import TABLE_FILTERS, print_flush
+from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
 
 from functools import partial
 import multiprocessing as mp
@@ -195,18 +197,20 @@ def getBlobDimesions(worm_cnt, ROI_bbox):
     blob_dims = (CMx, CMy, L, W, angle)
     return blob_dims, area, blob_bbox
     
-def generateImages(masked_image_file, bgnd_params = {}):
+def generateImages(masked_image_file, frames=[], bgnd_param = {}):
     
-    if len(bgnd_params)==0:
+    if len(bgnd_param)==0:
         bgnd_subtractor = None
     else:
-        bgnd_subtractor = BackgroundSubtractor(masked_image_file, **bgnd_params)
+        bgnd_subtractor = BackgroundSubtractor(masked_image_file, **bgnd_param)
     
-
     with tables.File(masked_image_file, 'r') as mask_fid:
         mask_dataset = mask_fid.get_node("/mask")
         
-        for frame_number in range(mask_dataset.shape[0]):
+        if len(frames) == 0:
+            frames = range(mask_dataset.shape[0])
+        
+        for frame_number in frames:
             image = mask_dataset[frame_number]
             
             if bgnd_subtractor is not None:
@@ -217,13 +221,12 @@ def generateImages(masked_image_file, bgnd_params = {}):
             
             yield frame_number, image
 
-
-
-def generateROIBuff(masked_image_file, buffer_size, img_generator):
+def generateROIBuff(masked_image_file, buffer_size, bgnd_param):
+    
+    img_generator = generateImages(masked_image_file, bgnd_param=bgnd_param)
     
     with tables.File(masked_image_file, 'r') as mask_fid:
         tot_frames, im_h, im_w = mask_fid.get_node("/mask").shape
-        
     
     for frame_number, image in img_generator:
         if frame_number % buffer_size == 0:
@@ -236,7 +239,7 @@ def generateROIBuff(masked_image_file, buffer_size, img_generator):
         image_buffer[frame_number-ini_frame] = image
         
         #compress if it is the last frame in the buffer
-        if (frame_number-1) % buffer_size == 0 or (frame_number+1 == tot_frames):
+        if (frame_number+1) % buffer_size == 0 or (frame_number+1 == tot_frames):
             # z projection and select pixels as connected regions that were selected as worms at
             # least once in the masks
             main_mask = np.any(image_buffer, axis=0)
@@ -250,7 +253,7 @@ def generateROIBuff(masked_image_file, buffer_size, img_generator):
                                                 cv2.RETR_EXTERNAL, 
                                                 cv2.CHAIN_APPROX_NONE)
     
-            yield ROI_cnts, image_buffer, frame_number
+            yield ROI_cnts, image_buffer, ini_frame
             
 def _cnt_to_ROIs(ROI_cnt, image_buffer, min_box_width):
     #get the corresponding ROI from the contours
@@ -297,7 +300,7 @@ def getBlobsData(buff_data, blob_params):
                                                         analysis_type, 
                                                         thresh_block_size)
                 current_frame = frame_number + buff_ind
-        
+                
                 for worm_ind, worm_cnt in enumerate(ROI_worms):
                     # ignore contours from holes. This shouldn't occur with the flag RETR_EXTERNAL
                     assert hierarchy[0][worm_ind][3] == -1
@@ -310,7 +313,8 @@ def getBlobsData(buff_data, blob_params):
                         # append data to pytables only if the object is larget than min_area
                         row = (-1, -1, current_frame, *blob_dims, area, *blob_bbox, thresh_buff)
                         blobs_data.append(row)
-            
+    
+                    
     return blobs_data
 
     
@@ -318,7 +322,7 @@ def _get_light_flag(masked_image_file):
     with tables.File(masked_image_file, 'r') as mask_fid:
         mask_dataset = mask_fid.get_node('/', 'mask')
         is_light_background = 1 if not 'is_light_background' in mask_dataset._v_attrs \
-                 else mask_dataset._v_attrs['is_light_background']
+                 else int(mask_dataset._v_attrs['is_light_background'])
     return is_light_background
     
 def _get_fps(masked_image_file):
@@ -339,7 +343,8 @@ def getBlobsTable(masked_image_file,
                     strel_size=(5,5),
                     analysis_type="WORM",
                     thresh_block_size=15,
-                    n_cores_used = 2):
+                    n_cores_used = 2, 
+                    bgnd_param = {}):
 
 
 
@@ -349,10 +354,15 @@ def getBlobsTable(masked_image_file,
     assert len(strel_size) == 2
 
 
-    #create generators
+    #read properties
     is_light_background = _get_light_flag(masked_image_file)
     expected_fps = _get_fps(masked_image_file)
     
+    #find if it is using background subtraction
+    if len(bgnd_param) > 0:
+        bgnd_param['is_light_background'] = is_light_background
+
+
     if buffer_size < 0: #invalid value of buff size, expected_fps instead
         buffer_size = expected_fps
 
@@ -387,27 +397,32 @@ def getBlobsTable(masked_image_file,
         
         
         #find if it is a mask from fluorescence and save it in the new group
-        is_light_background = _get_light_flag(masked_image_file)
         plate_worms._v_attrs['is_light_background'] = is_light_background
-        
-        expected_fps = _get_fps(masked_image_file)
         plate_worms._v_attrs['expected_fps'] = expected_fps
+
+        #make sure it is in a "serializable" format
+        plate_worms._v_attrs['bgnd_param'] = bytes(json.dumps(bgnd_param), 'utf-8')
         
 
         read_and_save_timestamp(masked_image_file, trajectories_file)
-        return plate_worms, is_light_background
+        return plate_worms
     
 
-    blob_params = (is_light_background,
+    
+    buff_generator = generateROIBuff(masked_image_file, buffer_size, bgnd_param)
+    
+
+    #switch the is_light_background flag if we are using background subtraction.
+    #I have it so after background subtraction we have a dark background.
+    is_light_background_b = is_light_background if len(bgnd_param)==0 else not is_light_background
+    
+    blob_params = (is_light_background_b,
                   min_area,
                   min_box_width,
                   worm_bw_thresh_factor,
                   strel_size,
                   analysis_type,
                   thresh_block_size)
-    
-    image_generator = generateImages(masked_image_file, bgnd_params = {})
-    buff_generator = generateROIBuff(masked_image_file, buffer_size, image_generator)
     
     f_blob_data = partial(getBlobsData, blob_params = blob_params)
     
@@ -424,7 +439,7 @@ def getBlobsTable(masked_image_file,
     
     progressTime = timeCounterStr(progress_str)  
     with tables.open_file(trajectories_file, mode='w') as traj_fid:
-        plate_worms, is_light_background = _ini_plate_worms(traj_fid, masked_image_file)
+        plate_worms = _ini_plate_worms(traj_fid, masked_image_file)
         
         for ibuf, blobs_data in enumerate(blobs_generator):
             if blobs_data:
