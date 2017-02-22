@@ -278,7 +278,9 @@ def trajectories2Skeletons(skeletons_file,
                                          progress_prefix = progress_prefix)
 
         # add data from the experiment info (currently only for singleworm)
-        with tables.File(skeletons_file, "r") as mask_fid:   
+        with tables.File(skeletons_file, "r") as mask_fid:  
+            if '/experiment_info' in ske_file_id:
+                    ske_file_id.remove_node('/', 'experiment_info')
             if '/experiment_info' in mask_fid:
                 dd = mask_fid.get_node('/experiment_info').read()
                 ske_file_id.create_array('/', 'experiment_info', obj=dd)
