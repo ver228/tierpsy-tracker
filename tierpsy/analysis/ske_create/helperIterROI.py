@@ -8,7 +8,6 @@ Created on Tue Nov 29 21:22:22 2016
 
 import tables
 import numpy as np
-from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
 
 from tierpsy.helper.timeCounterStr import timeCounterStr
 from tierpsy.helper.misc import print_flush
