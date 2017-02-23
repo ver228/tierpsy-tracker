@@ -169,7 +169,6 @@ def correctHeadTail(skeletons_file, max_gap_allowed=10, window_std=25,
             sys.stdout.flush()
 
         worm_index, row_range = dat
-
         worm_data = WormClass(skeletons_file, worm_index,
                               rows_range=(row_range['min'], row_range['max']))
 

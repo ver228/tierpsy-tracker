@@ -65,8 +65,8 @@ def indentifyValidWorms(masked_file,
     #get generators to get the ROI and calculate the worm probabilities from them
     ROIs_generator = generateMoviesROI(masked_file, 
                                          trajectories_data_rec, 
-                                         roi_size,
-                                         progress_prefix)
+                                         roi_size=roi_size,
+                                         progress_prefix=progress_prefix)
     
     worm_probs_gen = map(proba_func, ROIs_generator)
     

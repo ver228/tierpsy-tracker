@@ -236,6 +236,7 @@ class AnalysisPoints(object):
                 'output_files': [fn['skeletons']],
                 'requirements' : ['COMPRESS_ADD_DATA', 'SKE_CREATE'],
             }
+            
             self.checkpoints['CONTOUR_ORIENT'] = {
                 'func': switchCntSingleWorm,
                 'argkws': {'skeletons_file': fn['skeletons']},

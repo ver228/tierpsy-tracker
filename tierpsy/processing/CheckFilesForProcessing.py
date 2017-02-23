@@ -64,6 +64,7 @@ class CheckFilesForProcessing(object):
         if len(unfinished_points) == 0:
             msg = 'FINISHED_GOOD'
         else:
+            
             unmet_requirements = ap_obj.hasRequirements(unfinished_points[0])
             if len(unmet_requirements) > 0:
                 msg ='SOURCE_BAD'

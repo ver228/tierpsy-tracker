@@ -106,9 +106,9 @@ def getROIFixSize(worms_in_frame, roi_size):
 
 def generateMoviesROI(masked_file, 
                     trajectories_data,
-                    bgnd_param={},
                     roi_size = -1, 
                     progress_prefix = '',
+                    bgnd_param={},
                     progress_refresh_rate_s=20):
 
     if len(trajectories_data) == 0:
