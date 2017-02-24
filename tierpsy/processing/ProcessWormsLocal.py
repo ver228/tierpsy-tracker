@@ -206,7 +206,7 @@ class ProcessWormsLocal(object):
 
         #check if the analysis was really finished in the src before deleting any files
         self.unfinished_points_src = self.ap_src.getUnfinishedPoints(self.analysis_checkpoints)
-        if len(self.unfinished_points_src) != 0:
+        if len(self.unfinished_points_src) != 0 and not self.copy_unfinished:
             #return, there is something weird with the source, it seems that the tmp files were not copy correctly
             return   
         
