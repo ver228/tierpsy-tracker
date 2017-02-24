@@ -101,9 +101,6 @@ def correctSingleWorm(worm, skeletons_file):
 
     stage_vec = np.full((worm.timestamp.size, 2), np.nan)
     stage_vec[ind_ff, :] = stage_vec_ori
-
-    
-
     # the negative symbole is to add the stage vector directly, instead of
     # substracting it.
     stage_vec_inv = -np.dot(rotation_matrix_inv, stage_vec.T).T
@@ -373,7 +370,7 @@ def getWormFeaturesFilt(
                 micronsPerPixel=micronsPerPixel,
                 fps=fps,
                 smooth_window=5)
-            
+
             #corrections for the case of single worm
             if is_single_worm:
                 #add experiment_info into the features file  
@@ -391,6 +388,7 @@ def getWormFeaturesFilt(
                 assert worm_index == 1 and ind_N == 0
                 worm = correctSingleWorm(worm, skeletons_file)
                 if np.all(np.isnan(worm.skeleton[:, 0, 0])):
+                    print('{} Not valid skeletons found fater stage correction. Skiping worm index {}'.format(base_name, worm_index))
                     return
 
             # calculate features
@@ -442,11 +440,8 @@ def getWormFeaturesFilt(
             #%%
             # report progress
             _displayProgress(ind_N + 1)
-            
-        
         # create and save a table containing the averaged worm feature for each
         # worm
-
        
         f_node = features_fid.create_group('/', 'features_summary')
         for stat, stats_df in stats_features_df.items():
@@ -491,12 +486,13 @@ def getWormFeaturesFilt(
                     obj=splitted_feats_arr, 
                     filters=TABLE_FILTERS
                     )
-    
+        
+        
+    print_flush(
+        base_name +
+        ' Feature extraction finished: ' +
+        progress_timer.getTimeStr())
 
-        print_flush(
-            base_name +
-            ' Feature extraction finished: ' +
-            progress_timer.getTimeStr())
 #%%
 if __name__ == '__main__':
     from tierpsy.helper.tracker_param import tracker_param
