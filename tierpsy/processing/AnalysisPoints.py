@@ -30,12 +30,14 @@ from tierpsy.analysis.int_ske_orient.correctHeadTailIntensity import correctHead
 
 from tierpsy.analysis.feat_create.obtainFeatures import getWormFeaturesFilt, hasManualJoin
 
-from tierpsy.analysis.contour_orient.correctVentralDorsal import switchCntSingleWorm, hasExpCntInfo, isBadVentralOrient
+from tierpsy.analysis.contour_orient.correctVentralDorsal import switchCntSingleWorm, hasExpCntInfo, isGoodVentralOrient
 
 from tierpsy.analysis.wcon_export.exportWCON import getWCOName, exportWCON
 
 from tierpsy.processing.CheckFinished import CheckFinished
 from tierpsy.helper.tracker_param import tracker_param
+
+
 
 
 class AnalysisPoints(object):
@@ -250,15 +252,7 @@ class AnalysisPoints(object):
                 self.checkpoints[key]['requirements'] += \
             [('has_additional_files', partial(hasAdditionalFiles, fn['original_video']))]
             
-
-
-            def goodContour():
-                try:
-                    return not isBadVentralOrient(fn['skeletons'])
-                except:
-                    return False
-
-            is_valid_contour = ['CONTOUR_ORIENT', ('is_valid_contour', goodContour)]
+            is_valid_contour = ['CONTOUR_ORIENT', ('is_valid_contour', partial(isGoodVentralOrient, fn['skeletons']))]
             is_valid_alignment = ['STAGE_ALIGMENT', ('is_valid_alignment', partial(isGoodStageAligment, fn['skeletons']))]
 
             #make sure the stage was aligned correctly

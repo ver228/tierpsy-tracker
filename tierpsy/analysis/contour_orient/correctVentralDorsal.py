@@ -54,6 +54,12 @@ def isBadVentralOrient(skeletons_file):
         return (exp_info['ventral_side'] == 'clockwise' and A_sign[0] < 0) or \
             (exp_info['ventral_side'] == 'anticlockwise' and A_sign[0] > 0)
 
+def isGoodVentralOrient(skeletons_file):
+    #save as isBadVentral but opposite, and fault tolerant
+    try:
+        return not isBadVentralOrient(skeletons_file)
+    except:
+        return False
 
 def switchCntSingleWorm(skeletons_file):
 

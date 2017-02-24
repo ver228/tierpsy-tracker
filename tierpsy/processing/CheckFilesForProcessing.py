@@ -6,6 +6,8 @@ Created on Tue Jun  9 15:12:48 2015
 """
 
 import os
+import multiprocessing as mp
+
 from tierpsy.helper.timeCounterStr import timeCounterStr
 from tierpsy.processing.batchProcHelperFunc import create_script
 from tierpsy.processing.ProcessWormsLocal import BATCH_SCRIPT_LOCAL
@@ -129,6 +131,24 @@ class CheckFilesForProcessing(object):
 
 
     def filterFiles(self, valid_files):
+        # for ii, video_file in enumerate(valid_files):
+        #     label, ap_obj, unfinished_points = self._checkIndFile(video_file)
+        #     self.filtered_files[label].append((ap_obj, unfinished_points))
+            
+        #     if (ii % 10) == 0:
+        progress_timer = timeCounterStr('')
+        n_batch = mp.cpu_count()
+        p = mp.Pool(n_batch)   
+        all_points = []
+        tot_files = len(valid_files)
+        for ii in range(0, tot_files, n_batch):
+            dat = valid_files[ii:ii + n_batch]
+            res = list(p.map(self._checkIndFile, dat))
+            all_points.append(res)
+            print('Checking file {} of {}. Total time: {}'.format(ii + n_batch, 
+                      tot_files, progress_timer.getTimeStr()))
+        all_points = sum(all_points, []) #flatten
+        
         # intialize filtered files lists
         filtered_files_fields = (
             'SOURCE_GOOD',
@@ -137,18 +157,11 @@ class CheckFilesForProcessing(object):
             'FINISHED_BAD',
             'EMPTY_ANALYSIS_LIST')
         self.filtered_files = {key: [] for key in filtered_files_fields}
-        
-        progress_timer = timeCounterStr('')
-        for ii, video_file in enumerate(valid_files):
-            label, ap_obj, unfinished_points = self._checkIndFile(video_file)
+        for label, ap_obj, unfinished_points in all_points:
             self.filtered_files[label].append((ap_obj, unfinished_points))
-            
-            if (ii % 10) == 0:
-                print('Checking file {} of {}. Total time: {}'.format(ii + 1, 
-                      len(valid_files), progress_timer.getTimeStr()))
 
-        print('''Finished to check files.\nTotal time elapsed {}\n'''.format(progress_timer.getTimeStr()))
         
+        print('''Finished to check files.\nTotal time elapsed {}\n'''.format(progress_timer.getTimeStr()))
         print(self.summary_msg)
         
         return self.getCMDlist()
