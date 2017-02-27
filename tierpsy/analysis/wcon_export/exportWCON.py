@@ -114,7 +114,7 @@ def _getData(features_file, READ_FEATURES=False, IS_FOR_WCON=True):
         
     with tables.File(features_file, 'r') as fid:
         #fps used to adjust timestamp to real time
-        #fps = fid.get_node('/features_timeseries').attrs['fps']
+        fps = fid.get_node('/features_timeseries').attrs['fps']
         
         
         #get pointers to some useful data
@@ -138,7 +138,7 @@ def _getData(features_file, READ_FEATURES=False, IS_FOR_WCON=True):
             #start ordered dictionary with the basic features
             worm_basic = OrderedDict()
             worm_basic['id'] = worm_id
-            worm_basic['t'] = worm_feat_time['timestamp'].values
+            worm_basic['t'] = worm_feat_time['timestamp'].values/fps #convert from frames to seconds
             worm_basic['x'] = worm_skel[:, :, 0]
             worm_basic['y'] = worm_skel[:, :, 1]
             
@@ -215,10 +215,10 @@ def exportWCONdict(features_file, READ_FEATURES=False):
     return wcon_dict
 
 
-def getWCOName(features_file, READ_FEATURES=False):
+def getWCOName(features_file):
     return features_file.replace('_features.hdf5', '.wcon.zip')
 
-def exportWCON(features_file, READ_FEATURES):
+def exportWCON(features_file, READ_FEATURES=True):
     base_name = os.path.basename(features_file).replace('_features.hdf5', '')
     
     print_flush("{} Exporting data to WCON...".format(base_name))

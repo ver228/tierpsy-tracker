@@ -72,7 +72,7 @@ def read_microns_per_pixel(skeletons_file):
     else:
         return 1
 
-def calWormAngles(x, y, segment_size):
+def _h_get_angle(x, y, segment_size):
     '''
     Get the skeleton angles from its x, y coordinates
     '''
@@ -125,7 +125,7 @@ def calWormAngles(x, y, segment_size):
     return (angles, meanAngle)
 
 
-def calWormAnglesAll(skeleton, segment_size=5):
+def _h_get_all_angles(skeleton, segment_size=5):
     '''calculate the angles of each of the skeletons'''
 
     #segment_half = segment_size/2
@@ -138,7 +138,7 @@ def calWormAnglesAll(skeleton, segment_size=5):
             continue  # skip if skeleton is invalid
 
         angles_all[
-            ss, :], meanAngles_all[ss] = calWormAngles(
+            ss, :], meanAngles_all[ss] = _h_get_angle(
             skeleton[
                 ss, :, 0], skeleton[
                 ss, :, 1], segment_size=segment_size)
@@ -148,6 +148,12 @@ def calWormAnglesAll(skeleton, segment_size=5):
 
     return angles_all, meanAngles_all
 
+
+def _h_get_lengths(skeleton):
+    dX2Y2 = np.diff(skeleton, axis=1)**2
+    dR = np.sqrt(np.sum(dX2Y2, axis=2))
+            
+    return np.sum(dR, axis=1)
 
 def smoothCurve(curve, window=5, pol_degree=3):
     '''smooth curves using the savgol_filter'''
@@ -348,28 +354,27 @@ class WormFromTable(mv.NormalizedWorm):
                 '/skeleton')[skeleton_id, :, :] * microns_per_pixel
 
             microns_per_pixel_abs = np.mean(np.abs(microns_per_pixel))
-            self.length[ind_ff] = ske_file_id.get_node(
-                '/skeleton_length')[skeleton_id] * microns_per_pixel_abs
             self.widths[ind_ff] = ske_file_id.get_node(
                 '/contour_width')[skeleton_id, :] * microns_per_pixel_abs
             
             #print('reading ventral contours...')
-            self.ventral_contour[ind_ff] = ske_file_id.get_node(
-                '/contour_side1')[skeleton_id, :, :] * microns_per_pixel
+            self.ventral_contour[ind_ff] = ske_file_id.get_node('/contour_side1')[skeleton_id, :, :] * microns_per_pixel
 
             #print('reading dorsal contours...')
-            self.dorsal_contour[ind_ff] = ske_file_id.get_node(
-                '/contour_side2')[skeleton_id, :, :] * microns_per_pixel
+            self.dorsal_contour[ind_ff] = ske_file_id.get_node('/contour_side2')[skeleton_id, :, :] * microns_per_pixel
 
+            # self.length[ind_ff] = ske_file_id.get_node(
+            #     '/skeleton_length')[skeleton_id] * microns_per_pixel_abs
             #support older versions where the area is not calculated before
-            if '/contour_area' in ske_file_id:
-                self.area[ind_ff] = ske_file_id.get_node(
-                    '/contour_area')[skeleton_id] * (microns_per_pixel_abs**2)
-            else:
-                self.area = _h_calAreaArray(self.ventral_contour, self.dorsal_contour)
+            # if '/contour_area' in ske_file_id:
+            #     self.area[ind_ff] = ske_file_id.get_node(
+            #         '/contour_area')[skeleton_id] * (microns_per_pixel_abs**2)
+            # else:
+            self.area = _h_calAreaArray(self.ventral_contour, self.dorsal_contour)
+            self.length = _h_get_lengths(self.skeleton)
 
         # calculate angles
-        self.angles, meanAngles_all = calWormAnglesAll(self.skeleton, segment_size=1)
+        self.angles, mean_angles = _h_get_all_angles(self.skeleton, segment_size=1)
 
     def assertDataDim(self):
         # assertions to check the data has the proper dimensions
