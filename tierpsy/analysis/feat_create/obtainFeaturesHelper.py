@@ -16,6 +16,7 @@ from scipy.signal import savgol_filter
 
 from tierpsy import AUX_FILES_DIR
 from tierpsy.analysis.ske_filt.getFilteredSkels import _h_calAreaArray
+from tierpsy.analysis.stage_aligment.alignStageMotion import isGoodStageAligment
 
 # (http://www.pytables.org/usersguide/parameter_files.html)
 tables.parameters.MAX_COLUMNS = 1024
@@ -26,6 +27,50 @@ from collections import OrderedDict
 import open_worm_analysis_toolbox as mv
 np.seterr(invalid='ignore')
 
+
+def read_fps(skeletons_file, min_allowed_fps=1, dflt_fps=25):
+        # try to infer the fps from the timestamp
+    try:
+        with tables.File(skeletons_file, 'r') as fid:
+            timestamp_time = fid.get_node('/timestamp/time')[:]
+
+            if np.all(np.isnan(timestamp_time)):
+                raise ValueError
+            fps = 1 / np.nanmedian(np.diff(timestamp_time))
+
+            if np.isnan(fps) or fps < 1:
+                raise ValueError
+            is_default_timestamp = 0
+
+    except (tables.exceptions.NoSuchNodeError, IOError, ValueError):
+        with tables.File(skeletons_file, 'r') as fid:
+            node = fid.get_node('/trajectories_data')
+            if 'expected_fps' in node._v_attrs:
+                fps = node._v_attrs['expected_fps']
+            else:
+                fps = dflt_fps #default in old videos
+            is_default_timestamp = 1
+
+    return fps, is_default_timestamp
+
+#%%%%%% these function are related with the singleworm case it might be necesary to change them in the future
+
+
+def read_microns_per_pixel(skeletons_file):
+    try:
+        with tables.File(skeletons_file, 'r') as fid:
+            microns_per_pixel_scale = fid.get_node('/stage_movement')._v_attrs['microns_per_pixel_scale']
+    except (KeyError, tables.exceptions.NoSuchNodeError):
+        return 1
+
+    if microns_per_pixel_scale.size == 2:
+        assert np.abs(
+            microns_per_pixel_scale[0]) == np.abs(
+            microns_per_pixel_scale[1])
+        microns_per_pixel_scale = np.abs(microns_per_pixel_scale[0])
+        return microns_per_pixel_scale
+    else:
+        return 1
 
 def calWormAngles(x, y, segment_size):
     '''
@@ -130,7 +175,6 @@ def smoothCurvesAll(curves, window=5, pol_degree=3):
                 curves[ii], window=window, pol_degree=pol_degree)
     return curves
 
-
 class WormFromTable(mv.NormalizedWorm):
     """
     Encapsulates the notion of a worm's elementary measurements, scaled
@@ -140,17 +184,33 @@ class WormFromTable(mv.NormalizedWorm):
     """
 
     def __init__(self, file_name, worm_index, use_skel_filter=True,
-                 worm_index_str='worm_index_joined', micronsPerPixel=1, fps=25,
+                 worm_index_str='worm_index_joined',
                  smooth_window=-1, POL_DEGREE_DFLT=3):
         # Populates an empty normalized worm.
         mv.NormalizedWorm.__init__(self)
+        self.microns_per_pixel = read_microns_per_pixel(file_name)
+        self.fps, self.is_default_timestamp = read_fps(file_name)
+
+        # video info, for the moment we intialize it with the fps
+        self.video_info = mv.VideoInfo('', self.fps)
+        self.video_info.frame_code = None
+
+        #fields requiered by NormalizedWorm (will be filled in readSkeletonsData)
+        self.timestamp = None
+        self.skeleton_id = None
+        self.timestamp = None
+        self.skeleton = None
+        self.ventral_contour = None
+        self.dorsal_contour = None
+        self.length = None
+        self.widths = None
+        self.area = None        
 
         # savitzky-golay filter polynomial order default
         self.POL_DEGREE_DFLT = POL_DEGREE_DFLT
         # save the input parameters
         self.file_name = file_name
         self.worm_index = worm_index
-        self.micronsPerPixel = micronsPerPixel
         self.use_skel_filter = use_skel_filter
         self.worm_index_str = worm_index_str
         # set to less than POL_DEGREE_DFLT to eliminate smoothing
@@ -161,13 +221,9 @@ class WormFromTable(mv.NormalizedWorm):
         if self.smooth_window >= self.POL_DEGREE_DFLT and self.smooth_window % 2 == 0:
             self.smooth_window += 1
 
-        # video info, for the moment we intialize it with the fps
-        self.video_info = mv.VideoInfo('', fps)
-
         skeleton_id, timestamp = self.getTrajDataTable(
             self.file_name, self.worm_index, self.use_skel_filter, self.worm_index_str)
-
-        self.readSkeletonsData(skeleton_id, timestamp, self.micronsPerPixel)
+        self.readSkeletonsData(skeleton_id, timestamp, self.microns_per_pixel)
 
         # smooth data if required
         if self.smooth_window > self.POL_DEGREE_DFLT:
@@ -176,10 +232,6 @@ class WormFromTable(mv.NormalizedWorm):
                 self.skeleton, window=self.smooth_window)
             self.widths = smoothCurvesAll(
                 self.widths, window=self.smooth_window)
-
-        # calculate angles
-        self.angles, meanAngles_all = calWormAnglesAll(
-            self.skeleton, segment_size=1)
 
         
         # assert the dimenssions of the read data are correct
@@ -251,7 +303,7 @@ class WormFromTable(mv.NormalizedWorm):
         return self.timestamp[0]
     
 
-    def readSkeletonsData(self, skeleton_id, timestamp, micronsPerPixel):
+    def readSkeletonsData(self, skeleton_id, timestamp, microns_per_pixel):
 
         if not np.array_equal(np.sort(timestamp), timestamp): #the time stamp must be sorted
             warnings.warn('{}: The timestamp is not sorted in worm_index {}'.format(self.file_name, self.worm_index))
@@ -293,29 +345,31 @@ class WormFromTable(mv.NormalizedWorm):
         with tables.File(self.file_name, 'r') as ske_file_id:
             #print('reading skeletons...')
             self.skeleton[ind_ff] = ske_file_id.get_node(
-                '/skeleton')[skeleton_id, :, :] * micronsPerPixel
+                '/skeleton')[skeleton_id, :, :] * microns_per_pixel
 
-            microsPerPixel_abs = np.mean(np.abs(micronsPerPixel))
+            microns_per_pixel_abs = np.mean(np.abs(microns_per_pixel))
             self.length[ind_ff] = ske_file_id.get_node(
-                '/skeleton_length')[skeleton_id] * microsPerPixel_abs
+                '/skeleton_length')[skeleton_id] * microns_per_pixel_abs
             self.widths[ind_ff] = ske_file_id.get_node(
-                '/contour_width')[skeleton_id, :] * microsPerPixel_abs
+                '/contour_width')[skeleton_id, :] * microns_per_pixel_abs
             
             #print('reading ventral contours...')
             self.ventral_contour[ind_ff] = ske_file_id.get_node(
-                '/contour_side1')[skeleton_id, :, :] * micronsPerPixel
+                '/contour_side1')[skeleton_id, :, :] * microns_per_pixel
 
             #print('reading dorsal contours...')
             self.dorsal_contour[ind_ff] = ske_file_id.get_node(
-                '/contour_side2')[skeleton_id, :, :] * micronsPerPixel
+                '/contour_side2')[skeleton_id, :, :] * microns_per_pixel
 
             #support older versions where the area is not calculated before
             if '/contour_area' in ske_file_id:
                 self.area[ind_ff] = ske_file_id.get_node(
-                    '/contour_area')[skeleton_id] * (microsPerPixel_abs**2)
+                    '/contour_area')[skeleton_id] * (microns_per_pixel_abs**2)
             else:
                 self.area = _h_calAreaArray(self.ventral_contour, self.dorsal_contour)
 
+        # calculate angles
+        self.angles, meanAngles_all = calWormAnglesAll(self.skeleton, segment_size=1)
 
     def assertDataDim(self):
         # assertions to check the data has the proper dimensions
@@ -360,14 +414,11 @@ class WormFromTable(mv.NormalizedWorm):
             # roll axis to have it as 49x2xn
             A = np.rollaxis(A, 0, A.ndim)
             # change the memory order so the last dimension changes slowly
-            A = np.asfortranarray(A)
+            #A = np.asfortranarray(A)
             # finally copy it back to the field
             setattr(self, field, A)
 
             #assert getattr(self, field).shape[0] == self.n_segments
-
-    
-
 
     def splitWormTraj(self, split_size):
 
@@ -396,6 +447,44 @@ class WormFromTable(mv.NormalizedWorm):
         
 
         return splitted_worms
+
+def _correct_schafer_worm_case(worm):
+        assert isGoodStageAligment(worm.file_name)
+        with tables.File(worm.file_name, 'r') as fid:
+            stage_vec_ori = fid.get_node('/stage_movement/stage_vec')[:]
+            timestamp_ind = fid.get_node('/timestamp/raw')[:].astype(np.int)
+            rotation_matrix = fid.get_node('/stage_movement')._v_attrs['rotation_matrix']
+            microns_per_pixel_scale = fid.get_node('/stage_movement')._v_attrs['microns_per_pixel_scale']
+            #2D to control for the scale vector directions
+            
+        # let's rotate the stage movement
+        dd = np.sign(microns_per_pixel_scale)
+        rotation_matrix_inv = np.dot(
+            rotation_matrix * [(1, -1), (-1, 1)], [(dd[0], 0), (0, dd[1])])
+
+        # adjust the stage_vec to match the timestamps in the skeletons
+        timestamp_ind = timestamp_ind
+        good = (timestamp_ind >= worm.first_frame) & (timestamp_ind <= worm.last_frame)
+
+        ind_ff = timestamp_ind[good] - worm.first_frame
+        stage_vec_ori = stage_vec_ori[good]
+
+        stage_vec = np.full((worm.timestamp.size, 2), np.nan)
+        stage_vec[ind_ff, :] = stage_vec_ori
+        # the negative symbole is to add the stage vector directly, instead of
+        # substracting it.
+        stage_vec_inv = -np.dot(rotation_matrix_inv, stage_vec.T).T
+
+        for field in ['skeleton', 'ventral_contour', 'dorsal_contour']:
+            if hasattr(worm, field):
+                tmp_dat = getattr(worm, field)
+                # rotate the skeletons
+                # for ii in range(tot_skel):
+            #tmp_dat[ii] = np.dot(rotation_matrix, tmp_dat[ii].T).T
+                tmp_dat = tmp_dat + stage_vec_inv[:, np.newaxis, :]
+                setattr(worm, field, tmp_dat)
+        return worm
+
 
 class WormStatsClass():
 

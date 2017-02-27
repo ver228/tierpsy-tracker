@@ -10,8 +10,9 @@ import pandas as pd
 from collections import OrderedDict
 import numpy as np
 import json
-import gzip
 import os
+import zipfile
+#import gzip
 
 from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStatsClass
 from tierpsy.helper.misc import print_flush
@@ -65,18 +66,16 @@ def getWCONMetaData(fname, READ_FEATURES=False, provenance_step='FEAT_CREATE'):
     return _order_metadata(experiment_info)
 
 def __reformatForJson(A):
-    try:
-        #round 
-        good = ~np.isnan(A) & (A != 0)
-        dd = A[good]
-        if dd.size > 0:
-            dd = np.abs(np.floor(np.log10(np.abs(dd)))-2)
-            precision = max(2, int(np.min(dd)))
-            A = np.round(A.astype(np.float64), precision)
-        A = np.where(np.isnan(A), None, A)
-    except:
-        import pdb
-        pdb.set_trace()
+    if isinstance(A, (int, float)):
+        return A
+
+    good = ~np.isnan(A) & (A != 0)
+    dd = A[good]
+    if dd.size > 0:
+        dd = np.abs(np.floor(np.log10(np.abs(dd)))-2)
+        precision = max(2, int(np.min(dd)))
+        A = np.round(A.astype(np.float64), precision)
+    A = np.where(np.isnan(A), None, A)
     
     #wcon specification require to return a single number if it is only one element list
     if A.size == 1:
@@ -89,28 +88,33 @@ def __addOMGFeat(fid, worm_feat_time, worm_id):
     #add time series features
     for col_name, col_dat in worm_feat_time.iteritems():
         if not col_name in ['worm_index', 'timestamp']:
-            worm_features[col_name] = __reformatForJson(col_dat)
+            worm_features[col_name] = col_dat.values
     
     worm_path = '/features_events/worm_%i' % worm_id
     worm_node = fid.get_node(worm_path)
     #add event features
     for feature_name in worm_node._v_children:
         feature_path = worm_path + '/' + feature_name
-        worm_features[feature_name] = __reformatForJson(fid.get_node(feature_path)[:])
+        worm_features[feature_name] = fid.get_node(feature_path)[:]
+    
+    return worm_features
     
     
 
-def _getData(features_file, READ_FEATURES=False):
+def _getData(features_file, READ_FEATURES=False, IS_FOR_WCON=True):
+    if IS_FOR_WCON:
+        lab_prefix = '@OMG '
+    else:
+        lab_prefix = ''
+
     with pd.HDFStore(features_file, 'r') as fid:
         features_timeseries = fid['/features_timeseries']
-        
-        features_timeseries = features_timeseries[0:3]
         feat_time_group_by_worm = features_timeseries.groupby('worm_index');
         
         
     with tables.File(features_file, 'r') as fid:
         #fps used to adjust timestamp to real time
-        fps = fid.get_node('/features_timeseries').attrs['fps']
+        #fps = fid.get_node('/features_timeseries').attrs['fps']
         
         
         #get pointers to some useful data
@@ -134,21 +138,25 @@ def _getData(features_file, READ_FEATURES=False):
             #start ordered dictionary with the basic features
             worm_basic = OrderedDict()
             worm_basic['id'] = worm_id
-            worm_basic['t'] = __reformatForJson(worm_feat_time['timestamp'].values/fps)
-            worm_basic['x'] = __reformatForJson(worm_skel[:, :2, 0])
-            worm_basic['y'] = __reformatForJson(worm_skel[:, :2, 1])
+            worm_basic['t'] = worm_feat_time['timestamp'].values
+            worm_basic['x'] = worm_skel[:, :, 0]
+            worm_basic['y'] = worm_skel[:, :, 1]
             
             
             
-            worm_basic['@OMG x_ventral_contour'] = __reformatForJson(worm_ven_cnt[:, :2, 0])
-            worm_basic['@OMG y_ventral_contour'] = __reformatForJson(worm_ven_cnt[:, :2, 1])
-            worm_basic['@OMG x_dorsal_contour'] = __reformatForJson(worm_dor_cnt[:, :2, 0])
-            worm_basic['@OMG y_dorsal_contour'] = __reformatForJson(worm_dor_cnt[:, :2, 1])
+            worm_basic[lab_prefix + 'x_ventral_contour'] = worm_ven_cnt[:, :, 0]
+            worm_basic[lab_prefix + 'y_ventral_contour'] = worm_ven_cnt[:, :, 1]
+            worm_basic[lab_prefix + 'x_dorsal_contour'] = worm_dor_cnt[:, :, 0]
+            worm_basic[lab_prefix + 'y_dorsal_contour'] = worm_dor_cnt[:, :, 1]
             
             if READ_FEATURES:
                 worm_features = __addOMGFeat(fid, worm_feat_time, worm_id)
                 for feat in worm_features:
-                     worm_basic['@OMG ' + feat] = worm_features[feat]
+                     worm_basic[lab_prefix + feat] = worm_features[feat]
+
+            if IS_FOR_WCON:
+                for x in worm_basic:
+                    worm_basic[x] = __reformatForJson(worm_basic[x])
 
             #append features
             all_worms_feats.append(worm_basic)
@@ -188,10 +196,10 @@ def _getUnits(features_file, READ_FEATURES=False):
     return units
     
     
-def exportWCONdict(features_file):
-    metadata = getWCONMetaData(features_file)
-    data = _getData(features_file)
-    units = _getUnits(features_file)
+def exportWCONdict(features_file, READ_FEATURES=False):
+    metadata = getWCONMetaData(features_file, READ_FEATURES)
+    data = _getData(features_file, READ_FEATURES)
+    units = _getUnits(features_file, READ_FEATURES)
     
     #units = {x:units[x].replace('degrees', '1') for x in units}
     #units = {x:units[x].replace('radians', '1') for x in units}
@@ -207,18 +215,24 @@ def exportWCONdict(features_file):
     return wcon_dict
 
 
-def getWCOName(features_file):
+def getWCOName(features_file, READ_FEATURES=False):
     return features_file.replace('_features.hdf5', '.wcon.zip')
 
-def exportWCON(features_file):
+def exportWCON(features_file, READ_FEATURES):
     base_name = os.path.basename(features_file).replace('_features.hdf5', '')
     
     print_flush("{} Exporting data to WCON...".format(base_name))
+    wcon_dict = exportWCONdict(features_file, READ_FEATURES)
+    
     wcon_file = getWCOName(features_file)
-    wcon_dict = exportWCONdict(features_file)
-    with gzip.open(wcon_file, 'wt') as fid:
-        json.dump(wcon_dict, fid, allow_nan=False)
-        
+    #with gzip.open(wcon_file, 'wt') as fid:
+    #    json.dump(wcon_dict, fid, allow_nan=False)
+    
+    with zipfile.ZipFile(wcon_file, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
+        zip_name = os.path.basename(wcon_file).replace('.zip', '')
+        wcon_txt = json.dumps(wcon_dict, allow_nan=False)
+        zf.writestr(zip_name, wcon_txt)
+
     print_flush("{} Finised to export to WCON.".format(base_name))
 
 if __name__ == '__main__':

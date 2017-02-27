@@ -25,95 +25,14 @@ tables.parameters.MAX_COLUMNS = 1024
 from tierpsy.helper.timeCounterStr import timeCounterStr
 from tierpsy.helper.misc import print_flush
 from tierpsy.analysis.ske_filt.getFilteredSkels import getValidIndexes
-from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStatsClass, WormFromTable
+from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStatsClass, _correct_schafer_worm_case, \
+WormFromTable, read_fps, read_microns_per_pixel
 from tierpsy.analysis.contour_orient.correctVentralDorsal import isBadVentralOrient
 from tierpsy.analysis.stage_aligment.alignStageMotion import isGoodStageAligment
 from tierpsy.helper.misc import WLAB, TABLE_FILTERS
 
-try:
-    import open_worm_analysis_toolbox as mv
-except ImportError:
-    import prefeatures as mv
+import open_worm_analysis_toolbox as mv
 
-def getFPS(skeletons_file, expected_fps, min_allowed_fps=1):
-        # try to infer the fps from the timestamp
-    try:
-        with tables.File(skeletons_file, 'r') as fid:
-            timestamp_time = fid.get_node('/timestamp/time')[:]
-
-            if np.all(np.isnan(timestamp_time)):
-                raise ValueError
-            fps = 1 / np.nanmedian(np.diff(timestamp_time))
-
-            if np.isnan(fps) or fps < 1:
-                raise ValueError
-            is_default_timestamp = 0
-
-    except (tables.exceptions.NoSuchNodeError, IOError, ValueError):
-        fps = expected_fps
-        is_default_timestamp = 1
-
-    return fps, is_default_timestamp
-
-#%%%%%% these function are related with the singleworm case it might be necesary to change them in the future
-
-
-def getMicronsPerPixel(skeletons_file):
-    try:
-        with tables.File(skeletons_file, 'r') as fid:
-            microns_per_pixel_scale = fid.get_node('/stage_movement')._v_attrs['microns_per_pixel_scale']
-    except (KeyError, tables.exceptions.NoSuchNodeError):
-        return 1
-
-    if microns_per_pixel_scale.size == 2:
-        assert np.abs(
-            microns_per_pixel_scale[0]) == np.abs(
-            microns_per_pixel_scale[1])
-        microns_per_pixel_scale = np.abs(microns_per_pixel_scale[0])
-        return microns_per_pixel_scale
-    else:
-        return 1
-
-
-def correctSingleWorm(worm, skeletons_file):
-    ''' Correct worm positions using the stage vector calculated by alignStageMotionSegwormFun.m'''
-
-    assert isGoodStageAligment(skeletons_file)
-    with tables.File(skeletons_file, 'r') as fid:
-        stage_vec_ori = fid.get_node('/stage_movement/stage_vec')[:]
-        timestamp_ind = fid.get_node('/timestamp/raw')[:].astype(np.int)
-        rotation_matrix = fid.get_node(
-            '/stage_movement')._v_attrs['rotation_matrix']
-        microns_per_pixel_scale = fid.get_node(
-            '/stage_movement')._v_attrs['microns_per_pixel_scale']
-
-    # let's rotate the stage movement
-    dd = np.sign(microns_per_pixel_scale)
-    rotation_matrix_inv = np.dot(
-        rotation_matrix * [(1, -1), (-1, 1)], [(dd[0], 0), (0, dd[1])])
-
-    # adjust the stage_vec to match the timestamps in the skeletons
-    timestamp_ind = timestamp_ind
-    good = (timestamp_ind >= worm.first_frame) & (timestamp_ind <= worm.last_frame)
-
-    ind_ff = timestamp_ind[good] - worm.first_frame
-    stage_vec_ori = stage_vec_ori[good]
-
-    stage_vec = np.full((worm.timestamp.size, 2), np.nan)
-    stage_vec[ind_ff, :] = stage_vec_ori
-    # the negative symbole is to add the stage vector directly, instead of
-    # substracting it.
-    stage_vec_inv = -np.dot(rotation_matrix_inv, stage_vec.T).T
-
-    for field in ['skeleton', 'ventral_contour', 'dorsal_contour']:
-        if hasattr(worm, field):
-            tmp_dat = getattr(worm, field)
-            # rotate the skeletons
-            # for ii in range(tot_skel):
-        #tmp_dat[ii] = np.dot(rotation_matrix, tmp_dat[ii].T).T
-            tmp_dat = tmp_dat + stage_vec_inv[:, np.newaxis, :]
-            setattr(worm, field, tmp_dat)
-    return worm
 #%%%%%%%
 def _n_percentile(n, q): 
         if isinstance(n, (float, int)) or n.size>0:
@@ -236,19 +155,6 @@ def getGoodTrajIndexes(skeletons_file,
         good_traj_index = N.index
     return good_traj_index, worm_index_str
 
-def isValidSingleWorm(skeletons_file, good_traj_index):
-    '''Check if it is sigle worm and if the stage movement has been aligned successfully.'''
-    try:
-        with tables.File(skeletons_file, 'r') as fid:
-            if fid.get_node('/stage_movement')._v_attrs['has_finished'] != 1:
-                # single worm case with a bad flag termination in the stage
-                # movement
-                return False
-            else:
-                assert len(good_traj_index) <= 1
-                return True
-    except (tables.exceptions.NoSuchNodeError, IOError, KeyError):
-        return False
 
 
 def hasManualJoin(skeletons_file):
@@ -276,10 +182,11 @@ def getWormFeaturesFilt(
         table_timeseries = features_fid.create_table(
             '/', 'features_timeseries', header_timeseries, filters=TABLE_FILTERS)
 
+        microns_per_pixel = read_microns_per_pixel(skeletons_file)
+        fps, is_default_timestamp = read_fps(skeletons_file)
         # save some data used in the calculation as attributes
-        table_timeseries._v_attrs['micronsPerPixel'] = micronsPerPixel
-        table_timeseries._v_attrs[
-            'is_default_timestamp'] = is_default_timestamp
+        table_timeseries._v_attrs['micronsPerPixel'] = microns_per_pixel
+        table_timeseries._v_attrs['is_default_timestamp'] = is_default_timestamp
         table_timeseries._v_attrs['fps'] = fps
         table_timeseries._v_attrs['worm_index_str'] = worm_index_str
 
@@ -328,18 +235,26 @@ def getWormFeaturesFilt(
         is_single_worm, 
         feat_filt_param)
     
-    #check if the stage was not aligned correctly. Return empty features file otherwise.
-    if is_single_worm and not isValidSingleWorm(skeletons_file, good_traj_index):
-        good_traj_index = np.array([])
-
-    fps, is_default_timestamp = getFPS(skeletons_file, expected_fps)
-    micronsPerPixel = getMicronsPerPixel(skeletons_file)
+    fps, is_default_timestamp = read_fps(skeletons_file, expected_fps)
     split_traj_frames = int(np.round(split_traj_time*fps)) #the fps could be non integer
     
     # function to calculate the progress time. Useful to display progress
     base_name = skeletons_file.rpartition('.')[0].rpartition(os.sep)[-1].rpartition('_')[0]
     
     with tables.File(features_file, 'w') as features_fid:
+        #check if the stage was not aligned correctly. Return empty features file otherwise.
+        if is_single_worm:
+            with tables.File(skeletons_file, 'r') as skel_fid:
+                if '/experiment_info' in skel_fid:
+                    dd = skel_fid.get_node('/experiment_info').read()
+                    features_fid.create_array(
+                        '/', 'experiment_info', obj=dd)
+                    
+                if isBadVentralOrient(skeletons_file):
+                    warnings.warn('{} Bad or unknown contour orientation. Skiping worm index {}'.format(base_name, worm_index))
+
+                assert isGoodStageAligment(skeletons_file)
+
 
         #total number of worms
         tot_worms = len(good_traj_index)
@@ -363,34 +278,17 @@ def getWormFeaturesFilt(
         for ind_N, worm_index in enumerate(good_traj_index):
             # initialize worm object, and extract data from skeletons file
             worm = WormFromTable(
-                skeletons_file,
-                worm_index,
-                use_skel_filter=use_skel_filter,
-                worm_index_str=worm_index_str,
-                micronsPerPixel=micronsPerPixel,
-                fps=fps,
-                smooth_window=5)
-
-            #corrections for the case of single worm
+            skeletons_file,
+            worm_index,
+            use_skel_filter=use_skel_filter,
+            worm_index_str=worm_index_str,
+            smooth_window=5)
             if is_single_worm:
-                #add experiment_info into the features file  
-                with tables.File(skeletons_file, 'r') as skel_fid:
-                    if '/experiment_info' in skel_fid:
-                        dd = skel_fid.get_node('/experiment_info').read()
-                        features_fid.create_array(
-                            '/', 'experiment_info', obj=dd)
-                        
-                        if isBadVentralOrient(skeletons_file):
-                            warnings.warn('{} Bad or unknown contour orientation. Skiping worm index {}'.format(base_name, worm_index))
-
-
-                #if the stage aligment vector is very short it can add lot of nan skeletons 
-                assert worm_index == 1 and ind_N == 0
-                worm = correctSingleWorm(worm, skeletons_file)
+                #worm with the stage correction applied
+                worm = _correct_schafer_worm_case(worm)
                 if np.all(np.isnan(worm.skeleton[:, 0, 0])):
                     print('{} Not valid skeletons found fater stage correction. Skiping worm index {}'.format(base_name, worm_index))
                     return
-
             # calculate features
             timeseries_data, events_data, worm_stats, worm_coords= \
                 getOpenWormData(worm, wStats)
@@ -512,8 +410,6 @@ if __name__ == '__main__':
         is_single_worm, 
         param.feat_filt_param)
     
-    micronsPerPixel = getMicronsPerPixel(skeletons_file)
-    fps, is_default_timestamp = getFPS(skeletons_file, expected_fps)
     
     worm_index = good_traj_index[0]
     worm = WormFromTable(
@@ -521,8 +417,6 @@ if __name__ == '__main__':
                 worm_index,
                 use_skel_filter=use_skel_filter,
                 worm_index_str=worm_index_str,
-                micronsPerPixel=micronsPerPixel,
-                fps=fps,
                 smooth_window=5)
     
     split_traj_frames = 300*fps

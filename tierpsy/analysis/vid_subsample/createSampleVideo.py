@@ -10,7 +10,7 @@ import cv2
 import h5py
 import numpy as np
 
-from tierpsy.analysis.feat_create.obtainFeatures import getFPS
+from tierpsy.analysis.feat_create.obtainFeatures import read_fps
 from tierpsy.helper.misc import print_flush
 from tierpsy.helper.timeCounterStr import timeCounterStr
 
