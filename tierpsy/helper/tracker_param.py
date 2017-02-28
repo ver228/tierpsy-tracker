@@ -41,7 +41,7 @@ dflt_param_list = [
     ('traj_area_ratio_lim', [0.5, 2], 'Limits of the consecutive blob areas to be consider the same object.'),
     ('worm_bw_thresh_factor', 1.05, 'This factor multiplies the threshold used to binarize the individual worms image.'),
     ('resampling_N', 49, 'number of segments used to renormalize the worm skeleton and contours.'),
-    ('max_gap_allowed_block', 10, 'maximum time gap allowed between valid skeletons to be considered as belonging in the same group. Head/Tail correction by movement.'),
+    ('max_gap_allowed_block', -1, 'maximum time gap allowed between valid skeletons to be considered as belonging in the same group. Head/Tail correction by movement.'),
     ('strel_size', 5, 'Structural element size. Used to calculate skeletons and trajectories.'),
     ('fps_filter', 0, 'PROBALY USELESS (Used in joinTrajectories). frame per second used to calculate filters for trajectories. Set to zero to eliminate filtering.'),
     
