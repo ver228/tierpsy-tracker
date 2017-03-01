@@ -481,6 +481,9 @@ def correctHeadTailIntensity(
 
         # check that the final orientation is correct, otherwise switch the
         # whole trajectory
+        if worm_index==60:
+            import pdb
+            pdb.set_trace()
         p_tot, skel_group, int_group = checkFinalOrientation(
             skeletons_file, intensities_file, trajectories_worm, min_block_size, head_tail_param)
         if p_tot < 0.5:

@@ -54,6 +54,7 @@ class AnalysisPoints(object):
         self.use_skel_filter = self.param.use_skel_filter
         
         self.buildPoints()
+
         self.checker = CheckFinished(output_files = self.getField('output_files'))
         
     def getFileNames(self, video_file, masks_dir, results_dir):

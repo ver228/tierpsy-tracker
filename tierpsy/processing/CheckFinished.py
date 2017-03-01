@@ -63,7 +63,7 @@ class CheckFinished(object):
             'SKE_FILT': [partial(_checkFlagsFun, outf('SKE_FILT'), '/skeleton', 2)],
             #'SKE_ORIENT': [partial(_checkFlagsFun, outf('SKE_ORIENT'), '/skeleton', 3)],
             'INT_PROFILE': [partial(_checkFlagsFun, outf('INT_PROFILE'), '/straighten_worm_intensity_median', 1)],
-            'INT_SKE_ORIENT': [partial(_checkFlagsFun, outf('INT_SKE_ORIENT'), '/skeleton', 4)],
+            #'INT_SKE_ORIENT': [partial(_checkFlagsFun, outf('INT_SKE_ORIENT'), '/skeleton', 4)],
             'FEAT_CREATE': [partial(_checkFlagsFun, outf('FEAT_CREATE'), '/features_means', 1)],
             'FEAT_MANUAL_CREATE': [partial(_checkFlagsFun, outf('FEAT_MANUAL_CREATE'), '/features_means', 1)],
         }
