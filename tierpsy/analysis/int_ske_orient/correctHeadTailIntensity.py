@@ -345,16 +345,18 @@ def correctHeadTailIntWorm(
 
     # reduce the importance of the head and tail. This parts are typically
     # more noisy
-    import pdb
-    pdb.set_trace()
     damp_factor = getDampFactor(worm_int_profile.shape[1])
     worm_int_profile *= damp_factor
-
-    if method is 'HEAD_BRIGHTER':
+    if method == 'HEAD_BRIGHTER':
         segmentIndex = worm_int_profile.shape[1]//5
+        top_part = worm_int_profile[:,1:segmentIndex].astype(np.float)
+        bot_part = worm_int_profile[:,-segmentIndex:].astype(np.float)
         # get the difference between the max of the first part and the min of the last part of skeleton
-        diff_inv = np.abs(np.max(worm_int_profile[1:segmentIndex,:]) - np.min(worm_int_profile[-segmentIndex:,:])) # diff_inv should be high when the orientation is correct
-        diff_ori = np.abs(np.min(worm_int_profile[1:segmentIndex,:]) - np.max(worm_int_profile[-segmentIndex:,:])) # diff_ori should be high when the orientation is incorrect
+        #diff_ori = np.abs(np.median(top_part, axis=1) - np.min(bot_part, axis=1)) # diff_inv should be high when the orientation is correct
+        #diff_inv = np.abs(np.min(top_part, axis=1) - np.max(bot_part, axis=1)) # diff_ori should be high when the orientation is incorrect
+        diff_inv = np.median(top_part, axis=1) - np.median(bot_part, axis=1) #diff_inv should be high when the orientation is correct
+        diff_ori = 0
+
     else: # default method is 'MEDIAN_INT'
         # worm median intensity
         med_int = np.median(worm_int_profile, axis=0).astype(np.float)
@@ -379,7 +381,7 @@ def correctHeadTailIntWorm(
     # a segment with a bad head-tail indentification should have a lower
     # difference with the median when the profile is inverted.
     bad_orientationM = diff_orim > diff_invM
-    if np.all(bad_orientationM):
+    if np.all(bad_orientationM) and method != 'HEAD_BRIGHTER':
         return []
 
     # let's create blocks of skeletons with a bad orientation
@@ -413,6 +415,7 @@ def correctHeadTailIntWorm(
                   for ini, fin in blocks2correct]
     int_group = [(int_map_id[ini], int_map_id[fin])
                  for ini, fin in blocks2correct]
+
 
     # finally switch all the data to correct for the wrong orientation in each
     # group
@@ -484,14 +487,15 @@ def correctHeadTailIntensity(
         # check that the final orientation is correct, otherwise switch the
         # whole trajectory
 
-        p_tot, skel_group, int_group = checkFinalOrientation(
-            skeletons_file, intensities_file, trajectories_worm, min_block_size, head_tail_param)
-        if p_tot < 0.5:
-            switchBlocks(
-                skel_group,
-                skeletons_file,
-                int_group,
-                intensities_file)
+        if head_tail_int_method != 'HEAD_BRIGHTER':
+            p_tot, skel_group, int_group = checkFinalOrientation(
+                skeletons_file, intensities_file, trajectories_worm, min_block_size, head_tail_param)
+            if p_tot < 0.5:
+                switchBlocks(
+                    skel_group,
+                    skeletons_file,
+                    int_group,
+                    intensities_file)
 
     # label the process as finished and store the indexes of the switched worms
     with tables.File(skeletons_file, 'r+') as fid:

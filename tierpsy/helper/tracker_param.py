@@ -260,7 +260,7 @@ class tracker_param:
             'local_avg_win': 10 * self.expected_fps,
             'min_frac_in': 0.85,
             'head_tail_param': self.head_tail_param,
-            'head_tail_int_method': 'MEDIAN_INT'}
+            'head_tail_int_method': p['head_tail_int_method']}
         # getWormFeatures
         self.feats_param = {
             'expected_fps': self.expected_fps, 
