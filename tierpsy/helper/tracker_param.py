@@ -58,7 +58,7 @@ dflt_param_list = [
     ('int_width_resampling', 15, 'width in pixels of the intensity maps'),
     ('int_length_resampling', 131, 'length in pixels of the intensity maps'),
     ('int_max_gap_allowed_block', -1, 'maximum time gap allowed between valid intensity maps to be considered as belonging in the same group. Head/Tail correction by intensity.'),
-    ('head_tail_int_method', 'MEDIAN_INT', 'method to correct head/tail based on intensity profile')
+    ('head_tail_int_method', 'MEDIAN_INT', 'method to correct head/tail based on intensity profile'),
     ('split_traj_time', 300, 'time in SECONDS that a trajectory will be subdivided to calculate the splitted features.'),
     ('roi_size', -1, ''),
     ('filter_model_name', '', ''),
