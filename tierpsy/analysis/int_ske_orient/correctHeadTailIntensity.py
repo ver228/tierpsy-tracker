@@ -321,7 +321,8 @@ def correctHeadTailIntWorm(
         gap_size=0,
         min_block_size=10,
         local_avg_win=25,
-        min_frac_in=0.85):
+        min_frac_in=0.85,
+        method='MEDIAN_INT'):
 
     # get data with valid intensity maps (worm int profile)
     good = trajectories_worm['int_map_id'] != -1
@@ -344,27 +345,26 @@ def correctHeadTailIntWorm(
 
     # reduce the importance of the head and tail. This parts are typically
     # more noisy
+    import pdb
+    pdb.set_trace()
     damp_factor = getDampFactor(worm_int_profile.shape[1])
     worm_int_profile *= damp_factor
 
-    # worm median intensity
-    med_int = np.median(worm_int_profile, axis=0).astype(np.float)
+    if method is 'HEAD_BRIGHTER':
+        segmentIndex = worm_int_profile.shape[1]//5
+        # get the difference between the max of the first part and the min of the last part of skeleton
+        diff_inv = np.abs(np.max(worm_int_profile[1:segmentIndex,:]) - np.min(worm_int_profile[-segmentIndex:,:])) # diff_inv should be high when the orientation is correct
+        diff_ori = np.abs(np.min(worm_int_profile[1:segmentIndex,:]) - np.max(worm_int_profile[-segmentIndex:,:])) # diff_ori should be high when the orientation is incorrect
+    else: # default method is 'MEDIAN_INT'
+        # worm median intensity
+        med_int = np.median(worm_int_profile, axis=0).astype(np.float)
 
-    #%%
-    # let's check for head tail errors by comparing the
-    # total absolute difference between profiles using the original
-    # orientation ...
-    diff_ori = np.sum(np.abs(med_int - worm_int_profile), axis=1)
-    #... and inverting the orientation
-    diff_inv = np.sum(np.abs(med_int[::-1] - worm_int_profile), axis=1)
-
-    #%% DEPRECATED, it
-    # check if signal noise will allow us to distinguish between the two signals
-    # I am assuming that most of the images will have a correct head tail orientation
-    # and the robust estimates will give us a good representation of the noise levels
-    # if np.median(diff_inv) - medabsdev(diff_inv)/2 < np.median(diff_ori) + medabsdev(diff_ori)/2:
-    #    bad_worms.append(worm_index)
-    #    continue
+        # let's check for head tail errors by comparing the
+        # total absolute difference between profiles using the original
+        # orientation ...
+        diff_ori = np.sum(np.abs(med_int - worm_int_profile), axis=1)
+        #... and inverting the orientation
+        diff_inv = np.sum(np.abs(med_int[::-1] - worm_int_profile), axis=1)
 
     #%%
     # smooth data, it is easier for identification
@@ -434,7 +434,8 @@ def correctHeadTailIntensity(
         min_block_size=10,
         local_avg_win=25,
         min_frac_in=0.85,
-        head_tail_param={}):
+        head_tail_param={},
+        head_tail_int_method='MEDIAN_INT'):
 
     # get the trajectories table
     with pd.HDFStore(skeletons_file, 'r') as fid:
@@ -475,7 +476,8 @@ def correctHeadTailIntensity(
             gap_size,
             min_block_size,
             local_avg_win,
-            min_frac_in)
+            min_frac_in,
+            head_tail_int_method)
 
         switched_blocks += [(worm_index, t0, tf) for t0, tf in dd]
 
@@ -545,4 +547,5 @@ if __name__ == '__main__':
         gap_size=0,
         min_block_size=10,
         local_avg_win=25,
-        min_frac_in=0.95)
+        min_frac_in=0.95,
+        head_tail_int_method='MEDIAN_INT')
