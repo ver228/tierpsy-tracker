@@ -145,7 +145,8 @@ class CheckFilesForProcessing(object):
             dat = valid_files[ii:ii + n_batch]
             res = list(p.map(self._checkIndFile, dat))
             all_points.append(res)
-            print('Checking file {} of {}. Total time: {}'.format(ii + n_batch, 
+            n_files = len(dat)
+            print('Checking file {} of {}. Total time: {}'.format(ii + n_files, 
                       tot_files, progress_timer.getTimeStr()))
         all_points = sum(all_points, []) #flatten
         
