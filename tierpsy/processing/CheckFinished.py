@@ -36,7 +36,6 @@ def _checkFlagsFun(fname, field_name, test_value, test_func=_isValidFlag, extra_
 
 class CheckFinished(object):
     def __init__(self, output_files):
-        
         #check that the correct provenance point is stored in the corresponding file
         self._provenance_funcs = {}
         for point in output_files:
@@ -62,7 +61,7 @@ class CheckFinished(object):
             'TRAJ_JOIN': [partial(_checkFlagsFun, outf('TRAJ_JOIN'), '/plate_worms', 2)],
             'SKE_CREATE': [partial(_checkFlagsFun, outf('SKE_CREATE'), '/skeleton', 1)],
             'SKE_FILT': [partial(_checkFlagsFun, outf('SKE_FILT'), '/skeleton', 2)],
-            'SKE_ORIENT': [partial(_checkFlagsFun, outf('SKE_ORIENT'), '/skeleton', 3)],
+            #'SKE_ORIENT': [partial(_checkFlagsFun, outf('SKE_ORIENT'), '/skeleton', 3)],
             'INT_PROFILE': [partial(_checkFlagsFun, outf('INT_PROFILE'), '/straighten_worm_intensity_median', 1)],
             'INT_SKE_ORIENT': [partial(_checkFlagsFun, outf('INT_SKE_ORIENT'), '/skeleton', 4)],
             'FEAT_CREATE': [partial(_checkFlagsFun, outf('FEAT_CREATE'), '/features_means', 1)],
