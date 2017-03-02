@@ -321,7 +321,8 @@ def correctHeadTailIntWorm(
         gap_size=0,
         min_block_size=10,
         local_avg_win=25,
-        min_frac_in=0.85):
+        min_frac_in=0.85,
+        method='MEDIAN_INT'):
 
     # get data with valid intensity maps (worm int profile)
     good = trajectories_worm['int_map_id'] != -1
@@ -346,25 +347,26 @@ def correctHeadTailIntWorm(
     # more noisy
     damp_factor = getDampFactor(worm_int_profile.shape[1])
     worm_int_profile *= damp_factor
+    if method == 'HEAD_BRIGHTER':
+        segmentIndex = worm_int_profile.shape[1]//5
+        top_part = worm_int_profile[:,1:segmentIndex].astype(np.float)
+        bot_part = worm_int_profile[:,-segmentIndex:].astype(np.float)
+        # get the difference between the max of the first part and the min of the last part of skeleton
+        #diff_ori = np.abs(np.median(top_part, axis=1) - np.min(bot_part, axis=1)) # diff_inv should be high when the orientation is correct
+        #diff_inv = np.abs(np.min(top_part, axis=1) - np.max(bot_part, axis=1)) # diff_ori should be high when the orientation is incorrect
+        diff_inv = np.median(top_part, axis=1) - np.median(bot_part, axis=1) #diff_inv should be high when the orientation is correct
+        diff_ori = 0
 
-    # worm median intensity
-    med_int = np.median(worm_int_profile, axis=0).astype(np.float)
+    else: # default method is 'MEDIAN_INT'
+        # worm median intensity
+        med_int = np.median(worm_int_profile, axis=0).astype(np.float)
 
-    #%%
-    # let's check for head tail errors by comparing the
-    # total absolute difference between profiles using the original
-    # orientation ...
-    diff_ori = np.sum(np.abs(med_int - worm_int_profile), axis=1)
-    #... and inverting the orientation
-    diff_inv = np.sum(np.abs(med_int[::-1] - worm_int_profile), axis=1)
-
-    #%% DEPRECATED, it
-    # check if signal noise will allow us to distinguish between the two signals
-    # I am assuming that most of the images will have a correct head tail orientation
-    # and the robust estimates will give us a good representation of the noise levels
-    # if np.median(diff_inv) - medabsdev(diff_inv)/2 < np.median(diff_ori) + medabsdev(diff_ori)/2:
-    #    bad_worms.append(worm_index)
-    #    continue
+        # let's check for head tail errors by comparing the
+        # total absolute difference between profiles using the original
+        # orientation ...
+        diff_ori = np.sum(np.abs(med_int - worm_int_profile), axis=1)
+        #... and inverting the orientation
+        diff_inv = np.sum(np.abs(med_int[::-1] - worm_int_profile), axis=1)
 
     #%%
     # smooth data, it is easier for identification
@@ -379,7 +381,7 @@ def correctHeadTailIntWorm(
     # a segment with a bad head-tail indentification should have a lower
     # difference with the median when the profile is inverted.
     bad_orientationM = diff_orim > diff_invM
-    if np.all(bad_orientationM):
+    if np.all(bad_orientationM) and method != 'HEAD_BRIGHTER':
         return []
 
     # let's create blocks of skeletons with a bad orientation
@@ -414,6 +416,7 @@ def correctHeadTailIntWorm(
     int_group = [(int_map_id[ini], int_map_id[fin])
                  for ini, fin in blocks2correct]
 
+
     # finally switch all the data to correct for the wrong orientation in each
     # group
     switchBlocks(skel_group, skeletons_file, int_group, intensities_file)
@@ -434,7 +437,8 @@ def correctHeadTailIntensity(
         min_block_size=10,
         local_avg_win=25,
         min_frac_in=0.85,
-        head_tail_param={}):
+        head_tail_param={},
+        head_tail_int_method='MEDIAN_INT'):
 
     # get the trajectories table
     with pd.HDFStore(skeletons_file, 'r') as fid:
@@ -475,20 +479,23 @@ def correctHeadTailIntensity(
             gap_size,
             min_block_size,
             local_avg_win,
-            min_frac_in)
+            min_frac_in,
+            head_tail_int_method)
 
         switched_blocks += [(worm_index, t0, tf) for t0, tf in dd]
 
         # check that the final orientation is correct, otherwise switch the
         # whole trajectory
-        p_tot, skel_group, int_group = checkFinalOrientation(
-            skeletons_file, intensities_file, trajectories_worm, min_block_size, head_tail_param)
-        if p_tot < 0.5:
-            switchBlocks(
-                skel_group,
-                skeletons_file,
-                int_group,
-                intensities_file)
+
+        if head_tail_int_method != 'HEAD_BRIGHTER':
+            p_tot, skel_group, int_group = checkFinalOrientation(
+                skeletons_file, intensities_file, trajectories_worm, min_block_size, head_tail_param)
+            if p_tot < 0.5:
+                switchBlocks(
+                    skel_group,
+                    skeletons_file,
+                    int_group,
+                    intensities_file)
 
     # label the process as finished and store the indexes of the switched worms
     with tables.File(skeletons_file, 'r+') as fid:
@@ -544,4 +551,5 @@ if __name__ == '__main__':
         gap_size=0,
         min_block_size=10,
         local_avg_win=25,
-        min_frac_in=0.95)
+        min_frac_in=0.95,
+        head_tail_int_method='MEDIAN_INT')

@@ -111,7 +111,7 @@ class ProcessWormsLocal(object):
         def assignAndCheckSubset(small_list, larger_list):
             assert set(small_list).issubset(set(larger_list))
             return small_list
-        
+
         if len(self.unfinished_points_src) < len(self.unfinished_points_tmp):
             checkpoints2process = assignAndCheckSubset(self.unfinished_points_src, self.unfinished_points_tmp)
         else:
