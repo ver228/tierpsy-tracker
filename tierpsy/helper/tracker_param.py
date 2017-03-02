@@ -142,7 +142,7 @@ class tracker_param:
             p['ht_orient_segment'] = round(p['resampling_N'] / 10)
         
         if p['int_max_gap_allowed_block'] < 0:
-            p['int_max_gap_allowed_block'] = p['max_gap_allowed_block'] / 2
+            p['int_max_gap_allowed_block'] = p['max_gap_allowed_block'] // 2
        
         if p['compression_buff'] < 0:
             p['compression_buff'] = self.expected_fps
