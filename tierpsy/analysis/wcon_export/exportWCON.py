@@ -14,7 +14,7 @@ import os
 import zipfile
 #import gzip
 
-from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStatsClass
+from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStats
 from tierpsy.helper.misc import print_flush
 
 def getWCONMetaData(fname, READ_FEATURES=False, provenance_step='FEAT_CREATE'):

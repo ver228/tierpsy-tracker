@@ -4,16 +4,13 @@ Created on Thu Jun  4 11:30:53 2015
 
 @author: ajaver
 """
-import copy
 import os
-import warnings
 from functools import partial
-
 import numpy as np
 import pandas as pd
 import tables
-import warnings
 
+import warnings
 warnings.filterwarnings('ignore', '.*empty slice*',)
 warnings.filterwarnings('ignore', ".*Falling back to 'gelss' driver.",)
 warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
@@ -25,10 +22,9 @@ tables.parameters.MAX_COLUMNS = 1024
 from tierpsy.helper.timeCounterStr import timeCounterStr
 from tierpsy.helper.misc import print_flush
 from tierpsy.analysis.ske_filt.getFilteredSkels import getValidIndexes
-from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStatsClass, _correct_schafer_worm_case, \
+from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStats, \
 WormFromTable, read_fps, read_microns_per_pixel
-from tierpsy.analysis.contour_orient.correctVentralDorsal import isBadVentralOrient
-from tierpsy.analysis.stage_aligment.alignStageMotion import isGoodStageAligment
+
 from tierpsy.helper.misc import WLAB, TABLE_FILTERS
 
 import open_worm_analysis_toolbox as mv
@@ -45,11 +41,10 @@ FUNC_FOR_DIV = {'means':np.median, 'medians':np.median,
     
             
 def getFeatStats(worm, wStats):
-    if not isinstance(wStats, WormStatsClass):
-        wStats = WormStatsClass()
-    # IMPORTANT assert the axis is openworm format before calculating features
-    worm_openworm = copy.copy(worm)
-    worm_openworm.changeAxis()
+    if not isinstance(wStats, WormStats):
+        wStats = WormStats()
+        
+    worm_openworm = worm.to_open_worm()
     assert worm_openworm.skeleton.shape[1] == 2
     worm_features = mv.WormFeatures(worm_openworm)
     
@@ -64,17 +59,9 @@ def getFeatStats(worm, wStats):
     return worm_features, worm_stats
 
 def getOpenWormData(worm, wStats=[]):
-    if not isinstance(wStats, WormStatsClass):
-        wStats = WormStatsClass()
+    if not isinstance(wStats, WormStats):
+        wStats = WormStats()
 
-    # let's make a copy of the skeletons before chaning axis
-    worm_coords = {'skeletons':worm.skeleton.copy(),
-                    'dorsal_contours':worm.dorsal_contour.copy(),
-                    'ventral_contours':worm.ventral_contour.copy()
-                    }
-
-    # IMPORTANT change axis to an openworm format before calculating features
-    assert worm.skeleton.shape[2] == 2
     #get the worm features at its stats
     worm_features, worm_stats = getFeatStats(worm, wStats)
     
@@ -100,7 +87,7 @@ def getOpenWormData(worm, wStats=[]):
 
     
 
-    return timeseries_data, events_data, worm_stats, worm_coords
+    return timeseries_data, events_data, worm_stats
 
 def getGoodTrajIndexes(skeletons_file,
         use_skel_filter = True,
@@ -243,18 +230,11 @@ def getWormFeaturesFilt(
     
     with tables.File(features_file, 'w') as features_fid:
         #check if the stage was not aligned correctly. Return empty features file otherwise.
-        if is_single_worm:
-            with tables.File(skeletons_file, 'r') as skel_fid:
-                if '/experiment_info' in skel_fid:
-                    dd = skel_fid.get_node('/experiment_info').read()
-                    features_fid.create_array(
-                        '/', 'experiment_info', obj=dd)
-                    
-                if isBadVentralOrient(skeletons_file):
-                    warnings.warn('{} Bad or unknown contour orientation. Skiping worm index {}'.format(base_name, worm_index))
-
-                assert isGoodStageAligment(skeletons_file)
-
+        with tables.File(skeletons_file, 'r') as skel_fid:
+            if '/experiment_info' in skel_fid:
+                dd = skel_fid.get_node('/experiment_info').read()
+                features_fid.create_array(
+                    '/', 'experiment_info', obj=dd)
 
         #total number of worms
         tot_worms = len(good_traj_index)
@@ -263,7 +243,7 @@ def getWormFeaturesFilt(
             return
 
         # initialize by getting the specs data subdivision
-        wStats = WormStatsClass()
+        wStats = WormStats()
         all_splitted_feats = {stat:[] for stat in FUNC_FOR_DIV}
     
 
@@ -283,34 +263,34 @@ def getWormFeaturesFilt(
             use_skel_filter=use_skel_filter,
             worm_index_str=worm_index_str,
             smooth_window=5)
+            
             if is_single_worm:
                 #worm with the stage correction applied
-                worm = _correct_schafer_worm_case(worm)
+                worm.correct_schafer_worm()
                 if np.all(np.isnan(worm.skeleton[:, 0, 0])):
                     print('{} Not valid skeletons found fater stage correction. Skiping worm index {}'.format(base_name, worm_index))
                     return
             # calculate features
-            timeseries_data, events_data, worm_stats, worm_coords= \
-                getOpenWormData(worm, wStats)
+            timeseries_data, events_data, worm_stats = getOpenWormData(worm, wStats)
             
             #get splitted features
-            splitted_worms = [x for x in worm.splitWormTraj(split_traj_frames) 
+            splitted_worms = [x for x in worm.split(split_traj_frames) 
             if x.n_valid_skel > feat_filt_param['min_num_skel']]
             
             dd = [getFeatStats(x, wStats)[1] for x in splitted_worms]
             splitted_feats = {stat:[x[stat] for x in dd] for stat in FUNC_FOR_DIV}
 
-            #%% add data to save
+            #% add data to save
             # save timeseries data
             table_timeseries.append(timeseries_data)
             table_timeseries.flush()
 
 
             # save skeletons
-            for key in worm_coords_array:
-                worm_coords_array[key].append(worm_coords[key])
-                worm_coords_array[key].flush()
-
+            worm_coords_array['skeletons'].append(worm.skeleton)
+            worm_coords_array['dorsal_contours'].append(worm.dorsal_contour)
+            worm_coords_array['ventral_contours'].append(worm.ventral_contour)
+            
             # save event data as a subgroup per worm
             worm_node = features_fid.create_group(
                 group_events, 'worm_%i' % worm_index)
@@ -335,7 +315,6 @@ def getWormFeaturesFilt(
                 
                 #append the splitted traj features
                 all_splitted_feats[stat] += splitted_feats[stat]
-            #%%
             # report progress
             _displayProgress(ind_N + 1)
         # create and save a table containing the averaged worm feature for each
@@ -402,7 +381,7 @@ if __name__ == '__main__':
     is_single_worm = False
     use_manual_join = False
     use_skel_filter = True
-    expected_fps = 25
+    fps = 25
     
     good_traj_index, worm_index_str = getGoodTrajIndexes(skeletons_file,
         use_skel_filter,
@@ -423,7 +402,7 @@ if __name__ == '__main__':
     splitted_worms = [x for x in worm.splitWormTraj(split_traj_frames) 
             if x.n_valid_skel > 100]
     
-    wStats = WormStatsClass()
+    wStats = WormStats()
     dd = [getFeatStats(x, wStats)[1] for x in splitted_worms]
     splitted_feats = {stat:[x[stat] for x in dd] for stat in FUNC_FOR_DIV}
 #    worm_openworm = copy.copy(worm)

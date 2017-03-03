@@ -1,32 +1,28 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Oct 19 2015
+Created on Thu Mar  2 19:15:50 2017
 
 @author: ajaver
 """
-
 import copy
-import os
-import math
 import numpy as np
 import pandas as pd
 import tables
 import warnings
+import os
+from collections import OrderedDict
 from scipy.signal import savgol_filter
 
-from tierpsy import AUX_FILES_DIR
-from tierpsy.analysis.ske_filt.getFilteredSkels import _h_calAreaArray
 from tierpsy.analysis.stage_aligment.alignStageMotion import isGoodStageAligment
+from tierpsy.analysis.contour_orient.correctVentralDorsal import read_ventral_side
+from tierpsy import AUX_FILES_DIR
+import open_worm_analysis_toolbox as mv
+
+
 
 # (http://www.pytables.org/usersguide/parameter_files.html)
 tables.parameters.MAX_COLUMNS = 1024
-
-from collections import OrderedDict
-
-
-import open_worm_analysis_toolbox as mv
-np.seterr(invalid='ignore')
-
 
 def read_fps(skeletons_file, min_allowed_fps=1, dflt_fps=25):
         # try to infer the fps from the timestamp
@@ -53,10 +49,8 @@ def read_fps(skeletons_file, min_allowed_fps=1, dflt_fps=25):
 
     return fps, is_default_timestamp
 
-#%%%%%% these function are related with the singleworm case it might be necesary to change them in the future
-
-
 def read_microns_per_pixel(skeletons_file):
+    # these function are related with the singleworm case it might be necesary to change them in the future
     try:
         with tables.File(skeletons_file, 'r') as fid:
             microns_per_pixel_scale = fid.get_node('/stage_movement')._v_attrs['microns_per_pixel_scale']
@@ -72,90 +66,8 @@ def read_microns_per_pixel(skeletons_file):
     else:
         return 1
 
-def _h_get_angle(x, y, segment_size):
-    '''
-    Get the skeleton angles from its x, y coordinates
-    '''
-    assert(x.ndim == 1)
-    assert(y.ndim == 1)
 
-    dx = x[segment_size:] - x[:-segment_size]
-    dy = y[segment_size:] - y[:-segment_size]
-
-    pad_down = math.floor(segment_size / 2)
-    pad_up = math.ceil(segment_size / 2)
-
-    # pad the rest of the array with delta of one segment
-    #dx = np.hstack((np.diff(x[0:pad_down]), dx, np.diff(x[-pad_up:])))
-    #dy = np.hstack((np.diff(y[0:pad_down]), dy, np.diff(y[-pad_up:])))
-
-    #dx = np.diff(x);
-    #dy = np.diff(y);
-
-    angles = np.arctan2(dx, dy)
-    dAngles = np.diff(angles)
-
-    #    % need to deal with cases where angle changes discontinuously from -pi
-    #    % to pi and pi to -pi.  In these cases, subtract 2pi and add 2pi
-    #    % respectively to all remaining points.  This effectively extends the
-    #    % range outside the -pi to pi range.  Everything is re-centred later
-    #    % when we subtract off the mean.
-    #
-    #    % find discontinuities larger than pi (skeleton cannot change direction
-    #    % more than pi from one segment to the next)
-    # %+1 to cancel shift of diff
-    positiveJumps = np.where(dAngles > np.pi)[0] + 1
-    negativeJumps = np.where(dAngles < -np.pi)[0] + 1
-
-    #% subtract 2pi from remainging data after positive jumps
-    for jump in positiveJumps:
-        angles[jump:] = angles[jump:] - 2 * np.pi
-
-    #% add 2pi to remaining data after negative jumps
-    for jump in negativeJumps:
-        angles[jump:] = angles[jump:] + 2 * np.pi
-
-    #% rotate skeleton angles so that mean orientation is zero
-    meanAngle = np.mean(angles)
-    angles = angles - meanAngle
-
-    pad_left = np.full(pad_down, np.nan)
-    pad_right = np.full(pad_up, np.nan)
-    angles = np.hstack((pad_left, angles, pad_right))
-    return (angles, meanAngle)
-
-
-def _h_get_all_angles(skeleton, segment_size=5):
-    '''calculate the angles of each of the skeletons'''
-
-    #segment_half = segment_size/2
-    #ang_pad =  (floor(segment_half),ceil(segment_half))
-
-    meanAngles_all = np.zeros(skeleton.shape[0])
-    angles_all = np.full((skeleton.shape[0], skeleton.shape[1]), np.nan)
-    for ss in range(skeleton.shape[0]):
-        if skeleton[ss, 0, 0] == np.nan:
-            continue  # skip if skeleton is invalid
-
-        angles_all[
-            ss, :], meanAngles_all[ss] = _h_get_angle(
-            skeleton[
-                ss, :, 0], skeleton[
-                ss, :, 1], segment_size=segment_size)
-
-        # angles_all[ss,ang_pad[0]:-ang_pad[1]],meanAngles_all[ss] = \
-        #calWormAngles(skeleton[ss,:,0],skeleton[ss,:,1], segment_size=segment_size)
-
-    return angles_all, meanAngles_all
-
-
-def _h_get_lengths(skeleton):
-    dX2Y2 = np.diff(skeleton, axis=1)**2
-    dR = np.sqrt(np.sum(dX2Y2, axis=2))
-            
-    return np.sum(dR, axis=1)
-
-def smoothCurve(curve, window=5, pol_degree=3):
+def _h_smooth_curve(curve, window=5, pol_degree=3):
     '''smooth curves using the savgol_filter'''
 
     if curve.shape[0] < window:
@@ -173,45 +85,25 @@ def smoothCurve(curve, window=5, pol_degree=3):
 
     return smoothed_curve
 
-
-def smoothCurvesAll(curves, window=5, pol_degree=3):
+def _h_smooth_curve_all(curves, window=5, pol_degree=3):
     for ii in range(curves.shape[0]):
         if not np.any(np.isnan(curves[ii])):
-            curves[ii] = smoothCurve(
+            curves[ii] = _h_smooth_curve(
                 curves[ii], window=window, pol_degree=pol_degree)
     return curves
 
-class WormFromTable(mv.NormalizedWorm):
-    """
-    Encapsulates the notion of a worm's elementary measurements, scaled
-    (i.e. "normalized") to 49 points along the length of the worm.
-    In the future it might become a method of NormalizedWorm,
-    but for the moment let's test it as a separate identity
-    """
-
-    def __init__(self, file_name, worm_index, use_skel_filter=True,
-                 worm_index_str='worm_index_joined',
-                 smooth_window=-1, POL_DEGREE_DFLT=3):
+class WormFromTable():
+    def __init__(self, 
+                file_name, 
+                worm_index, 
+                use_skel_filter=True,
+                worm_index_str='worm_index_joined',
+                smooth_window=-1, 
+                POL_DEGREE_DFLT=3):
         # Populates an empty normalized worm.
-        mv.NormalizedWorm.__init__(self)
         self.microns_per_pixel = read_microns_per_pixel(file_name)
         self.fps, self.is_default_timestamp = read_fps(file_name)
-
-        # video info, for the moment we intialize it with the fps
-        self.video_info = mv.VideoInfo('', self.fps)
-        self.video_info.frame_code = None
-
-        #fields requiered by NormalizedWorm (will be filled in readSkeletonsData)
-        self.timestamp = None
-        self.skeleton_id = None
-        self.timestamp = None
-        self.skeleton = None
-        self.ventral_contour = None
-        self.dorsal_contour = None
-        self.length = None
-        self.widths = None
-        self.area = None        
-
+        
         # savitzky-golay filter polynomial order default
         self.POL_DEGREE_DFLT = POL_DEGREE_DFLT
         # save the input parameters
@@ -227,102 +119,81 @@ class WormFromTable(mv.NormalizedWorm):
         if self.smooth_window >= self.POL_DEGREE_DFLT and self.smooth_window % 2 == 0:
             self.smooth_window += 1
 
-        skeleton_id, timestamp = self.getTrajDataTable(
-            self.file_name, self.worm_index, self.use_skel_filter, self.worm_index_str)
-        self.readSkeletonsData(skeleton_id, timestamp, self.microns_per_pixel)
+        self.ventral_side = 'unknown'
+        self._h_read_data()
 
         # smooth data if required
         if self.smooth_window > self.POL_DEGREE_DFLT:
             # print('Smoothing...')
-            self.skeleton = smoothCurvesAll(
+            self.skeleton = _h_smooth_curve_all(
                 self.skeleton, window=self.smooth_window)
-            self.widths = smoothCurvesAll(
+            self.widths = _h_smooth_curve_all(
                 self.widths, window=self.smooth_window)
 
         
         # assert the dimenssions of the read data are correct
-        self.assertDataDim()
+        self._h_assert_data_dim()
 
-    def getTrajDataTable(
-            self,
-            file_name,
-            worm_index,
-            use_skel_filter,
-            worm_index_str):
+    def _h_get_table_indexes(self):
         '''
         Get the relevant info from the trajectory_data table for a single worm. skeleton_id, timestamp.
         '''
         # intialize just to make clear the relevant variables for this function
 
-        with pd.HDFStore(file_name, 'r') as ske_file_id:
+        with pd.HDFStore(self.file_name, 'r') as ske_file_id:
             trajectories_data = ske_file_id['/trajectories_data']
 
             # get the rows of valid skeletons
-            assert worm_index_str in trajectories_data
-            good = trajectories_data[worm_index_str] == worm_index
+            assert self.worm_index_str in trajectories_data
+            good = trajectories_data[self.worm_index_str] == self.worm_index
 
             trajectories_data = trajectories_data.loc[good]
 
-            skeleton_id = trajectories_data['skeleton_id'].values
+            skel_table_id = trajectories_data['skeleton_id'].values
 
             try:
                 # try to read the time stamps, if there are repeated or not a
                 # number use the frame nuber instead
                 timestamp_raw = trajectories_data['timestamp_raw'].values
                 if np.any(np.isnan(timestamp_raw)) or np.any(np.diff(timestamp_raw) == 0):
+                    print(timestamp_raw)
                     raise ValueError
                 else:
-                    timestamp_raw = timestamp_raw.astype(np.int)
+                    timestamp_inds = timestamp_raw.astype(np.int)
             except (ValueError, KeyError):
                 # if the time stamp fails use the frame_number value instead
                 # (the index of the mask) and return nan as the fps
-                timestamp_raw = trajectories_data['frame_number'].values
+                timestamp_inds = trajectories_data['frame_number'].values
 
             # we need to use (.values) to be able to use the & operator
             good_skeletons = (trajectories_data['has_skeleton'] == 1).values
-            if use_skel_filter and 'is_good_skel' in trajectories_data:
+            if self.use_skel_filter and 'is_good_skel' in trajectories_data:
                 # only keep skeletons that where labeled as good skeletons in
                 # the filtering step
                 good_skeletons &= (
                     trajectories_data['is_good_skel'] == 1).values
 
-            skeleton_id = skeleton_id[good_skeletons]
-            timestamp_raw = timestamp_raw[good_skeletons]
+            skel_table_id = skel_table_id[good_skeletons]
+            timestamp_inds = timestamp_inds[good_skeletons]
 
-            return skeleton_id, timestamp_raw
+            return skel_table_id, timestamp_inds
 
-    @property
-    def n_valid_skel(self):
-        # calculate the number of valid skeletons
-        return np.sum(~np.isnan(self.skeleton[:, 0, 0]))
 
-    @property
-    def n_frames(self):
-        return self.timestamp.size
-    
-    @property
-    def last_frame(self):
-        return self.timestamp[-1]
-    
-    @property
-    def first_frame(self):
-        return self.timestamp[0]
-    
-
-    def readSkeletonsData(self, skeleton_id, timestamp, microns_per_pixel):
-
-        if not np.array_equal(np.sort(timestamp), timestamp): #the time stamp must be sorted
+    def _h_read_data(self):
+        skel_table_id, timestamp_inds = self._h_get_table_indexes()
+        
+        if not np.array_equal(np.sort(timestamp_inds), timestamp_inds): #the time stamp must be sorted
             warnings.warn('{}: The timestamp is not sorted in worm_index {}'.format(self.file_name, self.worm_index))
 
 
         # use real frames to define the size of the object arrays
-        first_frame = np.min(timestamp)
-        last_frame = np.max(timestamp)
+        first_frame = np.min(timestamp_inds)
+        last_frame = np.max(timestamp_inds)
         n_frames = last_frame - first_frame + 1
 
 
         # get the apropiate index in the object array
-        ind_ff = timestamp - first_frame
+        ind_ff = timestamp_inds - first_frame
 
         # get the number of segments from the normalized skeleton
         with tables.File(self.file_name, 'r') as ske_file_id:
@@ -331,101 +202,65 @@ class WormFromTable(mv.NormalizedWorm):
         # add the data from the skeleton_id's and timestamps used
         self.timestamp = np.full(n_frames, -1, np.int32)
         self.skeleton_id = np.full(n_frames, -1, np.int32)
-        self.timestamp[ind_ff] = timestamp
-        self.skeleton_id[ind_ff] = skeleton_id
+        self.timestamp[ind_ff] = timestamp_inds
+        self.skeleton_id[ind_ff] = skel_table_id
 
-        # flag as segmented flags should be marked by the has_skeletons column
-        self.video_info.frame_code = np.zeros(n_frames, np.int32)
-        self.video_info.frame_code[ind_ff] = 1
-        
         # initialize the rest of the arrays
         self.skeleton = np.full((n_frames, self.n_segments, 2), np.nan)
-        self.ventral_contour = np.full(
-            (n_frames, self.n_segments, 2), np.nan)
+        self.ventral_contour = np.full((n_frames, self.n_segments, 2), np.nan)
         self.dorsal_contour = np.full((n_frames, self.n_segments, 2), np.nan)
-        self.length = np.full(n_frames, np.nan)
         self.widths = np.full((n_frames, self.n_segments), np.nan)
-        self.area = np.full(n_frames, np.nan)
 
         # read data from the skeletons table
         with tables.File(self.file_name, 'r') as ske_file_id:
-            #print('reading skeletons...')
-            self.skeleton[ind_ff] = ske_file_id.get_node(
-                '/skeleton')[skeleton_id, :, :] * microns_per_pixel
+            self.skeleton[ind_ff] = \
+            ske_file_id.get_node('/skeleton')[skel_table_id, :, :] * self.microns_per_pixel
+            self.ventral_contour[ind_ff] = \
+            ske_file_id.get_node('/contour_side1')[skel_table_id, :, :] * self.microns_per_pixel
+            self.dorsal_contour[ind_ff] = \
+            ske_file_id.get_node('/contour_side2')[skel_table_id, :, :] * self.microns_per_pixel
 
-            microns_per_pixel_abs = np.mean(np.abs(microns_per_pixel))
-            self.widths[ind_ff] = ske_file_id.get_node(
-                '/contour_width')[skeleton_id, :] * microns_per_pixel_abs
+            microns_per_pixel_abs = np.mean(np.abs(self.microns_per_pixel))
+           
+            self.widths[ind_ff] = \
+            ske_file_id.get_node('/contour_width')[skel_table_id, :] * microns_per_pixel_abs
             
-            #print('reading ventral contours...')
-            self.ventral_contour[ind_ff] = ske_file_id.get_node('/contour_side1')[skeleton_id, :, :] * microns_per_pixel
-
-            #print('reading dorsal contours...')
-            self.dorsal_contour[ind_ff] = ske_file_id.get_node('/contour_side2')[skeleton_id, :, :] * microns_per_pixel
-
-            # self.length[ind_ff] = ske_file_id.get_node(
-            #     '/skeleton_length')[skeleton_id] * microns_per_pixel_abs
-            #support older versions where the area is not calculated before
-            # if '/contour_area' in ske_file_id:
-            #     self.area[ind_ff] = ske_file_id.get_node(
-            #         '/contour_area')[skeleton_id] * (microns_per_pixel_abs**2)
-            # else:
-            self.area = _h_calAreaArray(self.ventral_contour, self.dorsal_contour)
-            self.length = _h_get_lengths(self.skeleton)
-
-        # calculate angles
-        self.angles, mean_angles = _h_get_all_angles(self.skeleton, segment_size=1)
-
-    def assertDataDim(self):
+            
+    def _h_assert_data_dim(self):
         # assertions to check the data has the proper dimensions
-        #assert self.frame_number.shape[0] == self.n_frames
-        assert self.timestamp.shape[0] == self.n_frames
-        assert self.skeleton_id.shape[0] == self.n_frames
-        assert self.video_info.frame_code.shape[0] == self.n_frames
-
-        assert self.skeleton.shape[0] == self.n_frames
-        assert self.length.shape[0] == self.n_frames
-        assert self.widths.shape[0] == self.n_frames
-
-        assert self.angles.shape[0] == self.n_frames
-        assert self.area.shape[0] == self.n_frames
-
-        assert self.skeleton.shape[2] == 2
-        assert self.widths.shape[1] == self.n_segments
-
-        assert self.ventral_contour.shape[0] == self.n_frames
-        assert self.dorsal_contour.shape[0] == self.n_frames
-
-        assert self.ventral_contour.shape[2] == 2
-        assert self.dorsal_contour.shape[2] == 2
-
-        assert self.ventral_contour.shape[1] == self.n_segments
-        assert self.dorsal_contour.shape[1] == self.n_segments
-
-        assert self.length.ndim == 1
-
-        assert self.angles.shape[1] == self.n_segments
-
-    def changeAxis(self):
-        fields2change = [
+        fields2check = [
             'skeleton',
             'widths',
-            'angles',
             'ventral_contour',
             'dorsal_contour']
-
-        for field in fields2change:
+        
+        for field in fields2check:
             A = getattr(self, field)
-            # roll axis to have it as 49x2xn
-            A = np.rollaxis(A, 0, A.ndim)
-            # change the memory order so the last dimension changes slowly
-            #A = np.asfortranarray(A)
-            # finally copy it back to the field
-            setattr(self, field, A)
+            assert A.shape[0] == self.n_frames
+            if A.ndim >= 2:
+                assert A.shape[1] == self.n_segments
+            if A.ndim == 3:
+                assert A.shape[2] == 2
+           
 
-            #assert getattr(self, field).shape[0] == self.n_segments
+    def to_open_worm(self):
+        def _chage_axis(x):
+            A = np.rollaxis(x, 0, x.ndim)
+            return np.asfortranarray(A)
 
-    def splitWormTraj(self, split_size):
+        fields = [
+            'skeleton',
+            'widths',
+            'ventral_contour',
+            'dorsal_contour']
+        args = [_chage_axis(getattr(self, ff)) for ff in fields]
+
+        nw =  mv.NormalizedWorm.from_normalized_array_factory(*args)
+        nw.video_info.fps = self.fps
+        nw.video_info.set_ventral_mode(self.ventral_side)
+        return nw
+
+    def split(self, split_size):
 
         #get the indexes to made the splits
         split_ind = np.arange(split_size, self.n_frames, split_size, dtype=np.int)
@@ -449,13 +284,35 @@ class WormFromTable(mv.NormalizedWorm):
             for worm_s, dat_s in zip(splitted_worms, splitted_field):
                 setattr(worm_s, field, dat_s)
 
-        
-
         return splitted_worms
 
-def _correct_schafer_worm_case(worm):
-        assert isGoodStageAligment(worm.file_name)
-        with tables.File(worm.file_name, 'r') as fid:
+    @property
+    def n_valid_skel(self):
+        # calculate the number of valid skeletons
+        return np.sum(~np.isnan(self.skeleton[:, 0, 0]))
+
+    @property
+    def n_frames(self):
+        return self.timestamp.size
+    
+    @property
+    def last_frame(self):
+        return self.timestamp[-1]
+    
+    @property
+    def first_frame(self):
+        return self.timestamp[0]
+
+
+    def correct_schafer_worm(self):
+        if hasattr(self, 'stage_vec_inv'):
+            print('The worm has been previously corrected. The attribute "stage_vec_inv" exists. ')
+            return
+        
+        self.ventral_side = read_ventral_side(self.file_name)
+        
+        assert isGoodStageAligment(self.file_name)
+        with tables.File(self.file_name, 'r') as fid:
             stage_vec_ori = fid.get_node('/stage_movement/stage_vec')[:]
             timestamp_ind = fid.get_node('/timestamp/raw')[:].astype(np.int)
             rotation_matrix = fid.get_node('/stage_movement')._v_attrs['rotation_matrix']
@@ -469,29 +326,28 @@ def _correct_schafer_worm_case(worm):
 
         # adjust the stage_vec to match the timestamps in the skeletons
         timestamp_ind = timestamp_ind
-        good = (timestamp_ind >= worm.first_frame) & (timestamp_ind <= worm.last_frame)
+        good = (timestamp_ind >= self.first_frame) & (timestamp_ind <= self.last_frame)
 
-        ind_ff = timestamp_ind[good] - worm.first_frame
+        ind_ff = timestamp_ind[good] - self.first_frame
         stage_vec_ori = stage_vec_ori[good]
 
-        stage_vec = np.full((worm.timestamp.size, 2), np.nan)
+        stage_vec = np.full((self.timestamp.size, 2), np.nan)
         stage_vec[ind_ff, :] = stage_vec_ori
         # the negative symbole is to add the stage vector directly, instead of
         # substracting it.
-        stage_vec_inv = -np.dot(rotation_matrix_inv, stage_vec.T).T
+        self.stage_vec_inv = -np.dot(rotation_matrix_inv, stage_vec.T).T
 
         for field in ['skeleton', 'ventral_contour', 'dorsal_contour']:
-            if hasattr(worm, field):
-                tmp_dat = getattr(worm, field)
+            if hasattr(self, field):
+                tmp_dat = getattr(self, field)
                 # rotate the skeletons
                 # for ii in range(tot_skel):
             #tmp_dat[ii] = np.dot(rotation_matrix, tmp_dat[ii].T).T
-                tmp_dat = tmp_dat + stage_vec_inv[:, np.newaxis, :]
-                setattr(worm, field, tmp_dat)
-        return worm
+                tmp_dat = tmp_dat + self.stage_vec_inv[:, np.newaxis, :]
+                setattr(self, field, tmp_dat)
+        
 
-
-class WormStatsClass():
+class WormStats():
 
     def __init__(self):
         '''get the info for each feature chategory'''
@@ -616,6 +472,12 @@ class WormStatsClass():
                 stats[sub_name + '_neg'] = stat_func(data[data < 0 & valid])
                 stats[sub_name + '_pos'] = stat_func(data[data > 0 & valid])
         return stats
-
-
+                
+if __name__ == '__main__':
+    
+    main_dir = '/Users/ajaver/OneDrive - Imperial College London/Local_Videos/single_worm/global_sample_v3/'
+    base_name = 'N2 on food R_2011_09_13__11_59___3___3'
+    skel_file = os.path.join(main_dir, base_name + '_skeletons.hdf5')
+    
+    worm = WormFromTable(skel_file, 1)
 
