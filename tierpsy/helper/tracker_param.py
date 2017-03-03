@@ -71,7 +71,7 @@ dflt_param_list = [
     ('traj_bgnd_frame_gap', -1, 'Frame gap between images used to calculate the background (trajectories/skeletons).'),
 
 
-    ('analysis_type', 'WORM', 'Analysis functions to use. Valid options: WORM, SINGLE_WORM_SHAFER, ZEBRAFISH (broken)'),
+    ('analysis_type', 'WORM', 'Analysis functions to use. Valid options: WORM, SINGLE_WORM_SHAFER, PHARYNX, ZEBRAFISH (broken)'),
     ('w_num_segments', 24, 'Number of segments used to calculate the skeleton curvature (or half the number of segments used for the contour curvature).  Reduced for rounder objects and decreased for sharper organisms.'),
     ('w_head_angle_thresh', 60, 'Threshold to consider a peak on the curvature as the head or tail.'),
 
