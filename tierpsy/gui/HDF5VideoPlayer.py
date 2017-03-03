@@ -73,6 +73,9 @@ class HDF5VideoPlayer_GUI(QtWidgets.QMainWindow):
         # the arrow keys
         setChildrenFocusPolicy(self, QtCore.Qt.ClickFocus)
 
+        #eliminate ticks, they will be a problem since I make the maximum size of the slider tot_frames
+        self.ui.imageSlider.setTickPosition(QtWidgets.QSlider.NoTicks)
+
     # Scroller
     def imSldPressed(self):
         self.ui.imageSlider.setCursor(QtCore.Qt.ClosedHandCursor)
@@ -82,19 +85,21 @@ class HDF5VideoPlayer_GUI(QtWidgets.QMainWindow):
 
     def imSldChanged(self):
         if self.image_group != -1:
-            prev_progress_bar = round(
-                100 * self.frame_number / self.tot_frames)
-            if prev_progress_bar != self.ui.imageSlider.value():
-                self.frame_number = int(
-                    round((self.tot_frames - 1) * self.ui.imageSlider.value() / 100))
-            self.ui.spinBox_frame.setValue(self.frame_number)
+            # prev_progress_bar = round(
+            #     100 * self.frame_number / self.tot_frames)
+            # if prev_progress_bar != self.ui.imageSlider.value():
+            #     self.frame_number = int(
+            #         round((self.tot_frames - 1) * self.ui.imageSlider.value() / 100))
+           
+            self.ui.spinBox_frame.setValue(self.ui.imageSlider.value())
 
     # frame spin box
     def updateFrameNumber(self):
         self.frame_number = self.ui.spinBox_frame.value()
-        progress_bar = round(100 * self.frame_number / self.tot_frames)
-        if progress_bar != self.ui.imageSlider.value():
-            self.ui.imageSlider.setValue(progress_bar)
+        self.ui.imageSlider.setValue(self.frame_number)
+        # progress_bar = round(100 * self.frame_number / self.tot_frames)
+        # if progress_bar != self.ui.imageSlider.value():
+        #     self.ui.imageSlider.setValue(progress_bar)
 
         self.updateImage()
 
@@ -270,6 +275,7 @@ class HDF5VideoPlayer_GUI(QtWidgets.QMainWindow):
         self.image_width = self.image_group.shape[2]
 
         self.ui.spinBox_frame.setMaximum(self.tot_frames - 1)
+        self.ui.imageSlider.setMaximum(self.tot_frames - 1)
 
         self.frame_number = 0
         self.ui.spinBox_frame.setValue(self.frame_number)

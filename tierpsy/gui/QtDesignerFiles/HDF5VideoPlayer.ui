@@ -34,7 +34,7 @@
            <x>0</x>
            <y>0</y>
            <width>572</width>
-           <height>525</height>
+           <height>532</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -179,7 +179,7 @@
            <bool>false</bool>
           </property>
           <property name="tickPosition">
-           <enum>QSlider::TicksBothSides</enum>
+           <enum>QSlider::NoTicks</enum>
           </property>
          </widget>
         </item>
