@@ -258,6 +258,16 @@ class WormFromTable():
         nw =  mv.NormalizedWorm.from_normalized_array_factory(*args)
         nw.video_info.fps = self.fps
         nw.video_info.set_ventral_mode(self.ventral_side)
+        
+        if nw.video_info.set_ventral_mode != 0:
+            #check that the contour orientation and the ventral_mode are the same
+            signed_a = nw.signed_area[np.argmax(~np.isnan(nw.signed_area))] #first element not nan
+            if signed_a < 0:
+                assert nw.video_info.ventral_mode == 2 #anticlockwise
+            else:
+                assert nw.video_info.ventral_mode == 1
+
+
         return nw
 
     def split(self, split_size):
