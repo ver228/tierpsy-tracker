@@ -77,13 +77,15 @@ def getOpenWormData(worm, wStats=[]):
 
     for feat in wStats.feat_timeseries:
         feat_obj = wStats.features_info.loc[feat, 'feat_name_obj']
-        timeseries_data[feat] = worm_features._features[feat_obj].value
+        if feat_obj in worm_features._features:
+            timeseries_data[feat] = worm_features._features[feat_obj].value
 
     # convert the events features into a dictionary
     events_data = {}
     for feat in wStats.feat_events:
         feat_obj = wStats.features_info.loc[feat, 'feat_name_obj']
-        events_data[feat] = worm_features._features[feat_obj].value
+        if feat_obj in worm_features._features:
+            events_data[feat] = worm_features._features[feat_obj].value
 
     
 
