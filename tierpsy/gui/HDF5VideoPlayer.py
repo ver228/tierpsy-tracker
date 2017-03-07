@@ -32,6 +32,7 @@ class HDF5VideoPlayer_GUI(QtWidgets.QMainWindow):
 
         self.ui.setupUi(self)
 
+        self.vfilename = None
         self.isPlay = False
         self.fid = -1
         self.image_group = -1

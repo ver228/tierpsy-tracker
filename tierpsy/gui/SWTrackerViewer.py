@@ -2,13 +2,54 @@ import json
 
 import numpy as np
 import tables
+import os
+import pandas as pd
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QPen
 from PyQt5.QtWidgets import QApplication
-
 from tierpsy.gui.SWTrackerViewer_ui import Ui_SWTrackerViewer
 from tierpsy.gui.TrackerViewerAux import TrackerViewerAux_GUI
 from tierpsy.analysis.int_ske_orient.correctHeadTailIntensity import createBlocks, _fuseOverlapingGroups
+
+
+class EggWriter():
+    def __init__(self):
+        self.fname = os.path.expanduser(os.path.join('~', 'Desktop', 'egg_events_raw.txt'))
+
+    def add(self, vfilename, frame_number):
+        if vfilename is not None:
+            base_name = os.path.splitext(os.path.basename(vfilename))[0]
+            line = '\n{}\t{}'.format(base_name, frame_number)
+            with open(self.fname, 'a+') as fid:
+                fid.write(line)
+
+    def tag_bad(self):
+        with open(self.fname, 'a+') as fid:
+            fid.write('X')
+
+    def export(self):
+        tab = pd.read_table(self.fname, header=None)
+        tab.columns = ['base_name', 'frame_number'] 
+        tab_g = tab.groupby('base_name')
+
+        fexport= os.path.expanduser(os.path.join('~', 'Desktop', 'egg_events.tsv'))
+        with open(fexport, 'w') as fid:
+            for base_name, dat in tab_g:
+                frame_numbers = []
+                for f in dat['frame_number'].values:
+                    try:
+                        frame_numbers.append(int(f))
+                    except:
+                        pass
+                if frame_numbers:
+                    frame_numbers = sorted(set(frame_numbers))
+                    line = '\t'.join([base_name] + list(map(str, frame_numbers))) + '\n'
+                    fid.write(line)
+
+
+
+           
 
 
 class SWTrackerViewer_GUI(TrackerViewerAux_GUI):
@@ -26,9 +67,13 @@ class SWTrackerViewer_GUI(TrackerViewerAux_GUI):
         self.ui.spinBox_skelBlock.valueChanged.connect(self.changeSkelBlock)
         self.ui.checkBox_showLabel.stateChanged.connect(self.updateImage)
         
+
         if mask_file:
             self.vfilename = mask_file
             self.updateVideoFile()
+
+        self.egg_writer = EggWriter()
+        
 
     def updateSkelFile(self, skel_file):
         super().updateSkelFile(skel_file)
@@ -140,9 +185,17 @@ class SWTrackerViewer_GUI(TrackerViewerAux_GUI):
                 self.ui.checkBox_showLabel.setChecked(0)
             else:
                 self.ui.checkBox_showLabel.setChecked(1)
+        elif event.key() == Qt.Key_E:
+            self.egg_writer.add(self.vfilename, self.frame_number)
+        elif event.key() == Qt.Key_X:
+            self.egg_writer.tag_bad()
+            
 
         super().keyPressEvent(event)
 
+    def closeEvent(self, event):
+        self.egg_writer.export()
+        super().closeEvent(event)
 
 if __name__ == '__main__':
     import sys

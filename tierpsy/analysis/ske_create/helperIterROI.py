@@ -139,19 +139,23 @@ def generateMoviesROI(masked_file,
             
         print_flush(progress_time.getStr(current_frame))
 
-def getROIfromInd(masked_file, trajectories_data, frame_number, worm_index):
+def getROIfromInd(masked_file, trajectories_data, frame_number, worm_index, roi_size=-1):
     good = (trajectories_data['frame_number']==frame_number) & (trajectories_data['worm_index_joined']==worm_index)
     row = trajectories_data[good]
+    if len(row) < 1:
+        return None
+    
     assert len(row) == 1
+    
     row = row.iloc[0]
     
     with tables.File(masked_file, 'r') as fid:
         img_data = fid.get_node('/mask')
         img = img_data[frame_number]
 
-    worm_roi, roi_corner = getWormROI(img, row['coord_x'], row['coord_y'], row['roi_size'])
-
-    row, worm_roi, roi_corner 
+    if roi_size <= 0:
+        roi_size = row['roi_size']
+    worm_roi, roi_corner = getWormROI(img, row['coord_x'], row['coord_y'], roi_size)
     return row, worm_roi, roi_corner 
 
 

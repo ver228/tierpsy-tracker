@@ -13,7 +13,7 @@ from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
 from tierpsy.analysis.compress.extractMetaData import store_meta_data, read_and_save_timestamp
 from scipy.ndimage.filters import median_filter
 
-from  tierpsy.analysis.compress.selectVideoReader import selectVideoReader
+from tierpsy.analysis.compress.selectVideoReader import selectVideoReader
 from tierpsy.helper.misc import print_flush
 from tierpsy.helper.timeCounterStr import timeCounterStr
 
