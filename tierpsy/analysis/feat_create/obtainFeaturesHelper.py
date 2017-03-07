@@ -418,7 +418,11 @@ class WormStats():
         motion_mode = worm_features._features['locomotion.motion_mode'].value
         for feat_name, feat_props in self.features_info.iterrows():
             feat_obj = feat_props['feat_name_obj']
-            tmp_data = worm_features._features[feat_obj].value
+
+            if feat_obj in worm_features._features:
+                tmp_data = worm_features._features[feat_obj].value
+            else:
+                tmp_data = None
 
             if tmp_data is None:
                 feat_stats[feat_name] = np.nan
