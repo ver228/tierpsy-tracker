@@ -47,7 +47,6 @@ def getStraightenWormInt(worm_img, skeleton, half_width, width_resampling):
         worm_image - image containing the worm
         skeleton - worm skeleton
         half_width - half width of the worm, if it is -1 it would try to calculated from cnt_widths
-        cnt_widths - contour widths used in case the half width is not given
         width_resampling - number of data points used in the intensity map along the worm width
         length_resampling - number of data points used in the intensity map along the worm length
         ang_smooth_win - window used to calculate the skeleton angles.
@@ -56,7 +55,7 @@ def getStraightenWormInt(worm_img, skeleton, half_width, width_resampling):
 
     '''
 
-    assert half_width > 0 or cnt_widths.size > 0
+    assert half_width > 0
     assert not np.any(np.isnan(skeleton))
 
     dX = np.diff(skeleton[:, 0])
