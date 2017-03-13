@@ -53,8 +53,8 @@ def isBadVentralOrient(skeletons_file):
         # if not (np.all(A_sign > 0) or np.all(A_sign < 0)):
         #    raise ValueError('There is a problem. All the contours should have the same orientation.')
 
-        return (exp_info['ventral_side'] == 'clockwise' and A_sign[0] < 0) or \
-            (exp_info['ventral_side'] == 'anticlockwise' and A_sign[0] > 0)
+        return (ventral_side == 'clockwise' and A_sign[0] < 0) or \
+            (ventral_side == 'anticlockwise' and A_sign[0] > 0)
 
 def isGoodVentralOrient(skeletons_file):
     #save as isBadVentral but opposite, and fault tolerant
