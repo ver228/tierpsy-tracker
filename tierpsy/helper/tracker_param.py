@@ -33,6 +33,8 @@ dflt_param_list = [
     ('thresh_block_size', 61, 'block size used by the adaptative thresholding.'),
     ('dilation_size', 9, 'size of the structural element used in morphological operations to calculate the worm mask.'),
     ('expected_fps', 25, 'expected frame rate.'),
+    ('is_extract_metadata', False, ''),
+
     ('compression_buff', -1, 'number of images "min-averaged" to calculate the image mask. If it is -1 the program will read the expected_fps from the file.'),
     ('keep_border_data', False, 'set it to false if you want to remove any connected component that touches the border.'),
     ('is_light_background', True, 'set to true to indentify dark worms over a light background.'),
@@ -44,7 +46,7 @@ dflt_param_list = [
     ('max_gap_allowed_block', -1, 'maximum time gap allowed between valid skeletons to be considered as belonging in the same group. Head/Tail correction by movement.'),
     ('strel_size', 5, 'Structural element size. Used to calculate skeletons and trajectories.'),
     ('fps_filter', 0, 'PROBALY USELESS (Used in joinTrajectories). frame per second used to calculate filters for trajectories. Set to zero to eliminate filtering.'),
-    
+
     ('ht_orient_segment', -1, 'Segment size to calculate the head_tail.'),
 
     ('filt_bad_seg_thresh', 0.8, 'minimum fraction of succesfully skeletonized frames in a worm trajectory to be considered valid'),
@@ -164,7 +166,8 @@ class tracker_param:
             'save_full_interval': save_full_interval,
             'mask_param': self.mask_param,
             'bgnd_param': self.bgnd_param_mask,
-            'expected_fps': self.expected_fps
+            'expected_fps': self.expected_fps,
+            'is_extract_metadata', p['is_extract_metadata']
         }
 
         # parameters for a subsampled video

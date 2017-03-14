@@ -181,7 +181,7 @@ def initMasksGroups(fid, expected_frames, im_height, im_width,
     return mask_dataset, full_dataset
 
 def compressVideo(video_file, masked_image_file, mask_param, bgnd_param ={}, buffer_size=-1,
-                  save_full_interval=-1, max_frame=1e32, expected_fps=25):
+                  save_full_interval=-1, max_frame=1e32, expected_fps=25, is_extract_metadata=False):
     '''
     Compresses video by selecting pixels that are likely to have worms on it and making the rest of
     the image zero. By creating a large amount of redundant data, any lossless compression
@@ -219,9 +219,12 @@ def compressVideo(video_file, masked_image_file, mask_param, bgnd_param ={}, buf
     if vid.width == 0 or vid.height == 0:
         raise RuntimeError
 
-    # extract and store video metadata using ffprobe
-    print_flush(base_name + ' Extracting video metadata...')
-    expected_frames = store_meta_data(video_file, masked_image_file)
+    if is_extract_metadata:
+        # extract and store video metadata using ffprobe
+        print_flush(base_name + ' Extracting video metadata...')
+        expected_frames = store_meta_data(video_file, masked_image_file)
+    else:
+        expected_frames = 1
     
     if is_bgnd_subtraction:
         print_flush(base_name + ' Initializing background subtraction.')

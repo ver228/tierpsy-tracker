@@ -5,6 +5,7 @@
 "resampling_N": 49, 
 "expected_fps": 30.0, 
 "max_area": 100000, 
+"is_extract_metadata": true,
 "keep_border_data": true, 
 "compression_buff": 1, 
 "worm_bw_thresh_factor":1.0, 
