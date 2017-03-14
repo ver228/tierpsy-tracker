@@ -167,7 +167,7 @@ class tracker_param:
             'mask_param': self.mask_param,
             'bgnd_param': self.bgnd_param_mask,
             'expected_fps': self.expected_fps,
-            'is_extract_metadata', p['is_extract_metadata']
+            'is_extract_metadata': p['is_extract_metadata']
         }
 
         # parameters for a subsampled video
