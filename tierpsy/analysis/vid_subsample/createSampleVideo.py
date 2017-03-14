@@ -64,7 +64,7 @@ def createSampleVideo(masked_image_file, sample_video_name ='', time_factor = 8,
         tot_frames, im_h, im_w = masks.shape
         im_h, im_w = im_h//size_factor, im_w//size_factor
         
-        fps, is_default_timestamp = getFPS(masked_image_file, expected_fps)
+        fps, is_default_timestamp = read_fps(masked_image_file, expected_fps)
 
         tt_vec = _getCorrectedTimeVec(fid, tot_frames)
         #%%

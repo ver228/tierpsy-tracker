@@ -24,10 +24,10 @@ import open_worm_analysis_toolbox as mv
 # (http://www.pytables.org/usersguide/parameter_files.html)
 tables.parameters.MAX_COLUMNS = 1024
 
-def read_fps(skeletons_file, min_allowed_fps=1, dflt_fps=25):
+def read_fps(fname, min_allowed_fps=1, dflt_fps=25):
         # try to infer the fps from the timestamp
     try:
-        with tables.File(skeletons_file, 'r') as fid:
+        with tables.File(fname, 'r') as fid:
             timestamp_time = fid.get_node('/timestamp/time')[:]
 
             if np.all(np.isnan(timestamp_time)):
@@ -39,8 +39,15 @@ def read_fps(skeletons_file, min_allowed_fps=1, dflt_fps=25):
             is_default_timestamp = 0
 
     except (tables.exceptions.NoSuchNodeError, IOError, ValueError):
-        with tables.File(skeletons_file, 'r') as fid:
-            node = fid.get_node('/trajectories_data')
+        with tables.File(fname, 'r') as fid:
+            #the expected fps might be in a different node depending on the file
+            if '/mask' in fid:
+                node_name = '/mask'
+            else:
+                node_name = '/trajectories_data'
+
+
+            node = fid.get_node(node_name)
             if 'expected_fps' in node._v_attrs:
                 fps = node._v_attrs['expected_fps']
             else:
