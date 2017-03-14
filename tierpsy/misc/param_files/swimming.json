@@ -1,0 +1,17 @@
+{
+    "analysis_type": "WORM",
+    "mask_bgnd_buff_size": 25,
+    "mask_bgnd_frame_gap": 250,
+    "traj_bgnd_buff_size": 50,
+    "traj_bgnd_frame_gap": 13,
+    "compression_buff": 25,
+    "dilation_size": 12,
+    "fps": 25.0,
+    "is_light_background": true,
+    "keep_border_data": false,
+    "max_area": 100000000,
+    "min_area": 50,
+    "thresh_C": 8,
+    "thresh_block_size": 61,
+    "filt_min_displacement":0
+}
