@@ -207,7 +207,7 @@ class WormFromTable():
             self.n_segments = ske_file_id.get_node('/skeleton').shape[1]
  
         # add the data from the skeleton_id's and timestamps used
-        self.timestamp = np.full(n_frames, -1, np.int32)
+        self.timestamp = np.full(n_frames, np.nan, np.float32)
         self.skeleton_id = np.full(n_frames, -1, np.int32)
         self.timestamp[ind_ff] = timestamp_inds
         self.skeleton_id[ind_ff] = skel_table_id
