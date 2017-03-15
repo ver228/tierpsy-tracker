@@ -260,7 +260,7 @@ def getIntensityProfile(
                     img, row_data['coord_x'], row_data['coord_y'], row_data['roi_size'])
                 skeleton = skel_tab[skeleton_id, :, :] - roi_corner
 
-                half_width = skel_width_tab[skeleton_id] / 2
+                half_width = np.min(1, skel_width_tab[skeleton_id] / 2) #make sure the half width has a valid dimension for the straighten worm
 
                 assert not np.isnan(skeleton[0, 0])
 
