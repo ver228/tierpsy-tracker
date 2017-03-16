@@ -100,24 +100,29 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
         self.is_light_background = 1 if not 'is_light_background' in self.image_group._v_attrs \
             else self.image_group._v_attrs['is_light_background']
         
-        videos_dir, basename = os.path.split(vfilename)
-        basename = os.path.splitext(basename)[0]
+        if '/trajectories_data' in self.fid:
+            self.skeletons_file = vfilename
+        else:
+            videos_dir, basename = os.path.split(vfilename)
+            basename = os.path.splitext(basename)[0]
 
-        self.skeletons_file = ''
-        self.results_dir = ''
+            self.skeletons_file = ''
+            self.results_dir = ''
 
-        possible_dirs = [
-            videos_dir, videos_dir.replace(
-                'MaskedVideos', 'Results'), os.path.join(
-                videos_dir, 'Results')]
+            possible_dirs = [
+                videos_dir, videos_dir.replace(
+                    'MaskedVideos', 'Results'), os.path.join(
+                    videos_dir, 'Results')]
 
-        for new_dir in possible_dirs:
-            new_skel_file = os.path.join(new_dir, basename + '_skeletons.hdf5')
-            if os.path.exists(new_skel_file):
-                self.skeletons_file = new_skel_file
-                self.results_dir = new_dir
-                break
-        
+            for new_dir in possible_dirs:
+                new_skel_file = os.path.join(new_dir, basename + '_skeletons.hdf5')
+                if os.path.exists(new_skel_file):
+                    self.skeletons_file = new_skel_file
+                    self.results_dir = new_dir
+                    break
+
+
+
         self.updateSkelFile(self.skeletons_file)
 
     def getFrameData(self, frame_number):
@@ -163,11 +168,17 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
 
         qPlg = {}
 
+        print(row_data)
         with tables.File(self.skeletons_file, 'r') as ske_file_id:
             for tt in ['skeleton', 'contour_side1', 'contour_side2']:
-                dat = ske_file_id.get_node('/' + tt)[skel_id]
-                dat[:, 0] = (dat[:, 0] - roi_corner[0]) * c_ratio_x
-                dat[:, 1] = (dat[:, 1] - roi_corner[1]) * c_ratio_y
+                field = '/' + tt
+                if field in ske_file_id:
+                    dat = ske_file_id.get_node(field)[skel_id]
+                    dat[:, 0] = (dat[:, 0] - roi_corner[0]) * c_ratio_x
+                    dat[:, 1] = (dat[:, 1] - roi_corner[1]) * c_ratio_y
+                else:
+                    dat = np.full((1,2), np.nan)
+
 
                 # for nn in range(2):
                 #    dat[:,nn] = savgol_filter(dat[:,nn], window_length=5, polyorder=3)
