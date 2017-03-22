@@ -19,8 +19,6 @@ from tierpsy.analysis.contour_orient.correctVentralDorsal import read_ventral_si
 from tierpsy import AUX_FILES_DIR
 import open_worm_analysis_toolbox as mv
 
-
-
 # (http://www.pytables.org/usersguide/parameter_files.html)
 tables.parameters.MAX_COLUMNS = 1024
 
@@ -148,16 +146,14 @@ class WormFromTable():
         # intialize just to make clear the relevant variables for this function
 
         with pd.HDFStore(self.file_name, 'r') as ske_file_id:
-            trajectories_data = ske_file_id['/trajectories_data']
+            trajectories_data_f = ske_file_id['/trajectories_data']
 
             # get the rows of valid skeletons
-            assert self.worm_index_str in trajectories_data
-            good = trajectories_data[self.worm_index_str] == self.worm_index
-
-            trajectories_data = trajectories_data.loc[good]
+            assert self.worm_index_str in trajectories_data_f
+            good = trajectories_data_f[self.worm_index_str] == self.worm_index
+            trajectories_data = trajectories_data_f.loc[good]
 
             skel_table_id = trajectories_data['skeleton_id'].values
-
             try:
                 # try to read the time stamps, if there are repeated or not a
                 # number use the frame nuber instead
@@ -171,7 +167,7 @@ class WormFromTable():
                 # if the time stamp fails use the frame_number value instead
                 # (the index of the mask) and return nan as the fps
                 timestamp_inds = trajectories_data['frame_number'].values
-
+                
             # we need to use (.values) to be able to use the & operator
             good_skeletons = (trajectories_data['has_skeleton'] == 1).values
             if self.use_skel_filter and 'is_good_skel' in trajectories_data:
@@ -182,7 +178,6 @@ class WormFromTable():
 
             skel_table_id = skel_table_id[good_skeletons]
             timestamp_inds = timestamp_inds[good_skeletons]
-
             return skel_table_id, timestamp_inds
 
 
@@ -191,14 +186,13 @@ class WormFromTable():
         
         if not np.array_equal(np.sort(timestamp_inds), timestamp_inds): #the time stamp must be sorted
             warnings.warn('{}: The timestamp is not sorted in worm_index {}'.format(self.file_name, self.worm_index))
-
-
+        
         # use real frames to define the size of the object arrays
         first_frame = np.min(timestamp_inds)
         last_frame = np.max(timestamp_inds)
         n_frames = last_frame - first_frame + 1
 
-
+        
         # get the apropiate index in the object array
         ind_ff = timestamp_inds - first_frame
 
@@ -207,11 +201,11 @@ class WormFromTable():
             self.n_segments = ske_file_id.get_node('/skeleton').shape[1]
  
         # add the data from the skeleton_id's and timestamps used
-        self.timestamp = np.full(n_frames, np.nan, np.float32)
+        self.timestamp = np.arange(first_frame, last_frame+1)
+        
         self.skeleton_id = np.full(n_frames, -1, np.int32)
-        self.timestamp[ind_ff] = timestamp_inds
         self.skeleton_id[ind_ff] = skel_table_id
-
+        
         # initialize the rest of the arrays
         self.skeleton = np.full((n_frames, self.n_segments, 2), np.nan)
         self.ventral_contour = np.full((n_frames, self.n_segments, 2), np.nan)
@@ -380,9 +374,10 @@ class WormStats():
         self.feat_timeseries = list(
             self.features_info[
                 self.features_info['is_time_series'] == 1].index.values)
-        self.feat_timeseries_dtype = [
-            (x, np.float32) for x in [
-                'worm_index', 'timestamp', 'motion_modes'] + self.feat_timeseries]
+
+        extra_fields = ['worm_index', 'timestamp', 'skeleton_id', 'motion_modes']
+        timeseries_fields =  extra_fields + self.feat_timeseries
+        self.feat_timeseries_dtype = [(x, np.float32) for x in timeseries_fields]
 
         self.feat_events = list(
             self.features_info[

@@ -72,6 +72,7 @@ def getOpenWormData(worm, wStats=[]):
 
     timeseries_data['timestamp'] = worm.timestamp
     timeseries_data['worm_index'] = worm.worm_index
+    timeseries_data['skeleton_id'] = worm.skeleton_id
     timeseries_data['motion_modes'] = worm_features._features[
         'locomotion.motion_mode'].value
 
