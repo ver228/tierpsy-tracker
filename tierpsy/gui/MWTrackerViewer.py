@@ -17,7 +17,7 @@ from tierpsy.analysis.ske_create.helperIterROI import getWormROI
 from tierpsy.analysis.ske_filt.getFilteredSkels import getValidIndexes
 from tierpsy.helper.trackProvenance import getGitCommitHash, execThisPoint
 from tierpsy.helper.tracker_param import tracker_param
-
+from tierpsy.helper.misc import WLAB
 
 class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
 
@@ -42,7 +42,7 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         self.frame_data = -1
         self.h5path = self.ui.comboBox_h5path.itemText(0)
 
-        self.wlab = {'U': 0, 'WORM': 1, 'WORMS': 2, 'BAD': 3, 'GOOD_SKE': 4}
+        self.wlab = WLAB
         self.wlabC = {
             self.wlab['U']: Qt.white,
             self.wlab['WORM']: Qt.green,
