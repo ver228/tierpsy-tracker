@@ -168,7 +168,6 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
 
         qPlg = {}
 
-        print(row_data)
         with tables.File(self.skeletons_file, 'r') as ske_file_id:
             for tt in ['skeleton', 'contour_side1', 'contour_side2']:
                 field = '/' + tt

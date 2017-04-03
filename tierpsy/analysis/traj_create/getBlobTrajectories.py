@@ -5,25 +5,24 @@ Created on Thu Apr  2 16:33:34 2015
 @author: ajaver
 """
 
-import os
-from math import sqrt
 import json
+import multiprocessing as mp
+import os
+from functools import partial
 
 import cv2
 import numpy as np
-import tables
-import pandas as pd
 import skimage.filters as skf
 import skimage.morphology as skm
+import tables
 
-from tierpsy.analysis.compress.extractMetaData import read_and_save_timestamp
-from tierpsy.helper.timeCounterStr import timeCounterStr
-from tierpsy.helper.misc import TABLE_FILTERS, print_flush
 from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
+from tierpsy.analysis.compress.extractMetaData import read_and_save_timestamp
+from tierpsy.analysis.params import read_fps
+from tierpsy.analysis.params import traj_create_defaults
+from tierpsy.helper import TimeCounter, print_flush, TABLE_FILTERS
 
-from functools import partial
-import multiprocessing as mp
-    
+
 def _thresh_bw(pix_valid):
     # calculate otsu_threshold as lower limit. Otsu understimates the threshold.
     try:
@@ -325,18 +324,9 @@ def _get_light_flag(masked_image_file):
                  else int(mask_dataset._v_attrs['is_light_background'])
     return is_light_background
     
-def _get_fps(masked_image_file):
-    with tables.File(masked_image_file, 'r') as mask_fid:
-        try:
-            expected_fps = mask_fid.get_node('/', 'mask')._v_attrs['expected_fps']
-        except:
-            expected_fps = 25 
-    return expected_fps
-
-
 def getBlobsTable(masked_image_file, 
                   trajectories_file,
-                  buffer_size = -1,
+                  buffer_size = None,
                     min_area=25,
                     min_box_width=5,
                     worm_bw_thresh_factor=1.,
@@ -356,16 +346,16 @@ def getBlobsTable(masked_image_file,
 
     #read properties
     is_light_background = _get_light_flag(masked_image_file)
-    expected_fps = _get_fps(masked_image_file)
+    expected_fps, _ = read_fps(masked_image_file)
     
     #find if it is using background subtraction
     if len(bgnd_param) > 0:
         bgnd_param['is_light_background'] = is_light_background
 
 
-    if buffer_size < 0: #invalid value of buff size, expected_fps instead
-        buffer_size = expected_fps
-
+    print(expected_fps)
+    buffer_size = traj_create_defaults(expected_fps, buffer_size)
+    
 
     def _ini_plate_worms(traj_fid, masked_image_file):
         # intialize main table
@@ -437,7 +427,7 @@ def getBlobsTable(masked_image_file,
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
     progress_str = base_name + ' Calculating trajectories.'
     
-    progressTime = timeCounterStr(progress_str)  
+    progressTime = TimeCounter(progress_str)  
     with tables.open_file(trajectories_file, mode='w') as traj_fid:
         plate_worms = _ini_plate_worms(traj_fid, masked_image_file)
         
@@ -448,9 +438,9 @@ def getBlobsTable(masked_image_file,
             frames = ibuf*buffer_size
             if frames % (expected_fps*20) == 0:
                 # calculate the progress and put it in a string
-                print_flush(progressTime.getStr(frames))
+                print_flush(progressTime.get_str(frames))
                 
-    print_flush( progressTime.getStr(frames))
+    print_flush( progressTime.get_str(frames))
     
 
     
@@ -483,12 +473,11 @@ if __name__ == '__main__':
     
     
     from tierpsy.analysis.ske_init.processTrajectoryData import processTrajectoryData
-    from tierpsy.helper.tracker_param import tracker_param, default_param
-    from tierpsy.analysis.traj_join.correctTrajectories import correctTrajectories
-    
+    from tierpsy.helper.params.tracker_param import TrackerParams, default_param
+
     default_param['expected_fps'] = buffer_size
     default_param['traj_area_ratio_lim'] = area_ratio_lim
-    param = tracker_param()
+    param = TrackerParams()
     param._get_param(**default_param)
     
     #correctTrajectories(trajectories_file, False, param.join_traj_param)

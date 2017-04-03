@@ -12,9 +12,9 @@ import numpy as np
 import pandas as pd
 import tables
 
+from tierpsy.analysis.params import head_tail_defaults
 from tierpsy.analysis.ske_orient.WormClass import WormClass
-from tierpsy.helper.misc import print_flush
-from tierpsy.helper.timeCounterStr import timeCounterStr
+from tierpsy.helper import TimeCounter, print_flush
 
 
 def getAnglesDelta(dx, dy):
@@ -104,11 +104,9 @@ def isWormHTSwitched(skeletons, segment4angle=5, max_gap_allowed=10,
     # calculate the rolling std
     ts = pd.DataFrame({'head_angle': angles_head, 'tail_angle': angles_tail})
 
-    roll_std = ts.rolling(
-        window=window_std,
-        min_periods=window_std -
-        max_gap_allowed).std()
-
+    roll_win = ts.rolling(window=window_std, min_periods=window_std - max_gap_allowed)
+    roll_std = roll_win.std()
+    
     # determine if the head in a skeleton has a larger rolling std than the
     # tail
     roll_std["is_head"] = (roll_std['head_angle'] > roll_std['tail_angle'])
@@ -132,8 +130,7 @@ def isWormHTSwitched(skeletons, segment4angle=5, max_gap_allowed=10,
     return is_switch_skel, roll_std
 
 
-def correctHeadTail(skeletons_file, max_gap_allowed=10, window_std=25,
-                    segment4angle=5, min_block_size=250):
+def correctHeadTail(skeletons_file, **params):
     '''
     Correct Head Tail orientation using skeleton movement. Head must move more than the tail (have a higher rolling standar deviation). This might fail if the amount of contingously skeletonized frames is too little (a few seconds). Head must be in the first position of the single frame skeleton array, while the tail must be in the last.
 
@@ -142,6 +139,13 @@ def correctHeadTail(skeletons_file, max_gap_allowed=10, window_std=25,
     segment4angle - separation between skeleton segments to calculate the angles
     min_block_size - consider only around 10s intervals to determine if it is head or tail...
     '''
+
+    params = head_tail_defaults(skeletons_file, **params)    
+    max_gap_allowed = params['max_gap_allowed']
+    window_std = params['window_std']
+    segment4angle = params['segment4angle']
+    min_block_size = params['min_block_size']
+
     base_name = skeletons_file.rpartition(
         '.')[0].rpartition(os.sep)[-1].rpartition('_')[0]
 
@@ -159,12 +163,12 @@ def correctHeadTail(skeletons_file, max_gap_allowed=10, window_std=25,
         if 'has_finished' in dir(skeleton_table._v_attrs):
             assert skeleton_table._v_attrs['has_finished'] >= 2
 
-    progress_timer = timeCounterStr('')
+    progress_timer = TimeCounter('')
     for ii, dat in enumerate(rows_indexes.iterrows()):
         if ii % 10 == 0:
             dd = " Correcting Head-Tail using worm movement. Worm %i of %i." % (
                 ii + 1, len(rows_indexes))
-            dd = base_name + dd + ' Total time:' + progress_timer.getTimeStr()
+            dd = base_name + dd + ' Total time:' + progress_timer.get_time_str()
             print_flush(dd)
             sys.stdout.flush()
 
@@ -183,7 +187,7 @@ def correctHeadTail(skeletons_file, max_gap_allowed=10, window_std=25,
         #%%
     print_flush(
         'Head-Tail correction using worm movement finished:' +
-        progress_timer.getTimeStr())
+        progress_timer.get_time_str())
 
     with tables.File(skeletons_file, "r+") as ske_file_id:
         # Mark a succesful termination

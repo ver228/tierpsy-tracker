@@ -5,23 +5,20 @@ Created on Fri Dec 11 23:39:22 2015
 @author: ajaver
 """
 
+import os
+import warnings
+
+import numpy as np
 import pandas as pd
 import tables
-import numpy as np
-import os
-
-from sklearn.covariance import MinCovDet
 from scipy.stats import chi2
-from tierpsy.helper.misc import TABLE_FILTERS
+from sklearn.covariance import MinCovDet
 
-#supress unnecessary warnings
-import warnings
+from tierpsy.analysis.params import correct_min_num_skel
+from tierpsy.helper import TimeCounter, print_flush, TABLE_FILTERS
+
 warnings.filterwarnings('ignore', '.*det > previous_det*',)
 np.seterr(invalid='ignore')
-
-from tierpsy.helper.timeCounterStr import timeCounterStr
-from tierpsy.helper.misc import print_flush
-
 
 
 getBaseName = lambda skeletons_file: skeletons_file.rpartition(
@@ -423,7 +420,7 @@ def _addMissingFields(skeletons_file):
 
 def filterByPopulationMorphology(skeletons_file, good_skel_row, critical_alpha=0.01):
     base_name = getBaseName(skeletons_file)
-    progress_timer = timeCounterStr('')
+    progress_timer = TimeCounter('')
 
     print_flush(base_name + ' Filter Skeletons: Starting...')
     with pd.HDFStore(skeletons_file, 'r') as table_fid:
@@ -453,7 +450,7 @@ def filterByPopulationMorphology(skeletons_file, good_skel_row, critical_alpha=0
         print_flush(
             base_name +
             ' Filter Skeletons: Calculating outliers. Total time:' +
-            progress_timer.getTimeStr())
+            progress_timer.get_time_str())
 
         tot_rows2fit = feats4fit[0].shape[0]
         # check all the data to fit has the same size in the first axis
@@ -473,7 +470,7 @@ def filterByPopulationMorphology(skeletons_file, good_skel_row, critical_alpha=0
         print_flush(
             base_name +
             ' Filter Skeletons: Labeling valid skeletons. Total time:' +
-            progress_timer.getTimeStr())
+            progress_timer.get_time_str())
 
         # labeled rows of valid individual skeletons as GOOD_SKE
         trajectories_data['is_good_skel'] &= ~outliers_rob
@@ -485,7 +482,7 @@ def filterByPopulationMorphology(skeletons_file, good_skel_row, critical_alpha=0
     print_flush(
         base_name +
         ' Filter Skeletons: Finished. Total time:' +
-        progress_timer.getTimeStr())
+        progress_timer.get_time_str())
 
 
 def getFilteredSkels(
@@ -496,6 +493,8 @@ def getFilteredSkels(
         critical_alpha=0.01,
         max_width_ratio=2.25,
         max_area_ratio=6):
+
+    min_num_skel = correct_min_num_skel(skeletons_file, min_num_skel=min_num_skel)
 
     # check if the skeletonization finished succesfully
     with tables.File(skeletons_file, "r") as ske_file_id:

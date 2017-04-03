@@ -9,13 +9,13 @@ import os
 import cv2
 import h5py
 import numpy as np
-from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
-from tierpsy.analysis.compress.extractMetaData import store_meta_data, read_and_save_timestamp
 from scipy.ndimage.filters import median_filter
 
+from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
+from tierpsy.analysis.compress.extractMetaData import store_meta_data, read_and_save_timestamp
 from tierpsy.analysis.compress.selectVideoReader import selectVideoReader
-from tierpsy.helper.misc import print_flush
-from tierpsy.helper.timeCounterStr import timeCounterStr
+from tierpsy.analysis.params import compress_defaults
+from tierpsy.helper import TimeCounter, print_flush
 
 IMG_FILTERS = {"compression":"gzip",
         "compression_opts":4,
@@ -198,13 +198,18 @@ def compressVideo(video_file, masked_image_file, mask_param, bgnd_param ={}, buf
      mask_param -- parameters used to calculate the mask
     '''
 
+    output = compress_defaults(expected_fps, 
+                    buffer_size = buffer_size, 
+                    save_full_interval = save_full_interval)
+    buffer_size = output['buffer_size'] 
+    save_full_interval = output['save_full_interval'] 
+
     if len(bgnd_param) > 0:
         is_bgnd_subtraction = True
         assert bgnd_param['buff_size']>0 and bgnd_param['frame_gap']>0
     else:
         is_bgnd_subtraction = False
     
-
     # processes identifier.
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
 
@@ -214,7 +219,6 @@ def compressVideo(video_file, masked_image_file, mask_param, bgnd_param ={}, buf
 
     # select the video reader class according to the file type.
     vid = selectVideoReader(video_file)
-
 
     if vid.width == 0 or vid.height == 0:
         raise RuntimeError
@@ -238,7 +242,7 @@ def compressVideo(video_file, masked_image_file, mask_param, bgnd_param ={}, buf
 
     # initialize timers
     print_flush(base_name + ' Starting video compression.')
-    progressTime = timeCounterStr('Compressing video.')
+    progressTime = TimeCounter('Compressing video.')
 
     with h5py.File(masked_image_file, "r+") as mask_fid:
 
@@ -346,7 +350,7 @@ def compressVideo(video_file, masked_image_file, mask_param, bgnd_param ={}, buf
 
             if frame_number % 500 == 0:
                 # calculate the progress and put it in a string
-                progress_str = progressTime.getStr(frame_number)
+                progress_str = progressTime.get_str(frame_number)
                 print_flush(base_name + ' ' + progress_str)
                 
             # finish process

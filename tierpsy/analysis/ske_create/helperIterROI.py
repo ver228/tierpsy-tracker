@@ -6,12 +6,12 @@ Created on Tue Nov 29 21:22:22 2016
 @author: ajaver
 """
 
-import tables
 import numpy as np
+import tables
 
-from tierpsy.helper.timeCounterStr import timeCounterStr
-from tierpsy.helper.misc import print_flush
 from tierpsy.analysis.traj_create.getBlobTrajectories import generateImages
+from tierpsy.helper import TimeCounter, print_flush
+
 
 def getWormROI(img, CMx, CMy, roi_size=128):
     '''
@@ -119,7 +119,7 @@ def generateMoviesROI(masked_file,
         img_generator = generateImages(masked_file, frames=frames, bgnd_param=bgnd_param)
         
         traj_group_by_frame = trajectories_data.groupby('frame_number')
-        progress_time = timeCounterStr(progress_prefix)
+        progress_time = TimeCounter(progress_prefix)
         with tables.File(masked_file, 'r') as fid:
             try:
                 expected_fps = fid.get_node('/', 'mask')._v_attrs['expected_fps']
@@ -135,9 +135,9 @@ def generateMoviesROI(masked_file,
             yield getAllImgROI(img, frame_data, roi_size)
             
             if current_frame % progress_refresh_rate == 0:
-                print_flush(progress_time.getStr(current_frame))
+                print_flush(progress_time.get_str(current_frame))
             
-        print_flush(progress_time.getStr(current_frame))
+        print_flush(progress_time.get_str(current_frame))
 
 def getROIfromInd(masked_file, trajectories_data, frame_number, worm_index, roi_size=-1):
     good = (trajectories_data['frame_number']==frame_number) & (trajectories_data['worm_index_joined']==worm_index)

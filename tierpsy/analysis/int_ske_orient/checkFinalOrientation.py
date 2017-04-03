@@ -13,7 +13,7 @@ import pandas as pd
 import tables
 
 from tierpsy.analysis.ske_orient.checkHeadOrientation import isWormHTSwitched
-from tierpsy.helper.misc import print_flush
+from tierpsy.helper import print_flush
 
 
 def getHeadProbMov(
@@ -41,6 +41,7 @@ def getHeadProbMov(
         else:
             return np.nan, skel_group
 
+    #print(window_std, min_block_size, max_gap_allowed)
     is_switch_skel, roll_std = isWormHTSwitched(skeletons, segment4angle=segment4angle, max_gap_allowed=max_gap_allowed,
                                                 window_std=window_std, min_block_size=min_block_size)
 
@@ -152,7 +153,9 @@ def checkFinalOrientation(
     peak_search_limits = [0.054, 0.192, 0.269, 0.346]
 
     p_mov, skel_group = getHeadProbMov(
-        skeletons_file, trajectories_worm, **head_tail_param)
+        skeletons_file, 
+        trajectories_worm, 
+        **head_tail_param)
 
     p_int_top, p_int_bot, int_group = getHeadProvInt(
         intensities_file, trajectories_worm, min_block_size, peak_search_limits=peak_search_limits)

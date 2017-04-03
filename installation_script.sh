@@ -13,10 +13,13 @@ OS=$(uname -s)
 
 #############
 function osx_dependencies {
-	xcode-select --install
-	#install homebrew and other software used
-	ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-	
+	if [[ -z `xcode-select -p` ]]; then
+		xcode-select --install
+	fi
+	if [[-z hash brew 2>/dev/null ]]; then
+		#install homebrew and other software used
+		ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+	fi
 	#make the current user the owner of homebrew otherewise it can cause some problems
 	#sudo chown -R `whoami`:admin /usr/local/bin
 	#sudo chown -R `whoami`:admin /usr/local/share
@@ -24,13 +27,6 @@ function osx_dependencies {
 	#brew upgrade
 
 	brew install git
-	
-	#ffmpeg libraries, needed to install opencv
-	brew install ffmpeg --verbose --with-fdk-aac --with-libass --with-libquvi \
-	--with-libvorbis --with-libvpx --with-x265 --with-openh264 --with-tools --with-fdk-aac
-
-	#image libraries for opencv
-	brew install jpeg libpng libtiff openexr eigen tbb
 }
 
 function force_clean_osx {
@@ -145,7 +141,7 @@ function redhat_dependencies {
 
 function anaconda_pkgs {
 	echo "Installing get_anaconda extra packages..."
-	conda install -y python=3.5.2 pip
+	conda install -y python=3.5.3 pip
 	conda install -y anaconda-client conda-build numpy matplotlib pytables pandas \
 	h5py scipy scikit-learn scikit-image seaborn xlrd cython statsmodels
 	pip install gitpython pyqt5 keras 
@@ -154,6 +150,19 @@ function anaconda_pkgs {
 
 function build_opencv3_anaconda {
 	echo "Installing openCV..."
+	case "${OS}" in
+		"Darwin")
+		#ffmpeg libraries, needed to install opencv
+		brew install ffmpeg --verbose --with-fdk-aac --with-libass --with-libquvi \
+		--with-libvorbis --with-libvpx --with-x265 --with-openh264 --with-tools --with-fdk-aac
+		#image libraries for opencv
+		brew install jpeg libpng libtiff openexr eigen tbb
+		;;
+		
+		"Linux"*)
+		;;
+	esac
+	
 	conda install -y conda-build
 	conda config --add channels menpo
 	conda build --no-anaconda-upload installation/menpo_conda-opencv3
@@ -162,7 +171,7 @@ function build_opencv3_anaconda {
 }
 
 function opencv_anaconda {
-	read -r -p "Would you like to compile openCV? Otherwise I will try to download it. [y/N] " response
+	read -r -p "Would you like to compile openCV? Otherwise I will try to download a previously compiled version that might not be compatible with your system. [y/N] " response
 	case "$response" in [yY][eE][sS]|[yY])
 		OPENCV_CUR_VER=`python3 -c "import cv2; print(cv2.__version__)" 2>/dev/null` || true
 		if [[ ! -z "$OPENCV_CUR_VER" ]]; then
@@ -300,14 +309,14 @@ case $1 in
 	"--setup_modules")
 	setup_modules
 	;;
-	"--download_examples")
-	download_examples
-	;;
 	"--anaconda")
 	get_anaconda
 	;;
 	"--link_desktop")
 	link_desktop
+	;;
+	"--download_examples")
+	download_examples
 	;;
 	*)
 	echo "Exiting... Unrecognized argument: $1"

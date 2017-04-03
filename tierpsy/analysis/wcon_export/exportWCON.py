@@ -5,17 +5,16 @@ Created on Mon Aug 15 20:55:19 2016
 @author: ajaver
 """
 
-import tables
-import pandas as pd
-from collections import OrderedDict
-import numpy as np
 import json
 import os
-import zipfile
-#import gzip
+from collections import OrderedDict
 
-from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStats
-from tierpsy.helper.misc import print_flush
+import numpy as np
+import pandas as pd
+import tables
+
+from tierpsy.helper import print_flush
+
 
 def getWCONMetaData(fname, READ_FEATURES=False, provenance_step='FEAT_CREATE'):
     def _order_metadata(metadata_dict):

@@ -7,10 +7,8 @@ Created on Thu Jun 25 12:44:07 2015
 
 import json
 import os
-from tierpsy import AUX_FILES_DIR
 #get default parameters files
-from tierpsy import DFLT_PARAMS_PATH, DFLT_PARAMS_FILES
-
+from tierpsy import AUX_FILES_DIR, DFLT_PARAMS_PATH, DFLT_PARAMS_FILES
 
 #deprecated variables that will be ignored
 deprecated_fields = ['has_timestamp', 'min_displacement']
@@ -35,7 +33,8 @@ dflt_param_list = [
     ('expected_fps', 25, 'expected frame rate.'),
     ('is_extract_metadata', False, ''),
 
-    ('compression_buff', -1, 'number of images "min-averaged" to calculate the image mask. If it is -1 the program will read the expected_fps from the file.'),
+    ('save_full_interval', -1, 'frequence in frames that an unprocessed frame is going to be saved (Default: 200 * expected_fps).'),
+    ('compression_buff', -1, 'number of images "min-averaged" to calculate the image mask. (Default: expected_fps).'),
     ('keep_border_data', False, 'set it to false if you want to remove any connected component that touches the border.'),
     ('is_light_background', True, 'set to true to indentify dark worms over a light background.'),
     ('traj_min_area', 25, 'minimum allowed area in pixels allowed for the trajectories and the videos.'),
@@ -43,7 +42,7 @@ dflt_param_list = [
     ('traj_area_ratio_lim', [0.5, 2], 'Limits of the consecutive blob areas to be consider the same object.'),
     ('worm_bw_thresh_factor', 1.05, 'This factor multiplies the threshold used to binarize the individual worms image.'),
     ('resampling_N', 49, 'number of segments used to renormalize the worm skeleton and contours.'),
-    ('max_gap_allowed_block', -1, 'maximum time gap allowed between valid skeletons to be considered as belonging in the same group. Head/Tail correction by movement.'),
+    ('max_gap_allowed_block', -1, 'maximum time gap allowed between valid skeletons to be considered as belonging in the same group. Head/Tail correction by movement. (Default: expected_fps/2).'),
     ('strel_size', 5, 'Structural element size. Used to calculate skeletons and trajectories.'),
     ('fps_filter', 0, 'PROBALY USELESS (Used in joinTrajectories). frame per second used to calculate filters for trajectories. Set to zero to eliminate filtering.'),
 
@@ -104,13 +103,6 @@ def _correct_filter_model_name(filter_model_name):
 
     return filter_model_name
 
-def _correct_fps(expected_fps):
-    if not isinstance(expected_fps, int):
-        expected_fps = int(expected_fps)
-    return expected_fps
-
-
-
 def _get_all_prefix(input_params, prefix):
     return {x.replace(prefix, ''):input_params[x] for x in input_params if x.startswith(prefix)}
 
@@ -126,57 +118,42 @@ def _correct_bgnd_param(bgnd_param):
     else:
         return {}
 
-class tracker_param:
+class TrackerParams:
 
     def __init__(self, source_file=''):
         p = self._read_clean_input(source_file)
 
-        self.expected_fps = _correct_fps(p['expected_fps'])
+        self.expected_fps = p['expected_fps']
         self.analysis_type = p['analysis_type']
         self.is_single_worm = self.analysis_type == 'SINGLE_WORM_SHAFER'
-        self.use_skel_filter = True #useless but important in other functions
-
-        #default parameters that depend on other properties
-        if p['max_gap_allowed_block'] < 0:
-            p['max_gap_allowed_block'] = self.expected_fps // 2
-        
-        if p['ht_orient_segment'] > 0:
-            p['ht_orient_segment'] = round(p['resampling_N'] / 10)
-        
-        if p['int_max_gap_allowed_block'] < 0:
-            p['int_max_gap_allowed_block'] = p['max_gap_allowed_block'] // 2
-       
-        if p['compression_buff'] < 0:
-            p['compression_buff'] = self.expected_fps
-
+        self.use_skel_filter = True #useless but important in other functions        
         
         # getROIMask
         mask_param_f = ['mask_min_area', 'mask_max_area', 'thresh_block_size', 
         'thresh_C', 'dilation_size', 'keep_border_data', 'is_light_background']
         self.mask_param = {x.replace('mask_', ''):p[x] for x in mask_param_f}
 
+        # compressVideo
         bgnd_param_mask_f = ['mask_bgnd_buff_size', 'mask_bgnd_frame_gap', 'is_light_background']
         self.bgnd_param_mask = {x.replace('mask_bgnd_', ''):p[x] for x in bgnd_param_mask_f}
         self.bgnd_param_mask = _correct_bgnd_param(self.bgnd_param_mask)
 
-        # compressVideo
-        save_full_interval = 200 * self.expected_fps
         self.compress_vid_param = {
             'buffer_size': p['compression_buff'],
-            'save_full_interval': save_full_interval,
+            'save_full_interval': p['save_full_interval'],
             'mask_param': self.mask_param,
             'bgnd_param': self.bgnd_param_mask,
             'expected_fps': self.expected_fps,
             'is_extract_metadata': p['is_extract_metadata']
         }
 
-        # parameters for a subsampled video
+        # createSampleVideo
         self.subsample_vid_param = {
             'time_factor' : 8, 
             'size_factor' : 5, 
-            'expected_fps' : self.expected_fps
+            'dflt_fps' : self.expected_fps
         }
-
+        #%%
         bgnd_param_traj_f = ['traj_bgnd_buff_size', 'traj_bgnd_frame_gap', 'is_light_background']
         self.bgnd_param_traj = {x.replace('traj_bgnd_', ''):p[x] for x in bgnd_param_traj_f}
         self.bgnd_param_traj = _correct_bgnd_param(self.bgnd_param_traj)
@@ -190,7 +167,7 @@ class tracker_param:
         self.trajectories_param['bgnd_param'] = self.bgnd_param_traj
         
         # joinTrajectories
-        traj_min_track_size = max(1, p['fps_filter'] * 2)
+        traj_min_track_size = max(1, p['fps_filter'] * 2) #probably useless
         traj_max_time_gap = max(0, p['fps_filter'] * 4)
         self.join_traj_param = {
             'max_allowed_dist': p['traj_max_allowed_dist'],
@@ -201,9 +178,9 @@ class tracker_param:
 
         # getSmoothTrajectories
         self.smoothed_traj_param = {
-            'min_track_size': traj_min_track_size,
-            'displacement_smooth_win': self.expected_fps + 1,
-            'threshold_smooth_win': self.expected_fps * 20 + 1,
+            'min_track_size': traj_min_track_size, #probably useless
+            'displacement_smooth_win': -1,
+            'threshold_smooth_win': -1,
             'roi_size': p['roi_size']}
 
         
@@ -211,6 +188,7 @@ class tracker_param:
             'smoothed_traj_param': self.smoothed_traj_param,
             'filter_model_name' : _correct_filter_model_name(p['filter_model_name'])
             }
+
 
         self.blob_feats_param =  {'strel_size' : p['strel_size']}
 
@@ -230,18 +208,16 @@ class tracker_param:
             'strel_size': p['strel_size'],
             'analysis_type': self.analysis_type,
             'skel_args' : skel_args}
-            
-
         
         self.head_tail_param = {
-            'max_gap_allowed': p['max_gap_allowed_block'],
-            'window_std': self.expected_fps,
+            'max_gap_allowed': p['max_gap_allowed_block'], 
+            'window_std': -1,
             'segment4angle': p['ht_orient_segment'],
-            'min_block_size': self.expected_fps * 10}
+            'min_block_size': -1}
 
         min_num_skel = 4 * self.expected_fps
         self.feat_filt_param = _get_all_prefix(p, 'filt_')
-        self.feat_filt_param['min_num_skel'] = min_num_skel
+        self.feat_filt_param['min_num_skel'] = -1
 
 
         self.int_profile_param = {
@@ -255,18 +231,18 @@ class tracker_param:
 
         
         
-        smooth_W = max(1, round(self.expected_fps / 5))
         self.head_tail_int_param = {
-            'smooth_W': smooth_W,
+            'smooth_W': -1,
             'gap_size': p['int_max_gap_allowed_block'],
-            'min_block_size': (2*self.expected_fps)//5,
-            'local_avg_win': 10 * self.expected_fps,
+            'min_block_size': -1,
+            'local_avg_win': -1,
             'min_frac_in': 0.85,
             'head_tail_param': self.head_tail_param,
             'head_tail_int_method': p['head_tail_int_method']}
+        
+
         # getWormFeatures
         self.feats_param = {
-            'expected_fps': self.expected_fps, 
             'feat_filt_param': self.feat_filt_param,
             'split_traj_time' : p['split_traj_time'],
             'is_single_worm': self.is_single_worm
@@ -303,6 +279,6 @@ class tracker_param:
 
 if __name__=='__main__':
     json_file = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/fluorescence/pharynx.json'
-    params = tracker_param(json_file)
+    params = TrackerParams(json_file)
     print(params.trajectories_param)
 

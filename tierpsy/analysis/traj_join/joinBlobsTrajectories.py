@@ -6,12 +6,14 @@ Created on Thu Apr  2 16:33:34 2015
 """
 
 import os
+
 import numpy as np
 import pandas as pd
 import tables
 from scipy.spatial.distance import cdist
-from tierpsy.helper.misc import print_flush
-from tierpsy.helper.timeCounterStr import timeCounterStr
+
+from tierpsy.helper import TimeCounter, print_flush
+
 
 def assignBlobTraj(trajectories_file, max_allowed_dist=20, area_ratio_lim=(0.5, 2)):
     
@@ -64,7 +66,7 @@ def assignBlobTraj(trajectories_file, max_allowed_dist=20, area_ratio_lim=(0.5, 
     
     #loop, save data and display progress
     base_name = os.path.basename(trajectories_file).replace('_trajectories.hdf5', '').replace('_skeletons.hdf5', '')
-    progressTime = timeCounterStr(base_name + ' Assigning trajectories.')  
+    progressTime = TimeCounter(base_name + ' Assigning trajectories.')  
              
     frame_data_prev = None
     tot_worms = 0
@@ -99,7 +101,7 @@ def assignBlobTraj(trajectories_file, max_allowed_dist=20, area_ratio_lim=(0.5, 
         frame_data_prev = frame_data
         if frame % 500 == 0:
             # calculate the progress and put it in a string
-            print_flush(progressTime.getStr(frame))
+            print_flush(progressTime.get_str(frame))
     
     if all_indexes:
         row_ind, traj_ind = map(np.concatenate, zip(*all_indexes))
@@ -109,7 +111,7 @@ def assignBlobTraj(trajectories_file, max_allowed_dist=20, area_ratio_lim=(0.5, 
             tbl = fid.get_node('/', 'plate_worms')
             tbl.modify_column(column=traj_ind, colname='worm_index_blob')
     
-        print_flush(progressTime.getStr(frame))    
+        print_flush(progressTime.get_str(frame))    
     
 
 def _validRowsByArea(plate_worms):

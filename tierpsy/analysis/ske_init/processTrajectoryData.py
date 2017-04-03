@@ -5,19 +5,20 @@ Created on Wed Nov 30 20:56:17 2016
 
 @author: ajaver
 """
-import numpy as np
-import tables
-import pandas as pd
-import os
 import json
 
+import numpy as np
+import pandas as pd
+import tables
+from scipy.interpolate import interp1d
 from scipy.ndimage.filters import median_filter
 from scipy.signal import savgol_filter
-from scipy.interpolate import interp1d
 
-from tierpsy.analysis.ske_init.filterTrajectModel import filterModelWorms
-from tierpsy.helper.misc import TABLE_FILTERS
 from tierpsy.analysis.compress.extractMetaData import read_and_save_timestamp
+from tierpsy.analysis.params import ske_init_defaults
+from tierpsy.analysis.ske_init.filterTrajectModel import filterModelWorms
+from tierpsy.helper import TABLE_FILTERS
+
 
 def getSmoothedTraj(trajectories_file,
                     min_track_size=100,
@@ -260,14 +261,23 @@ def saveTrajData(trajectories_data, masked_image_file, skeletons_file):
         trajectories_data._v_attrs['bgnd_param'] = bgnd_param
 
 
-def processTrajectoryData(skeletons_file, masked_image_file, trajectories_file, smoothed_traj_param, filter_model_name = ''):
+def processTrajectoryData(skeletons_file, 
+    masked_image_file, 
+    trajectories_file, 
+    smoothed_traj_param, 
+    min_track_size = 1, #probably useless
+    displacement_smooth_win = -1,
+    threshold_smooth_win = -1,
+    roi_size = -1,
+    filter_model_name = ''):
     '''
     Initialize the skeletons by creating the table `/trajectories_data`. This table is used by the GUI and by all the subsequent functions.
     filter_model_path -  name of the pretrainned keras model to used to filter worms from spurius blobs. 
                          The file must be stored in the `tierpsy/aux` directory. If the variable is empty this step will be ignored.
     '''
 
-
+    smoothed_traj_param = ske_init_defaults(masked_image_file, **smoothed_traj_param)
+    
     trajectories_data = getSmoothedTraj(trajectories_file, **smoothed_traj_param)
     if filter_model_name:
         trajectories_data = filterModelWorms(masked_image_file, trajectories_data, filter_model_name)

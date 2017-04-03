@@ -6,12 +6,11 @@ Created on Tue Aug  9 00:26:10 2016
 """
 import os
 
-from tierpsy.helper.tracker_param import tracker_param
-from tierpsy.helper.runMultiCMD import runMultiCMD, print_cmd_list
-
+from tierpsy.helper import TrackerParams
+from tierpsy.helper import RunMultiCMD, print_cmd_list
+from tierpsy.processing.CheckFilesForProcessing import CheckFilesForProcessing
 from tierpsy.processing.ProcessWormsLocal import ProcessWormsLocalParser
 from tierpsy.processing.batchProcHelperFunc import getDefaultSequence, walkAndFindValidFiles
-from tierpsy.processing.CheckFilesForProcessing import CheckFilesForProcessing
 
 def processMultipleFilesFun(
         video_dir_root,
@@ -41,7 +40,7 @@ def processMultipleFilesFun(
     if not video_dir_root:
         video_dir_root = mask_dir_root
 
-    param = tracker_param(json_file)
+    param = TrackerParams(json_file)
     json_file = param.json_file
     
     if not analysis_checkpoints:
@@ -81,13 +80,13 @@ def processMultipleFilesFun(
     cmd_list = files_checker.filterFiles(valid_files)
     
     if unmet_requirements:
-        files_checker._printUnmetReq()
+         files_checker._printUnmetReq()
     
     if not only_summary:
         # run all the commands
         print_cmd_list(cmd_list)
 
-        runMultiCMD(
+        RunMultiCMD(
             cmd_list,
             local_obj = ProcessWormsLocalParser,
             max_num_process = max_num_process,

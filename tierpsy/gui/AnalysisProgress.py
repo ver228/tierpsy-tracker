@@ -1,20 +1,14 @@
-
-import sys
-import traceback
-import time
-import os
 import queue
-
-
-from PyQt5.QtWidgets import QWidget, QApplication, QDialog, QVBoxLayout, \
-    QProgressBar, QPushButton, QPlainTextEdit, QTextEdit, QMessageBox
+import sys
+import time
+import traceback
 
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QThread, Qt
 from PyQt5.QtGui import QTextCursor
-
+from PyQt5.QtWidgets import QApplication, QDialog
 
 from tierpsy.gui.AnalysisProgress_ui import Ui_AnalysisProgress
-from tierpsy.helper.runMultiCMD import GUI_CLEAR_SIGNAL
+from tierpsy.helper import GUI_CLEAR_SIGNAL
 
 
 # based on http://stackoverflow.com/questions/21071448/redirecting-stdout-and-stderr-to-a-pyqt4-qtextedit-from-a-secondary-thread
@@ -118,7 +112,7 @@ class AnalysisProgress(QDialog):
         self.reciever.start()
 
     def appendText(self, text):
-        # GUI CLEAR SIGNAL is a string that will be printed by runMultiCMD to
+        # GUI CLEAR SIGNAL is a string that will be printed by RunMultiCMD to
         # indicate a clear screen to this widget
         if text == GUI_CLEAR_SIGNAL:
             self.ui.textEdit.clear()

@@ -14,11 +14,10 @@ from scipy.interpolate import RectBivariateSpline
 from scipy.interpolate import interp1d
 from scipy.signal import savgol_filter
 
+from tierpsy.analysis.params import correct_min_num_skel
 from tierpsy.analysis.ske_create.helperIterROI import getWormROI
 from tierpsy.analysis.ske_filt.getFilteredSkels import saveModifiedTrajData
-from tierpsy.helper.misc import print_flush
-from tierpsy.helper.timeCounterStr import timeCounterStr
-
+from tierpsy.helper import TimeCounter, print_flush
 
 def smoothSkeletons(
         skeleton,
@@ -153,6 +152,8 @@ def getIntensityProfile(
         pol_degree=3,
         width_percentage=0.5,
         save_maps=False):
+    
+    min_num_skel = correct_min_num_skel(skeletons_file, min_num_skel=min_num_skel)
 
     assert smooth_win > pol_degree
     assert min_num_skel > 0
@@ -243,7 +244,7 @@ def getIntensityProfile(
         # variables used to report progress
         base_name = skeletons_file.rpartition(
             '.')[0].rpartition(os.sep)[-1].rpartition('_')[0]
-        progressTime = timeCounterStr('Obtaining intensity maps.')
+        progressTime = TimeCounter('Obtaining intensity maps.')
 
         for frame, frame_data in trajectories_data_valid.groupby(
                 'frame_number'):
@@ -284,7 +285,7 @@ def getIntensityProfile(
                     worm_int_tab[int_map_id] = straighten_worm.T
 
             if frame % 500 == 0:
-                progress_str = progressTime.getStr(frame)
+                progress_str = progressTime.get_str(frame)
                 print_flush(base_name + ' ' + progress_str)
 
         worm_int_avg_tab._v_attrs['has_finished'] = 1

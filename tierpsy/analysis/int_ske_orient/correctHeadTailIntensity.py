@@ -13,12 +13,11 @@ import tables
 from scipy.ndimage.filters import median_filter, minimum_filter, maximum_filter
 
 from tierpsy.analysis.int_ske_orient.checkFinalOrientation import checkFinalOrientation
-from tierpsy.helper.misc import print_flush
-from tierpsy.helper.timeCounterStr import timeCounterStr
+from tierpsy.analysis.params import head_tail_defaults, head_tail_int_defaults
+from tierpsy.helper import TimeCounter, print_flush
 
 
 def medabsdev(x): return np.median(np.abs(np.median(x) - x))
-
 
 def createBlocks(flags_vector, min_block_size=0):
     # divide data into groups of continous indexes
@@ -433,13 +432,25 @@ def correctHeadTailIntensity(
         skeletons_file,
         intensities_file,
         smooth_W=5,
-        gap_size=0,
-        min_block_size=10,
-        local_avg_win=25,
+        gap_size=-1,
+        min_block_size=-1,
+        local_avg_win=-1,
         min_frac_in=0.85,
         head_tail_param={},
         head_tail_int_method='MEDIAN_INT'):
+    
+    output = head_tail_int_defaults(skeletons_file, 
+        smooth_W=smooth_W,
+        gap_size = gap_size,
+        min_block_size = min_block_size,
+        local_avg_win = local_avg_win)
+    smooth_W = output['smooth_W']
+    gap_size = output['gap_size']
+    min_block_size = output['min_block_size']
+    local_avg_win = output['local_avg_win']
 
+    head_tail_param = head_tail_defaults(skeletons_file, **head_tail_param)
+    
     # get the trajectories table
     with pd.HDFStore(skeletons_file, 'r') as fid:
         trajectories_data = fid['/trajectories_data']
@@ -454,7 +465,7 @@ def correctHeadTailIntensity(
     # variables to report progress
     base_name = skeletons_file.rpartition(
         '.')[0].rpartition(os.sep)[-1].rpartition('_')[0]
-    progress_timer = timeCounterStr('')
+    progress_timer = TimeCounter('')
 
     bad_worms = []  # worms with not enough difference between the normal and inverted median intensity profile
     switched_blocks = []  # data from the blocks that were switched
@@ -467,7 +478,7 @@ def correctHeadTailIntensity(
         if index_n % 10 == 0:
             dd = " Correcting Head-Tail using intensity profiles. Worm %i of %i." % (
                 index_n + 1, tot_worms)
-            dd = base_name + dd + ' Total time:' + progress_timer.getTimeStr()
+            dd = base_name + dd + ' Total time:' + progress_timer.get_time_str()
             print_flush(dd)
 
         # correct head tail using the intensity profiles
@@ -489,7 +500,12 @@ def correctHeadTailIntensity(
 
         if head_tail_int_method != 'HEAD_BRIGHTER':
             p_tot, skel_group, int_group = checkFinalOrientation(
-                skeletons_file, intensities_file, trajectories_worm, min_block_size, head_tail_param)
+                skeletons_file, 
+                intensities_file, 
+                trajectories_worm, 
+                min_block_size, 
+                head_tail_param)
+            
             if p_tot < 0.5:
                 switchBlocks(
                     skel_group,
@@ -528,7 +544,7 @@ def correctHeadTailIntensity(
     print_flush(
         base_name +
         ' Head-Tail correction using intensity profiles finished: ' +
-        progress_timer.getTimeStr())
+        progress_timer.get_time_str())
 
     # return bad_worms, switched_blocks
 

@@ -35,13 +35,19 @@ from tierpsy.analysis.contour_orient.correctVentralDorsal import switchCntSingle
 from tierpsy.analysis.wcon_export.exportWCON import getWCOName, exportWCON
 
 from tierpsy.processing.CheckFinished import CheckFinished
-from tierpsy.helper.tracker_param import tracker_param
+from tierpsy.helper import TrackerParams
 
 
+
+analysis_points_lock = None
+def init_analysis_point_lock(l):
+   global analysis_points_lock
+   analysis_points_lock = l
 
 
 class AnalysisPoints(object):
-    def __init__(self, video_file, masks_dir, results_dir, json_file = ''):
+    def __init__(self, video_file, masks_dir, 
+        results_dir, json_file = ''):
         
         self.getFileNames(video_file, masks_dir, results_dir)
         
@@ -49,7 +55,7 @@ class AnalysisPoints(object):
         self.masks_dir = masks_dir
         self.results_dir = results_dir
         
-        self.param = tracker_param(json_file)
+        self.param = TrackerParams(json_file)
         self.is_single_worm = self.param.is_single_worm
         self.use_skel_filter = self.param.use_skel_filter
         
@@ -57,6 +63,7 @@ class AnalysisPoints(object):
 
         self.checker = CheckFinished(output_files = self.getField('output_files'))
         
+
     def getFileNames(self, video_file, masks_dir, results_dir):
         base_name = video_file.rpartition('.')[0].rpartition(os.sep)[-1]
         results_dir = os.path.abspath(results_dir)
@@ -273,16 +280,27 @@ class AnalysisPoints(object):
 
         #check the requirements of a given point
         for requirement in self.checkpoints[point]['requirements']:
+            import time
+            tic = time.time()
+            print(point, requirement)
             if isinstance(requirement, str):
                 #if the requirement is a string, check the requirement with the checker 
                 requirements_results[requirement] = self.checker.get(requirement)
+                
             else:
                 try:
-                    requirements_results[requirement[0]] = requirement[1]()
+                    req_name, func = requirement
+                    if not analysis_points_lock is None and req_name in ['can_read_video']:
+                        with analysis_points_lock:
+                            requirements_results[req_name] = func()
+                    else:
+                        requirements_results[req_name] = func()
+                
+
                 except (OSError): 
                     #if there is a problem with the file return back requirement
                     requirements_results[requirement[0]] = False
-        
+            print(time.time()-tic)
         self.unmet_requirements = [x for x in requirements_results if not requirements_results[x]]
         
         return self.unmet_requirements

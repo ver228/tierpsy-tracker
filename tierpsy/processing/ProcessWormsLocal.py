@@ -4,19 +4,18 @@ Created on Tue Aug  9 00:26:10 2016
 
 @author: ajaver
 """
-import sys
-import os
-import time
 import datetime
+import os
 import shutil
+import sys
+import time
 
-from tierpsy.helper.misc import print_flush
+from tierpsy.analysis.compress_add_data.getAdditionalData import getAdditionalFiles
+from tierpsy.helper import TrackerParams
+from tierpsy.helper import print_flush
 from tierpsy.processing.AnalysisPoints import AnalysisPoints
 from tierpsy.processing.ProcessWormsWorker import ProcessWormsWorkerParser, ProcessWormsWorker, BATCH_SCRIPT_WORKER
-from tierpsy.processing.batchProcHelperFunc import create_script, getRealPathName
-from tierpsy.analysis.compress_add_data.getAdditionalData import getAdditionalFiles
-from tierpsy.helper.tracker_param import tracker_param
-
+from tierpsy.processing.batchProcHelperFunc import create_script
 
 #this path is not really going to be used if it is pyinstaller frozen (only the BATCH_SCRIPT_WORKER)
 BATCH_SCRIPT_LOCAL = [sys.executable, os.path.realpath(__file__)]
@@ -43,7 +42,7 @@ class ProcessWormsLocal(object):
         self.analysis_checkpoints = analysis_checkpoints
         
         self.json_file = json_file
-        param = tracker_param(json_file)
+        param = TrackerParams(json_file)
         self.is_single_worm = param.is_single_worm
         self.is_copy_video = is_copy_video
         self.copy_unfinished = copy_unfinished

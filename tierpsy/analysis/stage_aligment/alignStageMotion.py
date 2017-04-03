@@ -6,11 +6,12 @@ Created on Thu Feb 11 22:01:59 2016
 """
 
 import os
-import tables
 import subprocess as sp
 import tempfile
 
-from tierpsy.helper.misc import print_flush
+import tables
+
+from tierpsy.helper import print_flush
 
 
 def alignStageMotion(

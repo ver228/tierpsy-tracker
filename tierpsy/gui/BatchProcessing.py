@@ -15,7 +15,7 @@ from tierpsy.processing.ProcessMultipleFilesParser import CompressMultipleFilesP
 DFLT_COMPRESS_VALS = CompressMultipleFilesParser.dflt_vals
 DFLT_TRACK_VALS = TrackMultipleFilesParser.dflt_vals
 
-from tierpsy.helper.tracker_param import tracker_param
+from tierpsy.helper import TrackerParams
 
 #get default parameters files
 from tierpsy import DFLT_PARAMS_PATH, DFLT_PARAMS_FILES
@@ -316,7 +316,7 @@ class BatchProcessing_GUI(QMainWindow):
 
         #append the root dir if we are using any of the default parameters files. I didn't add the dir before because it is easy to read them in this way.
         json_file = self.ui.comboBox_paramFile.currentText()
-        param = tracker_param(json_file)
+        param = TrackerParams(json_file)
         analysis_checkpoints = getDefaultSequence(sequence_str, is_single_worm=param.is_single_worm)
         
         process_args = {

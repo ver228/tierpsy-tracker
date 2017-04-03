@@ -13,8 +13,8 @@ import tables
 from tierpsy.compressVideos.compressVideo import initMasksGroups
 
 from tierpsy.analysis.compress.extractMetaData import read_and_save_timestamp
-from tierpsy.helper.misc import print_flush
-from tierpsy.helper.timeCounterStr import timeCounterStr
+from tierpsy.helper import TimeCounter
+from tierpsy.helper import print_flush
 
 #default parameters if wormencoder.ini does not exist
 DFLT_SAVE_FULL_INTERVAL = 5000
@@ -82,7 +82,7 @@ def reformatRigMaskedVideo(original_file, new_file, plugin_param_file, expected_
         return
     
     
-    progress_timer = timeCounterStr('Reformating Gecko plugin hdf5 video.')
+    progress_timer = TimeCounter('Reformating Gecko plugin hdf5 video.')
     
     save_full_interval, buffer_size, mask_params = getReformatParams(plugin_params)
 
@@ -120,7 +120,7 @@ def reformatRigMaskedVideo(original_file, new_file, plugin_param_file, expected_
             
             if frame % 500 == 0:
                 # calculate the progress and put it in a string
-                progress_str = progress_timer.getStr(frame)
+                progress_str = progress_timer.get_str(frame)
                 print_flush(base_name + ' ' + progress_str)
         
         read_and_save_timestamp(masked_image_file)
@@ -130,7 +130,7 @@ def reformatRigMaskedVideo(original_file, new_file, plugin_param_file, expected_
         print_flush(
             base_name +
             ' Compressed video done. Total time:' +
-            progress_timer.getTimeStr())
+            progress_timer.get_time_str())
 
 
 def processVideo(video_file, masked_image_file, compress_vid_param):

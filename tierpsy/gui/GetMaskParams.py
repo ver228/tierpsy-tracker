@@ -18,7 +18,7 @@ from tierpsy.gui.HDF5VideoPlayer import lineEditDragDrop, ViewsWithZoom, setChil
 from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
 from tierpsy.processing.ProcessWormsWorker import ProcessWormsWorker
 from tierpsy.processing.batchProcHelperFunc import getDefaultSequence
-from tierpsy.helper.tracker_param import tracker_param
+from tierpsy.helper import TrackerParams
 
 
 class GetMaskParams_GUI(QMainWindow):
@@ -223,7 +223,7 @@ class GetMaskParams_GUI(QMainWindow):
 
     # def readAllParam(self):
     def _setDefaultParam(self):
-        param = tracker_param()
+        param = TrackerParams()
         widget_param = param.mask_param
         widget_param['fps'] = param.compress_vid_param['expected_fps']
         widget_param['compression_buff'] = param.compress_vid_param['buffer_size']

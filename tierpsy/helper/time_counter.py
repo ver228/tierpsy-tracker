@@ -9,15 +9,15 @@ import time
 import datetime
 import numpy as np
 
-def tictoc():
+def _tictoc():
     tic = time.time()
 
-    def toc():
+    def _toc():
         print('Elapse time %f' % (time.time() - tic))
-    return toc
+    return _toc
 
 
-class timeCounterStr:
+class TimeCounter:
 
     def __init__(self, task_str=''):
         self.initial_time = time.time()
@@ -25,7 +25,7 @@ class timeCounterStr:
         self.task_str = task_str
         self.fps_time = time.time()
 
-    def getStr(self, frame_number):
+    def get_str(self, frame_number):
         # calculate the progress and put it in a string
         time_str = str(
             datetime.timedelta(
@@ -45,7 +45,7 @@ class timeCounterStr:
         self.last_frame = frame_number
         return progress_str
 
-    def getTimeStr(self):
+    def get_time_str(self):
         return str(
             datetime.timedelta(
                 seconds=round(

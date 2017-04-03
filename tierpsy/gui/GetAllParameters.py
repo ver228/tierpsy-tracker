@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QDialog, QApplication, QGridLayout, QLabel, \
     QMessageBox, QSpacerItem, QFileDialog
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 
-from tierpsy.helper.tracker_param import tracker_param, param_help, dflt_param_list
+from tierpsy.helper.tracker_param import TrackerParams, param_help, dflt_param_list
 from tierpsy.gui.HDF5VideoPlayer import lineEditDragDrop
 
 
@@ -143,7 +143,7 @@ class GetAllParameters(QDialog):
         # by the json file.
         if os.path.exists(json_file):
             try:
-                params = tracker_param(json_file)
+                params = TrackerParams(json_file)
                 json_param = params.input_param
 
             except (OSError, UnicodeDecodeError, json.decoder.JSONDecodeError):

@@ -12,8 +12,7 @@ import os
 import time
 import subprocess as sp
 from io import StringIO
-from tierpsy.helper.misc import ReadEnqueue
-from tierpsy.helper.timeCounterStr import timeCounterStr
+from tierpsy.helper import TimeCounter, ReadEnqueue
 
 GUI_CLEAR_SIGNAL = '+++++++++++++++++++++++++++++++++++++++++++++++++'
 
@@ -33,7 +32,7 @@ ON_POSIX = 'posix' in sys.builtin_module_names
 
 
 
-class start_process():
+class StartProcess():
 
     def __init__(self, cmd, local_obj=''):
         self.output = ['Started\n']
@@ -88,10 +87,10 @@ class start_process():
         self.proc.stderr.close()
 
 
-def runMultiCMD(cmd_list, local_obj='', max_num_process=3, refresh_time=10):
+def RunMultiCMD(cmd_list, local_obj='', max_num_process=3, refresh_time=10):
     '''Start different process using the command is cmd_list'''
     
-    total_timer = timeCounterStr() #timer to meassure the total time 
+    total_timer = TimeCounter() #timer to meassure the total time 
 
     cmd_list = cmd_list[::-1]  # since I am using pop to get the next element i need to invert the list to get athe same order
     tot_tasks = len(cmd_list)
@@ -100,12 +99,11 @@ def runMultiCMD(cmd_list, local_obj='', max_num_process=3, refresh_time=10):
 
     # initialize the first max_number_process in the list
     finished_tasks = []
-    num_tasks = 0
-
+    
     current_tasks = []
     for ii in range(max_num_process):
         cmd = cmd_list.pop()
-        current_tasks.append(start_process(cmd, local_obj))
+        current_tasks.append(StartProcess(cmd, local_obj))
 
     # keep loop tasks as long as there is any task alive and
     # the number of tasks stated is less than the total number of tasks
@@ -141,12 +139,12 @@ def runMultiCMD(cmd_list, local_obj='', max_num_process=3, refresh_time=10):
                 # add new task once the previous one was finished
                 if cmd_list and len(next_tasks) < max_num_process:
                     cmd = cmd_list.pop()
-                    next_tasks.append(start_process(cmd, local_obj))
+                    next_tasks.append(StartProcess(cmd, local_obj))
 
         # if there is stlll space add a new tasks.
         while cmd_list and len(next_tasks) < max_num_process:
             cmd = cmd_list.pop()
-            next_tasks.append(start_process(cmd, local_obj))
+            next_tasks.append(StartProcess(cmd, local_obj))
 
 
         #close tasks (copy finished files to final destination)
@@ -163,7 +161,7 @@ def runMultiCMD(cmd_list, local_obj='', max_num_process=3, refresh_time=10):
         n_finished = len(finished_tasks)
         n_remaining = len(current_tasks) + len(cmd_list)
         progress_str = 'Tasks: {} finished, {} remaining. Total_time {}.'.format(
-            n_finished, n_remaining, total_timer.getTimeStr())
+            n_finished, n_remaining, total_timer.get_time_str())
         
         print('*************************************************')
         print(progress_str)

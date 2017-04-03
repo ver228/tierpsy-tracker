@@ -6,10 +6,12 @@ Created on Thu Aug 11 10:00:43 2016
 """
 
 import os
-from tierpsy.helper.runMultiCMD import runMultiCMD
-from helperFunc import getDefaultSequence, walkAndFindValidFiles
+
 from CheckFilesForProcessing import CheckFilesForProcessing
 from ProcessWormsLocal import ProcessWormsLocalParser
+from helperFunc import getDefaultSequence, walkAndFindValidFiles
+
+from tierpsy.helper import RunMultiCMD
 
 if __name__ == '__main__':
     
@@ -34,7 +36,7 @@ if __name__ == '__main__':
     
     cmd_list = files_checker.filterFiles(valid_files)
     #ProcessWormsLocalParser(cmd_list[0][1:])
-    runMultiCMD(
+    RunMultiCMD(
             cmd_list,
             local_obj = ProcessWormsLocalParser,
             max_num_process = 6,
