@@ -280,9 +280,9 @@ class AnalysisPoints(object):
 
         #check the requirements of a given point
         for requirement in self.checkpoints[point]['requirements']:
-            import time
-            tic = time.time()
-            print(point, requirement)
+            #import time
+            #tic = time.time()
+            #print(point, requirement)
             if isinstance(requirement, str):
                 #if the requirement is a string, check the requirement with the checker 
                 requirements_results[requirement] = self.checker.get(requirement)
@@ -300,7 +300,7 @@ class AnalysisPoints(object):
                 except (OSError): 
                     #if there is a problem with the file return back requirement
                     requirements_results[requirement[0]] = False
-            print(time.time()-tic)
+            #print(time.time()-tic)
         self.unmet_requirements = [x for x in requirements_results if not requirements_results[x]]
         
         return self.unmet_requirements
