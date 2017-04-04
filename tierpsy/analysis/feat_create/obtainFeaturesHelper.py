@@ -412,16 +412,15 @@ class WormStats():
         #filter nan data
         valid = ~np.isnan(data)
         data = data[valid]
-        motion_mode = motion_mode[valid]
-
+        
         motion_types = OrderedDict()
         motion_types['all'] = np.nan
-        #print(is_time_series, type(is_time_series))
         if is_time_series:
             # if the the feature is motion type we can subdivide in Foward,
             # Paused or Backward motion
+            motion_mode = motion_mode[valid]
             assert motion_mode.size == data.size
-
+            
             motion_types['foward'] = motion_mode == 1
             motion_types['paused'] = motion_mode == 0
             motion_types['backward'] = motion_mode == -1
