@@ -35,7 +35,7 @@ def _n_percentile(n, q):
         else:
             return np.nan
 
-FUNC_FOR_DIV = {'means':np.median, 'medians':np.median, 
+FUNC_FOR_DIV = {'means':np.mean, 'medians':np.median, 
     'P10th':partial(_n_percentile, q=10), 'P90th':partial(_n_percentile, q=90)}
     
             

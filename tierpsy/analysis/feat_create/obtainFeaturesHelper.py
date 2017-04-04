@@ -409,6 +409,11 @@ class WormStats():
         if data is None:
             data = np.zeros(0)
 
+        #filter nan data
+        valid = ~np.isnan(data)
+        data = data[valid]
+        motion_mode = motion_mode[valid]
+
         motion_types = OrderedDict()
         motion_types['all'] = np.nan
         #print(is_time_series, type(is_time_series))
@@ -423,20 +428,28 @@ class WormStats():
 
         stats = OrderedDict()
         for key in motion_types:
+            
             if key == 'all':
-                valid = ~np.isnan(data)
                 sub_name = name
+                valid_data = data
             else:
-                valid = motion_types[key]
                 sub_name = name + '_' + key
+                #filter by an specific motion type
+                valid_data = data[motion_types[key]]
 
-            stats[sub_name] = stat_func(data[valid])
+            assert not np.any(np.isnan(valid_data))
+            
+            stats[sub_name] = stat_func(valid_data)
             if is_signed:
                 # if the feature is signed we can subdivide in positive,
                 # negative and absolute
-                stats[sub_name + '_abs'] = stat_func(np.abs(data[valid]))
-                stats[sub_name + '_neg'] = stat_func(data[data < 0 & valid])
-                stats[sub_name + '_pos'] = stat_func(data[data > 0 & valid])
+                stats[sub_name + '_abs'] = stat_func(np.abs(valid_data))
+
+                neg_valid = (valid_data < 0)
+                stats[sub_name + '_neg'] = stat_func(valid_data[neg_valid])
+
+                pos_valid = (valid_data > 0) 
+                stats[sub_name + '_pos'] = stat_func(valid_data[pos_valid])
         return stats
                 
 if __name__ == '__main__':
