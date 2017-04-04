@@ -9,10 +9,13 @@ import multiprocessing as mp
 import os
 from functools import partial
 
-from tierpsy.helper import TimeCounter
+from tierpsy.helper import TimeCounter, print_cmd_list
 from tierpsy.processing.AnalysisPoints import AnalysisPoints, init_analysis_point_lock
 from tierpsy.processing.ProcessWormsLocal import BATCH_SCRIPT_LOCAL
 from tierpsy.processing.batchProcHelperFunc import create_script
+
+BREAK_L = '*********************************************' #use the list as below, otherwise it does weird copies of the list
+
 
 class CheckFilesForProcessing(object):
     def __init__(self, video_dir_root, mask_dir_root, 
@@ -111,8 +114,7 @@ class CheckFilesForProcessing(object):
         msd_dat = [ _vals2str(len(self.filtered_files[key]), msg) for key, msg in msg_pairs]
         tot_proc_files = len(self.filtered_files['SOURCE_GOOD']) + len(self.filtered_files['FINISHED_BAD'])
         
-        BREAK_L = '*********************************************' #use the list as below, otherwise it does weird copies of the list
-
+        
         s_msg = [BREAK_L]
         s_msg += ['Analysis Summary']
         s_msg += [BREAK_L]
@@ -128,7 +130,7 @@ class CheckFilesForProcessing(object):
         return s_msg
 
 
-    def filterFiles(self, valid_files):
+    def filterFiles(self, valid_files, print_cmd=False):
         # for ii, video_file in enumerate(valid_files):
         #     label, ap_obj, unfinished_points = self._checkIndFile(video_file)
         #     self.filtered_files[label].append((ap_obj, unfinished_points))
@@ -170,11 +172,23 @@ class CheckFilesForProcessing(object):
         for label, ap_obj, unfinished_points in all_points:
             self.filtered_files[label].append((ap_obj, unfinished_points))
 
-        
+        print(BREAK_L)
         print('''Finished to check files.\nTotal time elapsed {}\n'''.format(progress_timer.get_time_str()))
+        print(BREAK_L+ '\n')
+
+        cmd_list = self.getCMDlist()
+        if print_cmd:
+            #print the commands to be executed
+            print(BREAK_L)
+            print('Commands to be executed.')
+            print(BREAK_L)
+            print_cmd_list(cmd_list)
+            print(BREAK_L + '\n')
+
+        
         print(self.summary_msg)
         
-        return self.getCMDlist()
+        return cmd_list
     
     def _printUnmetReq(self):
         def _get_unmet_requirements(input_data):

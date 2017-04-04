@@ -7,7 +7,7 @@ Created on Tue Aug  9 00:26:10 2016
 import os
 
 from tierpsy.helper import TrackerParams
-from tierpsy.helper import RunMultiCMD, print_cmd_list
+from tierpsy.helper import RunMultiCMD
 from tierpsy.processing.CheckFilesForProcessing import CheckFilesForProcessing
 from tierpsy.processing.ProcessWormsLocal import ProcessWormsLocalParser
 from tierpsy.processing.batchProcHelperFunc import getDefaultSequence, walkAndFindValidFiles
@@ -77,15 +77,12 @@ def processMultipleFilesFun(
     print(len(valid_files))
     files_checker = CheckFilesForProcessing(**check_args)
 
-    cmd_list = files_checker.filterFiles(valid_files)
+    cmd_list = files_checker.filterFiles(valid_files, print_cmd=True)
     
     if unmet_requirements:
          files_checker._printUnmetReq()
     
     if not only_summary:
-        # run all the commands
-        print_cmd_list(cmd_list)
-
         RunMultiCMD(
             cmd_list,
             local_obj = ProcessWormsLocalParser,
