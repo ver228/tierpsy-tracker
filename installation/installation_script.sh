@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-MW_MAIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+MW_MAIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"/..
 OPENWORM_DIR=$MW_MAIN_DIR/../open-worm-analysis-toolbox
 OPENCV_DIR=$MW_MAIN_DIR/../opencv
 OPENCV_VER="3.2.0"
@@ -26,6 +26,11 @@ function osx_dependencies {
 	#brew update
 	#brew upgrade
 
+	#ffmpeg libraries, needed to install opencv
+	brew install ffmpeg --verbose --with-fdk-aac --with-libass --with-libquvi \
+	--with-libvorbis --with-libvpx --with-x265 --with-openh264 --with-tools --with-fdk-aac
+	#image libraries for opencv
+	brew install jpeg libpng libtiff openexr eigen tbb
 	brew install git
 }
 
@@ -141,8 +146,8 @@ function redhat_dependencies {
 
 function anaconda_pkgs {
 	echo "Installing get_anaconda extra packages..."
-	conda install -y python=3.5.3 pip
-	conda install -y anaconda-client conda-build numpy matplotlib pytables pandas \
+	#conda install -y python=3.5.3 pip
+	conda install -y numpy matplotlib pytables pandas \
 	h5py scipy scikit-learn scikit-image seaborn xlrd cython statsmodels
 	pip install gitpython pyqt5 keras 
 	conda install -y -c conda-forge tensorflow
@@ -150,24 +155,18 @@ function anaconda_pkgs {
 
 function build_opencv3_anaconda {
 	echo "Installing openCV..."
-	case "${OS}" in
-		"Darwin")
-		#ffmpeg libraries, needed to install opencv
-		brew install ffmpeg --verbose --with-fdk-aac --with-libass --with-libquvi \
-		--with-libvorbis --with-libvpx --with-x265 --with-openh264 --with-tools --with-fdk-aac
-		#image libraries for opencv
-		brew install jpeg libpng libtiff openexr eigen tbb
-		;;
-		
-		"Linux"*)
-		;;
-	esac
 	
-	conda install -y conda-build
-	conda config --add channels menpo
-	conda build --no-anaconda-upload installation/menpo_conda-opencv3
-	conda install -y --use-local opencv3
+	conda install -y anaconda-client conda-build 
+	#conda config --add channels menpo
+
+	git clone https://github.com/ver228/install_opencv3_conda 
+	conda build install_opencv3_conda
+	
+	conda build --no-anaconda-upload installation/install_opencv3_conda
+	#conda install -f --use-local ~/miniconda3/conda-bld/linux-64/opencv3-3.2.0-0.tar.bz2
+	conda install -y -f --use-local opencv3
 	python3 -c "import cv2; print(cv2.__version__)"
+	rm -Rf install_opencv3_conda/
 }
 
 function opencv_anaconda {
@@ -318,13 +317,11 @@ case $1 in
 	"--download_examples")
 	download_examples
 	;;
+	"--opencv")
+	opencv_anaconda
+	;;
 	*)
 	echo "Exiting... Unrecognized argument: $1"
 	exit 1
 	;;
 esac
-
-
-
-
-

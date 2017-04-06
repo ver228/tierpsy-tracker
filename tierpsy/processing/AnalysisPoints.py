@@ -276,6 +276,7 @@ class AnalysisPoints(object):
             assert self.checkpoints[point]['provenance_file'].endswith('.hdf5')
     
     def hasRequirements(self, point):
+        
         requirements_results = {}
 
         #check the requirements of a given point
@@ -292,6 +293,7 @@ class AnalysisPoints(object):
                     req_name, func = requirement
                     if not analysis_points_lock is None and req_name in ['can_read_video']:
                         with analysis_points_lock:
+
                             requirements_results[req_name] = func()
                     else:
                         requirements_results[req_name] = func()

@@ -8,10 +8,10 @@ conda install --channel https://conda.anaconda.org/ver228 opencv3
 :: conda install -y --use-local opencv3
 
 :: Install packages
-cd ..\open-worm-analysis-toolbox
+cd ..\..\open-worm-analysis-toolbox
 python setup.py develop
 rename .\open_worm_analysis_toolbox\user_config_example.txt user_config.py
-cd ..\Multiworm_Tracking
+cd ..\tierpsy-tracker
 python setup.py develop
 
 :: Test installation
