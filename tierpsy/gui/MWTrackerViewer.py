@@ -15,12 +15,12 @@ from tierpsy.analysis.ske_create.helperIterROI import getWormROI
 from tierpsy.analysis.ske_filt.getFilteredSkels import getValidIndexes
 from tierpsy.gui.AnalysisProgress import WorkerFunQt, AnalysisProgress
 from tierpsy.gui.MWTrackerViewer_ui import Ui_MWTrackerViewer
-from tierpsy.gui.TrackerViewerAux import TrackerViewerAux_GUI
+from tierpsy.gui.TrackerViewerAux import TrackerViewerAuxGUI
 from tierpsy.helper import WLAB
 from tierpsy.processing.trackProvenance import getGitCommitHash, execThisPoint
 
 
-class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
+class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
     def __init__(self, ui='', argv=''):
         if not ui:
@@ -255,7 +255,7 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         if self.image_group == -1:
             return
 
-        super(TrackerViewerAux_GUI, self).readCurrentFrame()
+        super(TrackerViewerAuxGUI, self).readCurrentFrame()
         self.img_h_ratio = self.frame_qimg.height() / self.image_height
         self.img_w_ratio = self.frame_qimg.width() / self.image_width
 

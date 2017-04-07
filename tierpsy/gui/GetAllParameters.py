@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QDialog, QApplication, QGridLayout, QLabel, \
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 
 from tierpsy.helper.tracker_param import TrackerParams, param_help, dflt_param_list
-from tierpsy.gui.HDF5VideoPlayer import lineEditDragDrop
+from tierpsy.gui.HDF5VideoPlayer import LineEditDragDrop
 
 
 def save_params_json(json_file, param4file):
@@ -120,7 +120,7 @@ class GetAllParameters(QDialog):
         grid.addWidget(self.lineEdit_file, last_row, 1, 1, last_col - 1)
         grid.addItem(spacer, last_row - 1, 0, 1, 1)
 
-        lineEditDragDrop(
+        LineEditDragDrop(
             self.lineEdit_file,
             self.updateParamFile,
             os.path.isfile)

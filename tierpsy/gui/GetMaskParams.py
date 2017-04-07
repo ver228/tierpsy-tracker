@@ -13,7 +13,7 @@ QFileDialog, QMessageBox, QCheckBox, QButtonGroup, QLabel
 from tierpsy.gui.AnalysisProgress import WorkerFunQt, AnalysisProgress
 from tierpsy.gui.GetAllParameters import GetAllParameters, save_params_json
 from tierpsy.gui.GetMaskParams_ui import Ui_GetMaskParams
-from tierpsy.gui.HDF5VideoPlayer import lineEditDragDrop, ViewsWithZoom, setChildrenFocusPolicy
+from tierpsy.gui.HDF5VideoPlayer import LineEditDragDrop, ViewsWithZoom, setChildrenFocusPolicy
 
 from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
 from tierpsy.processing.ProcessWormsWorker import ProcessWormsWorker
@@ -139,7 +139,7 @@ class GetMaskParams_GUI(QMainWindow):
         ]
         for dd_arg in dd_args:
             # let drag and drop a file into the video file line edit
-            lineEditDragDrop(*dd_arg)
+            LineEditDragDrop(*dd_arg)
 
         # make sure the childrenfocus policy is none in order to be able to use
         # the arrow keys

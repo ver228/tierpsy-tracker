@@ -173,8 +173,8 @@ class CheckFilesForProcessing(object):
             self.filtered_files[label].append((ap_obj, unfinished_points))
 
         print(BREAK_L)
-        print('''Finished to check files.\nTotal time elapsed {}\n'''.format(progress_timer.get_time_str()))
-        print(BREAK_L+ '\n')
+        print('''Finished to check files.\nTotal time elapsed {}'''.format(progress_timer.get_time_str()))
+        print(BREAK_L + '\n')
 
         cmd_list = self.getCMDlist()
         if print_cmd:

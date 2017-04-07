@@ -9,16 +9,13 @@ from PyQt5.QtCore import QPointF, Qt
 from PyQt5.QtGui import QPixmap, QImage, QPolygonF, QPen, QPainter, QColor
 from PyQt5.QtWidgets import QApplication, QFileDialog
 
-from tierpsy.gui.HDF5VideoPlayer import HDF5VideoPlayer_GUI, lineEditDragDrop
+from tierpsy.gui.HDF5VideoPlayer import HDF5VideoPlayerGUI, LineEditDragDrop
 from tierpsy.gui.TrackerViewerAux_ui import Ui_TrackerViewerAux
 from tierpsy.analysis.ske_create.getSkeletonsTables import getWormMask
 from tierpsy.analysis.ske_create.segWormPython.mainSegworm import getSkeleton
 
 
-#from scipy.signal import savgol_filter
-
-
-class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
+class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
 
     def __init__(self, ui=''):
         if not ui:
@@ -34,7 +31,7 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
         self.frame_save_interval = 1 
 
         self.ui.pushButton_skel.clicked.connect(self.getSkelFile)
-        lineEditDragDrop(
+        LineEditDragDrop(
             self.ui.lineEdit_skel,
             self.updateSkelFile,
             os.path.isfile)
@@ -272,7 +269,7 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    ui = TrackerViewerAux_GUI()
+    ui = TrackerViewerAuxGUI()
     ui.show()
 
     sys.exit(app.exec_())

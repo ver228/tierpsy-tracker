@@ -9,7 +9,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QPen
 from PyQt5.QtWidgets import QApplication
 from tierpsy.gui.SWTrackerViewer_ui import Ui_SWTrackerViewer
-from tierpsy.gui.TrackerViewerAux import TrackerViewerAux_GUI
+from tierpsy.gui.TrackerViewerAux import TrackerViewerAuxGUI
 from tierpsy.analysis.int_ske_orient.correctHeadTailIntensity import createBlocks, _fuseOverlapingGroups
 
 
@@ -52,7 +52,7 @@ class EggWriter():
            
 
 
-class SWTrackerViewer_GUI(TrackerViewerAux_GUI):
+class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
     def __init__(self, ui='', mask_file=''):
         if not ui:
