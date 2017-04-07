@@ -10,13 +10,13 @@ from PyQt5.QtGui import QPixmap, QPainter, QFont, QPen, QPolygonF, QColor
 from PyQt5.QtWidgets import QApplication, QMessageBox
 
 from tierpsy.analysis.feat_create.obtainFeatures import getWormFeaturesFilt
-from tierpsy.helper import TrackerParams
+from tierpsy.helper.params import TrackerParams
 from tierpsy.analysis.ske_create.helperIterROI import getWormROI
 from tierpsy.analysis.ske_filt.getFilteredSkels import getValidIndexes
 from tierpsy.gui.AnalysisProgress import WorkerFunQt, AnalysisProgress
 from tierpsy.gui.MWTrackerViewer_ui import Ui_MWTrackerViewer
 from tierpsy.gui.TrackerViewerAux import TrackerViewerAuxGUI
-from tierpsy.helper import WLAB
+from tierpsy.helper.misc import WLAB
 from tierpsy.processing.trackProvenance import getGitCommitHash, execThisPoint
 
 
@@ -29,19 +29,11 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
             super().__init__(ui)
 
         self.vfilename = '' if len(argv) <= 1 else argv[1]
-
         self.lastKey = ''
-        self.isPlay = False
-        self.fid = -1
-        self.image_group = -1
-        self.trajectories_data = -1
         self.traj_for_plot = {}
-
 
         self.worm_index_roi1 = 1
         self.worm_index_roi2 = 1
-        self.frame_data = -1
-        self.h5path = self.ui.comboBox_h5path.itemText(0)
 
         self.wlab = WLAB
         self.wlabC = {
@@ -200,8 +192,7 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
     def updateSkelFile(self, skeletons_file):
         super().updateSkelFile(skeletons_file)
         
-        if not self.skeletons_file or not isinstance(
-                self.trajectories_data, pd.DataFrame):
+        if not self.skeletons_file or self.trajectories_data is None:
             return
 
         #correct the index in case it was given before as worm_index_N
@@ -252,7 +243,7 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
     # update image
     def updateImage(self):
-        if self.image_group == -1:
+        if self.image_group is None:
             return
 
         super(TrackerViewerAuxGUI, self).readCurrentFrame()
@@ -262,26 +253,28 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         # read the data of the particles that exists in the frame
         self.frame_data = self.getFrameData(self.frame_number)
 
+
         #draw extra info only if the worm_index_type is valid
-        if self.worm_index_type in self.frame_data: 
-            # draw the boxes in each of the trajectories found
-            if self.ui.comboBox_showLabels.currentIndex() != self.showT['hide'] and self.label_type in self.frame_data:
-                self.drawROI(self.frame_qimg)
-            
+        if self.frame_data is not None and \
+        self.frame_data.size > 0 and \
+        self.worm_index_type in self.frame_data:
+
+            self.drawWormMarkers(self.frame_qimg)
             self.updateROIcanvasN(1)
             self.updateROIcanvasN(2)
-        
+        else:
+            self.ui.wormCanvas1.clear() 
+            self.ui.wormCanvas2.clear()        
         # create the pixmap for the label
         self.mainImage.setPixmap(self.frame_qimg)
 
-    def drawROI(self, image):
+    def drawWormMarkers(self, image):
         '''
         Draw traj worm trajectory.
         '''
-
-        #continue only if the frame_data is a pandas dataframe it is larger than 0 
-        #and the selected label_type is a column in the frame_data.
-        if len(self.frame_data) == 0 or not self.label_type in self.frame_data:
+        
+        if not self.label_type in self.frame_data or \
+        self.ui.comboBox_showLabels.currentIndex() == self.showT['hide']:
             return
 
         self.img_h_ratio = image.height() / self.image_height
@@ -397,7 +390,7 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
             worm_index_roi,
             comboBox_ROI,
             isDrawSkel):
-        if not isinstance(self.frame_data, pd.DataFrame):
+        if self.frame_data is None:
             # no trajectories data presented, nothing to do here
             wormCanvas.clear()
             return
@@ -443,10 +436,7 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         x = event.pos().x()
         y = event.pos().y()
 
-        if not isinstance(
-                self.frame_data,
-                pd.DataFrame) or len(
-                self.frame_data) == 0:
+        if self.frame_data is None or self.frame_data.size == 0:
             return
 
         x /= self.img_w_ratio
@@ -476,7 +466,7 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         elif self.ui.radioButton_ROI2.isChecked():
             worm_ind = self.worm_index_roi2
 
-        if not isinstance(self.frame_data, pd.DataFrame):
+        if self.frame_data is None:
             return
 
         if not worm_ind in self.frame_data['worm_index_manual'].values:
@@ -494,7 +484,7 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
     # move to the first or the last frames of a trajectory
     def roiRWFF(self, n_roi, rwff):
 
-        if not isinstance(self.frame_data, pd.DataFrame):
+        if self.frame_data is None:
             return
 
         if n_roi == 1:

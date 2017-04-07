@@ -15,7 +15,7 @@ from tierpsy.processing.ProcessMultipleFilesParser import CompressMultipleFilesP
 DFLT_COMPRESS_VALS = CompressMultipleFilesParser.dflt_vals
 DFLT_TRACK_VALS = TrackMultipleFilesParser.dflt_vals
 
-from tierpsy.helper import TrackerParams
+from tierpsy.helper.params import TrackerParams
 
 #get default parameters files
 from tierpsy import DFLT_PARAMS_PATH, DFLT_PARAMS_FILES

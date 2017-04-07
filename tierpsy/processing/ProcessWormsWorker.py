@@ -9,7 +9,7 @@ import datetime
 import os
 import time
 
-from tierpsy.helper import print_flush
+from tierpsy.helper.misc import print_flush
 from tierpsy.processing.AnalysisPoints import AnalysisPoints
 from tierpsy.processing.batchProcHelperFunc import getRealPathName
 from tierpsy.processing.trackProvenance import getGitCommitHash, execThisPoint

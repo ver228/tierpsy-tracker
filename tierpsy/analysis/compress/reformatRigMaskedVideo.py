@@ -13,8 +13,8 @@ import tables
 from tierpsy.compressVideos.compressVideo import initMasksGroups
 
 from tierpsy.analysis.compress.extractMetaData import read_and_save_timestamp
-from tierpsy.helper import TimeCounter
-from tierpsy.helper import print_flush
+from tierpsy.helper.misc import TimeCounter
+from tierpsy.helper.misc import print_flush
 
 #default parameters if wormencoder.ini does not exist
 DFLT_SAVE_FULL_INTERVAL = 5000

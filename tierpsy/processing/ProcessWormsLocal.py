@@ -11,8 +11,8 @@ import sys
 import time
 
 from tierpsy.analysis.compress_add_data.getAdditionalData import getAdditionalFiles
-from tierpsy.helper import TrackerParams
-from tierpsy.helper import print_flush
+from tierpsy.helper.params import TrackerParams
+from tierpsy.helper.misc import print_flush
 from tierpsy.processing.AnalysisPoints import AnalysisPoints
 from tierpsy.processing.ProcessWormsWorker import ProcessWormsWorkerParser, ProcessWormsWorker, BATCH_SCRIPT_WORKER
 from tierpsy.processing.batchProcHelperFunc import create_script

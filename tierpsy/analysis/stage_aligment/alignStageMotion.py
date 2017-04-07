@@ -11,7 +11,7 @@ import tempfile
 
 import tables
 
-from tierpsy.helper import print_flush
+from tierpsy.helper.misc import print_flush
 
 
 def alignStageMotion(

@@ -14,8 +14,8 @@ import tables
 from scipy.stats import chi2
 from sklearn.covariance import MinCovDet
 
-from tierpsy.analysis.params import correct_min_num_skel
-from tierpsy.helper import TimeCounter, print_flush, TABLE_FILTERS
+from tierpsy.helper.params import min_num_skel_defaults
+from tierpsy.helper.misc import TimeCounter, print_flush, TABLE_FILTERS
 
 warnings.filterwarnings('ignore', '.*det > previous_det*',)
 np.seterr(invalid='ignore')
@@ -494,7 +494,7 @@ def getFilteredSkels(
         max_width_ratio=2.25,
         max_area_ratio=6):
 
-    min_num_skel = correct_min_num_skel(skeletons_file, min_num_skel=min_num_skel)
+    min_num_skel = min_num_skel_defaults(skeletons_file, min_num_skel=min_num_skel)
 
     # check if the skeletonization finished succesfully
     with tables.File(skeletons_file, "r") as ske_file_id:

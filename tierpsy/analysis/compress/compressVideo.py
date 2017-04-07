@@ -14,8 +14,8 @@ from scipy.ndimage.filters import median_filter
 from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
 from tierpsy.analysis.compress.extractMetaData import store_meta_data, read_and_save_timestamp
 from tierpsy.analysis.compress.selectVideoReader import selectVideoReader
-from tierpsy.analysis.params import compress_defaults
-from tierpsy.helper import TimeCounter, print_flush
+from tierpsy.helper.params import compress_defaults
+from tierpsy.helper.misc import TimeCounter, print_flush
 
 IMG_FILTERS = {"compression":"gzip",
         "compression_opts":4,

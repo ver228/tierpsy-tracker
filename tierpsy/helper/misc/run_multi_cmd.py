@@ -12,7 +12,7 @@ import os
 import time
 import subprocess as sp
 from io import StringIO
-from tierpsy.helper import TimeCounter, ReadEnqueue
+from tierpsy.helper.misc import TimeCounter, ReadEnqueue
 
 GUI_CLEAR_SIGNAL = '+++++++++++++++++++++++++++++++++++++++++++++++++'
 

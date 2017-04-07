@@ -13,7 +13,7 @@ from collections import OrderedDict
 import numpy as np
 import tables
 
-from tierpsy.helper import TimeCounter, print_flush, ReadEnqueue, FFPROBE_CMD
+from tierpsy.helper.misc import TimeCounter, print_flush, ReadEnqueue, FFPROBE_CMD
 
 
 def dict2recarray(dat):

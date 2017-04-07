@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QDialog, QApplication, QGridLayout, QLabel, \
     QMessageBox, QSpacerItem, QFileDialog
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 
-from tierpsy.helper.tracker_param import TrackerParams, param_help, dflt_param_list
+from tierpsy.helper.params.tracker_param import TrackerParams, param_help, dflt_param_list
 from tierpsy.gui.HDF5VideoPlayer import LineEditDragDrop
 
 

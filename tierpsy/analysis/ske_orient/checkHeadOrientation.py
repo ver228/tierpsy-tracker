@@ -12,9 +12,9 @@ import numpy as np
 import pandas as pd
 import tables
 
-from tierpsy.analysis.params import head_tail_defaults
+from tierpsy.helper.params import head_tail_defaults
 from tierpsy.analysis.ske_orient.WormClass import WormClass
-from tierpsy.helper import TimeCounter, print_flush
+from tierpsy.helper.misc import TimeCounter, print_flush
 
 
 def getAnglesDelta(dx, dy):

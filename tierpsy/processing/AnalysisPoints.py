@@ -35,7 +35,7 @@ from tierpsy.analysis.contour_orient.correctVentralDorsal import switchCntSingle
 from tierpsy.analysis.wcon_export.exportWCON import getWCOName, exportWCON
 
 from tierpsy.processing.CheckFinished import CheckFinished
-from tierpsy.helper import TrackerParams
+from tierpsy.helper.params import TrackerParams
 
 
 

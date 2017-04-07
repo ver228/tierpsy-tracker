@@ -16,7 +16,7 @@ from scipy.signal import savgol_filter
 
 from tierpsy.analysis.stage_aligment.alignStageMotion import isGoodStageAligment
 from tierpsy.analysis.contour_orient.correctVentralDorsal import read_ventral_side
-from tierpsy.analysis.params import read_fps, read_microns_per_pixel
+from tierpsy.helper.params import read_fps, read_microns_per_pixel
 from tierpsy import AUX_FILES_DIR
 import open_worm_analysis_toolbox as mv
 

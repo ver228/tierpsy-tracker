@@ -18,9 +18,9 @@ import tables
 
 from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
 from tierpsy.analysis.compress.extractMetaData import read_and_save_timestamp
-from tierpsy.analysis.params import read_fps
-from tierpsy.analysis.params import traj_create_defaults
-from tierpsy.helper import TimeCounter, print_flush, TABLE_FILTERS
+from tierpsy.helper.params import read_fps
+from tierpsy.helper.params import traj_create_defaults
+from tierpsy.helper.misc import TimeCounter, print_flush, TABLE_FILTERS
 
 
 def _thresh_bw(pix_valid):

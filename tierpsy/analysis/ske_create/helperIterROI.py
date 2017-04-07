@@ -10,7 +10,7 @@ import numpy as np
 import tables
 
 from tierpsy.analysis.traj_create.getBlobTrajectories import generateImages
-from tierpsy.helper import TimeCounter, print_flush
+from tierpsy.helper.misc import TimeCounter, print_flush
 
 
 def getWormROI(img, CMx, CMy, roi_size=128):

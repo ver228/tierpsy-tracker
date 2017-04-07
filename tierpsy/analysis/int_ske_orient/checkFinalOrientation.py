@@ -13,7 +13,7 @@ import pandas as pd
 import tables
 
 from tierpsy.analysis.ske_orient.checkHeadOrientation import isWormHTSwitched
-from tierpsy.helper import print_flush
+from tierpsy.helper.misc import print_flush
 
 
 def getHeadProbMov(

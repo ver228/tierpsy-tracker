@@ -1,7 +1,7 @@
 
 import tables
 import numpy as np
-from tierpsy.analysis.params import read_fps
+from .read_attrs import read_fps
 
 class CorrectParams():
     def __init__(self, main_arg):
@@ -86,7 +86,7 @@ def head_tail_int_defaults(fname, **params):
     )
     return obj.process(params, convertions)
 
-def correct_min_num_skel(fname, **params):
+def min_num_skel_defaults(fname, **params):
     obj = CorrectParams(fname)
     convertions = dict(
         min_num_skel = lambda: int(round(4 * obj.fps))

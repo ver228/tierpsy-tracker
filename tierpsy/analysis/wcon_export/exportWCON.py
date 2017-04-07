@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 import tables
 
-from tierpsy.helper import print_flush
+from tierpsy.helper.misc import print_flush
 
 
 def getWCONMetaData(fname, READ_FEATURES=False, provenance_step='FEAT_CREATE'):

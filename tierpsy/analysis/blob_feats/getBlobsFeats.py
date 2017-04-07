@@ -8,7 +8,7 @@ import tables
 
 from tierpsy.analysis.ske_create.getSkeletonsTables import getWormMask
 from tierpsy.analysis.ske_create.helperIterROI import generateMoviesROI
-from tierpsy.helper import TABLE_FILTERS
+from tierpsy.helper.misc import TABLE_FILTERS
 
 
 def _getBlobFeatures(blob_cnt, blob_mask, roi_image, roi_corner):

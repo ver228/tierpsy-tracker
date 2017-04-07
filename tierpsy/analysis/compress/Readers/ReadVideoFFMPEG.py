@@ -11,7 +11,7 @@ import subprocess as sp
 
 import numpy as np
 
-from tierpsy.helper import FFMPEG_CMD, ReadEnqueue
+from tierpsy.helper.misc import FFMPEG_CMD, ReadEnqueue
 
 
 class ReadVideoFFMPEG:

@@ -15,9 +15,9 @@ from scipy.ndimage.filters import median_filter
 from scipy.signal import savgol_filter
 
 from tierpsy.analysis.compress.extractMetaData import read_and_save_timestamp
-from tierpsy.analysis.params import ske_init_defaults
+from tierpsy.helper.params import ske_init_defaults
 from tierpsy.analysis.ske_init.filterTrajectModel import filterModelWorms
-from tierpsy.helper import TABLE_FILTERS
+from tierpsy.helper.misc import TABLE_FILTERS
 
 
 def getSmoothedTraj(trajectories_file,

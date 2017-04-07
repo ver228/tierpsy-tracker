@@ -12,7 +12,7 @@ import pandas as pd
 import tables
 from scipy.spatial.distance import cdist
 
-from tierpsy.helper import TimeCounter, print_flush
+from tierpsy.helper.misc import TimeCounter, print_flush
 
 
 def assignBlobTraj(trajectories_file, max_allowed_dist=20, area_ratio_lim=(0.5, 2)):

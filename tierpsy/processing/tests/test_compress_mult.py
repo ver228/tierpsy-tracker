@@ -11,7 +11,7 @@ from CheckFilesForProcessing import CheckFilesForProcessing
 from ProcessWormsLocal import ProcessWormsLocalParser
 from helperFunc import getDefaultSequence, walkAndFindValidFiles
 
-from tierpsy.helper import RunMultiCMD
+from tierpsy.helper.misc import RunMultiCMD
 
 if __name__ == '__main__':
     

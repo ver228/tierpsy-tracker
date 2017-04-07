@@ -14,10 +14,10 @@ from scipy.interpolate import RectBivariateSpline
 from scipy.interpolate import interp1d
 from scipy.signal import savgol_filter
 
-from tierpsy.analysis.params import correct_min_num_skel
+from tierpsy.helper.params import min_num_skel_defaults
 from tierpsy.analysis.ske_create.helperIterROI import getWormROI
 from tierpsy.analysis.ske_filt.getFilteredSkels import saveModifiedTrajData
-from tierpsy.helper import TimeCounter, print_flush
+from tierpsy.helper.misc import TimeCounter, print_flush
 
 def smoothSkeletons(
         skeleton,
@@ -153,7 +153,7 @@ def getIntensityProfile(
         width_percentage=0.5,
         save_maps=False):
     
-    min_num_skel = correct_min_num_skel(skeletons_file, min_num_skel=min_num_skel)
+    min_num_skel = min_num_skel_defaults(skeletons_file, min_num_skel=min_num_skel)
 
     assert smooth_win > pol_degree
     assert min_num_skel > 0

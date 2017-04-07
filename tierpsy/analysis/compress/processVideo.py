@@ -13,7 +13,7 @@ import tables
 
 from tierpsy.analysis.compress.compressVideo import compressVideo, initMasksGroups
 from  tierpsy.analysis.compress.selectVideoReader import selectVideoReader
-from tierpsy.helper import TimeCounter, print_flush
+from tierpsy.helper.misc import TimeCounter, print_flush
 
 #default parameters if wormencoder.ini does not exist
 DFLT_SAVE_FULL_INTERVAL = 5000

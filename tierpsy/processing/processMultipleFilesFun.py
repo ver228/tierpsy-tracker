@@ -6,8 +6,8 @@ Created on Tue Aug  9 00:26:10 2016
 """
 import os
 
-from tierpsy.helper import TrackerParams
-from tierpsy.helper import RunMultiCMD
+from tierpsy.helper.params import TrackerParams
+from tierpsy.helper.misc import RunMultiCMD
 from tierpsy.processing.CheckFilesForProcessing import CheckFilesForProcessing
 from tierpsy.processing.ProcessWormsLocal import ProcessWormsLocalParser
 from tierpsy.processing.batchProcHelperFunc import getDefaultSequence, walkAndFindValidFiles

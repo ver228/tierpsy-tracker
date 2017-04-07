@@ -20,11 +20,11 @@ warnings.simplefilter(action="ignore", category=RuntimeWarning)
 # (http://www.pytables.org/usersguide/parameter_files.html)
 tables.parameters.MAX_COLUMNS = 1024
 
-from tierpsy.helper import TimeCounter, print_flush, WLAB, TABLE_FILTERS
+from tierpsy.helper.misc import TimeCounter, print_flush, WLAB, TABLE_FILTERS
 from tierpsy.analysis.ske_filt.getFilteredSkels import getValidIndexes
 from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStats, WormFromTable
-from tierpsy.analysis.params import read_fps, read_microns_per_pixel
-from tierpsy.analysis.params import correct_min_num_skel
+from tierpsy.helper.params import read_fps, read_microns_per_pixel
+from tierpsy.helper.params import min_num_skel_defaults
 
 import open_worm_analysis_toolbox as mv
 
@@ -160,7 +160,7 @@ def getWormFeaturesFilt(
         feat_filt_param,
         split_traj_time):
 
-    feat_filt_param = correct_min_num_skel(skeletons_file, **feat_filt_param)
+    feat_filt_param = min_num_skel_defaults(skeletons_file, **feat_filt_param)
 
 
     def _iniFileGroups():

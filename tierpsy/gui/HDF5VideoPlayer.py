@@ -1,14 +1,13 @@
 import sys
-from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtCore import Qt
-
-from HDF5VideoPlayer_ui import Ui_HDF5VideoPlayer
-
 import tables
 import os
 import numpy as np
 import copy
 from functools import partial
+
+from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5.QtCore import Qt
+from tierpsy.gui.HDF5VideoPlayer_ui import Ui_HDF5VideoPlayer
 
 def setChildrenFocusPolicy(obj, policy):
     # recursively change the focus policy of all the objects in the widgets

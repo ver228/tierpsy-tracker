@@ -13,8 +13,8 @@ import tables
 from scipy.ndimage.filters import median_filter, minimum_filter, maximum_filter
 
 from tierpsy.analysis.int_ske_orient.checkFinalOrientation import checkFinalOrientation
-from tierpsy.analysis.params import head_tail_defaults, head_tail_int_defaults
-from tierpsy.helper import TimeCounter, print_flush
+from tierpsy.helper.params import head_tail_defaults, head_tail_int_defaults
+from tierpsy.helper.misc import TimeCounter, print_flush
 
 
 def medabsdev(x): return np.median(np.abs(np.median(x) - x))

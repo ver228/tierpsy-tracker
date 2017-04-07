@@ -17,7 +17,7 @@ try:
 except Exception:
     base_path = os.path.dirname(__file__)
 
-AUX_FILES_DIR = os.path.abspath(os.path.join(base_path, 'misc'))
+AUX_FILES_DIR = os.path.abspath(os.path.join(base_path, 'extras'))
 DFLT_PARAMS_PATH = os.path.join(AUX_FILES_DIR, 'param_files')
 DFLT_PARAMS_FILES = [x for x in os.listdir(DFLT_PARAMS_PATH) if x.endswith('.json')]
 

@@ -9,7 +9,7 @@ import multiprocessing as mp
 import os
 from functools import partial
 
-from tierpsy.helper import TimeCounter, print_cmd_list
+from tierpsy.helper.misc import TimeCounter, print_cmd_list
 from tierpsy.processing.AnalysisPoints import AnalysisPoints, init_analysis_point_lock
 from tierpsy.processing.ProcessWormsLocal import BATCH_SCRIPT_LOCAL
 from tierpsy.processing.batchProcHelperFunc import create_script

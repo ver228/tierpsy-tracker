@@ -10,8 +10,8 @@ import cv2
 import h5py
 import numpy as np
 
-from tierpsy.analysis.params import read_fps
-from tierpsy.helper import TimeCounter, print_flush
+from tierpsy.helper.params import read_fps
+from tierpsy.helper.misc import TimeCounter, print_flush
 
 
 def getSubSampleVidName(masked_image_file):

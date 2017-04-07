@@ -8,7 +8,7 @@ from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import QApplication, QDialog
 
 from tierpsy.gui.AnalysisProgress_ui import Ui_AnalysisProgress
-from tierpsy.helper import GUI_CLEAR_SIGNAL
+from tierpsy.helper.misc import GUI_CLEAR_SIGNAL
 
 
 # based on http://stackoverflow.com/questions/21071448/redirecting-stdout-and-stderr-to-a-pyqt4-qtextedit-from-a-secondary-thread

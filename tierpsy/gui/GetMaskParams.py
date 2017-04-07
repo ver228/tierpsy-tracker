@@ -18,7 +18,7 @@ from tierpsy.gui.HDF5VideoPlayer import LineEditDragDrop, ViewsWithZoom, setChil
 from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
 from tierpsy.processing.ProcessWormsWorker import ProcessWormsWorker
 from tierpsy.processing.batchProcHelperFunc import getDefaultSequence
-from tierpsy.helper import TrackerParams
+from tierpsy.helper.params import TrackerParams
 
 
 class GetMaskParams_GUI(QMainWindow):
