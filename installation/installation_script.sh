@@ -151,6 +151,7 @@ function anaconda_pkgs {
 	h5py scipy scikit-learn scikit-image seaborn xlrd cython statsmodels
 	pip install gitpython pyqt5 keras 
 	conda install -y -c conda-forge tensorflow
+
 }
 
 function build_opencv3_anaconda {
@@ -170,6 +171,7 @@ function build_opencv3_anaconda {
 }
 
 function opencv_anaconda {
+	conda config --add channels menpo
 	read -r -p "Would you like to compile openCV? Otherwise I will try to download a previously compiled version that might not be compatible with your system. [y/N] " response
 	case "$response" in [yY][eE][sS]|[yY])
 		OPENCV_CUR_VER=`python3 -c "import cv2; print(cv2.__version__)" 2>/dev/null` || true
@@ -293,7 +295,6 @@ function exec_all {
 
 	compile_cython
 	setup_modules
-	download_examples
 	link_desktop
 }
 
@@ -319,6 +320,9 @@ case $1 in
 	;;
 	"--opencv")
 	opencv_anaconda
+	;;
+	"--tests")
+	download_examples
 	;;
 	*)
 	echo "Exiting... Unrecognized argument: $1"
