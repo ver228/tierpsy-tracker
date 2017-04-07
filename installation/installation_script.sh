@@ -27,8 +27,8 @@ function osx_dependencies {
 	#brew upgrade
 
 	#ffmpeg libraries, needed to install opencv
-	brew install ffmpeg --verbose --with-fdk-aac --with-libass --with-libquvi \
-	--with-libvorbis --with-libvpx --with-x265 --with-openh264 --with-tools --with-fdk-aac
+	brew install ffmpeg --verbose --with-fdk-aac --with-libass --with-libquvi --with-libvorbis --with-libvpx \
+	 --with-x265 --with-openh264 --with-tools --with-fdk-aac
 	#image libraries for opencv
 	brew install jpeg libpng libtiff openexr eigen tbb
 	brew install git
@@ -147,10 +147,10 @@ function redhat_dependencies {
 function anaconda_pkgs {
 	echo "Installing get_anaconda extra packages..."
 	#conda install -y python=3.5.3 pip
-	conda install -y numpy matplotlib pytables pandas \
+	conda install -y numpy matplotlib pytables pandas gitpython pyqt \
 	h5py scipy scikit-learn scikit-image seaborn xlrd cython statsmodels
-	pip install gitpython pyqt5 keras 
 	conda install -y -c conda-forge tensorflow
+	pip install keras 
 }
 
 function build_opencv3_anaconda {
@@ -293,7 +293,6 @@ function exec_all {
 
 	compile_cython
 	setup_modules
-	download_examples
 	link_desktop
 }
 
