@@ -38,7 +38,7 @@ def getWormProba(worms_in_frame, roi_size, model):
     indexes, worm_imgs, roi_corners = getROIFixSize(worms_in_frame, roi_size)
     
     worms_roi_f = reformat_for_model(worm_imgs)
-    worm_prob = model.predict_proba(worms_roi_f, verbose=0)[:, 1]
+    worm_prob = model.predict(worms_roi_f, verbose=0)[:, 1]
     return indexes, worm_prob
                 
                 
