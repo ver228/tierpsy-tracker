@@ -113,6 +113,9 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
     def drawSkelSingleWorm(self):
         frame_data = self.getFrameData(self.frame_number)
+        if frame_data is None:
+            return
+
         row_data = frame_data.squeeze()
         
         #for this viewer there must be only one particle per frame
