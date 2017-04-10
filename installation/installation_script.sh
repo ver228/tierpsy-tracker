@@ -158,6 +158,7 @@ function build_opencv3_anaconda {
 	echo "Installing openCV..."
 	conda install -y anaconda-client conda-build 
 	
+	rm -rf ./install_opencv3_conda
 	git clone https://github.com/ver228/install_opencv3_conda 
 	conda build install_opencv3_conda
 	
