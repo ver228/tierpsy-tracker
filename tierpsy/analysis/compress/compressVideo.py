@@ -176,9 +176,15 @@ def initMasksGroups(fid, expected_frames, im_height, im_width,
     full_dataset = createImgGroup(fid, "/full_data", tot_save_full, im_height, im_width)
     full_dataset.attrs['save_interval'] = save_full_interval
     full_dataset.attrs['expected_fps'] = expected_fps
-        
 
-    return mask_dataset, full_dataset
+
+    mean_intensity = fid.create_dataset('/mean_intensity',
+                                            (expected_fps,),
+                                            dtype="float32",
+                                            maxshape=(None,),
+                                            **IMG_FILTERS)
+    
+    return mask_dataset, full_dataset, mean_intensity
 
 def compressVideo(video_file, masked_image_file, mask_param, bgnd_param ={}, buffer_size=-1,
                   save_full_interval=-1, max_frame=1e32, expected_fps=25, is_extract_metadata=False):
@@ -247,7 +253,7 @@ def compressVideo(video_file, masked_image_file, mask_param, bgnd_param ={}, buf
     with h5py.File(masked_image_file, "r+") as mask_fid:
 
         #initialize masks groups
-        mask_dataset, full_dataset = initMasksGroups(mask_fid, 
+        mask_dataset, full_dataset, mean_intensity = initMasksGroups(mask_fid, 
             expected_frames, vid.height, vid.width, expected_fps, 
             mask_param['is_light_background'], save_full_interval)
         
@@ -291,6 +297,7 @@ def compressVideo(video_file, masked_image_file, mask_param, bgnd_param ={}, buf
                 # does not impact much the performance)
                 if mask_dataset.shape[0] <= frame_number + 1:
                     mask_dataset.resize(frame_number + 1000, axis=0)
+                    mean_intensity.resize(frame_number + 1000, axis=0)
 
                 # Add a full frame every save_full_interval
                 if frame_number % save_full_interval == 1:
@@ -314,6 +321,7 @@ def compressVideo(video_file, masked_image_file, mask_param, bgnd_param ={}, buf
 
                 # add image to the buffer
                 Ibuff[ind_buff, :, :] = image.copy()
+                mean_intensity[frame_number] = np.mean(image)
 
             else:
                 # sometimes the last image is all zeros, control for this case
@@ -357,10 +365,14 @@ def compressVideo(video_file, masked_image_file, mask_param, bgnd_param ={}, buf
             if ret == 0:
                 break
 
+
+
         # once we finished to read the whole video, we need to make sure that
         # the hdf5 array sizes are correct.
         if mask_dataset.shape[0] != frame_number:
             mask_dataset.resize(frame_number, axis=0)
+            mean_intensity.resize(frame_number, axis=0)
+
 
         if full_dataset.shape[0] != full_frame_number:
             full_dataset.resize(full_frame_number, axis=0)
