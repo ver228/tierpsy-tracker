@@ -364,18 +364,30 @@ class WormStats():
 
             Return the feature list as an ordered dictionary.
         '''
+        
+        if isinstance(worm_features, dict):
+            def read_feat(feat_name):
+                if feat_name in worm_features:
+                    return worm_features[feat_name]
+                else:
+                    return None
+            motion_mode = read_feat('motion_modes')
+        else:
+            
+            def read_feat(feat_name):
+                feat_obj = self.features_info.loc[feat_name, 'feat_name_obj']
+                if feat_obj in  worm_features._features:
+                    return worm_features._features[feat_obj].value
+                else:
+                    return None
+            motion_mode = read_feat('locomotion.motion_mode')
+
+
         # return data as a numpy recarray
         feat_stats = np.full(1, np.nan, dtype=self.feat_avg_dtype)
-
-        motion_mode = worm_features._features['locomotion.motion_mode'].value
+        
         for feat_name, feat_props in self.features_info.iterrows():
-            feat_obj = feat_props['feat_name_obj']
-
-            if feat_obj in worm_features._features:
-                tmp_data = worm_features._features[feat_obj].value
-            else:
-                tmp_data = None
-
+            tmp_data = read_feat(feat_name)
             if tmp_data is None:
                 feat_stats[feat_name] = np.nan
 
