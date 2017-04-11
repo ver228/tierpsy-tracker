@@ -1,10 +1,5 @@
 {
     "analysis_type": "WORM",
-    "background_file": "",
-    "background_frame_offset": 500,
-    "background_generation_function": "MAXIMUM",
-    "background_threshold": 1,
-    "background_type": "GENERATE_DYNAMICALLY",
     "compression_buff": 25,
     "dilation_size": 9,
     "expected_fps": 25,
@@ -41,16 +36,5 @@
     ],
     "traj_max_allowed_dist": 25,
     "traj_min_area": 25,
-    "use_background_subtraction": false,
-    "worm_bw_thresh_factor": 1.05,
-    "zf_auto_detect_tail_length": true,
-    "zf_draw_width": 2,
-    "zf_max_angle": 90,
-    "zf_min_angle": -90,
-    "zf_num_angles": 90,
-    "zf_num_segments": 12,
-    "zf_prune_retention": 1,
-    "zf_tail_detection": "MODEL_END_POINT",
-    "zf_tail_length": 60,
-    "zf_test_width": 2
+    "worm_bw_thresh_factor": 1.05
 }

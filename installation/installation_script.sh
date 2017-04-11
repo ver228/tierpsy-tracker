@@ -268,7 +268,16 @@ function download_examples {
 
 function link_desktop {
 	DESKTOLINK="$HOME/Desktop/TierpsyTracker.command"
-	echo "python3 $MW_MAIN_DIR/MWTracker_GUI/MWConsole.py; exit" > $DESKTOLINK
+	
+	if [[ "${OS}" -eq "Darwin" ]]
+	then
+		EXIT_CMD="osascript -e 'tell application "Terminal" to close first window' & exit"
+	else
+		EXIT_CMD="exit"
+	fi
+
+	echo "python3 $MW_MAIN_DIR/MWTracker_GUI/MWConsole.py; $EXIT_CMD" > $DESKTOLINK
+
 	chmod 744 $DESKTOLINK
 } 
 

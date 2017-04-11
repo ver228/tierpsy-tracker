@@ -6,6 +6,7 @@ import os
 
 from tierpsy import AUX_FILES_DIR
 from tierpsy.analysis.ske_create.helperIterROI import generateMoviesROI, getROIFixSize
+from tierpsy.helper.params import read_fps
 
 def shift_and_normalize(data):
     '''
@@ -57,6 +58,7 @@ def indentifyValidWorms(masked_file,
     proba_func = partial(getWormProba, roi_size=roi_size, model=model)
     
     frame_numbers = trajectories_data['frame_number'].unique()
+
     frame_numbers = frame_numbers[::frame_subsampling]
     trajectories_data_rec = trajectories_data[trajectories_data['frame_number'].isin(frame_numbers)].copy()
     
@@ -88,12 +90,8 @@ def filterModelWorms(masked_image_file, trajectories_data, model_name, frame_sub
     
     if frame_subsampling ==-1:
         #use the expected number of frames per seconds as the subsampling period 
-        with tables.File(masked_image_file, 'r') as fid:
-            mask_node = fid.get_node('/mask')
-            if 'expected_fps' in mask_node._v_attrs:
-                frame_subsampling = mask_node._v_attrs['expected_fps']
-            else:
-                frame_subsampling = 25
+        frame_subsampling, _ = read_fps(masked_image_file)
+        frame_subsampling = int(frame_subsampling)
     
 
     model_path = os.path.join(AUX_FILES_DIR, model_name)

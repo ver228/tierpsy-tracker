@@ -110,7 +110,6 @@ class WormFromTable():
                 # number use the frame nuber instead
                 timestamp_raw = trajectories_data['timestamp_raw'].values
                 if np.any(np.isnan(timestamp_raw)) or np.any(np.diff(timestamp_raw) == 0):
-                    print(timestamp_raw)
                     raise ValueError
                 else:
                     timestamp_inds = timestamp_raw.astype(np.int)
