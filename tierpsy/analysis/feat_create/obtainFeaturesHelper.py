@@ -380,7 +380,7 @@ class WormStats():
                     return worm_features._features[feat_obj].value
                 else:
                     return None
-            motion_mode = read_feat('locomotion.motion_mode')
+            motion_mode = worm_features._features['locomotion.motion_mode'].value
 
 
         # return data as a numpy recarray
