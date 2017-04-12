@@ -339,7 +339,7 @@ class WormStats():
 
             motion_types = ['']
             if feat_info['is_time_series']:
-                motion_types += ['_foward', '_paused', '_backward']
+                motion_types += ['_forward', '_paused', '_backward']
 
             for mtype in motion_types:
                 sub_name = feat_name + mtype
