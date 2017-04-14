@@ -48,7 +48,7 @@ def _getCorrectedTimeVec(fid, tot_frames):
 
     return tt_vec
 
-def createSampleVideo(masked_image_file, sample_video_name ='', time_factor = 8, 
+def createSampleVideo(masked_image_file, sample_video_name = '', time_factor = 8, 
                      size_factor = 5, dflt_fps=30, codec='MPEG'):
     #%%
     if not sample_video_name:
