@@ -358,7 +358,7 @@ class WormStats():
 
     def getWormStats(self, worm_features, stat_func=np.mean):
         ''' Calculate the statistics of an object worm features, subdividing data
-            into Backward/Foward/Paused and/or Positive/Negative/Absolute, when appropiated.
+            into Backward/Forward/Paused and/or Positive/Negative/Absolute, when appropiated.
             The default is to calculate the mean value, but this can be changed
             using stat_func.
 
@@ -427,12 +427,12 @@ class WormStats():
         motion_types = OrderedDict()
         motion_types['all'] = np.nan
         if is_time_series:
-            # if the the feature is motion type we can subdivide in Foward,
+            # if the the feature is motion type we can subdivide in Forward,
             # Paused or Backward motion
             motion_mode = motion_mode[valid]
             assert motion_mode.size == data.size
             
-            motion_types['foward'] = motion_mode == 1
+            motion_types['forward'] = motion_mode == 1
             motion_types['paused'] = motion_mode == 0
             motion_types['backward'] = motion_mode == -1
 
