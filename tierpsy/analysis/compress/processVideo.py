@@ -95,7 +95,7 @@ def reformatRigMaskedVideo(original_file, new_file, plugin_param_file, expected_
         tot_frames, im_height, im_width = mask_old.shape
     
         
-        mask_new, full_new =  initMasksGroups(fid_new, tot_frames, im_height, im_width, 
+        mask_new, full_new, _ =  initMasksGroups(fid_new, tot_frames, im_height, im_width, 
         expected_fps, True, save_full_interval)
         
         

@@ -29,6 +29,9 @@ class EggWriter():
             fid.write('X')
 
     def export(self):
+        if not os.path.exists(self.fname):
+            return
+
         tab = pd.read_table(self.fname, header=None)
         tab.columns = ['base_name', 'frame_number'] 
         tab_g = tab.groupby('base_name')
