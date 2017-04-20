@@ -23,8 +23,7 @@ tables.parameters.MAX_COLUMNS = 1024
 from tierpsy.helper.misc import TimeCounter, print_flush, WLAB, TABLE_FILTERS
 from tierpsy.analysis.ske_filt.getFilteredSkels import getValidIndexes
 from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStats, WormFromTable
-from tierpsy.helper.params import read_fps, read_microns_per_pixel
-from tierpsy.helper.params import min_num_skel_defaults
+from tierpsy.helper.params import add_unit_conversions, min_num_skel_defaults
 
 import open_worm_analysis_toolbox as mv
 
@@ -173,12 +172,8 @@ def getWormFeaturesFilt(
         table_timeseries = features_fid.create_table(
             '/', 'features_timeseries', header_timeseries, filters=TABLE_FILTERS)
 
-        microns_per_pixel = read_microns_per_pixel(skeletons_file)
-        fps, is_default_timestamp = read_fps(skeletons_file)
         # save some data used in the calculation as attributes
-        table_timeseries._v_attrs['micronsPerPixel'] = microns_per_pixel
-        table_timeseries._v_attrs['is_default_timestamp'] = is_default_timestamp
-        table_timeseries._v_attrs['fps'] = fps
+        fps, microns_per_pixel = add_unit_conversions(table_timeseries, skeletons_file)
         table_timeseries._v_attrs['worm_index_str'] = worm_index_str
 
         # node to save features events

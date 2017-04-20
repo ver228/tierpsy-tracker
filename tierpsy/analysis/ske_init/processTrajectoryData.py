@@ -210,6 +210,11 @@ def getSmoothedTraj(trajectories_file,
 
     
 def saveTrajData(trajectories_data, masked_image_file, skeletons_file):
+    #read and the pixel information
+    
+    trajectories_data._v_attrs['pixels2microns_x'] = pixels2microns_x                            
+    trajectories_data._v_attrs['pixels2microns_y'] = pixels2microns_y
+    trajectories_data._v_attrs['expected_fps'] = expected_fps
     
     #read some useful variables from the masked_image_file
     with tables.File(masked_image_file, 'r') as mask_fid:
@@ -249,15 +254,10 @@ def saveTrajData(trajectories_data, masked_image_file, skeletons_file):
         if not '/timestamp' in ske_file_id:
             read_and_save_timestamp(masked_image_file, skeletons_file)
         
-        #read and the pixel information
-        trajectories_data = ske_file_id.get_node('/trajectories_data')
-        trajectories_data._v_attrs['pixels2microns_x'] = pixels2microns_x                            
-        trajectories_data._v_attrs['pixels2microns_y'] = pixels2microns_y
-
+        
         #find if it is a mask from fluorescence and save it in the new group
+        trajectories_data = ske_file_id.get_node('/trajectories_data')
         trajectories_data._v_attrs['is_light_background'] = is_light_background
-
-        trajectories_data._v_attrs['expected_fps'] = expected_fps
         trajectories_data._v_attrs['bgnd_param'] = bgnd_param
 
 
