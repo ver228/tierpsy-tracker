@@ -24,7 +24,6 @@ from tierpsy.analysis.ske_create.segWormPython.mainSegworm import getSkeleton, r
 from tierpsy.analysis.ske_create.zebrafishAnalysis import zebrafishAnalysis, zebrafishSkeleton
 from tierpsy.helper.misc import TABLE_FILTERS
 
-
 def _zebra_func(worm_img, skel_args, resampling_N):
     # Get zebrafish mask
     config = zebrafishAnalysis.ModelConfig(**skel_args)

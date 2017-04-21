@@ -15,10 +15,9 @@ from scipy.ndimage.filters import median_filter
 from scipy.signal import savgol_filter
 
 from tierpsy.analysis.compress.extractMetaData import read_and_save_timestamp
-from tierpsy.helper.params import ske_init_defaults
+from tierpsy.helper.params import copy_unit_conversions, ske_init_defaults
 from tierpsy.analysis.ske_init.filterTrajectModel import filterModelWorms
 from tierpsy.helper.misc import TABLE_FILTERS
-
 
 def getSmoothedTraj(trajectories_file,
                     min_track_size=100,
@@ -210,32 +209,6 @@ def getSmoothedTraj(trajectories_file,
 
     
 def saveTrajData(trajectories_data, masked_image_file, skeletons_file):
-    #read and the pixel information
-    
-    trajectories_data._v_attrs['pixels2microns_x'] = pixels2microns_x                            
-    trajectories_data._v_attrs['pixels2microns_y'] = pixels2microns_y
-    trajectories_data._v_attrs['expected_fps'] = expected_fps
-    
-    #read some useful variables from the masked_image_file
-    with tables.File(masked_image_file, 'r') as mask_fid:
-        mask_dataset = mask_fid.get_node("/mask")
-        if 'pixels2microns_x' in mask_dataset._v_attrs:
-            pixels2microns_x = mask_dataset._v_attrs['pixels2microns_x']
-            pixels2microns_y = mask_dataset._v_attrs['pixels2microns_y']
-        else:
-            pixels2microns_x = 1
-            pixels2microns_y = 1
-        
-        if 'is_light_background' in mask_dataset._v_attrs:
-            is_light_background = mask_dataset._v_attrs['is_light_background']
-        else:
-            is_light_background = 1 #default value
-
-        if 'expected_fps' in mask_dataset._v_attrs:
-            expected_fps = mask_dataset._v_attrs['expected_fps']
-        else:
-            expected_fps = 25 #default value
-    
     #save data into the skeletons file
     with tables.File(skeletons_file, "a") as ske_file_id:
         plate_worms = ske_file_id.get_node('/plate_worms')
@@ -245,21 +218,19 @@ def saveTrajData(trajectories_data, masked_image_file, skeletons_file):
             bgnd_param = bytes(json.dumps({})) #default empty
 
 
-        ske_file_id.create_table(
+        trajectories_data_f = ske_file_id.create_table(
             '/',
             'trajectories_data',
             obj=trajectories_data.to_records(index=False),
             filters=TABLE_FILTERS)
         
+        #read and the pixel information
+        fps, microns_per_pixel, is_light_background = \
+        copy_unit_conversions(trajectories_data_f, masked_image_file)
+
         if not '/timestamp' in ske_file_id:
             read_and_save_timestamp(masked_image_file, skeletons_file)
-        
-        
-        #find if it is a mask from fluorescence and save it in the new group
-        trajectories_data = ske_file_id.get_node('/trajectories_data')
-        trajectories_data._v_attrs['is_light_background'] = is_light_background
-        trajectories_data._v_attrs['bgnd_param'] = bgnd_param
-
+       
 
 def processTrajectoryData(skeletons_file, 
     masked_image_file, 

@@ -20,6 +20,7 @@ from tierpsy.helper.misc import TimeCounter, print_flush
 IMG_FILTERS = {"compression":"gzip",
         "compression_opts":4,
         "shuffle":True,
+
         "fletcher32":True}
 
 def getROIMask(
@@ -163,19 +164,24 @@ def createImgGroup(fid, name, tot_frames, im_height, im_width):
     return img_dataset
 
 def initMasksGroups(fid, expected_frames, im_height, im_width, 
-    expected_fps, is_light_background, save_full_interval):
+    attr_params, save_full_interval):
+
+    valid_attrs = ['expected_fps', 'is_light_background', 'microns_per_pixel']
+    assert all(x in valid_attrs for x in attr_params)
 
     # open node to store the compressed (masked) data
     mask_dataset = createImgGroup(fid, "/mask", expected_frames, im_height, im_width)
-    mask_dataset.attrs['has_finished'] = 0 # flag to indicate if the conversion finished succesfully
-    mask_dataset.attrs['expected_fps'] = expected_fps # setting the expected_fps attribute so it can be read later
-    mask_dataset.attrs['is_light_background'] = int(is_light_background)
     
 
     tot_save_full = (expected_frames // save_full_interval) + 1
     full_dataset = createImgGroup(fid, "/full_data", tot_save_full, im_height, im_width)
     full_dataset.attrs['save_interval'] = save_full_interval
-    full_dataset.attrs['expected_fps'] = expected_fps
+    
+    # setting the expected_fps attribute so it can be read later
+    for attr_name, attr_val in attr_params.items():
+        print(attr_val)
+        mask_dataset.attrs[attr_name] = attr_val 
+        full_dataset.attrs[attr_name] = attr_val
 
 
     mean_intensity = fid.create_dataset('/mean_intensity',
@@ -254,9 +260,14 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
     with h5py.File(masked_image_file, "r+") as mask_fid:
 
         #initialize masks groups
+        attr_params = dict(
+            expected_fps = expected_fps,
+            microns_per_pixel = microns_per_pixel,
+            is_light_background = int(mask_param['is_light_background'])
+            )
         mask_dataset, full_dataset, mean_intensity = initMasksGroups(mask_fid, 
-            expected_frames, vid.height, vid.width, expected_fps, 
-            mask_param['is_light_background'], save_full_interval)
+            expected_frames, vid.height, vid.width,
+            attr_params, save_full_interval)
         
         if vid.dtype != np.uint8:
             # this will worm as flags to be sure that the normalization took place.
