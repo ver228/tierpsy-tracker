@@ -22,10 +22,13 @@ class CorrectParams():
             return self._fps
         except:
             if isinstance(self.main_arg, str):
-                self._fsp, _ = read_fps(self.main_arg)
+                self._fsp = read_fps(self.main_arg)
             else:
-                print(type(self.main_arg))
-                self._fsp = self.main_arg
+                #deal with a None argument
+                if self.main_arg is None:
+                    self._fsp = 1
+                else:
+                    self._fsp = self.main_arg
             return self._fsp
 
     @property

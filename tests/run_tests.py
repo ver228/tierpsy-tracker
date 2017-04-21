@@ -4,75 +4,87 @@ import os
 import shutil
 import stat
 import glob
+import argparse
 
 import tierpsy
-from tierpsy import DFLT_PARAMS_PATH
 
-def execute_cmd(command):
-    cmd_dd = []
-    for ii, x in enumerate(command):
-        if ii != 0 and not x.startswith('--'):
-            cmd_dd.append('"' + x + '"')
-        else:
-            cmd_dd.append(x)
-
-    cmd_dd = ' '.join(cmd_dd)
-    print(cmd_dd)
-
-    os.system(cmd_dd)
+class TestObj():
+    def __init__(self, examples_dir, script_dir):
+        self.process_script = os.path.join(script_dir, 'processMultipleFiles.py')
+        self.main_dir = os.path.join(examples_dir, self.name)
+        self.masked_files_dir = os.path.join(self.main_dir, 'MaskedVideos')
+        self.raw_video_dir = os.path.join(self.main_dir, 'RawVideos')
+        self.results_dir = os.path.join(self.main_dir, 'Results')
 
 
-def remove_dir(dir2remove):
-    if os.path.exists(dir2remove):
-        if sys.platform == 'darwin':
-            for fname in glob.glob(os.path.join(dir2remove, '*.hdf5')):
-                os.chflags(fname, not stat.UF_IMMUTABLE)
-        shutil.rmtree(dir2remove)
+    def execute_cmd(self):
+        self.command = [sys.executable, self.process_script] + self.args
+
+        cmd_dd = []
+        for ii, x in enumerate(self.command):
+            if ii != 0 and not x.startswith('--'):
+                cmd_dd.append('"' + x + '"')
+            else:
+                cmd_dd.append(x)
+
+        cmd_dd = ' '.join(cmd_dd)
+        print(cmd_dd)
 
 
-def test1(script_dir, examples_dir):
-    print('%%%%%% TEST1 %%%%%%\nGenerate mask files from .mjpg files.')
-    main_dir = os.path.join(examples_dir, 'test_1')
-    masked_files_dir = os.path.join(main_dir, 'MaskedVideos')
-    raw_video_dir = os.path.join(main_dir, 'RawVideos')
+        print('%%%%%% {} %%%%%%'.format(self.name))
+        print(self.description)
+        os.system(cmd_dd)
 
-    remove_dir(masked_files_dir)
+    
+    def remove_dir(self, dir2remove):
+        if os.path.exists(dir2remove):
+            if sys.platform == 'darwin':
+                for fname in glob.glob(os.path.join(dir2remove, '*.hdf5')):
+                    os.chflags(fname, not stat.UF_IMMUTABLE)
+            shutil.rmtree(dir2remove)
 
-    cmd = [
-        sys.executable,
-        os.path.join(
-            script_dir,
-            'processMultipleFiles.py'),
+    def run(self):
+        self.clean()
+        self.execute_cmd()
+
+
+
+class Test1(TestObj):
+    def __init__(self, *args):
+        self.name = 'test_1'
+        self.description = 'Generate mask files from Gecko .mjpg files.'
+        super().__init__(*args)
+
+        
+        self.args = [
         '--video_dir_root',
-        raw_video_dir,
+        self.raw_video_dir,
         '--mask_dir_root',
-        masked_files_dir,
+        self.masked_files_dir,
         '--analysis_type',
         'compress',
         '--pattern_include',
-        '*.mjpg'
+        '*.mjpg',
+        '--json_file',
+        'filter_worms.json'
         ]
-    execute_cmd(cmd)
+
+    def clean(self):
+        self.remove_dir(self.masked_files_dir)
 
 
-def test2(script_dir, examples_dir):
-    print('%%%%%% TEST2 %%%%%%\nGenerate mask files from .avi files.')
-    main_dir = os.path.join(examples_dir, 'test_2')
-    masked_files_dir = os.path.join(main_dir, 'MaskedVideos')
-    raw_video_dir = os.path.join(main_dir, 'RawVideos')
-    json_file = os.path.join(main_dir, 'test2.json')
+class Test2(TestObj):
+    def __init__(self, *args):
+        self.name = 'test_2'
+        self.description = 'Generate mask files from .avi files.'
+        super().__init__(*args)
 
-    remove_dir(masked_files_dir)
-
-    cmd = [
-        sys.executable,
-        os.path.join(
-            script_dir,
-            'processMultipleFiles.py'),
+        json_file = os.path.join(self.main_dir, 'test2.json')
+        self.args = [
         '--video_dir_root',
-        raw_video_dir,
+        self.raw_video_dir,
         '--mask_dir_root',
-        masked_files_dir,
+        self.masked_files_dir,
         '--analysis_type',
         'compress',
         "--json_file",
@@ -80,106 +92,105 @@ def test2(script_dir, examples_dir):
         '--pattern_include',
         '*.avi'
         ]
-    execute_cmd(cmd)
 
+    def clean(self):
+        self.remove_dir(self.masked_files_dir)
 
-def test3(script_dir, examples_dir):
-    print('%%%%%% TEST3 %%%%%%\nTrack from masked video files.')
-    main_dir = os.path.join(examples_dir, 'test_3')
-    masked_files_dir = os.path.join(main_dir, 'MaskedVideos')
-    results_dir = os.path.join(main_dir, 'Results')
-    json_file = os.path.join(main_dir, 'test3.json')
+class Test3(TestObj):
+    def __init__(self, *args):
+        self.name = 'test_3'
+        self.description = 'Track from masked video files.'
+        super().__init__(*args)
 
-    remove_dir(results_dir)
-
-    cmd = [
-        sys.executable,
-        os.path.join(
-            script_dir,
-            'processMultipleFiles.py'),
+        self.args = [
         '--mask_dir_root',
-        masked_files_dir,
+        self.masked_files_dir,
         '--analysis_type',
         'track',
         "--json_file",
-        json_file
+        'filter_worms.json'
         ]
 
-    execute_cmd(cmd)
+    def clean(self):
+        self.remove_dir(self.results_dir)
 
+class Test4(TestObj):
+    def __init__(self, *args):
+        self.name = 'test_4'
+        self.description = 'Calculate features from manually joined trajectories.'
+        super().__init__(*args)
 
-def test4(script_dir, examples_dir):
-    print('%%%%%% TEST4 %%%%%%\nCalculate features from manually joined trajectories.')
-    main_dir = os.path.join(examples_dir, 'test_4')
-    masked_files_dir = os.path.join(main_dir, 'MaskedVideos')
-    json_file = os.path.join(examples_dir, 'test_3', 'test3.json')
-
-    feat_manual_file = os.path.join(
-        main_dir,
+        self.feat_manual_file = os.path.join(
+        self.main_dir,
         'Results',
         'Capture_Ch1_18062015_140908_feat_manual.hdf5')
-    if os.path.exists(feat_manual_file):
-        os.remove(feat_manual_file)
 
-    cmd = [
-        sys.executable,
-        os.path.join(
-            script_dir,
-            'processMultipleFiles.py'),
+        self.args = [
         '--mask_dir_root',
-        masked_files_dir,
+        self.masked_files_dir,
         '--analysis_checkpoints',
         'FEAT_MANUAL_CREATE',
         "--json_file",
-        json_file
+        'filter_worms.json'
         ]
 
-    execute_cmd(cmd)
+    def clean(self):
+        if os.path.exists(self.feat_manual_file):
+            os.remove(self.feat_manual_file)
 
+class Test5(TestObj):
+    def __init__(self, *args):
+        self.name = 'test_5'
+        self.description = 'Complete analysis from video to calculate features.'
+        super().__init__(*args)
 
-def test5(script_dir, examples_dir):
-    print('%%%%%% TEST5 %%%%%%\nComplete analysis from video to calculate features.')
-    main_dir = os.path.join(examples_dir, 'test_5')
-    results_dir = os.path.join(main_dir, 'Results')
-    masked_files_dir = main_dir
-
-    remove_dir(results_dir)
-    cmd = cmd = [
-        sys.executable,
-        os.path.join(
-            script_dir,
-            'processMultipleFiles.py'),
+        
+        self.args = [
         '--mask_dir_root',
-        masked_files_dir,
+        self.masked_files_dir,
         '--analysis_type',
         'track']
-    execute_cmd(cmd)
 
+    def clean(self):
+        self.remove_dir(self.results_dir)
 
+class Test6(TestObj):
+    def __init__(self, *args):
+        self.name = 'test_6'
+        self.description = 'Reformat mask file produced by the rig.'
+        super().__init__(*args)
 
-
-def test6(script_dir, examples_dir):
-    print('%%%%%% TEST6 %%%%%%\nReformat mask file produced by the rig.')
-    main_dir = os.path.join(examples_dir, 'test_6')
-    masked_files_dir = os.path.join(main_dir, 'MaskedVideos')
-    raw_video_dir = os.path.join(main_dir, 'RawVideos')
-
-    json_file = os.path.join(DFLT_PARAMS_PATH, 'single_worm_on_food.json')
-    #remove_dir(masked_files_dir)
-
-    extra_cmd = ['STAGE_ALIGMENT', 'CONTOUR_ORIENT', 'FEAT_CREATE', 'WCON_EXPORT']
-    
-    cmd = [
-        sys.executable,
-        os.path.join(
-            script_dir,
-            'processMultipleFiles.py'),
+        
+        self.args = [
         '--video_dir_root',
-        raw_video_dir,
+        self.raw_video_dir,
         '--mask_dir_root',
-        masked_files_dir,
+        self.masked_files_dir,
+        '--analysis_type',
+        'compress',
+        '--pattern_include',
+        '*.raw_hdf5',
         '--json_file',
-        json_file,
+        'filter_worms.json'
+        ]
+
+    def clean(self):
+        self.remove_dir(self.masked_files_dir)
+
+class Test7(TestObj):
+    def __init__(self, *args):
+        self.name = 'test_7'
+        self.description = "Schaffer's lab single worm tracker."
+        super().__init__(*args)
+
+        extra_cmd = ['STAGE_ALIGMENT', 'CONTOUR_ORIENT', 'FEAT_CREATE', 'WCON_EXPORT']
+        self.args = [
+        '--video_dir_root',
+        self.raw_video_dir,
+        '--mask_dir_root',
+        self.masked_files_dir,
+        '--json_file',
+        'single_worm_on_food.json',
         '--pattern_include', 
         '*.avi',
         '--analysis_checkpoints',
@@ -196,36 +207,38 @@ def test6(script_dir, examples_dir):
         'INT_PROFILE',
         'INT_SKE_ORIENT',
         ]
-    execute_cmd(cmd)
 
-import argparse
+    def clean(self):
+        self.remove_dir(self.masked_files_dir)
+        self.remove_dir(self.results_dir)
 
-parser = argparse.ArgumentParser(description='Process some integers.')
-parser.add_argument('n_tests', metavar='N', type=int, nargs='*',
-                    help='Number of tests to be done. If it is empty it will execute all the tests.')
-parser.add_argument('--tests', dest='accumulate', action='store_const',
-                    const=sum, default=max,
-                    help='sum the integers (default: find the max)')
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('n_tests', metavar='N', type=int, nargs='*',
+                        help='Number of tests to be done. If it is empty it will execute all the tests.')
+    parser.add_argument('--tests', dest='accumulate', action='store_const',
+                        const=sum, default=max,
+                        help='sum the integers (default: find the max)')
     args = parser.parse_args()
+
     n_tests = args.n_tests
     
-
     root_dir = os.path.abspath(os.path.join(os.path.dirname(tierpsy.__file__), '..'))
-
     examples_dir = os.path.join(root_dir, 'tests', 'data')
     script_dir = os.path.join(root_dir, 'cmd_scripts')
 
-    all_tests = [test1, test2, test3, test4, test5, test6] 
-    
-    tests_ind = [x-1 for x in n_tests]
+    all_tests_obj = [Test1, Test2, Test3, Test4, Test5, Test6, Test7]
 
+    Test1(examples_dir, script_dir)
+    all_tests = [obj(examples_dir, script_dir) for obj in all_tests_obj]
+
+    tests_ind = [x-1 for x in n_tests]
     if tests_ind:
         test_to_exec = [all_tests[x] for x in tests_ind]
     else:
         test_to_exec = all_tests #execute all tests
     
     
-    for fun in test_to_exec:
-        fun(script_dir, examples_dir)
+    for test in test_to_exec:
+        test.run()

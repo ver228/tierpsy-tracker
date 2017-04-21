@@ -21,21 +21,15 @@ from tierpsy.analysis.ske_filt.getFilteredSkels import getFilteredSkels
 from tierpsy.analysis.ske_orient.checkHeadOrientation import correctHeadTail
 
 from tierpsy.analysis.blob_feats.getBlobsFeats import getBlobsFeats
-
-
 from tierpsy.analysis.stage_aligment.alignStageMotion import alignStageMotion, isGoodStageAligment
-
 from tierpsy.analysis.int_profile.getIntensityProfile import getIntensityProfile
 from tierpsy.analysis.int_ske_orient.correctHeadTailIntensity import correctHeadTailIntensity
-
 from tierpsy.analysis.feat_create.obtainFeatures import getWormFeaturesFilt, hasManualJoin
-
 from tierpsy.analysis.contour_orient.correctVentralDorsal import switchCntSingleWorm, hasExpCntInfo, isGoodVentralOrient
-
 from tierpsy.analysis.wcon_export.exportWCON import getWCOName, exportWCON
-
 from tierpsy.processing.CheckFinished import CheckFinished
 from tierpsy.helper.params import TrackerParams
+
 
 
 

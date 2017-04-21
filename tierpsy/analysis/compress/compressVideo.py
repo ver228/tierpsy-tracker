@@ -14,7 +14,7 @@ from scipy.ndimage.filters import median_filter
 from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
 from tierpsy.analysis.compress.extractMetaData import store_meta_data, read_and_save_timestamp
 from tierpsy.analysis.compress.selectVideoReader import selectVideoReader
-from tierpsy.helper.params import compress_defaults
+from tierpsy.helper.params import compress_defaults, set_unit_conversions
 from tierpsy.helper.misc import TimeCounter, print_flush
 
 IMG_FILTERS = {"compression":"gzip",
@@ -166,8 +166,7 @@ def createImgGroup(fid, name, tot_frames, im_height, im_width):
 def initMasksGroups(fid, expected_frames, im_height, im_width, 
     attr_params, save_full_interval):
 
-    valid_attrs = ['expected_fps', 'is_light_background', 'microns_per_pixel']
-    assert all(x in valid_attrs for x in attr_params)
+    
 
     # open node to store the compressed (masked) data
     mask_dataset = createImgGroup(fid, "/mask", expected_frames, im_height, im_width)
@@ -177,15 +176,13 @@ def initMasksGroups(fid, expected_frames, im_height, im_width,
     full_dataset = createImgGroup(fid, "/full_data", tot_save_full, im_height, im_width)
     full_dataset.attrs['save_interval'] = save_full_interval
     
-    # setting the expected_fps attribute so it can be read later
-    for attr_name, attr_val in attr_params.items():
-        print(attr_val)
-        mask_dataset.attrs[attr_name] = attr_val 
-        full_dataset.attrs[attr_name] = attr_val
 
+    assert all(x in ['expected_fps', 'is_light_background', 'microns_per_pixel'] for x in attr_params)
+    set_unit_conversions(mask_dataset, **attr_params)
+    set_unit_conversions(full_dataset, **attr_params)
 
     mean_intensity = fid.create_dataset('/mean_intensity',
-                                            (expected_fps,),
+                                            (expected_frames,),
                                             dtype="float32",
                                             maxshape=(None,),
                                             **IMG_FILTERS)

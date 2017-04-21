@@ -211,26 +211,28 @@ def getSmoothedTraj(trajectories_file,
 def saveTrajData(trajectories_data, masked_image_file, skeletons_file):
     #save data into the skeletons file
     with tables.File(skeletons_file, "a") as ske_file_id:
-        plate_worms = ske_file_id.get_node('/plate_worms')
-        if 'bgnd_param' in plate_worms._v_attrs:
-            bgnd_param = plate_worms._v_attrs['bgnd_param']
-        else:
-            bgnd_param = bytes(json.dumps({})) #default empty
-
-
         trajectories_data_f = ske_file_id.create_table(
             '/',
             'trajectories_data',
             obj=trajectories_data.to_records(index=False),
             filters=TABLE_FILTERS)
+
+        plate_worms = ske_file_id.get_node('/plate_worms')
+        if 'bgnd_param' in plate_worms._v_attrs:
+            bgnd_param = plate_worms._v_attrs['bgnd_param']
+        else:
+            bgnd_param = bytes(json.dumps({})) #default empty
         
-        #read and the pixel information
+        trajectories_data_f._v_attrs['bgnd_param'] = bgnd_param
+        #read and the units information information
         fps, microns_per_pixel, is_light_background = \
         copy_unit_conversions(trajectories_data_f, masked_image_file)
 
         if not '/timestamp' in ske_file_id:
             read_and_save_timestamp(masked_image_file, skeletons_file)
-       
+        
+        ske_file_id.flush()
+    
 
 def processTrajectoryData(skeletons_file, 
     masked_image_file, 

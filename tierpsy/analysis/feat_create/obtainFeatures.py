@@ -23,7 +23,7 @@ tables.parameters.MAX_COLUMNS = 1024
 from tierpsy.helper.misc import TimeCounter, print_flush, WLAB, TABLE_FILTERS
 from tierpsy.analysis.ske_filt.getFilteredSkels import getValidIndexes
 from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStats, WormFromTable
-from tierpsy.helper.params import copy_unit_conversions, min_num_skel_defaults
+from tierpsy.helper.params import copy_unit_conversions, read_fps, min_num_skel_defaults
 
 import open_worm_analysis_toolbox as mv
 
@@ -221,7 +221,7 @@ def getWormFeaturesFilt(
         is_single_worm, 
         feat_filt_param)
     
-    fps, is_default_timestamp = read_fps(skeletons_file)
+    fps = read_fps(skeletons_file)
     split_traj_frames = int(np.round(split_traj_time*fps)) #the fps could be non integer
     
     # function to calculate the progress time. Useful to display progress

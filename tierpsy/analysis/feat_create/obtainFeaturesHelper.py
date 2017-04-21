@@ -59,7 +59,7 @@ class WormFromTable():
         # Populates an empty normalized worm.
         #if it does not exists return 1 as a default, like that we can still calculate the features in pixels and frames, instead of micrometers and seconds.
         self.microns_per_pixel = read_microns_per_pixel(file_name, dflt=1)
-        self.fps, self.is_default_timestamp = read_fps(file_name, dflt=1)
+        self.fps = read_fps(file_name, dflt=1)
         
         # savitzky-golay filter polynomial order default
         self.POL_DEGREE_DFLT = POL_DEGREE_DFLT

@@ -8,17 +8,10 @@ import os
 import errno
 import sys
 import fnmatch
+from tierpsy.helper.misc import RESERVED_EXT
 
 def walkAndFindValidFiles(root_dir, pattern_include='*', pattern_exclude=''):
-    invalid_ext = [
-                '*_intensities.hdf5',
-                '*_skeletons.hdf5',
-                '*_trajectories.hdf5',
-                '*_features.hdf5',
-                '*_feat_ind.hdf5',
-                '*_subsampled.avi'
-                ]
-    
+    invalid_ext = ['*' + x for x in RESERVED_EXT]
     if not pattern_exclude:
         pattern_exclude = []
     elif not isinstance(pattern_exclude, (list, tuple)):

@@ -10,13 +10,16 @@ from PyQt5.QtGui import QPixmap, QPainter, QFont, QPen, QPolygonF, QColor
 from PyQt5.QtWidgets import QApplication, QMessageBox
 
 from tierpsy.analysis.feat_create.obtainFeatures import getWormFeaturesFilt
-from tierpsy.helper.params import TrackerParams
 from tierpsy.analysis.ske_create.helperIterROI import getWormROI
 from tierpsy.analysis.ske_filt.getFilteredSkels import getValidIndexes
+
 from tierpsy.gui.AnalysisProgress import WorkerFunQt, AnalysisProgress
 from tierpsy.gui.MWTrackerViewer_ui import Ui_MWTrackerViewer
 from tierpsy.gui.TrackerViewerAux import TrackerViewerAuxGUI
-from tierpsy.helper.misc import WLAB
+
+from tierpsy.helper.misc import WLAB, save_modified_table
+from tierpsy.helper.params import TrackerParams
+
 from tierpsy.processing.trackProvenance import getGitCommitHash, execThisPoint
 
 
@@ -170,22 +173,7 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
                         self, field_name).replace(
                         '/', os.sep))
 
-        # convert data into a rec array to save into pytables
-        trajectories_recarray = self.trajectories_data.to_records(index=False)
-
-        with tables.File(self.skeletons_file, "r+") as ske_file_id:
-            # pytables filters.
-            table_filters = tables.Filters(
-                complevel=5, complib='zlib', shuffle=True, fletcher32=True)
-
-            newT = ske_file_id.create_table(
-                '/',
-                'trajectories_data_d',
-                obj=trajectories_recarray,
-                filters=table_filters)
-
-            ske_file_id.remove_node('/', 'trajectories_data')
-            newT.rename('trajectories_data')
+        save_modified_table(skeletons_file, trajectories_data, 'trajectories_data')
 
         self.updateSkelFile(self.skeletons_file)
 
