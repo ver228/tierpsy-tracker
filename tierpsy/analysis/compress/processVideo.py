@@ -72,7 +72,7 @@ def _isValidSource(original_file):
         return False
         
     
-def reformatRigMaskedVideo(original_file, new_file, plugin_param_file, expected_fps):
+def reformatRigMaskedVideo(original_file, new_file, plugin_param_file, expected_fps, microns_per_pixel):
     plugin_params = _getWormEnconderParams(plugin_param_file)
      
     base_name = original_file.rpartition('.')[0].rpartition(os.sep)[-1]
@@ -95,11 +95,14 @@ def reformatRigMaskedVideo(original_file, new_file, plugin_param_file, expected_
         tot_frames, im_height, im_width = mask_old.shape
     
         
+        attr_params = dict(
+                expected_fps = expected_fps,
+                microns_per_pixel = microns_per_pixel,
+                is_light_background = True
+                )
         mask_new, full_new, _ =  initMasksGroups(fid_new, tot_frames, im_height, im_width, 
-        expected_fps, True, save_full_interval)
-        
-        
-    
+        attr_params, save_full_interval)
+
         mask_new.attrs['plugin_params'] = json.dumps(plugin_params)
         
         img_buff_ini = mask_old[:buffer_size]
@@ -146,7 +149,10 @@ def isGoodVideo(video_file):
 def processVideo(video_file, masked_image_file, compress_vid_param):
     if video_file.endswith('hdf5'):
         plugin_param_file = os.path.join(os.path.dirname(video_file), 'wormencoder.ini')
-        reformatRigMaskedVideo(video_file, masked_image_file, plugin_param_file, compress_vid_param['expected_fps'])
+        expected_fps = compress_vid_param['expected_fps'] 
+        microns_per_pixel = compress_vid_param['microns_per_pixel'] 
+
+        reformatRigMaskedVideo(video_file, masked_image_file, plugin_param_file, expected_fps=expected_fps, microns_per_pixel=microns_per_pixel)
     else:
         compressVideo(video_file, masked_image_file, **compress_vid_param)
 

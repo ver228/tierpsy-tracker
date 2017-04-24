@@ -4,6 +4,7 @@ import os
 import shutil
 import stat
 import glob
+import json
 import argparse
 
 import tierpsy
@@ -31,7 +32,7 @@ class TestObj():
                 cmd_dd.append(x)
 
         cmd_dd = ' '.join(cmd_dd)
-        self.commands += cmd_dd
+        self.commands.append(cmd_dd)
 
         return self.commands
 
@@ -54,11 +55,15 @@ class TestObj():
         self.clean()
         self.execute_cmd()
 
+    def clean(self):
+        self.remove_dir(self.masked_files_dir)
+        self.remove_dir(self.results_dir)
 
 
-class Test1(TestObj):
+
+class GECKO_VIDEOS(TestObj):
     def __init__(self, *args):
-        self.name = 'test_1'
+        self.name = 'GECKO_VIDEOS'
         self.description = 'Complete analysis from video from Gecko .mjpg files.'
         super().__init__(*args)
 
@@ -79,18 +84,13 @@ class Test1(TestObj):
         ]
         self.add_command(args)
 
-    def clean(self):
-        self.remove_dir(self.masked_files_dir)
-        self.remove_dir(self.results_dir)
-
-
-class Test2(TestObj):
+class AVI_VIDEOS(TestObj):
     def __init__(self, *args):
-        self.name = 'test_2'
+        self.name = 'AVI_VIDEOS'
         self.description = 'Generate mask files from .avi files.'
         super().__init__(*args)
 
-        json_file = os.path.join(self.main_dir, 'test2.json')
+        json_file = os.path.join(self.main_dir, 'AVI_VIDEOS.json')
         args = [
         '--video_dir_root',
         self.raw_video_dir,
@@ -105,31 +105,11 @@ class Test2(TestObj):
         ]
         self.add_command(args)
 
-    def clean(self):
-        self.remove_dir(self.masked_files_dir)
 
-class Test3(TestObj):
+
+class MANUAL_FEATS(TestObj):
     def __init__(self, *args):
-        self.name = 'test_3'
-        self.description = 'Track from masked video files.'
-        super().__init__(*args)
-
-        args = [
-        '--mask_dir_root',
-        self.masked_files_dir,
-        '--analysis_type',
-        'track',
-        "--json_file",
-        'filter_worms.json'
-        ]
-        self.add_command(args)
-
-    def clean(self):
-        self.remove_dir(self.results_dir)
-
-class Test4(TestObj):
-    def __init__(self, *args):
-        self.name = 'test_4'
+        self.name = 'MANUAL_FEATS'
         self.description = 'Calculate features from manually joined trajectories.'
         super().__init__(*args)
 
@@ -152,10 +132,10 @@ class Test4(TestObj):
         if os.path.exists(self.feat_manual_file):
             os.remove(self.feat_manual_file)
 
-class Test5(TestObj):
+class RIG_HDF5_VIDEOS(TestObj):
     def __init__(self, *args):
-        self.name = 'test_5'
-        self.description = 'Reformat mask file produced by the rig.'
+        self.name = 'RIG_HDF5_VIDEOS'
+        self.description = 'Reformat hdf5 file produced by the gecko plugin in the worm rig.'
         super().__init__(*args)
 
         args = [
@@ -164,7 +144,7 @@ class Test5(TestObj):
         '--mask_dir_root',
         self.masked_files_dir,
         '--analysis_type',
-        'compress',
+        'all',
         '--pattern_include',
         '*.raw_hdf5',
         '--json_file',
@@ -172,23 +152,21 @@ class Test5(TestObj):
         ]
         self.add_command(args)
 
-    def clean(self):
-        self.remove_dir(self.masked_files_dir)
 
-class Test6(TestObj):
+class SCHAFER_LAB_SINGLE_WORM(TestObj):
     def __init__(self, *args):
-        self.name = 'test_6'
+        self.name = 'SCHAFER_LAB_SINGLE_WORM'
         self.description = "Schaffer's lab single worm tracker."
         super().__init__(*args)
 
         original_param = os.path.join(tierpsy.DFLT_PARAMS_PATH, 'single_worm_on_food.json')
-        with open(original_param, 'r') as fid
-            dd = json.load(fid)
-            dd['ventral_orientation'] = 'read_basename'
+        with open(original_param, 'r') as fid:
+            params_dict = json.load(fid)
+            params_dict['ventral_orientation'] = 'read_basename'
 
-        dum_params = os.path.join(self.main_dir, 'params.json')
-        with open(dum_params, 'w') as fid:
-            json.dump(dd)
+        f_params = os.path.join(self.main_dir, 'params.json')
+        with open(f_params, 'w') as fid:
+            json.dump(params_dict, fid)
 
 
         args = [
@@ -199,15 +177,11 @@ class Test6(TestObj):
         '--results_dir_root',
         self.results_dir,
         '--json_file',
-        dum_params,
+        f_params,
         '--pattern_include', 
         '*.avi',
         ]
         self.add_command(args)
-
-    def clean(self):
-        self.remove_dir(self.masked_files_dir)
-        self.remove_dir(self.results_dir)
 
 
 if __name__ == '__main__':
@@ -225,9 +199,7 @@ if __name__ == '__main__':
     examples_dir = os.path.join(root_dir, 'tests', 'data')
     script_dir = os.path.join(root_dir, 'cmd_scripts')
 
-    all_tests_obj = [Test1, Test2, Test3, Test4, Test5, Test6, Test7]
-
-    Test1(examples_dir, script_dir)
+    all_tests_obj = [GECKO_VIDEOS, AVI_VIDEOS, MANUAL_FEATS, RIG_HDF5_VIDEOS, SCHAFER_LAB_SINGLE_WORM]
     all_tests = [obj(examples_dir, script_dir) for obj in all_tests_obj]
 
     tests_ind = [x-1 for x in n_tests]

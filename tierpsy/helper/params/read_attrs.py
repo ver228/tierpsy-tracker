@@ -149,7 +149,7 @@ def read_microns_per_pixel(fname, dflt=1):
     reader = AttrReader(fname, dflt)
     return reader.microns_per_pixel
 
-def _read_unit_conversions(fname, dflt=1):
+def read_unit_conversions(fname, dflt=1):
     reader = AttrReader(fname, dflt)
     fps_out = reader.get_fps()
     
@@ -159,15 +159,10 @@ def _read_unit_conversions(fname, dflt=1):
     print(fps_out, microns_per_pixel_out, is_light_background)
     return fps_out, microns_per_pixel_out, is_light_background
 
-def read_unit_conversions(fname, dflt=1):
-    fps_out, microns_per_pixel_out, is_light_background = \
-    _read_unit_conversions(fname, dflt)
-    return fps_out[0], microns_per_pixel_out[0], is_light_background
-
 
 def copy_unit_conversions(group_to_save, original_file, dflt=1):
     fps_out, microns_per_pixel_out, is_light_background = \
-    _read_unit_conversions(original_file, dflt)
+    read_unit_conversions(original_file, dflt)
 
     #expected_fps and fps will be the same if is_user_fps is True.
     fps, expected_fps, is_user_fps, time_units = fps_out

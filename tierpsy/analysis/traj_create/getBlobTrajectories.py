@@ -338,8 +338,9 @@ def getBlobsTable(masked_image_file,
 
 
     #read properties
-    expected_fps, _, is_light_background = read_unit_conversions(masked_image_file)
-    
+    fps_out, _, is_light_background = read_unit_conversions(masked_image_file)
+    expected_fps = fps_out[0]
+
     #find if it is using background subtraction
     if len(bgnd_param) > 0:
         bgnd_param['is_light_background'] = is_light_background

@@ -6,14 +6,12 @@ import warnings
 
 from tierpsy.analysis.ske_filt.getFilteredSkels import _h_calAreaSignedArray
 
-switchCntSingleWorm, hasExpCntInfo, isGoodVentralOrient
-
 VALID_CNT = ['clockwise', 'anticlockwise', 'unknown']
 
 def read_ventral_side(skeletons_file, ventral_orientation=''):
     if ventral_orientation in VALID_CNT:
         return ventral_orientation
-    if ventral_orientation = 'read_basename':
+    if ventral_orientation == 'read_basename':
         bn = os.path.basename(skeletons_file)
         if '_R_' in bn:
             return 'anticlockwise'
@@ -46,12 +44,17 @@ def hasExpCntInfo(skeletons_file, ventral_orientation=''):
 
 def isBadVentralOrient(skeletons_file, ventral_orientation=''):
     ventral_side = read_ventral_side(skeletons_file, ventral_orientation)
+    if not ventral_side in VALID_CNT:
+        # msg = '{}: "{}" is not a valid value for ventral side orientation. '.format(skeletons_file, exp_info['ventral_side'])
+        # msg += 'Only "clockwise" or "anticlockwise" are accepted values'
+        # warnings.warn(msg)
+        return True
+    
+    if ventral_side == 'unknown':
+        return False
+
     with tables.File(skeletons_file, 'r') as fid:
-        if not ventral_side in ['clockwise', 'anticlockwise']:
-            # msg = '{}: "{}" is not a valid value for ventral side orientation. '.format(skeletons_file, exp_info['ventral_side'])
-            # msg += 'Only "clockwise" or "anticlockwise" are accepted values'
-            # warnings.warn(msg)
-            return True
+        
 
         has_skeletons = fid.get_node('/trajectories_data').col('has_skeleton')
 
