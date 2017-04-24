@@ -8,6 +8,40 @@ from tierpsy import AUX_FILES_DIR
 from threading import Thread
 from queue import Queue, Empty
 
+# get the correct path for ffmpeg. First we look in the aux
+# directory, otherwise we look in the system path.
+def get_local_or_sys_path(file_name):
+    file_source = os.path.join(AUX_FILES_DIR, file_name)
+    if not os.path.exists(file_source):
+        file_source = shutil.which(file_name)
+
+    if not file_source:
+        raise FileNotFoundError('command not found: %s' % file_name)
+    return file_source
+
+
+try:
+    if sys.platform == 'win32':
+        FFMPEG_CMD = get_local_or_sys_path('ffmpeg.exe')
+    elif sys.platform == 'darwin':
+        FFMPEG_CMD = get_local_or_sys_path('ffmpeg22')
+    elif sys.platform == 'linux':
+        FFMPEG_CMD = get_local_or_sys_path('ffmpeg')
+except FileNotFoundError:
+    FFMPEG_CMD = ''
+    warnings.warn('ffmpeg do not found. This might cause problems while reading .mjpeg files.')
+
+# get the correct path for ffprobe. First we look in the aux
+    # directory, otherwise we look in the system path.
+try:
+    if os.name == 'nt':
+        FFPROBE_CMD = get_local_or_sys_path('ffprobe.exe')
+    else:
+        FFPROBE_CMD = get_local_or_sys_path('ffprobe')
+except FileNotFoundError: 
+    FFPROBE_CMD = ''
+    warnings.warn('ffprobe do not found. This might cause problems while extracting the raw videos timestamps.')
+
 
 WLAB = {'U': 0, 'WORM': 1, 'WORMS': 2, 'BAD': 3, 'GOOD_SKE': 4}
 
@@ -45,38 +79,3 @@ class ReadEnqueue():
         except Empty:
             line  = None
         return line
-
-
-# get the correct path for ffmpeg. First we look in the aux
-# directory, otherwise we look in the system path.
-def get_local_or_sys_path(file_name):
-    file_source = os.path.join(AUX_FILES_DIR, file_name)
-    if not os.path.exists(file_source):
-        file_source = shutil.which(file_name)
-
-    if not file_source:
-        raise FileNotFoundError('command not found: %s' % file_name)
-    return file_source
-
-
-try:
-    if sys.platform == 'win32':
-        FFMPEG_CMD = get_local_or_sys_path('ffmpeg.exe')
-    elif sys.platform == 'darwin':
-        FFMPEG_CMD = get_local_or_sys_path('ffmpeg22')
-    elif sys.platform == 'linux':
-        FFMPEG_CMD = get_local_or_sys_path('ffmpeg')
-except FileNotFoundError:
-    FFMPEG_CMD = ''
-    warnings.warn('ffmpeg do not found. This might cause problems while reading .mjpeg files.')
-
-# get the correct path for ffprobe. First we look in the aux
-    # directory, otherwise we look in the system path.
-try:
-    if os.name == 'nt':
-        FFPROBE_CMD = get_local_or_sys_path('ffprobe.exe')
-    else:
-        FFPROBE_CMD = get_local_or_sys_path('ffprobe')
-except FileNotFoundError: 
-    FFPROBE_CMD = ''
-    warnings.warn('ffprobe do not found. This might cause problems while extracting the raw videos timestamps.')

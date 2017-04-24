@@ -90,7 +90,7 @@ def filterModelWorms(masked_image_file, trajectories_data, model_name, frame_sub
     
     if frame_subsampling ==-1:
         #use the expected number of frames per seconds as the subsampling period 
-        frame_subsampling, _ = read_fps(masked_image_file)
+        frame_subsampling = read_fps(masked_image_file)
         frame_subsampling = int(frame_subsampling)
     
 

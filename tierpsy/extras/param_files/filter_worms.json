@@ -3,6 +3,7 @@
     "compression_buff": 25,
     "dilation_size": 9,
     "expected_fps": 25,
+    "microns_per_pixel": 10.0,
     "is_extract_metadata": false,
     "filt_bad_seg_thresh": 0.8,
     "filt_critical_alpha": 0.01,

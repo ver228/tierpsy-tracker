@@ -30,8 +30,9 @@ dflt_param_list = [
     ('thresh_C', 15, 'constant offset used by the adaptative thresholding to calculate the mask.'),
     ('thresh_block_size', 61, 'block size used by the adaptative thresholding.'),
     ('dilation_size', 9, 'size of the structural element used in morphological operations to calculate the worm mask.'),
-    ('expected_fps', 25, 'expected frame rate.'),
-    ('is_extract_metadata', False, ''),
+    ('is_extract_metadata', True, 'Extract metadata (timestamps) from the original video file. This is slow since the more accurate method scan the whole file using ffprobe.'),
+    ('expected_fps', None, 'Expected frame rate.'),
+    ('microns_per_pixel', None, 'Pixel size in micrometers.'),
 
     ('save_full_interval', -1, 'frequence in frames that an unprocessed frame is going to be saved (Default: 200 * expected_fps).'),
     ('compression_buff', -1, 'number of images "min-averaged" to calculate the image mask. (Default: expected_fps).'),
@@ -123,7 +124,6 @@ class TrackerParams:
     def __init__(self, source_file=''):
         p = self._read_clean_input(source_file)
 
-        self.expected_fps = p['expected_fps']
         self.analysis_type = p['analysis_type']
         self.is_single_worm = self.analysis_type == 'SINGLE_WORM_SHAFER'
         self.use_skel_filter = True #useless but important in other functions        
@@ -143,7 +143,8 @@ class TrackerParams:
             'save_full_interval': p['save_full_interval'],
             'mask_param': self.mask_param,
             'bgnd_param': self.bgnd_param_mask,
-            'expected_fps': self.expected_fps,
+            'expected_fps': p['expected_fps'],
+            'microns_per_pixel' : p['microns_per_pixel'],
             'is_extract_metadata': p['is_extract_metadata']
         }
 
@@ -151,7 +152,7 @@ class TrackerParams:
         self.subsample_vid_param = {
             'time_factor' : 8, 
             'size_factor' : 5, 
-            'dflt_fps' : self.expected_fps
+            'dflt_fps' : p['expected_fps']
         }
         #%%
         bgnd_param_traj_f = ['traj_bgnd_buff_size', 'traj_bgnd_frame_gap', 'is_light_background']
@@ -215,7 +216,6 @@ class TrackerParams:
             'segment4angle': p['ht_orient_segment'],
             'min_block_size': -1}
 
-        min_num_skel = 4 * self.expected_fps
         self.feat_filt_param = _get_all_prefix(p, 'filt_')
         self.feat_filt_param['min_num_skel'] = -1
 
@@ -223,7 +223,7 @@ class TrackerParams:
         self.int_profile_param = {
             'width_resampling': p['int_width_resampling'],
             'length_resampling': p['int_length_resampling'],
-            'min_num_skel': min_num_skel,
+            'min_num_skel': -1,
             'smooth_win': 11,
             'pol_degree': 3,
             'width_percentage': p['int_avg_width_frac'],

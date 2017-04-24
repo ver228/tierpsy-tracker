@@ -71,7 +71,7 @@ def _isValidSource(original_file):
         return False
         
     
-def reformatRigMaskedVideo(original_file, new_file, plugin_param_file, expected_fps):
+def reformatRigMaskedVideo(original_file, new_file, plugin_param_file, expected_fps, microns_per_pixel):
     plugin_params = getWormEnconderParams(plugin_param_file)
      
     base_name = original_file.rpartition('.')[0].rpartition(os.sep)[-1]
@@ -93,9 +93,13 @@ def reformatRigMaskedVideo(original_file, new_file, plugin_param_file, expected_
         
         tot_frames, im_height, im_width = mask_old.shape
     
-        
+        attr_params = dict(
+            expected_fps = expected_fps,
+            microns_per_pixel = microns_per_pixel,
+            is_light_background = 1
+            )
         mask_new, full_new =  initMasksGroups(fid_new, tot_frames, im_height, im_width, 
-        expected_fps, True, save_full_interval)
+        attr_params, save_full_interval)
         
         
     
