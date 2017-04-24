@@ -221,7 +221,7 @@ def saveTrajData(trajectories_data, masked_image_file, skeletons_file):
         if 'bgnd_param' in plate_worms._v_attrs:
             bgnd_param = plate_worms._v_attrs['bgnd_param']
         else:
-            bgnd_param = bytes(json.dumps({})) #default empty
+            bgnd_param = bytes(json.dumps({}), 'utf-8') #default empty
         
         trajectories_data_f._v_attrs['bgnd_param'] = bgnd_param
         #read and the units information information

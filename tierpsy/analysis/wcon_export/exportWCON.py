@@ -17,6 +17,8 @@ import tables
 from tierpsy.helper.misc import print_flush
 from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStats
 from tierpsy.analysis.contour_orient.correctVentralDorsal import read_ventral_side
+from tierpsy.helper.params import read_unit_conversions
+
 
 def getWCONMetaData(fname, READ_FEATURES=False, provenance_step='FEAT_CREATE'):
     def _order_metadata(metadata_dict):
@@ -181,29 +183,20 @@ def _getData(features_file, READ_FEATURES=False, IS_FOR_WCON=True):
     return all_worms_feats
 
 def _getUnits(features_file, READ_FEATURES=False):
-    def _pixels_or_microns(micronsPerPixel):
-        #if this number is 1 and it is an integer there was not conversion given and the unit is pixels
-        if isinstance(micronsPerPixel, (float, np.float64)) and micronsPerPixel == 1:
-            unit_str = 'pixels'
-        else:
-            unit_str = 'microns'
-        return unit_str
     
-    with tables.File(features_file, 'r') as fid:
-        micronsPerPixel = fid.get_node('/features_timeseries').attrs['micronsPerPixel']
-        
-        
+    fps_out, microns_per_pixel_out, _  = read_unit_conversions(features_file)
+    xy_units = microns_per_pixel_out[1]
+    time_units = fps_out[2]
+
     units = OrderedDict()
-    units['t'] = 'seconds'
     units["size"] = "mm" #size of the plate
+    units['t'] = time_units #frames or seconds
     
-    
-    unit_l_str = _pixels_or_microns(micronsPerPixel)
     for field in ['x', 'y', 'px', 'py']:
-        units[field] = unit_l_str
+        units[field] = xy_units #(pixels or micrometers)
     
     if READ_FEATURES:
-        #TODO double check the units
+        #TODO how to change microns to pixels when required
         ws = WormStats()
         for field, unit in ws.features_info['units'].iteritems():
             units['@OMG ' + field] = unit
