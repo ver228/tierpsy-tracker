@@ -10,30 +10,37 @@ import tierpsy
 
 class TestObj():
     def __init__(self, examples_dir, script_dir):
+        self.commands = []
         self.process_script = os.path.join(script_dir, 'processMultipleFiles.py')
         self.main_dir = os.path.join(examples_dir, self.name)
         self.masked_files_dir = os.path.join(self.main_dir, 'MaskedVideos')
         self.raw_video_dir = os.path.join(self.main_dir, 'RawVideos')
         self.results_dir = os.path.join(self.main_dir, 'Results')
 
+    def add_command(self, args, dlft_script=''):
+        if not dlft_script:
+            dlft_script = self.process_script
 
-    def execute_cmd(self):
-        self.command = [sys.executable, self.process_script] + self.args
+        command = [sys.executable, dlft_script] + args
 
         cmd_dd = []
-        for ii, x in enumerate(self.command):
+        for ii, x in enumerate(command):
             if ii != 0 and not x.startswith('--'):
                 cmd_dd.append('"' + x + '"')
             else:
                 cmd_dd.append(x)
 
         cmd_dd = ' '.join(cmd_dd)
-        print(cmd_dd)
+        self.commands += cmd_dd
 
+        return self.commands
 
-        print('%%%%%% {} %%%%%%'.format(self.name))
-        print(self.description)
-        os.system(cmd_dd)
+    def execute_cmd(self):
+        for cmd in self.commands:
+            print(cmd)
+            print('%%%%%% {} %%%%%%'.format(self.name))
+            print(self.description)
+            os.system(cmd)
 
     
     def remove_dir(self, dir2remove):
@@ -52,25 +59,29 @@ class TestObj():
 class Test1(TestObj):
     def __init__(self, *args):
         self.name = 'test_1'
-        self.description = 'Generate mask files from Gecko .mjpg files.'
+        self.description = 'Complete analysis from video from Gecko .mjpg files.'
         super().__init__(*args)
 
         
-        self.args = [
+        args = [
         '--video_dir_root',
         self.raw_video_dir,
         '--mask_dir_root',
         self.masked_files_dir,
+        '--results_dir_root',
+        self.results_dir,
         '--analysis_type',
-        'compress',
+        'all',
         '--pattern_include',
         '*.mjpg',
         '--json_file',
         'filter_worms.json'
         ]
+        self.add_command(args)
 
     def clean(self):
         self.remove_dir(self.masked_files_dir)
+        self.remove_dir(self.results_dir)
 
 
 class Test2(TestObj):
@@ -80,7 +91,7 @@ class Test2(TestObj):
         super().__init__(*args)
 
         json_file = os.path.join(self.main_dir, 'test2.json')
-        self.args = [
+        args = [
         '--video_dir_root',
         self.raw_video_dir,
         '--mask_dir_root',
@@ -92,6 +103,7 @@ class Test2(TestObj):
         '--pattern_include',
         '*.avi'
         ]
+        self.add_command(args)
 
     def clean(self):
         self.remove_dir(self.masked_files_dir)
@@ -102,7 +114,7 @@ class Test3(TestObj):
         self.description = 'Track from masked video files.'
         super().__init__(*args)
 
-        self.args = [
+        args = [
         '--mask_dir_root',
         self.masked_files_dir,
         '--analysis_type',
@@ -110,6 +122,7 @@ class Test3(TestObj):
         "--json_file",
         'filter_worms.json'
         ]
+        self.add_command(args)
 
     def clean(self):
         self.remove_dir(self.results_dir)
@@ -125,7 +138,7 @@ class Test4(TestObj):
         'Results',
         'Capture_Ch1_18062015_140908_feat_manual.hdf5')
 
-        self.args = [
+        args = [
         '--mask_dir_root',
         self.masked_files_dir,
         '--analysis_checkpoints',
@@ -133,6 +146,7 @@ class Test4(TestObj):
         "--json_file",
         'filter_worms.json'
         ]
+        self.add_command(args)
 
     def clean(self):
         if os.path.exists(self.feat_manual_file):
@@ -141,27 +155,10 @@ class Test4(TestObj):
 class Test5(TestObj):
     def __init__(self, *args):
         self.name = 'test_5'
-        self.description = 'Complete analysis from video to calculate features.'
-        super().__init__(*args)
-
-        
-        self.args = [
-        '--mask_dir_root',
-        self.masked_files_dir,
-        '--analysis_type',
-        'track']
-
-    def clean(self):
-        self.remove_dir(self.results_dir)
-
-class Test6(TestObj):
-    def __init__(self, *args):
-        self.name = 'test_6'
         self.description = 'Reformat mask file produced by the rig.'
         super().__init__(*args)
 
-        
-        self.args = [
+        args = [
         '--video_dir_root',
         self.raw_video_dir,
         '--mask_dir_root',
@@ -173,40 +170,40 @@ class Test6(TestObj):
         '--json_file',
         'filter_worms.json'
         ]
+        self.add_command(args)
 
     def clean(self):
         self.remove_dir(self.masked_files_dir)
 
-class Test7(TestObj):
+class Test6(TestObj):
     def __init__(self, *args):
-        self.name = 'test_7'
+        self.name = 'test_6'
         self.description = "Schaffer's lab single worm tracker."
         super().__init__(*args)
 
-        extra_cmd = ['STAGE_ALIGMENT', 'CONTOUR_ORIENT', 'FEAT_CREATE', 'WCON_EXPORT']
-        self.args = [
+        original_param = os.path.join(tierpsy.DFLT_PARAMS_PATH, 'single_worm_on_food.json')
+        with open(original_param, 'r') as fid
+            dd = json.load(fid)
+            dd['ventral_orientation'] = 'read_basename'
+
+        dum_params = os.path.join(self.main_dir, 'params.json')
+        with open(dum_params, 'w') as fid:
+            json.dump(dd)
+
+
+        args = [
         '--video_dir_root',
         self.raw_video_dir,
         '--mask_dir_root',
         self.masked_files_dir,
+        '--results_dir_root',
+        self.results_dir,
         '--json_file',
-        'single_worm_on_food.json',
+        dum_params,
         '--pattern_include', 
         '*.avi',
-        '--analysis_checkpoints',
-        'COMPRESS',
-        'COMPRESS_ADD_DATA',
-        'VID_SUBSAMPLE',
-        'TRAJ_CREATE',
-        'TRAJ_JOIN',
-        'SKE_INIT',
-        'BLOB_FEATS',
-        'SKE_CREATE',
-        'SKE_FILT',
-        'SKE_ORIENT',
-        'INT_PROFILE',
-        'INT_SKE_ORIENT',
         ]
+        self.add_command(args)
 
     def clean(self):
         self.remove_dir(self.masked_files_dir)
