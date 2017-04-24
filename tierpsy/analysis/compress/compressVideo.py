@@ -310,7 +310,7 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
 
                 # Add a full frame every save_full_interval
                 if frame_number % save_full_interval == 1:
-                    if full_dataset.shape[0] <= full_frame_number:
+                    if full_dataset.shape[0] <= full_frame_number+1:
                         full_dataset.resize(full_frame_number + 1, axis=0)
                         # just to be sure that the index we are saving in is
                         # what we what we are expecting
