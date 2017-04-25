@@ -18,8 +18,7 @@ import tables
 
 from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
 from tierpsy.analysis.compress.extractMetaData import read_and_save_timestamp
-from tierpsy.helper.params import read_unit_conversions
-from tierpsy.helper.params import traj_create_defaults
+from tierpsy.helper.params import traj_create_defaults, read_unit_conversions
 from tierpsy.helper.misc import TimeCounter, print_flush, TABLE_FILTERS
 
 

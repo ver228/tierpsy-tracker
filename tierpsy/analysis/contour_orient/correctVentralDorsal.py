@@ -48,32 +48,38 @@ def isBadVentralOrient(skeletons_file, ventral_orientation=''):
         # msg = '{}: "{}" is not a valid value for ventral side orientation. '.format(skeletons_file, exp_info['ventral_side'])
         # msg += 'Only "clockwise" or "anticlockwise" are accepted values'
         # warnings.warn(msg)
-        return True
+        is_bad =  True
     
-    if ventral_side == 'unknown':
-        return False
+    elif ventral_side == 'unknown':
+        is_bad =  False
+    else:
+        with tables.File(skeletons_file, 'r') as fid:
+            
 
-    with tables.File(skeletons_file, 'r') as fid:
-        
+            has_skeletons = fid.get_node('/trajectories_data').col('has_skeleton')
 
-        has_skeletons = fid.get_node('/trajectories_data').col('has_skeleton')
+            # let's use the first valid skeleton, it seems like a waste to use all the other skeletons.
+            # I checked earlier to make sure the have the same orientation.
 
-        # let's use the first valid skeleton, it seems like a waste to use all the other skeletons.
-        # I checked earlier to make sure the have the same orientation.
+            valid_ind = np.where(has_skeletons)[0]
+            if valid_ind.size == 0:
+                raise ValueError
 
-        valid_ind = np.where(has_skeletons)[0]
-        if valid_ind.size == 0:
-            return
+            cnt_side1 = fid.get_node('/contour_side1')[valid_ind[0], :, :]
+            cnt_side2 = fid.get_node('/contour_side2')[valid_ind[0], :, :]
+            A_sign = _h_calAreaSignedArray(cnt_side1, cnt_side2)
 
-        cnt_side1 = fid.get_node('/contour_side1')[valid_ind[0], :, :]
-        cnt_side2 = fid.get_node('/contour_side2')[valid_ind[0], :, :]
-        A_sign = _h_calAreaSignedArray(cnt_side1, cnt_side2)
+            # if not (np.all(A_sign > 0) or np.all(A_sign < 0)):
+            #    raise ValueError('There is a problem. All the contours should have the same orientation.')
+            if ventral_side == 'clockwise':
+                is_bad = A_sign[0] < 0
+            elif ventral_side == 'anticlockwise':
+                is_bad = A_sign[0] > 0
+            else:
+                raise ValueError
 
-        # if not (np.all(A_sign > 0) or np.all(A_sign < 0)):
-        #    raise ValueError('There is a problem. All the contours should have the same orientation.')
-
-        return (ventral_side == 'clockwise' and A_sign[0] < 0) or \
-            (ventral_side == 'anticlockwise' and A_sign[0] > 0)
+    print(ventral_orientation, is_bad)
+    return is_bad
 
 def isGoodVentralOrient(skeletons_file, ventral_orientation=''):
     #save as isBadVentral but opposite, and fault tolerant
@@ -84,7 +90,7 @@ def isGoodVentralOrient(skeletons_file, ventral_orientation=''):
 
 def switchCntSingleWorm(skeletons_file, ventral_orientation=''):
 
-    if isBadVentralOrient(skeletons_file):
+    if isBadVentralOrient(skeletons_file, ventral_orientation):
         with tables.File(skeletons_file, 'r+') as fid:
             # since here we are changing all the contours, let's just change
             # the name of the datasets
