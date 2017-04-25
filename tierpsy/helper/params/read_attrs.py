@@ -97,33 +97,30 @@ class AttrReader():
 
     def get_microns_per_pixel(self):
         try:
-            return self._microns_per_pixel
-        except:
-            try:
-                #this for the shaffer's lab single worm case...
-                with tables.File(self.file_name, 'r') as fid:
-                    microns_per_pixel_scale = fid.get_node('/stage_movement')._v_attrs['microns_per_pixel_scale']
-                    if microns_per_pixel_scale.size == 2:
-                        assert np.abs(
-                            microns_per_pixel_scale[0]) == np.abs(
-                            microns_per_pixel_scale[1])
-                        microns_per_pixel = np.abs(microns_per_pixel_scale[0])
-                xy_units = 'micrometers'
+            #this for the shaffer's lab single worm case...
+            with tables.File(self.file_name, 'r') as fid:
+                microns_per_pixel_scale = fid.get_node('/stage_movement')._v_attrs['microns_per_pixel_scale']
+                if microns_per_pixel_scale.size == 2:
+                    assert np.abs(
+                        microns_per_pixel_scale[0]) == np.abs(
+                        microns_per_pixel_scale[1])
+                    microns_per_pixel = np.abs(microns_per_pixel_scale[0])
+            xy_units = 'micrometers'
 
-            except (KeyError, tables.exceptions.NoSuchNodeError):
-                microns_per_pixel = self._read_attr('microns_per_pixel', dflt = 1)
-                xy_units = self._read_attr('xy_units', dflt = None)
-                if xy_units is None:
-                    if microns_per_pixel == 1:
-                        xy_units = 'pixels'
-                    else:
-                        xy_units = 'micrometers'
+        except (KeyError, tables.exceptions.NoSuchNodeError):
+            microns_per_pixel = self._read_attr('microns_per_pixel', dflt = 1)
+            xy_units = self._read_attr('xy_units', dflt = None)
+            if xy_units is None:
+                if microns_per_pixel == 1:
+                    xy_units = 'pixels'
+                else:
+                    xy_units = 'micrometers'
  
 
             
-            self._microns_per_pixel = microns_per_pixel
-            self._xy_units = xy_units
-            return self._microns_per_pixel, self._xy_units
+        self._microns_per_pixel = microns_per_pixel
+        self._xy_units = xy_units
+        return self._microns_per_pixel, self._xy_units
 
     @property
     def microns_per_pixel(self):
@@ -141,6 +138,23 @@ class AttrReader():
             self.get_microns_per_pixel()
             return self._xy_units
 
+    def get_ventral_side(self):
+        try:
+            with tables.File(self.file_name, 'r') as fid:
+                exp_info_b = fid.get_node('/experiment_info').read()
+                exp_info = json.loads(exp_info_b.decode("utf-8"))
+                ventral_side = exp_info['ventral_side']
+        
+        except:
+            ventral_side = self._read_attr('ventral_side', dflt = "")
+        
+        return ventral_side
+
+
+def read_ventral_side(fname):
+    reader = AttrReader(fname)
+    return reader.get_ventral_side()
+    
 def read_fps(fname, dflt=1):
     reader = AttrReader(fname, dflt)
     return reader.fps
@@ -207,4 +221,6 @@ def set_unit_conversions(group_to_save, expected_fps=None, microns_per_pixel=Non
         attr_writer['expected_fps'] = expected_fps
         attr_writer['time_units'] = 'seconds'
     attr_writer['is_light_background'] = is_light_background
+
+
 

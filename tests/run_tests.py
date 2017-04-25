@@ -162,7 +162,7 @@ class SCHAFER_LAB_SINGLE_WORM(TestObj):
         original_param = os.path.join(tierpsy.DFLT_PARAMS_PATH, 'single_worm_on_food.json')
         with open(original_param, 'r') as fid:
             params_dict = json.load(fid)
-            params_dict['ventral_orientation'] = 'read_basename'
+            params_dict['ventral_orientation'] = 'anticlockwise'
 
         f_params = os.path.join(self.main_dir, 'params.json')
         with open(f_params, 'w') as fid:

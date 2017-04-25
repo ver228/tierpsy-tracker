@@ -16,8 +16,7 @@ import tables
 
 from tierpsy.helper.misc import print_flush
 from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStats
-from tierpsy.analysis.contour_orient.correctVentralDorsal import read_ventral_side
-from tierpsy.helper.params import read_unit_conversions
+from tierpsy.helper.params import read_unit_conversions, read_ventral_side
 
 
 def getWCONMetaData(fname, READ_FEATURES=False, provenance_step='FEAT_CREATE'):
@@ -103,7 +102,7 @@ def __addOMGFeat(fid, worm_feat_time, worm_id):
     return worm_features
     
 
-def _get_ventral_orientation(features_file):
+def _get_ventral_side(features_file):
     ventral_side = read_ventral_side(features_file)
     if not ventral_side or ventral_side == 'unknown':
         ventral_type = '?'
@@ -122,7 +121,7 @@ def _getData(features_file, READ_FEATURES=False, IS_FOR_WCON=True):
         features_timeseries = fid['/features_timeseries']
         feat_time_group_by_worm = features_timeseries.groupby('worm_index');
         
-    ventral_orientation = _get_ventral_orientation(features_file)
+    ventral_side = _get_ventral_side(features_file)
     
     with tables.File(features_file, 'r') as fid:
         #fps used to adjust timestamp to real time
@@ -154,7 +153,7 @@ def _getData(features_file, READ_FEATURES=False, IS_FOR_WCON=True):
             worm_basic = OrderedDict()
             worm_basic['id'] = str(worm_id)
             worm_basic['head'] = 'L'
-            worm_basic['ventral'] = ventral_orientation
+            worm_basic['ventral'] = ventral_side
             worm_basic['ptail'] = worm_ven_cnt.shape[1]-1 #index starting with 0
             
             worm_basic['t'] = worm_feat_time['timestamp'].values/fps #convert from frames to seconds

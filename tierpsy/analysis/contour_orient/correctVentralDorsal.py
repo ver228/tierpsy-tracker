@@ -5,35 +5,25 @@ import tables
 import warnings
 
 from tierpsy.analysis.ske_filt.getFilteredSkels import _h_calAreaSignedArray
+from tierpsy.helper.params import read_ventral_side
 
 VALID_CNT = ['clockwise', 'anticlockwise', 'unknown']
 
-def read_ventral_side(skeletons_file, ventral_orientation=''):
-    if ventral_orientation in VALID_CNT:
-        return ventral_orientation
-    if ventral_orientation == 'read_basename':
-        bn = os.path.basename(skeletons_file)
-        if '_R_' in bn:
-            return 'anticlockwise'
-        elif '_L_' in bn:
-            return 'clockwise'
-        else:
-            return 'unknown'
+def _read_or_pass(skeletons_file, ventral_side):
+    #decide if to read or pass the value ventral_side. I give preference to read from file.
+    if skeletons_file:
+        #if it is not supplied try to read it from the file
+        ventral_side_f = read_ventral_side(skeletons_file)
 
-    #default try to read attribute
-    try:
-        with tables.File(skeletons_file, 'r') as fid:
-            exp_info_b = fid.get_node('/experiment_info').read()
-            exp_info = json.loads(exp_info_b.decode("utf-8"))
-            return exp_info['ventral_side']
-    except:
-        return ""
+    if ventral_side_f in VALID_CNT:
+        
+        return ventral_side_f
+    else:
+        return ventral_side
 
-def hasExpCntInfo(skeletons_file, ventral_orientation=''):
-    # i'm reading this data twice (one more in switchCntSingleWorm), but I think this is cleaner
-    # from a function organization point of view.
-    ventral_side = read_ventral_side(skeletons_file, ventral_orientation)    
-
+def is_valid_cnt_info(skeletons_file='', ventral_side=''):
+    ventral_side = _read_or_pass(skeletons_file, ventral_side)
+    
     is_valid = ventral_side in VALID_CNT
     # if not is_valid:
     #     base_name = os.path.basename(skeletons_file).replace('_skeletons.hdf5', '')
@@ -42,20 +32,14 @@ def hasExpCntInfo(skeletons_file, ventral_orientation=''):
     # only clockwise and anticlockwise are valid contour orientations
     return is_valid
 
-def isBadVentralOrient(skeletons_file, ventral_orientation=''):
-    ventral_side = read_ventral_side(skeletons_file, ventral_orientation)
-    if not ventral_side in VALID_CNT:
-        # msg = '{}: "{}" is not a valid value for ventral side orientation. '.format(skeletons_file, exp_info['ventral_side'])
-        # msg += 'Only "clockwise" or "anticlockwise" are accepted values'
-        # warnings.warn(msg)
-        is_bad =  True
-    
-    elif ventral_side == 'unknown':
-        is_bad =  False
-    else:
-        with tables.File(skeletons_file, 'r') as fid:
-            
 
+def isBadVentralOrient(skeletons_file):
+    ventral_side = read_ventral_side(skeletons_file)
+
+    if ventral_side == 'unknown':
+        is_bad =  False
+    elif ventral_side in ['clockwise', 'anticlockwise']:
+        with tables.File(skeletons_file, 'r') as fid:
             has_skeletons = fid.get_node('/trajectories_data').col('has_skeleton')
 
             # let's use the first valid skeleton, it seems like a waste to use all the other skeletons.
@@ -77,20 +61,24 @@ def isBadVentralOrient(skeletons_file, ventral_orientation=''):
                 is_bad = A_sign[0] > 0
             else:
                 raise ValueError
+    else:
+        is_bad = True
 
-    print(ventral_orientation, is_bad)
     return is_bad
 
-def isGoodVentralOrient(skeletons_file, ventral_orientation=''):
-    #save as isBadVentral but opposite, and fault tolerant
-    try:
-        return not isBadVentralOrient(skeletons_file, ventral_orientation)
-    except:
-        return False
+def isGoodVentralOrient(skeletons_file):
+    return not isBadVentralOrient(skeletons_file)
+    
+def _add_ventral_side(skeletons_file, ventral_side):
+    ventral_side = _read_or_pass(skeletons_file, ventral_side)
+    if ventral_side in VALID_CNT:
+        with tables.File(skeletons_file, 'r+') as fid:
+            fid.get_node('/trajectories_data').attrs['ventral_side'] = ventral_side
+    return ventral_side
 
-def switchCntSingleWorm(skeletons_file, ventral_orientation=''):
-
-    if isBadVentralOrient(skeletons_file, ventral_orientation):
+def switchCntSingleWorm(skeletons_file, ventral_side=''):
+    ventral_side = _add_ventral_side(skeletons_file, ventral_side)
+    if isBadVentralOrient(skeletons_file):
         with tables.File(skeletons_file, 'r+') as fid:
             # since here we are changing all the contours, let's just change
             # the name of the datasets

@@ -25,7 +25,7 @@ from tierpsy.analysis.stage_aligment.alignStageMotion import alignStageMotion, i
 from tierpsy.analysis.int_profile.getIntensityProfile import getIntensityProfile
 from tierpsy.analysis.int_ske_orient.correctHeadTailIntensity import correctHeadTailIntensity
 from tierpsy.analysis.feat_create.obtainFeatures import getWormFeaturesFilt, hasManualJoin
-from tierpsy.analysis.contour_orient.correctVentralDorsal import switchCntSingleWorm, hasExpCntInfo, isGoodVentralOrient
+from tierpsy.analysis.contour_orient.correctVentralDorsal import switchCntSingleWorm, is_valid_cnt_info, isGoodVentralOrient
 from tierpsy.analysis.wcon_export.exportWCON import getWCOName, exportWCON
 from tierpsy.processing.CheckFinished import CheckFinished
 from tierpsy.helper.params import TrackerParams
@@ -243,18 +243,18 @@ class AnalysisPoints(object):
             
             self.checkpoints['CONTOUR_ORIENT'] = {
                 'func': switchCntSingleWorm,
-                'argkws': {'skeletons_file': fn['skeletons'], 'ventral_orientation':param.p_dict['ventral_orientation']},
+                'argkws': {'skeletons_file': fn['skeletons'], 'ventral_side':param.p_dict['ventral_side']},
                 'input_files' : [fn['skeletons']],
                 'output_files': [fn['skeletons']],
                 'requirements' : ['SKE_CREATE',
-                                  ('has_contour_info', partial(hasExpCntInfo, fn['skeletons'], param.p_dict['ventral_orientation']))],
+                                  ('is_valid_cnt_info', partial(is_valid_cnt_info, fn['skeletons'], param.p_dict['ventral_side']))],
             }
             #make sure the file has the additional files, even before start compression
             for key in ['COMPRESS', 'COMPRESS_ADD_DATA']:
                 self.checkpoints[key]['requirements'] += \
             [('has_additional_files', partial(hasAdditionalFiles, fn['original_video']))]
             
-            is_valid_contour = ['CONTOUR_ORIENT', ('is_valid_contour', partial(isGoodVentralOrient, fn['skeletons'], param.p_dict['ventral_orientation']))]
+            is_valid_contour = ['CONTOUR_ORIENT', ('is_valid_contour', partial(isGoodVentralOrient, fn['skeletons']))]
             is_valid_alignment = ['STAGE_ALIGMENT', ('is_valid_alignment', partial(isGoodStageAligment, fn['skeletons']))]
 
             #make sure the stage was aligned correctly

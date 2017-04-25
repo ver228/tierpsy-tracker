@@ -34,7 +34,7 @@ dflt_param_list = [
     ('expected_fps', None, 'Expected frame rate.'),
     ('microns_per_pixel', None, 'Pixel size in micrometers.'),
 
-    ('ventral_orientation', None, 'Useful for single worm case. You can define the worm orientation as "clockwise", "anticlockwise" or "unknown". Otherwise the program will attempt to read it from the attribute "experiment_info"'),
+    ('ventral_side', None, 'Useful for single worm case. You can define the worm orientation as "clockwise", "anticlockwise" or "unknown". Otherwise the program will attempt to read it from the attribute "experiment_info"'),
 
     ('save_full_interval', -1, 'frequence in frames that an unprocessed frame is going to be saved (Default: 200 * expected_fps).'),
     ('compression_buff', -1, 'number of images "min-averaged" to calculate the image mask. (Default: expected_fps).'),
