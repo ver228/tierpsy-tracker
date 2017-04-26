@@ -87,7 +87,7 @@ class GECKO_VIDEOS(TestObj):
 class AVI_VIDEOS(TestObj):
     def __init__(self, *args):
         self.name = 'AVI_VIDEOS'
-        self.description = 'Generate mask files from .avi files.'
+        self.description = 'Complete analysis from .avi files.'
         super().__init__(*args)
 
         json_file = os.path.join(self.main_dir, 'AVI_VIDEOS.json')
@@ -97,7 +97,7 @@ class AVI_VIDEOS(TestObj):
         '--mask_dir_root',
         self.masked_files_dir,
         '--analysis_type',
-        'compress',
+        'all',
         "--json_file",
         json_file,
         '--pattern_include',

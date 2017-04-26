@@ -438,16 +438,6 @@ def getBlobsTable(masked_image_file,
 
     
 if __name__ == '__main__':
-    #%%
-    #dname = '/Users/ajaver/OneDrive - Imperial College London/Local_Videos/fluorescence/'
-    #masked_image_file = os.path.join(dname, 'test_s.hdf5')
-#    min_area=15/2
-#    buffer_size=9
-#    thresh_block_size=15    
-#    max_allowed_dist = 20
-#    area_ratio_lim = (0.25, 4)
-#    n_proc = 20
-    
     masked_image_file = '/Users/ajaver/OneDrive - Imperial College London/Local_Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_17112015_205616.hdf5'
     min_area=25/2
     buffer_size=25
