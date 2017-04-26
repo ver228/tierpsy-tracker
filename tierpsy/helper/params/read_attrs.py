@@ -220,7 +220,7 @@ def set_unit_conversions(group_to_save, expected_fps=None, microns_per_pixel=Non
     else: 
         attr_writer['expected_fps'] = expected_fps
         attr_writer['time_units'] = 'seconds'
-    attr_writer['is_light_background'] = is_light_background
+    attr_writer['is_light_background'] = int(is_light_background) #bool is not be supported by hdf5
 
 
 

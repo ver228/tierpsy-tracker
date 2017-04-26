@@ -152,7 +152,7 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
         return qimg
 
     def drawSkel(self, worm_img, worm_qimg, row_data, roi_corner=(0, 0)):
-        if not self.skeletons_file or self.trajectories_data is None:
+        if not self.skeletons_file or self.trajectories_data is None or worm_img.size == 0:
             return
 
         c_ratio_y = worm_qimg.width() / worm_img.shape[1]
