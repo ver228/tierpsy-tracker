@@ -173,7 +173,7 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
                         self, field_name).replace(
                         '/', os.sep))
 
-        save_modified_table(skeletons_file, trajectories_data, 'trajectories_data')
+        save_modified_table(self.skeletons_file, self.trajectories_data, 'trajectories_data')
 
         self.updateSkelFile(self.skeletons_file)
 
