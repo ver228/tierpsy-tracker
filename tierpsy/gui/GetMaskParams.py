@@ -645,6 +645,9 @@ class ParamWidgetMapper():
         self.param2widget = param2widget_dict
 
     def set(self, param_name, value):
+        if value is None:
+            return None
+
         widget = self.param2widget[param_name]
         if isinstance(widget, QCheckBox):
             return widget.setChecked(value)
@@ -652,6 +655,7 @@ class ParamWidgetMapper():
             for button in widget.buttons():
                 if button.text().replace(" ", "_").upper() == value:
                     return button.setChecked(True)
+        
         elif isinstance(widget, QLabel):
             return widget.setText(value)
         else:
