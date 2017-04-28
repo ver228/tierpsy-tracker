@@ -2,6 +2,8 @@
     "analysis_type": "WORM",
     "bgnd_buff_size": 25,
     "bgnd_frame_gap": 250,
+    "traj_bgnd_buff_size": -1,
+    "traj_bgnd_frame_gap": -1,
     "microns_per_pixel": 10.0,
     "filter_model_name": "model_isworm_20170407_184845.h5",
     "is_extract_metadata": false,
