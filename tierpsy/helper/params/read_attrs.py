@@ -146,7 +146,7 @@ class AttrReader():
                 exp_info = json.loads(exp_info_b.decode("utf-8"))
                 ventral_side = exp_info['ventral_side']
         
-        except e:
+        except:
             ventral_side = self._read_attr('ventral_side', dflt = "")
         
         return ventral_side
