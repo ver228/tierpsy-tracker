@@ -82,9 +82,9 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
 
     def updateImGroup(self):
         super().updateImGroup()
-        if self.h5path == '/full_data':
+        try:
             self.frame_save_interval = int(self.image_group._v_attrs['save_interval'])
-        else:
+        except:
             self.frame_save_interval = 1
 
     def updateVideoFile(self, vfilename):

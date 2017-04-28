@@ -108,13 +108,12 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         #%%
         self.feat_manual_file = self.skeletons_file.replace(
             '_skeletons.hdf5', '_feat_manual.hdf5')
-
+        
         point_parameters = {
             'func': getWormFeaturesFilt,
             'argkws': {
                 'skeletons_file': self.skeletons_file,
                 'features_file': self.feat_manual_file,
-                'expected_fps': self.expected_fps, #if it is read as np.int64 can give errors in the json serializer
                 'is_single_worm': False,
                 'use_skel_filter': True,
                 'use_manual_join': True,
