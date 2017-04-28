@@ -149,8 +149,7 @@ function anaconda_pkgs {
 	#conda install -y python=3.5.3 pip
 	conda install -y numpy matplotlib pytables pandas gitpython pyqt \
 	h5py scipy scikit-learn scikit-image seaborn xlrd cython statsmodels
-	conda install -y -c conda-forge tensorflow
-	pip install keras 
+	conda install -y -c conda-forge tensorflow keras
 
 }
 
