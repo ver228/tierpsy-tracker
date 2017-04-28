@@ -1,7 +1,7 @@
 import tables
 import h5py
 import numpy as np
-
+import json
 
 class AttrReader():
     def __init__(self, file_name, dflt=1):
@@ -140,12 +140,13 @@ class AttrReader():
 
     def get_ventral_side(self):
         try:
+
             with tables.File(self.file_name, 'r') as fid:
                 exp_info_b = fid.get_node('/experiment_info').read()
                 exp_info = json.loads(exp_info_b.decode("utf-8"))
                 ventral_side = exp_info['ventral_side']
         
-        except:
+        except e:
             ventral_side = self._read_attr('ventral_side', dflt = "")
         
         return ventral_side
