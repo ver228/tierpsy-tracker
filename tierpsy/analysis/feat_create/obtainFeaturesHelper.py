@@ -304,7 +304,7 @@ class WormFromTable():
         self.ventral_side = read_ventral_side(self.file_name)
         
         assert isGoodStageAligment(self.file_name)
-        self.stage_vec_inv = _h_get_stage_inv(skeletons_file, timestamp)
+        self.stage_vec_inv = _h_get_stage_inv(self.file_name, self.timestamp)
         
         for field in ['skeleton', 'ventral_contour', 'dorsal_contour']:
             if hasattr(self, field):
