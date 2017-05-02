@@ -184,6 +184,26 @@ class SCHAFER_LAB_SINGLE_WORM(TestObj):
         self.add_command(args)
 
 
+class WORM_MOTEL(TestObj):
+    def __init__(self, *args):
+        self.name = 'WORM_MOTEL'
+        self.description = "Worm motel (background subtraction)."
+        super().__init__(*args)
+
+        args = [
+        '--video_dir_root',
+        self.raw_video_dir,
+        '--mask_dir_root',
+        self.masked_files_dir,
+        '--results_dir_root',
+        self.results_dir,
+        '--json_file',
+        'worm_motel.json',
+        '--pattern_include', 
+        '*.mjpg'
+        ]
+        self.add_command(args)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('n_tests', metavar='N', type=int, nargs='*',
@@ -199,7 +219,14 @@ if __name__ == '__main__':
     examples_dir = os.path.join(root_dir, 'tests', 'data')
     script_dir = os.path.join(root_dir, 'cmd_scripts')
 
-    all_tests_obj = [GECKO_VIDEOS, AVI_VIDEOS, MANUAL_FEATS, RIG_HDF5_VIDEOS, SCHAFER_LAB_SINGLE_WORM]
+    all_tests_obj = [
+                    GECKO_VIDEOS, 
+                    AVI_VIDEOS, 
+                    MANUAL_FEATS, 
+                    RIG_HDF5_VIDEOS, 
+                    SCHAFER_LAB_SINGLE_WORM, 
+                    WORM_MOTEL
+                    ]
     all_tests = [obj(examples_dir, script_dir) for obj in all_tests_obj]
 
     tests_ind = [x-1 for x in n_tests]

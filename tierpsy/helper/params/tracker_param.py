@@ -274,8 +274,10 @@ class TrackerParams:
                     input_param['mask_min_area'] = param_in_file['min_area']
                     input_param['traj_min_area'] = param_in_file['min_area']/2
 
-                else:
+                elif key in input_param:
                     input_param[key] = param_in_file[key]
+                else:
+                    raise ValueError('Parameter {} is not a valid parameter. Change its value in file {}'.format(key, self.json_file))
         return input_param
 
 
