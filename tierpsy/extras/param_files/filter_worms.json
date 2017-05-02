@@ -12,7 +12,6 @@
     "filt_min_displacement": 10,
     "filter_model_name": "model_isworm_20170407_184845.h5",
     "fps_filter": -1,
-    "ignore_mask": false,
     "int_avg_width_frac": 0.3,
     "int_length_resampling": 131,
     "int_max_gap_allowed_block": -1,
