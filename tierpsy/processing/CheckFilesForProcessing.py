@@ -23,7 +23,7 @@ class CheckFilesForProcessing(object):
                  json_file='', analysis_checkpoints = [],
                   is_copy_video = True, 
                   copy_unfinished=True,
-                  is_parallel_check=False):
+                  is_parallel_check=True):
         
         def _testFileExists(fname, type_str):
             if fname:
