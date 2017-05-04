@@ -305,6 +305,10 @@ class WormFromTable():
         
         assert isGoodStageAligment(self.file_name)
         self.stage_vec_inv = _h_get_stage_inv(self.file_name, self.timestamp)
+
+        #remove data where the stage is moving (the blurred image can induce artifacts)
+        self.is_stage_move = np.isnan(self.stage_vec_inv[:,0])
+        self.widths[self.is_stage_move, :] = np.nan 
         
         for field in ['skeleton', 'ventral_contour', 'dorsal_contour']:
             if hasattr(self, field):
