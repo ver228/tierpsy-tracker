@@ -9,18 +9,22 @@ class AttrReader():
         self.dflt = dflt
         self.field =  self._find_field()
 
+
     def _find_field(self):
         valid_fields = ['/mask', '/trajectories_data', '/features_timeseries']
         with tables.File(self.file_name, 'r') as fid:
             for field in valid_fields:
                 if field in fid:
                     return field
-        raise KeyError("Not valid field {} found in {}".format(valid_fields, fname)) 
-
+        #raise KeyError("Not valid field {} found in {}".format(valid_fields, self.file_name)) 
+        return ''
 
     def _read_attr(self, attr_name, dflt=None):
         if dflt is None:
             dflt = self.dflt
+
+        if not self.field:
+            return self.dflt
 
         with tables.File(self.file_name, 'r') as fid:
             node = fid.get_node(self.field)
@@ -171,7 +175,7 @@ def read_unit_conversions(fname, dflt=1):
     microns_per_pixel_out = reader.get_microns_per_pixel()
     is_light_background = reader._read_attr('is_light_background', 1)
     
-    print(fps_out, microns_per_pixel_out, is_light_background)
+    #print(fps_out, microns_per_pixel_out, is_light_background)
     return fps_out, microns_per_pixel_out, is_light_background
 
 
@@ -197,7 +201,6 @@ def copy_unit_conversions(group_to_save, original_file, dflt=1):
     return fps, microns_per_pixel, is_light_background
 
 def set_unit_conversions(group_to_save, expected_fps=None, microns_per_pixel=None, is_light_background=1):
-
 
     #this is a not so pretty hack to be able to deal with h5py library that the compressVideo file uses
     if isinstance(group_to_save, h5py._hl.dataset.Dataset):
