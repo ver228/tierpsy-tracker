@@ -267,7 +267,7 @@ def getWormFeaturesFilt(
                 #worm with the stage correction applied
                 worm.correct_schafer_worm()
                 if np.all(np.isnan(worm.skeleton[:, 0, 0])):
-                    print('{} Not valid skeletons found fater stage correction. Skiping worm index {}'.format(base_name, worm_index))
+                    print_flush('{} Not valid skeletons found after stage correction. Skiping worm index {}'.format(base_name, worm_index))
                     return
             # calculate features
             timeseries_data, events_data, worm_stats = getOpenWormData(worm, wStats)

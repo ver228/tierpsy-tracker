@@ -41,7 +41,6 @@ def getHeadProbMov(
         else:
             return np.nan, skel_group
 
-    #print(window_std, min_block_size, max_gap_allowed)
     is_switch_skel, roll_std = isWormHTSwitched(skeletons, segment4angle=segment4angle, max_gap_allowed=max_gap_allowed,
                                                 window_std=window_std, min_block_size=min_block_size)
 
@@ -193,8 +192,7 @@ if __name__ == '__main__':
     for ff in glob.glob(os.path.join(check_dir, '*')):
         ff = ff.replace('MaskedVideos', 'Results')
         base_name = os.path.split(ff)[1].rpartition('.')[0]
-        print(base_name)
-
+        
         trajectories_file = ff[:-5] + '_trajectories.hdf5'
         skeletons_file = ff[:-5] + '_skeletons.hdf5'
         intensities_file = ff[:-5] + '_intensities.hdf5'
@@ -220,8 +218,7 @@ if __name__ == '__main__':
 
             p_tot, skel_group, int_group = checkFinalOrientation(
                 skeletons_file, intensities_file, trajectories_worm, head_tail_param)
-            print(p_tot)
-
+            
             if p_tot < 0.5:
                 switchBlocks(
                     skel_group,

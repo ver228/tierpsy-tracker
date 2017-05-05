@@ -14,7 +14,7 @@ import os
 from collections import OrderedDict
 from scipy.signal import savgol_filter
 
-from tierpsy.analysis.stage_aligment.alignStageMotion import isGoodStageAligment
+from tierpsy.analysis.stage_aligment.alignStageMotion import isGoodStageAligment, _h_get_stage_inv
 from tierpsy.helper.params import read_fps, read_microns_per_pixel, read_ventral_side
 from tierpsy import AUX_FILES_DIR
 import open_worm_analysis_toolbox as mv
@@ -48,36 +48,7 @@ def _h_smooth_curve_all(curves, window=5, pol_degree=3):
     return curves
 
 
-def _h_get_stage_inv(skeletons_file, timestamp):
-    first_frame = timestamp[0]
-    last_frame = timestamp[-1]
 
-    with tables.File(skeletons_file, 'r') as fid:
-        stage_vec_ori = fid.get_node('/stage_movement/stage_vec')[:]
-        timestamp_ind = fid.get_node('/timestamp/raw')[:].astype(np.int)
-        rotation_matrix = fid.get_node('/stage_movement')._v_attrs['rotation_matrix']
-        microns_per_pixel_scale = fid.get_node('/stage_movement')._v_attrs['microns_per_pixel_scale']
-        #2D to control for the scale vector directions
-            
-    # let's rotate the stage movement
-    dd = np.sign(microns_per_pixel_scale)
-    rotation_matrix_inv = np.dot(
-        rotation_matrix * [(1, -1), (-1, 1)], [(dd[0], 0), (0, dd[1])])
-
-    # adjust the stage_vec to match the timestamps in the skeletons
-    good = (timestamp_ind >= first_frame) & (timestamp_ind <= last_frame)
-
-    ind_ff = timestamp_ind[good] - first_frame
-    stage_vec_ori = stage_vec_ori[good]
-
-    stage_vec = np.full((timestamp.size, 2), np.nan)
-    stage_vec[ind_ff, :] = stage_vec_ori
-    # the negative symbole is to add the stage vector directly, instead of
-    # substracting it.
-    stage_vec_inv = -np.dot(rotation_matrix_inv, stage_vec.T).T
-
-
-    return stage_vec_inv
 
 class WormFromTable():
     def __init__(self, 

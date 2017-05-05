@@ -74,7 +74,6 @@ def processMultipleFilesFun(
             valid_files = fid.read().split('\n')
             #valid_files = [os.path.realpath(x) for x in valid_files]
             
-    print(len(valid_files))
     files_checker = CheckFilesForProcessing(**check_args)
 
     cmd_list = files_checker.filterFiles(valid_files, print_cmd=True)
