@@ -48,7 +48,7 @@ def getFeatStats(worm, wStats):
     
     def _get_worm_stat(fun):
         # calculate the mean value of each feature
-        worm_stat = wStats.getWormStats(worm_features, np.mean)
+        worm_stat = wStats.getWormStats(worm_features, fun)
         for field in wStats.extra_fields:
             worm_stat[field] = getattr(worm, field)
         return worm_stat

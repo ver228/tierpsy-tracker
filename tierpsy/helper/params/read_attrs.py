@@ -3,6 +3,8 @@ import h5py
 import numpy as np
 import json
 
+
+VALID_FIELDS = ['/mask', '/trajectories_data', '/features_timeseries']
 class AttrReader():
     def __init__(self, file_name, dflt=1):
         self.file_name = file_name
@@ -11,12 +13,12 @@ class AttrReader():
 
 
     def _find_field(self):
-        valid_fields = ['/mask', '/trajectories_data', '/features_timeseries']
+        
         with tables.File(self.file_name, 'r') as fid:
-            for field in valid_fields:
+            for field in VALID_FIELDS:
                 if field in fid:
                     return field
-        #raise KeyError("Not valid field {} found in {}".format(valid_fields, self.file_name)) 
+        #raise KeyError("Not valid field {} found in {}".format(VALID_FIELDS, self.file_name)) 
         return ''
 
     def _read_attr(self, attr_name, dflt=None):
@@ -175,7 +177,7 @@ def read_unit_conversions(fname, dflt=1):
     microns_per_pixel_out = reader.get_microns_per_pixel()
     is_light_background = reader._read_attr('is_light_background', 1)
     
-    #print(fps_out, microns_per_pixel_out, is_light_background)
+    print(fps_out, microns_per_pixel_out, is_light_background)
     return fps_out, microns_per_pixel_out, is_light_background
 
 
