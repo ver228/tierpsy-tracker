@@ -132,7 +132,7 @@ def _getData(features_file, READ_FEATURES=False, IS_FOR_WCON=True):
 
 
         #fps used to adjust timestamp to real time
-        fps = read_fps(skeletons_file)
+        fps = read_fps(features_file)
         
         
         #get pointers to some useful data
