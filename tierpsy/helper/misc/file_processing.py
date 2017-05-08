@@ -7,7 +7,7 @@ RESERVED_EXT = ['_skeletons.hdf5',
                 '_features.hdf5', 
                 '_intensities.hdf5', 
                 '_feat_manual.hdf5',
-                '_subsampled.avi',
+                '_subsample.avi',
                 '.wcon.zip']
 
 def get_base_name(fname):

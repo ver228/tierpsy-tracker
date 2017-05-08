@@ -183,7 +183,7 @@ class AnalysisPoints(object):
                 'argkws': {**{'masked_image_file': fn['masked_image'], 'skeletons_file': fn['skeletons'],
                               'intensities_file': fn['intensities']}, **param.int_profile_param},
                 'input_files' : [fn['skeletons'],fn['masked_image']],
-                'output_files': [fn['intensities']],
+                'output_files': [fn['intensities'], fn['skeletons']],
                 'requirements' : ['SKE_CREATE'],
             },
             'INT_SKE_ORIENT': {

@@ -7,7 +7,6 @@ Created on Thu Jun  4 11:30:53 2015
 import os
 import warnings
 from functools import partial
-
 import numpy as np
 import pandas as pd
 import tables
@@ -26,7 +25,7 @@ from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStats, WormFro
 from tierpsy.helper.params import copy_unit_conversions, read_fps, min_num_skel_defaults
 
 import open_worm_analysis_toolbox as mv
-
+    
 #%%%%%%%
 def _n_percentile(n, q): 
         if isinstance(n, (float, int)) or n.size>0:
@@ -36,8 +35,7 @@ def _n_percentile(n, q):
 
 FUNC_FOR_DIV = {'means':np.mean, 'medians':np.median, 
     'P10th':partial(_n_percentile, q=10), 'P90th':partial(_n_percentile, q=90)}
-    
-            
+
 def getFeatStats(worm, wStats):
     if not isinstance(wStats, WormStats):
         wStats = WormStats()
@@ -46,9 +44,9 @@ def getFeatStats(worm, wStats):
     assert worm_openworm.skeleton.shape[1] == 2
     worm_features = mv.WormFeatures(worm_openworm)
     
-    def _get_worm_stat(fun):
+    def _get_worm_stat(func):
         # calculate the mean value of each feature
-        worm_stat = wStats.getWormStats(worm_features, fun)
+        worm_stat = wStats.getWormStats(worm_features, func)
         for field in wStats.extra_fields:
             worm_stat[field] = getattr(worm, field)
         return worm_stat
