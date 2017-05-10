@@ -167,6 +167,10 @@ def RunMultiCMD(cmd_list, local_obj='', max_num_process=3, refresh_time=10):
         print(progress_str)
         print('*************************************************')
 
+    #if i don't add this the GUI could terminate before displaying the last text.
+    sys.stdout.flush()
+    time.sleep(1)
+
 
 def cmdlist2str(cmdlist):
     # change the format from the list accepted by Popen to a text string

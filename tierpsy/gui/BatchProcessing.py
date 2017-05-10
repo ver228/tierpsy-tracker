@@ -273,7 +273,7 @@ class BatchProcessing_GUI(QMainWindow):
         max_num_process = self.ui.spinBox_numMaxProc.value()
         tmp_dir_root = self.ui.lineEdit_tmpDir.text()
         is_copy_video = self.ui.checkBox_isCopyVideo.isChecked()
-        
+        copy_unfinished = self.ui.checkBox_copyUnfinished.isChecked()
         
         
         if self.ui.checkBox_txtFileList.isChecked():
@@ -333,7 +333,8 @@ class BatchProcessing_GUI(QMainWindow):
           'max_num_process' : max_num_process,
           'refresh_time' : DFLT_TRACK_VALS['refresh_time'],
           'only_summary' : False,
-          'analysis_checkpoints' : analysis_checkpoints
+          'analysis_checkpoints' : analysis_checkpoints,
+          'copy_unfinished' : copy_unfinished
         }
 
         analysis_worker = WorkerFunQt(processMultipleFilesFun, process_args)

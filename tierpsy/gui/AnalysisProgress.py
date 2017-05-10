@@ -68,7 +68,6 @@ class WorkerFunQt(QThread):
                 exc_traceback,
                 limit=2,
                 file=sys.stdout)
-
         self.task_done.emit()
         self.exit(0)
 
@@ -101,8 +100,8 @@ class AnalysisProgress(QDialog):
         super(AnalysisProgress, self).closeEvent(event)
 
     def task_done(self):
-        sys.stdout = self.original_stdout
         self.ui.progressBar.setValue(100)
+        sys.stdout = self.original_stdout
 
     def startRecieverThread(self):
         # redirect the stdout to reciever

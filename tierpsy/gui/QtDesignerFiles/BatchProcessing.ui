@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>712</width>
+    <width>734</width>
     <height>425</height>
    </rect>
   </property>
@@ -159,9 +159,9 @@
          </widget>
         </item>
         <item row="0" column="0" colspan="2">
-         <widget class="QCheckBox" name="checkBox_isSingleWorm">
+         <widget class="QCheckBox" name="checkBox_copyUnfinished">
           <property name="text">
-           <string>Is single worm (Shafer Lab)?</string>
+           <string>Copy unfinished analysis</string>
           </property>
          </widget>
         </item>
@@ -218,7 +218,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>712</width>
+     <width>734</width>
      <height>22</height>
     </rect>
    </property>

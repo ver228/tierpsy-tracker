@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'BatchProcessing.ui'
 #
-# Created by: PyQt5 UI code generator 5.7.1
+# Created by: PyQt5 UI code generator 5.6
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_BatchProcessing(object):
     def setupUi(self, BatchProcessing):
         BatchProcessing.setObjectName("BatchProcessing")
-        BatchProcessing.resize(712, 425)
+        BatchProcessing.resize(734, 425)
         self.centralwidget = QtWidgets.QWidget(BatchProcessing)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.centralwidget)
@@ -100,9 +100,9 @@ class Ui_BatchProcessing(object):
         self.checkBox_isTrack = QtWidgets.QCheckBox(self.centralwidget)
         self.checkBox_isTrack.setObjectName("checkBox_isTrack")
         self.gridLayout_3.addWidget(self.checkBox_isTrack, 1, 3, 1, 1)
-        self.checkBox_isSingleWorm = QtWidgets.QCheckBox(self.centralwidget)
-        self.checkBox_isSingleWorm.setObjectName("checkBox_isSingleWorm")
-        self.gridLayout_3.addWidget(self.checkBox_isSingleWorm, 0, 0, 1, 2)
+        self.checkBox_copyUnfinished = QtWidgets.QCheckBox(self.centralwidget)
+        self.checkBox_copyUnfinished.setObjectName("checkBox_copyUnfinished")
+        self.gridLayout_3.addWidget(self.checkBox_copyUnfinished, 0, 0, 1, 2)
         self.spinBox_numMaxProc = QtWidgets.QSpinBox(self.centralwidget)
         self.spinBox_numMaxProc.setObjectName("spinBox_numMaxProc")
         self.gridLayout_3.addWidget(self.spinBox_numMaxProc, 3, 3, 1, 1)
@@ -135,7 +135,7 @@ class Ui_BatchProcessing(object):
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
         BatchProcessing.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(BatchProcessing)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 712, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 734, 22))
         self.menubar.setObjectName("menubar")
         BatchProcessing.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(BatchProcessing)
@@ -158,7 +158,7 @@ class Ui_BatchProcessing(object):
         self.checkBox_isCompress.setText(_translate("BatchProcessing", "Execute compression"))
         self.label_numMaxProc.setText(_translate("BatchProcessing", "Maximum number of processes:"))
         self.checkBox_isTrack.setText(_translate("BatchProcessing", "Execute tracking"))
-        self.checkBox_isSingleWorm.setText(_translate("BatchProcessing", "Is single worm (Shafer Lab)?"))
+        self.checkBox_copyUnfinished.setText(_translate("BatchProcessing", "Copy unfinished analysis"))
         self.label_patternIn.setText(_translate("BatchProcessing", "File pattern to include:"))
         self.label_patternExc.setText(_translate("BatchProcessing", "File pattern to exclude:"))
         self.checkBox_isCopyVideo.setText(_translate("BatchProcessing", "Copy original videos to tmp dir"))

@@ -150,7 +150,6 @@ class ProcessWormsLocal(object):
         files2copy += self._getAddFilesForTmpSW()
 
 
-        print("(''>>>>>>>>>>>>", files2copy)
         self._copyFilesLocal(files2copy)
     
     def _getAddFilesForTmpSW(self):
@@ -175,8 +174,9 @@ class ProcessWormsLocal(object):
         
         #recalcuate the unfinished points in the tmp directory. At this point they should be empty
         self.unfinished_points_tmp = self.ap_tmp.getUnfinishedPoints(self.unfinished_points_src)
+        
         if len(self.unfinished_points_tmp) != 0 and not self.copy_unfinished:
-        #    #return, do not copy the files if the tmp analysis was interrupted
+        #   do not copy the files if the tmp analysis was interrupted
             return
 
         
