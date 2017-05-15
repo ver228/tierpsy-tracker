@@ -27,12 +27,8 @@ class AttrReader():
 
         if not self.field:
             return self.dflt
-
         with tables.File(self.file_name, 'r') as fid:
             node = fid.get_node(self.field)
-
-            #print([(k,node._v_attrs[k]) for k in node._v_attrs.keys()])
-
 
             if attr_name in node._v_attrs:
                 attr = node._v_attrs[attr_name]
@@ -55,11 +51,14 @@ class AttrReader():
                     raise ValueError
 
                 time_units = 'seconds'
-                is_user_fps = 0
 
         except (tables.exceptions.NoSuchNodeError, IOError, ValueError):
-            #read the user defined timestamp
-            fps = expected_fps
+            fps = self._read_attr('fps', dflt=None)
+            
+            if fps is None:
+                #read the user defined timestamp
+                fps = expected_fps
+
             time_units = self._read_attr('time_units', dflt=None)
             if not isinstance(time_units, str):
                 if fps == 1:
@@ -67,14 +66,13 @@ class AttrReader():
                 else:
                     time_units = 'seconds'
             
-            is_user_fps = 1
+            
         
         self._fps = fps
         self._expected_fps = expected_fps
-        self._is_user_fps = is_user_fps
         self._time_units = time_units
 
-        return self._fps, self._expected_fps, self._time_units, self._is_user_fps
+        return self._fps, self._expected_fps, self._time_units
 
     @property
     def fps(self):
@@ -92,14 +90,6 @@ class AttrReader():
             self.get_fps()
             return self._time_units
 
-
-    @property
-    def is_user_fps(self):
-        try:
-            return self._is_user_fps
-        except:
-            self.get_fps()
-            return self._is_user_fps
 
     def get_microns_per_pixel(self):
         try:
@@ -185,8 +175,8 @@ def copy_unit_conversions(group_to_save, original_file, dflt=1):
     fps_out, microns_per_pixel_out, is_light_background = \
     read_unit_conversions(original_file, dflt)
 
-    #expected_fps and fps will be the same if is_user_fps is True.
-    fps, expected_fps, is_user_fps, time_units = fps_out
+    #expected_fps and fps will be the same if it was defined by the user.
+    fps, expected_fps, time_units = fps_out
     microns_per_pixel, xy_units = microns_per_pixel_out
 
     # save some data used in the calculation as attributes
@@ -195,7 +185,6 @@ def copy_unit_conversions(group_to_save, original_file, dflt=1):
     
     group_to_save._v_attrs['fps'] = fps
     group_to_save._v_attrs['expected_fps'] = expected_fps 
-    group_to_save._v_attrs['is_user_fps'] = is_user_fps
     group_to_save._v_attrs['time_units'] = time_units
 
     group_to_save._v_attrs['is_light_background'] = is_light_background
