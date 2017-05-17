@@ -1,6 +1,8 @@
 # Tierpsy Tracker
 
-This repository contains my work on the multiworm tracker for the [MRC-CSC](http://csc.mrc.ac.uk/) [Behavioral Genomics Group](http://behave.csc.mrc.ac.uk/).
+This repository contains the code of the multiworm tracker for the [MRC-LMS](http://lms.mrc.ac.uk/) [Behavioral Genomics Group](http://behave.csc.mrc.ac.uk/).
+
+For more details please visit the repository [wiki](https://github.com/ver228/tierpsy-tracker/wiki).
 
 # Installation
 ## Installation using Anaconda (OS X/Linux).
@@ -21,7 +23,16 @@ git clone https://github.com/openworm/open-worm-analysis-toolbox
 - Run `installation/installation_script.bat` .
 
 ## Test installation and examples.
-The installation can be checked running the script [./Tests/run_test.py](https://github.com/ver228/Multiworm_Tracking/blob/master/Tests/run_tests.py). The example data used by the tests is downloaded by [installation_script.sh](https://github.com/ver228/Multiworm_Tracking/blob/master/installation_script.sh), see the variable EXAMPLES_LINK. The data can be downloaded manually using the following [link](https://imperiallondon-my.sharepoint.com/personal/ajaver_ic_ac_uk/_layouts/15/guestaccess.aspx?guestaccesstoken=ldZ18fLY%2bzlu7XuO9mbKVdyiKoH4naiesqiLXWU4vGQ%3d&docid=0cec4e52f4ccf4d5b8bb3a737020fc12f&rev=1).
+The test data can be downloaded using
+```
+installation/instalation_script.sh --tests
+```
+or manually downloaded using [this link](https://imperiallondon-my.sharepoint.com/personal/ajaver_ic_ac_uk/_layouts/15/guestaccess.aspx?guestaccesstoken=ldZ18fLY%2bzlu7XuO9mbKVdyiKoH4naiesqiLXWU4vGQ%3d&docid=0cec4e52f4ccf4d5b8bb3a737020fc12f&rev=1).
+
+The installation can be checked running
+```
+python tests/run_tests.py
+```
 
 ## Possible issues.
 - If you recieve an error related with a module in segWormPython you will need to re-compile the cython files. Cython requires the same C compiler used to compile python. On OS X you need to install xcode using the app store. On Windows using python 3.5 you have to install [visual studio community 2015](https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx) (use custom installation and select Visual C++).
