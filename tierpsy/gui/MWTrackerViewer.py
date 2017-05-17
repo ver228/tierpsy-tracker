@@ -31,6 +31,9 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         else:
             super().__init__(ui)
 
+        self.setWindowTitle("Multi-Worm Viewer")
+
+
         self.vfilename = '' if len(argv) <= 1 else argv[1]
         self.lastKey = ''
         self.traj_for_plot = {}

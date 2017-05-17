@@ -275,7 +275,7 @@ function link_desktop {
 		EXIT_CMD="exit"
 	fi
 
-	echo "python3 $MW_MAIN_DIR/MWTracker_GUI/MWConsole.py; $EXIT_CMD" > $DESKTOLINK
+	echo "python3 $MW_MAIN_DIR/cmd_scripts/TierpsyTrackerConsole.py; $EXIT_CMD" > $DESKTOLINK
 
 	chmod 744 $DESKTOLINK
 } 

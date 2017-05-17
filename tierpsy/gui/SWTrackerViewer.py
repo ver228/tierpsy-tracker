@@ -62,6 +62,7 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
             super().__init__(Ui_SWTrackerViewer())
         else:
             super().__init__(ui)
+        self.setWindowTitle("Single Worm Viewer")
 
         self.skel_block = []
         self.skel_block_n = 0
