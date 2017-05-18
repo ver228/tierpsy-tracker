@@ -19,11 +19,12 @@ def _tictoc():
 
 class TimeCounter:
 
-    def __init__(self, task_str=''):
+    def __init__(self, task_str='', tot_frames=None):
         self.initial_time = time.time()
         self.last_frame = 0
         self.task_str = task_str
         self.fps_time = time.time()
+        self.tot_frames = tot_frames
 
     def get_str(self, frame_number):
         # calculate the progress and put it in a string
@@ -39,10 +40,13 @@ class TimeCounter:
         except ZeroDivisionError:
             fps = np.nan
             
-        progress_str = '%s Total time = %s, fps = %2.1f; Frame %i '\
+        progress_str = '%s Total time = %s, fps = %2.1f; Frame %i'\
             % (self.task_str, time_str, fps, frame_number)
         self.fps_time = time.time()
         self.last_frame = frame_number
+        if self.tot_frames is not None:
+            progress_str += ' of %i' % self.tot_frames
+
         return progress_str
 
     def get_time_str(self):

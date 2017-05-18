@@ -201,7 +201,7 @@ def set_unit_conversions(group_to_save, expected_fps=None, microns_per_pixel=Non
 
 
     # save some data used in the calculation as attributes
-    if microns_per_pixel is None:
+    if microns_per_pixel is None or microns_per_pixel<=0:
         attr_writer['microns_per_pixel'] = 1
         attr_writer['xy_units'] = 'pixels'
     else: 
@@ -209,7 +209,7 @@ def set_unit_conversions(group_to_save, expected_fps=None, microns_per_pixel=Non
         attr_writer['xy_units'] = 'micrometers'
 
     # save some data used in the calculation as attributes
-    if expected_fps is None:
+    if expected_fps is None or expected_fps<=0:
         attr_writer['expected_fps'] = 1
         attr_writer['time_units'] = 'frames'
     else: 

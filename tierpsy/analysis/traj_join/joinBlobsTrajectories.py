@@ -66,13 +66,16 @@ def assignBlobTraj(trajectories_file, max_allowed_dist=20, area_ratio_lim=(0.5, 
     
     #loop, save data and display progress
     base_name = os.path.basename(trajectories_file).replace('_trajectories.hdf5', '').replace('_skeletons.hdf5', '')
-    progressTime = TimeCounter(base_name + ' Assigning trajectories.')  
+    
              
     frame_data_prev = None
     tot_worms = 0
     all_indexes = []
+
+    frames_grouped = plate_worms.groupby('frame_number')
     
-    for frame, frame_data in plate_worms.groupby('frame_number'):
+    progress_time = TimeCounter(base_name + ' Assigning trajectories.', len(frames_grouped))  
+    for frame, frame_data in frames_grouped:
         if frame_data is not None:
             if frame_data_prev is not None:    
                 _, prev_traj_ind = all_indexes[-1]
@@ -101,7 +104,7 @@ def assignBlobTraj(trajectories_file, max_allowed_dist=20, area_ratio_lim=(0.5, 
         frame_data_prev = frame_data
         if frame % 500 == 0:
             # calculate the progress and put it in a string
-            print_flush(progressTime.get_str(frame))
+            print_flush(progress_time.get_str(frame))
     
     if all_indexes:
         row_ind, traj_ind = map(np.concatenate, zip(*all_indexes))
@@ -111,7 +114,7 @@ def assignBlobTraj(trajectories_file, max_allowed_dist=20, area_ratio_lim=(0.5, 
             tbl = fid.get_node('/', 'plate_worms')
             tbl.modify_column(column=traj_ind, colname='worm_index_blob')
     
-        print_flush(progressTime.get_str(frame))    
+        print_flush(progress_time.get_str(frame))    
     
 
 def _validRowsByArea(plate_worms):

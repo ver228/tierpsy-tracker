@@ -170,7 +170,6 @@ def correctHeadTail(skeletons_file, **params):
                 ii + 1, len(rows_indexes))
             dd = base_name + dd + ' Total time:' + progress_timer.get_time_str()
             print_flush(dd)
-            sys.stdout.flush()
 
         worm_index, row_range = dat
         worm_data = WormClass(skeletons_file, worm_index,

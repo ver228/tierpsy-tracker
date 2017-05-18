@@ -241,13 +241,14 @@ def getIntensityProfile(
                     length_resampling,
                     width_resampling),
                 filters=table_filters)
+
+        grouped_frames = trajectories_data_valid.groupby('frame_number')
         # variables used to report progress
         base_name = skeletons_file.rpartition(
             '.')[0].rpartition(os.sep)[-1].rpartition('_')[0]
-        progressTime = TimeCounter('Obtaining intensity maps.')
+        progressTime = TimeCounter('Obtaining intensity maps.', len(grouped_frames))
 
-        for frame, frame_data in trajectories_data_valid.groupby(
-                'frame_number'):
+        for frame, frame_data in grouped_frames:
             img = mask_dataset[frame, :, :]
             for ii, row_data in frame_data.iterrows():
                 skeleton_id = int(row_data['skeleton_id'])

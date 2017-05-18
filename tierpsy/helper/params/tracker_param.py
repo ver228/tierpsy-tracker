@@ -31,10 +31,10 @@ dflt_param_list = [
     ('thresh_block_size', 61, 'block size used by the adaptative thresholding.'),
     ('dilation_size', 9, 'size of the structural element used in morphological operations to calculate the worm mask.'),
     ('is_extract_metadata', True, 'Extract metadata (timestamps) from the original video file. This is slow since the more accurate method scan the whole file using ffprobe.'),
-    ('expected_fps', None, 'Expected frame rate.'),
-    ('microns_per_pixel', None, 'Pixel size in micrometers.'),
+    ('expected_fps', -1, 'Expected frames per seconds. If it is negative it would be set to 1 and the units to frames.'),
+    ('microns_per_pixel', -1., 'Pixel size in micrometers. If it is negative it would be set to 1 and the units to pixels.'),
 
-    ('ventral_side', None, 'Useful for single worm case. You can define the worm orientation as "clockwise", "anticlockwise" or "unknown". Otherwise the program will attempt to read it from the attribute "experiment_info"'),
+    ('ventral_side', '', 'Ventral side orientation. Useful for single worm case. It can be defined as "clockwise", "anticlockwise" or "unknown". Otherwise the program will attempt to read it from the attribute "experiment_info"'),
 
     ('save_full_interval', -1, 'frequence in frames that an unprocessed frame is going to be saved (Default: 200 * expected_fps).'),
     ('compression_buff', -1, 'number of images "min-averaged" to calculate the image mask. (Default: expected_fps).'),
@@ -64,8 +64,8 @@ dflt_param_list = [
     ('int_max_gap_allowed_block', -1, 'maximum time gap allowed between valid intensity maps to be considered as belonging in the same group. Head/Tail correction by intensity.'),
     ('head_tail_int_method', 'MEDIAN_INT', 'method to correct head/tail based on intensity profile'),
     ('split_traj_time', 300, 'time in SECONDS that a trajectory will be subdivided to calculate the splitted features.'),
-    ('roi_size', -1, ''),
-    ('filter_model_name', '', ''),
+    ('roi_size', -1, 'Size of the worm region of interest. If it is set to -1 it would be calculated by the program.'),
+    ('filter_model_name', '', 'Path to a Keras model used to filter worms from spurious particles.'),
     ('n_cores_used', 1, 'Number of core used. Currently it is only suported by TRAJ_CREATE and it is only recommended at high particle densities.'),
     
     ('mask_bgnd_buff_size', -1, 'Number of images to keep to calculate the background (mask compression).'),
@@ -74,23 +74,28 @@ dflt_param_list = [
     ('traj_bgnd_buff_size', -1, 'Number of images to keep to calculate the background (trajectories/skeletons).'),
     ('traj_bgnd_frame_gap', -1, 'Frame gap between images used to calculate the background (trajectories/skeletons).'),
 
-
-    ('analysis_type', 'WORM', 'Analysis functions to use. Valid options: WORM, SINGLE_WORM_SHAFER, PHARYNX, ZEBRAFISH (broken)'),
+    ('analysis_type', 'WORM', 'Flag that defines the type of data for the analysis.'),
     ('w_num_segments', 24, 'Number of segments used to calculate the skeleton curvature (or half the number of segments used for the contour curvature).  Reduced for rounder objects and decreased for sharper organisms.'),
     ('w_head_angle_thresh', 60, 'Threshold to consider a peak on the curvature as the head or tail.'),
+    ]
 
-    #not tested (used for the zebra fish)
-    ('zf_num_segments', 12, 'Number of segments to use in tail model.'),
-    ('zf_min_angle', -90, 'The lowest angle to test for each segment. Angles are set relative to the angle of the previous segment.'),
-    ('zf_max_angle', 90, 'The highest angle to test for each segment.'),
-    ('zf_num_angles', 90, 'The total number of angles to test for each segment. Eg., If the min angle is -90 and the max is 90, setting this to 90 will test every 2 degrees, as follows: -90, -88, -86, ...88, 90.'),
-    ('zf_tail_length', 60, 'The total length of the tail model in pixels.'),
-    ('zf_tail_detection', 'MODEL_END_POINT', 'Algorithm to use to detect the fish tail point.'),
-    ('zf_prune_retention', 1, 'Number of models to retain after scoring for each round of segment addition. Higher numbers will be much slower.'),
-    ('zf_test_width', 2, 'Width of the tail in pixels. This is used only for scoring the model against the test frame.'),
-    ('zf_draw_width', 2, 'Width of the tail in pixels. This is used for drawing the final model.'),
-    ('zf_auto_detect_tail_length', True, 'Flag to determine whether zebrafish tail length detection is used. If set to True, values for zf_tail_length, zf_num_segments and zf_test_width are ignored.')
-]
+# #not tested (used for the zebra fish)
+# ('zf_num_segments', 12, 'Number of segments to use in tail model.'),
+# ('zf_min_angle', -90, 'The lowest angle to test for each segment. Angles are set relative to the angle of the previous segment.'),
+# ('zf_max_angle', 90, 'The highest angle to test for each segment.'),
+# ('zf_num_angles', 90, 'The total number of angles to test for each segment. Eg., If the min angle is -90 and the max is 90, setting this to 90 will test every 2 degrees, as follows: -90, -88, -86, ...88, 90.'),
+# ('zf_tail_length', 60, 'The total length of the tail model in pixels.'),
+# ('zf_tail_detection', 'MODEL_END_POINT', 'Algorithm to use to detect the fish tail point.'),
+# ('zf_prune_retention', 1, 'Number of models to retain after scoring for each round of segment addition. Higher numbers will be much slower.'),
+# ('zf_test_width', 2, 'Width of the tail in pixels. This is used only for scoring the model against the test frame.'),
+# ('zf_draw_width', 2, 'Width of the tail in pixels. This is used for drawing the final model.'),
+# ('zf_auto_detect_tail_length', True, 'Flag to determine whether zebrafish tail length detection is used. If set to True, values for zf_tail_length, zf_num_segments and zf_test_width are ignored.')
+
+valid_options = {
+    'analysis_type':['WORM', 'SINGLE_WORM_SHAFER', 'PHARYNX', 'ZEBRAFISH'],
+    'ventral_side':['','clockwise','anticlockwise', 'unknown'],
+    'head_tail_int_method':['MEDIAN_INT', 'HEAD_BRIGHTER']
+}
 
 #separate parameters default data into dictionaries for values and help
 default_param = {x: y for x, y, z in dflt_param_list}
@@ -278,6 +283,10 @@ class TrackerParams:
                     input_param[key] = param_in_file[key]
                 else:
                     raise ValueError('Parameter {} is not a valid parameter. Change its value in file {}'.format(key, self.json_file))
+                
+                if key in valid_options:
+                    assert param_in_file[key] in valid_options[key]
+
         return input_param
 
 

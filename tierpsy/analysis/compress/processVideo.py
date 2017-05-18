@@ -81,19 +81,13 @@ def reformatRigMaskedVideo(original_file, new_file, plugin_param_file, expected_
         print_flush(new_file + ' ERROR. File might be corrupt. ' + original_file)
         
         return
-    
-    
-    progress_timer = TimeCounter('Reformating Gecko plugin hdf5 video.')
-    
     save_full_interval, buffer_size, mask_params = _getReformatParams(plugin_params)
-
     with tables.File(original_file, 'r') as fid_old, \
         h5py.File(new_file, 'w') as fid_new:
         
         mask_old = fid_old.get_node('/mask')
-        
         tot_frames, im_height, im_width = mask_old.shape
-    
+        progress_timer = TimeCounter('Reformating Gecko plugin hdf5 video.', tot_frames)    
         
         attr_params = dict(
                 expected_fps = expected_fps,
@@ -107,10 +101,7 @@ def reformatRigMaskedVideo(original_file, new_file, plugin_param_file, expected_
         
         img_buff_ini = mask_old[:buffer_size]
         full_new[0] = img_buff_ini[0]
-        
-        
         mask_new[:buffer_size] = img_buff_ini*(mask_old[buffer_size] != 0)
-        
         for frame in range(buffer_size, tot_frames):
             if frame % save_full_interval != 0:
                 mask_new[frame] = mask_old[frame]

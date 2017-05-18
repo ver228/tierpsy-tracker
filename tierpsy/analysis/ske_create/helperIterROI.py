@@ -11,7 +11,7 @@ import tables
 
 from tierpsy.analysis.traj_create.getBlobTrajectories import generateImages
 from tierpsy.helper.misc import TimeCounter, print_flush
-
+from tierpsy.helper.params import read_fps
 
 def getWormROI(img, CMx, CMy, roi_size=128):
     '''
@@ -119,14 +119,10 @@ def generateMoviesROI(masked_file,
         img_generator = generateImages(masked_file, frames=frames, bgnd_param=bgnd_param)
         
         traj_group_by_frame = trajectories_data.groupby('frame_number')
-        progress_time = TimeCounter(progress_prefix)
-        with tables.File(masked_file, 'r') as fid:
-            try:
-                expected_fps = fid.get_node('/', 'mask')._v_attrs['expected_fps']
-            except:
-                expected_fps = 25
-            progress_refresh_rate = expected_fps*progress_refresh_rate_s
-
+        progress_time = TimeCounter(progress_prefix, max(frames))
+        
+        fps = read_fps(masked_file, dflt=25)
+        progress_refresh_rate = fps*progress_refresh_rate_s
 
         for ii, (current_frame, img) in enumerate(img_generator):
             frame_data = traj_group_by_frame.get_group(current_frame)

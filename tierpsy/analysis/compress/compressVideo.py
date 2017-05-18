@@ -252,7 +252,14 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
 
     # initialize timers
     print_flush(base_name + ' Starting video compression.')
-    progressTime = TimeCounter('Compressing video.')
+
+
+    if expected_frames == 1:
+        progressTime = TimeCounter('Compressing video.')
+    else:
+        #if we know the number of frames display it in the progress
+        progressTime = TimeCounter('Compressing video.', expected_frames)
+
 
     with h5py.File(masked_image_file, "r+") as mask_fid:
 

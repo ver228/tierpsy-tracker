@@ -18,9 +18,8 @@ import tables
 
 from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
 from tierpsy.analysis.compress.extractMetaData import read_and_save_timestamp
-from tierpsy.helper.params import traj_create_defaults, read_unit_conversions
+from tierpsy.helper.params import traj_create_defaults, read_unit_conversions, read_fps
 from tierpsy.helper.misc import TimeCounter, print_flush, TABLE_FILTERS
-
 
 def _thresh_bw(pix_valid):
     # calculate otsu_threshold as lower limit. Otsu understimates the threshold.
@@ -219,13 +218,20 @@ def generateImages(masked_image_file, frames=[], bgnd_param = {}):
             
             yield frame_number, image
 
-def generateROIBuff(masked_image_file, buffer_size, bgnd_param):
-    
+def generateROIBuff(masked_image_file, buffer_size, bgnd_param, progress_str='', progress_refresh_rate_s=20):
     img_generator = generateImages(masked_image_file, bgnd_param=bgnd_param)
     
     with tables.File(masked_image_file, 'r') as mask_fid:
         tot_frames, im_h, im_w = mask_fid.get_node("/mask").shape
     
+
+    #loop, save data and display progress
+    base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
+    progress_str = base_name + progress_str
+    fps = read_fps(masked_image_file, dflt=25)
+    progress_refresh_rate = fps*progress_refresh_rate_s
+
+    progress_time = TimeCounter(progress_str, tot_frames)  
     for frame_number, image in img_generator:
         if frame_number % buffer_size == 0:
             if frame_number + buffer_size > tot_frames:
@@ -252,7 +258,13 @@ def generateROIBuff(masked_image_file, buffer_size, bgnd_param):
                                                 cv2.CHAIN_APPROX_NONE)
     
             yield ROI_cnts, image_buffer, ini_frame
-            
+        
+        if frame_number % progress_refresh_rate == 0:
+            print_flush(progress_time.get_str(frame_number))
+                
+    print_flush( progress_time.get_str(frame_number))
+
+
 def _cnt_to_ROIs(ROI_cnt, image_buffer, min_box_width):
     #get the corresponding ROI from the contours
     ROI_bbox = cv2.boundingRect(ROI_cnt)
@@ -388,7 +400,7 @@ def getBlobsTable(masked_image_file,
     
 
     
-    buff_generator = generateROIBuff(masked_image_file, buffer_size, bgnd_param)
+    buff_generator = generateROIBuff(masked_image_file, buffer_size, bgnd_param,  progress_str = ' Calculating trajectories.')
     
 
     #switch the is_light_background flag if we are using background subtraction.
@@ -412,11 +424,6 @@ def getBlobsTable(masked_image_file,
     else:
         blobs_generator = map(f_blob_data, buff_generator)
     
-    #loop, save data and display progress
-    base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
-    progress_str = base_name + ' Calculating trajectories.'
-    
-    progressTime = TimeCounter(progress_str)  
     with tables.open_file(trajectories_file, mode='w') as traj_fid:
         plate_worms = _ini_plate_worms(traj_fid, masked_image_file)
         
@@ -424,13 +431,6 @@ def getBlobsTable(masked_image_file,
             if blobs_data:
                 plate_worms.append(blobs_data)
             
-            frames = ibuf*buffer_size
-            if frames % (expected_fps*20) == 0:
-                # calculate the progress and put it in a string
-                print_flush(progressTime.get_str(frames))
-                
-    print_flush( progressTime.get_str(frames))
-    
 
     
     
