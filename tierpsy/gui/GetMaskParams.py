@@ -152,10 +152,15 @@ class ParamsGUI(QMainWindow):
         self._ini_params_widgets()
 
         self.ui.pushButton_saveParam.clicked.connect(self.saveParamFile)
-        self.ui.pushButton_moreParams.clicked.connect(self.getMoreParams)
         self.ui.pushButton_paramFile.clicked.connect(self.getParamFile)
         
         LineEditDragDrop(self.ui.lineEdit_paramFile, self.updateParamFile, os.path.isfile)
+
+        self.ui.pushButton_moreParams.clicked.connect(self.getMoreParams)
+        #I am hiding this part. It is a bit confusing and I am not sure it is a useful 
+        #feature. The user can modify the .json file directly if required.
+        self.ui.pushButton_moreParams.hide()
+
 
     def _link_slider_spinbox(self):
         def _single_link(slider, spinbox, connect_func):
@@ -260,6 +265,9 @@ class ParamsGUI(QMainWindow):
 class GetMaskParams_GUI(ParamsGUI):
 
     def __init__(self, default_videos_dir='', scripts_dir=''):
+        super().__init__()
+        self.setWindowTitle("Set Parameters")
+        
         self.video_file = ''
         
         self.Ibuff = np.zeros(0)
@@ -269,7 +277,6 @@ class GetMaskParams_GUI(ParamsGUI):
         self.vid = None
         self.frame_number = 0
 
-        super().__init__()
 
         #remove tabs for the moment. I need to fix this it later
         self.ui.tabWidget.setCurrentIndex(self.ui.tabWidget.indexOf(self.ui.tab_mask))

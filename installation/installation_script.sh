@@ -147,7 +147,7 @@ function redhat_dependencies {
 function anaconda_pkgs {
 	echo "Installing get_anaconda extra packages..."
 	#conda install -y python=3.5.3 pip
-	conda install -y numpy matplotlib pytables pandas gitpython pyqt \
+	conda install -y numpy matplotlib pytables pandas gitpython pyqt=5 \
 	h5py scipy scikit-learn scikit-image seaborn xlrd cython statsmodels
 	conda install -y -c conda-forge tensorflow keras
 
@@ -226,7 +226,6 @@ function get_anaconda {
     else
         _anaconda
     fi
-
     anaconda_pkgs
     opencv_anaconda
 }
@@ -307,7 +306,7 @@ function exec_all {
 
 case $1 in
 	""|"--all")
-	"exec_all"
+	exec_all
 	;;
 	"--compile_cython")
 	compile_cython
