@@ -20,7 +20,7 @@
       <item>
        <widget class="QPushButton" name="pushButton_paramGUI">
         <property name="text">
-         <string>Set parameters / Process individual file</string>
+         <string>Set parameters</string>
         </property>
        </widget>
       </item>

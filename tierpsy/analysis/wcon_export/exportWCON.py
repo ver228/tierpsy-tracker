@@ -22,7 +22,7 @@ from tierpsy.helper.params import read_unit_conversions, read_ventral_side, read
 def getWCONMetaData(fname, READ_FEATURES=False, provenance_step='FEAT_CREATE'):
     def _order_metadata(metadata_dict):
         ordered_fields = ['strain', 'timestamp', 'gene', 'chromosome', 'allele', 
-        'genotype', 'sex', 'stage', 'ventral_side', 'media', 'arena', 'food', 
+        'strain_description', 'sex', 'stage', 'ventral_side', 'media', 'arena', 'food', 
         'habituation', 'who', 'protocol', 'lab', 'software']
         
         extra_fields = metadata_dict.keys() - set(ordered_fields)

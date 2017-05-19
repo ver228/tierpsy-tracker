@@ -9,6 +9,7 @@ import json
 import os
 #get default parameters files
 from tierpsy import AUX_FILES_DIR, DFLT_PARAMS_PATH, DFLT_PARAMS_FILES
+from collections import OrderedDict
 
 #deprecated variables that will be ignored
 deprecated_fields = ['has_timestamp', 'min_displacement']
@@ -26,7 +27,7 @@ deprecated_alias = {
 dflt_param_list = [
     ('mask_min_area', 50, 'minimum allowed area in pixels allowed for in the compression mask.'),
     ('mask_max_area', int(1e8), 'maximum allowed area in pixels allowed for in the compression mask..'),
-    ('min_box_width', 5, 'minimum allowed width of bounding box in pxels.'),
+    ('min_box_width', 5, 'minimum allowed width of bounding box in pixels.'),
     ('thresh_C', 15, 'constant offset used by the adaptative thresholding to calculate the mask.'),
     ('thresh_block_size', 61, 'block size used by the adaptative thresholding.'),
     ('dilation_size', 9, 'size of the structural element used in morphological operations to calculate the worm mask.'),
@@ -98,9 +99,11 @@ valid_options = {
 }
 
 #separate parameters default data into dictionaries for values and help
-default_param = {x: y for x, y, z in dflt_param_list}
-param_help = {x: z for x, y, z in dflt_param_list}
-
+default_param = OrderedDict()
+info_param = OrderedDict()
+for name, dflt_value, info in dflt_param_list:
+    default_param[name] = dflt_value
+    info_param[name] = info
 
 def _correct_filter_model_name(filter_model_name):
     if filter_model_name:

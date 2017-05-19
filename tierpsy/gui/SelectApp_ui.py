@@ -46,7 +46,7 @@ class Ui_SelectApp(object):
     def retranslateUi(self, SelectApp):
         _translate = QtCore.QCoreApplication.translate
         SelectApp.setWindowTitle(_translate("SelectApp", "Select App"))
-        self.pushButton_paramGUI.setText(_translate("SelectApp", "Set parameters / Process individual file"))
+        self.pushButton_paramGUI.setText(_translate("SelectApp", "Set parameters"))
         self.pushButton_batchProcess.setText(_translate("SelectApp", "Batch processing multiple files"))
         self.pushButton_MWViewer.setText(_translate("SelectApp", "Multi-worm tracker viewer"))
         self.pushButton_SWViewer.setText(_translate("SelectApp", "Single-worm tracker viewer"))
