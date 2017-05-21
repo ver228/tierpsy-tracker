@@ -54,6 +54,8 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         self.skeletons_file = ''
         self.worm_index_type = 'worm_index_manual'
         self.label_type = 'worm_label'
+        self.frame_data = None
+
 
         self.ui.comboBox_ROI1.activated.connect(self.selectROI1)
         self.ui.comboBox_ROI2.activated.connect(self.selectROI2)
