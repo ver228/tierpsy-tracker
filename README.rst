@@ -1,31 +1,34 @@
+.. _MRC-LMS: http://lms.mrc.ac.uk/
+.. _`Behavioral Genomics Group` : http://behave.csc.mrc.ac.uk/
+.. _`Github Desktop ` : https://desktop.github.com/
+.. _miniconda : https://conda.io/miniconda.html
+.. _ffmpeg : https://ffmpeg.org/download.html
+.. _`(Visual C++ 2015 Build Tools)` : http://landinghub.visualstudio.com/visual-cpp-build-tools
 Tierpsy Tracker
 ===============
 
-This repository contains the code of the multiworm tracker for the [MRC-LMS](http://lms.mrc.ac.uk/) [Behavioral Genomics Group](http://behave.csc.mrc.ac.uk/).
+This repository contains the code of the multiworm tracker for the MRC-LMS_ `Behavioral Genomics Group`_.
 
 For more details please visit the repository [wiki](https://github.com/ver228/tierpsy-tracker/wiki).
 
 Installation
 ============
+First you have to clone this repository. I recommend to install `Github Desktop`_, open a new terminal (in Windows open Git Shell), and run:
+```
+git clone https://github.com/ver228/tierpsy-tracker
+```
 
-Installation using Anaconda (OS X/Linux)
+
+Installation for OS X/Linux
 ----------------------------------------
-
-Run `bash installation/installation_script.sh`
-
-There might be some problems with dependencies. It might be requiered to install from scratch ffmpeg and pyqt5, and there might be some issues to compile openCV. Open an issue and I might be able to help.
+- Run `bash installation/installation_script.sh`
 
 Installation for Windows
 ========================
-- Download and install [git tools for windows](https://git-scm.com/download/win). Make sure to select "Select Windows' default window". Otherwise you will have to use MinTTY as command line.
-- Clone this repository and  [OpenWorm analysis toolbox](https://github.com/openworm/open-worm-analysis-toolbox):
-```
-git clone https://github.com/ver228/Multiworm_Tracking
-git clone https://github.com/openworm/open-worm-analysis-toolbox
-```
-- Install [ffmpeg](https://ffmpeg.org/download.html). [Here](http://adaptivesamples.com/how-to-install-ffmpeg-on-windows/) are friendly installation instructions.
-- Download [miniconda](http://conda.pydata.org/miniconda.html).
-- Run `installation/installation_script.bat` .
+- Download and install miniconda_.
+- Install ffmpeg_. Friendly installation instructions can be found here http://adaptivesamples.com/how-to-install-ffmpeg-on-windows/ .
+- Install `(Visual C++ 2015 Build Tools)`_ .
+- Run `./tierpsy-tracker/installation/installation_script.bat` .
 
 Test Installation and Examples
 ==============================
@@ -33,13 +36,13 @@ The test data can be downloaded using
 ```
 installation/instalation_script.sh --tests
 ```
-or manually downloaded using [this link](https://imperiallondon-my.sharepoint.com/personal/ajaver_ic_ac_uk/_layouts/15/guestaccess.aspx?guestaccesstoken=ldZ18fLY%2bzlu7XuO9mbKVdyiKoH4naiesqiLXWU4vGQ%3d&docid=0cec4e52f4ccf4d5b8bb3a737020fc12f&rev=1).
+or manually downloaded at (https://imperiallondon-my.sharepoint.com/personal/ajaver_ic_ac_uk/_layouts/15/guestaccess.aspx?guestaccesstoken=ldZ18fLY%2bzlu7XuO9mbKVdyiKoH4naiesqiLXWU4vGQ%3d&docid=0cec4e52f4ccf4d5b8bb3a737020fc12f&rev=1).
 
-The installation can be checked running
+There after the installation can be checked running
 ```
 python tests/run_tests.py
 ```
 
 Possible Issues
 ===============
-- If you recieve an error related with a module in segWormPython you will need to re-compile the cython files. Cython requires the same C compiler used to compile python. On OS X you need to install xcode using the app store. On Windows using python 3.5 you have to install [visual studio community 2015](https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx) (use custom installation and select Visual C++).
+Most of the problems that can occur during the installation are due to missing/conflicting dependencies specially if there were older versions of miniconda installed. Try to upgrade and re-run the scripts. If the problem persist you can raise an issue I'll try to help you but most of the time the problems can be solved by doing a google search.
