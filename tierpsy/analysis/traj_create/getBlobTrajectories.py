@@ -355,7 +355,7 @@ def getBlobsTable(masked_image_file,
     #find if it is using background subtraction
     if len(bgnd_param) > 0:
         bgnd_param['is_light_background'] = is_light_background
-    buffer_size = traj_create_defaults(expected_fps, buffer_size)
+    buffer_size = traj_create_defaults(masked_image_file, buffer_size)
     
 
     def _ini_plate_worms(traj_fid, masked_image_file):

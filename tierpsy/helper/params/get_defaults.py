@@ -1,13 +1,19 @@
 
 import tables
 import numpy as np
-from .read_attrs import read_fps
+from .read_attrs import read_fps, read_unit_conversions
+
+#to be used in case the fps is negative or zero
+DFLT_FPS = 25
+
 
 class CorrectParams():
     def __init__(self, main_arg):
         self.main_arg=  main_arg
 
     def process(self, params, convertions):
+        #this function replace a parameter if it is an invalid parameter. 
+        #It would only calculate the default conversion value if it is needed
         for key in convertions:
             if key in params:
                 param = params[key]
@@ -15,20 +21,21 @@ class CorrectParams():
                     params[key] = convertions[key]()
         return params
 
-
     @property
     def fps(self):
         try:
             return self._fps
         except:
-            if isinstance(self.main_arg, str):
-                self._fsp = read_fps(self.main_arg)
-            else:
-                #deal with a None argument
-                if self.main_arg is None:
-                    self._fsp = 1
-                else:
-                    self._fsp = self.main_arg
+            fps_out = read_unit_conversions(self.main_arg)[0]
+            fps, expected_fps, time_units = fps_out
+
+            
+            if fps <= 0 or time_units == 'frames': 
+                #Use default if fps is an invalid value or there is no conversion (fps=1, time_units='frames')
+                fps = DFLT_FPS
+
+            self._fsp = fps
+
             return self._fsp
 
     @property
@@ -43,8 +50,24 @@ class CorrectParams():
 
 
 
-def compress_defaults(expected_fps, **params):
-    obj = CorrectParams(expected_fps)
+def compress_defaults(fname, expected_fps=-1, **params):
+    #try to read fps from the file. 
+    #If the metadata was extracted from the video, there should be a correct timestamp.
+    fps = read_fps(fname)
+
+    if fps <= 0:
+        if expected_fps > 0:
+            #Use the user define value if it is valid
+            fps = expected_fps
+        else:
+            #if it is still bad value the hardcoded DFLT_FPS
+            fps = DFLT_FPS
+
+    assert fps > 0
+    
+    obj = CorrectParams('')
+    obj._fps = fps
+
 
     convertions = dict(
         buffer_size = lambda: int(round(obj.fps)),
@@ -95,14 +118,11 @@ def min_num_skel_defaults(fname, **params):
         min_num_skel = lambda: int(round(4 * obj.fps))
         )
     output = obj.process(params, convertions)
+    
     if len(output) == 1:
         return output['min_num_skel']
     else:
         return output
 
 
-if __name__ == '__main__':
-    fname = '/Volumes/Samsung USB/unc-4/Results/L4_unc4(e2323)_Ch1_31032017_140732_skeletons.hdf5'
-    output = compress_defaults(50, buffer_size=-1, save_full_interval=None)
-    print(output)
 

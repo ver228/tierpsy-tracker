@@ -2,7 +2,7 @@ import tables
 import h5py
 import numpy as np
 import json
-
+import os
 
 VALID_FIELDS = ['/mask', '/trajectories_data', '/features_timeseries']
 class AttrReader():
@@ -13,11 +13,11 @@ class AttrReader():
 
 
     def _find_field(self):
-        
-        with tables.File(self.file_name, 'r') as fid:
-            for field in VALID_FIELDS:
-                if field in fid:
-                    return field
+        if os.path.exists(self.file_name):
+            with tables.File(self.file_name, 'r') as fid:
+                for field in VALID_FIELDS:
+                    if field in fid:
+                        return field
         #raise KeyError("Not valid field {} found in {}".format(VALID_FIELDS, self.file_name)) 
         return ''
 
@@ -38,10 +38,10 @@ class AttrReader():
     def get_fps(self):
         expected_fps = self._read_attr('expected_fps', dflt=1)
         try:
+
             #try to calculate the frames per second from the timestamp
             with tables.File(self.file_name, 'r') as fid:
                 timestamp_time = fid.get_node('/timestamp/time')[:]
-
                 if np.all(np.isnan(timestamp_time)):
                     raise ValueError
                 fps = 1 / np.nanmedian(np.diff(timestamp_time))
@@ -51,7 +51,7 @@ class AttrReader():
 
                 time_units = 'seconds'
 
-        except (tables.exceptions.NoSuchNodeError, IOError, ValueError):
+        except:# (tables.exceptions.NoSuchNodeError, IOError, ValueError):
             fps = self._read_attr('fps', dflt=-1)
             if fps < 0:
                 #read the user defined timestamp
@@ -66,8 +66,8 @@ class AttrReader():
             
             
         
-        self._fps = fps
-        self._expected_fps = expected_fps
+        self._fps = float(fps)
+        self._expected_fps = float(expected_fps)
         self._time_units = time_units
 
         return self._fps, self._expected_fps, self._time_units
@@ -112,7 +112,7 @@ class AttrReader():
  
 
             
-        self._microns_per_pixel = microns_per_pixel
+        self._microns_per_pixel = float(microns_per_pixel)
         self._xy_units = xy_units
         return self._microns_per_pixel, self._xy_units
 
@@ -151,6 +151,7 @@ def read_ventral_side(fname):
     return reader.get_ventral_side()
     
 def read_fps(fname, dflt=1):
+    assert isinstance(fname, str)
     reader = AttrReader(fname, dflt)
     return reader.fps
 

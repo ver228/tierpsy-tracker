@@ -138,7 +138,6 @@ def reduceBuffer(Ibuff, is_light_background):
         return np.max(Ibuff, axis=0)
 
 def createImgGroup(fid, name, tot_frames, im_height, im_width):
-    
     img_dataset = fid.create_dataset(
         name,
         (tot_frames,
@@ -208,9 +207,11 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
      mask_param -- parameters used to calculate the mask
     '''
 
-    output = compress_defaults(expected_fps, 
-                    buffer_size = buffer_size, 
-                    save_full_interval = save_full_interval)
+    output = compress_defaults(masked_image_file, 
+                                expected_fps, 
+                                buffer_size = buffer_size, 
+                                save_full_interval = save_full_interval)
+
     buffer_size = output['buffer_size'] 
     save_full_interval = output['save_full_interval'] 
 
