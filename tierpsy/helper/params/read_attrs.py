@@ -22,19 +22,18 @@ class AttrReader():
         return ''
 
     def _read_attr(self, attr_name, dflt=None):
+        
         if dflt is None:
             dflt = self.dflt
 
-        if not self.field:
-            return self.dflt
-        with tables.File(self.file_name, 'r') as fid:
-            node = fid.get_node(self.field)
-
-            if attr_name in node._v_attrs:
-                attr = node._v_attrs[attr_name]
-            else:
-                attr = self.dflt #default in old videos
-            return attr
+        attr = dflt
+        if self.field:
+            with tables.File(self.file_name, 'r') as fid:
+                node = fid.get_node(self.field)
+                
+                if attr_name in node._v_attrs:
+                    attr = node._v_attrs[attr_name] 
+        return attr
 
     def get_fps(self):
         expected_fps = self._read_attr('expected_fps', dflt=1)
@@ -53,9 +52,8 @@ class AttrReader():
                 time_units = 'seconds'
 
         except (tables.exceptions.NoSuchNodeError, IOError, ValueError):
-            fps = self._read_attr('fps', dflt=None)
-            
-            if fps is None:
+            fps = self._read_attr('fps', dflt=-1)
+            if fps < 0:
                 #read the user defined timestamp
                 fps = expected_fps
 
