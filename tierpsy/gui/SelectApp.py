@@ -16,10 +16,10 @@ from tierpsy.gui.BatchProcessing import BatchProcessing_GUI
         
 
 widget_lists = {
-    'get_params':(GetMaskParams_GUI,"Set parameters"),
-    'batch_processing':(BatchProcessing_GUI,"Batch processing multiple files"),
-    'mwtracker':(MWTrackerViewer_GUI,"Multi-worm tracker viewer"),
-    'swtracker':(SWTrackerViewer_GUI,"Single-worm tracker viewer")
+    'get_params':(GetMaskParams_GUI,"Set Parameters"),
+    'batch_processing':(BatchProcessing_GUI,"Batch Processing Multiple Files"),
+    'mwtracker':(MWTrackerViewer_GUI,"Multi-Worm Tracker Viewer"),
+    'swtracker':(SWTrackerViewer_GUI,"Single-Worm Tracker Viewer")
 }
 
 
