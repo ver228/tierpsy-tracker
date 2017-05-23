@@ -1,64 +1,26 @@
-# Analysis Types
-* WORM
-* SINGLE_WORM_SHAFER
-* PHARYNX
-* ZEBRAFISH
+############
+Output Files
+############
 
-# Analysis Steps
-tierpsy/analysis
+BASENAME.hdf5
+#############
 
-* COMPRESS
-* VID_SUBSAMPLE
-* TRAJ_CREATE
-* TRAJ_JOIN
-* SKE_INIT
-* BLOB_FEATS
-* SKE_CREATE
-* SKE_FILT
-* SKE_ORIENT
+**/mask** *(tot_images, im_high, im_width)*
 
-* STAGE_ALIGMENT
-* CONTOUR_ORIENT
-'ventral_side':['','clockwise','anticlockwise', 'unknown'],
+attributes: 
+  * expected_fps := 1,
+  * time_units := 'frames'
+  * microns_per_pixel := 1
+  * xy_units := 'pixels'
+  * is_light_background := 1
 
-* INT_PROFILE
-* INT_SKE_ORIENT
-* FEAT_CREATE
+**/full_data** *(tot_images/full_image, im_high, im_width)*
 
-* WCON_EXPORT
+**/mean_intensity** *(tot_images)*
 
-* FEAT_MANUAL_CREATE
+**/timestamp/time**
 
-# PARAMETERS
-json files directory:
-tierpsy/extras/param_file
-dflt_param_list
-
-### /provenance_tracking/COMPRESS
-### /provenance_tracking/VID_SUBSAMPLE
-
-# Output Files
-
-## BASENAME.hdf5
-
-### /mask
-_(tot_images, im_high, im_width)_
-
-#### attributes: 
-* expected_fps := 1,
-* time_units := 'frames'
-* microns_per_pixel := 1
-* xy_units := 'pixels'
-* is_light_background := 1
-
-### /full_data 
-_(tot_images/full_image, im_high, im_width)_
-
-### /mean_intensity 
-_(tot_images)_
-
-### /timestamp/raw
-### /timestamp/time
+**/timestamp/raw**
 
 ## BASENAME_subsample.avi
 
