@@ -6,7 +6,7 @@ BASENAME.hdf5
 #############
 
 **/mask** *(tot_images, im_high, im_width)*
-compressed array with the masked image.
+Compressed array with the masked image.
 
 **/full_data** *(tot_images/save_full_interval, im_high, im_width)*
 Frame without mask saved every ``save_full_interval``. The saving interval is recommended to be adjusted every 5min. This field can be useful to identify changes in the background that are lost in the **/mask** dataset *e.g.* food depletion or contrast lost due to water condensation.
@@ -26,26 +26,13 @@ BASENAME_skeletons.hsf5
 
 **/plate_worms**
  * worm_index_blob: Trajectory index given initially by the program. Since there can be several short spurious tracks identified this number can be very large and does not reflect the number of final trajectories.
- * worm_index_joined: Index after joining trajectories separated by a small time gap and filtering short spurious tracks, and invalid row will be assigned ``-1``. 
- * threshold: threshold used for the image binarization.
+ * worm_index_joined: Index after joining trajectories separated by a small time gap and filtering short spurious tracks, and invalid row will be assigned ``-1``.
+ * threshold: Threshold used for the image binarization.
  * frame_number: Video frame number.
- * coord_x, coord_y, box_length, box_width, angle: center coordinates, length, width and orientation of the `minimum rotated rectangle <http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#minarearect>`_
+ * coord_x, coord_y, box_length, box_width, angle: center coordinates, length, width and orientation of the `minimum rotated rectangle <http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#minarearect>`_.
  * area: blob area.
  * bounding_box_xmin, bounding_box_xmax, bounding_box_ymin, bounding_box_ymax: `bounding rectangle <http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#boundingrect>`_ coordinates.
 
-**/blob_features**
- * coord_x, coord_y
- * area
- * perimeter
- * box_length
- * box_width
- * quirkiness
- * compactness
- * box_orientation
- * solidity: area / (convex hull area)
- * intensity_mean, intensity_std:
- * hu0, hu1, hu2, hu3, hu4, hu5, hu6: `hu moments <http://docs.opencv.org/2.4/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html?highlight=drawcontours#humoments>`_
- 
 **/trajectories_data**
  * frame_number
  * worm_index_joined
@@ -61,6 +48,16 @@ BASENAME_skeletons.hsf5
  * is_good_skel
  * skel_outliers_flag
  * int_map_id
+
+**/blob_features**
+ * coord_x, coord_y, box_length, box_width, box_orientation
+ * area: `area <http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#contourarea>`_
+ * perimeter: `perimeter <http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#arclength>`_
+ * quirkiness: sqrt(1 - box_width^2 / box_width^2)
+ * compactness: 4 * pi * area / (perimeter^2)
+ * solidity: area / (`convex hull <http://docs.opencv.org/3.0-beta/doc/tutorials/imgproc/shapedescriptors/hull/hull.html#>`_ area)
+ * intensity_mean, intensity_std: mean and standard deviation inside the thresholded region.
+ * hu0, hu1, hu2, hu3, hu4, hu5, hu6: `hu moments <http://docs.opencv.org/2.4/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html?highlight=drawcontours#humoments>`_
 
 **/contour_area**
 
