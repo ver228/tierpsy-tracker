@@ -19,18 +19,13 @@ The data is stored into a hdf5 container using a gzip filter. Some advantages of
 Creating worm trajectories
 ##########################
 
-In the first step (`getWormTrajectories.py`), trajectories are linked by its closest neighbor in a consecutive area. The closest neighbor must have a similar area and be closer than a specified distance, additionally the algorithm filters for large or smaller particles. In a second step, trajectories are joined that have a small time and spatial gap between their end and beginning, as well as similar area. Finally for visualization purposes, a video is created showing a speedup and low resolution version of the masks where trajectories are drawed over time. 
+Trajectories are linked by its closest neighbor in a consecutive area. The closest neighbor must have a similar area and be closer than a specified distance, additionally the algorithm filters for large or smaller particles. 
+
+In a second step, trajectories are joined that have a small time and spatial gap between their end and beginning, as well as similar area. Finally for visualization purposes, a video is created showing a speedup and low resolution version of the masks where trajectories are drawed over time. 
 
 .. image:: https://cloud.githubusercontent.com/assets/8364368/26301795/25eb72ac-3eda-11e7-8a52-99dd6c49bc07.gif
 
- The main output of the program is a file with the extension '_trajectories.hdf5'. The hdf5 pytables file with a table named `\plate_worms` with the fields *worm_index, worm_index_joined, frame_number, coord_x, coord_y, area, perimeter, box_lenght, box_width, box_orientation, quirkiness, compactness, solidity, intensity_mean, intensity_std, threshold, bounding_box_xmin, bounding_box_xmax, bounding_box_ymin, bounding_box_ymax, segworm_id*.
-Most of these fields are features with a self-explanatory name, here we only elaborate the ones considered requiring clarification.
-   - *worm_index:* index of the trajectory given by the program, since lots of partial spurious trajectories can be identified, this number can be very large, but the index value does not reflect the number of final trajectories returned by the program.
-   - *worm_index_joined:* the trajectory index after joining close trajectories and filtering for short spurious tracks. This is the number that must be used in subsequent analysis.
-   - *threshold:* worm threshold over the background calculated by finding an abrupt change in the cumulative of the intensity distribution. This number is can be noisy for some frames, but it is later improved by averaging over a large number of frames before the skeletonization step.
-   - *box_lenght, box_width, box_orientation, quirkiness:* refer to the values of the rotated min bounding box calculated by openCV minAreaRect. Quirkiness is eccentricity but using box_lenght and box_width instead of an ellipse major and minor axis.
-   - *bounding_box_xmin, bounding_box_xmax, bounding_box_ymin:* refers to the rectangular, not rotated, bounding of the worm.
-   - *segworm_id* depecrated, used before to quickly related data from the skeletons table.
+
  
 ##########################
 Extracting worm skeletons
