@@ -12,3 +12,4 @@ tests/data/*
 *.so
 
 tierpsy.egg-info/
+docs/_build/

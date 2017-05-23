@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
+#import sphinx_bootstrap_theme
+import foundation_sphinx_theme
 #
 # TierpsyTracker documentation build configuration file, created by
 # sphinx-quickstart on Mon May 22 16:45:55 2017.
@@ -17,10 +20,12 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+sys.path.insert(0, os.path.abspath('..'))
 
+
+suppress_warnings = ['image.nonlocal_uri']
 
 # -- General configuration ------------------------------------------------
 
@@ -40,6 +45,11 @@ extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages']
+
+extensions.append('sphinx.ext.napoleon')
+napoleon_google_docstring = False
+napoleon_use_param = False
+napoleon_use_ivar = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -91,7 +101,12 @@ todo_include_todos = True
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+extensions += ['sphinxjp.themes.basicstrap']
+html_theme = 'basicstrap'
+#html_theme = 'bootstrap'
+#html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
+#html_theme = 'foundation_sphinx_theme'
+#html_theme_path = foundation_sphinx_theme.HTML_THEME_PATH
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -102,7 +117,7 @@ html_theme = 'alabaster'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = []#['_static']
 
 
 # -- Options for HTMLHelp output ------------------------------------------

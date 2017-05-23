@@ -9,7 +9,10 @@ Welcome to TierpsyTracker's documentation!
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-
+   
+   source/intro
+   source/manual
+   source/software_explanation
 
 
 Indices and tables

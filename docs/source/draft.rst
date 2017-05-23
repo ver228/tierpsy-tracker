@@ -1,3 +1,11 @@
+DRAFT
+*******
+
+.. automodule:: tierpsy
+ :members:
+
+
+
 # Analysis Types
 * WORM
 * SINGLE_WORM_SHAFER
@@ -18,8 +26,7 @@ tierpsy/analysis
 * SKE_ORIENT
 
 * STAGE_ALIGMENT
-* CONTOUR_ORIENT
-'ventral_side':['','clockwise','anticlockwise', 'unknown'],
+* CONTOUR_ORIENT: 'ventral_side':['','clockwise','anticlockwise', 'unknown'],
 
 * INT_PROFILE
 * INT_SKE_ORIENT
