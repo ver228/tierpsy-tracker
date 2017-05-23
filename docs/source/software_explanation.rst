@@ -95,7 +95,7 @@ basename_subsample.avi
 basename_skeletons.hdf5
 ========================
 
-**/plate_worms**
+:/plate_worms:
  * worm_index_blob: Trajectory index given initially by the program. Since there can be several short spurious tracks identified this number can be very large and does not reflect the number of final trajectories.
  * worm_index_joined: Index after joining trajectories separated by a small time gap and filtering short spurious tracks, and invalid row will be assigned ``-1``.
  * threshold: Threshold used for the image binarization.
@@ -104,12 +104,12 @@ basename_skeletons.hdf5
  * area: blob area.
  * bounding_box_xmin, bounding_box_xmax, bounding_box_ymin, bounding_box_ymax: `bounding rectangle <http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#boundingrect>`_ coordinates.
 
-**/trajectories_data**
-table containing the smoothed data and the indexes to link each row in the others table, with the corresponding worm_index and frame_number
-
- * frame_number
+:/trajectories_data:
+ table containing the smoothed data and the indexes to link each row in the others table, with the corresponding worm_index and frame_number
+ 
+ * frame_number: 
  * worm_index_joined
- * plate_worm_id
+ * plate_worm_id 
  * skeleton_id: row in the trajectory_data, useful to quickly recover worm data.
  * coord_x, coord_y: Centroid coordinates after smoothing **/plate_worms data**. It is used to find the ROI to calculate the skeletons. If you want to calculate the centroid features use the corresponding field in **/blob_features**.
  * threshold: value used to segment the worm in the ROI.
@@ -122,7 +122,7 @@ table containing the smoothed data and the indexes to link each row in the other
  * skel_outliers_flag
  * int_map_id
 
-**/blob_features**
+:/blob_features:
  * coord_x, coord_y, box_length, box_width, box_orientation
  * area: `area <http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#contourarea>`_
  * perimeter: `perimeter <http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#arclength>`_
@@ -132,42 +132,40 @@ table containing the smoothed data and the indexes to link each row in the other
  * intensity_mean, intensity_std: mean and standard deviation inside the thresholded region.
  * hu0, hu1, hu2, hu3, hu4, hu5, hu6: `hu moments <http://docs.opencv.org/2.4/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html?highlight=drawcontours#humoments>`_
 
-**/contour_area**
+:/contour_area:
 
-**/contour_side1_length**
-**/contour_side2_length**
-**/skeleton_length**
-length in pixels.
+:/contour_side1_length: 
+:/contour_side2_length:
+:/skeleton_length: length in pixels.
 
-**/skeleton**
-**/contour_side1**
-**/contour_side2**
-normalized coordinates. head is the first index and tail the last. The contour side is assigned to keep a clockwise-orientation. There is still work to do to find what is the ventral and dorsal side.
+:/skeleton:
+:/contour_side1:
+:/contour_side2: normalized coordinates. head is the first index and tail the last. The contour side is assigned to keep a clockwise-orientation. There is still work to do to find what is the ventral and dorsal side.
 
-**/width_midbody**
+:/width_midbody:
 
-**/contour_width**
-contour width along the skeleton. I'm using the output from segworm, and resampling by interpolation. It might be possible to improve this.
+:/contour_width:
+ contour width along the skeleton. I'm using the output from segworm, and resampling by interpolation. It might be possible to improve this.
 
-**/intensity_analysis/switched_head_tail**
+:/intensity_analysis/switched_head_tail:
  * worm_index
  * ini_frame
  * last_frame
 
-**/timestamp/raw**
+:/timestamp/raw:
 
-**/timestamp/time**
+:/timestamp/time:
 
 basename_features.hdf5
 ===============================
 
-**/coordinates/dorsal_contours**
+:/coordinates/dorsal_contours:
 
-**/coordinates/ventral_contours**
+:/coordinates/ventral_contours:
 
-**/coordinates/skeletons**
+:/coordinates/skeletons:
 
-**/features_events/worm_***
+:/features_events/worm_*:
  * inter_backward_distance
  * inter_backward_time
  * inter_coil_distance
@@ -195,7 +193,7 @@ basename_features.hdf5
  * upsilon_turns_time_ratio
  * worm_dwelling
 
-**/features_timeseries**
+:/features_timeseries:
  * worm_index
  * timestamp
  * skeleton_id
@@ -226,7 +224,9 @@ basename_features.hdf5
  * path_range
  * path_curvature
 
-**/features_summary** P10th_split, P90th_split
+:/features_summary: 
+ P10th_split, P90th_split
+ 
  * P10th
  * P90th
  * means
