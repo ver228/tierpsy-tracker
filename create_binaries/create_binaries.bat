@@ -11,8 +11,8 @@ goto:eof
 
 
 :build
-pyinstaller --noconfirm  --clean ProcessWormsWorker.spec
-pyinstaller --noconfirm --clean MWConsole.spec
+pyinstaller --noconfirm  --clean ProcessWorker.spec
+pyinstaller --noconfirm --clean TierpsyTracker.spec
 goto:eof
 
 :build_spec
@@ -51,10 +51,10 @@ pyinstaller --noconfirm  --clean --onefile ^
 goto:eof
 
 :clean
-for /f %%w in ('python -c "import MWTracker; print(MWTracker.__version__)"') do set MWVER=%%w
+for /f %%w in ('python -c "import tierpsy; print(tierpsy.__version__)"') do set MWVER=%%w
 for /f %%w in ('python -c "import platform; print(platform.platform())"') do set WINVER=%%w
 
-MOVE .\dist\MWConsole.exe ".\MWConsole %MWVER% - %WINVER%.exe"
+MOVE .\dist\MWConsole.exe ".\TierpsyTracker %MWVER% - %WINVER%.exe"
 RMDIR /S /Q .\dist
 RMDIR /S /Q .\build	
 

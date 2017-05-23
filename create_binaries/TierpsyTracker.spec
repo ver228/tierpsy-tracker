@@ -1,18 +1,18 @@
 # -*- mode: python -*-
 import os
 import sys
-import MWTracker
+import tierpsy
 import open_worm_analysis_toolbox
 
 
-from MWTracker.helper.misc import FFMPEG_CMD, FFPROBE_CMD
-from MWTracker.gui import SelectApp
+from tierpsy.helper.misc import FFMPEG_CMD, FFPROBE_CMD
+from tierpsy.gui import SelectApp
 
 IS_WIN =  (sys.platform == 'win32')
 IS_MAC =  (sys.platform == 'darwin')
 IS_LINUX =  (sys.platform == 'linux')
 
-#get MWConsole main path
+#get TierpsyTracker main path
 SRC_SCRIPT_PATH = SelectApp.__file__
 
 DST_BUILD=os.path.abspath('.')
@@ -39,10 +39,10 @@ ffprobe_src = FFPROBE_CMD
 ffprobe_dst = os.path.join('misc', os.path.basename(FFPROBE_CMD))
 
 #add prev compiled binary (they should have been ran before)
-proccess_bin_dst = 'ProcessWormsWorker'
+proccess_bin_dst = 'ProcessWorker'
 if IS_WIN:
   proccess_bin_dst += '.exe'
-proccess_bin_src = os.path.join(DST_BUILD, 'dist', 'ProcessWormsWorker', proccess_bin_dst)
+proccess_bin_src = os.path.join(DST_BUILD, 'dist', 'ProcessWorker', proccess_bin_dst)
 
 #create added files
 added_datas = [(ow_feat_dst, ow_feat_src, 'DATA'),
@@ -52,15 +52,15 @@ added_datas = [(ow_feat_dst, ow_feat_src, 'DATA'),
         (ffprobe_dst, ffprobe_src, 'DATA')]
 
 #I add the file separator at the end, it makes my life easier later on
-MWTracker_path = os.path.dirname(MWTracker.__file__)
-MWTracker_path += os.sep
+tierpsy_path = os.path.dirname(tierpsy.__file__)
+tierpsy_path += os.sep
 
 #add all the files in misc
-for (dirpath, dirnames, filenames) in os.walk(os.path.join(MWTracker_path, 'misc')):
+for (dirpath, dirnames, filenames) in os.walk(os.path.join(tierpsy_path, 'misc')):
   for fname in filenames:
     if not fname.startswith('.'):
       fname_src = os.path.join(dirpath, fname)
-      fname_dst = fname_src.replace(MWTracker_path, '')
+      fname_dst = fname_src.replace(tierpsy_path, '')
       added_datas.append((fname_dst, fname_src, 'DATA'))
 
 #copy additional dll in windows
@@ -112,7 +112,7 @@ if not DEBUG:
             a.binaries,
             a.zipfiles,
             a.datas,
-            name='MWConsole',
+            name='TierpsyTracker',
             debug=False,
             strip=False,
             upx=True,
@@ -121,11 +121,11 @@ if not DEBUG:
   if IS_MAC:
 
     app = BUNDLE(exe,
-                 name='MWConsole.app',
+                 name='TierpsyTracker.app',
                  icon=None,
                  bundle_identifier=None,
                  info_plist={
-                  'CFBundleShortVersionString' : MWTracker.__version__,
+                  'CFBundleShortVersionString' : tierpsy.__version__,
                   'NSHighResolutionCapable': 'True'
                   }
                 )
@@ -136,7 +136,7 @@ else:
   exe = EXE(pyz,
             a.scripts,
             exclude_binaries=True,
-            name='MWConsole',
+            name='TierpsyTracker',
             debug=False,
             strip=False,
             upx=True,
@@ -148,4 +148,4 @@ else:
                  a.datas,
                  strip=False,
                  upx=True,
-                 name='MWConsole')
+                 name='TierpsyTracker')

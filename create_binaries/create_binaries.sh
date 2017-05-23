@@ -1,6 +1,6 @@
 function build {
-pyinstaller --noconfirm  --clean ProcessWormsWorker.spec
-pyinstaller --noconfirm  --clean MWConsole.spec
+pyinstaller --noconfirm  --clean ProcessWorker.spec
+pyinstaller --noconfirm  --clean TierpsyTracker.spec
 }
 
 function build_spec {
@@ -27,9 +27,9 @@ pyinstaller --noconfirm  --onefile --windowed --clean\
 }
 
 function clean {
-	MWVER=`python3 -c "import MWTracker; print(MWTracker.__version__)"`
+	MWVER=`python3 -c "import tierpsy; print(tierpsy.__version__)"`
 	OSXVER=`python3 -c "import platform; print(platform.platform().replace('Darwin', 'MacOSX'))"`
-	mv ./dist/MWConsole.app "./MWConsole $MWVER - $OSXVER+.app"
+	mv ./dist/TierpsyTracker.app "./TierpsyTracker $MWVER - $OSXVER+.app"
 	rm -Rf ./dist
 	rm -Rf ./build	
 }
