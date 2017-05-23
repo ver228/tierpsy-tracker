@@ -101,12 +101,9 @@ todo_include_todos = True
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-extensions += ['sphinxjp.themes.basicstrap']
-html_theme = 'basicstrap'
-#html_theme = 'bootstrap'
-#html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
-#html_theme = 'foundation_sphinx_theme'
-#html_theme_path = foundation_sphinx_theme.HTML_THEME_PATH
+# extensions += ['sphinxjp.themes.basicstrap']
+# html_theme = 'basicstrap'
+html_theme='haiku'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
