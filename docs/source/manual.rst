@@ -10,7 +10,7 @@ After running installation script in OSX or Windows there should be a doulbe-cli
 The alternative is to open a terminal, move to the Tierpsy Tracker main directory and type ``python3 cmd_scripts/TierpsyTrackerConsole.py``.
 
 
-.. image:: https://cloud.githubusercontent.com/assets/8364368/26286115/0b0c7376-3e55-11e7-918c-cc0319b90496.png
+.. image:: https://cloud.githubusercontent.com/assets/8364368/26398704/30c17b10-4072-11e7-9a90-d3e9e394ef9d.png
    :align: center
    
 
