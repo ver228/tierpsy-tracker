@@ -5,9 +5,9 @@ from functools import partial
 import numpy as np
 import pandas as pd
 import tables
-from PyQt5.QtCore import Qt, QPointF
-from PyQt5.QtGui import QPixmap, QPainter, QFont, QPen, QPolygonF, QColor
-from PyQt5.QtWidgets import QApplication, QMessageBox
+from PyQt5.QtCore import Qt, QPointF, pyqtSignal
+from PyQt5.QtGui import QPixmap, QPainter, QFont, QPen, QPolygonF, QColor, QKeySequence
+from PyQt5.QtWidgets import QApplication, QMessageBox, QShortcut
 
 from tierpsy.analysis.feat_create.obtainFeatures import getWormFeaturesFilt
 from tierpsy.analysis.ske_create.helperIterROI import getWormROI
@@ -22,6 +22,8 @@ from tierpsy.helper.params import TrackerParams
 
 from tierpsy.processing.trackProvenance import getGitCommitHash, execThisPoint
 
+# # worm: w
+#         elif event.key() == :
 
 class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
@@ -105,6 +107,16 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
         # select worm ROI when doubleclick a worm
         self.mainImage._canvas.mouseDoubleClickEvent = self.selectWorm
+
+        #SHORTCUTS
+        self.ui.pushButton_W.setShortcut(QKeySequence(Qt.Key_W))
+        self.ui.pushButton_U.setShortcut(QKeySequence(Qt.Key_U))
+        self.ui.pushButton_WS.setShortcut(QKeySequence(Qt.Key_C))
+        self.ui.pushButton_B.setShortcut(QKeySequence(Qt.Key_B))
+        self.ui.radioButton_ROI1.setShortcut(QKeySequence(Qt.Key_Up))
+        self.ui.radioButton_ROI2.setShortcut(QKeySequence(Qt.Key_Down))
+        self.ui.pushButton_join.setShortcut(QKeySequence(Qt.Key_J))
+        self.ui.pushButton_split.setShortcut(QKeySequence(Qt.Key_S))
 
     def getManualFeatures(self):
         # save the user changes before recalculating anything
@@ -600,33 +612,8 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
     # change frame number using the keys
     def keyPressEvent(self, event):
-        # select uchange the radio button pression the up and down keys
-        if event.key() == Qt.Key_Up:
-            self.ui.radioButton_ROI1.setChecked(True)
-        elif event.key() == Qt.Key_Down:
-            self.ui.radioButton_ROI2.setChecked(True)
-
-        # undefined: u
-        if event.key() == Qt.Key_U:
-            self.tagWorm(self.wlab['U'])
-        # worm: w
-        elif event.key() == Qt.Key_W:
-            self.tagWorm(self.wlab['WORM'])
-        # worm cluster: c
-        elif event.key() == Qt.Key_C:
-            self.tagWorm(self.wlab['WORMS'])
-        # bad: b
-        elif event.key() == Qt.Key_B:
-            self.tagWorm(self.wlab['BAD'])
-        # s
-        elif event.key() == Qt.Key_J:
-            self.joinTraj()
-        # j
-        elif event.key() == Qt.Key_S:
-            self.splitTraj()
-
         # go the the start of end of a trajectory
-        elif event.key() == Qt.Key_BracketLeft:
+        if event.key() == Qt.Key_BracketLeft:
             current_roi = 1 if self.ui.radioButton_ROI1.isChecked() else 2
             self.roiRWFF(current_roi, self.RW)
         #[ <<
