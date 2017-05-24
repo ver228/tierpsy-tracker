@@ -5,5 +5,4 @@ all:
 	pyuic5 SWTrackerViewer.ui -o ../SWTrackerViewer_ui.py
 	pyuic5 GetMaskParams.ui -o ../GetMaskParams_ui.py
 	pyuic5 AnalysisProgress.ui -o ../AnalysisProgress_ui.py
-	pyuic5 SelectApp.ui -o ../SelectApp_ui.py
 	pyuic5 BatchProcessing.ui -o ../BatchProcessing_ui.py

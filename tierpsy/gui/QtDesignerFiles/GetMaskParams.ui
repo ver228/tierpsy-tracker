@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1038</width>
-    <height>885</height>
+    <height>952</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,19 +40,6 @@
            <layout class="QGridLayout" name="gridLayout_6">
             <item row="2" column="0">
              <layout class="QGridLayout" name="gridLayout_5">
-              <item row="3" column="1">
-               <widget class="QLabel" name="label_min_area_2">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Frames per Second</string>
-                </property>
-               </widget>
-              </item>
               <item row="8" column="1" colspan="2">
                <spacer name="horizontalSpacer_4">
                 <property name="orientation">
@@ -66,32 +53,51 @@
                 </property>
                </spacer>
               </item>
-              <item row="6" column="1">
-               <widget class="QDoubleSpinBox" name="p_microns_per_pixel">
-                <property name="frame">
+              <item row="3" column="2">
+               <widget class="QDoubleSpinBox" name="p_expected_fps">
+                <property name="enabled">
                  <bool>true</bool>
                 </property>
                 <property name="buttonSymbols">
                  <enum>QAbstractSpinBox::NoButtons</enum>
                 </property>
-                <property name="accelerated">
-                 <bool>false</bool>
-                </property>
-                <property name="keyboardTracking">
-                 <bool>true</bool>
-                </property>
                </widget>
               </item>
-              <item row="0" column="1">
-               <widget class="QLabel" name="label_max_aea_2">
+              <item row="5" column="1">
+               <widget class="QLabel" name="label_min_area_3">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>Analysis Type</string>
+                 <string>Microns per Pixel</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QLabel" name="label_min_area_2">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Frames per Second</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -111,76 +117,32 @@
               <item row="1" column="1" colspan="2">
                <widget class="QComboBox" name="p_analysis_type"/>
               </item>
-              <item row="5" column="1">
-               <widget class="QLabel" name="label_min_area_3">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Microns per Pixel</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1">
-               <widget class="QDoubleSpinBox" name="p_expected_fps">
-                <property name="enabled">
+              <item row="5" column="2">
+               <widget class="QDoubleSpinBox" name="p_microns_per_pixel">
+                <property name="frame">
                  <bool>true</bool>
                 </property>
                 <property name="buttonSymbols">
                  <enum>QAbstractSpinBox::NoButtons</enum>
                 </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item row="1" column="0">
-             <layout class="QFormLayout" name="formLayout">
-              <property name="sizeConstraint">
-               <enum>QLayout::SetDefaultConstraint</enum>
-              </property>
-              <property name="fieldGrowthPolicy">
-               <enum>QFormLayout::FieldsStayAtSizeHint</enum>
-              </property>
-              <item row="1" column="0">
-               <widget class="QSpinBox" name="p_compression_buff">
-                <property name="buttonSymbols">
-                 <enum>QAbstractSpinBox::UpDownArrows</enum>
+                <property name="accelerated">
+                 <bool>false</bool>
                 </property>
-                <property name="minimum">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <number>1000</number>
-                </property>
-                <property name="value">
-                 <number>25</number>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QLabel" name="label_5">
-                <property name="text">
-                 <string>Frames to Average</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QCheckBox" name="p_keep_border_data">
-                <property name="text">
-                 <string>Keep Border Data?</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <widget class="QCheckBox" name="p_is_light_background">
-                <property name="text">
-                 <string>Is Light Background?</string>
-                </property>
-                <property name="checked">
+                <property name="keyboardTracking">
                  <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1" colspan="2">
+               <widget class="QLabel" name="label_max_aea_2">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Analysis Type</string>
                 </property>
                </widget>
               </item>
@@ -401,9 +363,6 @@
                   <property name="keyboardTracking">
                    <bool>true</bool>
                   </property>
-                  <property name="showGroupSeparator" stdset="0">
-                   <bool>false</bool>
-                  </property>
                   <property name="minimum">
                    <number>10</number>
                   </property>
@@ -412,6 +371,9 @@
                   </property>
                   <property name="value">
                    <number>5000</number>
+                  </property>
+                  <property name="showGroupSeparator" stdset="0">
+                   <bool>false</bool>
                   </property>
                  </widget>
                 </item>
@@ -442,6 +404,88 @@
                  </widget>
                 </item>
                </layout>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="0">
+             <layout class="QFormLayout" name="formLayout">
+              <property name="sizeConstraint">
+               <enum>QLayout::SetDefaultConstraint</enum>
+              </property>
+              <property name="fieldGrowthPolicy">
+               <enum>QFormLayout::FieldsStayAtSizeHint</enum>
+              </property>
+              <item row="2" column="0" colspan="2">
+               <widget class="QCheckBox" name="p_keep_border_data">
+                <property name="text">
+                 <string>Keep Border Data?</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0" colspan="2">
+               <widget class="QCheckBox" name="p_is_light_background">
+                <property name="text">
+                 <string>Is Light Background?</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0" colspan="2">
+               <widget class="QCheckBox" name="p_is_extract_timestamp">
+                <property name="text">
+                 <string>Extract Timestamp</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="label_5">
+                <property name="text">
+                 <string>Frames to Average</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="1">
+               <widget class="QSpinBox" name="p_compression_buff">
+                <property name="buttonSymbols">
+                 <enum>QAbstractSpinBox::UpDownArrows</enum>
+                </property>
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>1000</number>
+                </property>
+                <property name="value">
+                 <number>25</number>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="1">
+               <widget class="QSpinBox" name="p_save_full_interval"/>
+              </item>
+              <item row="7" column="0">
+               <widget class="QLabel" name="label_3">
+                <property name="text">
+                 <string>Full Frames Saving Frequency</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
@@ -605,16 +649,7 @@
           <item>
            <widget class="QWidget" name="widget" native="true">
             <layout class="QHBoxLayout" name="horizontalLayout_3">
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
+             <property name="margin">
               <number>0</number>
              </property>
              <item>
@@ -680,11 +715,11 @@
                    <property name="accelerated">
                     <bool>false</bool>
                    </property>
-                   <property name="showGroupSeparator" stdset="0">
-                    <bool>false</bool>
-                   </property>
                    <property name="maximum">
                     <number>100000000</number>
+                   </property>
+                   <property name="showGroupSeparator" stdset="0">
+                    <bool>false</bool>
                    </property>
                   </widget>
                  </item>

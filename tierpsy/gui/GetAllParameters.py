@@ -41,6 +41,12 @@ class ParamWidget():
                 self.widget.setEditable(True)
 
 
+        if not isinstance(self.widget, QGridLayout):
+            self.widget.setToolTip(info_param[name])
+        else:
+            for n in range(self.widget.count()):
+                self.widget.itemAt(n).widget().setToolTip(info_param[name])
+
         if value is not None:
             self.write(value)
 
@@ -50,6 +56,7 @@ class ParamWidget():
         
         if name in valid_options or name == 'filter_model_name':
             widget = QComboBox()
+        
         elif value_type is bool:
             widget = QCheckBox(name)
 

@@ -157,9 +157,6 @@ class ParamsGUI(QMainWindow):
         LineEditDragDrop(self.ui.lineEdit_paramFile, self.updateParamFile, os.path.isfile)
 
         self.ui.pushButton_moreParams.clicked.connect(self.getMoreParams)
-        #I am hiding this part. It is a bit confusing and I am not sure it is a useful 
-        #feature. The user can modify the .json file directly if required.
-        self.ui.pushButton_moreParams.hide()
 
 
     def _link_slider_spinbox(self):
