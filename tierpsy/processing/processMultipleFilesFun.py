@@ -108,31 +108,7 @@ def _removePointFromSide(list_of_points, point, index):
         list_of_points[index] != point:
             list_of_points.pop(index)
     if not list_of_points:
-        raise ValueError("Point {} is not valid.".format(point))
-
-def test_compressMultipleFilesFun():
-    from ProcessMultipleFilesParser import CompressMultipleFilesParser
-    
-    cmp_dflt = CompressMultipleFilesParser.dflt_vals
-    cmp_dflt['pattern_include'] = '*.avi'
-    cmp_dflt['json_file'] = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/Tests/Data/test_2/test2.json'
-    
-    video_dir_root = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/Tests/Data/test_2/RawVideos/'
-    mask_dir_root = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/Tests/Data/test_2/RawVideos/Masks/'
-    
-    compressMultipleFilesFun(video_dir_root, mask_dir_root, **cmp_dflt)
-
-def test_trackMultipleFilesFun():
-    from ProcessMultipleFilesParser import TrackMultipleFilesParser
-    
-    track_dflt = TrackMultipleFilesParser.dflt_vals
-    track_dflt['pattern_include'] = '*.hdf5'
-    track_dflt['json_file'] = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/Tests/Data/test_2/test2.json'
-    
-    #video_dir_root = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/Tests/Data/test_2/RawVideos/'
-    mask_dir_root = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/Tests/Data/test_2/RawVideos/Masks/'
-        
-    trackMultipleFilesFun(mask_dir_root, **track_dflt)
+     
 
 if __name__ == '__main__':
     test_trackMultipleFilesFun()
