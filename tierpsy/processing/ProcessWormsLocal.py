@@ -54,7 +54,7 @@ class ProcessWormsLocal(object):
         #we change the name of the main_file. 
         #This flag should be optional in compress mode but true in track where teh src directory should be equal to the main_file
         src_dir, src_name = os.path.split(self.main_file)
-        if self.is_copy_video or (src_dir == self.masks_dir):
+        if self.is_copy_video or (src_dir == self.masks_dir) or (src_dir == self.results_dir):
             self.tmp_main_file = os.path.join(self.tmp_mask_dir, src_name)
         else:
             self.tmp_main_file = self.main_file
