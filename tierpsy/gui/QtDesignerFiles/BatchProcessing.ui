@@ -20,7 +20,7 @@
       <item>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="2">
-         <widget class="QLineEdit" name="lineEdit_videosDir"/>
+         <widget class="QLineEdit" name="p_video_dir_root"/>
         </item>
         <item row="0" column="1">
          <widget class="QPushButton" name="pushButton_videosDir">
@@ -30,17 +30,17 @@
          </widget>
         </item>
         <item row="5" column="2">
-         <widget class="QLineEdit" name="lineEdit_tmpDir"/>
+         <widget class="QLineEdit" name="p_tmp_dir_root"/>
         </item>
         <item row="1" column="2">
-         <widget class="QLineEdit" name="lineEdit_txtFileList">
+         <widget class="QLineEdit" name="p_videos_list">
           <property name="enabled">
            <bool>true</bool>
           </property>
          </widget>
         </item>
         <item row="2" column="2">
-         <widget class="QLineEdit" name="lineEdit_masksDir"/>
+         <widget class="QLineEdit" name="p_mask_dir_root"/>
         </item>
         <item row="5" column="1">
          <widget class="QPushButton" name="pushButton_tmpDir">
@@ -67,7 +67,7 @@
          </widget>
         </item>
         <item row="3" column="2">
-         <widget class="QLineEdit" name="lineEdit_resultsDir"/>
+         <widget class="QLineEdit" name="p_results_dir_root"/>
         </item>
         <item row="4" column="1">
          <widget class="QPushButton" name="pushButton_paramFile">
@@ -110,7 +110,7 @@
          </widget>
         </item>
         <item row="4" column="2">
-         <widget class="QComboBox" name="comboBox_paramFile">
+         <widget class="QComboBox" name="p_json_file">
           <property name="editable">
            <bool>true</bool>
           </property>
@@ -131,13 +131,6 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="3">
-         <widget class="QCheckBox" name="checkBox_isCompress">
-          <property name="text">
-           <string>Execute compression</string>
-          </property>
-         </widget>
-        </item>
         <item row="2" column="3">
          <widget class="QLabel" name="label_numMaxProc">
           <property name="sizePolicy">
@@ -151,28 +144,21 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="3">
-         <widget class="QCheckBox" name="checkBox_isTrack">
-          <property name="text">
-           <string>Execute tracking</string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="0" colspan="2">
-         <widget class="QCheckBox" name="checkBox_copyUnfinished">
+         <widget class="QCheckBox" name="p_copy_unfinished">
           <property name="text">
            <string>Copy unfinished analysis</string>
           </property>
          </widget>
         </item>
         <item row="3" column="3">
-         <widget class="QSpinBox" name="spinBox_numMaxProc"/>
+         <widget class="QSpinBox" name="p_max_num_process"/>
         </item>
         <item row="3" column="2">
-         <widget class="QLineEdit" name="lineEdit_patternExc"/>
+         <widget class="QLineEdit" name="p_pattern_exclude"/>
         </item>
         <item row="3" column="1">
-         <widget class="QLineEdit" name="lineEdit_patternIn"/>
+         <widget class="QLineEdit" name="p_pattern_include"/>
         </item>
         <item row="2" column="1">
          <widget class="QLabel" name="label_patternIn">
@@ -201,9 +187,19 @@
          </widget>
         </item>
         <item row="1" column="0" colspan="2">
-         <widget class="QCheckBox" name="checkBox_isCopyVideo">
+         <widget class="QCheckBox" name="p_is_copy_video">
           <property name="text">
            <string>Copy original videos to tmp dir</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3">
+         <widget class="QComboBox" name="p_analysis_sequence"/>
+        </item>
+        <item row="0" column="3">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Sequence to be Processed</string>
           </property>
          </widget>
         </item>

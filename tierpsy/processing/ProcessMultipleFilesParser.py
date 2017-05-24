@@ -2,7 +2,7 @@ import argparse
 import os
 
 from tierpsy.processing.batchProcHelperFunc import getDefaultSequence
-
+from tierpsy.helper.misc import repack_dflt_list
 
 dflt_args_list = [
     ('video_dir_root', 
@@ -43,6 +43,20 @@ dflt_args_list = [
         '',
         'Pattern used to exclude files in video_dir_root'
         ),
+    
+    ('is_copy_video',
+        False,
+        'The raw video file would be copied to the temporary directory.'
+        ),
+    ('copy_unfinished',
+        False,
+        'Copy files from an uncompleted analysis in the temporary directory.'
+        ),
+
+    ('analysis_sequence',
+        '',
+        'Sequence of analysis to be processed.'
+        ),
     ('force_start_point',
         '',
         'Force the program to start at a specific point in the analysis.'
@@ -51,19 +65,11 @@ dflt_args_list = [
         '',
         'End point of the analysis.'
         ),
-    ('analysis_type',
-        '',
-        'Type of analysis to be processed.'
-        ),
     ('analysis_checkpoints',
         '',
         'List of the points to be processed.'
         ),
-    
-    ('is_copy_video',
-        False,
-        'The raw video file would be copied to the temporary directory.'
-        ),
+
     ('only_summary',
         False,
         'Use this flag if you only want to print a summary of the files in the directory.'
@@ -72,11 +78,6 @@ dflt_args_list = [
         False,
         'Use this flag if you only want to print the unmet requirements in the invalid source files.'
         ),
-    ('copy_unfinished',
-        False,
-        'Copy files from an uncompleted analysis in the temporary directory.'
-        ),
-
     ('refresh_time',
         10.,
         'Refresh time in seconds of the process screen.'
@@ -84,14 +85,15 @@ dflt_args_list = [
 
     ]
 
-
 all_available_checkpoints = getDefaultSequence('all', is_single_worm=True, add_manual_feats=True)
-choices_args = dict(
-    analysis_type = ['compress', 'track', 'all'],
+process_valid_options = dict(
+    analysis_sequence = ['compress', 'track', 'all'],
     analysis_checkpoints = all_available_checkpoints,
     force_start_point = all_available_checkpoints,
     end_point = all_available_checkpoints
 )
+
+proccess_args_dflt, proccess_args_info = repack_dflt_list(dflt_args_list, process_valid_options)
 
 class ProcessMultipleFilesParser(argparse.ArgumentParser):
     def __init__(self):
@@ -111,10 +113,9 @@ class ProcessMultipleFilesParser(argparse.ArgumentParser):
             if isinstance(dflt_val, (list, tuple)):
                 args_d['nargs'] = '+'
 
-            if name in choices_args:
-                args_d['choices'] = choices_args[name]
+            if name in process_valid_options:
+                args_d['choices'] = process_valid_options[name]
 
-            print(args_d)
             self.add_argument('--' + name, **args_d)
 
 
@@ -147,4 +148,7 @@ class ProcessMultipleFilesParser(argparse.ArgumentParser):
         #     choices = dflt_vals['checkpoints2process'],
         #     help='End point of the analysis.')
 
+
+if __name__ == '__main__':
+    print(dflt_args_list)
         

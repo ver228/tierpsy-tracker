@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, \
 QFileDialog, QMessageBox, QCheckBox, QButtonGroup, QLabel
 
 from tierpsy.gui.AnalysisProgress import WorkerFunQt, AnalysisProgress
-from tierpsy.gui.GetAllParameters import GetAllParameters, ParamWidget, save_params_json
+from tierpsy.gui.GetAllParameters import GetAllParameters, ParamWidgetMapper, save_params_json
 from tierpsy.gui.GetMaskParams_ui import Ui_GetMaskParams
 from tierpsy.gui.HDF5VideoPlayer import LineEditDragDrop, ViewsWithZoom, setChildrenFocusPolicy
 
@@ -106,37 +106,8 @@ class twoViewsWithZoom():
             self.view_mask._view.setCursor(Qt.OpenHandCursor)
             self._mousePressed = False
 
-class ParamWidgetMapper():
-    def __init__(self, params_widgets={}):
-        self.params_widgets = params_widgets
 
-    def __setitem__(self, param_name, value):
-        assert param_name in self.params_widgets
-        if value is None:
-            return None
-        else:
-            self.params_widgets[param_name].write(value)
-
-    def __getitem__(self, param_name):
-        w = self.params_widgets[param_name]
-        if w.widget.isEnabled():
-            return w.read()
-        else:
-            return default_param[param_name]
-
-    def __iter__(self):
-        self.remaining_names = list(self.params_widgets.keys())
-        return self
-
-    def __next__(self):
-        if len(self.remaining_names)==0:
-            raise StopIteration
-
-        return self.remaining_names.pop(0)
-
-    def append(self, widget, param_name, value):
-        w = ParamWidget(param_name, widget=widget, value=value)
-        self.params_widgets[param_name] = w
+        
 
 
 class ParamsGUI(QMainWindow):
@@ -149,7 +120,7 @@ class ParamsGUI(QMainWindow):
         self.ui = Ui_GetMaskParams()
         self.ui.setupUi(self)
         self._link_slider_spinbox()
-        self._ini_params_widgets()
+        self.mapper = ParamWidgetMapper(self.ui)
 
         self.ui.pushButton_saveParam.clicked.connect(self.saveParamFile)
         self.ui.pushButton_paramFile.clicked.connect(self.getParamFile)
@@ -170,15 +141,6 @@ class ParamsGUI(QMainWindow):
             slider = getattr(self.ui, 'horizontalSlider_' + field)
             spinbox = getattr(self.ui, 'p_' + field)
             _single_link(slider, spinbox, self.updateMask)
-
-    def _ini_params_widgets(self):
-        self.mapper = ParamWidgetMapper()
-        for attr_name in dir(self.ui):
-            if attr_name.startswith('p_'):
-                param_name = attr_name[2:]
-                widget = getattr(self.ui, attr_name)
-                self.mapper.append(widget, param_name, default_param[param_name])
-        
 
     def saveParamFile(self):
         if not self.json_file:

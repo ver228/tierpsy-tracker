@@ -24,7 +24,7 @@ def processMultipleFilesFun(
         max_num_process,
         refresh_time,
         only_summary,
-        analysis_type='',
+        analysis_sequence='',
         force_start_point='',
         end_point='',
         is_copy_video=False,
@@ -43,7 +43,7 @@ def processMultipleFilesFun(
     json_file = param.json_file
     
     if not analysis_checkpoints:
-      analysis_checkpoints = getDefaultSequence(analysis_type, is_single_worm=param.is_single_worm)
+      analysis_checkpoints = getDefaultSequence(analysis_sequence, is_single_worm=param.is_single_worm)
     
     
     _removePointFromSide(analysis_checkpoints, force_start_point, 0)
@@ -108,7 +108,4 @@ def _removePointFromSide(list_of_points, point, index):
         list_of_points[index] != point:
             list_of_points.pop(index)
     if not list_of_points:
-     
-
-if __name__ == '__main__':
-    test_trackMultipleFilesFun()
+        raise ValueError("Point {} is not valid.".format(point))

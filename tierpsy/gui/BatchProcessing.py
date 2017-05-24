@@ -10,29 +10,37 @@ from tierpsy.processing.batchProcHelperFunc import getDefaultSequence
 from tierpsy.gui.AnalysisProgress import AnalysisProgress, WorkerFunQt
 from tierpsy.gui.HDF5VideoPlayer import LineEditDragDrop
 from tierpsy.gui.BatchProcessing_ui import Ui_BatchProcessing
-
-from tierpsy.processing.ProcessMultipleFilesParser import CompressMultipleFilesParser, TrackMultipleFilesParser
-DFLT_COMPRESS_VALS = CompressMultipleFilesParser.dflt_vals
-DFLT_TRACK_VALS = TrackMultipleFilesParser.dflt_vals
-
-from tierpsy.helper.params import TrackerParams
+from tierpsy.gui.GetAllParameters import ParamWidgetMapper
 
 #get default parameters files
-from tierpsy import DFLT_PARAMS_PATH, DFLT_PARAMS_FILES
+from tierpsy.helper.params import TrackerParams
+from tierpsy import DFLT_PARAMS_FILES
+from tierpsy.processing.ProcessMultipleFilesParser import proccess_args_dflt, proccess_args_info, process_valid_options
+process_valid_options['json_file'] = [''] + DFLT_PARAMS_FILES
+
+proccess_args_dflt['analysis_sequence'] = 'all'
+
 
 class BatchProcessing_GUI(QMainWindow):
 
     def __init__(self):
         super(BatchProcessing_GUI, self).__init__()
+        self.mask_files_dir = ''
+        self.results_dir = ''
+        self.videos_dir = ''
+
+
         self.ui = Ui_BatchProcessing()
         self.ui.setupUi(self)
+        self.mapper = ParamWidgetMapper(self.ui,
+                                        default_param=proccess_args_dflt,
+                                        info_param=proccess_args_info, 
+                                        valid_options=process_valid_options)
 
         self.ui.checkBox_txtFileList.stateChanged.connect(
             self.enableTxtFileListButton)
         self.ui.checkBox_tmpDir.stateChanged.connect(self.enableTmpDirButton)
-        self.ui.checkBox_isCompress.stateChanged.connect(
-            self.enableCompressInput)
-        self.ui.checkBox_isTrack.stateChanged.connect(self.enableTrackInput)
+        
 
         self.ui.pushButton_txtFileList.clicked.connect(self.getTxtFileList)
         self.ui.pushButton_paramFile.clicked.connect(self.getParamFile)
@@ -42,71 +50,52 @@ class BatchProcessing_GUI(QMainWindow):
         self.ui.pushButton_tmpDir.clicked.connect(self.getTmpDir)
         self.ui.pushButton_start.clicked.connect(self.startAnalysis)
 
-        # print(DFLT_COMPRESS_VALS)
-        # print(DFLT_TRACK_VALS)
-
-        self.mask_files_dir = ''
-        self.results_dir = ''
-        self.videos_dir = ''
-
+        
+        
         self.ui.checkBox_tmpDir.setChecked(False)
         self.enableTxtFileListButton()
         self.ui.checkBox_tmpDir.setChecked(True)
         self.enableTmpDirButton()
 
-        self.ui.checkBox_isCompress.setChecked(True)
-        self.enableCompressInput()
-        self.ui.checkBox_isTrack.setChecked(True)
-        self.enableTrackInput()
+        self.ui.p_analysis_sequence.currentIndexChanged.connect(self.changeSequence)
 
-        self.ui.spinBox_numMaxProc.setValue(DFLT_TRACK_VALS['max_num_process'])
-        self.ui.lineEdit_patternIn.setText(
-            DFLT_COMPRESS_VALS['pattern_include'])
-        self.ui.lineEdit_patternExc.setText(
-            DFLT_COMPRESS_VALS['pattern_exclude'])
-
-
-        assert DFLT_COMPRESS_VALS[
-            'max_num_process'] == DFLT_TRACK_VALS['max_num_process']
-        assert DFLT_COMPRESS_VALS[
-            'tmp_dir_root'] == DFLT_TRACK_VALS['tmp_dir_root']
         LineEditDragDrop(
-            self.ui.lineEdit_txtFileList,
+            self.ui.p_videos_list,
             self.updateTxtFileList,
             os.path.isfile)
         LineEditDragDrop(
-            self.ui.lineEdit_videosDir,
+            self.ui.p_video_dir_root,
             self.updateVideosDir,
             os.path.isdir)
         LineEditDragDrop(
-            self.ui.lineEdit_masksDir,
+            self.ui.p_mask_dir_root,
             self.updateMasksDir,
             os.path.isdir)
         LineEditDragDrop(
-            self.ui.lineEdit_resultsDir,
+            self.ui.p_results_dir_root,
             self.updateResultsDir,
             os.path.isdir)
         LineEditDragDrop(
-            self.ui.lineEdit_tmpDir,
+            self.ui.p_tmp_dir_root,
             self.updateTmpDir,
             os.path.isdir)
 
         LineEditDragDrop(
-            self.ui.comboBox_paramFile,
+            self.ui.p_json_file,
             self.updateParamFile,
             os.path.isfile)
 
-        #add default parameters options. Empty list so no json file is select by default
-        self.ui.comboBox_paramFile.addItems([''] + DFLT_PARAMS_FILES)
-
+        
+                
+        
     def enableTxtFileListButton(self):
         is_enable = self.ui.checkBox_txtFileList.isChecked()
         self.ui.pushButton_txtFileList.setEnabled(is_enable)
-        self.ui.lineEdit_txtFileList.setEnabled(is_enable)
+        self.ui.p_videos_list.setEnabled(is_enable)
         self.ui.label_patternIn.setEnabled(not is_enable)
         self.ui.label_patternExc.setEnabled(not is_enable)
-        self.ui.lineEdit_patternExc.setEnabled(not is_enable)
-        self.ui.lineEdit_patternIn.setEnabled(not is_enable)
+        self.ui.p_pattern_exclude.setEnabled(not is_enable)
+        self.ui.p_pattern_include.setEnabled(not is_enable)
 
         if not is_enable:
             self.updateTxtFileList('')
@@ -119,14 +108,14 @@ class BatchProcessing_GUI(QMainWindow):
 
     def updateTxtFileList(self, videos_list):
         self.videos_list = videos_list
-        self.ui.lineEdit_txtFileList.setText(videos_list)
+        self.ui.p_videos_list.setText(videos_list)
 
     def enableTmpDirButton(self):
         is_enable = self.ui.checkBox_tmpDir.isChecked()
         self.ui.pushButton_tmpDir.setEnabled(is_enable)
-        self.ui.lineEdit_tmpDir.setEnabled(is_enable)
+        self.ui.p_tmp_dir_root.setEnabled(is_enable)
 
-        tmp_dir_root = DFLT_TRACK_VALS['tmp_dir_root'] if is_enable else ''
+        tmp_dir_root = proccess_args_dflt['tmp_dir_root'] if is_enable else ''
         self.updateTmpDir(tmp_dir_root)
 
     def getTmpDir(self):
@@ -139,34 +128,20 @@ class BatchProcessing_GUI(QMainWindow):
 
     def updateTmpDir(self, tmp_dir_root):
         self.tmp_dir_root = tmp_dir_root
-        self.ui.lineEdit_tmpDir.setText(self.tmp_dir_root)
+        self.ui.p_tmp_dir_root.setText(self.tmp_dir_root)
 
-    def enableCompressInput(self):
-        is_enable = self.ui.checkBox_isCompress.isChecked()
-        self.ui.pushButton_videosDir.setEnabled(is_enable)
-        self.ui.lineEdit_videosDir.setEnabled(is_enable)
-        if is_enable:
-            self.ui.lineEdit_patternIn.setText(
-            DFLT_COMPRESS_VALS['pattern_include'])
-            self.ui.lineEdit_patternExc.setText(
-            DFLT_COMPRESS_VALS['pattern_exclude'])
-        elif self.ui.checkBox_isTrack.isChecked():
-            self.ui.lineEdit_patternIn.setText(
-            DFLT_TRACK_VALS['pattern_include'])
-            self.ui.lineEdit_patternExc.setText(
-            DFLT_TRACK_VALS['pattern_exclude'])
-        
+    def changeSequence(self, index):
+        analysis_sequence = self.mapper['analysis_sequence']
+        if analysis_sequence == 'track':
+            self.ui.pushButton_videosDir.setEnabled(False)
+        else:
+            self.ui.pushButton_videosDir.setEnabled(True)
 
-    def enableTrackInput(self):
-        is_enable = self.ui.checkBox_isTrack.isChecked()
-        self.ui.pushButton_resultsDir.setEnabled(is_enable)
-        self.ui.lineEdit_resultsDir.setEnabled(is_enable)
-        if is_enable and not self.ui.checkBox_isCompress.isChecked():
-            self.ui.lineEdit_patternIn.setText(
-            DFLT_TRACK_VALS['pattern_include'])
-            self.ui.lineEdit_patternExc.setText(
-            DFLT_TRACK_VALS['pattern_exclude'])
-        
+        if analysis_sequence == 'compress':
+            self.ui.pushButton_videosDir.setEnabled(False)
+        else:
+            self.ui.pushButton_videosDir.setEnabled(True)
+
     def getVideosDir(self):
         videos_dir = QFileDialog.getExistingDirectory(
             self,
@@ -178,7 +153,7 @@ class BatchProcessing_GUI(QMainWindow):
 
     def updateVideosDir(self, videos_dir):
         self.videos_dir = videos_dir
-        self.ui.lineEdit_videosDir.setText(self.videos_dir)
+        self.ui.p_video_dir_root.setText(self.videos_dir)
 
         if 'Worm_Videos' in videos_dir:
             mask_files_dir = videos_dir.replace('Worm_Videos', 'MaskedVideos')
@@ -199,8 +174,7 @@ class BatchProcessing_GUI(QMainWindow):
 
     def updateResultsDir(self, results_dir):
         self.results_dir = results_dir
-        self.ui.lineEdit_resultsDir.setText(self.results_dir)
-
+        self.mapper['results_dir_root'] = self.results_dir
     def getMasksDir(self):
         mask_files_dir = QFileDialog.getExistingDirectory(
             self,
@@ -217,7 +191,7 @@ class BatchProcessing_GUI(QMainWindow):
 
 
         self.mask_files_dir = mask_files_dir
-        self.ui.lineEdit_masksDir.setText(self.mask_files_dir)
+        self.mapper['mask_dir_root'] = self.mask_files_dir
         
         self.updateResultsDir(results_dir)
 
@@ -237,12 +211,12 @@ class BatchProcessing_GUI(QMainWindow):
                     json_param = json.loads(json_str)
 
                     #find the current index in the combobox, if it preappend it.
-                    ind_comb = self.ui.comboBox_paramFile.findText(param_file)
+                    ind_comb = self.ui.p_json_file.findText(param_file)
                     if ind_comb == -1:
-                        self.ui.comboBox_paramFile.insertItem(-1, param_file)
+                        self.ui.p_json_file.insertItem(-1, param_file)
                         ind_comb = 0
 
-                    self.ui.comboBox_paramFile.setCurrentIndex(ind_comb)
+                    self.ui.p_json_file.setCurrentIndex(ind_comb)
 
 
             except (IOError, OSError, UnicodeDecodeError, json.decoder.JSONDecodeError):
@@ -256,86 +230,33 @@ class BatchProcessing_GUI(QMainWindow):
         self.param_file = param_file
 
     def startAnalysis(self):
-        is_compress = self.ui.checkBox_isCompress.isChecked()
-        is_track = self.ui.checkBox_isTrack.isChecked()
-
-        #check before continue
-        if not is_compress and not is_track:
-            QMessageBox.critical(
-                self,
-                'Error',
-                "Neither compression or selection is selected. No analysis to be done.",
-                QMessageBox.Ok)
-
-        video_dir_root = self.ui.lineEdit_videosDir.text()
-        mask_dir_root = self.ui.lineEdit_masksDir.text()
-        results_dir_root = self.ui.lineEdit_resultsDir.text()
-        max_num_process = self.ui.spinBox_numMaxProc.value()
-        tmp_dir_root = self.ui.lineEdit_tmpDir.text()
-        is_copy_video = self.ui.checkBox_isCopyVideo.isChecked()
-        copy_unfinished = self.ui.checkBox_copyUnfinished.isChecked()
+        process_args = proccess_args_dflt.copy()
+        #append the root dir if we are using any of the default parameters files. I didn't add the dir before because it is easy to read them in this way.
+        param = TrackerParams(self.mapper['json_file'])
+        analysis_sequence = self.mapper['analysis_sequence']
+        analysis_checkpoints = getDefaultSequence(analysis_sequence, is_single_worm=param.is_single_worm)
+        process_args['analysis_checkpoints'] : analysis_checkpoints
         
-        
-        if self.ui.checkBox_txtFileList.isChecked():
-            videos_list = self.ui.lineEdit_txtFileList.text()
-            pattern_include = ''
-            pattern_exclude = ''
-        else:
-            videos_list = ''
-            pattern_include = self.ui.lineEdit_patternIn.text()
-            pattern_exclude = self.ui.lineEdit_patternExc.text()
+        for x in self.mapper:
+            process_args[x] = self.mapper[x]
 
-        
-        if is_compress:
-            if not os.path.exists(video_dir_root):
+
+        if 'COMPRESS' in process_args['analysis_checkpoints']:
+            if not os.path.exists(process_args['video_dir_root']):
                 QMessageBox.critical(
                     self,
                     'Error',
                     "The videos directory does not exist. Please select a valid directory.",
                     QMessageBox.Ok)
                 return
-        
-        if is_track:
-            if not is_compress and not os.path.exists(mask_dir_root):
-                QMessageBox.critical(
-                    self,
-                    'Error',
-                    "The masks directory does not exist. Please select a valid directory.",
-                    QMessageBox.Ok)
-                return
-        
-        if is_compress and is_track:
-            sequence_str = 'all'
-        elif is_compress:
-            sequence_str = 'compress'
-            results_dir_root = mask_dir_root #overwrite the results_dir_root since it will not be used
-        elif is_track:
-            is_copy_video = True
-            sequence_str = 'track'
-            video_dir_root = mask_dir_root  #overwrite the video_dir_root in order to copy the mask file to tmp
+        elif not os.path.exists(process_args['mask_dir_root']):
+            QMessageBox.critical(
+                self,
+                'Error',
+                "The masks directory does not exist. Please select a valid directory.",
+                QMessageBox.Ok)
+            return
 
-        #append the root dir if we are using any of the default parameters files. I didn't add the dir before because it is easy to read them in this way.
-        json_file = self.ui.comboBox_paramFile.currentText()
-        param = TrackerParams(json_file)
-        analysis_checkpoints = getDefaultSequence(sequence_str, is_single_worm=param.is_single_worm)
-        
-        process_args = {
-          'video_dir_root': video_dir_root,
-          'mask_dir_root': mask_dir_root,
-          'results_dir_root' : results_dir_root,
-          'tmp_dir_root' : tmp_dir_root,
-          'json_file' : json_file,
-          'videos_list' : videos_list,
-          'analysis_checkpoints': analysis_checkpoints,
-          'is_copy_video': is_copy_video,
-          'pattern_include' : pattern_include,
-          'pattern_exclude' : pattern_exclude,
-          'max_num_process' : max_num_process,
-          'refresh_time' : DFLT_TRACK_VALS['refresh_time'],
-          'only_summary' : False,
-          'analysis_checkpoints' : analysis_checkpoints,
-          'copy_unfinished' : copy_unfinished
-        }
 
         analysis_worker = WorkerFunQt(processMultipleFilesFun, process_args)
         progress = AnalysisProgress(analysis_worker)

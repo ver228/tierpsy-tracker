@@ -7,10 +7,11 @@ Created on Thu Jun 25 12:44:07 2015
 
 import json
 import os
-import textwrap
+
 #get default parameters files
 from tierpsy import AUX_FILES_DIR, DFLT_PARAMS_PATH, DFLT_PARAMS_FILES
-from collections import OrderedDict
+from tierpsy.helper.misc import repack_dflt_list
+
 
 #deprecated variables that will be ignored
 deprecated_fields = ['has_timestamp', 'min_displacement', 'fps_filter', 'traj_bgnd_buff_size', 'traj_bgnd_frame_gap']
@@ -321,22 +322,7 @@ valid_options = {
     'head_tail_int_method':['MEDIAN_INT', 'HEAD_BRIGHTER']
 }
 
-def _fix_info(x):
-    name, dftl, txt = x
-    if name in valid_options:
-        txt += ' Valid_options ({})'.format(','.join(valid_options[name]))
-    txt = textwrap.dedent(txt)
-    txt = textwrap.fill(txt)
-    return name, dftl, txt
-
-dflt_param_list = list(map(_fix_info, dflt_param_list))
-
-#separate parameters default data into dictionaries for values and help
-default_param = OrderedDict()
-info_param = OrderedDict()
-for name, dflt_value, info in dflt_param_list:
-    default_param[name] = dflt_value
-    info_param[name] = info
+default_param, info_param = repack_dflt_list(dflt_param_list, valid_options)
 
 def _correct_filter_model_name(filter_model_name):
     if filter_model_name:
