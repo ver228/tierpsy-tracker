@@ -26,15 +26,24 @@ This widget is used to setup the parameters used by `Batch Processing Multiple F
 Batch Processing Multiple Files
 ===============================
 
-It is a GUI for command line tool ProcessMultipleFiles.py.
+It is a GUI for `Command Line Tool`_ .
 
-Single-Worm Tracker Viewer
-===============================
+.. image:: https://cloud.githubusercontent.com/assets/8364368/26411227/4e788006-409d-11e7-8386-28235d859541.png
+
 
 Multi-Worm Tracker Viewer
 ===============================
 
-Command Line Scripts
+.. image:: https://cloud.githubusercontent.com/assets/8364368/26412511/eac27158-40a0-11e7-880c-5671c2c27099.gif
+
+.. image:: https://cloud.githubusercontent.com/assets/8364368/26412212/e0e112f8-409f-11e7-867b-512cf044d717.gif
+
+Single-Worm Tracker Viewer
+===============================
+
+.. image:: https://cloud.githubusercontent.com/assets/8364368/26412826/e608bfea-40a1-11e7-9d3e-d0b8bf482db2.gif
+
+Command Line Tool
 ===============================
 
 scripts are located in **cmd_scripts/**
