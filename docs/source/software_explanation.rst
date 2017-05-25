@@ -137,7 +137,7 @@ basename_skeletons.hdf5
   * worm_index_joined: F
   * plate_worm_id: F
   * skeleton_id: row in the trajectory_data, useful to quickly recover worm data.
-  * coord_x, coord_y: Centroid coordinates after smoothing **/plate_worms data**. It is used to find the ROI to calculate the skeletons. If you want to calculate the centroid features use the corresponding field in **/blob_features**.
+  * coord_x, coord_y: Centroid coordinates after smoothing `/plate_worms`_ . It is used to find the ROI to calculate the skeletons. If you want to calculate the centroid features use the corresponding field in `/blob_features`_ .
   * threshold: value used to segment the worm in the ROI.
   * has_skeleton: flag to mark is the skeletonization was succesful
   * roi_size: F
@@ -148,7 +148,7 @@ basename_skeletons.hdf5
   * skel_outliers_flag: F
   * int_map_id: F
 
-:/blob_features:
+:_`/blob_features`:
   * coord_x, coord_y, box_length, box_width, box_orientation
   * area: `area <http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#contourarea>`_
   * perimeter: `perimeter <http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#arclength>`_
