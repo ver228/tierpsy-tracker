@@ -35,8 +35,10 @@ class BatchProcessing_GUI(QMainWindow):
                                         info_param=proccess_args_info, 
                                         valid_options=valid_options)
 
+
         self.ui.p_json_file.currentIndexChanged.connect(self.updateCheckpoints)
         self.ui.p_force_start_point.currentIndexChanged.connect(self.updateCheckpointsEnd)
+        self.updateCheckpoints()
 
         self.ui.checkBox_txtFileList.stateChanged.connect(self.enableTxtFileListButton)
         self.ui.checkBox_tmpDir.stateChanged.connect(self.enableTmpDirButton)
@@ -211,7 +213,10 @@ class BatchProcessing_GUI(QMainWindow):
 
         self.param_file = param_file
 
-    def updateCheckpoints(self, index):
+    def updateCheckpoints(self, index=0):
+        '''
+        index - dum variable to be able to connect to currentIndexChanged
+        '''
         param = TrackerParams(self.mapper['json_file'])
         analysis_checkpoints = get_dflt_sequence(param.p_dict['analysis_type'], add_manual_feats=True)
         self.analysis_checkpoints = analysis_checkpoints
@@ -233,8 +238,7 @@ class BatchProcessing_GUI(QMainWindow):
     def startAnalysis(self):
         process_args = proccess_args_dflt.copy()
         #append the root dir if we are using any of the default parameters files. I didn't add the dir before because it is easy to read them in this way.
-        analysis_checkpoints = self.analysis_checkpoints
-        
+        process_args['analysis_checkpoints'] = self.analysis_checkpoints
         for x in self.mapper:
             process_args[x] = self.mapper[x]
 
@@ -255,6 +259,7 @@ class BatchProcessing_GUI(QMainWindow):
                 QMessageBox.Ok)
             return
 
+        print(process_args)
 
         analysis_worker = WorkerFunQt(processMultipleFilesFun, process_args)
         progress = AnalysisProgress(analysis_worker)

@@ -18,7 +18,7 @@ dflt_args_list = [
         'Root directory where the tracking results will be stored. If not given it will be estimated from the mask_dir_root directory.'
         ),
     ('tmp_dir_root',
-        os.path.join(os.path.expanduser("~")),
+        os.path.join(os.path.expanduser("~"), 'Tmp'),
         'Temporary directory where files are going to be stored.'
         ),
     ('videos_list',
@@ -51,11 +51,6 @@ dflt_args_list = [
     ('copy_unfinished',
         False,
         'Copy files from an uncompleted analysis in the temporary directory.'
-        ),
-
-    ('analysis_sequence',
-        '',
-        'Sequence of analysis to be processed.'
         ),
     ('force_start_point',
         '',
