@@ -12,11 +12,11 @@ The algorithm identifies dark particles on a light background or light particles
 
 The data is stored into a hdf5 container using a gzip filter. Some advantages of this format are:
 
-- This format can significally reduce the size of a high resolution video since only the pixels corresponding to tracked particle are kept. This gain depends on codec used by the original video, and can be less important or even inexistent.
+* This format can significally reduce the size of a high resolution video since only the pixels corresponding to tracked particle are kept. This gain depends on codec used by the original video, and can be less important or even inexistent.
 
-- Rapid access to specific video frames. Typically it is hard to rapidly access to a specific video frame. Most of the video readers do an approximative search when looking for a specific frame. To accurately retrive a video frame one has to read sequencially the whole video file, a process particuarly slow for large video files. The HDF5 format indexes the data in a way that makes trivial to access to specific frames.
+* Rapid access to specific video frames. Typically it is hard to rapidly access to a specific video frame. Most of the video readers do an approximative search when looking for a specific frame. To accurately retrive a video frame one has to read sequencially the whole video file, a process particuarly slow for large video files. The HDF5 format indexes the data in a way that makes trivial to access to specific frames.
 
-- Metadata can be stored in the same file as the video. HDF5 format allows to store all kind of binary data into the same file. This allows to store the video metadata and analysis progress in the same file.
+* Metadata can be stored in the same file as the video. HDF5 format allows to store all kind of binary data into the same file. This allows to store the video metadata and analysis progress in the same file.
 
 ## Creating trajectories
 
@@ -26,11 +26,11 @@ We identify possible particles. The approach we follow is to divide the image in
 
 ### TRAJ_JOIN
 
-We link the particles trajectories by using their closest neighbor in a consecutive frames. The closest neighbor must closer than ``max_allowed_dist`` and the change in area must be less than ``area_ratio_lim`` . A particle can only be joined to one particle in consecutive frames. If this conditions are not satisfied it means that there was a problem in the trajectory *e.g.* two worms colided and in the next frame the closest object is twice the area, or a worm disapear from the screen. Therefore the trajectory will be broken a new number will be assigned to any unassigned particle. In a subsequent step the program will try to join trajectories that have a small time gap between them *i.e.* the worm was lost for a couple of frames. Additionally we remove any spurious trajectory shorter than ``min_track_size`` .
+We link the particles trajectories by using their closest neighbor in a consecutive frames. The closest neighbor must closer than `max_allowed_dist` and the change in area must be less than `area_ratio_lim` . A particle can only be joined to one particle in consecutive frames. If this conditions are not satisfied it means that there was a problem in the trajectory *e.g.* two worms colided and in the next frame the closest object is twice the area, or a worm disapear from the screen. Therefore the trajectory will be broken a new number will be assigned to any unassigned particle. In a subsequent step the program will try to join trajectories that have a small time gap between them *i.e.* the worm was lost for a couple of frames. Additionally we remove any spurious trajectory shorter than `min_track_size` .
 
 Below there is an example of how the trajectories look.
 
-.. image:: https://cloud.githubusercontent.com/assets/8364368/26301795/25eb72ac-3eda-11e7-8a52-99dd6c49bc07.gif
+![trajectories](https://cloud.githubusercontent.com/assets/8364368/26301795/25eb72ac-3eda-11e7-8a52-99dd6c49bc07.gif)
 
 ### SKE_CREATE
 
