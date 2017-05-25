@@ -8,23 +8,33 @@ from tierpsy.helper.misc import repack_dflt_list
 dflt_args_list = [
     ('video_dir_root', 
         '', 
-        'Root directory with the raw videos.'
+        'Root directory where the raw videos are located.'
         ),
     ('mask_dir_root', 
         '', 
-        'Root directory with the masked videos. It must the hdf5 from a previous compression step.'
+        '''
+        Root directory where the masked videos (after COMPRESSION) are located or will be stored.
+        If it is not given it will be created replacing RawVideos by MaskedVideos in the video_dir_root.
+        '''
         ),
     ('results_dir_root', 
         '', 
-        'Root directory where the tracking results will be stored. If not given it will be estimated from the mask_dir_root directory.'
+        ''''
+        Root directory where the tracking results  are located or will be stored. 
+        If it is not given it will be created replacing MaskedVideos by Results in the mask_dir_root.
+        '''
         ),
     ('tmp_dir_root',
         os.path.join(os.path.expanduser("~"), 'Tmp'),
-        'Temporary directory where files are going to be stored.'
+        'Temporary directory where the unfinished analysis files are going to be stored.'
         ),
     ('videos_list',
         '',
-        'File containing the full path of the videos to be analyzed, otherwise there will be search from root directory using pattern_include and pattern_exclude.'
+        '''
+        File containing the full path of the files to be analyzed. 
+        If it is not given files will be searched in video_dir_root or mask_dir_root 
+        using pattern_include and pattern_exclude.
+        '''
         ),
     
     ('json_file',
@@ -33,25 +43,25 @@ dflt_args_list = [
         ),
     ('max_num_process',
         6,
-        'Max number of process to be executed in parallel.'
+        'Maximum number of files to be processed simultaneously.'
         ),
 
     ('pattern_include',
         '*.hdf5',
-        'Pattern used to find the valid video files in video_dir_root'
+        'Pattern used to search files to be analyzed.'
         ),
     ('pattern_exclude',
         '',
-        'Pattern used to exclude files in video_dir_root'
+        'Pattern used to exclude files to be analyzed.'
         ),
     
     ('is_copy_video',
         False,
-        'The raw video file would be copied to the temporary directory.'
+        'Set **true** to copy the raw videos files to the temporary directory.'
         ),
     ('copy_unfinished',
         False,
-        'Copy files from an uncompleted analysis in the temporary directory.'
+        'Copy files to the final destination even if the analysis was not completed successfully.'
         ),
     ('force_start_point',
         '',
@@ -59,12 +69,12 @@ dflt_args_list = [
         ),
     ('end_point',
         '',
-        'End point of the analysis.'
+        'Stop the analysis at a specific point.'
         ),
     
     ('only_summary',
         False,
-        'Use this flag if you only want to print a summary of the files in the directory.'
+        'Set **true** if you only want to see a summary of how many files are going to be analyzed.'
         ),
     ('unmet_requirements',
         False,
@@ -72,7 +82,7 @@ dflt_args_list = [
         ),
     ('refresh_time',
         10.,
-        'Refresh time in seconds of the process screen.'
+        'Refresh time in seconds of the progress screen.'
         ),
 
     ]
