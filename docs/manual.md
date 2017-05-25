@@ -1,56 +1,57 @@
-************
-Manual
-************
-
-How to Start
-==============
-
-After running installation script in OSX or Windows there should be a doulbe-click executable named `TierpsyTracker` in the Desktop. If the executable is missing you can run ``installation/installation_script.sh--link_desktop`` in OSX or ``installation/installation_script.bat --link_desktop`` in Windows to re-create the executable.
-
-The alternative is to open a terminal, move to the Tierpsy Tracker main directory and type ``python3 cmd_scripts/TierpsyTrackerConsole.py``.
+#Manual
 
 
-.. image:: https://cloud.githubusercontent.com/assets/8364368/26398704/30c17b10-4072-11e7-9a90-d3e9e394ef9d.png
-   :align: center
-   
+## How to Start
 
-Set Parameters
-==============
-This widget is used to setup the parameters used by `Batch Processing Multiple Files`_ . Explanation of each parameter can be found by 
+After running installation script in OSX or Windows there should be a doulbe-click executable named `TierpsyTracker` in the Desktop. If the executable is missing you can re-create the executable by running:
 
-.. image:: https://cloud.githubusercontent.com/assets/8364368/26410507/6df7ef54-409b-11e7-8139-9ce99daf69cb.gif
+```
+installation/installation_script.sh--link_desktop 
+#(OSX/Linux)
 
-.. image:: https://cloud.githubusercontent.com/assets/8364368/26410958/95a8c09a-409c-11e7-9fc9-14dafeabb467.gif
+installation/installation_script.bat --link_desktop
+#Windows
+```  
+
+Alternatively open a terminal, go to the Tierpsy Tracker main directory and type: 
+
+```
+python3 cmd_scripts/TierpsyTrackerConsole.py
+```
+
+![TierpsyTrackerConsole](https://cloud.githubusercontent.com/assets/8364368/26398704/30c17b10-4072-11e7-9a90-d3e9e394ef9d.png)   
+
+##Set Parameters
+
+This widget is used to setup the parameters used by [Batch Processing Multiple Files](#batch-processing-multiple-files) Explanation of each parameter can be found by 
+
+![SetParameters](https://cloud.githubusercontent.com/assets/8364368/26410507/6df7ef54-409b-11e7-8139-9ce99daf69cb.gif)  
+
+![SetBgndSubt](https://cloud.githubusercontent.com/assets/8364368/26410958/95a8c09a-409c-11e7-9fc9-14dafeabb467.gif)  
 
 
-Batch Processing Multiple Files
-===============================
-
-It is a GUI for `Command Line Tool`_ .
-
-.. image:: https://cloud.githubusercontent.com/assets/8364368/26411227/4e788006-409d-11e7-8386-28235d859541.png
+## Batch Processing Multiple Files
 
 
-Multi-Worm Tracker Viewer
-===============================
+It is a GUI for [Command Line Tool](#command-line-tool).
+![BatchProcessing](https://cloud.githubusercontent.com/assets/8364368/26411227/4e788006-409d-11e7-8386-28235d859541.png)  
 
-.. image:: https://cloud.githubusercontent.com/assets/8364368/26412511/eac27158-40a0-11e7-880c-5671c2c27099.gif
 
-.. image:: https://cloud.githubusercontent.com/assets/8364368/26412212/e0e112f8-409f-11e7-867b-512cf044d717.gif
+## Multi-Worm Tracker Viewer
 
-Single-Worm Tracker Viewer
-===============================
+![MWTrackerViewer](https://cloud.githubusercontent.com/assets/8364368/26412511/eac27158-40a0-11e7-880c-5671c2c27099.gif)  
 
-.. image:: https://cloud.githubusercontent.com/assets/8364368/26412826/e608bfea-40a1-11e7-9d3e-d0b8bf482db2.gif
+![TrackJoined](https://cloud.githubusercontent.com/assets/8364368/26412212/e0e112f8-409f-11e7-867b-512cf044d717.gif) 
 
-Command Line Tool
-===============================
+## Single-Worm Tracker Viewer
+![SWTrackerViewer](https://cloud.githubusercontent.com/assets/8364368/26412826/e608bfea-40a1-11e7-9d3e-d0b8bf482db2.gif) 
 
-scripts are located in **cmd_scripts/**
 
-.. code-block:: bash
-  :linenos:
+## Command Line Tool
 
+scripts are located in `cmd_scripts/`
+
+``` 
   usage: processMultipleFiles.py [-h] [--videos_list VIDEOS_LIST]
                                  [--json_file JSON_FILE]
                                  [--tmp_dir_root TMP_DIR_ROOT]
@@ -118,3 +119,4 @@ scripts are located in **cmd_scripts/**
                           analysis.
     --end_point {COMPRESS,COMPRESS_ADD_DATA,VID_SUBSAMPLE,TRAJ_CREATE,TRAJ_JOIN,SKE_INIT,BLOB_FEATS,SKE_CREATE,SKE_FILT,SKE_ORIENT,STAGE_ALIGMENT,CONTOUR_ORIENT,INT_PROFILE,INT_SKE_ORIENT,FEAT_CREATE,WCON_EXPORT,FEAT_MANUAL_CREATE}
                           End point of the analysis.```
+```
