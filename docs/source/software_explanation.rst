@@ -2,11 +2,15 @@
 Software Explanation
 ####################
 
-
 Video Compression
 #################
 
-This step has the double function identifing candidate regions for the tracking and to zero the background to increase the lossless compression efficiency. The algorithm aims to identify dark particles on a light background or light particles on a dark background using `adaptative thresholding <http://docs.opencv.org/3.0-beta/modules/imgproc/doc/miscellaneous_transformations.html>`_ and paticle size filter. The filter parameters must be adjusted manually for a different setup but typically it is possible to use the same parameters under similar experimental contions. More information on how to setup this parameters can be found in the `GUI manual <https://github.com/ver228/tierpsy-tracker/edit/dev/docs/source/GUI_manual.rst>`_ .
+COMPRESS
+========
+
+This step has the double function identifing candidate regions for the tracking and efficiently store data the using lossless compression by zeroing the background. 
+
+The algorithm identifies dark particles on a light background or light particles on a dark background using `adaptative thresholding <http://docs.opencv.org/3.0-beta/modules/imgproc/doc/miscellaneous_transformations.html>`_ together with a filtering particles by size. The filter parameters must be adjusted manually for a different setup but typically it is possible to use the same parameters under similar experimental contions. More information on how to setup this parameters can be found in the `GUI manual <https://github.com/ver228/tierpsy-tracker/edit/dev/docs/source/GUI_manual.rst>`_ .
 
 .. image:: https://cloud.githubusercontent.com/assets/8364368/8456443/5f36a380-2003-11e5-822c-ea58857c2e52.png
 
@@ -19,21 +23,44 @@ The data is stored into a hdf5 container using a gzip filter. Some advantages of
 - Metadata can be stored in the same file as the video. HDF5 format allows to store all kind of binary data into the same file. This allows to store the video metadata and analysis progress in the same file.
 
 
-Creating worm trajectories
+
+
+Creating trajectories
 ##########################
 
-Trajectories are linked by its closest neighbor in a consecutive area. The closest neighbor must have a similar area and be closer than a specified distance, additionally the algorithm filters for large or smaller particles. 
+TRAJ_CREATE
+===========
 
-In a second step, trajectories are joined that have a small time and spatial gap between their end and beginning, as well as similar area. Finally for visualization purposes, a video is created showing a speedup and low resolution version of the masks where trajectories are drawed over time. 
+We identify possible particles. The approach we follow is to divide the image in regions of non-zero connected pixels. For each candidate region we calculate a simple threshold and create binary mask. Then we calculate the centroid, area and bounding box of each connected-element in the binary mask. If the connected-element features are within the user defined ranges it is kept to create the trajectories. This information ins stored in the `/plate_worms`_ table.
+
+
+TRAJ_JOIN
+===========
+
+We link the particles trajectories by using their closest neighbor in a consecutive frames. The closest neighbor must closer than ``max_allowed_dist`` and the change in area must be less than ``area_ratio_lim`` . A particle can only be joined to one particle in consecutive frames. If this conditions are not satisfied it means that there was a problem in the trajectory *e.g.* two worms colided and in the next frame the closest object is twice the area, or a worm disapear from the screen. Therefore the trajectory will be broken a new number will be assigned to any unassigned particle. In a subsequent step the program will try to join trajectories that have a small time gap between them *i.e.* the worm was lost for a couple of frames. Additionally we remove any spurious trajectory shorter than ``min_track_size`` .
+
+Below there is an example of how the trajectories look.
 
 .. image:: https://cloud.githubusercontent.com/assets/8364368/26301795/25eb72ac-3eda-11e7-8a52-99dd6c49bc07.gif
 
+SKE_CREATE
+===========
 
- 
+This step create `/trajectories_data`_ table, that contains
+
+BLOB_FEATS
+===========
+
+We extract a series of features for each individual binary mask and store them in `/blob_features`_ .
+
+
 Extracting worm skeletons
 ##########################
 
-Uses the code in `getSkeletonsTables.py`, `checkHeadOrientation.py` and `WormClass.py` in the `trackWorms` directory as well as all the code in the `segWormPython` directory. 
+
+
+
+
 
 Firstly, the center of mass and the threshold for each of the trajectories is smoothed.  This improves the estimation of the worm threshold, fills gaps where the trajectory might have been lost, and helps to produce videos where the ROI displaces gradually following individual worms.
 
@@ -95,7 +122,7 @@ basename_subsample.avi
 basename_skeletons.hdf5
 ========================
 
-:/plate_worms:
+:_`/plate_worms`:
   * worm_index_blob: Trajectory index given initially by the program. Since there can be several short spurious tracks identified this number can be very large and does not reflect the number of final trajectories.
   * worm_index_joined: Index after joining trajectories separated by a small time gap and filtering short spurious tracks, and invalid row will be assigned ``-1``.
   * threshold: Threshold used for the image binarization.
@@ -104,7 +131,7 @@ basename_skeletons.hdf5
   * area: blob area.
   * bounding_box_xmin, bounding_box_xmax, bounding_box_ymin, bounding_box_ymax: `bounding rectangle <http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#boundingrect>`_ coordinates.
 
-:/trajectories_data: table containing the smoothed data and the indexes to link each row in the others table, with the corresponding worm_index and frame_number
+:_`/trajectories_data`: table containing the smoothed data and the indexes to link each row in the others table, with the corresponding worm_index and frame_number
 
   * frame_number: F
   * worm_index_joined: F
