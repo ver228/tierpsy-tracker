@@ -18,18 +18,13 @@ The data is stored into a hdf5 container using a gzip filter. Some advantages of
 
 - Metadata can be stored in the same file as the video. HDF5 format allows to store all kind of binary data into the same file. This allows to store the video metadata and analysis progress in the same file.
 
+## Creating trajectories
 
-
-
-## Creating trajectories
-
-### TRAJ_CREATE
-
+### TRAJ_CREATE
 
 We identify possible particles. The approach we follow is to divide the image in regions of non-zero connected pixels. For each candidate region we calculate a simple threshold and create binary mask. Then we calculate the centroid, area and bounding box of each connected-element in the binary mask. If the connected-element features are within the user defined ranges it is kept to create the trajectories. This information ins stored in the `/plate_worms`_ table.
 
-
-### TRAJ_JOIN
+### TRAJ_JOIN
 
 We link the particles trajectories by using their closest neighbor in a consecutive frames. The closest neighbor must closer than ``max_allowed_dist`` and the change in area must be less than ``area_ratio_lim`` . A particle can only be joined to one particle in consecutive frames. If this conditions are not satisfied it means that there was a problem in the trajectory *e.g.* two worms colided and in the next frame the closest object is twice the area, or a worm disapear from the screen. Therefore the trajectory will be broken a new number will be assigned to any unassigned particle. In a subsequent step the program will try to join trajectories that have a small time gap between them *i.e.* the worm was lost for a couple of frames. Additionally we remove any spurious trajectory shorter than ``min_track_size`` .
 
@@ -37,17 +32,17 @@ Below there is an example of how the trajectories look.
 
 .. image:: https://cloud.githubusercontent.com/assets/8364368/26301795/25eb72ac-3eda-11e7-8a52-99dd6c49bc07.gif
 
-### SKE_CREATE
+### SKE_CREATE
 
 
 This step create `/trajectories_data`_ table, that contains
 
-### BLOB_FEATS
+### BLOB_FEATS
 
 We extract a series of features for each individual binary mask and store them in `/blob_features`_ .
 
 
-## Extracting worm skeletons
+## Extracting worm skeletons
 
 Firstly, the center of mass and the threshold for each of the trajectories is smoothed.  This improves the estimation of the worm threshold, fills gaps where the trajectory might have been lost, and helps to produce videos where the ROI displaces gradually following individual worms.
 
@@ -63,7 +58,7 @@ Finally, for visualization purposes movies for each individual worm trajectory a
 ![INT_SKE_ORIENT]https://cloud.githubusercontent.com/assets/8364368/26366191/089a6ca4-3fe2-11e7-91ef-77a7a78ee8ba.png)
 
 
-## Extracting worm features
+## Extracting worm features
 
 Uses the code in `obtainFeatures.py` in the `FeaturesAnalysis` directory, and the movement validation repository. This part is still in progress but basically creates a normalized worm object from the '_skeletons.hdf5' tables, and extract features and mean features using the movement_validation functions. The motion data is stored in a large table with all the worms in it and with with the indexes frame_number and worm_index, where the event data is stored in individual tables for each worm. The seven hundred or so mean features are stored in another table where each worm corresponds to worm index.
 
@@ -77,7 +72,7 @@ TODO:
 
 
 
-# Output Files
+# Output Files
 
 
 ## basename.hdf5
@@ -94,23 +89,23 @@ attributes:
 (tot_images, im_high, im_width)
 Compressed array with the masked image.
 
-####  /full_data
+#### /full_data
 (tot_images/save_full_interval, im_high, im_width)*
 Frame without mask saved every ``save_full_interval``. The saving interval is recommended to be adjusted every 5min. This field can be useful to identify changes in the background that are lost in the **/mask** dataset *e.g.* food depletion or contrast lost due to water condensation.
 
-#### mean_intensity
+#### mean_intensity
 (tot_images)
 Mean intensity of a given frame. It is useful in optogenetic experiments to identify when the light is turned on.
 
-#### timestamp/time
-#### timestamp/raw
+#### timestamp/time
+#### timestamp/raw
 
 Timestamp extracted from the video if the ``is_extract_metadata`` flag set to ``true``. If this fields exists and are valid (there are not nan values and they increase monotonically), they will be used to calculate the ``fps`` used in subsequent parts of the analysis. The extracting the timestamp can be a slow process since it uses `ffprobe <https://ffmpeg.org/ffprobe.html>`_ to read the whole video. If you believe that your video does not have a significative number of drop frames and you know the frame rate, or simply realise that ffprobe cannot extract the timestamp correctly, I recommend to set ``is_extract_metadata`` to ``false``.
 
-### basename_subsample.avi
+### basename_subsample.avi
 
 
-### basename_skeletons.hdf5
+### basename_skeletons.hdf5
 
 #### /plate_worms
   * worm_index_blob: Trajectory index given initially by the program. Since there can be several short spurious tracks identified this number can be very large and does not reflect the number of final trajectories.
