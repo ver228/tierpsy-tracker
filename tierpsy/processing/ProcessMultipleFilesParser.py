@@ -65,18 +65,14 @@ dflt_args_list = [
         '',
         'End point of the analysis.'
         ),
-    #('analysis_checkpoints',
-    #    '',
-    #    'List of the points to be processed.'
-    #    ),
-
+    
     ('only_summary',
         False,
         'Use this flag if you only want to print a summary of the files in the directory.'
         ),
     ('unmet_requirements',
         False,
-        'Use this flag if you only want to print the unmet requirements in the invalid source files.'
+        'Use this flag if you only want to print the unmet requirements of the invalid source files.'
         ),
     ('refresh_time',
         10.,
@@ -84,9 +80,6 @@ dflt_args_list = [
         ),
 
     ]
-
-#I am choising this because it currently has all the available points. I would have to change it in the feature.
-all_available_checkpoints = get_dflt_sequence('SINGLE_WORM_SHAFER', add_manual_feats=True)
 
 process_valid_options = {}
 proccess_args_dflt, proccess_args_info = repack_dflt_list(dflt_args_list, valid_options=process_valid_options)
@@ -113,36 +106,6 @@ class ProcessMultipleFilesParser(argparse.ArgumentParser):
                 args_d['choices'] = process_valid_options[name]
 
             self.add_argument('--' + name, **args_d)
-
-
-
-        # group = self.add_mutually_exclusive_group()
-
-        # group.add_argument(
-        #     '--analysis_type',
-        #     default = 'all',
-        #     choices = ['compress', 'track', 'all'],
-        #     help='Type of analysis to be processed.',
-        #     )
-
-        # group.add_argument(
-        #     '--analysis_checkpoints',
-        #     default=dflt_vals['analysis_checkpoints'],
-        #     nargs='+',
-        #     help='List of the points to be processed.')
-        
-
-        # self.add_argument(
-        #     '--force_start_point',
-        #     default=dflt_vals['force_start_point'],
-        #     choices = dflt_vals['checkpoints2process'],
-        #     help='Force the program to start at a specific point in the analysis.')
-        
-        # self.add_argument(
-        #     '--end_point',
-        #     default=dflt_vals['end_point'],
-        #     choices = dflt_vals['checkpoints2process'],
-        #     help='End point of the analysis.')
 
 
 if __name__ == '__main__':

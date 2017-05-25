@@ -76,8 +76,7 @@ def processMultipleFilesFun(
     
     if unmet_requirements:
          files_checker._printUnmetReq()
-    
-    if not only_summary:
+    elif not only_summary:
         RunMultiCMD(
             cmd_list,
             local_obj = ProcessWormsLocalParser,
