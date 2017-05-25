@@ -46,7 +46,7 @@ It is a GUI for [Command Line Tool](#command-line-tool).
 
 scripts are located in `cmd_scripts/`
 
-```bash
+```
 $ python3 processMultipleFiles.py -h
 usage: processMultipleFiles.py [-h] [--video_dir_root VIDEO_DIR_ROOT]
                                [--mask_dir_root MASK_DIR_ROOT]
