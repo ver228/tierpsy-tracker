@@ -22,7 +22,7 @@ The data is stored into a hdf5 container using a gzip filter. Some advantages of
 
 ### TRAJ_CREATE
 
-We identify possible particles. The approach we follow is to divide the image in regions of non-zero connected pixels. For each candidate region we calculate a simple threshold and create binary mask. Then we calculate the centroid, area and bounding box of each connected-element in the binary mask. If the connected-element features are within the user defined ranges it is kept to create the trajectories. This information ins stored in the `/plate_worms`_ table.
+We identify possible particles. The approach we follow is to divide the image in regions of non-zero connected pixels. For each candidate region we calculate a simple threshold and create binary mask. Then we calculate the centroid, area and bounding box of each connected-element in the binary mask. If the connected-element features are within the user defined ranges it is kept to create the trajectories. This information ins stored in the [plate_worms](#plate_worms) table.
 
 ### TRAJ_JOIN
 
@@ -35,18 +35,18 @@ Below there is an example of how the trajectories look.
 ### SKE_CREATE
 
 
-This step create `/trajectories_data`_ table, that contains
+This step create [trajectories_data](#trajectories_data) table, that contains
 
 ### BLOB_FEATS
 
-We extract a series of features for each individual binary mask and store them in `/blob_features`_ .
+We extract a series of features for each individual binary mask and store them in [blob_features](#blob_features).
 
 
 ## Extracting worm skeletons
 
 Firstly, the center of mass and the threshold for each of the trajectories is smoothed.  This improves the estimation of the worm threshold, fills gaps where the trajectory might have been lost, and helps to produce videos where the ROI displaces gradually following individual worms.
 
-Secondly, a ROI is thresholded, a contour is calculated, and the worm is skeletonized. The key part of this step is the skeletonization code based on `segWorm <https://github.com/openworm/SegWorm>`_. Since one has to deal with multiworm at a time speed becomes an important issue, therefore the code was optimized using Cython and C. The skeletons and contours are normalized to have the same number of points in order to store them in a simple table. The output is store in a file with the extension `basename_skeletons.hdf5`_ .
+Secondly, a ROI is thresholded, a contour is calculated, and the worm is skeletonized. The key part of this step is the skeletonization code based on [segWorm](https://github.com/openworm/SegWorm). Since one has to deal with multiworm at a time speed becomes an important issue, therefore the code was optimized using Cython and C. The skeletons and contours are normalized to have the same number of points in order to store them in a simple table. The output is store in a file with the extension [basename_skeletons.hdf5](#basename_skeletonshdf5).
 
 In a second part of the code the head and tail are identified by movement. Althought it is hard to determine the head and the tail from the contour, it is possible to assign "blocks" with the same orientation for skeletons in contingous frames, since the head in one skeleton will not suddenly jump to the other side of the worm within a few frames. We can then assign the relative standard deviation (SD) of the angular movement for the first and last part of the segment. If the blocks are large enough the section with the higher SD would be the head.
  
@@ -55,7 +55,7 @@ Finally, for visualization purposes movies for each individual worm trajectory a
 ![skeletons](https://cloud.githubusercontent.com/assets/8364368/26309647/a6b4402e-3ef5-11e7-96cd-4a037ee42868.gif)
 
 
-![INT_SKE_ORIENT]https://cloud.githubusercontent.com/assets/8364368/26366191/089a6ca4-3fe2-11e7-91ef-77a7a78ee8ba.png)
+![INT_SKE_ORIENT](https://cloud.githubusercontent.com/assets/8364368/26366191/089a6ca4-3fe2-11e7-91ef-77a7a78ee8ba.png)
 
 
 ## Extracting worm features
@@ -90,8 +90,8 @@ attributes:
 Compressed array with the masked image.
 
 #### /full_data
-(tot_images/save_full_interval, im_high, im_width)*
-Frame without mask saved every ``save_full_interval``. The saving interval is recommended to be adjusted every 5min. This field can be useful to identify changes in the background that are lost in the **/mask** dataset *e.g.* food depletion or contrast lost due to water condensation.
+(tot_images/save_full_interval, im_high, im_width)
+Frame without mask saved every `save_full_interval`. The saving interval is recommended to be adjusted every 5min. This field can be useful to identify changes in the background that are lost in the [/mask](#mask) dataset *e.g.* food depletion or contrast lost due to water condensation.
 
 #### mean_intensity
 (tot_images)
@@ -100,7 +100,7 @@ Mean intensity of a given frame. It is useful in optogenetic experiments to iden
 #### timestamp/time
 #### timestamp/raw
 
-Timestamp extracted from the video if the ``is_extract_metadata`` flag set to ``true``. If this fields exists and are valid (there are not nan values and they increase monotonically), they will be used to calculate the ``fps`` used in subsequent parts of the analysis. The extracting the timestamp can be a slow process since it uses `ffprobe <https://ffmpeg.org/ffprobe.html>`_ to read the whole video. If you believe that your video does not have a significative number of drop frames and you know the frame rate, or simply realise that ffprobe cannot extract the timestamp correctly, I recommend to set ``is_extract_metadata`` to ``false``.
+Timestamp extracted from the video if the `is_extract_metadata` flag set to `true`. If this fields exists and are valid (there are not nan values and they increase monotonically), they will be used to calculate the `fps` used in subsequent parts of the analysis. The extracting the timestamp can be a slow process since it uses [ffprobe](https://ffmpeg.org/ffprobe.html) to read the whole video. If you believe that your video does not have a significative number of drop frames and you know the frame rate, or simply realise that ffprobe cannot extract the timestamp correctly, I recommend to set `is_extract_metadata` to `false`.
 
 ### basename_subsample.avi
 
@@ -109,12 +109,12 @@ Timestamp extracted from the video if the ``is_extract_metadata`` flag set to ``
 
 #### /plate_worms
   * worm_index_blob: Trajectory index given initially by the program. Since there can be several short spurious tracks identified this number can be very large and does not reflect the number of final trajectories.
-  * worm_index_joined: Index after joining trajectories separated by a small time gap and filtering short spurious tracks, and invalid row will be assigned ``-1``.
+  * worm_index_joined: Index after joining trajectories separated by a small time gap and filtering short spurious tracks, and invalid row will be assigned -1.
   * threshold: Threshold used for the image binarization.
   * frame_number: Video frame number.
-  * coord_x, coord_y, box_length, box_width, angle: center coordinates, length, width and orientation of the `minimum rotated rectangle <http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#minarearect>`_.
+  * coord_x, coord_y, box_length, box_width, angle: center coordinates, length, width and orientation of the [minimum rotated rectangle](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#minarearect).
   * area: blob area.
-  * bounding_box_xmin, bounding_box_xmax, bounding_box_ymin, bounding_box_ymax: `bounding rectangle <http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#boundingrect>`_ coordinates.
+  * bounding_box_xmin, bounding_box_xmax, bounding_box_ymin, bounding_box_ymax: [bounding rectangle](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#boundingrect) coordinates.
 
 #### /trajectories_data
 table containing the smoothed data and the indexes to link each row in the others table, with the corresponding worm_index and frame_number
@@ -123,7 +123,7 @@ table containing the smoothed data and the indexes to link each row in the other
   * worm_index_joined: F
   * plate_worm_id: F
   * skeleton_id: row in the trajectory_data, useful to quickly recover worm data.
-  * coord_x, coord_y: Centroid coordinates after smoothing `/plate_worms`_ . It is used to find the ROI to calculate the skeletons. If you want to calculate the centroid features use the corresponding field in `/blob_features`_ .
+  * coord_x, coord_y: Centroid coordinates after smoothing [plate_worms](#plate_worms). It is used to find the ROI to calculate the skeletons. If you want to calculate the centroid features use the corresponding field in [blob_features](#blob_features).
   * threshold: value used to segment the worm in the ROI.
   * has_skeleton: flag to mark is the skeletonization was succesful
   * roi_size: F
@@ -136,13 +136,13 @@ table containing the smoothed data and the indexes to link each row in the other
 
 #### /blob_features
   * coord_x, coord_y, box_length, box_width, box_orientation
-  * area: `area <http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#contourarea>`_
-  * perimeter: `perimeter <http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#arclength>`_
+  * area: [area](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#contourarea)
+  * perimeter: [perimeter](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#arclength)
   * quirkiness: sqrt(1 - box_width^2 / box_width^2)
   * compactness: 4 * pi * area / (perimeter^2)
-  * solidity: area / (`convex hull <http://docs.opencv.org/3.0-beta/doc/tutorials/imgproc/shapedescriptors/hull/hull.html#>`_ area)
+  * solidity: area / ([convex hull](http://docs.opencv.org/3.0-beta/doc/tutorials/imgproc/shapedescriptors/hull/hull.html#) area)
   * intensity_mean, intensity_std: mean and standard deviation inside the thresholded region.
-  * hu0, hu1, hu2, hu3, hu4, hu5, hu6: `hu moments <http://docs.opencv.org/2.4/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html?highlight=drawcontours#humoments>`_
+  * hu0, hu1, hu2, hu3, hu4, hu5, hu6: [hu moments](http://docs.opencv.org/2.4/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html?highlight=drawcontours#humoments)
 
 #### /contour_area:
 
