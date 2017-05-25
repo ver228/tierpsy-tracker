@@ -1,9 +1,8 @@
-# Software Explanation
+# Software Explanation
 
-## Video Compression
+## Video Compression
 
-### COMPRESS
-
+### COMPRESS
 
 This step has the double function identifing candidate regions for the tracking and efficiently store data the using lossless compression by zeroing the background. 
 
