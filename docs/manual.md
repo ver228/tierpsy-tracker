@@ -5,11 +5,11 @@
 After running installation script in OSX or Windows there should be a doulbe-click executable named `TierpsyTracker` in the Desktop. If the executable is missing you can re-create the executable by running:
 
 ```bash
-installation/installation_script.sh--link_desktop 
 #(OSX/Linux)
+installation/installation_script.sh--link_desktop 
 
-installation/installation_script.bat --link_desktop
 #Windows
+installation/installation_script.bat --link_desktop
 ```  
 
 Alternatively open a terminal, go to the Tierpsy Tracker main directory and type: 
