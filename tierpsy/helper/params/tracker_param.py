@@ -12,7 +12,6 @@ import os
 from tierpsy import AUX_FILES_DIR, DFLT_PARAMS_PATH, DFLT_PARAMS_FILES
 from tierpsy.helper.misc import repack_dflt_list
 
-
 #deprecated variables that will be ignored
 deprecated_fields = ['has_timestamp', 'min_displacement', 'fps_filter', 'traj_bgnd_buff_size', 'traj_bgnd_frame_gap']
 #('fps_filter', 0,  '''PROBALY USELESS (Used in joinTrajectories).  Frame per second used to calculate filters for trajectories. Set to zero to eliminate filtering.''')

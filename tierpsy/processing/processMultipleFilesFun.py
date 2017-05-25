@@ -10,7 +10,7 @@ from tierpsy.helper.params import TrackerParams
 from tierpsy.helper.misc import RunMultiCMD
 from tierpsy.processing.CheckFilesForProcessing import CheckFilesForProcessing
 from tierpsy.processing.ProcessWormsLocal import ProcessWormsLocalParser
-from tierpsy.processing.batchProcHelperFunc import getDefaultSequence, walkAndFindValidFiles
+from tierpsy.processing.helper import get_dflt_sequence, find_valid_files, remove_border_checkpoints
 
 def processMultipleFilesFun(
         video_dir_root,
@@ -24,7 +24,6 @@ def processMultipleFilesFun(
         max_num_process,
         refresh_time,
         only_summary,
-        analysis_sequence='',
         force_start_point='',
         end_point='',
         is_copy_video=False,
@@ -40,14 +39,15 @@ def processMultipleFilesFun(
         video_dir_root = mask_dir_root
 
     param = TrackerParams(json_file)
+
     json_file = param.json_file
     
     if not analysis_checkpoints:
-      analysis_checkpoints = getDefaultSequence(analysis_sequence, is_single_worm=param.is_single_worm)
+      analysis_checkpoints = get_dflt_sequence(param.p_dict['analysis_type'])
     
     
-    _removePointFromSide(analysis_checkpoints, force_start_point, 0)
-    _removePointFromSide(analysis_checkpoints, end_point, -1)
+    remove_border_checkpoints(analysis_checkpoints, force_start_point, 0)
+    remove_border_checkpoints(analysis_checkpoints, end_point, -1)
 
     walk_args = {'root_dir': video_dir_root, 
                  'pattern_include' : pattern_include,
@@ -64,7 +64,7 @@ def processMultipleFilesFun(
     
     #get the list of valid videos
     if not videos_list:
-        valid_files = walkAndFindValidFiles(**walk_args)
+        valid_files = find_valid_files(**walk_args)
     else:
         with open(videos_list, 'r') as fid:
             valid_files = fid.read().split('\n')
@@ -100,12 +100,4 @@ def getResultsDir(mask_dir_root):
 
     return (os.sep).join(subdir_list)
 
-def _removePointFromSide(list_of_points, point, index):
-    assert (index == 0) or (index == -1)
-    if point:
-        #move points until 
-        while list_of_points and \
-        list_of_points[index] != point:
-            list_of_points.pop(index)
-    if not list_of_points:
-        raise ValueError("Point {} is not valid.".format(point))
+

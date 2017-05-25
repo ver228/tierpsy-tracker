@@ -82,11 +82,18 @@ class ReadEnqueue():
             line  = None
         return line
 
-def repack_dflt_list(dflt_list, valid_options):
+def repack_dflt_list(dflt_list, valid_options={}):
+    '''
+        Reformat the variable text_info to make it more readable.
+        dflt_list - is a list of tuples in the format
+                    [(name, default_value, text_info), ...]
+        
+        valid_options - is a dictionary that contains as dictionary keys the features that
+                        are allowed to have specific values, and as dictionary values a list
+                        with the allowed values.
+    '''
     def _format_var_info(input_tuple):
-        '''
-        Reformat the info text to make it more readable.
-        '''
+        
         name, dftl_val, info_txt = input_tuple
 
 

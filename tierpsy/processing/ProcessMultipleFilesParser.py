@@ -1,7 +1,7 @@
 import argparse
 import os
 
-from tierpsy.processing.batchProcHelperFunc import getDefaultSequence
+from tierpsy.processing.helper import get_dflt_sequence
 from tierpsy.helper.misc import repack_dflt_list
 
 dflt_args_list = [
@@ -65,10 +65,10 @@ dflt_args_list = [
         '',
         'End point of the analysis.'
         ),
-    ('analysis_checkpoints',
-        '',
-        'List of the points to be processed.'
-        ),
+    #('analysis_checkpoints',
+    #    '',
+    #    'List of the points to be processed.'
+    #    ),
 
     ('only_summary',
         False,
@@ -85,9 +85,10 @@ dflt_args_list = [
 
     ]
 
-all_available_checkpoints = getDefaultSequence('all', is_single_worm=True, add_manual_feats=True)
+#I am choising this because it currently has all the available points. I would have to change it in the feature.
+all_available_checkpoints = get_dflt_sequence('SINGLE_WORM_SHAFER', add_manual_feats=True)
+
 process_valid_options = dict(
-    analysis_sequence = ['compress', 'track', 'all'],
     analysis_checkpoints = all_available_checkpoints,
     force_start_point = all_available_checkpoints,
     end_point = all_available_checkpoints

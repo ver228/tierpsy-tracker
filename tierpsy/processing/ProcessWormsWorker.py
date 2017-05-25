@@ -11,10 +11,10 @@ import time
 
 from tierpsy.helper.misc import print_flush
 from tierpsy.processing.AnalysisPoints import AnalysisPoints
-from tierpsy.processing.batchProcHelperFunc import getRealPathName
 from tierpsy.processing.trackProvenance import getGitCommitHash, execThisPoint
+from tierpsy.processing.helper import get_real_script_path
 
-BATCH_SCRIPT_WORKER = getRealPathName(__file__)
+BATCH_SCRIPT_WORKER = get_real_script_path(__file__)
 
 class ProcessWormsWorker(object):
     def __init__(self, main_file, masks_dir, results_dir, 

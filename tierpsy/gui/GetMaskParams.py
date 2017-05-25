@@ -106,10 +106,6 @@ class twoViewsWithZoom():
             self.view_mask._view.setCursor(Qt.OpenHandCursor)
             self._mousePressed = False
 
-
-        
-
-
 class ParamsGUI(QMainWindow):
     def __init__(self, default_videos_dir='', scripts_dir=''):
         self.json_file = ''

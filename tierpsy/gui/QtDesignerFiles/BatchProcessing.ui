@@ -124,6 +124,13 @@
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
        <layout class="QGridLayout" name="gridLayout_3">
+        <item row="4" column="1">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Analysis Start Point</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="4" rowspan="2">
          <widget class="QPushButton" name="pushButton_start">
           <property name="text">
@@ -193,13 +200,30 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="3">
-         <widget class="QComboBox" name="p_analysis_sequence"/>
+        <item row="5" column="1">
+         <widget class="QComboBox" name="p_force_start_point"/>
+        </item>
+        <item row="4" column="2">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Analysis End Point</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="2">
+         <widget class="QComboBox" name="p_end_point"/>
         </item>
         <item row="0" column="3">
-         <widget class="QLabel" name="label">
+         <widget class="QCheckBox" name="p_only_summary">
           <property name="text">
-           <string>Sequence to be Processed</string>
+           <string>Only Display Progress Summary</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3">
+         <widget class="QCheckBox" name="p_unmet_requirements">
+          <property name="text">
+           <string>Print Unmet Requirements</string>
           </property>
          </widget>
         </item>

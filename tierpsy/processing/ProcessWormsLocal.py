@@ -15,7 +15,7 @@ from tierpsy.helper.params import TrackerParams
 from tierpsy.helper.misc import print_flush
 from tierpsy.processing.AnalysisPoints import AnalysisPoints
 from tierpsy.processing.ProcessWormsWorker import ProcessWormsWorkerParser, ProcessWormsWorker, BATCH_SCRIPT_WORKER
-from tierpsy.processing.batchProcHelperFunc import create_script
+from tierpsy.processing.helper import create_script
 
 #this path is not really going to be used if it is pyinstaller frozen (only the BATCH_SCRIPT_WORKER)
 BATCH_SCRIPT_LOCAL = [sys.executable, os.path.realpath(__file__)]

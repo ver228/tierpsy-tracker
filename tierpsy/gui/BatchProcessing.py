@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 from PyQt5.QtCore import Qt
 
 from tierpsy.processing.processMultipleFilesFun import processMultipleFilesFun, getResultsDir
-from tierpsy.processing.batchProcHelperFunc import getDefaultSequence
+from tierpsy.processing.helper import get_dflt_sequence, remove_border_checkpoints
 
 from tierpsy.gui.AnalysisProgress import AnalysisProgress, WorkerFunQt
 from tierpsy.gui.HDF5VideoPlayer import LineEditDragDrop
@@ -18,8 +18,6 @@ from tierpsy import DFLT_PARAMS_FILES
 from tierpsy.processing.ProcessMultipleFilesParser import proccess_args_dflt, proccess_args_info, process_valid_options
 process_valid_options['json_file'] = [''] + DFLT_PARAMS_FILES
 
-proccess_args_dflt['analysis_sequence'] = 'all'
-
 
 class BatchProcessing_GUI(QMainWindow):
 
@@ -28,7 +26,7 @@ class BatchProcessing_GUI(QMainWindow):
         self.mask_files_dir = ''
         self.results_dir = ''
         self.videos_dir = ''
-
+        self.analysis_checkpoints = process_valid_options['force_start_point']
 
         self.ui = Ui_BatchProcessing()
         self.ui.setupUi(self)
@@ -37,8 +35,10 @@ class BatchProcessing_GUI(QMainWindow):
                                         info_param=proccess_args_info, 
                                         valid_options=process_valid_options)
 
-        self.ui.checkBox_txtFileList.stateChanged.connect(
-            self.enableTxtFileListButton)
+        self.ui.p_json_file.currentIndexChanged.connect(self.updateCheckpoints)
+        self.ui.p_force_start_point.currentIndexChanged.connect(self.updateCheckpointsEnd)
+
+        self.ui.checkBox_txtFileList.stateChanged.connect(self.enableTxtFileListButton)
         self.ui.checkBox_tmpDir.stateChanged.connect(self.enableTmpDirButton)
         
 
@@ -49,15 +49,12 @@ class BatchProcessing_GUI(QMainWindow):
         self.ui.pushButton_resultsDir.clicked.connect(self.getResultsDir)
         self.ui.pushButton_tmpDir.clicked.connect(self.getTmpDir)
         self.ui.pushButton_start.clicked.connect(self.startAnalysis)
+        
 
-        
-        
         self.ui.checkBox_tmpDir.setChecked(False)
         self.enableTxtFileListButton()
         self.ui.checkBox_tmpDir.setChecked(True)
         self.enableTmpDirButton()
-
-        self.ui.p_analysis_sequence.currentIndexChanged.connect(self.changeSequence)
 
         LineEditDragDrop(
             self.ui.p_videos_list,
@@ -85,9 +82,6 @@ class BatchProcessing_GUI(QMainWindow):
             self.updateParamFile,
             os.path.isfile)
 
-        
-                
-        
     def enableTxtFileListButton(self):
         is_enable = self.ui.checkBox_txtFileList.isChecked()
         self.ui.pushButton_txtFileList.setEnabled(is_enable)
@@ -129,18 +123,6 @@ class BatchProcessing_GUI(QMainWindow):
     def updateTmpDir(self, tmp_dir_root):
         self.tmp_dir_root = tmp_dir_root
         self.ui.p_tmp_dir_root.setText(self.tmp_dir_root)
-
-    def changeSequence(self, index):
-        analysis_sequence = self.mapper['analysis_sequence']
-        if analysis_sequence == 'track':
-            self.ui.pushButton_videosDir.setEnabled(False)
-        else:
-            self.ui.pushButton_videosDir.setEnabled(True)
-
-        if analysis_sequence == 'compress':
-            self.ui.pushButton_videosDir.setEnabled(False)
-        else:
-            self.ui.pushButton_videosDir.setEnabled(True)
 
     def getVideosDir(self):
         videos_dir = QFileDialog.getExistingDirectory(
@@ -229,13 +211,29 @@ class BatchProcessing_GUI(QMainWindow):
 
         self.param_file = param_file
 
+    def updateCheckpoints(self, index):
+        param = TrackerParams(self.mapper['json_file'])
+        analysis_checkpoints = get_dflt_sequence(param.p_dict['analysis_type'], add_manual_feats=True)
+        self.analysis_checkpoints = analysis_checkpoints
+        self.ui.p_force_start_point.clear()
+        self.ui.p_force_start_point.addItems(self.analysis_checkpoints)
+        self.ui.p_force_start_point.setCurrentIndex(0)
+
+    def updateCheckpointsEnd(self, index):
+        remaining_points = remove_border_checkpoints(self.analysis_checkpoints, 
+                                    self.mapper['force_start_point'], 
+                                    0)
+        
+        self.ui.p_end_point.clear()
+        self.ui.p_end_point.addItems(remaining_points)
+
+        nn = self.ui.p_end_point.count()
+        self.ui.p_end_point.setCurrentIndex(nn-2)
+
     def startAnalysis(self):
         process_args = proccess_args_dflt.copy()
         #append the root dir if we are using any of the default parameters files. I didn't add the dir before because it is easy to read them in this way.
-        param = TrackerParams(self.mapper['json_file'])
-        analysis_sequence = self.mapper['analysis_sequence']
-        analysis_checkpoints = getDefaultSequence(analysis_sequence, is_single_worm=param.is_single_worm)
-        process_args['analysis_checkpoints'] : analysis_checkpoints
+        analysis_checkpoints = self.analysis_checkpoints
         
         for x in self.mapper:
             process_args[x] = self.mapper[x]
@@ -261,9 +259,6 @@ class BatchProcessing_GUI(QMainWindow):
         analysis_worker = WorkerFunQt(processMultipleFilesFun, process_args)
         progress = AnalysisProgress(analysis_worker)
         progress.exec_()
-
-    
-
 
 if __name__ == '__main__':
     import sys
