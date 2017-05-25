@@ -8,7 +8,7 @@ After running installation script in OSX or Windows there should be a doulbe-cli
 #(OSX/Linux)
 installation/installation_script.sh--link_desktop 
 
-#Windows
+#(Windows)
 installation/installation_script.bat --link_desktop
 ```  
 
