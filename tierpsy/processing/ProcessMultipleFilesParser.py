@@ -88,7 +88,8 @@ dflt_args_list = [
 #I am choising this because it currently has all the available points. I would have to change it in the feature.
 all_available_checkpoints = get_dflt_sequence('SINGLE_WORM_SHAFER', add_manual_feats=True)
 
-proccess_args_dflt, proccess_args_info = repack_dflt_list(dflt_args_list, valid_options={})
+process_valid_options = {}
+proccess_args_dflt, proccess_args_info = repack_dflt_list(dflt_args_list, valid_options=process_valid_options)
 
 class ProcessMultipleFilesParser(argparse.ArgumentParser):
     def __init__(self):
