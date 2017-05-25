@@ -17,7 +17,6 @@ from tierpsy.gui.HDF5VideoPlayer import LineEditDragDrop, ViewsWithZoom, setChil
 
 from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
 from tierpsy.processing.ProcessWormsWorker import ProcessWormsWorker
-from tierpsy.processing.batchProcHelperFunc import getDefaultSequence
 from tierpsy.helper.params.tracker_param import TrackerParams, default_param
 
 class twoViewsWithZoom():

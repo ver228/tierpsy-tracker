@@ -15,9 +15,7 @@ from tierpsy.gui.GetAllParameters import ParamWidgetMapper
 #get default parameters files
 from tierpsy.helper.params import TrackerParams
 from tierpsy import DFLT_PARAMS_FILES
-from tierpsy.processing.ProcessMultipleFilesParser import proccess_args_dflt, proccess_args_info, process_valid_options
-process_valid_options['json_file'] = [''] + DFLT_PARAMS_FILES
-
+from tierpsy.processing.ProcessMultipleFilesParser import proccess_args_dflt, proccess_args_info
 
 class BatchProcessing_GUI(QMainWindow):
 
@@ -26,14 +24,16 @@ class BatchProcessing_GUI(QMainWindow):
         self.mask_files_dir = ''
         self.results_dir = ''
         self.videos_dir = ''
-        self.analysis_checkpoints = process_valid_options['force_start_point']
+        self.analysis_checkpoints = []
 
         self.ui = Ui_BatchProcessing()
         self.ui.setupUi(self)
+
+        valid_options = dict(json_file = [''] + DFLT_PARAMS_FILES)
         self.mapper = ParamWidgetMapper(self.ui,
                                         default_param=proccess_args_dflt,
                                         info_param=proccess_args_info, 
-                                        valid_options=process_valid_options)
+                                        valid_options=valid_options)
 
         self.ui.p_json_file.currentIndexChanged.connect(self.updateCheckpoints)
         self.ui.p_force_start_point.currentIndexChanged.connect(self.updateCheckpointsEnd)
