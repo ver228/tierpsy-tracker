@@ -50,7 +50,6 @@ We extract a series of features for each individual binary mask and store them i
 ![skeletons](https://cloud.githubusercontent.com/assets/8364368/26309647/a6b4402e-3ef5-11e7-96cd-4a037ee42868.gif)
 
 Secondly, a ROI is thresholded, a contour is calculated, and the worm is skeletonized. The key part of this step is the skeletonization code based on [segWorm](https://github.com/openworm/SegWorm). Since one has to deal with multiworm at a time speed becomes an important issue, therefore the code was optimized using Cython and C. The skeletons and contours are normalized to have the same number of points in order to store them in a simple table. The output is store in a file with the extension [basename_skeletons.hdf5](#basename_skeletonshdf5).
-![skeletons](https://cloud.githubusercontent.com/assets/8364368/26309647/a6b4402e-3ef5-11e7-96cd-4a037ee42868.gif)
 
 ### SKE_FILT
 Filter "bad worms", meaning any particle indentified and analyzed for the tracker that it is not a worm, or any trajectory that corresponds to two or more worms in contact.
