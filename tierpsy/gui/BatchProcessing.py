@@ -13,9 +13,9 @@ from tierpsy.gui.BatchProcessing_ui import Ui_BatchProcessing
 from tierpsy.gui.GetAllParameters import ParamWidgetMapper
 
 #get default parameters files
-from tierpsy.helper.params import TrackerParams
 from tierpsy import DFLT_PARAMS_FILES
-from tierpsy.processing.ProcessMultipleFilesParser import proccess_args_dflt, proccess_args_info
+from tierpsy.helper.params import TrackerParams
+from tierpsy.helper.docs.process_param_docs import proccess_args_dflt, proccess_args_info
 
 class BatchProcessing_GUI(QMainWindow):
 
@@ -29,6 +29,9 @@ class BatchProcessing_GUI(QMainWindow):
         self.ui = Ui_BatchProcessing()
         self.ui.setupUi(self)
 
+        # for the moment this option is more confusing that helpful so we hide it
+        self.ui.p_unmet_requirements.hide() 
+
         valid_options = dict(json_file = [''] + DFLT_PARAMS_FILES)
         self.mapper = ParamWidgetMapper(self.ui,
                                         default_param=proccess_args_dflt,
@@ -36,9 +39,9 @@ class BatchProcessing_GUI(QMainWindow):
                                         valid_options=valid_options)
 
 
-        self.ui.p_json_file.currentIndexChanged.connect(self.updateCheckpoints)
-        self.ui.p_force_start_point.currentIndexChanged.connect(self.updateCheckpointsEnd)
-        self.updateCheckpoints()
+        self.ui.p_json_file.currentIndexChanged.connect(self.updateCheckpointsChange)
+        self.ui.p_force_start_point.currentIndexChanged.connect(self.updateStartPointChange)
+        self.updateCheckpointsChange()
 
         self.ui.checkBox_txtFileList.stateChanged.connect(self.enableTxtFileListButton)
         self.ui.checkBox_tmpDir.stateChanged.connect(self.enableTmpDirButton)
@@ -159,6 +162,7 @@ class BatchProcessing_GUI(QMainWindow):
     def updateResultsDir(self, results_dir):
         self.results_dir = results_dir
         self.mapper['results_dir_root'] = self.results_dir
+
     def getMasksDir(self):
         mask_files_dir = QFileDialog.getExistingDirectory(
             self,
@@ -213,7 +217,7 @@ class BatchProcessing_GUI(QMainWindow):
 
         self.param_file = param_file
 
-    def updateCheckpoints(self, index=0):
+    def updateCheckpointsChange(self, index=0):
         '''
         index - dum variable to be able to connect to currentIndexChanged
         '''
@@ -224,11 +228,24 @@ class BatchProcessing_GUI(QMainWindow):
         self.ui.p_force_start_point.addItems(self.analysis_checkpoints)
         self.ui.p_force_start_point.setCurrentIndex(0)
 
-    def updateCheckpointsEnd(self, index):
-        remaining_points = remove_border_checkpoints(self.analysis_checkpoints, 
+    def updateStartPointChange(self, index):
+        remaining_points = remove_border_checkpoints(self.analysis_checkpoints.copy(), 
                                     self.mapper['force_start_point'], 
                                     0)
         
+        if self.mapper['force_start_point'] == 'COMPRESS':
+            self.ui.pushButton_videosDir.setEnabled(True)
+            self.ui.p_video_dir_root.setEnabled(True)
+            self.mapper['pattern_include'] = '*.mjpg'
+        else:
+            self.ui.pushButton_videosDir.setEnabled(False)
+            self.ui.p_video_dir_root.setEnabled(False)
+
+            if not '.hdf5' in self.mapper['pattern_include']:
+                self.mapper['pattern_include'] = '*.hdf5'
+
+
+
         self.ui.p_end_point.clear()
         self.ui.p_end_point.addItems(remaining_points)
 

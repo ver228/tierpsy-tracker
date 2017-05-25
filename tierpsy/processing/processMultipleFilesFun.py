@@ -5,12 +5,40 @@ Created on Tue Aug  9 00:26:10 2016
 @author: ajaver
 """
 import os
+import argparse
 
 from tierpsy.helper.params import TrackerParams
 from tierpsy.helper.misc import RunMultiCMD
-from tierpsy.processing.CheckFilesForProcessing import CheckFilesForProcessing
-from tierpsy.processing.ProcessWormsLocal import ProcessWormsLocalParser
+from tierpsy.helper.docs.process_param_docs import dflt_args_list, process_valid_options
+
 from tierpsy.processing.helper import get_dflt_sequence, find_valid_files, remove_border_checkpoints
+from tierpsy.processing.CheckFilesForProcessing import CheckFilesForProcessing
+from tierpsy.processing.ProcessLocal import ProcessLocalParser
+
+
+
+class ProcessMultipleFilesParser(argparse.ArgumentParser):
+    def __init__(self):
+        description = "Process worm video in the local drive using several parallel processes"
+        super().__init__(description=description)
+        
+        for name, dflt_val, help in dflt_args_list:
+            
+            args_d = {'help' : help}
+            if isinstance(dflt_val, bool):
+                args_d['action'] = 'store_true'
+            else:
+                args_d['default'] = dflt_val
+                if isinstance(dflt_val, (int, float)):
+                    args_d['type'] = type(dflt_val)
+
+            if isinstance(dflt_val, (list, tuple)):
+                args_d['nargs'] = '+'
+
+            if name in process_valid_options:
+                args_d['choices'] = process_valid_options[name]
+
+            self.add_argument('--' + name, **args_d)
 
 def processMultipleFilesFun(
         video_dir_root,
@@ -79,7 +107,7 @@ def processMultipleFilesFun(
     elif not only_summary:
         RunMultiCMD(
             cmd_list,
-            local_obj = ProcessWormsLocalParser,
+            local_obj = ProcessLocalParser,
             max_num_process = max_num_process,
             refresh_time = refresh_time)
 

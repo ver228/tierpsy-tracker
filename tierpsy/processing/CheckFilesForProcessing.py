@@ -11,10 +11,10 @@ from functools import partial
 
 from tierpsy.helper.misc import TimeCounter, print_cmd_list
 from tierpsy.processing.AnalysisPoints import AnalysisPoints, init_analysis_point_lock
-from tierpsy.processing.ProcessWormsLocal import BATCH_SCRIPT_LOCAL
+from tierpsy.processing.ProcessLocal import BATCH_SCRIPT_LOCAL
 from tierpsy.processing.helper import create_script
 
-BREAK_L = '*********************************************' #use the list as below, otherwise it does weird copies of the list
+BREAK_L = '*********************************************'
 
 
 class CheckFilesForProcessing(object):

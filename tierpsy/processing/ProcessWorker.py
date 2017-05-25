@@ -16,7 +16,7 @@ from tierpsy.processing.helper import get_real_script_path
 
 BATCH_SCRIPT_WORKER = get_real_script_path(__file__)
 
-class ProcessWormsWorker(object):
+class ProcessWorker(object):
     def __init__(self, main_file, masks_dir, results_dir, 
             json_file, analysis_checkpoints, cmd_original):
         
@@ -74,9 +74,9 @@ class ProcessWormsWorker(object):
         
 
 
-class ProcessWormsWorkerParser(argparse.ArgumentParser):
+class ProcessWorkerParser(argparse.ArgumentParser):
     def __init__(self):
-        super(ProcessWormsWorkerParser, self).__init__()
+        super(ProcessWorkerParser, self).__init__()
         self.add_argument('main_file', help='hdf5 or video file.')
         self.add_argument('--masks_dir',
             help='Directory where the masked images are saved or are going to be saved')
@@ -96,6 +96,6 @@ if __name__ == '__main__':
     import sys
     import subprocess
     
-    worm_parser = ProcessWormsWorkerParser()
+    worm_parser = ProcessWorkerParser()
     args = vars(worm_parser.parse_args())
-    ProcessWormsWorker(**args, cmd_original = subprocess.list2cmdline(sys.argv))
+    ProcessWorker(**args, cmd_original = subprocess.list2cmdline(sys.argv))

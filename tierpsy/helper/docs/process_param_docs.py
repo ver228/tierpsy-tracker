@@ -1,7 +1,8 @@
-import argparse
-import os
+'''
+List of default values and description of the tierpsy.processing.progressMultipleFilesFun
+'''
 
-from tierpsy.processing.helper import get_dflt_sequence
+import os
 from tierpsy.helper.misc import repack_dflt_list
 
 dflt_args_list = [
@@ -78,31 +79,3 @@ dflt_args_list = [
 
 process_valid_options = {}
 proccess_args_dflt, proccess_args_info = repack_dflt_list(dflt_args_list, valid_options=process_valid_options)
-
-class ProcessMultipleFilesParser(argparse.ArgumentParser):
-    def __init__(self):
-        description = "Process worm video in the local drive using several parallel processes"
-        super().__init__(description=description)
-        
-        for name, dflt_val, help in dflt_args_list:
-            
-            args_d = {'help' : help}
-            if isinstance(dflt_val, bool):
-                args_d['action'] = 'store_true'
-            else:
-                args_d['default'] = dflt_val
-                if isinstance(dflt_val, (int, float)):
-                    args_d['type'] = type(dflt_val)
-
-            if isinstance(dflt_val, (list, tuple)):
-                args_d['nargs'] = '+'
-
-            if name in process_valid_options:
-                args_d['choices'] = process_valid_options[name]
-
-            self.add_argument('--' + name, **args_d)
-
-
-if __name__ == '__main__':
-    print(dflt_args_list)
-        

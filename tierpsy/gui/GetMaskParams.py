@@ -16,7 +16,7 @@ from tierpsy.gui.GetMaskParams_ui import Ui_GetMaskParams
 from tierpsy.gui.HDF5VideoPlayer import LineEditDragDrop, ViewsWithZoom, setChildrenFocusPolicy
 
 from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
-from tierpsy.processing.ProcessWormsWorker import ProcessWormsWorker
+from tierpsy.processing.ProcessWorker import ProcessWorker
 from tierpsy.helper.params.tracker_param import TrackerParams, default_param
 
 class twoViewsWithZoom():
