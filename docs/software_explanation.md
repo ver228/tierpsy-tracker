@@ -6,7 +6,7 @@
 
 This step has the double function identifing candidate regions for the tracking and efficiently store data the using lossless compression by zeroing the background. 
 
-The algorithm identifies dark particles on a light background or light particles on a dark background using [adaptative thresholding](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/miscellaneous_transformations.html) together with a filtering particles by size. The filter parameters must be adjusted manually for a different setup but typically it is possible to use the same parameters under similar experimental contions. More information on how to setup this parameters can be found in the [GUI manual](set-parameters).
+The algorithm identifies dark particles on a light background or light particles on a dark background using [adaptative thresholding](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/miscellaneous_transformations.html) together with a filtering particles by size. The filter parameters must be adjusted manually for a different setup but typically it is possible to use the same parameters under similar experimental contions. More information on how to setup this parameters can be found in the [GUI manual](manual.md#set-parameters).
 
 ![COMPRESS](https://cloud.githubusercontent.com/assets/8364368/8456443/5f36a380-2003-11e5-822c-ea58857c2e52.png)
 
