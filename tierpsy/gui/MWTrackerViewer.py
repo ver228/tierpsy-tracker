@@ -12,18 +12,17 @@ from PyQt5.QtWidgets import QApplication, QMessageBox, QShortcut
 from tierpsy.analysis.feat_create.obtainFeatures import getWormFeaturesFilt
 from tierpsy.analysis.ske_create.helperIterROI import getWormROI
 from tierpsy.analysis.ske_filt.getFilteredSkels import getValidIndexes
+from tierpsy.analysis.ske_filt import _get_feat_filt_param
 
 from tierpsy.gui.AnalysisProgress import WorkerFunQt, AnalysisProgress
 from tierpsy.gui.MWTrackerViewer_ui import Ui_MWTrackerViewer
 from tierpsy.gui.TrackerViewerAux import TrackerViewerAuxGUI
 
 from tierpsy.helper.misc import WLAB, save_modified_table
-from tierpsy.helper.params import TrackerParams
+from tierpsy.helper.params import TrackerParams, read_fps
 
 from tierpsy.processing.trackProvenance import getGitCommitHash, execThisPoint
 
-# # worm: w
-#         elif event.key() == :
 
 class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
@@ -225,15 +224,10 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
                 'bad_seg_thresh',
                 'min_displacement']}
             except (KeyError, tables.exceptions.NoSuchNodeError):
-                self.feat_filt_param = self.param_default.feat_filt_param
+                self.feat_filt_param = _get_feat_filt_param(self.param_default.p_dict)
 
-        try:
-            #read expected frames per second
-            with tables.File(self.vfilename, 'r') as mask_fid:
-                self.expected_fps = int(mask_fid.get_node('/mask')._v_attrs['expected_fps'])  
-        except (OSError, tables.exceptions.NoSuchNodeError, AttributeError, KeyError):
-            self.expected_fps = self.param_default.expected_fps
-
+        self.expected_fps = read_fps(self.vfilename)
+        
 
         #TODO: THIS IS NOT REALLY THE INDEX I USE IN THE FEATURES FILES. I NEED A MORE CLEVER WAY TO SEE WHAT I AM REALLY FILTERING.
         dd = {x:self.feat_filt_param[x] for x in ['min_num_skel', 'bad_seg_thresh', 'min_displacement']}

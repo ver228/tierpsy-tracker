@@ -156,7 +156,7 @@ def getWormFeaturesFilt(
         is_single_worm,
         feat_filt_param,
         split_traj_time):
-
+    
     feat_filt_param = min_num_skel_defaults(skeletons_file, **feat_filt_param)
 
 

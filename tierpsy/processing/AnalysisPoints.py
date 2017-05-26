@@ -69,11 +69,7 @@ class AnalysisPoints(object):
         self.results_dir = results_dir
         
         self.param = TrackerParams(json_file)
-        self.is_single_worm = self.param.is_single_worm
-        self.use_skel_filter = self.param.use_skel_filter
-
         self.checkpoints = CheckPoints(self.file_names, self.param)
-        
         self.checker = CheckFinished(checkpoints_args = self.checkpoints)
         
     def getFileNames(self, video_file, masks_dir, results_dir):

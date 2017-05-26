@@ -1,6 +1,17 @@
 from .obtainFeatures import getWormFeaturesFilt
+from ..ske_filt import _get_feat_filt_param
+
+def _get_feats_param(p):
+  return {
+    'feat_filt_param': _get_feat_filt_param(p),
+    'split_traj_time' : p['split_traj_time'],
+    'is_single_worm': p['analysis_type'] == 'SINGLE_WORM_SHAFER'
+    }
 
 def args_(fn, param):
+  # getWormFeatures
+        
+
   requirements = ['SKE_CREATE']
   if param.p_dict['analysis_type'] == 'SINGLE_WORM_SHAFER':
     from functools import partial
@@ -14,7 +25,7 @@ def args_(fn, param):
   return {
         'func': getWormFeaturesFilt,
         'argkws': {'skeletons_file': fn['skeletons'], 'features_file': fn['features'],
-                   **param.feats_param,
+                   **_get_feats_param(param.p_dict),
                    'use_skel_filter': True, 'use_manual_join': False
                    },
         'input_files' : [fn['skeletons']],
