@@ -2,7 +2,7 @@
 
 ## How to Start
 
-After running installation script in OSX or Windows there should be a doulbe-click executable named `TierpsyTracker` in the Desktop. If the executable is missing you can re-create the executable by running:
+After running installation script in OSX or Windows there should be a double-click executable named `TierpsyTracker` in the Desktop. If the executable is missing you can re-create it by running:
 
 ```bash
 #(OSX/Linux)
@@ -18,15 +18,22 @@ Alternatively open a terminal, go to the Tierpsy Tracker main directory and type
 python3 cmd_scripts/TierpsyTrackerConsole.py
 ```
 
+The main widget should look like the one below:
+
 ![TierpsyTrackerConsole](https://cloud.githubusercontent.com/assets/8364368/26398704/30c17b10-4072-11e7-9a90-d3e9e394ef9d.png)   
 
 ## Set Parameters
 
-This widget is used to setup the parameters used by [Batch Processing Multiple Files](#batch-processing-multiple-files) Explanation of each parameter can be found by 
+This widget is used to setup the parameters used by [Batch Processing Multiple Files](#batch-processing-multiple-files). 
+
+The main purpose of this interface is help the user to select the parameters for [video compression](EXPLANATION#COMPRESS).
 
 ![SetParameters](https://cloud.githubusercontent.com/assets/8364368/26410507/6df7ef54-409b-11e7-8139-9ce99daf69cb.gif)  
 
 ![SetBgndSubt](https://cloud.githubusercontent.com/assets/8364368/26410958/95a8c09a-409c-11e7-9fc9-14dafeabb467.gif)  
+
+Explanation of each parameter can be found by using the contextual help (but the mouse over the input and wait a few seconds for the [tooltip](https://en.wikipedia.org/wiki/Tooltip). 
+
 
 ## Batch Processing Multiple Files
 
