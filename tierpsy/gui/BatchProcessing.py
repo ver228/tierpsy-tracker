@@ -222,7 +222,7 @@ class BatchProcessing_GUI(QMainWindow):
         index - dum variable to be able to connect to currentIndexChanged
         '''
         param = TrackerParams(self.mapper['json_file'])
-        analysis_checkpoints = get_dflt_sequence(param.p_dict['analysis_type'], add_manual_feats=True)
+        analysis_checkpoints = get_dflt_sequence(param.p_dict['analysis_type'])
         self.analysis_checkpoints = analysis_checkpoints
         self.ui.p_force_start_point.clear()
         self.ui.p_force_start_point.addItems(self.analysis_checkpoints)

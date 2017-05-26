@@ -15,8 +15,6 @@ from tierpsy.processing.helper import get_dflt_sequence, find_valid_files, remov
 from tierpsy.processing.CheckFilesForProcessing import CheckFilesForProcessing
 from tierpsy.processing.ProcessLocal import ProcessLocalParser
 
-
-
 class ProcessMultipleFilesParser(argparse.ArgumentParser):
     def __init__(self):
         description = "Process worm video in the local drive using several parallel processes"

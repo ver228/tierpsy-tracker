@@ -10,6 +10,7 @@ import sys
 import fnmatch
 from tierpsy.helper.misc import RESERVED_EXT
 from tierpsy.helper.params.tracker_param import valid_options
+from tierpsy.helper.docs import dflt_analysis_points
 
 def find_valid_files(root_dir, pattern_include='*', pattern_exclude=''):
     '''
@@ -81,44 +82,13 @@ def get_real_script_path(fullfile):
         return [sys.executable, os.path.realpath(fullfile)]
 
 
-def get_dflt_sequence(analysis_type, add_manual_feats=False):
+def get_dflt_sequence(analysis_type):
     assert analysis_type in valid_options['analysis_type']
-    if analysis_type == 'SINGLE_WORM_SHAFER':
-        analysis_checkpoints = ['COMPRESS',
-                                'COMPRESS_ADD_DATA',
-                                'VID_SUBSAMPLE',
-                                'TRAJ_CREATE',
-                                'TRAJ_JOIN',
-                                'SKE_INIT',
-                                'BLOB_FEATS',
-                                'SKE_CREATE',
-                                'SKE_FILT',
-                                'SKE_ORIENT',
-                                'STAGE_ALIGMENT',
-                                'CONTOUR_ORIENT', #orientation must occur before the intensity map calculation.
-                                'INT_PROFILE',
-                                'INT_SKE_ORIENT',
-                                'FEAT_CREATE',
-                                'WCON_EXPORT'
-                                ]
+    if analysis_type in dflt_analysis_points:
+        analysis_checkpoints = dflt_analysis_points[analysis_type]
     else:
-        #default sequence "WORM"
-        analysis_checkpoints = ['COMPRESS',
-                                'VID_SUBSAMPLE',
-                                'TRAJ_CREATE',
-                                'TRAJ_JOIN',
-                                'SKE_INIT',
-                                'BLOB_FEATS',
-                                'SKE_CREATE',
-                                'SKE_FILT',
-                                'SKE_ORIENT',
-                                'INT_PROFILE',
-                                'INT_SKE_ORIENT',
-                                'FEAT_CREATE'
-                                ]
-    if add_manual_feats:
-        analysis_checkpoints.append('FEAT_MANUAL_CREATE') 
-
+        analysis_checkpoints = dflt_analysis_points['DEFAULT']
+        
     return analysis_checkpoints
 
 
