@@ -238,6 +238,9 @@ def joinGapsTrajectories(trajectories_file, min_track_size=50,
     max_time_gap -- time gap between joined trajectories
     '''
 
+    
+
+
     def _findNextTraj(df, area_ratio_lim, min_track_size, max_time_gap):
         '''
         area_ratio_lim -- allowed range between the area ratio of consecutive frames
@@ -351,6 +354,11 @@ def joinBlobsTrajectories(trajectories_file,
                           area_ratio_lim, 
                           min_track_size,
                           max_time_gap):
+    
+    #allow to recieve int/float values
+    if not isinstance(area_ratio_lim, (tuple,list)):
+        area_ratio_lim = (1/area_ratio_lim, area_ratio_lim)
+
     
     assignBlobTraj(trajectories_file, max_allowed_dist, area_ratio_lim)
     if is_single_worm:

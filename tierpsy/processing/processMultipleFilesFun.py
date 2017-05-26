@@ -5,12 +5,40 @@ Created on Tue Aug  9 00:26:10 2016
 @author: ajaver
 """
 import os
+import argparse
 
 from tierpsy.helper.params import TrackerParams
 from tierpsy.helper.misc import RunMultiCMD
+from tierpsy.helper.docs.process_param_docs import dflt_args_list, process_valid_options
+
+from tierpsy.processing.helper import get_dflt_sequence, find_valid_files, remove_border_checkpoints
 from tierpsy.processing.CheckFilesForProcessing import CheckFilesForProcessing
-from tierpsy.processing.ProcessWormsLocal import ProcessWormsLocalParser
-from tierpsy.processing.batchProcHelperFunc import getDefaultSequence, walkAndFindValidFiles
+from tierpsy.processing.ProcessLocal import ProcessLocalParser
+
+
+
+class ProcessMultipleFilesParser(argparse.ArgumentParser):
+    def __init__(self):
+        description = "Process worm video in the local drive using several parallel processes"
+        super().__init__(description=description)
+        
+        for name, dflt_val, help in dflt_args_list:
+            
+            args_d = {'help' : help}
+            if isinstance(dflt_val, bool):
+                args_d['action'] = 'store_true'
+            else:
+                args_d['default'] = dflt_val
+                if isinstance(dflt_val, (int, float)):
+                    args_d['type'] = type(dflt_val)
+
+            if isinstance(dflt_val, (list, tuple)):
+                args_d['nargs'] = '+'
+
+            if name in process_valid_options:
+                args_d['choices'] = process_valid_options[name]
+
+            self.add_argument('--' + name, **args_d)
 
 def processMultipleFilesFun(
         video_dir_root,
@@ -24,10 +52,8 @@ def processMultipleFilesFun(
         max_num_process,
         refresh_time,
         only_summary,
-        analysis_type='',
         force_start_point='',
         end_point='',
-        use_manual_join=False,
         is_copy_video=False,
         analysis_checkpoints=[],
         unmet_requirements = False,
@@ -41,17 +67,15 @@ def processMultipleFilesFun(
         video_dir_root = mask_dir_root
 
     param = TrackerParams(json_file)
+
     json_file = param.json_file
     
     if not analysis_checkpoints:
-      analysis_checkpoints = getDefaultSequence(analysis_type, is_single_worm=param.is_single_worm, add_manual_feats=use_manual_join)
+      analysis_checkpoints = get_dflt_sequence(param.p_dict['analysis_type'])
     
-    if use_manual_join:
-          #only execute the calculation of the manual features
-          analysis_checkpoints = analysis_checkpoints + ['FEAT_MANUAL_CREATE']
-          
-    _removePointFromSide(analysis_checkpoints, force_start_point, 0)
-    _removePointFromSide(analysis_checkpoints, end_point, -1)
+    
+    remove_border_checkpoints(analysis_checkpoints, force_start_point, 0)
+    remove_border_checkpoints(analysis_checkpoints, end_point, -1)
 
     walk_args = {'root_dir': video_dir_root, 
                  'pattern_include' : pattern_include,
@@ -68,7 +92,7 @@ def processMultipleFilesFun(
     
     #get the list of valid videos
     if not videos_list:
-        valid_files = walkAndFindValidFiles(**walk_args)
+        valid_files = find_valid_files(**walk_args)
     else:
         with open(videos_list, 'r') as fid:
             valid_files = fid.read().split('\n')
@@ -80,77 +104,14 @@ def processMultipleFilesFun(
     
     if unmet_requirements:
          files_checker._printUnmetReq()
-    
-    if not only_summary:
+    elif not only_summary:
         RunMultiCMD(
             cmd_list,
-            local_obj = ProcessWormsLocalParser,
+            local_obj = ProcessLocalParser,
             max_num_process = max_num_process,
             refresh_time = refresh_time)
 
-def compressMultipleFilesFun(
-        video_dir_root,
-        mask_dir_root,
-        tmp_dir_root,
-        json_file,
-        pattern_include,
-        pattern_exclude,
-        max_num_process,
-        refresh_time,
-        only_summary,
-        is_copy_video,
-        videos_list
-        ):
 
-  processMultipleFilesFun(
-        video_dir_root,
-        mask_dir_root,
-        mask_dir_root,
-        tmp_dir_root,
-        json_file,
-        videos_list,
-        pattern_include,
-        pattern_exclude,
-        max_num_process,
-        refresh_time,
-        only_summary,
-        analysis_type='compress',
-        is_copy_video=is_copy_video
-        )
-
-def trackMultipleFilesFun(
-        mask_dir_root,
-        results_dir_root,
-        tmp_dir_root,
-        json_file,
-        pattern_include,
-        pattern_exclude,
-        max_num_process,
-        refresh_time,
-        force_start_point,
-        end_point,
-        only_summary,
-        use_manual_join,
-        videos_list
-        ):
-
-  processMultipleFilesFun(
-        mask_dir_root,
-        mask_dir_root,
-        results_dir_root,
-        tmp_dir_root,
-        json_file,
-        videos_list,
-        pattern_include,
-        pattern_exclude,
-        max_num_process,
-        refresh_time,
-        only_summary,
-        analysis_type='track',
-        force_start_point=force_start_point,
-        end_point=end_point,
-        use_manual_join=use_manual_join
-        )        
 
 def getResultsDir(mask_dir_root):
     # construct the results dir on base of the mask_dir_root
@@ -166,39 +127,4 @@ def getResultsDir(mask_dir_root):
 
     return (os.sep).join(subdir_list)
 
-def _removePointFromSide(list_of_points, point, index):
-    assert (index == 0) or (index == -1)
-    if point:
-        #move points until 
-        while list_of_points and \
-        list_of_points[index] != point:
-            list_of_points.pop(index)
-    if not list_of_points:
-        raise ValueError("Point {} is not valid.".format(point))
 
-def test_compressMultipleFilesFun():
-    from ProcessMultipleFilesParser import CompressMultipleFilesParser
-    
-    cmp_dflt = CompressMultipleFilesParser.dflt_vals
-    cmp_dflt['pattern_include'] = '*.avi'
-    cmp_dflt['json_file'] = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/Tests/Data/test_2/test2.json'
-    
-    video_dir_root = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/Tests/Data/test_2/RawVideos/'
-    mask_dir_root = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/Tests/Data/test_2/RawVideos/Masks/'
-    
-    compressMultipleFilesFun(video_dir_root, mask_dir_root, **cmp_dflt)
-
-def test_trackMultipleFilesFun():
-    from ProcessMultipleFilesParser import TrackMultipleFilesParser
-    
-    track_dflt = TrackMultipleFilesParser.dflt_vals
-    track_dflt['pattern_include'] = '*.hdf5'
-    track_dflt['json_file'] = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/Tests/Data/test_2/test2.json'
-    
-    #video_dir_root = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/Tests/Data/test_2/RawVideos/'
-    mask_dir_root = '/Users/ajaver/Documents/GitHub/Multiworm_Tracking/Tests/Data/test_2/RawVideos/Masks/'
-        
-    trackMultipleFilesFun(mask_dir_root, **track_dflt)
-
-if __name__ == '__main__':
-    test_trackMultipleFilesFun()

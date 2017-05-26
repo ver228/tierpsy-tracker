@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>734</width>
-    <height>425</height>
+    <width>702</width>
+    <height>483</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
       <item>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="2">
-         <widget class="QLineEdit" name="lineEdit_videosDir"/>
+         <widget class="QLineEdit" name="p_video_dir_root"/>
         </item>
         <item row="0" column="1">
          <widget class="QPushButton" name="pushButton_videosDir">
@@ -30,17 +30,17 @@
          </widget>
         </item>
         <item row="5" column="2">
-         <widget class="QLineEdit" name="lineEdit_tmpDir"/>
+         <widget class="QLineEdit" name="p_tmp_dir_root"/>
         </item>
         <item row="1" column="2">
-         <widget class="QLineEdit" name="lineEdit_txtFileList">
+         <widget class="QLineEdit" name="p_videos_list">
           <property name="enabled">
            <bool>true</bool>
           </property>
          </widget>
         </item>
         <item row="2" column="2">
-         <widget class="QLineEdit" name="lineEdit_masksDir"/>
+         <widget class="QLineEdit" name="p_mask_dir_root"/>
         </item>
         <item row="5" column="1">
          <widget class="QPushButton" name="pushButton_tmpDir">
@@ -67,7 +67,7 @@
          </widget>
         </item>
         <item row="3" column="2">
-         <widget class="QLineEdit" name="lineEdit_resultsDir"/>
+         <widget class="QLineEdit" name="p_results_dir_root"/>
         </item>
         <item row="4" column="1">
          <widget class="QPushButton" name="pushButton_paramFile">
@@ -110,7 +110,7 @@
          </widget>
         </item>
         <item row="4" column="2">
-         <widget class="QComboBox" name="comboBox_paramFile">
+         <widget class="QComboBox" name="p_json_file">
           <property name="editable">
            <bool>true</bool>
           </property>
@@ -124,22 +124,45 @@
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
        <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="4" rowspan="2">
-         <widget class="QPushButton" name="pushButton_start">
+        <item row="1" column="2">
+         <widget class="QLineEdit" name="p_pattern_exclude"/>
+        </item>
+        <item row="5" column="1" colspan="2">
+         <widget class="QCheckBox" name="p_copy_unfinished">
           <property name="text">
-           <string>START</string>
+           <string>Copy Unfinished Analysis</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1" colspan="2">
+         <widget class="QCheckBox" name="p_is_copy_video">
+          <property name="text">
+           <string>Copy Raw Videos to Temp Dir</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1" colspan="2">
+         <widget class="QCheckBox" name="p_only_summary">
+          <property name="text">
+           <string>Only Display Progress Summary</string>
           </property>
          </widget>
         </item>
         <item row="0" column="3">
-         <widget class="QCheckBox" name="checkBox_isCompress">
+         <widget class="QLabel" name="label">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="text">
-           <string>Execute compression</string>
+           <string>Analysis Start Point</string>
           </property>
          </widget>
         </item>
         <item row="2" column="3">
-         <widget class="QLabel" name="label_numMaxProc">
+         <widget class="QLabel" name="label_2">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
             <horstretch>0</horstretch>
@@ -147,47 +170,11 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>Maximum number of processes:</string>
+           <string>Analysis End Point</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="3">
-         <widget class="QCheckBox" name="checkBox_isTrack">
-          <property name="text">
-           <string>Execute tracking</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0" colspan="2">
-         <widget class="QCheckBox" name="checkBox_copyUnfinished">
-          <property name="text">
-           <string>Copy unfinished analysis</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="3">
-         <widget class="QSpinBox" name="spinBox_numMaxProc"/>
-        </item>
-        <item row="3" column="2">
-         <widget class="QLineEdit" name="lineEdit_patternExc"/>
-        </item>
-        <item row="3" column="1">
-         <widget class="QLineEdit" name="lineEdit_patternIn"/>
-        </item>
-        <item row="2" column="1">
-         <widget class="QLabel" name="label_patternIn">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>File pattern to include:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="2">
+        <item row="0" column="2">
          <widget class="QLabel" name="label_patternExc">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
@@ -196,16 +183,84 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>File pattern to exclude:</string>
+           <string>File Pattern to Exclude</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
-        <item row="1" column="0" colspan="2">
-         <widget class="QCheckBox" name="checkBox_isCopyVideo">
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="p_pattern_include"/>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="label_patternIn">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="text">
-           <string>Copy original videos to tmp dir</string>
+           <string>File Pattern to Include</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
           </property>
          </widget>
+        </item>
+        <item row="7" column="3" colspan="2">
+         <widget class="QCheckBox" name="p_unmet_requirements">
+          <property name="text">
+           <string>Print Unmet Requirements</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QSpinBox" name="p_max_num_process"/>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLabel" name="label_numMaxProc">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Maximum Number of Processes</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3" colspan="3">
+         <widget class="QComboBox" name="p_force_start_point"/>
+        </item>
+        <item row="6" column="5" rowspan="2">
+         <widget class="QPushButton" name="pushButton_start">
+          <property name="font">
+           <font>
+            <pointsize>18</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>START</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="3" colspan="3">
+         <widget class="QComboBox" name="p_end_point"/>
         </item>
        </layout>
       </item>
@@ -218,7 +273,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>734</width>
+     <width>702</width>
      <height>22</height>
     </rect>
    </property>

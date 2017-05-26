@@ -1,0 +1,253 @@
+# Software Explanation
+
+## Video Compression
+
+### COMPRESS
+
+This step has the double function identifing candidate regions for the tracking and efficiently store data the using lossless compression by zeroing the background. 
+
+The algorithm identifies dark particles on a light background or light particles on a dark background using [adaptative thresholding](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/miscellaneous_transformations.html) together with a filtering particles by size. The filter parameters must be adjusted manually for a different setup but typically it is possible to use the same parameters under similar experimental contions. More information on how to setup this parameters can be found in the [GUI manual](manual.md#set-parameters).
+
+![COMPRESS](https://cloud.githubusercontent.com/assets/8364368/8456443/5f36a380-2003-11e5-822c-ea58857c2e52.png)
+
+The data is stored into a hdf5 container using a gzip filter. Some advantages of this format are:
+
+* This format can significally reduce the size of a high resolution video since only the pixels corresponding to tracked particle are kept. This gain depends on codec used by the original video, and can be less important or even inexistent.
+
+* Rapid access to specific video frames. Typically it is hard to rapidly access to a specific video frame. Most of the video readers do an approximative search when looking for a specific frame. To accurately retrive a video frame one has to read sequencially the whole video file, a process particuarly slow for large video files. The HDF5 format indexes the data in a way that makes trivial to access to specific frames.
+
+* Metadata can be stored in the same file as the video. HDF5 format allows to store all kind of binary data into the same file. This allows to store the video metadata and analysis progress in the same file.
+
+### VID_SUBSAMPLE
+
+
+## Creating trajectories
+
+### TRAJ_CREATE
+
+We identify possible particles. The approach we follow is to divide the image in regions of non-zero connected pixels. For each candidate region we calculate a simple threshold and create binary mask. Then we calculate the centroid, area and bounding box of each connected-element in the binary mask. If the connected-element features are within the user defined ranges it is kept to create the trajectories. This information ins stored in the [plate_worms](#plate_worms) table.
+
+### TRAJ_JOIN
+
+We link the particles trajectories by using their closest neighbor in a consecutive frames. The closest neighbor must closer than `max_allowed_dist` and the change in area must be less than `area_ratio_lim` . A particle can only be joined to one particle in consecutive frames. If this conditions are not satisfied it means that there was a problem in the trajectory *e.g.* two worms colided and in the next frame the closest object is twice the area, or a worm disapear from the screen. Therefore the trajectory will be broken a new number will be assigned to any unassigned particle. In a subsequent step the program will try to join trajectories that have a small time gap between them *i.e.* the worm was lost for a couple of frames. Additionally we remove any spurious trajectory shorter than `min_track_size` .
+
+Below there is an example of how the trajectories look.
+
+![trajectories](https://cloud.githubusercontent.com/assets/8364368/26301795/25eb72ac-3eda-11e7-8a52-99dd6c49bc07.gif)
+
+### SKE_INIT
+Firstly, the center of mass and the threshold for each of the trajectories is smoothed.  This improves the estimation of the worm threshold, fills gaps where the trajectory might have been lost, and helps to produce videos where the ROI displaces gradually following individual worms.
+
+This step create [trajectories_data](#trajectories_data) table, that contains
+
+### BLOB_FEATS
+
+We extract a series of features for each individual binary mask and store them in [blob_features](#blob_features).
+
+## Extracting worm skeletons
+
+### SKE CREATE
+![skeletons](https://cloud.githubusercontent.com/assets/8364368/26309647/a6b4402e-3ef5-11e7-96cd-4a037ee42868.gif)
+
+Secondly, a ROI is thresholded, a contour is calculated, and the worm is skeletonized. The key part of this step is the skeletonization code based on [segWorm](https://github.com/openworm/SegWorm). Since one has to deal with multiworm at a time speed becomes an important issue, therefore the code was optimized using Cython and C. The skeletons and contours are normalized to have the same number of points in order to store them in a simple table. The output is store in a file with the extension [basename_skeletons.hdf5](#basename_skeletonshdf5).
+
+### SKE_FILT
+Filter "bad worms", meaning any particle indentified and analyzed for the tracker that it is not a worm, or any trajectory that corresponds to two or more worms in contact.
+
+
+### SKE_ORIENT
+In a second part of the code the head and tail are identified by movement. Althought it is hard to determine the head and the tail from the contour, it is possible to assign "blocks" with the same orientation for skeletons in contingous frames, since the head in one skeleton will not suddenly jump to the other side of the worm within a few frames. We can then assign the relative standard deviation (SD) of the angular movement for the first and last part of the segment. If the blocks are large enough the section with the higher SD would be the head.
+ 
+### STAGE_ALIGMENT
+### CONTOUR_ORIENT
+'ventral_side':['','clockwise','anticlockwise', 'unknown'],
+
+### INT_PROFILE
+### INT_SKE_ORIENT
+![INT_SKE_ORIENT](https://cloud.githubusercontent.com/assets/8364368/26366191/089a6ca4-3fe2-11e7-91ef-77a7a78ee8ba.png)
+
+
+## Extracting worm features
+
+### FEAT_CREATE
+### FEAT_MANUAL_CREATE
+
+[Open Worm Analysis Toolbox](https://github.com/openworm/open-worm-analysis-toolbox)
+Uses the code in `obtainFeatures.py` in the `FeaturesAnalysis` directory, and the movement validation repository. This part is still in progress but basically creates a normalized worm object from the basename_skeletons.hdf5 tables, and extract features and mean features using the movement_validation functions. The motion data is stored in a large table with all the worms in it and with with the indexes frame_number and worm_index, where the event data is stored in individual tables for each worm. The seven hundred or so mean features are stored in another table where each worm corresponds to worm index.
+
+### WCON_EXPORT
+[Tracker Commons](https://github.com/openworm/tracker-commons)
+
+# Output Files
+
+## basename.hdf5
+attributes: 
+  * expected_fps := 1,
+  * time_units := 'frames'
+  * microns_per_pixel := 1
+  * xy_units := 'pixels'
+  * is_light_background := 1
+
+#### /mask 
+(tot_images, im_high, im_width)
+Compressed array with the masked image.
+
+#### /full_data
+(tot_images/save_full_interval, im_high, im_width)
+Frame without mask saved every `save_full_interval`. The saving interval is recommended to be adjusted every 5min. This field can be useful to identify changes in the background that are lost in the [/mask](#mask) dataset *e.g.* food depletion or contrast lost due to water condensation.
+
+#### mean_intensity
+(tot_images)
+Mean intensity of a given frame. It is useful in optogenetic experiments to identify when the light is turned on.
+
+#### timestamp/time
+#### timestamp/raw
+
+Timestamp extracted from the video if the `is_extract_metadata` flag set to `true`. If this fields exists and are valid (there are not nan values and they increase monotonically), they will be used to calculate the `fps` used in subsequent parts of the analysis. The extracting the timestamp can be a slow process since it uses [ffprobe](https://ffmpeg.org/ffprobe.html) to read the whole video. If you believe that your video does not have a significative number of drop frames and you know the frame rate, or simply realise that ffprobe cannot extract the timestamp correctly, I recommend to set `is_extract_metadata` to `false`.
+
+### basename_subsample.avi
+
+
+### basename_skeletons.hdf5
+
+#### /plate_worms
+  * worm_index_blob: Trajectory index given initially by the program. Since there can be several short spurious tracks identified this number can be very large and does not reflect the number of final trajectories.
+  * worm_index_joined: Index after joining trajectories separated by a small time gap and filtering short spurious tracks, and invalid row will be assigned -1.
+  * threshold: Threshold used for the image binarization.
+  * frame_number: Video frame number.
+  * coord_x, coord_y, box_length, box_width, angle: center coordinates, length, width and orientation of the [minimum rotated rectangle](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#minarearect).
+  * area: blob area.
+  * bounding_box_xmin, bounding_box_xmax, bounding_box_ymin, bounding_box_ymax: [bounding rectangle](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#boundingrect) coordinates.
+
+#### /trajectories_data
+table containing the smoothed data and the indexes to link each row in the others table, with the corresponding worm_index and frame_number
+
+  * frame_number: F
+  * worm_index_joined: F
+  * plate_worm_id: F
+  * skeleton_id: row in the trajectory_data, useful to quickly recover worm data.
+  * coord_x, coord_y: Centroid coordinates after smoothing [plate_worms](#plate_worms). It is used to find the ROI to calculate the skeletons. If you want to calculate the centroid features use the corresponding field in [blob_features](#blob_features).
+  * threshold: value used to segment the worm in the ROI.
+  * has_skeleton: flag to mark is the skeletonization was succesful
+  * roi_size: F
+  * area: F
+  * timestamp_raw: F
+  * timestamp_time: F
+  * is_good_skel: F
+  * skel_outliers_flag: F
+  * int_map_id: F
+
+#### /blob_features
+  * coord_x, coord_y, box_length, box_width, box_orientation
+  * area: [area](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#contourarea)
+  * perimeter: [perimeter](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#arclength)
+  * quirkiness: sqrt(1 - box_width^2 / box_width^2)
+  * compactness: 4 * pi * area / (perimeter^2)
+  * solidity: area / ([convex hull](http://docs.opencv.org/3.0-beta/doc/tutorials/imgproc/shapedescriptors/hull/hull.html#) area)
+  * intensity_mean, intensity_std: mean and standard deviation inside the thresholded region.
+  * hu0, hu1, hu2, hu3, hu4, hu5, hu6: [hu moments](http://docs.opencv.org/2.4/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html?highlight=drawcontours#humoments)
+
+#### /contour_area:
+
+#### /contour_side1_length: 
+#### /contour_side2_length:
+#### /skeleton_length: 
+length in pixels.
+
+#### /skeleton:
+#### /contour_side1:
+#### /contour_side2: 
+  normalized coordinates. head is the first index and tail the last. The contour side is assigned to keep a clockwise-orientation. There is still work to do to find what is the ventral and dorsal side.
+
+#### /width_midbody:
+
+#### /contour_width:
+  contour width along the skeleton. I'm using the output from segworm, and resampling by interpolation It might be possible to improve this.
+
+#### /intensity_analysis/switched_head_tail:
+  * worm_index
+  * ini_frame
+  * last_frame
+
+#### /timestamp/raw:
+#### /timestamp/time:
+
+### basename_features.hdf5
+
+#### /coordinates/dorsal_contours:
+#### /coordinates/ventral_contours:
+#### /coordinates/skeletons:
+
+#### /features_events/worm_*:
+  * inter_backward_distance
+  * inter_backward_time
+  * inter_coil_distance
+  * inter_coil_time
+  * inter_forward_distance
+  * inter_forward_time
+  * inter_omega_distance
+  * inter_omega_time
+  * inter_paused_distance
+  * inter_paused_time
+  * inter_upsilon_distance
+  * inter_upsilon_time
+  * midbody_dwelling
+  * omega_turn_time
+  * omega_turns_frequency
+  * omega_turns_time_ratio
+  * paused_distance
+  * paused_motion_distance_ratio
+  * paused_motion_frequency
+  * paused_motion_time_ratio
+  * paused_time
+  * tail_dwelling
+  * upsilon_turn_time
+  * upsilon_turns_frequency
+  * upsilon_turns_time_ratio
+  * worm_dwelling
+
+#### /features_timeseries:
+  * worm_index
+  * timestamp
+  * skeleton_id
+  * motion_modes
+  * length
+  * head_width, midbody_width, tail_width
+  * area
+  * area_length_ratio
+  * width_length_ratio
+  * max_amplitude
+  * amplitude_ratio
+  * primary_wavelength, secondary_wavelength
+  * track_length
+  * eccentricity
+  * bend_count
+  * tail_to_head_orientation
+  * head_orientation
+  * tail_orientation
+  * eigen_projection_1, eigen_projection_2, eigen_projection_3,  eigen_projection_4, eigen_projection_5, eigen_projection_6
+  * head_bend_mean, neck_bend_mean, midbody_bend_mean, hips_bend_mean, tail_bend_mean
+  * head_bend_sd, neck_bend_sd, midbody_bend_sd, hips_bend_sd, tail_bend_sd
+  * head_tip_speed, head_speed, midbody_speed, tail_speed, tail_tip_speed
+  * head_tip_motion_direction, head_motion_direction, midbody_motion_direction, tail_motion_direction, tail_tip_motion_direction
+  * head_crawling_amplitude, midbody_crawling_amplitude, tail_crawling_amplitude
+  * head_crawling_frequency, midbody_crawling_frequency, tail_crawling_frequency
+  * foraging_amplitude
+  * foraging_speed
+  * path_range
+  * path_curvature
+
+#### /features_summary: 
+  P10th_split, P90th_split
+
+  * P10th
+  * P90th
+  * means
+  * medians
+
+
+
+
+
+
+

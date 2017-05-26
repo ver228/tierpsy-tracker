@@ -337,7 +337,7 @@ def getBlobsTable(masked_image_file,
                     strel_size=(5,5),
                     analysis_type="WORM",
                     thresh_block_size=15,
-                    n_cores_used = 2, 
+                    n_cores_used = 1, 
                     bgnd_param = {}):
 
 
@@ -431,33 +431,3 @@ def getBlobsTable(masked_image_file,
             if blobs_data:
                 plate_worms.append(blobs_data)
             
-
-    
-    
-
-
-    
-if __name__ == '__main__':
-    masked_image_file = '/Users/ajaver/OneDrive - Imperial College London/Local_Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_17112015_205616.hdf5'
-    min_area=25/2
-    buffer_size=25
-    thresh_block_size=15 
-    max_allowed_dist = 25
-    area_ratio_lim = (0.5, 2)
-    n_cores_used = 1
-    
-    trajectories_file = masked_image_file.replace('.hdf5', '_skeletons.hdf5')
-    skeletons_file = masked_image_file.replace('.hdf5', '_skeletons.hdf5')
-        
-    
-    
-    from tierpsy.analysis.ske_init.processTrajectoryData import processTrajectoryData
-    from tierpsy.helper.params.tracker_param import TrackerParams, default_param
-
-    default_param['expected_fps'] = buffer_size
-    default_param['traj_area_ratio_lim'] = area_ratio_lim
-    param = TrackerParams()
-    param._get_param(**default_param)
-    
-    #correctTrajectories(trajectories_file, False, param.join_traj_param)
-    processTrajectoryData(skeletons_file, masked_image_file, skeletons_file, param.smoothed_traj_param, filter_model_name = '')

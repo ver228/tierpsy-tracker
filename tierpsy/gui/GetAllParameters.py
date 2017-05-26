@@ -9,19 +9,20 @@ from PyQt5.QtWidgets import QDialog, QApplication, QGridLayout, QLabel, \
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 
 
-from tierpsy.helper.params.tracker_param import TrackerParams, info_param, default_param, dflt_param_list, valid_options
+from tierpsy.helper.params.tracker_param import TrackerParams, info_param, default_param, valid_options
 from tierpsy.gui.HDF5VideoPlayer import LineEditDragDrop
 from tierpsy import DFLT_FILTER_FILES
 
 
 def save_params_json(json_file, param4file):
-
     # save data into the json file
     with open(json_file, 'w') as fid:
         json.dump(param4file, fid, indent=4)
 
 class ParamWidget():
-    def __init__(self, name, value=None, widget=None):
+    def __init__(self, name, value=None, widget=None, 
+        info_param=info_param, valid_options=valid_options):
+
         self.name = name
         if widget is not None:
             self.widget = widget
@@ -41,6 +42,12 @@ class ParamWidget():
                 self.widget.setEditable(True)
 
 
+        if not isinstance(self.widget, QGridLayout):
+            self.widget.setToolTip(info_param[name])
+        else:
+            for n in range(self.widget.count()):
+                self.widget.itemAt(n).widget().setToolTip(info_param[name])
+
         if value is not None:
             self.write(value)
 
@@ -50,6 +57,7 @@ class ParamWidget():
         
         if name in valid_options or name == 'filter_model_name':
             widget = QComboBox()
+        
         elif value_type is bool:
             widget = QCheckBox(name)
 
@@ -106,7 +114,57 @@ class ParamWidget():
             self.widget.setCurrentIndex(index)
         else:
             raise ValueError('unknown type {}'.format(type(self.widget)))
-        
+
+class ParamWidgetMapper():
+    '''
+    Class used to read/write data in different inputs. 
+    The corresponding widget must an element in the form p_(agument_name)
+
+    '''
+    def __init__(self, 
+                central_widget, 
+                default_param=default_param,
+                info_param=info_param, 
+                valid_options=valid_options
+                ):
+        self.params_widgets = {}
+        self.default_param=default_param
+
+        for attr_name in dir(central_widget):
+            if attr_name.startswith('p_'):
+                param_name = attr_name[2:]
+                widget = getattr(central_widget, attr_name)
+                w = ParamWidget(param_name, 
+                                widget=widget, 
+                                value=default_param[param_name],
+                                info_param=info_param, 
+                                valid_options=valid_options
+                                )
+                self.params_widgets[param_name] = w
+
+    def __setitem__(self, param_name, value):
+        assert param_name in self.params_widgets
+        if value is None:
+            return None
+        else:
+            self.params_widgets[param_name].write(value)
+
+    def __getitem__(self, param_name):
+        w = self.params_widgets[param_name]
+        if w.widget.isEnabled():
+            return w.read()
+        else:
+            return self.default_param[param_name]
+
+    def __iter__(self):
+        self.remaining_names = list(self.params_widgets.keys())
+        return self
+
+    def __next__(self):
+        if len(self.remaining_names)==0:
+            raise StopIteration
+
+        return self.remaining_names.pop(0)        
 
 
 class GetAllParameters(QDialog):
@@ -144,7 +202,7 @@ class GetAllParameters(QDialog):
         self.setLayout(grid)
 
         self.widgetlabels = {}
-        for ii, (name, value, info) in enumerate(dflt_param_list):
+        for ii, (name, value) in enumerate(default_param.items()):
             row = ii // self.param_per_row * 2
             col = (ii % self.param_per_row)
             
@@ -157,7 +215,6 @@ class GetAllParameters(QDialog):
                 w.widget.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
             else:
                 label = QLabel(name)
-                label.setWhatsThis(info)
                 grid.addWidget(label, row, col, 1, 1)
                 label.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
                 if isinstance(w.widget, QGridLayout):
@@ -177,7 +234,7 @@ class GetAllParameters(QDialog):
         self.pushbutton_file = QPushButton('Select File')
         self.lineEdit_file = QLineEdit(self.param_file)
 
-        last_row = len(dflt_param_list) // self.param_per_row * 2 + 3
+        last_row = len(default_param) // self.param_per_row * 2 + 3
         last_col = max(self.param_per_row - 1, 3)
         grid.addWidget(self.pushbutton_save, last_row, 0, 1, 1)
         grid.addWidget(self.pushbutton_file, last_row, last_col, 1, 1)

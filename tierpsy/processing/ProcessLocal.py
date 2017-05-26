@@ -14,13 +14,13 @@ from tierpsy.analysis.compress_add_data.getAdditionalData import getAdditionalFi
 from tierpsy.helper.params import TrackerParams
 from tierpsy.helper.misc import print_flush
 from tierpsy.processing.AnalysisPoints import AnalysisPoints
-from tierpsy.processing.ProcessWormsWorker import ProcessWormsWorkerParser, ProcessWormsWorker, BATCH_SCRIPT_WORKER
-from tierpsy.processing.batchProcHelperFunc import create_script
+from tierpsy.processing.ProcessWorker import ProcessWorkerParser, ProcessWorker, BATCH_SCRIPT_WORKER
+from tierpsy.processing.helper import create_script
 
 #this path is not really going to be used if it is pyinstaller frozen (only the BATCH_SCRIPT_WORKER)
 BATCH_SCRIPT_LOCAL = [sys.executable, os.path.realpath(__file__)]
 
-class ProcessWormsLocal(object):
+class ProcessLocal(object):
     def __init__(self, main_file, masks_dir, results_dir, tmp_mask_dir='',
             tmp_results_dir='', json_file='', analysis_checkpoints = [], 
             is_copy_video = False, copy_unfinished=False):
@@ -54,7 +54,7 @@ class ProcessWormsLocal(object):
         #we change the name of the main_file. 
         #This flag should be optional in compress mode but true in track where teh src directory should be equal to the main_file
         src_dir, src_name = os.path.split(self.main_file)
-        if self.is_copy_video or (src_dir == self.masks_dir):
+        if self.is_copy_video or (src_dir == self.masks_dir) or (src_dir == self.results_dir):
             self.tmp_main_file = os.path.join(self.tmp_mask_dir, src_name)
         else:
             self.tmp_main_file = self.main_file
@@ -265,10 +265,10 @@ class ProcessWormsLocal(object):
                 shutil.copy(file_name, destination)
 
 
-class ProcessWormsLocalParser(ProcessWormsLocal, ProcessWormsWorkerParser):
+class ProcessLocalParser(ProcessLocal, ProcessWorkerParser):
     
     def __init__(self, sys_argv):
-        ProcessWormsWorkerParser.__init__(self)
+        ProcessWorkerParser.__init__(self)
         self.add_argument(
             '--tmp_mask_dir',
             default='',
@@ -287,9 +287,7 @@ class ProcessWormsLocalParser(ProcessWormsLocal, ProcessWormsWorkerParser):
             help='Copy files from an uncompleted analysis in the temporary directory.')
         
         args = self.parse_args(sys_argv[1:])
-        print(args)
-        ProcessWormsLocal.__init__(self,
-            **vars(args))
+        ProcessLocal.__init__(self, **vars(args))
 
 
 if __name__ == '__main__':
@@ -297,11 +295,11 @@ if __name__ == '__main__':
     import sys
     
     #the local parser copy the tmp files into the tmp directory using its method start, and returns the command for the worm worker
-    local_obj = ProcessWormsLocalParser(sys.argv)
+    local_obj = ProcessLocalParser(sys.argv)
     worker_cmd = local_obj.start()
-    worm_parser = ProcessWormsWorkerParser()
+    worm_parser = ProcessWorkerParser()
     args = vars(worm_parser.parse_args(worker_cmd[2:]))
-    ProcessWormsWorker(**args, cmd_original = subprocess.list2cmdline(sys.argv))
+    ProcessWorker(**args, cmd_original = subprocess.list2cmdline(sys.argv))
 
     #clear temporary files
     local_obj.clean()    
