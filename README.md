@@ -1,19 +1,16 @@
-#Tierpsy Tracker
+# Tierpsy Tracker
 
 This repository contains the code of the multiworm tracker for the [MRC-LMS](http://lms.mrc.ac.uk/) [Behavioral Genomics Group](http://behave.csc.mrc.ac.uk/)
 
-##Installation
+## Installation
 
 First you have to clone this repository. I recommend to install [Github Desktop](https://desktop.github.com/). Then open a new terminal (in Windows open Git Shell) and run: 
 
-```
+```bash
 git clone https://github.com/ver228/tierpsy-tracker
 ```
-
-### Installation for OSX/Linux
-
-Run `bash installation/installation_script.sh`
-
+### Installation for OSX/Linux
+- Run `bash installation/installation_script.sh`
 
 ### Installation for Windows
 
@@ -25,13 +22,10 @@ Run `bash installation/installation_script.sh`
 ### Possible Issues
 Most of the problems that can occur during the installation are due to missing/conflicting dependencies specially if there were older versions of miniconda installed. Try to upgrade and re-run the scripts. If the problem persist you can raise an issue I'll try to help you but most of the time the problems can be solved by doing a google search.
 
-
-## Tests Examples
-
-
+## Tests Examples
 In OSX/Linux the test examples can be downloaded executing: 
 
-```
+```bash
 installation/instalation_script.sh --tests
 ```
 
@@ -39,7 +33,9 @@ It can be also manually downloaded using [this link](https://imperiallondon-my.s
 
 You can run the tests by running: 
 
-```
+```bash
 python tests/run_tests.py
 ```
 
+## [How to Use](docs/manual.md)
+## [Algorithm Explanation](docs/software_explanation.md)
