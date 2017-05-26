@@ -37,3 +37,5 @@ You can run the tests by running:
 python tests/run_tests.py
 ```
 
+## [How to Use](docs/manual.md)
+## [Algorithm Explanation](docs/software_explanation.md)
