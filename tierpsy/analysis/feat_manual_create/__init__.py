@@ -1,3 +1,4 @@
+from functools import partial
 from ..feat_create.obtainFeatures import getWormFeaturesFilt, hasManualJoin
 
 def args_(fn, param):

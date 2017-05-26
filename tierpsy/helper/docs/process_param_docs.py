@@ -63,6 +63,10 @@ dflt_args_list = [
         False,
         'Copy files to the final destination even if the analysis was not completed successfully.'
         ),
+    ('analysis_checkpoints',
+        [],
+        'Points in the analysis to be executed.'),
+
     ('force_start_point',
         '',
         'Force the program to start at a specific point in the analysis.'

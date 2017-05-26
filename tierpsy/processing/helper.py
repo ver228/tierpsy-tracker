@@ -85,6 +85,7 @@ def get_dflt_sequence(analysis_type, add_manual_feats=False):
     assert analysis_type in valid_options['analysis_type']
     if analysis_type == 'SINGLE_WORM_SHAFER':
         analysis_checkpoints = ['COMPRESS',
+                                'COMPRESS_ADD_DATA',
                                 'VID_SUBSAMPLE',
                                 'TRAJ_CREATE',
                                 'TRAJ_JOIN',
