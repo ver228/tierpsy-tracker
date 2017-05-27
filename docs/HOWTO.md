@@ -24,25 +24,25 @@ The main widget should look like the one below:
 
 ## Set Parameters
 
-This widget is used to setup the parameters used by [Batch Processing Multiple Files](#batch-processing-multiple-files). 
+The purpose of this widget is to setup the parameters used in [Batch Processing Multiple Files](#batch-processing-multiple-files). The graphic interface is designed to help to select the parameters for [video compression](EXPLANATION.md/#COMPRESS). These parameters should be changed under different imaginig conditions.
 
-The main purpose of this interface is help the user to select the parameters for [video compression](EXPLANATION.md/#COMPRESS). This parameters must be changed under different setups but they typically do not change under the same experimental conditions.
-
-Probably the most likely parameter to be modified is `Threshold`. The value selected should be enough to exclude as much background as possible without lossing any part of the animals to be tracked. Below is an example of how this is done.
+The most likely parameter to be modified is `Threshold`. The selected value should be enough to exclude as much background as possible without lossing any part of the animals to be tracked. Below is an example on how one can use the interface to do this.
 
 ![SetParameters](https://cloud.githubusercontent.com/assets/8364368/26410507/6df7ef54-409b-11e7-8139-9ce99daf69cb.gif)  
 
-In some cases even after adjusting the threshold there are large regions of background that remain. If the objects significatively change position during the movie you can use substract the background as show below. Please note that if some of your animals are not moving and you use this method you will lose them. 
+In some cases, even after adjusting the threshold there still remain large regions of background. If the tracked objects significatively change position during the movie you can enable the background subtraction as show below. This method will consider background anything that do not change within the specified frame range, therefore if some of your animals are inmobile they will be lost. 
 
 ![SetBgndSubt](https://cloud.githubusercontent.com/assets/8364368/26410958/95a8c09a-409c-11e7-9fc9-14dafeabb467.gif)  
 
-The other important parameters to set are:
+Other important parameters to set are:
 
-* `Frame per Seconds` of your video. It is a very important value that it is used to calculate several other parameters in the used by the program. If you the parameter `Extract Timestamp` to `true`, the software will try to extract this information from the video timestamp. However, it is recommended to set this value since it is not always possible to recover the correct timestamp.
-* `Frames to Average` to calculate the background mask. This value can significatively speed up the compression step. However, it will not work if the particles are highly mobile. Use the buttons `Play` and `Next Chunck` to see how this value can affect the mask. Note that the frame average is used only for the background mask, the foreground regions are kept intact for each individual frame. 
-* `Microns per Pixels`. This value is only used to calculate the [skeleton features](EXPLANATION.md/#FEAT_CREATE), but you will have your data in pixels instead of micrometers if you do not change it.
+* `Frame per Seconds` (fps) of your video. An important value since it is used to calculate several other parameters. If `Extract Timestamp` is set to `true`, the software will try to extract the fps from the video timestamp. However, keep it mind that it is not always possible to recover the correct timestamp, and therefore it is recommended give a value for the fps.
+* `Frames to Average` to calculate the background mask. This value can significatively speed up the compression step. However, it will not work if the particles are highly motile. Use the buttons `Play` and `Next Chunck` to see how a selected value affects the mask. Note that the averaged is used only for the background mask, the foreground regions are kept intact for each individual frame. 
+* `Microns per Pixels`. This value is only used to calculate the [skeleton features](EXPLANATION.md/#FEAT_CREATE), but the results will be in pixels instead of micrometers if the conversion factor is not setted.
 
-You can access to all the parameters used by the tracker by clicking `Edit More Parameters`. The explanation of each parameter can be found by using the [contextual help](https://en.wikipedia.org/wiki/Tooltip). It is not trivial to adjust this parameters, but if you believe you need too, I recommend to use a small movie (few seconds) for testing.
+You can access to all the parameters by clicking `Edit More Parameters`. The explanation of each parameter can be found by using the [contextual help](https://en.wikipedia.org/wiki/Tooltip). It is not trivial to adjust the parameters, but if you believe you need too, I recommend to use a small movie (few seconds) for testing.
+
+When you are satisfied with the selected parameters select a file name and press `Save Parameters`. The parameters will be saved into a [JSON](http://json.org/) that can be used by [Batch Processing Multiple Files](#batch-processing-multiple-files). If you need to further modify a parameter you can either use a text editor or reload the file by dragging it to the Set Parameters widget.
 
 ## Batch Processing Multiple Files
 
