@@ -9,7 +9,7 @@ import argparse
 
 from tierpsy.helper.params import TrackerParams
 from tierpsy.helper.misc import RunMultiCMD
-from tierpsy.helper.docs.process_param_docs import dflt_args_list, process_valid_options
+from tierpsy.helper.params.docs_process_param import dflt_args_list, process_valid_options
 
 from tierpsy.processing.helper import get_dflt_sequence, find_valid_files, remove_border_checkpoints
 from tierpsy.processing.CheckFilesForProcessing import CheckFilesForProcessing

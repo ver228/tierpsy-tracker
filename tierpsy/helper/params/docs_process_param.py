@@ -3,7 +3,7 @@ List of default values and description of the tierpsy.processing.progressMultipl
 '''
 
 import os
-from ..misc import repack_dflt_list
+from .helper import repack_dflt_list
 
 dflt_args_list = [
     ('video_dir_root', 

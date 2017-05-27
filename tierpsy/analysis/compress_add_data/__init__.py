@@ -1,5 +1,4 @@
 from functools import partial
-
 from .getAdditionalData import storeAdditionalDataSW, hasAdditionalFiles
 
 def args_(fn, param):

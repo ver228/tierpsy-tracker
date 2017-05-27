@@ -3,6 +3,7 @@ from .getFilteredSkels import getFilteredSkels
 
 
 def _get_feat_filt_param(p):
+    #read all parameters with the prefix filt_.
     feat_filt_param = get_prefix_params(p, 'filt_')
     feat_filt_param['min_num_skel'] = -1
     return feat_filt_param

@@ -2,8 +2,8 @@
 List of default values and description of the tracker parameters. 
 '''
 
-from .dflt_analysis_points import valid_analysis_points
-from ..misc import repack_dflt_list
+from .docs_analysis_points import valid_analysis_points
+from .helper import repack_dflt_list
 
 dflt_param_list = [
     ('analysis_type', 

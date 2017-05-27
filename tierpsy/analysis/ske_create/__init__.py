@@ -1,5 +1,5 @@
 from .getSkeletonsTables import trajectories2Skeletons
-from tierpsy.helper.params.tracker_param import get_prefix_params
+from tierpsy.helper.params import get_prefix_params
 
 def args_(fn, param):
 

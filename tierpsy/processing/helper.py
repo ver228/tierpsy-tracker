@@ -10,7 +10,7 @@ import sys
 import fnmatch
 from tierpsy.helper.misc import RESERVED_EXT
 from tierpsy.helper.params.tracker_param import valid_options
-from tierpsy.helper.docs import dflt_analysis_points
+from tierpsy.helper.params.docs_analysis_points import dflt_analysis_points
 
 def find_valid_files(root_dir, pattern_include='*', pattern_exclude=''):
     '''
