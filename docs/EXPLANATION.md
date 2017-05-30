@@ -19,37 +19,43 @@ The masked images are stored into a HDF5 container using a gzip filter. Some adv
 * Metadata can be stored in the same file as the video. HDF5 format allows to store all kind of binary data into the same file. This allows to store the video metadata, timestamp and experimental condtions, as well as the analysis progress in the same file.
 
 ### VID_SUBSAMPLE
-
+After compression a low resolution avi file is generated. This is only for visualization purposes in case the [Tierpsy Tracker Viewer](HOWTO.md#tierpsy-tracker-viewer) is not available.
 
 ## Creating trajectories
 
 ### TRAJ_CREATE
 
-We identify possible particles. The approach we follow is to divide the image in regions of non-zero connected pixels. For each candidate region we calculate a simple threshold and create binary mask. Then we calculate the centroid, area and bounding box of each connected-element in the binary mask. If the connected-element features are within the user defined ranges it is kept to create the trajectories. This information ins stored in the [plate_worms](#plate_worms) table.
+The first step is to identify possible particles. We divide the image in regions of non-zero connected pixels. For each candidate region we calculate a simple threshold and create a binary mask. We identify each individual object and calculate their centroids, areas and bounding boxes. Only objects with features within user-defined ranges are kept. This information is stored in the [/plate_worms](#plate_worms) table.
 
 ### TRAJ_JOIN
 
-We link the particles trajectories by using their closest neighbor in a consecutive frames. The closest neighbor must closer than `max_allowed_dist` and the change in area must be less than `area_ratio_lim` . A particle can only be joined to one particle in consecutive frames. If this conditions are not satisfied it means that there was a problem in the trajectory *e.g.* two worms colided and in the next frame the closest object is twice the area, or a worm disapear from the screen. Therefore the trajectory will be broken a new number will be assigned to any unassigned particle. In a subsequent step the program will try to join trajectories that have a small time gap between them *i.e.* the worm was lost for a couple of frames. Additionally we remove any spurious trajectory shorter than `min_track_size` .
+The second step is to join the identified particles to create the trajectories. We link the particles trajectories by using their closest neighbor in consecutive frames. The closest neighbor must less than `max_allowed_dist` and the change in area must be less than `area_ratio_lim` . One particle can only be joined to a single particle in consecutive frames, no splitted or merged trajectories are allowed. If this conditions are not satisfied it means that there was a problem in the trajectory *e.g.* two worms colided and therefore in the next frame the closest object is twice the area, or a worm disapear from the screen. If there is any conflict the trajectory will be broken and a new number will be assigned to any unassigned particle. 
 
-Below there is an example of how the trajectories look.
+In a subsequent step the program will try to join trajectories that have a small time gap between them *i.e.* the worm was lost for a couple of frames. Additionally we will remove any spurious trajectories shorter than `min_track_size` .
+
+Below there is an example of how the trajectories look after tracking.
 
 ![trajectories](https://cloud.githubusercontent.com/assets/8364368/26301795/25eb72ac-3eda-11e7-8a52-99dd6c49bc07.gif)
 
 ### SKE_INIT
-Firstly, the center of mass and the threshold for each of the trajectories is smoothed.  This improves the estimation of the worm threshold, fills gaps where the trajectory might have been lost, and helps to produce videos where the ROI displaces gradually following individual worms.
+This is a refiment step to clean [/plate_worms](#plate_worms). For each trajectory, we interpolate any time gap, calculate a fixed ROI size, and smoothes the threshold and centroid over time. The purpose of this modifications is to make the thresholding more robust and the data suitable to for the (next step)[Extracting worm skeletons]. The data is stored in the [/trajectories_data](#trajectories_data) table that becomes the central table. It contains the trajectories that would be used in the subsequent steps and displayed by the [viewer](HOWTO.md#tierpsy-tracker-viewer).
 
-This step create [trajectories_data](#trajectories_data) table, that contains
 
 ### BLOB_FEATS
 
-We extract a series of features for each individual binary mask and store them in [blob_features](#blob_features).
+We extract a set of features for each particle in each frame (corresponding to the individual rows in [/trajectories_data](#trajectories_data)). The results are stored in the [/blob_features](#blob_features) table.
 
 ## Extracting worm skeletons
 
 ### SKE CREATE
 ![skeletons](https://cloud.githubusercontent.com/assets/8364368/26309647/a6b4402e-3ef5-11e7-96cd-4a037ee42868.gif)
 
-Secondly, a ROI is thresholded, a contour is calculated, and the worm is skeletonized. The key part of this step is the skeletonization code based on [segWorm](https://github.com/openworm/SegWorm). Since one has to deal with multiworm at a time speed becomes an important issue, therefore the code was optimized using Cython and C. The skeletons and contours are normalized to have the same number of points in order to store them in a simple table. The output is store in a file with the extension [basename_skeletons.hdf5](#basename_skeletonshdf5).
+This step extract the worm skeleton using a python implementation of [segWorm](https://github.com/openworm/SegWorm). 
+
+
+Since one has to deal with multiworm at a time speed becomes an important issue, therefore the code was optimized using Cython and C. 
+
+The skeletons and contours are normalized to have the same number of points in order to store them in a simple table. The output is store in a file with the extension [basename_skeletons.hdf5](#basename_skeletonshdf5).
 
 ### SKE_FILT
 Filter "bad worms", meaning any particle indentified and analyzed for the tracker that it is not a worm, or any trajectory that corresponds to two or more worms in contact.

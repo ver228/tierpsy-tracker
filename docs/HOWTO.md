@@ -55,7 +55,7 @@ The same procedure can be done using the command line. You can see the available
 python cmd_scripts/processMultipleFiles.py -h
 ```
 
-## Multi-Worm Tracker Viewer
+## Tierpsy Tracker Viewer
 
 ![MWTrackerViewer](https://cloud.githubusercontent.com/assets/8364368/26412511/eac27158-40a0-11e7-880c-5671c2c27099.gif)  
 
