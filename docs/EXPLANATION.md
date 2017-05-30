@@ -150,7 +150,7 @@ Table containing the data of the trajectories used in the analysis and displayed
   * `is_good_skel`: `true` if the skeleton passed the [filter step](#ske_filt). Only rows with this flag as `true` will be used to calculate the [skeleton features](#feat_create). 
   * skel_outliers_flag: Internal used to identify why a skeleton was rejected in the [filter step](#ske_filt).
   * `roi_size`: Size in pixels of the region of interest. Should be constant for a given trajectory.
-  * `area`: Expected blob area. Useful to filter spurious particles after the ROI binarization.
+  * `area`: expected blob area. Useful to filter spurious particles after the ROI binarization.
   * `timestamp_raw`: Timestamp number. Useful to find droped frames.
   * `timestamp_time`: Real time timestamp value.
   * `int_map_id`: Corresponding row in the [`base_name_intensities.hdf5`](base_name_intensities.hdf5).
