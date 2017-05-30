@@ -28,7 +28,7 @@ class BatchProcessing_GUI(QMainWindow):
 
         self.ui = Ui_BatchProcessing()
         self.ui.setupUi(self)
-
+        
         # for the moment this option is more confusing that helpful so we hide it
         self.ui.p_unmet_requirements.hide() 
 

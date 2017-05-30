@@ -61,5 +61,5 @@ python cmd_scripts/processMultipleFiles.py -h
 
 ![TrackJoined](https://cloud.githubusercontent.com/assets/8364368/26412212/e0e112f8-409f-11e7-867b-512cf044d717.gif) 
 
-## Single-Worm Tracker Viewer
+### Single Worm Viewer
 ![SWTrackerViewer](https://cloud.githubusercontent.com/assets/8364368/26412826/e608bfea-40a1-11e7-9d3e-d0b8bf482db2.gif) 

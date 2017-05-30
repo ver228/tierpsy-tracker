@@ -214,13 +214,10 @@ class ParamsGUI(QMainWindow):
         self.json_param = json_param
         self.ui.lineEdit_paramFile.setText(self.json_file)
         
-
-
 class GetMaskParams_GUI(ParamsGUI):
 
     def __init__(self, default_videos_dir='', scripts_dir=''):
         super().__init__()
-        self.setWindowTitle("Set Parameters")
         
         self.video_file = ''
         
