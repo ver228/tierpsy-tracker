@@ -4,19 +4,19 @@
 
 ### COMPRESS
 
-This step has the double function identifing candidate regions for the tracking and efficiently store data the using lossless compression by zeroing the background. 
+This step has the double function of identifing candidate regions for the tracking and zeroing the background in order to efficiently store data using lossless compression. 
 
-The algorithm identifies dark particles on a light background or light particles on a dark background using [adaptative thresholding](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/miscellaneous_transformations.html) together with a filtering particles by size. The filter parameters must be adjusted manually for a different setup but typically it is possible to use the same parameters under similar experimental contions. More information on how to setup this parameters can be found in the [GUI manual](manual.md#set-parameters).
+The algorithm identifies dark particles on a lighter background or light particles on a darker background using [adaptative thresholding](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/miscellaneous_transformations.html) and filtering particles by size. The filter parameters should be adjusted manually for each different setup, however it should be possible to use the same parameters under similar experimental contions. More information on how to setup these parameters can be found in the [GUI manual](manual.md#set-parameters).
 
 ![COMPRESS](https://cloud.githubusercontent.com/assets/8364368/8456443/5f36a380-2003-11e5-822c-ea58857c2e52.png)
 
-The data is stored into a hdf5 container using a gzip filter. Some advantages of this format are:
+The masked images are stored into a HDF5 container using a gzip filter. Some advantages of this format are:
 
-* This format can significally reduce the size of a high resolution video since only the pixels corresponding to tracked particle are kept. This gain depends on codec used by the original video, and can be less important or even inexistent.
+* It can significally reduce the size of a high resolution video since only the pixels corresponding to tracked particle are kept. This gain depends on codec used by the original video and the fraction of pixels in the image that correspond to the background. In some cases, *e.g* where the animal occupies a large region of the image or the original video was highly compressed, the gain in compression using the gzip hdf5 format can be low or even inexistent. 
 
-* Rapid access to specific video frames. Typically it is hard to rapidly access to a specific video frame. Most of the video readers do an approximative search when looking for a specific frame. To accurately retrive a video frame one has to read sequencially the whole video file, a process particuarly slow for large video files. The HDF5 format indexes the data in a way that makes trivial to access to specific frames.
+* Rapid access to specific video frames. Typically it is slow access to a specific video frame, particularly in long videos. Most of the video readers do an approximative search for fast moving to a specific time point, and can miss the desired frame by a significative amount. To accurately retrieve a specific frame one has to read sequencially the whole video file, a slower process particuarly if the frame is at the end of the video. The HDF5 format indexes the data so it takes a similar amount of time to access to any frame in the video.
 
-* Metadata can be stored in the same file as the video. HDF5 format allows to store all kind of binary data into the same file. This allows to store the video metadata and analysis progress in the same file.
+* Metadata can be stored in the same file as the video. HDF5 format allows to store all kind of binary data into the same file. This allows to store the video metadata, timestamp and experimental condtions, as well as the analysis progress in the same file.
 
 ### VID_SUBSAMPLE
 
