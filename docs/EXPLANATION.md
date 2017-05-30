@@ -144,7 +144,7 @@ Table containing the data of the trajectories used in the analysis and displayed
   * `worm_index_joined`: Same as in [`/plate_worms`](#plate_worms).
   * `plate_worm_id`: Row number in [`/plate_worms`](#plate_worms).
   * `skeleton_id`: Row in this table. It is useful to recover data after slicing using pandas.
-  * `coord_x`, `coord_y`: Centroid coordinates after smoothing [plate_worms](#plate_worms). It is used to find the ROI to calculate the skeletons. If you want to calculate the centroid features use the corresponding field in [/blob_features](#blob_features).
+  * `coord_x`, `coord_y`: Centroid coordinates after smoothing [/plate_worms](#plate_worms). It is used to find the ROI to calculate the skeletons. If you want to calculate the centroid features use the corresponding field in [/blob_features](#blob_features).
   * `threshold`: Value used to binarize the ROI.
   * `has_skeleton`: `true` is the skeletonization was succesful.
   * `is_good_skel`: `true` if the skeleton passed the [filter step](#ske_filt). Only rows with this flag as `true` will be used to calculate the [skeleton features](#feat_create). 
@@ -188,10 +188,22 @@ Area in pixels of the binary image used to calculate the skeletons. Probably sho
 Internal. Table with the skeleton switched in [INT_SKE_ORIENT](#int_ske_orient).
 
 #### /timestamp/raw /timestamp/time
-Same as in [basename.hdf5](#basename.hdf5) but formated to match the 
-`worm_index_joined` and `frame_number` key pairs.
+Same as in [basename.hdf5](#basename.hdf5).
 
 ### base_name_intensities.hdf5
+
+#### /trajectories_data_valid 
+Same as [/trajectories_data](#trajectories_data) but only containing rows where `has_skeleton` is `true`.
+
+#### /straighten_worm_intensity 
+`Shape (tot_valid_skel, n_length, n_width)`
+
+Intensity maps of the straigten worms described in [INT_PROFILE](#INT_PROFILE). Each index in the first dimension correspond to the same row in [/trajectories_data_valid](#trajectories_data_valid). Note that the data type is [`float16`](https://en.wikipedia.org/wiki/Half-precision_floating-point_format) used to save disk space. Cast this data to float32 or float64 before doing any operation to avoid overflows.
+
+#### /straighten_worm_intensity_median 
+`Shape (tot_valid_skel, n_length)`
+
+Averaged intensity along the skeleton. Calculated in [INT_PROFILE](#INT_PROFILE) and used by [INT_SKE_ORIENT](#INT_SKE_ORIENT). The data is organized as in [/straighten_worm_intensity](#straighten_worm_intensity).
 
 
 ### basename_features.hdf5
@@ -199,17 +211,19 @@ Same as in [basename.hdf5](#basename.hdf5) but formated to match the
 #### /coordinates/*
 Contour and skeleton coordinates after smoothing. Each row correspond to the same `worm_index`, `timestamp` key pairs used in [`/features_timeseries`](#features_timeseries). 
 
-#### /features_timeseries:
-  * worm_index
-  * timestamp
-  * skeleton_id
-  * motion_modes
-  * length
-  * head_width, midbody_width, tail_width
-  * area
-  * area_length_ratio
-  * width_length_ratio
-  * max_amplitude
+#### /features_timeseries
+Table containing the features that can be considered as timeseries. There is a value for each (`worm_index`, `timestamp`) pair.
+
+  * `worm_index` : Trajectory index. Same as `worm_index_joined` in [/trajectories_data](#trajectories_data).
+  * `timestamp` : Video timestamp indexes. Should be continous. The real space between indexes should be `1/frames per second`. 
+  * `skeleton_id` : Corresponding row in the [/trajectories_data](#trajectories_data) table. It should be -1 if there is no corresponding row (dropped frames).
+  * `motion_modes` : Vector indicating if the worm is `moving forward (1)`, `backwards (-1)` or is `paused (0)`.
+  * `length` : Skeleton length calculated using the skeleton coordinates. 
+  * `head_width`, `midbody_width`, `tail_width` : Contour width for each worm region.
+  * `area` : Contour area calculated using the [shoelace formula](https://en.wikipedia.org/wiki/Shoelace_formula). 
+  * `area_length_ratio` : `area/length`
+  * `width_length_ratio` : `midbody_width/length`
+  * `max_amplitude` : 
   * amplitude_ratio
   * primary_wavelength, secondary_wavelength
   * track_length
