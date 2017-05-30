@@ -129,10 +129,10 @@ Contains the results of the [tracking](#create-trajectories) and [skeletonizatio
 #### /plate_worms
 Table where the first results of [TRAJ_CREATE](#traj_create) and [TRAJ_JOIN](#traj_join). Do not use this table in further analysis, use instead [/trajectories_data](#trajectories_data).
 
-  * `worm_index_blob`: Trajectory index given by the program. Since there can be several short spurious tracks identified this number can be very large and does not reflect the number of final trajectories.
-  * `worm_index_joined`: Index after joining trajectories separated by a small time gap and filtering short spurious tracks, and invalid row will be assigned -1.
-  * `threshold`: Threshold used for the image binarization.
-  * `frame_number`: Video frame number.
+  * `worm_index_blob`: trajectory index given by the program. Since there can be several short spurious tracks identified this number can be very large and does not reflect the number of final trajectories.
+  * `worm_index_joined`: index after joining trajectories separated by a small time gap and filtering short spurious tracks, and invalid row will be assigned -1.
+  * `threshold`: threshold used for the image binarization.
+  * `frame_number`: video frame number.
   * `coord_x`, `coord_y`, `box_length`, `box_width`, `angle`: center coordinates, length, width and orientation of the [minimum rotated rectangle](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#minarearect).
   * `area`: blob area.
   * `bounding_box_xmin`, `bounding_box_xmax`, `bounding_box_ymin`, `bounding_box_ymax`: [bounding rectangle](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#boundingrect) coordinates.
@@ -140,29 +140,29 @@ Table where the first results of [TRAJ_CREATE](#traj_create) and [TRAJ_JOIN](#tr
 #### /trajectories_data
 Table containing the data of the trajectories used in the analysis and displayed by the [Tierpsy Tracker Viewer](HOWTO.md#tierpsy-tracker-viewer). Each row should have a unique pair of `worm_index_joined` and `frame_number` keys corresponding to each of the particles identified in each video frame.
 
-  * `frame_number`: Video frame number.
-  * `worm_index_joined`: Same as in [`/plate_worms`](#plate_worms).
-  * `plate_worm_id`: Row number in [`/plate_worms`](#plate_worms).
-  * `skeleton_id`: Row in this table. It is useful to recover data after slicing using pandas.
-  * `coord_x`, `coord_y`: Centroid coordinates after smoothing [/plate_worms](#plate_worms). It is used to find the ROI to calculate the skeletons. If you want to calculate the centroid features use the corresponding field in [/blob_features](#blob_features).
-  * `threshold`: Value used to binarize the ROI.
+  * `frame_number`: video frame number.
+  * `worm_index_joined`: same as in [`/plate_worms`](#plate_worms).
+  * `plate_worm_id`: row number in [`/plate_worms`](#plate_worms).
+  * `skeleton_id`: row in this table. It is useful to recover data after slicing using pandas.
+  * `coord_x`, `coord_y`: centroid coordinates after smoothing [/plate_worms](#plate_worms). It is used to find the ROI to calculate the skeletons. If you want to calculate the centroid features use the corresponding field in [/blob_features](#blob_features).
+  * `threshold`: value used to binarize the ROI.
   * `has_skeleton`: `true` is the skeletonization was succesful.
   * `is_good_skel`: `true` if the skeleton passed the [filter step](#ske_filt). Only rows with this flag as `true` will be used to calculate the [skeleton features](#feat_create). 
-  * skel_outliers_flag: Internal used to identify why a skeleton was rejected in the [filter step](#ske_filt).
-  * `roi_size`: Size in pixels of the region of interest. Should be constant for a given trajectory.
+  * skel_outliers_flag: internal used to identify why a skeleton was rejected in the [filter step](#ske_filt).
+  * `roi_size`: size in pixels of the region of interest. Should be constant for a given trajectory.
   * `area`: expected blob area. Useful to filter spurious particles after the ROI binarization.
-  * `timestamp_raw`: Timestamp number. Useful to find droped frames.
-  * `timestamp_time`: Real time timestamp value.
-  * `int_map_id`: Corresponding row in the [`base_name_intensities.hdf5`](base_name_intensities.hdf5).
+  * `timestamp_raw`: timestamp number. Useful to find droped frames.
+  * `timestamp_time`: real time timestamp value.
+  * `int_map_id`: corresponding row in the [`base_name_intensities.hdf5`](base_name_intensities.hdf5).
 
 #### /blob_features
-  * `coord_x`, `coord_y`, `box_length`, `box_width`, `box_orientation`. Features calculated using [minAreaRect](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#minarearect).
-  * `area`: [Area](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#contourarea).
-  * `perimeter`: [Perimeter](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#arclength).
-  * `quirkiness`: Defined as `sqrt(1 - box_width^2 / box_width^2)`.
-  * `compactness`: Defined as `4 * pi * area / (perimeter^2)`.
-  * `solidity`: `area / convex hull area` whhere the convex hull is calculated as [here](http://docs.opencv.org/3.0-beta/doc/tutorials/imgproc/shapedescriptors/hull/hull.html#).
-  * `intensity_mean`, `intensity_std`: Mean and standard deviation inside the thresholded region.
+  * `coord_x`, `coord_y`, `box_length`, `box_width`, `box_orientation`. features calculated using [minAreaRect](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#minarearect).
+  * `area`: [area](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#contourarea).
+  * `perimeter`: [perimeter](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#arclength).
+  * `quirkiness`: defined as `sqrt(1 - box_width^2 / box_width^2)`.
+  * `compactness`: defined as `4 * pi * area / (perimeter^2)`.
+  * `solidity`: `area / convex hull area` where the convex hull is calculated as [here](http://docs.opencv.org/3.0-beta/doc/tutorials/imgproc/shapedescriptors/hull/hull.html#).
+  * `intensity_mean`, `intensity_std`: mean and standard deviation inside the thresholded region.
   * `hu0`, `hu1`, `hu2`, `hu3`, `hu4`, `hu5`, `hu6`: [Hu moments](http://docs.opencv.org/2.4/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html?highlight=drawcontours#humoments).
 
 
@@ -214,13 +214,13 @@ Contour and skeleton coordinates after smoothing. Each row correspond to the sam
 #### /features_timeseries
 Table containing the features that can be considered as timeseries. There is a value for each (`worm_index`, `timestamp`) pair.
 
-  * `worm_index` : Trajectory index. Same as `worm_index_joined` in [/trajectories_data](#trajectories_data).
-  * `timestamp` : Video timestamp indexes. Should be continous. The real space between indexes should be `1/frames per second`. 
+  * `worm_index` : trajectory index. Same as `worm_index_joined` in [/trajectories_data](#trajectories_data).
+  * `timestamp` : video timestamp indexes. Should be continous. The real space between indexes should be `1/frames per second`. 
   * `skeleton_id` : Corresponding row in the [/trajectories_data](#trajectories_data) table. It should be -1 if there is no corresponding row (dropped frames).
-  * `motion_modes` : Vector indicating if the worm is `moving forward (1)`, `backwards (-1)` or is `paused (0)`.
-  * `length` : Skeleton length calculated using the skeleton coordinates. 
-  * `head_width`, `midbody_width`, `tail_width` : Contour width for each worm region.
-  * `area` : Contour area calculated using the [shoelace formula](https://en.wikipedia.org/wiki/Shoelace_formula). 
+  * `motion_modes` : vector indicating if the worm is `moving forward (1)`, `backwards (-1)` or is `paused (0)`.
+  * `length` : skeleton length calculated using the skeleton coordinates. 
+  * `head_width`, `midbody_width`, `tail_width` : contour width for each worm region.
+  * `area` : contour area calculated using the [shoelace formula](https://en.wikipedia.org/wiki/Shoelace_formula). 
   * `area_length_ratio` : `area/length`
   * `width_length_ratio` : `midbody_width/length`
   * `max_amplitude` : 
