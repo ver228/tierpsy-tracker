@@ -6,7 +6,7 @@
 
 This step has the double function of identifing candidate regions for the tracking and zeroing the background in order to efficiently store data using lossless compression. 
 
-The algorithm identifies dark particles on a lighter background or light particles on a darker background using [adaptative thresholding](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/miscellaneous_transformations.html) and filtering particles by size. The filter parameters should be adjusted manually for each different setup, however it should be possible to use the same parameters under similar experimental contions. More information on how to setup these parameters can be found in the [GUI manual](HOWTO.md#set-parameters).
+The algorithm identifies dark particles on a lighter background or light particles on a darker background using [adaptative thresholding](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/miscellaneous_transformations.html) and filtering particles by size. The filter parameters should be adjusted manually for each different setup, however it should be possible to use the same parameters under similar experimental contions. More information on how to setup these parameters can be found in the [GUI manual](HOWTO.md/#set-parameters).
 
 ![COMPRESS](https://cloud.githubusercontent.com/assets/8364368/8456443/5f36a380-2003-11e5-822c-ea58857c2e52.png)
 
@@ -19,7 +19,7 @@ The masked images are stored into a HDF5 container using a gzip filter. Some adv
 * Metadata can be stored in the same file as the video. HDF5 format allows to store all kind of binary data into the same file. This allows to store the video metadata, timestamp and experimental condtions, as well as the analysis progress in the same file.
 
 ### VID_SUBSAMPLE
-After compression a low resolution avi file is generated. This is only for visualization purposes in case the [Tierpsy Tracker Viewer](HOWTO.md#tierpsy-tracker-viewer) is not available.
+After compression a low resolution avi file is generated. This is only for visualization purposes in case the [Tierpsy Tracker Viewer](HOWTO.md/#tierpsy-tracker-viewer) is not available.
 
 ## Create Trajectories
 
@@ -116,8 +116,7 @@ Frame without mask saved every `save_full_interval` frames. By default the inter
 
 Mean intensity of a given frame. It is useful in optogenetic experiments to identify when the light is turned on.
 
-#### timestamp/time
-#### timestamp/raw
+#### timestamp/time timestamp/raw
 
 Timestamp extracted from the video if the `is_extract_metadata` flag set to `true`. If this fields exists and are valid (there are not `nan` values and they increase monotonically), they will be used to calculate the `fps` used in subsequent parts of the analysis. The extraction of the timestamp can be a slow process since it uses [ffprobe](https://ffmpeg.org/ffprobe.html) to read the whole video. If you believe that your video does not have a significative number of dropped frames and you know the frame rate, or simply realise that ffprobe cannot extract the timestamp correctly, I recommend to set `is_extract_metadata` to `false`.
 
@@ -157,77 +156,48 @@ Table containing the data of the trajectories used in the analysis and displayed
   * `int_map_id`: Corresponding row in the [`base_name_intensities.hdf5`](base_name_intensities.hdf5).
 
 #### /blob_features
-  * `coord_x`, `coord_y`, `box_length`, `box_width`, `box_orientation`. Calculated using [minAreaRect](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#minarearect).
+  * `coord_x`, `coord_y`, `box_length`, `box_width`, `box_orientation`. Features calculated using [minAreaRect](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#minarearect).
   * `area`: [Area](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#contourarea).
   * `perimeter`: [Perimeter](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#arclength).
   * `quirkiness`: Defined as `sqrt(1 - box_width^2 / box_width^2)`.
   * `compactness`: Defined as `4 * pi * area / (perimeter^2)`.
-  * `solidity`: `area / convex hull area` where [convex hull](http://docs.opencv.org/3.0-beta/doc/tutorials/imgproc/shapedescriptors/hull/hull.html#) 
+  * `solidity`: `area / convex hull area` whhere the convex hull is calculated as [here](http://docs.opencv.org/3.0-beta/doc/tutorials/imgproc/shapedescriptors/hull/hull.html#).
   * `intensity_mean`, `intensity_std`: Mean and standard deviation inside the thresholded region.
-  * `hu0`, `hu1`, `hu2`, `hu3`, `hu4`, `hu5`, `hu6`: [Hu moments](http://docs.opencv.org/2.4/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html?highlight=drawcontours#humoments)
-
-#### /contour_area:
+  * `hu0`, `hu1`, `hu2`, `hu3`, `hu4`, `hu5`, `hu6`: [Hu moments](http://docs.opencv.org/2.4/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html?highlight=drawcontours#humoments).
 
 
-#### /contour_side1_length: 
-#### /contour_side2_length:
-#### /skeleton_length: 
-length in pixels.
+#### /skeleton /contour_side1 /contour_side2
+Normalized coordinates (same number of points) of the skeletons, and the contour in each side. The head should correspond to the first index and tail to the last.
 
-#### /skeleton:
-#### /contour_side1:
-#### /contour_side2: 
-  normalized coordinates. head is the first index and tail the last. The contour side is assigned to keep a clockwise-orientation. There is still work to do to find what is the ventral and dorsal side.
 
-#### /width_midbody:
+#### /contour_width
+Contour width along the skeleton.
 
-#### /contour_width:
-  contour width along the skeleton. I'm using the output from segworm, and resampling by interpolation It might be possible to improve this.
+#### /width_midbody
+Contour width of the midbody. Used to calculate the intensity maps in [INT_PROFILE](#int_profile).
 
-#### /intensity_analysis/switched_head_tail:
-  * worm_index
-  * ini_frame
-  * last_frame
 
-#### /timestamp/raw:
-#### /timestamp/time:
+#### /contour_side1_length /contour_side2_length /skeleton_length
+Contours and skeleton length in pixels before normalization and smoothing. This value is likely to be larger than the length caculated in [FEAT_CREATE](#feat_create) due to the noiser contours and probably should be deprecated.
+
+#### /contour_area
+Area in pixels of the binary image used to calculate the skeletons. Probably should be deprecated.
+
+
+#### /intensity_analysis/switched_head_tail
+Internal. Table with the skeleton switched in [INT_SKE_ORIENT](#int_ske_orient).
+
+#### /timestamp/raw /timestamp/time
+Same as in [basename.hdf5](#basename.hdf5) but formated to match the 
+`worm_index_joined` and `frame_number` key pairs.
 
 ### base_name_intensities.hdf5
 
 
 ### basename_features.hdf5
 
-#### /coordinates/dorsal_contours:
-#### /coordinates/ventral_contours:
-#### /coordinates/skeletons:
-
-#### /features_events/worm_*:
-  * inter_backward_distance
-  * inter_backward_time
-  * inter_coil_distance
-  * inter_coil_time
-  * inter_forward_distance
-  * inter_forward_time
-  * inter_omega_distance
-  * inter_omega_time
-  * inter_paused_distance
-  * inter_paused_time
-  * inter_upsilon_distance
-  * inter_upsilon_time
-  * midbody_dwelling
-  * omega_turn_time
-  * omega_turns_frequency
-  * omega_turns_time_ratio
-  * paused_distance
-  * paused_motion_distance_ratio
-  * paused_motion_frequency
-  * paused_motion_time_ratio
-  * paused_time
-  * tail_dwelling
-  * upsilon_turn_time
-  * upsilon_turns_frequency
-  * upsilon_turns_time_ratio
-  * worm_dwelling
+#### /coordinates/*
+Contour and skeleton coordinates after smoothing. Each row correspond to the same `worm_index`, `timestamp` key pairs used in [`/features_timeseries`](#features_timeseries). 
 
 #### /features_timeseries:
   * worm_index
@@ -259,6 +229,36 @@ length in pixels.
   * foraging_speed
   * path_range
   * path_curvature
+
+#### /features_events/worm_*:
+  * inter_backward_distance
+  * inter_backward_time
+  * inter_coil_distance
+  * inter_coil_time
+  * inter_forward_distance
+  * inter_forward_time
+  * inter_omega_distance
+  * inter_omega_time
+  * inter_paused_distance
+  * inter_paused_time
+  * inter_upsilon_distance
+  * inter_upsilon_time
+  * midbody_dwelling
+  * omega_turn_time
+  * omega_turns_frequency
+  * omega_turns_time_ratio
+  * paused_distance
+  * paused_motion_distance_ratio
+  * paused_motion_frequency
+  * paused_motion_time_ratio
+  * paused_time
+  * tail_dwelling
+  * upsilon_turn_time
+  * upsilon_turns_frequency
+  * upsilon_turns_time_ratio
+  * worm_dwelling
+
+
 
 #### /features_summary: 
   P10th_split, P90th_split
