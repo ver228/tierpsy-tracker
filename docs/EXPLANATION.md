@@ -167,7 +167,7 @@ Table containing the data of the trajectories used in the analysis and displayed
 
 
 #### /skeleton /contour_side1 /contour_side2
-Normalized coordinates (same number of points) of the skeletons, and the contour in each side. The head should correspond to the first index and tail to the last.
+Normalized coordinates (same number of points) for the skeletons and the contour in each side of the worm. The head should correspond to the first index and the tail to the last.
 
 
 #### /contour_width
@@ -198,7 +198,7 @@ Same as [/trajectories_data](#trajectories_data) but only containing rows where 
 #### /straighten_worm_intensity 
 `Shape (tot_valid_skel, n_length, n_width)`
 
-Intensity maps of the straigten worms described in [INT_PROFILE](#INT_PROFILE). Each index in the first dimension correspond to the same row in [/trajectories_data_valid](#trajectories_data_valid). Note that the data type is [`float16`](https://en.wikipedia.org/wiki/Half-precision_floating-point_format) used to save disk space. Cast this data to float32 or float64 before doing any operation to avoid overflows.
+Intensity maps of the straigten worms described in [INT_PROFILE](#INT_PROFILE). Each index in the first dimension correspond to the same row in [/trajectories_data_valid](#trajectories_data_valid). Note that the data type is [`float16`](https://en.wikipedia.org/wiki/Half-precision_floating-point_format). Cast this data to float32 or float64 before doing any operation to avoid overflows.
 
 #### /straighten_worm_intensity_median 
 `Shape (tot_valid_skel, n_length)`
@@ -209,16 +209,16 @@ Averaged intensity along the skeleton. Calculated in [INT_PROFILE](#INT_PROFILE)
 ### basename_features.hdf5
 
 #### /coordinates/*
-Contour and skeleton coordinates after smoothing. Each row correspond to the same `worm_index`, `timestamp` key pairs used in [`/features_timeseries`](#features_timeseries). 
+Contour and skeleton coordinates after smoothing. Each index in the first dimension correspond to a row in [`/features_timeseries`](#features_timeseries). 
 
 #### /features_timeseries
-Table containing the features that can be considered as timeseries. There is a value for each (`worm_index`, `timestamp`) pair.
+Table containing the features that can be represented as timeseries. Each row corresponds to a single (`worm_index`, `timestamp`) pair.
 
   * `worm_index` : trajectory index. Same as `worm_index_joined` in [/trajectories_data](#trajectories_data).
   * `timestamp` : video timestamp indexes. Should be continous. The real space between indexes should be `1/frames per second`. 
-  * `skeleton_id` : Corresponding row in the [/trajectories_data](#trajectories_data) table. It should be -1 if there is no corresponding row (dropped frames).
-  * `motion_modes` : vector indicating if the worm is `moving forward (1)`, `backwards (-1)` or is `paused (0)`.
-  * `length` : skeleton length calculated using the skeleton coordinates. 
+  * `skeleton_id` : corresponding row in the [/trajectories_data](#trajectories_data) table. It should be -1 if there is not a match (dropped frames).
+  * `motion_modes` : vector indicating if the worm is `moving forward (1)`, `backwards (-1)` or it is `paused (0)`.
+  * `length` : skeleton length calculated using `/coordinates/skeleton`. 
   * `head_width`, `midbody_width`, `tail_width` : contour width for each worm region.
   * `area` : contour area calculated using the [shoelace formula](https://en.wikipedia.org/wiki/Shoelace_formula). 
   * `area_length_ratio` : `area/length`
@@ -275,16 +275,28 @@ Table containing the features that can be considered as timeseries. There is a v
 
 
 #### /features_summary: 
-  P10th_split, P90th_split
+Set of features calculated by subdividing and reducing the features in [/features_timeseries](#features_timeseries) and the [/features_events/worm_* ](#features_eventsworm_).
 
-  * P10th
-  * P90th
-  * means
-  * medians
+The subdivisions can be done by movement type or/and by signed data. A feature was subdivided when the corresponding subfix is in its name. If a feature name does not contain any subdivision subfix then the reduction was applied on all the original data.
 
+The movement subdivision are only valid for features in [/features_timeseries](#features_timeseries) and are:
 
+* `_forward` : worm is moving forwards (`motion_modes == 1`).
+* `_paused` : worm is paused (`motion_modes == 0`).
+* `_backward`  : worm is moving backwards (`motion_modes == -1`).
 
+The signed data subdivision are only applied to data where the sign have meaning, *e.g.* `midbody_speed` or `midbody_bend_mean` and not in features like `area` or `length`. The signed data subdivisions are:
+* `_neg` : only the negative data is considered.
+* `_pos` : only the positive data is considered.
+* `_abs` : the absolute value of the data is taken before doing the reduction.
 
+The reduction can be done by any of the following operations on a given subdivision. The data is saved in the corresponding table name.
+  
+  * `P10th` : 10th [percentile](https://docs.scipy.org/doc/numpy-dev/reference/generated/numpy.percentile.html).
+  * `P90th` : 90th [percentile](https://docs.scipy.org/doc/numpy-dev/reference/generated/numpy.percentile.html).
+  * `means` : mean value.
+  * `medians` : median value (50th percentile).
 
+Finally, there are some tables that have the subfix `_split`. For this tables long trajectories are splitted in shorter ones of at most `split_traj_time` seconds before calculating the features. This is done as an attempt to balance uneven track sizes. Otherwise a trajectory that was followed for the whole duration of the video will be counted as a single feature vector, while a trajectory that was lost and found several times will be counted as many feature vectors. This is because each time a worm is lost it would be assigned a new id when it is found again.
 
 
