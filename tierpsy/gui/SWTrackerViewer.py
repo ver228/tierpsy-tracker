@@ -77,7 +77,27 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
             self.updateVideoFile()
 
         self.egg_writer = EggWriter()
-        
+    
+    # change frame number using the keys
+    def keyPressEvent(self, event):
+        # go the previous block
+        if event.key() == Qt.Key_BracketLeft:
+            self.ui.spinBox_skelBlock.setValue(self.skel_block_n - 1)
+
+        # go to the next block
+        elif event.key() == Qt.Key_BracketRight:
+            self.ui.spinBox_skelBlock.setValue(self.skel_block_n + 1)
+
+        elif event.key() == Qt.Key_Semicolon:
+            if self.ui.checkBox_showLabel.isChecked():
+                self.ui.checkBox_showLabel.setChecked(0)
+            else:
+                self.ui.checkBox_showLabel.setChecked(1)
+        elif event.key() == Qt.Key_E:
+            self.egg_writer.add(self.vfilename, self.frame_number)
+        elif event.key() == Qt.Key_X:
+            self.egg_writer.tag_bad()
+        super().keyPressEvent(event)
 
     def updateSkelFile(self, skel_file):
         super().updateSkelFile(skel_file)
@@ -177,28 +197,7 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
         else:
             self.ui.label_skelBlock.setText('')
 
-    # change frame number using the keys
-    def keyPressEvent(self, event):
-        # go the previous block
-        if event.key() == Qt.Key_BracketLeft:
-            self.ui.spinBox_skelBlock.setValue(self.skel_block_n - 1)
-
-        # go to the next block
-        elif event.key() == Qt.Key_BracketRight:
-            self.ui.spinBox_skelBlock.setValue(self.skel_block_n + 1)
-
-        elif event.key() == Qt.Key_Semicolon:
-            if self.ui.checkBox_showLabel.isChecked():
-                self.ui.checkBox_showLabel.setChecked(0)
-            else:
-                self.ui.checkBox_showLabel.setChecked(1)
-        elif event.key() == Qt.Key_E:
-            self.egg_writer.add(self.vfilename, self.frame_number)
-        elif event.key() == Qt.Key_X:
-            self.egg_writer.tag_bad()
-            
-
-        super().keyPressEvent(event)
+    
 
     def closeEvent(self, event):
         self.egg_writer.export()

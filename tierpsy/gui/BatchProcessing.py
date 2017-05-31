@@ -15,7 +15,7 @@ from tierpsy.gui.GetAllParameters import ParamWidgetMapper
 #get default parameters files
 from tierpsy import DFLT_PARAMS_FILES
 from tierpsy.helper.params import TrackerParams
-from tierpsy.helper.docs.process_param_docs import proccess_args_dflt, proccess_args_info
+from tierpsy.helper.params.docs_process_param import proccess_args_dflt, proccess_args_info
 
 class BatchProcessing_GUI(QMainWindow):
 
@@ -28,7 +28,7 @@ class BatchProcessing_GUI(QMainWindow):
 
         self.ui = Ui_BatchProcessing()
         self.ui.setupUi(self)
-
+        
         # for the moment this option is more confusing that helpful so we hide it
         self.ui.p_unmet_requirements.hide() 
 
@@ -222,7 +222,7 @@ class BatchProcessing_GUI(QMainWindow):
         index - dum variable to be able to connect to currentIndexChanged
         '''
         param = TrackerParams(self.mapper['json_file'])
-        analysis_checkpoints = get_dflt_sequence(param.p_dict['analysis_type'], add_manual_feats=True)
+        analysis_checkpoints = get_dflt_sequence(param.p_dict['analysis_type'])
         self.analysis_checkpoints = analysis_checkpoints
         self.ui.p_force_start_point.clear()
         self.ui.p_force_start_point.addItems(self.analysis_checkpoints)
@@ -250,7 +250,7 @@ class BatchProcessing_GUI(QMainWindow):
         self.ui.p_end_point.addItems(remaining_points)
 
         nn = self.ui.p_end_point.count()
-        self.ui.p_end_point.setCurrentIndex(nn-2)
+        self.ui.p_end_point.setCurrentIndex(nn-1)
 
     def startAnalysis(self):
         process_args = proccess_args_dflt.copy()
@@ -275,8 +275,6 @@ class BatchProcessing_GUI(QMainWindow):
                 "The masks directory does not exist. Please select a valid directory.",
                 QMessageBox.Ok)
             return
-
-        print(process_args)
 
         analysis_worker = WorkerFunQt(processMultipleFilesFun, process_args)
         progress = AnalysisProgress(analysis_worker)

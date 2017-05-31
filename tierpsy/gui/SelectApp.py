@@ -9,17 +9,13 @@ from tierpsy.gui.GetMaskParams import GetMaskParams_GUI
 from tierpsy.gui.MWTrackerViewer import MWTrackerViewer_GUI
 from tierpsy.gui.SWTrackerViewer import SWTrackerViewer_GUI
 from tierpsy.gui.BatchProcessing import BatchProcessing_GUI
-
-# class Ui_SelectApp(object):
-#     def setupUi(self, SelectApp):
-        
         
 
 widget_lists = {
     'get_params':(GetMaskParams_GUI,"Set Parameters"),
     'batch_processing':(BatchProcessing_GUI,"Batch Processing Multiple Files"),
-    'mwtracker':(MWTrackerViewer_GUI,"Multi-Worm Tracker Viewer"),
-    'swtracker':(SWTrackerViewer_GUI,"Single-Worm Tracker Viewer")
+    'mwtracker':(MWTrackerViewer_GUI, "Tierpsy Tracker Viewer"),
+    'swtracker':(SWTrackerViewer_GUI, "Single Worm Viewer")
 }
 
 
@@ -45,13 +41,17 @@ class SelectApp(QMainWindow):
             self.buttons[name].setObjectName(name)
             self.verticalLayout.addWidget(self.buttons[name])
             self.buttons[name].setText(label)
-            fun_d = partial(self.appCall, func_name)
+            fun_d = partial(self.appCall, name)
             self.buttons[name].clicked.connect(fun_d)
 
-    def appCall(self, appFun):
+    def appCall(self, name):
+        appFun, label = widget_lists[name]
         ui = appFun()
+        ui.setWindowTitle(label)
         ui.show()
         ui.setAttribute(Qt.WA_DeleteOnClose)
+        
+        
 
 if __name__ == '__main__':
     import sys

@@ -43,7 +43,7 @@ class ProcessLocal(object):
         
         self.json_file = json_file
         param = TrackerParams(json_file)
-        self.is_single_worm = param.is_single_worm
+        self.is_single_worm = param.p_dict['analysis_type'] == 'SINGLE_WORM_SHAFER'
         self.is_copy_video = is_copy_video
         self.copy_unfinished = copy_unfinished
 

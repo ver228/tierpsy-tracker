@@ -3,7 +3,7 @@ List of default values and description of the tierpsy.processing.progressMultipl
 '''
 
 import os
-from tierpsy.helper.misc import repack_dflt_list
+from .helper import repack_dflt_list
 
 dflt_args_list = [
     ('video_dir_root', 
@@ -19,7 +19,7 @@ dflt_args_list = [
         ),
     ('results_dir_root', 
         '', 
-        ''''
+        '''
         Root directory where the tracking results  are located or will be stored. 
         If it is not given it will be created replacing MaskedVideos by Results in the mask_dir_root.
         '''
@@ -63,6 +63,10 @@ dflt_args_list = [
         False,
         'Copy files to the final destination even if the analysis was not completed successfully.'
         ),
+    ('analysis_checkpoints',
+        [],
+        'Points in the analysis to be executed.'),
+
     ('force_start_point',
         '',
         'Force the program to start at a specific point in the analysis.'

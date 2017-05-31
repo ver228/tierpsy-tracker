@@ -2,7 +2,8 @@
 List of default values and description of the tracker parameters. 
 '''
 
-from tierpsy.helper.misc import repack_dflt_list
+from .docs_analysis_points import valid_analysis_points
+from .helper import repack_dflt_list
 
 dflt_param_list = [
     ('analysis_type', 
@@ -291,7 +292,7 @@ dflt_param_list = [
 # ('zf_auto_detect_tail_length', True, 'Flag to determine whether zebrafish tail length detection is used. If set to True, values for zf_tail_length, zf_num_segments and zf_test_width are ignored.')
 
 valid_options = {
-    'analysis_type':['WORM', 'SINGLE_WORM_SHAFER', 'PHARYNX', 'ZEBRAFISH'],
+    'analysis_type': valid_analysis_points,
     'ventral_side':['','clockwise','anticlockwise', 'unknown'],
     'head_tail_int_method':['MEDIAN_INT', 'HEAD_BRIGHTER']
 }
