@@ -4,8 +4,8 @@ import json
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 from PyQt5.QtCore import Qt
 
-from tierpsy.processing.processMultipleFilesFun import processMultipleFilesFun, getResultsDir
-from tierpsy.processing.helper import get_dflt_sequence, remove_border_checkpoints
+from tierpsy.processing.processMultipleFilesFun import processMultipleFilesFun
+from tierpsy.processing.helper import get_dflt_sequence, remove_border_checkpoints, get_results_dir, get_masks_dir 
 
 from tierpsy.gui.AnalysisProgress import AnalysisProgress, WorkerFunQt
 from tierpsy.gui.HDF5VideoPlayer import LineEditDragDrop
@@ -142,13 +142,7 @@ class BatchProcessing_GUI(QMainWindow):
         self.videos_dir = videos_dir
         self.ui.p_video_dir_root.setText(self.videos_dir)
 
-        if 'Worm_Videos' in videos_dir:
-            mask_files_dir = videos_dir.replace('Worm_Videos', 'MaskedVideos')
-        elif 'RawVideos' in videos_dir:
-            mask_files_dir = videos_dir.replace('RawVideos', 'MaskedVideos')
-        else:
-            mask_files_dir = os.path.join(videos_dir, 'MaskedVideos')
-
+        mask_files_dir = get_masks_dir(self.videos_dir)
         self.updateMasksDir(mask_files_dir)
 
     def getResultsDir(self):
@@ -172,11 +166,8 @@ class BatchProcessing_GUI(QMainWindow):
             self.updateMasksDir(mask_files_dir)
 
     def updateMasksDir(self, mask_files_dir):
-        if 'MaskedVideos' in mask_files_dir:
-            results_dir = mask_files_dir.replace('MaskedVideos', 'Results')
-        else:
-            results_dir = os.path.join(mask_files_dir, 'Results')
 
+        results_dir = get_results_dir(mask_files_dir)
 
         self.mask_files_dir = mask_files_dir
         self.mapper['mask_dir_root'] = self.mask_files_dir

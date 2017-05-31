@@ -36,9 +36,7 @@ class ProcessLocal(object):
         for dname in [self.results_dir,  self.masks_dir]:
             if not os.path.exists(dname):
                 os.makedirs(dname)
-                
         
-
         self.analysis_checkpoints = analysis_checkpoints
         
         self.json_file = json_file
@@ -59,6 +57,7 @@ class ProcessLocal(object):
         else:
             self.tmp_main_file = self.main_file
         
+
         #make directories
         for dirname in [self.tmp_results_dir, self.tmp_mask_dir, self.results_dir, self.masks_dir]:
             if not os.path.exists(dirname):
@@ -127,8 +126,6 @@ class ProcessLocal(object):
         
         #files that will be created
         outputs_to_create = self._points2Files(self.checkpoints2process, self.ap_tmp, "output_files")
-
-
 
         #files from steps finished in the source but not in the tmp
         files_finished_src_no_tmp = self._getMissingFiles(self.unfinished_points_tmp, 
@@ -246,12 +243,22 @@ class ProcessLocal(object):
     def _points2Files(self, points_finished, ap_obj, field_name):
         '''convert analysis points to individual file names'''
         data = ap_obj.getField(field_name, points_finished)
+
+        #to avoid problems in the algorithm i must avoid to copy raw video files that end with *.hdf5 (same as the masked files)
+        if field_name == "input_files" and \
+        'COMPRESS' in data and \
+        data['COMPRESS'][0].endswith('.hdf5'):
+            del data['COMPRESS']
+
         data = sum(data.values(), []) #flatten list
         data = [os.path.split(x)[1] for x in data] #split and only get the file names
         return set(data)
 
     def _getFilesSrcDstPairs(self, fnames, f2d_src, f2dir_dst):
         '''get the pair source file to destination directory'''
+        print(f2d_src)
+        print(f2dir_dst)
+
         return [(os.path.join(f2d_src[x], x), f2dir_dst[x]) for x in fnames]
 
     def _copyFilesLocal(self, files2copy):
