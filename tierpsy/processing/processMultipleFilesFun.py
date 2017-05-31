@@ -11,9 +11,11 @@ from tierpsy.helper.params import TrackerParams
 from tierpsy.helper.misc import RunMultiCMD
 from tierpsy.helper.params.docs_process_param import dflt_args_list, process_valid_options
 
-from tierpsy.processing.helper import get_dflt_sequence, find_valid_files, remove_border_checkpoints
 from tierpsy.processing.CheckFilesForProcessing import CheckFilesForProcessing
 from tierpsy.processing.ProcessLocal import ProcessLocalParser
+from tierpsy.processing.helper import get_dflt_sequence, find_valid_files, \
+remove_border_checkpoints, get_results_dir, get_masks_dir 
+
 
 class ProcessMultipleFilesParser(argparse.ArgumentParser):
     def __init__(self):
@@ -57,12 +59,17 @@ def processMultipleFilesFun(
         unmet_requirements = False,
         copy_unfinished = False):
 
-    # calculate the results_dir_root from the mask_dir_root if it was not given
-    if not results_dir_root:
-        results_dir_root = getResultsDir(mask_dir_root)
-
+    assert video_dir_root or mask_dir_root
+    
+    # get a name for the directories if they were not given
     if not video_dir_root:
         video_dir_root = mask_dir_root
+
+    if not mask_dir_root:
+        mask_dir_root = get_masks_dir(video_dir_root)
+
+    if not results_dir_root:
+        results_dir_root = get_results_dir(mask_dir_root)
 
     param = TrackerParams(json_file)
 
@@ -108,21 +115,3 @@ def processMultipleFilesFun(
             local_obj = ProcessLocalParser,
             max_num_process = max_num_process,
             refresh_time = refresh_time)
-
-
-
-def getResultsDir(mask_dir_root):
-    # construct the results dir on base of the mask_dir_root
-    subdir_list = mask_dir_root.split(os.sep)
-
-    for ii in range(len(subdir_list))[::-1]:
-        if subdir_list[ii] == 'MaskedVideos':
-            subdir_list[ii] = 'Results'
-            break
-    # the counter arrived to zero, add Results at the end of the directory
-    if ii == 0:
-        subdir_list.append('Results')
-
-    return (os.sep).join(subdir_list)
-
-
