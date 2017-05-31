@@ -108,28 +108,38 @@ You can manually correct the trajectories as shown below. Once you finished clic
 ![TrackJoined](https://cloud.githubusercontent.com/assets/8364368/26412212/e0e112f8-409f-11e7-867b-512cf044d717.gif) 
 
 ### Viewer Shortcuts
-	W : label selected box as `Single Worm`.
-	C : label selected box as `Worm Cluster`.
-	B : label selected box as `Bad`.
-	U : label selected box as `Undefined`.
 
-	J : Join both trajectories in the zoomed windows.
-	S : Split the selected trajectory at the current time frame.
+`W` : label selected box as `Single Worm`.
 
-	Up key : select the top zoomed window. 
-	Down key : select the bottom zoomed window. 
+`C` : label selected box as `Worm Cluster`.
 
-	[ : Move the the begining of the selected trajectory.
-	] : Move the the end of the selected trajectory.
+`B` : label selected box as `Bad`.
 
-	+ : Zoom out the main window.
-	- : Zoom in the main window.
+`U` : label selected box as `Undefined`.
 
-	> : Duplicated the frame step size.
-	< : Half the frame step size.
+`J` : Join both trajectories in the zoomed windows.
+	
+`S` : Split the selected trajectory at the current time frame.
 
-	Left key : Increse the frame by step size.
-	Right key : Decrease the frame by step size.
+`Up key` : select the top zoomed window. 
+	
+`Down key` : select the bottom zoomed window. 
+
+`[` : Move the the begining of the selected trajectory.
+	
+`]` : Move the the end of the selected trajectory.
+
+`+` : Zoom out the main window.
+
+`-` : Zoom in the main window.
+
+`>` : Duplicated the frame step size.
+
+`<` : Half the frame step size.
+
+`Left key` : Increse the frame by step size.
+
+`Right key` : Decrease the frame by step size.
     
 ## Single Worm Viewer
 It is simplified version of the [Tierpsy Tracker Viewer](#tierpsy-tracker-viewer) created specifically for the `SINGLE_WORM_SHAFER` case. It can be used as shown below.

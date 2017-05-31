@@ -133,7 +133,8 @@ dflt_param_list = [
         Minimum area in pixels for an object to be considered as a part of a trajectory.
         '''
         ),
-    ('traj_min_box_width', 5, 
+    ('traj_min_box_width', 
+        5, 
         'Minimum width of bounding box in pixels for an object to be considered as a part of a trajectory.'
         ),
     
