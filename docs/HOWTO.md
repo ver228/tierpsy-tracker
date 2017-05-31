@@ -70,8 +70,7 @@ The program will find the progress of all the files selected for the analysis, a
 * You can start or end the analysis at specific points by using the `Analysis Start Point` and `Analysis End Point` drop-down menus. 
 * If you want to re-analyse a file you might have to delete or rename the previous files. If you only want to overwrite a particular step, you have to delete the corresponding step in the `/provenance_tracking` node in the corresponding file. 
 
-
-### Directory to Save the Output Files
+### Directory to Save the Output Files
 The masked videos created in the [compression step](EXPLANATION.md/#video-compression) are stored in `Masked Videos Dir`. The rest of the tracker results are stored in `Tracking Results Dir`. In both cases the subdirectory tree structure in `Original Videos Dir` would be recreated. 
 
 The reason because the tracking and the compression files are stored in different directories is because the compressed files are mean to replace the original videos, and should not be altered after compression. On the other hand you might want to re-run the analysis using a different parameters. In this way you could delete or rename the results directory and start the analysis again. If you do not want to store the files in separate directories you can assign `Masked Videos Dir` and `Tracking Results Dir` to the same value.
@@ -113,26 +112,26 @@ You can manually correct the trajectories as shown below. Once you finished clic
 	C : label selected box as `Worm Cluster`.
 	B : label selected box as `Bad`.
 	U : label selected box as `Undefined`.
-	
+
 	J : Join both trajectories in the zoomed windows.
 	S : Split the selected trajectory at the current time frame.
-	
+
 	Up key : select the top zoomed window. 
 	Down key : select the bottom zoomed window. 
-       
-    [ : Move the the begining of the selected trajectory.
-    ] : Move the the end of the selected trajectory.
-    
-    + : Zoom out the main window.
-    - : Zoom in the main window.
-    
-    > : Duplicated the frame step size.
-    < : Half the frame step size.
-    
-    Left key : Increse the frame by step size.
-    Right key : Decrease the frame by step size.
+
+	[ : Move the the begining of the selected trajectory.
+	] : Move the the end of the selected trajectory.
+
+	+ : Zoom out the main window.
+	- : Zoom in the main window.
+
+	> : Duplicated the frame step size.
+	< : Half the frame step size.
+
+	Left key : Increse the frame by step size.
+	Right key : Decrease the frame by step size.
     
 ## Single Worm Viewer
-It is a similar interface to the [Tierpsy Tracker Viewer](#tierpsy-tracker-viewer) created specifically for the `SINGLE_WORM_SHAFER` case. It can be used as shown below.
+It is simplified version of the [Tierpsy Tracker Viewer](#tierpsy-tracker-viewer) created specifically for the `SINGLE_WORM_SHAFER` case. It can be used as shown below.
 
 ![SWTrackerViewer](https://cloud.githubusercontent.com/assets/8364368/26412826/e608bfea-40a1-11e7-9d3e-d0b8bf482db2.gif) 
