@@ -19,12 +19,12 @@ Compressed array with the masked images.
 
 Frame without mask saved every `save_full_interval` frames. By default the interval is adjusted to be saved every 5 min. This field can be useful to identify changes in the background that are lost in [/mask](#mask) *e.g.* food depletion or contrast lost due to water condensation.
 
-#### mean_intensity
+#### /mean_intensity
 `Shape (tot_images,)`
 
 Mean intensity of a given frame. It is useful in optogenetic experiments to identify when the light is turned on.
 
-#### timestamp/time timestamp/raw
+#### /timestamp/time timestamp/raw
 
 Timestamp extracted from the video if the `is_extract_metadata` flag set to `true`. If this fields exists and are valid (there are not `nan` values and they increase monotonically), they will be used to calculate the `fps` used in subsequent parts of the analysis. The extraction of the timestamp can be a slow process since it uses [ffprobe](https://ffmpeg.org/ffprobe.html) to read the whole video. If you believe that your video does not have a significative number of dropped frames and you know the frame rate, or simply realise that ffprobe cannot extract the timestamp correctly, I recommend to set `is_extract_metadata` to `false`.
 
@@ -154,139 +154,34 @@ Table containing the features that can be represented as timeseries. Each row co
   * `path_range` : `(micrometers)` distance of the worm’s midbody from the path centroid.
   * `path_curvature` : `(radians/micrometers)` the angle of the worm's path divided by the distance travelled.
 
+#### /features_events/worm_*
+  * `worm_dwelling`, `head_dwelling`, `midbody_dwelling`, `tail_dwelling` : `(seconds)` time duration a body part spends in a specific region of the plate. The worm path is subdivided in uniform grids where each element diagonal is equal to the body part mean width. The stored vector contains the time spend in each grid, excluding the grids that the body part never visited.
 
-  * midbody_dwelling
-  * tail_dwelling
-  * worm_dwelling
-% The worm coils.
-coilStartFrames = struct( ...
-    'summary', 'The starting frame number per worm coil event.', ...
-    'method', ['Frames where the worm is coiled are determined by ' ...
-    'searching for a run of segmentation failures bracketed by ' ...
-    'annotations indicating failures as a result of not finding both ' ...
-    'a head and tail or, finding a large mismatch between the lengths ' ...
-    'on either side of the worm''s contour. This run of failures must ' ...
-    'exceed 1/5 of a second.']);
-coilEndFrames = struct( ...
-    'summary', 'The ending frame number per worm coil event.', ...
-    'method', ['Frames where the worm is coiled are determined by ' ...
-    'searching for a run of segmentation failures bracketed by ' ...
-    'annotations indicating failures as a result of not finding both ' ...
-    'a head and tail or, finding a large mismatch between the lengths ' ...
-    'on either side of the worm''s contour. This run of failures must ' ...
-    'exceed 1/5 of a second.']);
-coilTimes = struct( ...
-    'summary', 'The time (in seconds) per worm coil event.', ...
-    'method', ['Frames where the worm is coiled are determined by ' ...
-    'searching for a run of segmentation failures bracketed by ' ...
-    'annotations indicating failures as a result of not finding both ' ...
-    'a head and tail or, finding a large mismatch between the lengths ' ...
-    'on either side of the worm''s contour. This run of failures must ' ...
-    'exceed 1/5 of a second.']);
-coilInterTimes = struct( ...
-    'summary', ['The time (in seconds), from the end of each worm ' ...
-    'coiling event, till the next one took place.'], ...
-    'method', ['Frames where the worm is coiled are determined by ' ...
-    'searching for a run of segmentation failures bracketed by ' ...
-    'annotations indicating failures as a result of not finding both ' ...
-    'a head and tail or, finding a large mismatch between the lengths ' ...
-    'on either side of the worm''s contour. This run of failures must ' ...
-    'exceed 1/5 of a second.']);
-coilInterDistances = struct( ...
-    'summary', ['The distance traveled (in microns), from the end of ' ...
-    'each worm coiling event, till the next one took place.'], ...
-    'method', ['Frames where the worm is coiled are determined by ' ...
-    'searching for a run of segmentation failures bracketed by ' ...
-    'annotations indicating failures as a result of not finding both ' ...
-    'a head and tail or, finding a large mismatch between the lengths ' ...
-    'on either side of the worm''s contour. This run of failures must ' ...
-    'exceed 1/5 of a second.']);
-    coilFrames = struct( ...
-    'start', coilStartFrames, ...
-    'end', coilEndFrames, ...
-    'time', coilTimes, ...
-    'interTime', coilInterTimes, ...
-    'interDistance', coilInterDistances);
-coilFrequency = struct( ...
-    'summary', 'The frequency (in hertz) of coiling events.', ...
-    'method', 'The number of coiling events divided by the video length.');
-coilTimeRatio = struct( ...
-    'summary', ['The ratio of time (a unitless measure) the worm ' ...
-    'spent coiled.'], ...
-    'method', 'The sum of the coiling times divided by the video length.');
-coils = struct( ...
-    'frames', coilFrames, ...
-    'frequency', coilFrequency, ...
-    'timeRatio', coilTimeRatio);
-  
-  * inter_backward_distance
-  * inter_backward_time
-  * inter_coil_distance
-  * inter_coil_time
-  * inter_forward_distance
-  * inter_forward_time
-  
-  
-  * inter_paused_distance
-  * inter_paused_time
-  * paused_distance
-  * paused_motion_distance_ratio
-  * paused_motion_frequency
-  * paused_motion_time_ratio
-  * paused_time
+Each time frame can be labeled according to any of the following events definitions (modified from the Supplementary Material of [Yemini et al.](http://www.nature.com/nmeth/journal/v10/n9/full/nmeth.2560.html):
 
-  * omega_turn_time
-  * omega_turns_frequency
-  * omega_turns_time_ratio
-  
-  * upsilon_turn_time
-  * upsilon_turns_frequency
-  * upsilon_turns_time_ratio
-  * inter_upsilon_distance
-  * inter_upsilon_time
-  * inter_omega_distance
-  * inter_omega_time
-  
+* `forward` : the worm is moving in forward motion. It is defined over a period of 0.5 seconds where the worm travels at least 5% of its mean length and its speed is at least 5% of its length per second. The worm must maintain this conditions almost continuously with
+interruptions not longer than 0.25 seconds (the interruptions allow for quick contradictory movements such as head withdrawal, body contractions, and segmentation noise).
+
+* `backward` : the worm is moving in backward motion. Same as `forward` except the midbody speed sign must be negative.
+
+* `paused` : the worm is moving motion is paused. It is defined over a period of 0.5 seconds where the forward and backward speed does not exceed 2.5% of the worms length per second. Similarly to `forward` the maximum permissible interruption must be less than 0.25 seconds.
+
+* `omega_turn` : the worm bends are used to find a contiguous sequence of frames wherein a large bend travels from the worm’s head, through its midbody, to its tail. The worm’s body is separated into three equal parts from its head to its tail.  The mean supplementary angle is measured along each third. For omega turns, this angle must initially exceed 30° at the first but not the last third of the body (the head but not the tail). The middle third must then exceed 30°. And finally, the last but not the first third of the body must exceed 30° (the tail but not the head). This sequence of a 30° mean supplementary angle, passing continuously along the worm from head to tail, is labeled an omega turn event.
+
+* `upsilon_turn` : computed nearly identically to the `omega_turn` but they capture all events that escaped being labeled omega turns, wherein the mean supplementary angle exceeded 15° on one side of the worm (the first or last third of the body) while not exceeding 30° on the opposite end. 
 
 
+* `coil` : this feature is currently deactivated. It should use the annotations produced by [segWorm](https://github.com/openworm/SegWorm) during skeletonization. The original algorithm is based on the ratio between the contour midbody and head/tail width.
 
-posture.coils	event	posture	coils			event_durations
-posture.coils	event	posture	coils			time_between_events
-posture.coils	event	posture	coils			distance_between_events
-posture.coils	event	posture	coils			frequency
-posture.coils	event	posture	coils			time_ratio
-locomotion.turns.omegas.omegas	event	locomotion	omega_turns			event_durations
-locomotion.turns.omegas.omegas	event	locomotion	omega_turns			time_between_events
-locomotion.turns.omegas.omegas	event	locomotion	omega_turns			distance_between_events
-locomotion.turns.omegas.omegas	event	locomotion	omega_turns			frequency
-locomotion.turns.omegas.omegas	event	locomotion	omega_turns			time_ratio
-locomotion.turns.upsilons.upsilons	event	locomotion	upsilon_turns			event_durations
-locomotion.turns.upsilons.upsilons	event	locomotion	upsilon_turns			time_between_events
-locomotion.turns.upsilons.upsilons	event	locomotion	upsilon_turns			distance_between_events
-locomotion.turns.upsilons.upsilons	event	locomotion	upsilon_turns			frequency
-locomotion.turns.upsilons.upsilons	event	locomotion	upsilon_turns			time_ratio
-locomotion.motion_events.forward	event	locomotion	motion_events	forward		event_durations
-locomotion.motion_events.forward	event	locomotion	motion_events	forward		distance_during_events
-locomotion.motion_events.forward	event	locomotion	motion_events	forward		time_between_events
-locomotion.motion_events.forward	event	locomotion	motion_events	forward		distance_between_events
-locomotion.motion_events.forward	event	locomotion	motion_events	forward		frequency
-locomotion.motion_events.forward	event	locomotion	motion_events	forward		time_ratio
-locomotion.motion_events.forward	event	locomotion	motion_events	forward		data_ratio
-locomotion.motion_events.paused	event	locomotion	motion_events	paused		event_durations
-locomotion.motion_events.paused	event	locomotion	motion_events	paused		distance_during_events
-locomotion.motion_events.paused	event	locomotion	motion_events	paused		time_between_events
-locomotion.motion_events.paused	event	locomotion	motion_events	paused		distance_between_events
-locomotion.motion_events.paused	event	locomotion	motion_events	paused		frequency
-locomotion.motion_events.paused	event	locomotion	motion_events	paused		time_ratio
-locomotion.motion_events.paused	event	locomotion	motion_events	paused		data_ratio
-locomotion.motion_events.backward	event	locomotion	motion_events	backward		event_durations
-locomotion.motion_events.backward	event	locomotion	motion_events	backward		distance_during_events
-locomotion.motion_events.backward	event	locomotion	motion_events	backward		time_between_events
-locomotion.motion_events.backward	event	locomotion	motion_events	backward		distance_between_events
-locomotion.motion_events.backward	event	locomotion	motion_events	backward		frequency
-locomotion.motion_events.backward	event	locomotion	motion_events	backward		time_ratio
-locomotion.motion_events.backward	event	locomotion	motion_events	backward		data_ratio
+For each of the event each of the following features are calculated:
 
+* `_distance` : `(micromenters)` distance travelled during the events.
+* `inter_*_distance` : `(micromenters)` distance travelled between different events.
+* `_time` : `(seconds)` time durations of each event.
+* `inter_*_time` : `(seconds)` time between different events.
+* `_frequency` : `(1/seconds)` how often an event occurs per time unit `(n_events/total_time)`.
+* `_time_ratio` :  `(no units)` ratio between the time spend at the event over the total trajectory time.
+* `_distance_ratio` : `(no units)` ratio between the total distance travelled during an event and the total distance travelled during the whole trajectory.
 
 #### /features_summary: 
 Set of features calculated by subdividing and reducing the features in [/features_timeseries](#features_timeseries) and the [/features_events/worm_* ](#features_eventsworm_).
