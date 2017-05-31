@@ -115,6 +115,7 @@ Averaged intensity along the skeleton. Calculated in [INT_PROFILE](EXPLANATION.m
 
 
 ### basename_features.hdf5
+This file contains the results of [FEAT_CREATE](EXPLANATION.md#feat_create). For a more detailed information of the features see the supplementary information of [Yemini et al](http://www.nature.com/nmeth/journal/v10/n9/full/nmeth.2560.html).
 
 #### /coordinates/*
 Contour and skeleton coordinates after smoothing. Each index in the first dimension correspond to a row in [`/features_timeseries`](#features_timeseries). 
@@ -145,17 +146,18 @@ Table containing the features that can be represented as timeseries. Each row co
   * `eigen_projection_1`, `eigen_projection_2`, `eigen_projection_3`,  `eigen_projection_4`, `eigen_projection_5`, `eigen_projection_6` : `(degrees)` eigenworm coefficients calculated using the [Stephens et al., 2008](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000028) moethod. The eigenworms are calculated by applying [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis) to the angles between each subsequent skeleton point (an orientation-invariant representation). The PCA components are calculated on wild-type skeletons, and account for roughly 95% of the variance in N2 shapes. Another way of looking at this is that the worm shape is compressed with roughly 5% loss. 
   * `head_bend_mean`, `neck_bend_mean`, `midbody_bend_mean`, `hips_bend_mean`, `tail_bend_mean` : `(degrees)` mean of the angles along the skeleton for each worm body region.
   * `head_bend_sd`, `neck_bend_sd`, `midbody_bend_sd`, `hips_bend_sd`, `tail_bend_sd` : `(degrees)` standard deviation of the angles along the skeleton for each worm body region. The sign is given by the corresponding `_bend_mean`.
-  * `head_tip_speed`, `head_speed`, `midbody_speed`, `tail_speed`, `tail_tip_speed` : 
-  * head_tip_motion_direction, head_motion_direction, midbody_motion_direction, tail_motion_direction, tail_tip_motion_direction
-  * head_crawling_amplitude, midbody_crawling_amplitude, tail_crawling_amplitude
-  * head_crawling_frequency, midbody_crawling_frequency, tail_crawling_frequency
-  * foraging_amplitude
-  * foraging_speed
-  * path_range
-  * path_curvature
+  * `head_crawling_amplitude`, `head_crawling_frequency`, `midbody_crawling_amplitude`, `midbody_crawling_frequency` `tail_crawling_amplitude`, `tail_crawling_frequency`: Frequency and amplitude of the largest peak of the fourier transform over a time window of the body part bend_mean. 
+  * `head_tip_speed`, `head_speed`, `midbody_speed`, `tail_speed`, `tail_tip_speed` : `(micrometers/seconds)` body part speed. It is signed accordingly to the segment change of direction.
+  * `head_tip_motion_direction`, `head_motion_direction`, `midbody_motion_direction`, `tail_motion_direction`,  `tail_tip_motion_direction` : `(degrees/seconds)` angular speed of the respective body part.
+  * `foraging_amplitude` : the largest foraging angle measured (nose bend) prior to returning to a straight, unbent position. 
+  * `foraging_speed` : `(degrees/seconds)` foraging angular speed. It quantifies how fast the nose is moving.
+  * `path_range` : `(micrometers)` distance of the worm’s midbody from the path centroid.
+  * `path_curvature` : `(radians/micrometers)` the angle of the worm's path divided by the distance travelled.
 
-#### /features_events/worm_*:
 
+  * midbody_dwelling
+  * tail_dwelling
+  * worm_dwelling
 % The worm coils.
 coilStartFrames = struct( ...
     'summary', 'The starting frame number per worm coil event.', ...
@@ -216,33 +218,74 @@ coils = struct( ...
     'frames', coilFrames, ...
     'frequency', coilFrequency, ...
     'timeRatio', coilTimeRatio);
+  
   * inter_backward_distance
   * inter_backward_time
   * inter_coil_distance
   * inter_coil_time
   * inter_forward_distance
   * inter_forward_time
-  * inter_omega_distance
-  * inter_omega_time
+  
+  
   * inter_paused_distance
   * inter_paused_time
-  * inter_upsilon_distance
-  * inter_upsilon_time
-  * midbody_dwelling
-  * omega_turn_time
-  * omega_turns_frequency
-  * omega_turns_time_ratio
   * paused_distance
   * paused_motion_distance_ratio
   * paused_motion_frequency
   * paused_motion_time_ratio
   * paused_time
-  * tail_dwelling
+
+  * omega_turn_time
+  * omega_turns_frequency
+  * omega_turns_time_ratio
+  
   * upsilon_turn_time
   * upsilon_turns_frequency
   * upsilon_turns_time_ratio
-  * worm_dwelling
+  * inter_upsilon_distance
+  * inter_upsilon_time
+  * inter_omega_distance
+  * inter_omega_time
+  
 
+
+
+posture.coils	event	posture	coils			event_durations
+posture.coils	event	posture	coils			time_between_events
+posture.coils	event	posture	coils			distance_between_events
+posture.coils	event	posture	coils			frequency
+posture.coils	event	posture	coils			time_ratio
+locomotion.turns.omegas.omegas	event	locomotion	omega_turns			event_durations
+locomotion.turns.omegas.omegas	event	locomotion	omega_turns			time_between_events
+locomotion.turns.omegas.omegas	event	locomotion	omega_turns			distance_between_events
+locomotion.turns.omegas.omegas	event	locomotion	omega_turns			frequency
+locomotion.turns.omegas.omegas	event	locomotion	omega_turns			time_ratio
+locomotion.turns.upsilons.upsilons	event	locomotion	upsilon_turns			event_durations
+locomotion.turns.upsilons.upsilons	event	locomotion	upsilon_turns			time_between_events
+locomotion.turns.upsilons.upsilons	event	locomotion	upsilon_turns			distance_between_events
+locomotion.turns.upsilons.upsilons	event	locomotion	upsilon_turns			frequency
+locomotion.turns.upsilons.upsilons	event	locomotion	upsilon_turns			time_ratio
+locomotion.motion_events.forward	event	locomotion	motion_events	forward		event_durations
+locomotion.motion_events.forward	event	locomotion	motion_events	forward		distance_during_events
+locomotion.motion_events.forward	event	locomotion	motion_events	forward		time_between_events
+locomotion.motion_events.forward	event	locomotion	motion_events	forward		distance_between_events
+locomotion.motion_events.forward	event	locomotion	motion_events	forward		frequency
+locomotion.motion_events.forward	event	locomotion	motion_events	forward		time_ratio
+locomotion.motion_events.forward	event	locomotion	motion_events	forward		data_ratio
+locomotion.motion_events.paused	event	locomotion	motion_events	paused		event_durations
+locomotion.motion_events.paused	event	locomotion	motion_events	paused		distance_during_events
+locomotion.motion_events.paused	event	locomotion	motion_events	paused		time_between_events
+locomotion.motion_events.paused	event	locomotion	motion_events	paused		distance_between_events
+locomotion.motion_events.paused	event	locomotion	motion_events	paused		frequency
+locomotion.motion_events.paused	event	locomotion	motion_events	paused		time_ratio
+locomotion.motion_events.paused	event	locomotion	motion_events	paused		data_ratio
+locomotion.motion_events.backward	event	locomotion	motion_events	backward		event_durations
+locomotion.motion_events.backward	event	locomotion	motion_events	backward		distance_during_events
+locomotion.motion_events.backward	event	locomotion	motion_events	backward		time_between_events
+locomotion.motion_events.backward	event	locomotion	motion_events	backward		distance_between_events
+locomotion.motion_events.backward	event	locomotion	motion_events	backward		frequency
+locomotion.motion_events.backward	event	locomotion	motion_events	backward		time_ratio
+locomotion.motion_events.backward	event	locomotion	motion_events	backward		data_ratio
 
 
 #### /features_summary: 
