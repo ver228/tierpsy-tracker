@@ -45,12 +45,12 @@ You can access to all the parameters by clicking `Edit More Parameters`. The exp
 When you are satisfied with the selected parameters select a file name and press `Save Parameters`. The parameters will be saved into a [JSON](http://json.org/) that can be used by [Batch Processing Multiple Files](#batch-processing-multiple-files). If you need to further modify a parameter you can either use a text editor or reload the file by dragging it to the Set Parameters widget.
 
 ## Batch Processing Multiple Files
-
-We can analyze multiple files simultaneously by setting `Maximum Number of Processes`. 
-
 ![BatchProcessing](https://cloud.githubusercontent.com/assets/8364368/26605347/86ffb1e6-4585-11e7-9835-ffdc0751c67a.png)
 
-### How to choose the files to analyze
+This widget is execute the [analysis steps](EXPLANATION.md) on each of the files on a given directory. The program allows a degree of parallelization by analyzing multiple files at the same time (set on `Maximum Number of Processes`). I do not recommend to set this parameter to a value larger than the number of cores in the processor.
+
+
+### Chosing the Files to be Analyzed
 The program will do a recursive search in `Original Video Dir` looking for files that match the value in `File Pattern to Include`, but do not match the partern `File Pattern to Exclude`. 
 
 * The patterns can use [Unix shell-style wildcards](https://docs.python.org/3.1/library/fnmatch.html). 
@@ -61,7 +61,7 @@ The program will do a recursive search in `Original Video Dir` looking for files
 Alternatively one can create a text file with the list of files to be analysed. The path to this file can be set in `Individual File List`. 
 
 
-### What happens if I have analyzed files in the same directory. 
+### Analysis Progress 
 
 The program will find the progress of all the files selected for the analysis, and will only execute the analysis from the last completed step. Files that were completed or do not satisfy the next step requirements will be ignored. 
 
@@ -71,8 +71,7 @@ The program will find the progress of all the files selected for the analysis, a
 * If you want to re-analyse a file you might have to delete or rename the previous files. If you only want to overwrite a particular step, you have to delete the corresponding step in the `/provenance_tracking` node in the corresponding file. 
 
 
-
-### Where to save the results
+### Directory to Save the Output Files
 The masked videos created in the [compression step](EXPLANATION.md/#video-compression) are stored in `Masked Videos Dir`. The rest of the tracker results are stored in `Tracking Results Dir`. In both cases the subdirectory tree structure in `Original Videos Dir` would be recreated. 
 
 The reason because the tracking and the compression files are stored in different directories is because the compressed files are mean to replace the original videos, and should not be altered after compression. On the other hand you might want to re-run the analysis using a different parameters. In this way you could delete or rename the results directory and start the analysis again. If you do not want to store the files in separate directories you can assign `Masked Videos Dir` and `Tracking Results Dir` to the same value.
@@ -92,7 +91,6 @@ Some extra options:
 
 * In some cases the analysis will not finished correctly because some steps were not executed. If you still want to copy to the final destination the files produced by remaining steps tick the `Copy Unifnished Analysis` box.
 
-
 ### Command Line Tool
 
 The same functions are accesible using the command line. You can see the available option by typing in the main tierpsy directory:
@@ -102,13 +100,15 @@ python cmd_scripts/processMultipleFiles.py -h
 
 ## Tierpsy Tracker Viewer
 
+This widget is used to visualize the tracking results. You can move to a specific frame, zoom in/out, select specific trajectories, and visualize the skeletons overlay, the trajectory paths or saved [unmasked frames](OUTPUTS.md#full_data). See below for an example on how to use it.
 
 ![MWTrackerViewer](https://cloud.githubusercontent.com/assets/8364368/26412511/eac27158-40a0-11e7-880c-5671c2c27099.gif)  
 
-Tracks can be joined
+You can manually correct the trajectories as shown below. Once you finished click `Calculate Features` to execute the [FEAT_MANUAL_CREATE](EXPLANATION.md/#feat_manual_create) step.
+
 ![TrackJoined](https://cloud.githubusercontent.com/assets/8364368/26412212/e0e112f8-409f-11e7-867b-512cf044d717.gif) 
 
-### HotKeys
+### Viewer Shortcuts
 	W : label selected box as `Single Worm`.
 	C : label selected box as `Worm Cluster`.
 	B : label selected box as `Bad`.
@@ -133,6 +133,6 @@ Tracks can be joined
     Right key : Decrease the frame by step size.
     
 ## Single Worm Viewer
-It is a similar interface to the (Tierpsy Tracker Viewer)[#tierpsy-tracker-viewer] created specifically for the `SINGLE_WORM_SHAFER` case. It can be used as shown below.
+It is a similar interface to the [Tierpsy Tracker Viewer](#tierpsy-tracker-viewer) created specifically for the `SINGLE_WORM_SHAFER` case. It can be used as shown below.
 
 ![SWTrackerViewer](https://cloud.githubusercontent.com/assets/8364368/26412826/e608bfea-40a1-11e7-9d3e-d0b8bf482db2.gif) 
