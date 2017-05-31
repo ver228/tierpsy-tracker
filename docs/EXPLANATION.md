@@ -1,4 +1,6 @@
 # Software Explanation
+Here is an explanation of all the steps executed in the analysis of a video file. See the [Output Files](OUTPUTS.md) section for a description of each of the files produced by the program.
+
 
 ## Video Compression
 
@@ -50,6 +52,7 @@ We extract a set of features for each particle in each frame (corresponding to t
 ### SKE_CREATE
 
 In this step the multiworm data is transform to a single worm mask by extracting individual ROIs using the information in [/trajectories_data](OUTPUTS.md/#trajectories_data). Then the skeletons can be extracted using using the [segWorm](https://github.com/openworm/SegWorm) algorithm. To increase the speed the algorithm was implemented in Python and optimized using Cython and C. The output is stored as [`basename_skeletons.hdf5`](OUTPUTS.md/#basename_skeletonshdf5). An example of the result is shown below. 
+
 ![skeletons](https://cloud.githubusercontent.com/assets/8364368/26309647/a6b4402e-3ef5-11e7-96cd-4a037ee42868.gif)
 
 ### SKE_FILT
