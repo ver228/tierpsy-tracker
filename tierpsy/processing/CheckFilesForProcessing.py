@@ -87,6 +87,11 @@ class CheckFilesForProcessing(object):
     def _getSubDirPath(self, source_dir, source_root_dir):
         '''Generate the destination dir path keeping the same structure 
         as the source directory'''
+
+        #if the source_root_dir is empty do not create a subdir_path
+        if not source_root_dir:
+            return ''
+
         subdir_path = source_dir.replace(source_root_dir, '')
 
         #TODO: What happends is there is MaskedVideos within the subdirectory 

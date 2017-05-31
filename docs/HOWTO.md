@@ -20,7 +20,7 @@ python3 cmd_scripts/TierpsyTrackerConsole.py
 
 The main widget should look like the one below:
 
-![TierpsyTrackerConsole](https://cloud.githubusercontent.com/assets/8364368/26605344/8348e338-4585-11e7-8720-81584fde7ca5.png)   
+![TierpsyTrackerConsole](https://cloud.githubusercontent.com/assets/8364368/26624637/64275e1c-45e9-11e7-8bd6-69a386007d89.png)   
 
 ## Set Parameters
 
@@ -46,9 +46,51 @@ When you are satisfied with the selected parameters select a file name and press
 
 ## Batch Processing Multiple Files
 
+We can analyze multiple files simultaneously by setting `Maximum Number of Processes`. 
+
 ![BatchProcessing](https://cloud.githubusercontent.com/assets/8364368/26605347/86ffb1e6-4585-11e7-9835-ffdc0751c67a.png)
-  
-It is an interface designed to input 
+
+### How to choose the files to analyze
+The program will do a recursive search in `Original Video Dir` looking for files that match the value in `File Pattern to Include`, but do not match the partern `File Pattern to Exclude`. 
+
+* The patterns can use [Unix shell-style wildcards](https://docs.python.org/3.1/library/fnmatch.html). 
+* In order to distinguish the program [output files](OUTPUTS.md), any file that ends with any of the [reserved subfixes](https://github.com/ver228/tierpsy-tracker/blob/master/tierpsy/helper/misc/file_processing.py#L5) will be ignored. 
+* To analyze a single file set `File Pattern to Include` to the file name.
+* If the `Analysis Start Point` is set to be after [`COMPRESS`](EXPLANATION.md/#compress) the `Original Videos Dir` would be ignored and `Masked Videos Dir` would be used instead.
+
+Alternatively one can create a text file with the list of files to be analysed. The path to this file can be set in `Individual File List`. 
+
+
+### What happens if I have analyzed files in the same directory. 
+
+The program will find the progress of all the files selected for the analysis, and will only execute the analysis from the last completed step. Files that were completed or do not satisfy the next step requirements will be ignored. 
+
+* To see only a summary of the files to be analysed without starting the analysis tick `Only Display Progress Summary`.
+
+* You can start or end the analysis at specific points by using the `Analysis Start Point` and `Analysis End Point` drop-down menus. 
+* If you want to re-analyse a file you might have to delete or rename the previous files. If you only want to overwrite a particular step, you have to delete the corresponding step in the `/provenance_tracking` node in the corresponding file. 
+
+
+
+### Where to save the results
+The masked videos created in the [compression step](EXPLANATION.md/#video-compression) are stored in `Masked Videos Dir`. The rest of the tracker results are stored in `Tracking Results Dir`. In both cases the subdirectory tree structure in `Original Videos Dir` would be recreated. 
+
+The reason because the tracking and the compression files are stored in different directories is because the compressed files are mean to replace the original videos, and should not be altered after compression. On the other hand you might want to re-run the analysis using a different parameters. In this way you could delete or rename the results directory and start the analysis again. If you do not want to store the files in separate directories you can assign `Masked Videos Dir` and `Tracking Results Dir` to the same value.
+
+### Parameters Files
+Parameters files created with the widget [Set Parameters](#set-parameters) can be select in the `Parameter Files` box. You can also select some previously created files using the drop-down list. If no file is selected the [default values](https://github.com/ver228/tierpsy-tracker/blob/dev/tierpsy/helper/params/docs_tracker_param.py) will be used. 
+
+### Temporary directory
+By default the program creates files into the `Temporary Dir` and only moves them to the `Masked Videos Dir` or the `Tracking Results Dir` when the analysis finished. The reasons to use a temporary directory are:
+
+* Protect files from corruption due to an unexpected termination (crashes). HDF5 is particularly prone to get corrupted if a file was opened in write mode and not closed properly.
+* Deal with unreliable connections. If you are using remote disks it is possible that the connection between the analysis computer and the data would be interrupted. A solution is to copy the required files locally before starting the analysis and copy the modified files back once is finished.
+
+Some extra options:
+
+* By default the original videos are not copied to the temporary directory for compression. This files can be quite large and since they would be read-only they do not require protection from corruption.  If you want copy the videos, *i.e.* you have connection problems, tick `Copy Raw Videos to Temp Dir` box.
+
+* In some cases the analysis will not finished correctly because some steps were not executed. If you still want to copy to the final destination the files produced by remaining steps tick the `Copy Unifnished Analysis` box.
 
 
 ### Command Line Tool
@@ -67,32 +109,29 @@ Tracks can be joined
 ![TrackJoined](https://cloud.githubusercontent.com/assets/8364368/26412212/e0e112f8-409f-11e7-867b-512cf044d717.gif) 
 
 ### HotKeys
-       #SHORTCUTS
-        self.ui.pushButton_W.setShortcut(QKeySequence(Qt.Key_W))
-        self.ui.pushButton_U.setShortcut(QKeySequence(Qt.Key_U))
-        self.ui.pushButton_WS.setShortcut(QKeySequence(Qt.Key_C))
-        self.ui.pushButton_B.setShortcut(QKeySequence(Qt.Key_B))
-        self.ui.radioButton_ROI1.setShortcut(QKeySequence(Qt.Key_Up))
-        self.ui.radioButton_ROI2.setShortcut(QKeySequence(Qt.Key_Down))
-        self.ui.pushButton_join.setShortcut(QKeySequence(Qt.Key_J))
-        self.ui.pushButton_split.setShortcut(QKeySequence(Qt.Key_S))
-
+	W : label selected box as `Single Worm`.
+	C : label selected box as `Worm Cluster`.
+	B : label selected box as `Bad`.
+	U : label selected box as `Undefined`.
+	
+	J : Join both trajectories in the zoomed windows.
+	S : Split the selected trajectory at the current time frame.
+	
+	Up key : select the top zoomed window. 
+	Down key : select the bottom zoomed window. 
+       
+    [ : Move the the begining of the selected trajectory.
+    ] : Move the the end of the selected trajectory.
     
-
-    def keyPressEvent(self, event):
-        #MORE SHORTCUTS
-        # go the the start of end of a trajectory
-        if event.key() == Qt.Key_BracketLeft:
-            current_roi = 1 if self.ui.radioButton_ROI1.isChecked() else 2
-            self.roiRWFF(current_roi, self.RW)
-        #[ <<
-        elif event.key() == Qt.Key_BracketRight:
-            current_roi = 1 if self.ui.radioButton_ROI1.isChecked() else 2
-            self.roiRWFF(current_roi, self.FF)
-
-        super().keyPressEvent(event)
-
-
+    + : Zoom out the main window.
+    - : Zoom in the main window.
+    
+    > : Duplicated the frame step size.
+    < : Half the frame step size.
+    
+    Left key : Increse the frame by step size.
+    Right key : Decrease the frame by step size.
+    
 ## Single Worm Viewer
 It is a similar interface to the (Tierpsy Tracker Viewer)[#tierpsy-tracker-viewer] created specifically for the `SINGLE_WORM_SHAFER` case. It can be used as shown below.
 
