@@ -40,12 +40,12 @@ Below there is an example of how the trajectories look after tracking.
 ![trajectories](https://cloud.githubusercontent.com/assets/8364368/26301795/25eb72ac-3eda-11e7-8a52-99dd6c49bc07.gif)
 
 ### SKE_INIT
-This is a refiment step to clean [/plate_worms](OUTPUTS.md/#plate_worms). For each trajectory we interpolate any time gap, calculate a fixed ROI size, and smooth the threshold and centroid over time. The purpose of this modifications is to make the thresholding more robust and the data suitable to for the [next step](#calculate-skeletons). The data is stored in the [/trajectories_data](OUTPUTS.md/#trajectories_data) table that becomes the central table. It contains the trajectories that would be used in the subsequent steps and displayed by the [viewer](HOWTO.md#tierpsy-tracker-viewer).
+This is a refiment step to clean [/plate_worms](OUTPUTS.md/#plate_worms). For each trajectory we interpolate any time gap, calculate a fixed ROI size, and smooth the threshold and centroid over time. The purpose of this modifications is to make the thresholding more robust and the data suitable to for the [next step](#calculate-skeletons). The data is stored in the [trajectories_data](OUTPUTS.md/#trajectories_data) table that becomes the central table. It contains the trajectories that would be used in the subsequent steps and displayed by the [viewer](HOWTO.md/#tierpsy-tracker-viewer).
 
 
 ### BLOB_FEATS
 
-We extract a set of features for each particle in each frame (corresponding to the individual rows in [/trajectories_data](#trajectories_data)). The results are stored in the [/blob_features](#blob_features) table.
+We extract a set of features for each particle in each frame (corresponding to the individual rows in [/trajectories_data](OUTPUTS.md/#trajectories_data)). The results are stored in the [/blob_features](OUTPUTS.md/#blob_features) table.
 
 ## Calculate Skeletons
 
@@ -85,7 +85,7 @@ Using this algorithm the errors in head-tail identification decrease to 0.01% co
 ## Extract Features
 
 ### FEAT_CREATE
-This step uses the [Open Worm Analysis Toolbox](https://github.com/openworm/open-worm-analysis-toolbox) to calculate the skeleton features explained in [`basename_features.hdf5`](OUTPUTS.md/#basename_features.hdf5).
+This step uses the [open worm analysis toolbox](https://github.com/openworm/open-worm-analysis-toolbox) to calculate the skeleton features explained in [`basename_features.hdf5`](OUTPUTS.md/#basename_features.hdf5).
 
 ### FEAT_MANUAL_CREATE
 Same as [FEAT_CREATE](#feat_create) but it will only use the indexes that were manually identified as worms using the [Tierpsy Tracker Viewer](HOWTO.md#tierpsy-tracker-viewer). The results will be saved as `basename_feat_manual.hdf5`.
