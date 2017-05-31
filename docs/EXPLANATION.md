@@ -1,5 +1,5 @@
 # Software Explanation
-Here is an explanation of all the steps executed in the analysis of a video file. See the [Output Files](OUTPUTS.md) section for a description of each of the files produced by the program.
+Here is an explanation of all the steps executed in the analysis of a video file. See the [Output Files](OUTPUTS.md) section for a description of each of the files created by the program.
 
 
 ## Video Compression
