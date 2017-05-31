@@ -1,11 +1,7 @@
 # Output Files
-attributes: 
-  * expected_fps := 1,
-  * time_units := 'frames'
-  * microns_per_pixel := 1
-  * xy_units := 'pixels'
-  * is_light_background := 1
-  * 
+
+Below are a description and contents of each of the files produced during the [analysis steps](EXPLANATION.md). The `basename` prefix in each of the files refers to the original video name without the extension. For example, if the video file is named as `myfile.avi`, the files will look like `myfile.hdf5`, `myfile_subsample.avi` `myfile_skeletons.hdf5`, `myfile_features.hdf5`, `myfile_intensities.hdf5`.
+  
 ## basename.hdf5
 Contains the compressed hdf5 video data.
 
@@ -13,6 +9,13 @@ Contains the compressed hdf5 video data.
 `Shape (tot_images, im_high, im_width)`
 
 Compressed array with the masked images.
+
+Additionally, this dataset will store as attributes the following information:
+  * `expected_fps` : expected frames per second given by the user. If there is a valid video timestamp the `fps` will be calculated from it and this field will be ignored.
+  * time_units = this value is set to `seconds` if there is a valid `expected_fps` or `timestamp`, otherwise it will be set to `frames`. 
+  * microns_per_pixel : user given micrometers per pixels conversion.
+  * xy_units : set to `microns` if a valid `microns_per_pixel` was given otherwise it will be set to `pixels`.
+  * is_light_background : user given flag. It must be `1` if the background is lighter than the objects tracker, and `0` if the background is darker. 
 
 #### /full_data
 `Shape (tot_images/save_full_interval, im_high, im_width)`
@@ -28,10 +31,10 @@ Mean intensity of a given frame. It is useful in optogenetic experiments to iden
 
 Timestamp extracted from the video if the `is_extract_metadata` flag set to `true`. If this fields exists and are valid (there are not `nan` values and they increase monotonically), they will be used to calculate the `fps` used in subsequent parts of the analysis. The extraction of the timestamp can be a slow process since it uses [ffprobe](https://ffmpeg.org/ffprobe.html) to read the whole video. If you believe that your video does not have a significative number of dropped frames and you know the frame rate, or simply realise that ffprobe cannot extract the timestamp correctly, I recommend to set `is_extract_metadata` to `false`.
 
-### basename_subsample.avi
+## basename_subsample.avi
 Low time and spatial resolution avi video generated using the data in [/mask](#mask).
 
-### basename_skeletons.hdf5
+## basename_skeletons.hdf5
 Contains the results of the [tracking](#create-trajectories) and [skeletonization](#calculate-skeletons) steps.
 
 #### /plate_worms
@@ -46,7 +49,7 @@ Table where the first results of [TRAJ_CREATE](EXPLANATION.md/#traj_create) and 
   * `bounding_box_xmin`, `bounding_box_xmax`, `bounding_box_ymin`, `bounding_box_ymax`: [bounding rectangle](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#boundingrect) coordinates.
 
 #### /trajectories_data
-Table containing the data of the trajectories used in the analysis and displayed by the [Tierpsy Tracker Viewer](HOWTO.md#tierpsy-tracker-viewer). Each row should have a unique pair of `worm_index_joined` and `frame_number` keys corresponding to each of the particles identified in each video frame.
+Table containing the data of the trajectories used in the analysis and displayed by the [Tierpsy Tracker Viewer](HOWTO.md#tierpsy-tracker-viewer). Each row should have a unique pair of `worm_index_joined` and `frame_number` keys corresponding to each of the particles identified in each video frame. Additionally, this dataset will store the same attributes described in [/mask](#mask):
 
   * `frame_number`: video frame number.
   * `worm_index_joined`: same as in [`/plate_worms`](#plate_worms).
@@ -61,7 +64,7 @@ Table containing the data of the trajectories used in the analysis and displayed
   * `area`: expected blob area. Useful to filter spurious particles after the ROI binarization.
   * `timestamp_raw`: timestamp number. Useful to find droped frames.
   * `timestamp_time`: real time timestamp value.
-  * `int_map_id`: corresponding row in the [`base_name_intensities.hdf5`](base_name_intensities.hdf5).
+  * `int_map_id`: corresponding row in the [`basename_intensities.hdf5`](basename_intensities.hdf5).
 
 #### /blob_features
   * `coord_x`, `coord_y`, `box_length`, `box_width`, `box_orientation`. features calculated using [minAreaRect](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#minarearect).
@@ -98,7 +101,7 @@ Internal. Table with the skeleton switched in [INT_SKE_ORIENT](EXPLANATION.md/#i
 #### /timestamp/raw /timestamp/time
 Same as in [basename.hdf5](#basename.hdf5).
 
-### base_name_intensities.hdf5
+## basename_intensities.hdf5
 
 #### /trajectories_data_valid 
 Same as [/trajectories_data](#trajectories_data) but only containing rows where `has_skeleton` is `true`.
@@ -114,16 +117,14 @@ Intensity maps of the straigten worms described in [INT_PROFILE](EXPLANATION.md/
 Averaged intensity along the skeleton. Calculated in [INT_PROFILE](EXPLANATION.md/#int_profile) and used by [INT_SKE_ORIENT](EXPLANATION.md/#int_ske_orient). The data is organized as in [/straighten_worm_intensity](#straighten_worm_intensity).
 
 
-### basename_features.hdf5
+## basename_features.hdf5
 This file contains the results of [FEAT_CREATE](EXPLANATION.md#feat_create). For a more detailed information of the features see the supplementary information of [Yemini et al](http://www.nature.com/nmeth/journal/v10/n9/full/nmeth.2560.html).
 
 #### /coordinates/*
 Contour and skeleton coordinates after smoothing. Each index in the first dimension correspond to a row in [`/features_timeseries`](#features_timeseries). 
 
 #### /features_timeseries
-Table containing the features that can be represented as timeseries. Each row corresponds to a single (`worm_index`, `timestamp`) pair.
-
-`tail_to_head_orientation` This feature needs to be changed since its value is with respect to the image frame of reference that does not have a real meaning unless we are using chemotaxis experiments.
+Table containing the features that can be represented as timeseries. Each row corresponds to a single (`worm_index`, `timestamp`) pair. Additionally, this dataset will store the same attributes described in [/mask](#mask)
 
   * `worm_index` : trajectory index. Same as `worm_index_joined` in [/trajectories_data](#trajectories_data).
   * `timestamp` : video timestamp indexes. Should be continous. The real space between indexes should be `1/frames per second`. 
@@ -140,10 +141,10 @@ Table containing the features that can be represented as timeseries. Each row co
   * `track_length` : `(microns)` length of the line extending from head to its tail.
   * `eccentricity` : `(no units)` [eccentricity](https://en.wikipedia.org/wiki/Eccentricity_(mathematics)) of the worm's body calculated using the [contour moments](http://docs.opencv.org/trunk/dd/d49/tutorial_py_contour_features.html).
   * `bend_count` : `(no units)` the number of kinks (bends) in the skeleton.
-  * `tail_to_head_orientation` `(degrees)` direction the worm is facing is measured as the angle between the head and the tail. 
+  * `tail_to_head_orientation` : direction the worm is facing is measured as the angle between the head and the tail.  This feature needs to be changed since its value is with respect to the image frame of reference that does not have a real meaning unless we are using chemotaxis experiments.
   * `head_orientation` `(degrees)`  direction of the head measured as the angle between 1/6 of the worm body from the head and the head tip.
-  * `tail_orientation` `(no units)`  direction of the tail measured as the angle between 1/6 of the worm body from the tail and the tail tip.
-  * `eigen_projection_1`, `eigen_projection_2`, `eigen_projection_3`,  `eigen_projection_4`, `eigen_projection_5`, `eigen_projection_6` : `(degrees)` eigenworm coefficients calculated using the [Stephens et al., 2008](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000028) moethod. The eigenworms are calculated by applying [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis) to the angles between each subsequent skeleton point (an orientation-invariant representation). The PCA components are calculated on wild-type skeletons, and account for roughly 95% of the variance in N2 shapes. Another way of looking at this is that the worm shape is compressed with roughly 5% loss. 
+  * `tail_orientation` `(degrees)`  direction of the tail measured as the angle between 1/6 of the worm body from the tail and the tail tip.
+  * `eigen_projection_1`, `eigen_projection_2`, `eigen_projection_3`,  `eigen_projection_4`, `eigen_projection_5`, `eigen_projection_6` : `(no units)` eigenworm coefficients calculated using the [Stephens et al., 2008](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000028) moethod. The eigenworms are calculated by applying [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis) to the angles between each subsequent skeleton point (an orientation-invariant representation). The PCA components are calculated on wild-type skeletons, and account for roughly 95% of the variance in N2 shapes. Another way of looking at this is that the worm shape is compressed with roughly 5% loss. 
   * `head_bend_mean`, `neck_bend_mean`, `midbody_bend_mean`, `hips_bend_mean`, `tail_bend_mean` : `(degrees)` mean of the angles along the skeleton for each worm body region.
   * `head_bend_sd`, `neck_bend_sd`, `midbody_bend_sd`, `hips_bend_sd`, `tail_bend_sd` : `(degrees)` standard deviation of the angles along the skeleton for each worm body region. The sign is given by the corresponding `_bend_mean`.
   * `head_crawling_amplitude`, `head_crawling_frequency`, `midbody_crawling_amplitude`, `midbody_crawling_frequency` `tail_crawling_amplitude`, `tail_crawling_frequency`: Frequency and amplitude of the largest peak of the fourier transform over a time window of the body part bend_mean. 
