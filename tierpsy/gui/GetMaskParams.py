@@ -269,7 +269,18 @@ class GetMaskParams_GUI(ParamsGUI):
         self.timer.timeout.connect(self.getNextChunk)
 
     
+    def keyPressEvent(self, event):
+        if self.vid is not None:
+            # break no file open, nothing to do here
+            return
+        key = event.key()
+        if key == Qt.Key_Minus:
+            self.twoViews.zoom(-1)
+        elif key == Qt.Key_Plus:
+            self.twoViews.zoom(1)
 
+        else:
+            QMainWindow.keyPressEvent(self, event)
 
     def playVideo(self):
         if self.vid is None:
@@ -486,18 +497,7 @@ class GetMaskParams_GUI(ParamsGUI):
     
     
 
-    def keyPressEvent(self, event):
-        if self.vid is not None:
-            # break no file open, nothing to do here
-            return
-        key = event.key()
-        if key == Qt.Key_Minus:
-            self.twoViews.zoom(-1)
-        elif key == Qt.Key_Plus:
-            self.twoViews.zoom(1)
-
-        else:
-            QMainWindow.keyPressEvent(self, event)
+    
     def updateParamFile(self, json_file):
         super().updateParamFile(json_file)
         self.updateMask()

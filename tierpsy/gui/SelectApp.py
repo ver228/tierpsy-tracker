@@ -15,7 +15,7 @@ widget_lists = {
     'get_params':(GetMaskParams_GUI,"Set Parameters"),
     'batch_processing':(BatchProcessing_GUI,"Batch Processing Multiple Files"),
     'mwtracker':(MWTrackerViewer_GUI, "Tierpsy Tracker Viewer"),
-    'swtracker':(SWTrackerViewer_GUI, "Tierpsy Tracker Viewer (single worm)")
+    'swtracker':(SWTrackerViewer_GUI, "Single Worm Viewer")
 }
 
 

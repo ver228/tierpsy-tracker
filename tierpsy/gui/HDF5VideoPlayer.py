@@ -108,6 +108,42 @@ class SimplePlayer(QtWidgets.QMainWindow):
         self.isPlay = False
         self.image_group = None
 
+
+    def keyPressEvent(self, event):
+        #HOT KEYS
+        key = event.key()
+
+        # Duplicate the frame step size (speed) when pressed  > or .:
+        if key == Qt.Key_Greater or key == Qt.Key_Period:
+            self.frame_step *= 2
+            self.ui.spinBox_step.setValue(self.frame_step)
+            
+
+        # Half the frame step size (speed) when pressed: < or ,
+        elif key == Qt.Key_Less or key == Qt.Key_Comma:
+            self.frame_step //= 2
+            if self.frame_step < 1:
+                self.frame_step = 1
+            self.ui.spinBox_step.setValue(self.frame_step)
+            
+
+        # Move backwards when  are pressed
+        elif key == Qt.Key_Left:
+            self.frame_number -= self.frame_step
+            if self.frame_number < 0:
+                self.frame_number = 0
+            self.ui.spinBox_frame.setValue(self.frame_number)
+            
+
+        # Move forward when  are pressed
+        elif key == Qt.Key_Right:
+            self.frame_number += self.frame_step
+            if self.frame_number >= self.tot_frames:
+                self.frame_number = self.tot_frames - 1
+            self.ui.spinBox_frame.setValue(self.frame_number)
+            
+        #super().keyPressEvent(event)
+
     def playVideo(self):
         if self.image_group is None:
             return
@@ -152,39 +188,7 @@ class SimplePlayer(QtWidgets.QMainWindow):
         return self.ui.spinBox_step.setValue(value)
 
 
-    def keyPressEvent(self, event):
-        key = event.key()
-
-        # Duplicate the frame step size (speed) when pressed  > or .:
-        if key == Qt.Key_Greater or key == Qt.Key_Period:
-            self.frame_step *= 2
-            self.ui.spinBox_step.setValue(self.frame_step)
-            
-
-        # Half the frame step size (speed) when pressed: < or ,
-        elif key == Qt.Key_Less or key == Qt.Key_Comma:
-            self.frame_step //= 2
-            if self.frame_step < 1:
-                self.frame_step = 1
-            self.ui.spinBox_step.setValue(self.frame_step)
-            
-
-        # Move backwards when  are pressed
-        elif key == Qt.Key_Left:
-            self.frame_number -= self.frame_step
-            if self.frame_number < 0:
-                self.frame_number = 0
-            self.ui.spinBox_frame.setValue(self.frame_number)
-            
-
-        # Move forward when  are pressed
-        elif key == Qt.Key_Right:
-            self.frame_number += self.frame_step
-            if self.frame_number >= self.tot_frames:
-                self.frame_number = self.tot_frames - 1
-            self.ui.spinBox_frame.setValue(self.frame_number)
-            
-        super().keyPressEvent(event)
+    
 
 class HDF5VideoPlayerGUI(SimplePlayer):
 
@@ -239,6 +243,21 @@ class HDF5VideoPlayerGUI(SimplePlayer):
         # the arrow keys
         setChildrenFocusPolicy(self, QtCore.Qt.ClickFocus)
     
+    def keyPressEvent(self, event):
+        #HOT KEYS
+
+        if self.fid is None:
+            # break no file open, nothing to do here
+            return
+
+        key = event.key()
+        if key == Qt.Key_Minus:
+            self.mainImage.zoom(-1)
+        elif key == Qt.Key_Plus:
+            self.mainImage.zoom(1)
+
+        super().keyPressEvent(event)
+
     # frame spin box
     def updateFrameNumber(self):
         self.frame_number = self.ui.spinBox_frame.value()
@@ -395,18 +414,7 @@ class HDF5VideoPlayerGUI(SimplePlayer):
             self.updateImage()
             self.mainImage.zoomFitInView()
 
-    def keyPressEvent(self, event):
-        if self.fid is None:
-            # break no file open, nothing to do here
-            return
-
-        key = event.key()
-        if key == Qt.Key_Minus:
-            self.mainImage.zoom(-1)
-        elif key == Qt.Key_Plus:
-            self.mainImage.zoom(1)
-
-        super().keyPressEvent(event)
+    
 
     def closeEvent(self, event):
         if self.fid is not None:
