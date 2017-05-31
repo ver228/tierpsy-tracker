@@ -155,7 +155,7 @@ Table containing the features that can be represented as timeseries. Each row co
   * `path_range` : `(micrometers)` distance of the worm’s midbody from the path centroid.
   * `path_curvature` : `(radians/micrometers)` the angle of the worm's path divided by the distance travelled.
 
-#### /features_events/worm_*
+#### /features_events/worm_*
   * `worm_dwelling`, `head_dwelling`, `midbody_dwelling`, `tail_dwelling` : `(seconds)` time duration a body part spends in a specific region of the plate. The worm path is subdivided in uniform grids where each element diagonal is equal to the body part mean width. The stored vector contains the time spend in each grid, excluding the grids that the body part never visited.
 
 Each time frame can be labeled according to any of the following events definitions (modified from the Supplementary Material of [Yemini et al.](http://www.nature.com/nmeth/journal/v10/n9/full/nmeth.2560.html):
