@@ -26,7 +26,7 @@
     "resampling_N": 49,
     "roi_size": -1,
     "save_int_maps": false,
-    "split_traj_time": 300,
+    "split_traj_time": 90,
     "strel_size": 5,
     "thresh_C": 15,
     "thresh_block_size": 61,
