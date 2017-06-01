@@ -268,7 +268,7 @@ dflt_param_list = [
         'Method to used to correct head/tail based on the intensity profile.'
         ),
     ('split_traj_time', 
-        90, 
+        300, 
         'Time in SECONDS that a worm trajectory will be subdivided to calculate the splitted features.'
         ),
 
