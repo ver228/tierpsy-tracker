@@ -109,11 +109,6 @@ class MANUAL_FEATS(TestObj):
         self.description = 'Calculate features from manually joined trajectories.'
         super().__init__(*args)
 
-        self.feat_manual_file = os.path.join(
-        self.main_dir,
-        'Results',
-        'Capture_Ch1_18062015_140908_feat_manual.hdf5')
-
         args = [
         '--mask_dir_root',
         self.masked_files_dir,
@@ -125,8 +120,10 @@ class MANUAL_FEATS(TestObj):
         self.add_command(args)
 
     def clean(self):
-        if os.path.exists(self.feat_manual_file):
-            os.remove(self.feat_manual_file)
+        fnames = glob.glob(os.path.join(self.main_dir, 'Results', '*_feat_manual.hdf5'))
+        for fname in fnames:
+            os.remove(fname)
+
 
 class RIG_HDF5_VIDEOS(TestObj):
     def __init__(self, *args):
