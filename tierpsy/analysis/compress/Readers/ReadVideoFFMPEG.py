@@ -6,11 +6,10 @@ Created on Thu Apr  2 13:15:59 2015
 """
 
 import os
-import sys
 import re
 import subprocess as sp
+
 import numpy as np
-from queue import Empty
 
 from tierpsy.helper.misc import FFMPEG_CMD, ReadEnqueue
 

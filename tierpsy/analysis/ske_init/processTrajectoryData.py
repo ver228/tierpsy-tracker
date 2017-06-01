@@ -5,19 +5,19 @@ Created on Wed Nov 30 20:56:17 2016
 
 @author: ajaver
 """
-import numpy as np
-import tables
-import pandas as pd
-import os
 import json
 
+import numpy as np
+import pandas as pd
+import tables
+from scipy.interpolate import interp1d
 from scipy.ndimage.filters import median_filter
 from scipy.signal import savgol_filter
-from scipy.interpolate import interp1d
 
+from tierpsy.analysis.compress.extractMetaData import read_and_save_timestamp
+from tierpsy.helper.params import copy_unit_conversions, ske_init_defaults
 from tierpsy.analysis.ske_init.filterTrajectModel import filterModelWorms
 from tierpsy.helper.misc import TABLE_FILTERS
-from tierpsy.analysis.compress.extractMetaData import read_and_save_timestamp
 
 def getSmoothedTraj(trajectories_file,
                     min_track_size=100,
@@ -209,65 +209,48 @@ def getSmoothedTraj(trajectories_file,
 
     
 def saveTrajData(trajectories_data, masked_image_file, skeletons_file):
-    
-    #read some useful variables from the masked_image_file
-    with tables.File(masked_image_file, 'r') as mask_fid:
-        mask_dataset = mask_fid.get_node("/mask")
-        if 'pixels2microns_x' in mask_dataset._v_attrs:
-            pixels2microns_x = mask_dataset._v_attrs['pixels2microns_x']
-            pixels2microns_y = mask_dataset._v_attrs['pixels2microns_y']
-        else:
-            pixels2microns_x = 1
-            pixels2microns_y = 1
-        
-        if 'is_light_background' in mask_dataset._v_attrs:
-            is_light_background = mask_dataset._v_attrs['is_light_background']
-        else:
-            is_light_background = 1 #default value
-
-        if 'expected_fps' in mask_dataset._v_attrs:
-            expected_fps = mask_dataset._v_attrs['expected_fps']
-        else:
-            expected_fps = 25 #default value
-    
     #save data into the skeletons file
     with tables.File(skeletons_file, "a") as ske_file_id:
-        plate_worms = ske_file_id.get_node('/plate_worms')
-        if 'bgnd_param' in plate_worms._v_attrs:
-            bgnd_param = plate_worms._v_attrs['bgnd_param']
-        else:
-            bgnd_param = bytes(json.dumps({})) #default empty
-
-
-        ske_file_id.create_table(
+        trajectories_data_f = ske_file_id.create_table(
             '/',
             'trajectories_data',
             obj=trajectories_data.to_records(index=False),
             filters=TABLE_FILTERS)
+
+        plate_worms = ske_file_id.get_node('/plate_worms')
+        if 'bgnd_param' in plate_worms._v_attrs:
+            bgnd_param = plate_worms._v_attrs['bgnd_param']
+        else:
+            bgnd_param = bytes(json.dumps({}), 'utf-8') #default empty
         
+        trajectories_data_f._v_attrs['bgnd_param'] = bgnd_param
+        #read and the units information information
+        fps, microns_per_pixel, is_light_background = \
+        copy_unit_conversions(trajectories_data_f, masked_image_file)
+
         if not '/timestamp' in ske_file_id:
             read_and_save_timestamp(masked_image_file, skeletons_file)
         
-        #read and the pixel information
-        trajectories_data = ske_file_id.get_node('/trajectories_data')
-        trajectories_data._v_attrs['pixels2microns_x'] = pixels2microns_x                            
-        trajectories_data._v_attrs['pixels2microns_y'] = pixels2microns_y
+        ske_file_id.flush()
+    
 
-        #find if it is a mask from fluorescence and save it in the new group
-        trajectories_data._v_attrs['is_light_background'] = is_light_background
-
-        trajectories_data._v_attrs['expected_fps'] = expected_fps
-        trajectories_data._v_attrs['bgnd_param'] = bgnd_param
-
-
-def processTrajectoryData(skeletons_file, masked_image_file, trajectories_file, smoothed_traj_param, filter_model_name = ''):
+def processTrajectoryData(skeletons_file, 
+    masked_image_file, 
+    trajectories_file, 
+    smoothed_traj_param, 
+    min_track_size = 1, #probably useless
+    displacement_smooth_win = -1,
+    threshold_smooth_win = -1,
+    roi_size = -1,
+    filter_model_name = ''):
     '''
     Initialize the skeletons by creating the table `/trajectories_data`. This table is used by the GUI and by all the subsequent functions.
     filter_model_path -  name of the pretrainned keras model to used to filter worms from spurius blobs. 
                          The file must be stored in the `tierpsy/aux` directory. If the variable is empty this step will be ignored.
     '''
 
-
+    smoothed_traj_param = ske_init_defaults(masked_image_file, **smoothed_traj_param)
+    
     trajectories_data = getSmoothedTraj(trajectories_file, **smoothed_traj_param)
     if filter_model_name:
         trajectories_data = filterModelWorms(masked_image_file, trajectories_data, filter_model_name)

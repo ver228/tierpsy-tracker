@@ -9,16 +9,13 @@ from PyQt5.QtCore import QPointF, Qt
 from PyQt5.QtGui import QPixmap, QImage, QPolygonF, QPen, QPainter, QColor
 from PyQt5.QtWidgets import QApplication, QFileDialog
 
-from tierpsy.gui.HDF5VideoPlayer import HDF5VideoPlayer_GUI, lineEditDragDrop
+from tierpsy.gui.HDF5VideoPlayer import HDF5VideoPlayerGUI, LineEditDragDrop
 from tierpsy.gui.TrackerViewerAux_ui import Ui_TrackerViewerAux
 from tierpsy.analysis.ske_create.getSkeletonsTables import getWormMask
 from tierpsy.analysis.ske_create.segWormPython.mainSegworm import getSkeleton
 
 
-#from scipy.signal import savgol_filter
-
-
-class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
+class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
 
     def __init__(self, ui=''):
         if not ui:
@@ -28,13 +25,12 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
 
         self.results_dir = ''
         self.skeletons_file = ''
-        self.frame_number = -1
-        self.trajectories_data = pd.DataFrame()
-        self.traj_time_grouped = -1
+        self.trajectories_data = None
+        self.traj_time_grouped = None
         self.frame_save_interval = 1 
 
         self.ui.pushButton_skel.clicked.connect(self.getSkelFile)
-        lineEditDragDrop(
+        LineEditDragDrop(
             self.ui.lineEdit_skel,
             self.updateSkelFile,
             os.path.isfile)
@@ -75,8 +71,8 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
                     self.strel_size = 5
 
         except (IOError, KeyError):
-            self.trajectories_data = pd.DataFrame()
-            self.traj_time_grouped = -1
+            self.trajectories_data = None
+            self.traj_time_grouped = None
             self.skel_dat = {}
 
         if self.frame_number == 0:
@@ -86,51 +82,55 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
 
     def updateImGroup(self):
         super().updateImGroup()
-        if self.h5path == '/full_data':
+        try:
             self.frame_save_interval = int(self.image_group._v_attrs['save_interval'])
-        else:
+        except:
             self.frame_save_interval = 1
 
     def updateVideoFile(self, vfilename):
         super().updateVideoFile(vfilename)
-        if type(self.image_group) is int:
+        if self.image_group is None:
             return
 
         #find if it is a fluorescence image
         self.is_light_background = 1 if not 'is_light_background' in self.image_group._v_attrs \
             else self.image_group._v_attrs['is_light_background']
         
-        videos_dir, basename = os.path.split(vfilename)
-        basename = os.path.splitext(basename)[0]
+        if '/trajectories_data' in self.fid:
+            self.skeletons_file = vfilename
+        else:
+            videos_dir, basename = os.path.split(vfilename)
+            basename = os.path.splitext(basename)[0]
 
-        self.skeletons_file = ''
-        self.results_dir = ''
+            self.skeletons_file = ''
+            self.results_dir = ''
 
-        possible_dirs = [
-            videos_dir, videos_dir.replace(
-                'MaskedVideos', 'Results'), os.path.join(
-                videos_dir, 'Results')]
+            possible_dirs = [
+                videos_dir, videos_dir.replace(
+                    'MaskedVideos', 'Results'), os.path.join(
+                    videos_dir, 'Results')]
 
-        for new_dir in possible_dirs:
-            new_skel_file = os.path.join(new_dir, basename + '_skeletons.hdf5')
-            if os.path.exists(new_skel_file):
-                self.skeletons_file = new_skel_file
-                self.results_dir = new_dir
-                break
-        
+            for new_dir in possible_dirs:
+                new_skel_file = os.path.join(new_dir, basename + '_skeletons.hdf5')
+                if os.path.exists(new_skel_file):
+                    self.skeletons_file = new_skel_file
+                    self.results_dir = new_dir
+                    break
+
+
+
         self.updateSkelFile(self.skeletons_file)
 
     def getFrameData(self, frame_number):
         try:
-            if not isinstance(self.traj_time_grouped,
-                pd.core.groupby.DataFrameGroupBy):
+            if not isinstance(self.traj_time_grouped, pd.core.groupby.DataFrameGroupBy):
                 raise KeyError
             
             frame_data = self.traj_time_grouped.get_group(self.frame_save_interval*frame_number)
             return frame_data
 
         except KeyError:
-            return pd.DataFrame()
+            return None
 
     def drawSkelResult(self, img, qimg, row_data, isDrawSkel, 
         roi_corner=(0,0), read_center=True):
@@ -152,8 +152,7 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
         return qimg
 
     def drawSkel(self, worm_img, worm_qimg, row_data, roi_corner=(0, 0)):
-        if not self.skeletons_file or not isinstance(
-                self.trajectories_data, pd.DataFrame):
+        if not self.skeletons_file or self.trajectories_data is None or worm_img.size == 0:
             return
 
         c_ratio_y = worm_qimg.width() / worm_img.shape[1]
@@ -165,9 +164,14 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
 
         with tables.File(self.skeletons_file, 'r') as ske_file_id:
             for tt in ['skeleton', 'contour_side1', 'contour_side2']:
-                dat = ske_file_id.get_node('/' + tt)[skel_id]
-                dat[:, 0] = (dat[:, 0] - roi_corner[0]) * c_ratio_x
-                dat[:, 1] = (dat[:, 1] - roi_corner[1]) * c_ratio_y
+                field = '/' + tt
+                if field in ske_file_id:
+                    dat = ske_file_id.get_node(field)[skel_id]
+                    dat[:, 0] = (dat[:, 0] - roi_corner[0]) * c_ratio_x
+                    dat[:, 1] = (dat[:, 1] - roi_corner[1]) * c_ratio_y
+                else:
+                    dat = np.full((1,2), np.nan)
+
 
                 # for nn in range(2):
                 #    dat[:,nn] = savgol_filter(dat[:,nn], window_length=5, polyorder=3)
@@ -262,7 +266,7 @@ class TrackerViewerAux_GUI(HDF5VideoPlayer_GUI):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    ui = TrackerViewerAux_GUI()
+    ui = TrackerViewerAuxGUI()
     ui.show()
 
     sys.exit(app.exec_())

@@ -14,58 +14,13 @@ import os
 from collections import OrderedDict
 from scipy.signal import savgol_filter
 
-from tierpsy.analysis.stage_aligment.alignStageMotion import isGoodStageAligment
-from tierpsy.analysis.contour_orient.correctVentralDorsal import read_ventral_side
+from tierpsy.analysis.stage_aligment.alignStageMotion import isGoodStageAligment, _h_get_stage_inv
+from tierpsy.helper.params import read_fps, read_microns_per_pixel, read_ventral_side
 from tierpsy import AUX_FILES_DIR
 import open_worm_analysis_toolbox as mv
 
-
-
 # (http://www.pytables.org/usersguide/parameter_files.html)
 tables.parameters.MAX_COLUMNS = 1024
-
-def read_fps(skeletons_file, min_allowed_fps=1, dflt_fps=25):
-        # try to infer the fps from the timestamp
-    try:
-        with tables.File(skeletons_file, 'r') as fid:
-            timestamp_time = fid.get_node('/timestamp/time')[:]
-
-            if np.all(np.isnan(timestamp_time)):
-                raise ValueError
-            fps = 1 / np.nanmedian(np.diff(timestamp_time))
-
-            if np.isnan(fps) or fps < 1:
-                raise ValueError
-            is_default_timestamp = 0
-
-    except (tables.exceptions.NoSuchNodeError, IOError, ValueError):
-        with tables.File(skeletons_file, 'r') as fid:
-            node = fid.get_node('/trajectories_data')
-            if 'expected_fps' in node._v_attrs:
-                fps = node._v_attrs['expected_fps']
-            else:
-                fps = dflt_fps #default in old videos
-            is_default_timestamp = 1
-
-    return fps, is_default_timestamp
-
-def read_microns_per_pixel(skeletons_file):
-    # these function are related with the singleworm case it might be necesary to change them in the future
-    try:
-        with tables.File(skeletons_file, 'r') as fid:
-            microns_per_pixel_scale = fid.get_node('/stage_movement')._v_attrs['microns_per_pixel_scale']
-    except (KeyError, tables.exceptions.NoSuchNodeError):
-        return 1
-
-    if microns_per_pixel_scale.size == 2:
-        assert np.abs(
-            microns_per_pixel_scale[0]) == np.abs(
-            microns_per_pixel_scale[1])
-        microns_per_pixel_scale = np.abs(microns_per_pixel_scale[0])
-        return microns_per_pixel_scale
-    else:
-        return 1
-
 
 def _h_smooth_curve(curve, window=5, pol_degree=3):
     '''smooth curves using the savgol_filter'''
@@ -92,6 +47,9 @@ def _h_smooth_curve_all(curves, window=5, pol_degree=3):
                 curves[ii], window=window, pol_degree=pol_degree)
     return curves
 
+
+
+
 class WormFromTable():
     def __init__(self, 
                 file_name, 
@@ -101,8 +59,9 @@ class WormFromTable():
                 smooth_window=-1, 
                 POL_DEGREE_DFLT=3):
         # Populates an empty normalized worm.
-        self.microns_per_pixel = read_microns_per_pixel(file_name)
-        self.fps, self.is_default_timestamp = read_fps(file_name)
+        #if it does not exists return 1 as a default, like that we can still calculate the features in pixels and frames, instead of micrometers and seconds.
+        self.microns_per_pixel = read_microns_per_pixel(file_name, dflt=1)
+        self.fps = read_fps(file_name, dflt=1)
         
         # savitzky-golay filter polynomial order default
         self.POL_DEGREE_DFLT = POL_DEGREE_DFLT
@@ -141,22 +100,19 @@ class WormFromTable():
         # intialize just to make clear the relevant variables for this function
 
         with pd.HDFStore(self.file_name, 'r') as ske_file_id:
-            trajectories_data = ske_file_id['/trajectories_data']
+            trajectories_data_f = ske_file_id['/trajectories_data']
 
             # get the rows of valid skeletons
-            assert self.worm_index_str in trajectories_data
-            good = trajectories_data[self.worm_index_str] == self.worm_index
-
-            trajectories_data = trajectories_data.loc[good]
+            assert self.worm_index_str in trajectories_data_f
+            good = trajectories_data_f[self.worm_index_str] == self.worm_index
+            trajectories_data = trajectories_data_f.loc[good]
 
             skel_table_id = trajectories_data['skeleton_id'].values
-
             try:
                 # try to read the time stamps, if there are repeated or not a
                 # number use the frame nuber instead
                 timestamp_raw = trajectories_data['timestamp_raw'].values
                 if np.any(np.isnan(timestamp_raw)) or np.any(np.diff(timestamp_raw) == 0):
-                    print(timestamp_raw)
                     raise ValueError
                 else:
                     timestamp_inds = timestamp_raw.astype(np.int)
@@ -164,7 +120,7 @@ class WormFromTable():
                 # if the time stamp fails use the frame_number value instead
                 # (the index of the mask) and return nan as the fps
                 timestamp_inds = trajectories_data['frame_number'].values
-
+                
             # we need to use (.values) to be able to use the & operator
             good_skeletons = (trajectories_data['has_skeleton'] == 1).values
             if self.use_skel_filter and 'is_good_skel' in trajectories_data:
@@ -175,7 +131,6 @@ class WormFromTable():
 
             skel_table_id = skel_table_id[good_skeletons]
             timestamp_inds = timestamp_inds[good_skeletons]
-
             return skel_table_id, timestamp_inds
 
 
@@ -184,14 +139,13 @@ class WormFromTable():
         
         if not np.array_equal(np.sort(timestamp_inds), timestamp_inds): #the time stamp must be sorted
             warnings.warn('{}: The timestamp is not sorted in worm_index {}'.format(self.file_name, self.worm_index))
-
-
+        
         # use real frames to define the size of the object arrays
         first_frame = np.min(timestamp_inds)
         last_frame = np.max(timestamp_inds)
         n_frames = last_frame - first_frame + 1
 
-
+        
         # get the apropiate index in the object array
         ind_ff = timestamp_inds - first_frame
 
@@ -200,11 +154,11 @@ class WormFromTable():
             self.n_segments = ske_file_id.get_node('/skeleton').shape[1]
  
         # add the data from the skeleton_id's and timestamps used
-        self.timestamp = np.full(n_frames, -1, np.int32)
+        self.timestamp = np.arange(first_frame, last_frame+1)
+        
         self.skeleton_id = np.full(n_frames, -1, np.int32)
-        self.timestamp[ind_ff] = timestamp_inds
         self.skeleton_id[ind_ff] = skel_table_id
-
+        
         # initialize the rest of the arrays
         self.skeleton = np.full((n_frames, self.n_segments, 2), np.nan)
         self.ventral_contour = np.full((n_frames, self.n_segments, 2), np.nan)
@@ -321,31 +275,12 @@ class WormFromTable():
         self.ventral_side = read_ventral_side(self.file_name)
         
         assert isGoodStageAligment(self.file_name)
-        with tables.File(self.file_name, 'r') as fid:
-            stage_vec_ori = fid.get_node('/stage_movement/stage_vec')[:]
-            timestamp_ind = fid.get_node('/timestamp/raw')[:].astype(np.int)
-            rotation_matrix = fid.get_node('/stage_movement')._v_attrs['rotation_matrix']
-            microns_per_pixel_scale = fid.get_node('/stage_movement')._v_attrs['microns_per_pixel_scale']
-            #2D to control for the scale vector directions
-            
-        # let's rotate the stage movement
-        dd = np.sign(microns_per_pixel_scale)
-        rotation_matrix_inv = np.dot(
-            rotation_matrix * [(1, -1), (-1, 1)], [(dd[0], 0), (0, dd[1])])
+        self.stage_vec_inv = _h_get_stage_inv(self.file_name, self.timestamp)
 
-        # adjust the stage_vec to match the timestamps in the skeletons
-        timestamp_ind = timestamp_ind
-        good = (timestamp_ind >= self.first_frame) & (timestamp_ind <= self.last_frame)
-
-        ind_ff = timestamp_ind[good] - self.first_frame
-        stage_vec_ori = stage_vec_ori[good]
-
-        stage_vec = np.full((self.timestamp.size, 2), np.nan)
-        stage_vec[ind_ff, :] = stage_vec_ori
-        # the negative symbole is to add the stage vector directly, instead of
-        # substracting it.
-        self.stage_vec_inv = -np.dot(rotation_matrix_inv, stage_vec.T).T
-
+        #remove data where the stage is moving (the blurred image can induce artifacts)
+        self.is_stage_move = np.isnan(self.stage_vec_inv[:,0])
+        self.widths[self.is_stage_move, :] = np.nan 
+        
         for field in ['skeleton', 'ventral_contour', 'dorsal_contour']:
             if hasattr(self, field):
                 tmp_dat = getattr(self, field)
@@ -373,9 +308,10 @@ class WormStats():
         self.feat_timeseries = list(
             self.features_info[
                 self.features_info['is_time_series'] == 1].index.values)
-        self.feat_timeseries_dtype = [
-            (x, np.float32) for x in [
-                'worm_index', 'timestamp', 'motion_modes'] + self.feat_timeseries]
+
+        extra_fields = ['worm_index', 'timestamp', 'skeleton_id', 'motion_modes']
+        timeseries_fields =  extra_fields + self.feat_timeseries
+        self.feat_timeseries_dtype = [(x, np.float32) for x in timeseries_fields]
 
         self.feat_events = list(
             self.features_info[
@@ -387,7 +323,7 @@ class WormStats():
 
             motion_types = ['']
             if feat_info['is_time_series']:
-                motion_types += ['_foward', '_paused', '_backward']
+                motion_types += ['_forward', '_paused', '_backward']
 
             for mtype in motion_types:
                 sub_name = feat_name + mtype
@@ -406,20 +342,36 @@ class WormStats():
 
     def getWormStats(self, worm_features, stat_func=np.mean):
         ''' Calculate the statistics of an object worm features, subdividing data
-            into Backward/Foward/Paused and/or Positive/Negative/Absolute, when appropiated.
+            into Backward/Forward/Paused and/or Positive/Negative/Absolute, when appropiated.
             The default is to calculate the mean value, but this can be changed
             using stat_func.
 
             Return the feature list as an ordered dictionary.
         '''
+        
+        if isinstance(worm_features, dict):
+            def read_feat(feat_name):
+                if feat_name in worm_features:
+                    return worm_features[feat_name]
+                else:
+                    return None
+            motion_mode = read_feat('motion_modes')
+        else:
+            
+            def read_feat(feat_name):
+                feat_obj = self.features_info.loc[feat_name, 'feat_name_obj']
+                if feat_obj in  worm_features._features:
+                    return worm_features._features[feat_obj].value
+                else:
+                    return None
+            motion_mode = worm_features._features['locomotion.motion_mode'].value
+
+
         # return data as a numpy recarray
         feat_stats = np.full(1, np.nan, dtype=self.feat_avg_dtype)
-
-        motion_mode = worm_features._features['locomotion.motion_mode'].value
+        
         for feat_name, feat_props in self.features_info.iterrows():
-            feat_obj = feat_props['feat_name_obj']
-            tmp_data = worm_features._features[feat_obj].value
-
+            tmp_data = read_feat(feat_name)
             if tmp_data is None:
                 feat_stats[feat_name] = np.nan
 
@@ -452,34 +404,46 @@ class WormStats():
         if data is None:
             data = np.zeros(0)
 
+        #filter nan data
+        valid = ~np.isnan(data)
+        data = data[valid]
+        
         motion_types = OrderedDict()
         motion_types['all'] = np.nan
-        #print(is_time_series, type(is_time_series))
         if is_time_series:
-            # if the the feature is motion type we can subdivide in Foward,
+            # if the the feature is motion type we can subdivide in Forward,
             # Paused or Backward motion
+            motion_mode = motion_mode[valid]
             assert motion_mode.size == data.size
-
-            motion_types['foward'] = motion_mode == 1
+            
+            motion_types['forward'] = motion_mode == 1
             motion_types['paused'] = motion_mode == 0
             motion_types['backward'] = motion_mode == -1
 
         stats = OrderedDict()
         for key in motion_types:
+            
             if key == 'all':
-                valid = ~np.isnan(data)
                 sub_name = name
+                valid_data = data
             else:
-                valid = motion_types[key]
                 sub_name = name + '_' + key
+                #filter by an specific motion type
+                valid_data = data[motion_types[key]]
 
-            stats[sub_name] = stat_func(data[valid])
+            assert not np.any(np.isnan(valid_data))
+            
+            stats[sub_name] = stat_func(valid_data)
             if is_signed:
                 # if the feature is signed we can subdivide in positive,
                 # negative and absolute
-                stats[sub_name + '_abs'] = stat_func(np.abs(data[valid]))
-                stats[sub_name + '_neg'] = stat_func(data[data < 0 & valid])
-                stats[sub_name + '_pos'] = stat_func(data[data > 0 & valid])
+                stats[sub_name + '_abs'] = stat_func(np.abs(valid_data))
+
+                neg_valid = (valid_data < 0)
+                stats[sub_name + '_neg'] = stat_func(valid_data[neg_valid])
+
+                pos_valid = (valid_data > 0) 
+                stats[sub_name + '_pos'] = stat_func(valid_data[pos_valid])
         return stats
                 
 if __name__ == '__main__':

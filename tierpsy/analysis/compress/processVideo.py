@@ -10,11 +10,10 @@ import os
 
 import h5py
 import tables
-from tierpsy.analysis.compress.compressVideo import compressVideo, initMasksGroups
 
+from tierpsy.analysis.compress.compressVideo import compressVideo, initMasksGroups
 from  tierpsy.analysis.compress.selectVideoReader import selectVideoReader
-from tierpsy.helper.misc import print_flush
-from tierpsy.helper.timeCounterStr import timeCounterStr
+from tierpsy.helper.misc import TimeCounter, print_flush
 
 #default parameters if wormencoder.ini does not exist
 DFLT_SAVE_FULL_INTERVAL = 5000
@@ -73,7 +72,7 @@ def _isValidSource(original_file):
         return False
         
     
-def reformatRigMaskedVideo(original_file, new_file, plugin_param_file, expected_fps):
+def reformatRigMaskedVideo(original_file, new_file, plugin_param_file, expected_fps, microns_per_pixel):
     plugin_params = _getWormEnconderParams(plugin_param_file)
      
     base_name = original_file.rpartition('.')[0].rpartition(os.sep)[-1]
@@ -82,33 +81,27 @@ def reformatRigMaskedVideo(original_file, new_file, plugin_param_file, expected_
         print_flush(new_file + ' ERROR. File might be corrupt. ' + original_file)
         
         return
-    
-    
-    progress_timer = timeCounterStr('Reformating Gecko plugin hdf5 video.')
-    
     save_full_interval, buffer_size, mask_params = _getReformatParams(plugin_params)
-
     with tables.File(original_file, 'r') as fid_old, \
         h5py.File(new_file, 'w') as fid_new:
         
         mask_old = fid_old.get_node('/mask')
-        
         tot_frames, im_height, im_width = mask_old.shape
-    
+        progress_timer = TimeCounter('Reformating Gecko plugin hdf5 video.', tot_frames)    
         
-        mask_new, full_new =  initMasksGroups(fid_new, tot_frames, im_height, im_width, 
-        expected_fps, True, save_full_interval)
-        
-        
-    
+        attr_params = dict(
+                expected_fps = expected_fps,
+                microns_per_pixel = microns_per_pixel,
+                is_light_background = True
+                )
+        mask_new, full_new, _ =  initMasksGroups(fid_new, tot_frames, im_height, im_width, 
+        attr_params, save_full_interval)
+
         mask_new.attrs['plugin_params'] = json.dumps(plugin_params)
         
         img_buff_ini = mask_old[:buffer_size]
         full_new[0] = img_buff_ini[0]
-        
-        
         mask_new[:buffer_size] = img_buff_ini*(mask_old[buffer_size] != 0)
-        
         for frame in range(buffer_size, tot_frames):
             if frame % save_full_interval != 0:
                 mask_new[frame] = mask_old[frame]
@@ -122,7 +115,7 @@ def reformatRigMaskedVideo(original_file, new_file, plugin_param_file, expected_
             
             if frame % 500 == 0:
                 # calculate the progress and put it in a string
-                progress_str = progress_timer.getStr(frame)
+                progress_str = progress_timer.get_str(frame)
                 print_flush(base_name + ' ' + progress_str)
             
         #tag as finished reformatting
@@ -131,7 +124,7 @@ def reformatRigMaskedVideo(original_file, new_file, plugin_param_file, expected_
         print_flush(
             base_name +
             ' Compressed video done. Total time:' +
-            progress_timer.getTimeStr())
+            progress_timer.get_time_str())
 
 def isGoodVideo(video_file):
     try:
@@ -147,7 +140,10 @@ def isGoodVideo(video_file):
 def processVideo(video_file, masked_image_file, compress_vid_param):
     if video_file.endswith('hdf5'):
         plugin_param_file = os.path.join(os.path.dirname(video_file), 'wormencoder.ini')
-        reformatRigMaskedVideo(video_file, masked_image_file, plugin_param_file, compress_vid_param['expected_fps'])
+        expected_fps = compress_vid_param['expected_fps'] 
+        microns_per_pixel = compress_vid_param['microns_per_pixel'] 
+
+        reformatRigMaskedVideo(video_file, masked_image_file, plugin_param_file, expected_fps=expected_fps, microns_per_pixel=microns_per_pixel)
     else:
         compressVideo(video_file, masked_image_file, **compress_vid_param)
 

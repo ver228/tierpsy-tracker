@@ -34,4 +34,11 @@ def selectVideoReader(video_file):
     else:
         # use opencv VideoCapture
         vid = readVideoCapture(video_file)
+
+    #raise an error if it is not a valid video (cannot read a frame)
+    if vid.width == 0 or vid.height == 0:
+        raise RuntimeError
+
     return vid
+
+

@@ -5,25 +5,22 @@ Created on Thu Apr  2 16:33:34 2015
 @author: ajaver
 """
 
-import os
-from math import sqrt
 import json
+import multiprocessing as mp
+import os
+from functools import partial
 
 import cv2
 import numpy as np
-import tables
-import pandas as pd
 import skimage.filters as skf
 import skimage.morphology as skm
+import tables
 
-from tierpsy.analysis.compress.extractMetaData import read_and_save_timestamp
-from tierpsy.helper.timeCounterStr import timeCounterStr
-from tierpsy.helper.misc import TABLE_FILTERS, print_flush
 from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
+from tierpsy.analysis.compress.extractMetaData import read_and_save_timestamp
+from tierpsy.helper.params import traj_create_defaults, read_unit_conversions, read_fps
+from tierpsy.helper.misc import TimeCounter, print_flush, TABLE_FILTERS
 
-from functools import partial
-import multiprocessing as mp
-    
 def _thresh_bw(pix_valid):
     # calculate otsu_threshold as lower limit. Otsu understimates the threshold.
     try:
@@ -221,13 +218,20 @@ def generateImages(masked_image_file, frames=[], bgnd_param = {}):
             
             yield frame_number, image
 
-def generateROIBuff(masked_image_file, buffer_size, bgnd_param):
-    
+def generateROIBuff(masked_image_file, buffer_size, bgnd_param, progress_str='', progress_refresh_rate_s=20):
     img_generator = generateImages(masked_image_file, bgnd_param=bgnd_param)
     
     with tables.File(masked_image_file, 'r') as mask_fid:
         tot_frames, im_h, im_w = mask_fid.get_node("/mask").shape
     
+
+    #loop, save data and display progress
+    base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
+    progress_str = base_name + progress_str
+    fps = read_fps(masked_image_file, dflt=25)
+    progress_refresh_rate = fps*progress_refresh_rate_s
+
+    progress_time = TimeCounter(progress_str, tot_frames)  
     for frame_number, image in img_generator:
         if frame_number % buffer_size == 0:
             if frame_number + buffer_size > tot_frames:
@@ -254,7 +258,13 @@ def generateROIBuff(masked_image_file, buffer_size, bgnd_param):
                                                 cv2.CHAIN_APPROX_NONE)
     
             yield ROI_cnts, image_buffer, ini_frame
-            
+        
+        if frame_number % progress_refresh_rate == 0:
+            print_flush(progress_time.get_str(frame_number))
+                
+    print_flush( progress_time.get_str(frame_number))
+
+
 def _cnt_to_ROIs(ROI_cnt, image_buffer, min_box_width):
     #get the corresponding ROI from the contours
     ROI_bbox = cv2.boundingRect(ROI_cnt)
@@ -317,33 +327,17 @@ def getBlobsData(buff_data, blob_params):
                     
     return blobs_data
 
-    
-def _get_light_flag(masked_image_file):
-    with tables.File(masked_image_file, 'r') as mask_fid:
-        mask_dataset = mask_fid.get_node('/', 'mask')
-        is_light_background = 1 if not 'is_light_background' in mask_dataset._v_attrs \
-                 else int(mask_dataset._v_attrs['is_light_background'])
-    return is_light_background
-    
-def _get_fps(masked_image_file):
-    with tables.File(masked_image_file, 'r') as mask_fid:
-        try:
-            expected_fps = mask_fid.get_node('/', 'mask')._v_attrs['expected_fps']
-        except:
-            expected_fps = 25 
-    return expected_fps
-
 
 def getBlobsTable(masked_image_file, 
                   trajectories_file,
-                  buffer_size = -1,
+                  buffer_size = None,
                     min_area=25,
                     min_box_width=5,
                     worm_bw_thresh_factor=1.,
                     strel_size=(5,5),
                     analysis_type="WORM",
                     thresh_block_size=15,
-                    n_cores_used = 2, 
+                    n_cores_used = 1, 
                     bgnd_param = {}):
 
 
@@ -355,17 +349,14 @@ def getBlobsTable(masked_image_file,
 
 
     #read properties
-    is_light_background = _get_light_flag(masked_image_file)
-    expected_fps = _get_fps(masked_image_file)
-    
+    fps_out, _, is_light_background = read_unit_conversions(masked_image_file)
+    expected_fps = fps_out[0]
+
     #find if it is using background subtraction
     if len(bgnd_param) > 0:
         bgnd_param['is_light_background'] = is_light_background
-
-
-    if buffer_size < 0: #invalid value of buff size, expected_fps instead
-        buffer_size = expected_fps
-
+    buffer_size = traj_create_defaults(masked_image_file, buffer_size)
+    
 
     def _ini_plate_worms(traj_fid, masked_image_file):
         # intialize main table
@@ -409,7 +400,7 @@ def getBlobsTable(masked_image_file,
     
 
     
-    buff_generator = generateROIBuff(masked_image_file, buffer_size, bgnd_param)
+    buff_generator = generateROIBuff(masked_image_file, buffer_size, bgnd_param,  progress_str = ' Calculating trajectories.')
     
 
     #switch the is_light_background flag if we are using background subtraction.
@@ -433,11 +424,6 @@ def getBlobsTable(masked_image_file,
     else:
         blobs_generator = map(f_blob_data, buff_generator)
     
-    #loop, save data and display progress
-    base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
-    progress_str = base_name + ' Calculating trajectories.'
-    
-    progressTime = timeCounterStr(progress_str)  
     with tables.open_file(trajectories_file, mode='w') as traj_fid:
         plate_worms = _ini_plate_worms(traj_fid, masked_image_file)
         
@@ -445,51 +431,3 @@ def getBlobsTable(masked_image_file,
             if blobs_data:
                 plate_worms.append(blobs_data)
             
-            frames = ibuf*buffer_size
-            if frames % (expected_fps*20) == 0:
-                # calculate the progress and put it in a string
-                print_flush(progressTime.getStr(frames))
-                
-    print_flush( progressTime.getStr(frames))
-    
-
-    
-    
-
-
-    
-if __name__ == '__main__':
-    #%%
-    #dname = '/Users/ajaver/OneDrive - Imperial College London/Local_Videos/fluorescence/'
-    #masked_image_file = os.path.join(dname, 'test_s.hdf5')
-#    min_area=15/2
-#    buffer_size=9
-#    thresh_block_size=15    
-#    max_allowed_dist = 20
-#    area_ratio_lim = (0.25, 4)
-#    n_proc = 20
-    
-    masked_image_file = '/Users/ajaver/OneDrive - Imperial College London/Local_Videos/Avelino_17112015/MaskedVideos/CSTCTest_Ch1_17112015_205616.hdf5'
-    min_area=25/2
-    buffer_size=25
-    thresh_block_size=15 
-    max_allowed_dist = 25
-    area_ratio_lim = (0.5, 2)
-    n_cores_used = 1
-    
-    trajectories_file = masked_image_file.replace('.hdf5', '_skeletons.hdf5')
-    skeletons_file = masked_image_file.replace('.hdf5', '_skeletons.hdf5')
-        
-    
-    
-    from tierpsy.analysis.ske_init.processTrajectoryData import processTrajectoryData
-    from tierpsy.helper.tracker_param import tracker_param, default_param
-    from tierpsy.analysis.traj_join.correctTrajectories import correctTrajectories
-    
-    default_param['expected_fps'] = buffer_size
-    default_param['traj_area_ratio_lim'] = area_ratio_lim
-    param = tracker_param()
-    param._get_param(**default_param)
-    
-    #correctTrajectories(trajectories_file, False, param.join_traj_param)
-    processTrajectoryData(skeletons_file, masked_image_file, skeletons_file, param.smoothed_traj_param, filter_model_name = '')

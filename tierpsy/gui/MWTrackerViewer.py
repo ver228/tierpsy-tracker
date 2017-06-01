@@ -5,21 +5,26 @@ from functools import partial
 import numpy as np
 import pandas as pd
 import tables
-from PyQt5.QtCore import Qt, QPointF
-from PyQt5.QtGui import QPixmap, QPainter, QFont, QPen, QPolygonF, QColor
-from PyQt5.QtWidgets import QApplication, QMessageBox
+from PyQt5.QtCore import Qt, QPointF, pyqtSignal
+from PyQt5.QtGui import QPixmap, QPainter, QFont, QPen, QPolygonF, QColor, QKeySequence
+from PyQt5.QtWidgets import QApplication, QMessageBox, QShortcut
 
-from tierpsy.gui.AnalysisProgress import WorkerFunQt, AnalysisProgress
-from tierpsy.gui.MWTrackerViewer_ui import Ui_MWTrackerViewer
-from tierpsy.gui.TrackerViewerAux import TrackerViewerAux_GUI
 from tierpsy.analysis.feat_create.obtainFeatures import getWormFeaturesFilt
 from tierpsy.analysis.ske_create.helperIterROI import getWormROI
 from tierpsy.analysis.ske_filt.getFilteredSkels import getValidIndexes
-from tierpsy.helper.trackProvenance import getGitCommitHash, execThisPoint
-from tierpsy.helper.tracker_param import tracker_param
+from tierpsy.analysis.ske_filt import _get_feat_filt_param
+
+from tierpsy.gui.AnalysisProgress import WorkerFunQt, AnalysisProgress
+from tierpsy.gui.MWTrackerViewer_ui import Ui_MWTrackerViewer
+from tierpsy.gui.TrackerViewerAux import TrackerViewerAuxGUI
+
+from tierpsy.helper.misc import WLAB, save_modified_table
+from tierpsy.helper.params import TrackerParams, read_fps
+
+from tierpsy.processing.trackProvenance import getGitCommitHash, execThisPoint
 
 
-class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
+class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
     def __init__(self, ui='', argv=''):
         if not ui:
@@ -27,22 +32,17 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         else:
             super().__init__(ui)
 
+        self.setWindowTitle("Multi-Worm Viewer")
+
+
         self.vfilename = '' if len(argv) <= 1 else argv[1]
-
         self.lastKey = ''
-        self.isPlay = False
-        self.fid = -1
-        self.image_group = -1
-        self.trajectories_data = -1
         self.traj_for_plot = {}
-
 
         self.worm_index_roi1 = 1
         self.worm_index_roi2 = 1
-        self.frame_data = -1
-        self.h5path = self.ui.comboBox_h5path.itemText(0)
 
-        self.wlab = {'U': 0, 'WORM': 1, 'WORMS': 2, 'BAD': 3, 'GOOD_SKE': 4}
+        self.wlab = WLAB
         self.wlabC = {
             self.wlab['U']: Qt.white,
             self.wlab['WORM']: Qt.green,
@@ -55,6 +55,8 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         self.skeletons_file = ''
         self.worm_index_type = 'worm_index_manual'
         self.label_type = 'worm_label'
+        self.frame_data = None
+
 
         self.ui.comboBox_ROI1.activated.connect(self.selectROI1)
         self.ui.comboBox_ROI2.activated.connect(self.selectROI2)
@@ -71,13 +73,13 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         # flags for RW and FF
         self.RW, self.FF = 1, 2
         self.ui.pushButton_ROI1_RW.clicked.connect(
-            partial(self.roiRWFF, 1, self.RW))
+            partial(self.roiRWFF, self.RW, 1))
         self.ui.pushButton_ROI1_FF.clicked.connect(
-            partial(self.roiRWFF, 1, self.FF))
+            partial(self.roiRWFF, self.FF, 1))
         self.ui.pushButton_ROI2_RW.clicked.connect(
-            partial(self.roiRWFF, 2, self.RW))
+            partial(self.roiRWFF, self.RW, 2))
         self.ui.pushButton_ROI2_FF.clicked.connect(
-            partial(self.roiRWFF, 2, self.FF))
+            partial(self.roiRWFF, self.FF, 2))
 
         self.ui.pushButton_U.clicked.connect(
             partial(self.tagWorm, self.wlab['U']))
@@ -105,6 +107,32 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         # select worm ROI when doubleclick a worm
         self.mainImage._canvas.mouseDoubleClickEvent = self.selectWorm
 
+        #SHORTCUTS
+        self.ui.pushButton_W.setShortcut(QKeySequence(Qt.Key_W))
+        self.ui.pushButton_U.setShortcut(QKeySequence(Qt.Key_U))
+        self.ui.pushButton_WS.setShortcut(QKeySequence(Qt.Key_C))
+        self.ui.pushButton_B.setShortcut(QKeySequence(Qt.Key_B))
+        self.ui.radioButton_ROI1.setShortcut(QKeySequence(Qt.Key_Up))
+        self.ui.radioButton_ROI2.setShortcut(QKeySequence(Qt.Key_Down))
+        self.ui.pushButton_join.setShortcut(QKeySequence(Qt.Key_J))
+        self.ui.pushButton_split.setShortcut(QKeySequence(Qt.Key_S))
+
+    
+
+    def keyPressEvent(self, event):
+        #MORE SHORTCUTS
+        # go the the start of end of a trajectory
+        if event.key() == Qt.Key_BracketLeft:
+            current_roi = 1 if self.ui.radioButton_ROI1.isChecked() else 2
+            self.roiRWFF(current_roi, self.RW)
+        #[ <<
+        elif event.key() == Qt.Key_BracketRight:
+            current_roi = 1 if self.ui.radioButton_ROI1.isChecked() else 2
+            self.roiRWFF(current_roi, self.FF)
+
+        super().keyPressEvent(event)
+
+
     def getManualFeatures(self):
         # save the user changes before recalculating anything
         self.saveData()
@@ -112,13 +140,12 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         #%%
         self.feat_manual_file = self.skeletons_file.replace(
             '_skeletons.hdf5', '_feat_manual.hdf5')
-
+        
         point_parameters = {
             'func': getWormFeaturesFilt,
             'argkws': {
                 'skeletons_file': self.skeletons_file,
                 'features_file': self.feat_manual_file,
-                'expected_fps': self.expected_fps, #if it is read as np.int64 can give errors in the json serializer
                 'is_single_worm': False,
                 'use_skel_filter': True,
                 'use_manual_join': True,
@@ -177,30 +204,14 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
                         self, field_name).replace(
                         '/', os.sep))
 
-        # convert data into a rec array to save into pytables
-        trajectories_recarray = self.trajectories_data.to_records(index=False)
-
-        with tables.File(self.skeletons_file, "r+") as ske_file_id:
-            # pytables filters.
-            table_filters = tables.Filters(
-                complevel=5, complib='zlib', shuffle=True, fletcher32=True)
-
-            newT = ske_file_id.create_table(
-                '/',
-                'trajectories_data_d',
-                obj=trajectories_recarray,
-                filters=table_filters)
-
-            ske_file_id.remove_node('/', 'trajectories_data')
-            newT.rename('trajectories_data')
+        save_modified_table(self.skeletons_file, self.trajectories_data, 'trajectories_data')
 
         self.updateSkelFile(self.skeletons_file)
 
     def updateSkelFile(self, skeletons_file):
         super().updateSkelFile(skeletons_file)
         
-        if not self.skeletons_file or not isinstance(
-                self.trajectories_data, pd.DataFrame):
+        if not self.skeletons_file or self.trajectories_data is None:
             return
 
         #correct the index in case it was given before as worm_index_N
@@ -217,7 +228,7 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         with tables.File(self.skeletons_file, 'r') as skel_fid:
 
             # if any of this fields is missing load the default parameters
-            self.param_default = tracker_param()
+            self.param_default = TrackerParams()
             try:
                 ss = skel_fid.get_node('/provenance_tracking/ske_filt').read()
                 ss = json.loads(ss.decode("utf-8"))
@@ -229,15 +240,10 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
                 'bad_seg_thresh',
                 'min_displacement']}
             except (KeyError, tables.exceptions.NoSuchNodeError):
-                self.feat_filt_param = self.param_default.feat_filt_param
+                self.feat_filt_param = _get_feat_filt_param(self.param_default.p_dict)
 
-        try:
-            #read expected frames per second
-            with tables.File(self.vfilename, 'r') as mask_fid:
-                self.expected_fps = int(mask_fid.get_node('/mask')._v_attrs['expected_fps'])  
-        except (OSError, tables.exceptions.NoSuchNodeError, AttributeError, KeyError):
-            self.expected_fps = self.param_default.expected_fps
-
+        self.expected_fps = read_fps(self.vfilename)
+        
 
         #TODO: THIS IS NOT REALLY THE INDEX I USE IN THE FEATURES FILES. I NEED A MORE CLEVER WAY TO SEE WHAT I AM REALLY FILTERING.
         dd = {x:self.feat_filt_param[x] for x in ['min_num_skel', 'bad_seg_thresh', 'min_displacement']}
@@ -251,36 +257,38 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
 
     # update image
     def updateImage(self):
-        if self.image_group == -1:
+        if self.image_group is None:
             return
 
-        super(TrackerViewerAux_GUI, self).readCurrentFrame()
+        super(TrackerViewerAuxGUI, self).readCurrentFrame()
         self.img_h_ratio = self.frame_qimg.height() / self.image_height
         self.img_w_ratio = self.frame_qimg.width() / self.image_width
 
         # read the data of the particles that exists in the frame
         self.frame_data = self.getFrameData(self.frame_number)
 
+
         #draw extra info only if the worm_index_type is valid
-        if self.worm_index_type in self.frame_data: 
-            # draw the boxes in each of the trajectories found
-            if self.ui.comboBox_showLabels.currentIndex() != self.showT['hide'] and self.label_type in self.frame_data:
-                self.drawROI(self.frame_qimg)
-            
+        if self.frame_data is not None and \
+        self.frame_data.size > 0 and \
+        self.worm_index_type in self.frame_data:
+
+            self.drawWormMarkers(self.frame_qimg)
             self.updateROIcanvasN(1)
             self.updateROIcanvasN(2)
-        
+        else:
+            self.ui.wormCanvas1.clear() 
+            self.ui.wormCanvas2.clear()        
         # create the pixmap for the label
         self.mainImage.setPixmap(self.frame_qimg)
 
-    def drawROI(self, image):
+    def drawWormMarkers(self, image):
         '''
         Draw traj worm trajectory.
         '''
-
-        #continue only if the frame_data is a pandas dataframe it is larger than 0 
-        #and the selected label_type is a column in the frame_data.
-        if len(self.frame_data) == 0 or not self.label_type in self.frame_data:
+        
+        if not self.label_type in self.frame_data or \
+        self.ui.comboBox_showLabels.currentIndex() == self.showT['hide']:
             return
 
         self.img_h_ratio = image.height() / self.image_height
@@ -376,6 +384,7 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         self.updateROIcanvasN(2)
 
     def updateROIcanvasN(self, n_canvas):
+
         if n_canvas == 1:
             self.updateROIcanvas(
                 self.ui.wormCanvas1,
@@ -389,6 +398,10 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
                 self.ui.comboBox_ROI2,
                 self.ui.checkBox_ROI2.isChecked())
 
+        
+
+                
+
     # function that generalized the updating of the ROI
     def updateROIcanvas(
             self,
@@ -396,7 +409,8 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
             worm_index_roi,
             comboBox_ROI,
             isDrawSkel):
-        if not isinstance(self.frame_data, pd.DataFrame):
+
+        if self.frame_data is None:
             # no trajectories data presented, nothing to do here
             wormCanvas.clear()
             return
@@ -442,10 +456,7 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         x = event.pos().x()
         y = event.pos().y()
 
-        if not isinstance(
-                self.frame_data,
-                pd.DataFrame) or len(
-                self.frame_data) == 0:
+        if self.frame_data is None or self.frame_data.size == 0:
             return
 
         x /= self.img_w_ratio
@@ -475,7 +486,7 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         elif self.ui.radioButton_ROI2.isChecked():
             worm_ind = self.worm_index_roi2
 
-        if not isinstance(self.frame_data, pd.DataFrame):
+        if self.frame_data is None:
             return
 
         if not worm_ind in self.frame_data['worm_index_manual'].values:
@@ -491,15 +502,18 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         self.updateImage()
 
     # move to the first or the last frames of a trajectory
-    def roiRWFF(self, n_roi, rwff):
+    def roiRWFF(self, rwff, n_roi=None):
 
-        if not isinstance(self.frame_data, pd.DataFrame):
+        if self.frame_data is None:
             return
-
+        if n_roi is None:
+            n_roi = 1 if self.ui.radioButton_ROI1.isChecked() else 2
         if n_roi == 1:
             worm_ind = self.worm_index_roi1
-        else:
+        elif n_roi == 2:
             worm_ind = self.worm_index_roi2
+        else:
+            raise ValueError('Invalid n_roi value : {} '.format(n_roi))
 
         # use 1 for rewind RW or 2 of fast forward
         good = self.trajectories_data[self.worm_index_type] == worm_ind
@@ -508,15 +522,18 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         if frames.size == 0:
             return
 
-        if rwff == 1:
+        if rwff == self.RW:
             self.frame_number = frames.min()
-        elif rwff == 2:
+        elif rwff == self.FF:
             self.frame_number = frames.max()
+        else:
+            raise ValueError('Invalid rwff value : {} '.format(rwff))
 
         self.ui.spinBox_frame.setValue(self.frame_number)
 
     def joinTraj(self):
-        if not self.worm_index_type == 'worm_index_manual':
+        if self.worm_index_type != 'worm_index_manual' \
+        or self.frame_data is None:
             return
 
         worm_ind1 = self.worm_index_roi1
@@ -577,7 +594,8 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         self.ui.spinBox_join2.setValue(worm_ind1)
 
     def splitTraj(self):
-        if not self.worm_index_type == 'worm_index_manual':
+        if self.worm_index_type != 'worm_index_manual' \
+        or self.frame_data is None:
             return
 
         if self.ui.radioButton_ROI1.isChecked():
@@ -615,43 +633,7 @@ class MWTrackerViewer_GUI(TrackerViewerAux_GUI):
         self.ui.spinBox_join1.setValue(new_ind1)
         self.ui.spinBox_join2.setValue(new_ind2)
 
-    # change frame number using the keys
-    def keyPressEvent(self, event):
-        # select uchange the radio button pression the up and down keys
-        if event.key() == Qt.Key_Up:
-            self.ui.radioButton_ROI1.setChecked(True)
-        elif event.key() == Qt.Key_Down:
-            self.ui.radioButton_ROI2.setChecked(True)
-
-        # undefined: u
-        if event.key() == Qt.Key_U:
-            self.tagWorm(self.wlab['U'])
-        # worm: w
-        elif event.key() == Qt.Key_W:
-            self.tagWorm(self.wlab['WORM'])
-        # worm cluster: c
-        elif event.key() == Qt.Key_C:
-            self.tagWorm(self.wlab['WORMS'])
-        # bad: b
-        elif event.key() == Qt.Key_B:
-            self.tagWorm(self.wlab['BAD'])
-        # s
-        elif event.key() == Qt.Key_J:
-            self.joinTraj()
-        # j
-        elif event.key() == Qt.Key_S:
-            self.splitTraj()
-
-        # go the the start of end of a trajectory
-        elif event.key() == Qt.Key_BracketLeft:
-            current_roi = 1 if self.ui.radioButton_ROI1.isChecked() else 2
-            self.roiRWFF(current_roi, self.RW)
-        #[ <<
-        elif event.key() == Qt.Key_BracketRight:
-            current_roi = 1 if self.ui.radioButton_ROI1.isChecked() else 2
-            self.roiRWFF(current_roi, self.FF)
-
-        super().keyPressEvent(event)
+    
 
 if __name__ == '__main__':
     import sys

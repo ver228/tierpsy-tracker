@@ -10,9 +10,8 @@ import cv2
 import h5py
 import numpy as np
 
-from tierpsy.analysis.feat_create.obtainFeatures import read_fps
-from tierpsy.helper.misc import print_flush
-from tierpsy.helper.timeCounterStr import timeCounterStr
+from tierpsy.helper.params import read_fps
+from tierpsy.helper.misc import TimeCounter, print_flush
 
 
 def getSubSampleVidName(masked_image_file):
@@ -49,31 +48,38 @@ def _getCorrectedTimeVec(fid, tot_frames):
 
     return tt_vec
 
-def createSampleVideo(masked_image_file, sample_video_name ='', time_factor = 8, 
-                     size_factor = 5, expected_fps=30, codec='MPEG'):
+def createSampleVideo(masked_image_file, 
+                    sample_video_name = '', 
+                    time_factor = 8, 
+                    size_factor = 5,
+                    skip_factor = 2, 
+                    dflt_fps=30, 
+                    codec='MPEG'):
+    #skip factor is to reduce the size of the movie by using less frames (so we use 15fps for example instead of 30fps)
+
     #%%
     if not sample_video_name:
         sample_video_name = getSubSampleVidName(masked_image_file)
     
     # initialize timers
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
-    progressTime = timeCounterStr('{} Generating subsampled video.'.format(base_name))
+    progressTime = TimeCounter('{} Generating subsampled video.'.format(base_name))
     
     with h5py.File(masked_image_file, 'r') as fid:
         masks = fid['/mask']
         tot_frames, im_h, im_w = masks.shape
         im_h, im_w = im_h//size_factor, im_w//size_factor
         
-        fps, is_default_timestamp = getFPS(masked_image_file, expected_fps)
+        fps = read_fps(masked_image_file, dflt_fps)
 
         tt_vec = _getCorrectedTimeVec(fid, tot_frames)
         #%%
         #codec values that work 'H264' #'MPEG' #XVID
         vid_writer = cv2.VideoWriter(sample_video_name, \
-                            cv2.VideoWriter_fourcc(*codec), fps/2, (im_w,im_h), isColor=False)
+                            cv2.VideoWriter_fourcc(*codec), fps/skip_factor, (im_w,im_h), isColor=False)
         assert vid_writer.isOpened()
         
-        for frame_number in range(0, tot_frames, time_factor*2):
+        for frame_number in range(0, tot_frames, int(time_factor*skip_factor)):
             current_frame = tt_vec[frame_number]
             img = masks[current_frame]
             im_new = cv2.resize(img, (im_w,im_h))
@@ -82,10 +88,10 @@ def createSampleVideo(masked_image_file, sample_video_name ='', time_factor = 8,
 
             if frame_number % (500*time_factor) == 0:
                 # calculate the progress and put it in a string
-                print_flush(progressTime.getStr(frame_number))
+                print_flush(progressTime.get_str(frame_number))
 
         vid_writer.release()
-        print_flush(progressTime.getStr(frame_number) + ' DONE.')
+        print_flush(progressTime.get_str(frame_number) + ' DONE.')
     
 #%%
 if __name__ == '__main__':

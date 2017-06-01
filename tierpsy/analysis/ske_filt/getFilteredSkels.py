@@ -5,27 +5,20 @@ Created on Fri Dec 11 23:39:22 2015
 @author: ajaver
 """
 
+import os
+import warnings
+
+import numpy as np
 import pandas as pd
 import tables
-import numpy as np
-import os
-
-from sklearn.covariance import MinCovDet
 from scipy.stats import chi2
-from tierpsy.helper.misc import TABLE_FILTERS
+from sklearn.covariance import MinCovDet
 
-#supress unnecessary warnings
-import warnings
+from tierpsy.helper.params import min_num_skel_defaults
+from tierpsy.helper.misc import TimeCounter, print_flush, TABLE_FILTERS, save_modified_table, get_base_name
+
 warnings.filterwarnings('ignore', '.*det > previous_det*',)
 np.seterr(invalid='ignore')
-
-from tierpsy.helper.timeCounterStr import timeCounterStr
-from tierpsy.helper.misc import print_flush
-
-
-
-getBaseName = lambda skeletons_file: skeletons_file.rpartition(
-    os.sep)[-1].replace('_skeletons.hdf5', '')
 
 worm_partitions = {'neck': (8, 16),
                    'midbody': (16, 33),
@@ -39,7 +32,6 @@ worm_partitions = {'neck': (8, 16),
 
 
 name_width_fun = lambda part: 'width_' + part
-
 
 def getValidIndexes(
         skel_file,
@@ -95,18 +87,6 @@ def getValidIndexes(
         assert np.all(good_skel_row == trajectories_data[good_row].index)
 
         return (good_traj_index, good_skel_row)
-
-def saveModifiedTrajData(skeletons_file, trajectories_data):
-    trajectories_recarray = trajectories_data.to_records(index=False)
-    with tables.File(skeletons_file, "r+") as ske_file_id:
-        newT = ske_file_id.create_table(
-            '/',
-            'trajectories_data_d',
-            obj=trajectories_recarray,
-            filters=TABLE_FILTERS)
-        ske_file_id.remove_node('/', 'trajectories_data')
-        newT.rename('trajectories_data')
-
 
 def _h_nodes2Array(skeletons_file, nodes4fit, valid_index=-1):
     '''
@@ -378,7 +358,7 @@ def filterPossibleCoils(
                 is_good_skel[skel_id] = 0
                 continue
     trajectories_data['is_good_skel'] = is_good_skel
-    saveModifiedTrajData(skeletons_file, trajectories_data)
+    save_modified_table(skeletons_file, trajectories_data, 'trajectories_data')
 
 
 def _h_calAreaSignedArray(cnt_side1, cnt_side2):
@@ -422,8 +402,8 @@ def _addMissingFields(skeletons_file):
             fid.create_carray('/', "width_midbody", obj=width_midbody, filters=TABLE_FILTERS)
 
 def filterByPopulationMorphology(skeletons_file, good_skel_row, critical_alpha=0.01):
-    base_name = getBaseName(skeletons_file)
-    progress_timer = timeCounterStr('')
+    base_name = get_base_name(skeletons_file)
+    progress_timer = TimeCounter('')
 
     print_flush(base_name + ' Filter Skeletons: Starting...')
     with pd.HDFStore(skeletons_file, 'r') as table_fid:
@@ -453,7 +433,7 @@ def filterByPopulationMorphology(skeletons_file, good_skel_row, critical_alpha=0
         print_flush(
             base_name +
             ' Filter Skeletons: Calculating outliers. Total time:' +
-            progress_timer.getTimeStr())
+            progress_timer.get_time_str())
 
         tot_rows2fit = feats4fit[0].shape[0]
         # check all the data to fit has the same size in the first axis
@@ -473,19 +453,19 @@ def filterByPopulationMorphology(skeletons_file, good_skel_row, critical_alpha=0
         print_flush(
             base_name +
             ' Filter Skeletons: Labeling valid skeletons. Total time:' +
-            progress_timer.getTimeStr())
+            progress_timer.get_time_str())
 
         # labeled rows of valid individual skeletons as GOOD_SKE
         trajectories_data['is_good_skel'] &= ~outliers_rob
         trajectories_data['skel_outliers_flag'] = outliers_flag
 
     # Save the new is_good_skel column
-    saveModifiedTrajData(skeletons_file, trajectories_data)
+    save_modified_table(skeletons_file, trajectories_data, 'trajectories_data')
 
     print_flush(
         base_name +
         ' Filter Skeletons: Finished. Total time:' +
-        progress_timer.getTimeStr())
+        progress_timer.get_time_str())
 
 
 def getFilteredSkels(
@@ -496,6 +476,8 @@ def getFilteredSkels(
         critical_alpha=0.01,
         max_width_ratio=2.25,
         max_area_ratio=6):
+
+    min_num_skel = min_num_skel_defaults(skeletons_file, min_num_skel=min_num_skel)
 
     # check if the skeletonization finished succesfully
     with tables.File(skeletons_file, "r") as ske_file_id:

@@ -9,7 +9,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QPen
 from PyQt5.QtWidgets import QApplication
 from tierpsy.gui.SWTrackerViewer_ui import Ui_SWTrackerViewer
-from tierpsy.gui.TrackerViewerAux import TrackerViewerAux_GUI
+from tierpsy.gui.TrackerViewerAux import TrackerViewerAuxGUI
 from tierpsy.analysis.int_ske_orient.correctHeadTailIntensity import createBlocks, _fuseOverlapingGroups
 
 
@@ -29,6 +29,9 @@ class EggWriter():
             fid.write('X')
 
     def export(self):
+        if not os.path.exists(self.fname):
+            return
+
         tab = pd.read_table(self.fname, header=None)
         tab.columns = ['base_name', 'frame_number'] 
         tab_g = tab.groupby('base_name')
@@ -52,13 +55,14 @@ class EggWriter():
            
 
 
-class SWTrackerViewer_GUI(TrackerViewerAux_GUI):
+class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
     def __init__(self, ui='', mask_file=''):
         if not ui:
             super().__init__(Ui_SWTrackerViewer())
         else:
             super().__init__(ui)
+        self.setWindowTitle("Single Worm Viewer")
 
         self.skel_block = []
         self.skel_block_n = 0
@@ -73,7 +77,27 @@ class SWTrackerViewer_GUI(TrackerViewerAux_GUI):
             self.updateVideoFile()
 
         self.egg_writer = EggWriter()
-        
+    
+    # change frame number using the keys
+    def keyPressEvent(self, event):
+        # go the previous block
+        if event.key() == Qt.Key_BracketLeft:
+            self.ui.spinBox_skelBlock.setValue(self.skel_block_n - 1)
+
+        # go to the next block
+        elif event.key() == Qt.Key_BracketRight:
+            self.ui.spinBox_skelBlock.setValue(self.skel_block_n + 1)
+
+        elif event.key() == Qt.Key_Semicolon:
+            if self.ui.checkBox_showLabel.isChecked():
+                self.ui.checkBox_showLabel.setChecked(0)
+            else:
+                self.ui.checkBox_showLabel.setChecked(1)
+        elif event.key() == Qt.Key_E:
+            self.egg_writer.add(self.vfilename, self.frame_number)
+        elif event.key() == Qt.Key_X:
+            self.egg_writer.tag_bad()
+        super().keyPressEvent(event)
 
     def updateSkelFile(self, skel_file):
         super().updateSkelFile(skel_file)
@@ -113,6 +137,9 @@ class SWTrackerViewer_GUI(TrackerViewerAux_GUI):
 
     def drawSkelSingleWorm(self):
         frame_data = self.getFrameData(self.frame_number)
+        if frame_data is None:
+            return
+
         row_data = frame_data.squeeze()
         
         #for this viewer there must be only one particle per frame
@@ -170,28 +197,7 @@ class SWTrackerViewer_GUI(TrackerViewerAux_GUI):
         else:
             self.ui.label_skelBlock.setText('')
 
-    # change frame number using the keys
-    def keyPressEvent(self, event):
-        # go the previous block
-        if event.key() == Qt.Key_BracketLeft:
-            self.ui.spinBox_skelBlock.setValue(self.skel_block_n - 1)
-
-        # go to the next block
-        elif event.key() == Qt.Key_BracketRight:
-            self.ui.spinBox_skelBlock.setValue(self.skel_block_n + 1)
-
-        elif event.key() == Qt.Key_Semicolon:
-            if self.ui.checkBox_showLabel.isChecked():
-                self.ui.checkBox_showLabel.setChecked(0)
-            else:
-                self.ui.checkBox_showLabel.setChecked(1)
-        elif event.key() == Qt.Key_E:
-            self.egg_writer.add(self.vfilename, self.frame_number)
-        elif event.key() == Qt.Key_X:
-            self.egg_writer.tag_bad()
-            
-
-        super().keyPressEvent(event)
+    
 
     def closeEvent(self, event):
         self.egg_writer.export()

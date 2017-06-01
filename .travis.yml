@@ -9,11 +9,11 @@ matrix:
           dist: trusty
         - os: linux
           sudo: required
-        #- os: osx
-        #  osx_image: xcode7
+        - os: osx
+          osx_image: xcode7
 
 install:
-  - bash ./installation_script.sh
+  - bash ./installation/installation_script.sh
 
 before_script:
   #add conda path to the system. For some reason it does not work if it is done in the installation script.

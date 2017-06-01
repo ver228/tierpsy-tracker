@@ -11,19 +11,18 @@ Created on Fri Mar 13 19:39:41 2015
 
 @author: ajaver
 """
-import tables
+import json
 import os
+
 import cv2
 import numpy as np
 import pandas as pd
-import json
+import tables
 
 from tierpsy.analysis.ske_create.helperIterROI import generateMoviesROI
-
 from tierpsy.analysis.ske_create.segWormPython.mainSegworm import getSkeleton, resampleAll
-from tierpsy.helper.misc import TABLE_FILTERS
-#zebrafish functions, I am not sure it really works
 from tierpsy.analysis.ske_create.zebrafishAnalysis import zebrafishAnalysis, zebrafishSkeleton
+from tierpsy.helper.misc import TABLE_FILTERS
 
 def _zebra_func(worm_img, skel_args, resampling_N):
     # Get zebrafish mask
@@ -353,8 +352,7 @@ if __name__ == '__main__':
     
     json_file = os.path.join(root_dir, 'f3_ss_uncompressed.json')
 
-    from tierpsy.helper.tracker_param import tracker_param
-    params = tracker_param(json_file)
+    params = TrackerParams(json_file)
 
 
 

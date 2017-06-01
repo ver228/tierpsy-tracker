@@ -152,7 +152,9 @@ def checkFinalOrientation(
     peak_search_limits = [0.054, 0.192, 0.269, 0.346]
 
     p_mov, skel_group = getHeadProbMov(
-        skeletons_file, trajectories_worm, **head_tail_param)
+        skeletons_file, 
+        trajectories_worm, 
+        **head_tail_param)
 
     p_int_top, p_int_bot, int_group = getHeadProvInt(
         intensities_file, trajectories_worm, min_block_size, peak_search_limits=peak_search_limits)
@@ -190,8 +192,7 @@ if __name__ == '__main__':
     for ff in glob.glob(os.path.join(check_dir, '*')):
         ff = ff.replace('MaskedVideos', 'Results')
         base_name = os.path.split(ff)[1].rpartition('.')[0]
-        print(base_name)
-
+        
         trajectories_file = ff[:-5] + '_trajectories.hdf5'
         skeletons_file = ff[:-5] + '_skeletons.hdf5'
         intensities_file = ff[:-5] + '_intensities.hdf5'
@@ -217,8 +218,7 @@ if __name__ == '__main__':
 
             p_tot, skel_group, int_group = checkFinalOrientation(
                 skeletons_file, intensities_file, trajectories_worm, head_tail_param)
-            print(p_tot)
-
+            
             if p_tot < 0.5:
                 switchBlocks(
                     skel_group,

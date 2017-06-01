@@ -5,22 +5,24 @@ Created on Mon Aug 15 20:55:19 2016
 @author: ajaver
 """
 
-import tables
-import pandas as pd
-from collections import OrderedDict
-import numpy as np
 import json
 import os
-import zipfile
-#import gzip
+from collections import OrderedDict
 
-from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStats
+import zipfile
+import numpy as np
+import pandas as pd
+import tables
+
 from tierpsy.helper.misc import print_flush
+from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStats
+from tierpsy.helper.params import read_unit_conversions, read_ventral_side, read_fps
+
 
 def getWCONMetaData(fname, READ_FEATURES=False, provenance_step='FEAT_CREATE'):
     def _order_metadata(metadata_dict):
         ordered_fields = ['strain', 'timestamp', 'gene', 'chromosome', 'allele', 
-        'genotype', 'sex', 'stage', 'ventral_side', 'media', 'arena', 'food', 
+        'strain_description', 'sex', 'stage', 'ventral_side', 'media', 'arena', 'food', 
         'habituation', 'who', 'protocol', 'lab', 'software']
         
         extra_fields = metadata_dict.keys() - set(ordered_fields)
@@ -99,7 +101,15 @@ def __addOMGFeat(fid, worm_feat_time, worm_id):
     
     return worm_features
     
-    
+
+def _get_ventral_side(features_file):
+    ventral_side = read_ventral_side(features_file)
+    if not ventral_side or ventral_side == 'unknown':
+        ventral_type = '?'
+    else:
+        #we will merge the ventral and dorsal contours so the ventral contour is clockwise
+        ventral_type='CW'
+    return ventral_type
 
 def _getData(features_file, READ_FEATURES=False, IS_FOR_WCON=True):
     if IS_FOR_WCON:
@@ -107,20 +117,31 @@ def _getData(features_file, READ_FEATURES=False, IS_FOR_WCON=True):
     else:
         lab_prefix = ''
 
+
+
     with pd.HDFStore(features_file, 'r') as fid:
+        if not '/features_timeseries' in fid:
+            return {} #empty file nothing to do here
+
         features_timeseries = fid['/features_timeseries']
         feat_time_group_by_worm = features_timeseries.groupby('worm_index');
         
-        
+    ventral_side = _get_ventral_side(features_file)
+    
     with tables.File(features_file, 'r') as fid:
+
+
         #fps used to adjust timestamp to real time
-        fps = fid.get_node('/features_timeseries').attrs['fps']
+        fps = read_fps(features_file)
         
         
         #get pointers to some useful data
         skeletons = fid.get_node('/coordinates/skeletons')
         dorsal_contours = fid.get_node('/coordinates/dorsal_contours')
         ventral_contours = fid.get_node('/coordinates/ventral_contours')
+        
+        
+            
         
         #let's append the data of each individual worm as a element in a list
         all_worms_feats = []
@@ -137,17 +158,18 @@ def _getData(features_file, READ_FEATURES=False, IS_FOR_WCON=True):
             
             #start ordered dictionary with the basic features
             worm_basic = OrderedDict()
-            worm_basic['id'] = worm_id
+            worm_basic['id'] = str(worm_id)
+            worm_basic['head'] = 'L'
+            worm_basic['ventral'] = ventral_side
+            worm_basic['ptail'] = worm_ven_cnt.shape[1]-1 #index starting with 0
+            
             worm_basic['t'] = worm_feat_time['timestamp'].values/fps #convert from frames to seconds
             worm_basic['x'] = worm_skel[:, :, 0]
             worm_basic['y'] = worm_skel[:, :, 1]
             
-            
-            
-            worm_basic[lab_prefix + 'x_ventral_contour'] = worm_ven_cnt[:, :, 0]
-            worm_basic[lab_prefix + 'y_ventral_contour'] = worm_ven_cnt[:, :, 1]
-            worm_basic[lab_prefix + 'x_dorsal_contour'] = worm_dor_cnt[:, :, 0]
-            worm_basic[lab_prefix + 'y_dorsal_contour'] = worm_dor_cnt[:, :, 1]
+            contour = np.hstack((worm_ven_cnt, worm_dor_cnt[:, ::-1, :]))
+            worm_basic['px'] = contour[:, :, 0]
+            worm_basic['py'] = contour[:, :, 1]
             
             if READ_FEATURES:
                 worm_features = __addOMGFeat(fid, worm_feat_time, worm_id)
@@ -156,40 +178,32 @@ def _getData(features_file, READ_FEATURES=False, IS_FOR_WCON=True):
 
             if IS_FOR_WCON:
                 for x in worm_basic:
-                    worm_basic[x] = __reformatForJson(worm_basic[x])
-
+                    if not x in ['id', 'head', 'ventral', 'ptail']:
+                        worm_basic[x] = __reformatForJson(worm_basic[x])
+            
+            
+            
             #append features
             all_worms_feats.append(worm_basic)
     
     return all_worms_feats
 
 def _getUnits(features_file, READ_FEATURES=False):
-    def _pixels_or_microns(micronsPerPixel):
-        #if this number is 1 and it is an integer there was not conversion given and the unit is pixels
-        if isinstance(micronsPerPixel, (float, np.float64)) and micronsPerPixel == 1:
-            unit_str = 'pixels'
-        else:
-            unit_str = 'microns'
-        return unit_str
     
-    with tables.File(features_file, 'r') as fid:
-        micronsPerPixel = fid.get_node('/features_timeseries').attrs['micronsPerPixel']
-        
-        
+    fps_out, microns_per_pixel_out, _  = read_unit_conversions(features_file)
+    xy_units = microns_per_pixel_out[1]
+    time_units = fps_out[2]
+
     units = OrderedDict()
-    units['t'] = 'seconds'
     units["size"] = "mm" #size of the plate
+    units['t'] = time_units #frames or seconds
     
-    extra = ['x_ventral_contour', 'y_ventral_contour', 'x_dorsal_contour', 'y_dorsal_contour']
-    extra = ['@OMG ' + x for x in extra]
-    
-    unit_l_str = _pixels_or_microns(micronsPerPixel)
-    for field in ['x', 'y'] + extra:
-        units[field] = unit_l_str
+    for field in ['x', 'y', 'px', 'py']:
+        units[field] = xy_units #(pixels or micrometers)
     
     if READ_FEATURES:
-        #TODO double check the units
-        ws = WormStatsClass()
+        #TODO how to change microns to pixels when required
+        ws = WormStats()
         for field, unit in ws.features_info['units'].iteritems():
             units['@OMG ' + field] = unit
         
@@ -209,16 +223,13 @@ def exportWCONdict(features_file, READ_FEATURES=False):
     wcon_dict['metadata'] = metadata
     wcon_dict['units'] = units
     wcon_dict['data'] = data
-    
-    
-
     return wcon_dict
 
 
 def getWCOName(features_file):
     return features_file.replace('_features.hdf5', '.wcon.zip')
 
-def exportWCON(features_file, READ_FEATURES=True):
+def exportWCON(features_file, READ_FEATURES=False):
     base_name = os.path.basename(features_file).replace('_features.hdf5', '')
     
     print_flush("{} Exporting data to WCON...".format(base_name))
@@ -230,21 +241,21 @@ def exportWCON(features_file, READ_FEATURES=True):
     
     with zipfile.ZipFile(wcon_file, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
         zip_name = os.path.basename(wcon_file).replace('.zip', '')
-        wcon_txt = json.dumps(wcon_dict, allow_nan=False)
+        wcon_txt = json.dumps(wcon_dict, allow_nan=False, separators=(',', ':'))
         zf.writestr(zip_name, wcon_txt)
 
     print_flush("{} Finised to export to WCON.".format(base_name))
 
 if __name__ == '__main__':
     
-    features_file = '/Volumes/behavgenom_archive$/single_worm/Results/Laura-phase1/phase 1 pc207-12/Laura/31-03-10/3/T28138.5 (ok1014) on food L_2010_03_31__12_13_55___6___5_features.hdf5'
+    features_file = '/Users/ajaver/OneDrive - Imperial College London/Local_Videos/single_worm/global_sample_v3/883 RC301 on food R_2011_03_07__11_10_27___8___1_features.hdf5'
     #exportWCON(features_file)
     
     wcon_file = getWCOName(features_file)
     wcon_dict = exportWCONdict(features_file)
     wcon_txt = json.dumps(wcon_dict, allow_nan=False, indent=4)
     #%%
-    import zipfile
+    
     with zipfile.ZipFile(wcon_file, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
         zip_name = os.path.basename(wcon_file).replace('.zip', '')
         zf.writestr(zip_name, wcon_txt)

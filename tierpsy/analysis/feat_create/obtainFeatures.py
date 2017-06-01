@@ -5,12 +5,12 @@ Created on Thu Jun  4 11:30:53 2015
 @author: ajaver
 """
 import os
+import warnings
 from functools import partial
 import numpy as np
 import pandas as pd
 import tables
 
-import warnings
 warnings.filterwarnings('ignore', '.*empty slice*',)
 warnings.filterwarnings('ignore', ".*Falling back to 'gelss' driver.",)
 warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
@@ -19,16 +19,13 @@ warnings.simplefilter(action="ignore", category=RuntimeWarning)
 # (http://www.pytables.org/usersguide/parameter_files.html)
 tables.parameters.MAX_COLUMNS = 1024
 
-from tierpsy.helper.timeCounterStr import timeCounterStr
-from tierpsy.helper.misc import print_flush
+from tierpsy.helper.misc import TimeCounter, print_flush, WLAB, TABLE_FILTERS
 from tierpsy.analysis.ske_filt.getFilteredSkels import getValidIndexes
-from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStats, \
-WormFromTable, read_fps, read_microns_per_pixel
-
-from tierpsy.helper.misc import WLAB, TABLE_FILTERS
+from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStats, WormFromTable
+from tierpsy.helper.params import copy_unit_conversions, read_fps, min_num_skel_defaults
 
 import open_worm_analysis_toolbox as mv
-
+    
 #%%%%%%%
 def _n_percentile(n, q): 
         if isinstance(n, (float, int)) or n.size>0:
@@ -36,10 +33,9 @@ def _n_percentile(n, q):
         else:
             return np.nan
 
-FUNC_FOR_DIV = {'means':np.median, 'medians':np.median, 
+FUNC_FOR_DIV = {'means':np.mean, 'medians':np.median, 
     'P10th':partial(_n_percentile, q=10), 'P90th':partial(_n_percentile, q=90)}
-    
-            
+
 def getFeatStats(worm, wStats):
     if not isinstance(wStats, WormStats):
         wStats = WormStats()
@@ -48,9 +44,9 @@ def getFeatStats(worm, wStats):
     assert worm_openworm.skeleton.shape[1] == 2
     worm_features = mv.WormFeatures(worm_openworm)
     
-    def _get_worm_stat(fun):
+    def _get_worm_stat(func):
         # calculate the mean value of each feature
-        worm_stat = wStats.getWormStats(worm_features, np.mean)
+        worm_stat = wStats.getWormStats(worm_features, func)
         for field in wStats.extra_fields:
             worm_stat[field] = getattr(worm, field)
         return worm_stat
@@ -72,18 +68,21 @@ def getOpenWormData(worm, wStats=[]):
 
     timeseries_data['timestamp'] = worm.timestamp
     timeseries_data['worm_index'] = worm.worm_index
+    timeseries_data['skeleton_id'] = worm.skeleton_id
     timeseries_data['motion_modes'] = worm_features._features[
         'locomotion.motion_mode'].value
 
     for feat in wStats.feat_timeseries:
         feat_obj = wStats.features_info.loc[feat, 'feat_name_obj']
-        timeseries_data[feat] = worm_features._features[feat_obj].value
+        if feat_obj in worm_features._features:
+            timeseries_data[feat] = worm_features._features[feat_obj].value
 
     # convert the events features into a dictionary
     events_data = {}
     for feat in wStats.feat_events:
         feat_obj = wStats.features_info.loc[feat, 'feat_name_obj']
-        events_data[feat] = worm_features._features[feat_obj].value
+        if feat_obj in worm_features._features:
+            events_data[feat] = worm_features._features[feat_obj].value
 
     
 
@@ -155,9 +154,11 @@ def getWormFeaturesFilt(
         use_skel_filter,
         use_manual_join,
         is_single_worm,
-        expected_fps,
         feat_filt_param,
         split_traj_time):
+    
+    feat_filt_param = min_num_skel_defaults(skeletons_file, **feat_filt_param)
+
 
     def _iniFileGroups():
         # initialize groups for the timeseries and event features
@@ -169,12 +170,8 @@ def getWormFeaturesFilt(
         table_timeseries = features_fid.create_table(
             '/', 'features_timeseries', header_timeseries, filters=TABLE_FILTERS)
 
-        microns_per_pixel = read_microns_per_pixel(skeletons_file)
-        fps, is_default_timestamp = read_fps(skeletons_file)
         # save some data used in the calculation as attributes
-        table_timeseries._v_attrs['micronsPerPixel'] = microns_per_pixel
-        table_timeseries._v_attrs['is_default_timestamp'] = is_default_timestamp
-        table_timeseries._v_attrs['fps'] = fps
+        fps, microns_per_pixel, _ = copy_unit_conversions(table_timeseries, skeletons_file)
         table_timeseries._v_attrs['worm_index_str'] = worm_index_str
 
         # node to save features events
@@ -205,7 +202,7 @@ def getWormFeaturesFilt(
     
         return header_timeseries, table_timeseries, group_events, worm_coords_array, stats_features_df
     
-    progress_timer = timeCounterStr('')
+    progress_timer = TimeCounter('')
     def _displayProgress(n):
             # display progress
         dd = " Extracting features. Worm %i of %i done." % (n, tot_worms)
@@ -213,7 +210,7 @@ def getWormFeaturesFilt(
             base_name +
             dd +
             ' Total time:' +
-            progress_timer.getTimeStr())
+            progress_timer.get_time_str())
 
     #get the valid number of worms
     good_traj_index, worm_index_str = getGoodTrajIndexes(skeletons_file,
@@ -222,7 +219,7 @@ def getWormFeaturesFilt(
         is_single_worm, 
         feat_filt_param)
     
-    fps, is_default_timestamp = read_fps(skeletons_file, expected_fps)
+    fps = read_fps(skeletons_file)
     split_traj_frames = int(np.round(split_traj_time*fps)) #the fps could be non integer
     
     # function to calculate the progress time. Useful to display progress
@@ -268,7 +265,7 @@ def getWormFeaturesFilt(
                 #worm with the stage correction applied
                 worm.correct_schafer_worm()
                 if np.all(np.isnan(worm.skeleton[:, 0, 0])):
-                    print('{} Not valid skeletons found fater stage correction. Skiping worm index {}'.format(base_name, worm_index))
+                    print_flush('{} Not valid skeletons found after stage correction. Skiping worm index {}'.format(base_name, worm_index))
                     return
             # calculate features
             timeseries_data, events_data, worm_stats = getOpenWormData(worm, wStats)
@@ -368,16 +365,15 @@ def getWormFeaturesFilt(
     print_flush(
         base_name +
         ' Feature extraction finished: ' +
-        progress_timer.getTimeStr())
+        progress_timer.get_time_str())
 
 #%%
 if __name__ == '__main__':
-    from tierpsy.helper.tracker_param import tracker_param
     skeletons_file = '/Users/ajaver/Tmp/Results/FirstRun_181016/HW_N1_Set2_Pos6_Ch1_18102016_140043_skeletons.hdf5'
     features_file = skeletons_file.replace('_skeletons.hdf5', '_features.hdf5')
     
     
-    param = tracker_param()
+    param = TrackerParams()
     is_single_worm = False
     use_manual_join = False
     use_skel_filter = True

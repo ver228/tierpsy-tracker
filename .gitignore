@@ -12,3 +12,5 @@ tests/data/*
 *.so
 
 tierpsy.egg-info/
+_site/
+Gemfile*

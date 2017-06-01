@@ -1,33 +1,171 @@
 import sys
 import os
 import json
+from collections import OrderedDict
 
 from PyQt5.QtWidgets import QDialog, QApplication, QGridLayout, QLabel, \
     QSpinBox,  QDoubleSpinBox, QCheckBox, QPushButton, QLineEdit, QSizePolicy, \
-    QMessageBox, QSpacerItem, QFileDialog
+    QMessageBox, QSpacerItem, QFileDialog, QComboBox
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 
-from tierpsy.helper.tracker_param import tracker_param, param_help, dflt_param_list
-from tierpsy.gui.HDF5VideoPlayer import lineEditDragDrop
+
+from tierpsy.helper.params.tracker_param import TrackerParams, info_param, default_param, valid_options
+from tierpsy.gui.HDF5VideoPlayer import LineEditDragDrop
+from tierpsy import DFLT_FILTER_FILES
 
 
 def save_params_json(json_file, param4file):
     # save data into the json file
     with open(json_file, 'w') as fid:
-        json.dump(param4file, fid, indent=4, sort_keys=True)
+        json.dump(param4file, fid, indent=4)
 
-def _read_widget(widget):
-    if isinstance(widget, (QDoubleSpinBox, QSpinBox)):
-        return widget.value()
-    elif isinstance(widget, QCheckBox):
-        return widget.isChecked()
-    elif isinstance(widget, QLineEdit):
-        return widget.text()
-    elif isinstance(widget, QGridLayout):
-        return [widget.itemAt(ii).widget().value() for ii in range(widget.count())]
-            
-    else:
-        raise('unknown type {}'.format(type(widget)))
+class ParamWidget():
+    def __init__(self, name, value=None, widget=None, 
+        info_param=info_param, valid_options=valid_options):
+
+        self.name = name
+        if widget is not None:
+            self.widget = widget
+        else:
+            assert value is not None
+            self.widget = self._create(name, value)
+
+        if isinstance(self.widget, (QDoubleSpinBox, QSpinBox)):
+            self.widget.setMinimum(int(-1e10))
+            self.widget.setMaximum(int(1e10))
+
+        elif isinstance(self.widget, QComboBox):
+            if name in valid_options:
+                self.widget.addItems(valid_options[name])
+            elif name == 'filter_model_name':
+                self.widget.addItems([''] + DFLT_FILTER_FILES)
+                self.widget.setEditable(True)
+
+
+        if not isinstance(self.widget, QGridLayout):
+            self.widget.setToolTip(info_param[name])
+        else:
+            for n in range(self.widget.count()):
+                self.widget.itemAt(n).widget().setToolTip(info_param[name])
+
+        if value is not None:
+            self.write(value)
+
+
+    def _create(self, name, value):
+        value_type = type(value)
+        
+        if name in valid_options or name == 'filter_model_name':
+            widget = QComboBox()
+        
+        elif value_type is bool:
+            widget = QCheckBox(name)
+
+        elif value_type is int:
+            widget = QSpinBox()
+
+        elif value_type is float:
+            widget = QDoubleSpinBox()
+
+        elif value_type is str:
+            widget = QLineEdit(value)
+        
+        elif value_type is list or value_type is tuple:
+            widget = QGridLayout()
+
+            for icol, val in enumerate(value):
+                spinbox = QSpinBox() if value_type is int else QDoubleSpinBox()
+                spinbox.setMinimum(int(-1e10))
+                spinbox.setMaximum(int(1e10))
+                spinbox.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+                widget.addWidget(spinbox, 1, icol, 1, 2)
+
+        else:
+            raise ValueError('unknown type {}'.format(value_type))
+        return widget
+
+    def read(self):
+        if isinstance(self.widget, (QDoubleSpinBox, QSpinBox)):
+            return self.widget.value()
+        elif isinstance(self.widget, QCheckBox):
+            return self.widget.isChecked()
+        elif isinstance(self.widget, QLineEdit):
+            return self.widget.text()
+        elif isinstance(self.widget, QGridLayout):
+            return [self.widget.itemAt(ii).widget().value() for ii in range(self.widget.count())]
+        elif isinstance(self.widget, QComboBox):
+            return self.widget.currentText()
+
+        else:
+            raise ValueError('unknown type {}'.format(type(self.widget)))
+
+    def write(self, value):
+        if isinstance(self.widget, (QDoubleSpinBox, QSpinBox)):
+            self.widget.setValue(value)
+        elif isinstance(self.widget, QCheckBox):
+            self.widget.setChecked(value)
+        elif isinstance(self.widget, QLineEdit):
+            self.widget.setText(value)
+        elif isinstance(self.widget, QGridLayout):
+            for ii, val in enumerate(value):
+                self.widget.itemAt(ii).widget().setValue(val)
+        elif isinstance(self.widget, QComboBox):
+            index = self.widget.findText(value)
+            self.widget.setCurrentIndex(index)
+        else:
+            raise ValueError('unknown type {}'.format(type(self.widget)))
+
+class ParamWidgetMapper():
+    '''
+    Class used to read/write data in different inputs. 
+    The corresponding widget must an element in the form p_(agument_name)
+
+    '''
+    def __init__(self, 
+                central_widget, 
+                default_param=default_param,
+                info_param=info_param, 
+                valid_options=valid_options
+                ):
+        self.params_widgets = {}
+        self.default_param=default_param
+
+        for attr_name in dir(central_widget):
+            if attr_name.startswith('p_'):
+                param_name = attr_name[2:]
+                widget = getattr(central_widget, attr_name)
+                w = ParamWidget(param_name, 
+                                widget=widget, 
+                                value=default_param[param_name],
+                                info_param=info_param, 
+                                valid_options=valid_options
+                                )
+                self.params_widgets[param_name] = w
+
+    def __setitem__(self, param_name, value):
+        assert param_name in self.params_widgets
+        if value is None:
+            return None
+        else:
+            self.params_widgets[param_name].write(value)
+
+    def __getitem__(self, param_name):
+        w = self.params_widgets[param_name]
+        if w.widget.isEnabled():
+            return w.read()
+        else:
+            return self.default_param[param_name]
+
+    def __iter__(self):
+        self.remaining_names = list(self.params_widgets.keys())
+        return self
+
+    def __next__(self):
+        if len(self.remaining_names)==0:
+            raise StopIteration
+
+        return self.remaining_names.pop(0)        
+
 
 class GetAllParameters(QDialog):
     file_saved = pyqtSignal(str)
@@ -37,6 +175,8 @@ class GetAllParameters(QDialog):
         self.param_file = param_file
         self.param_per_row = param_per_row
         self.initUI()
+
+        self.updateParamFile(param_file)
 
         self.pushbutton_save.clicked.connect(self.saveParamFile)
         self.pushbutton_file.clicked.connect(self.getParamFile)
@@ -56,53 +196,34 @@ class GetAllParameters(QDialog):
         super(GetAllParameters, self).closeEvent(event)
 
     def initUI(self):
+        
+
         grid = QGridLayout()
         self.setLayout(grid)
 
-        def _ini_spinbox(name, value):
-            spinbox = QSpinBox() if value_type is int else QDoubleSpinBox()
-            spinbox.setMinimum(int(-1e10))
-            spinbox.setMaximum(int(1e10))
-            spinbox.setValue(value)
-            return spinbox
-
         self.widgetlabels = {}
-        for ii, (name, value, info) in enumerate(dflt_param_list):
+        for ii, (name, value) in enumerate(default_param.items()):
             row = ii // self.param_per_row * 2
             col = (ii % self.param_per_row)
+            
 
-            value_type = type(value)
-            if value_type is bool:
-                checkbox = QCheckBox(name)
-                checkbox.setChecked(value)
-                grid.addWidget(checkbox, row, col, 2, 1)
-                self.widgetlabels[name] = checkbox
+            w = ParamWidget(name, value=value)
+            self.widgetlabels[name] = w
+
+            if isinstance(w.widget, QCheckBox):
+                grid.addWidget(w.widget, row, col, 2, 1)
+                w.widget.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
             else:
                 label = QLabel(name)
-                label.setWhatsThis(info)
                 grid.addWidget(label, row, col, 1, 1)
-                
-                if value_type is int or value_type is float:
-                    spinbox = _ini_spinbox(name, value)
-                    grid.addWidget(spinbox, row+1, col, 1, 1)
-                    self.widgetlabels[name] = spinbox
-                    
-                elif value_type is str:
-                    lineedit = QLineEdit(value)
-                    grid.addWidget(lineedit, row + 1, col, 1, 1)
-                    self.widgetlabels[name] = lineedit
-                
-                elif value_type is list or value_type is tuple:
-                    grid_loc = QGridLayout()
-                    grid.addLayout(grid_loc, row + 1, col, 1, 1)
-                    
-                    for icol, val in enumerate(value):
-                        spinbox = _ini_spinbox(name, val)
-                        grid_loc.addWidget(spinbox, row, icol, 1, 1)
-                    
-                    self.widgetlabels[name] = grid_loc
-        assert all(x for x in self.widgetlabels)
-
+                label.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+                if isinstance(w.widget, QGridLayout):
+                    grid.addLayout(w.widget, row+1, col, 1, 1)
+                else:
+                    grid.addWidget(w.widget, row+1, col, 1, 1)
+                    w.widget.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        #assert all(x for x in self.widgetlabels)
+        
         spacer = QSpacerItem(
             40,
             20,
@@ -113,14 +234,14 @@ class GetAllParameters(QDialog):
         self.pushbutton_file = QPushButton('Select File')
         self.lineEdit_file = QLineEdit(self.param_file)
 
-        last_row = len(dflt_param_list) // self.param_per_row * 2 + 3
+        last_row = len(default_param) // self.param_per_row * 2 + 3
         last_col = max(self.param_per_row - 1, 3)
         grid.addWidget(self.pushbutton_save, last_row, 0, 1, 1)
         grid.addWidget(self.pushbutton_file, last_row, last_col, 1, 1)
         grid.addWidget(self.lineEdit_file, last_row, 1, 1, last_col - 1)
         grid.addItem(spacer, last_row - 1, 0, 1, 1)
 
-        lineEditDragDrop(
+        LineEditDragDrop(
             self.lineEdit_file,
             self.updateParamFile,
             os.path.isfile)
@@ -143,8 +264,8 @@ class GetAllParameters(QDialog):
         # by the json file.
         if os.path.exists(json_file):
             try:
-                params = tracker_param(json_file)
-                json_param = params.input_param
+                params = TrackerParams(json_file)
+                json_param = params.p_dict
 
             except (OSError, UnicodeDecodeError, json.decoder.JSONDecodeError):
                 QMessageBox.critical(
@@ -166,22 +287,14 @@ class GetAllParameters(QDialog):
         # Set the parameters in the correct widget. Any paramter not contained
         # in the json file will be keep with the default value.
         for name in self.widgetlabels:
-            widget = self.widgetlabels[name]
-            value = json_param[
-                name] if name in json_param else default_param[name]
-
-            if isinstance(widget, (QDoubleSpinBox, QSpinBox)):
-                widget.setValue(value)
-            elif isinstance(widget, QCheckBox):
-                widget.setChecked(value)
-            elif isinstance(widget, QLineEdit):
-                widget.setText(value)
-            elif isinstance(widget, QGridLayout):
-                for ii, val in enumerate(value):
-                    widget.itemAt(ii).widget().setValue(val)
+            w = self.widgetlabels[name]
+            if name in json_param:
+                value = json_param[name]  
             else:
-                raise('unknown type {}'.format(type(widget)))
+                value = default_param[name]
 
+            w.write(value)
+            
         self.lineEdit_file.setText(json_file)
         # used to find if anything was modified.
         self.lastreadparams = self._readParams()
@@ -190,14 +303,12 @@ class GetAllParameters(QDialog):
         # read all the values in the GUI
         parameters = {}
         for name in self.widgetlabels:
-            widget = self.widgetlabels[name]
-            parameters[name] = _read_widget(widget)
+            parameters[name] = self.widgetlabels[name].read()
         return parameters
 
     @pyqtSlot()
     def saveParamFile(self):
         json_file = self.lineEdit_file.text()
-        print(json_file)
         if not json_file:
             QMessageBox.critical(
                 self,

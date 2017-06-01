@@ -6,12 +6,14 @@ Created on Thu Apr  2 16:33:34 2015
 """
 
 import os
+
 import numpy as np
 import pandas as pd
 import tables
 from scipy.spatial.distance import cdist
-from tierpsy.helper.misc import print_flush
-from tierpsy.helper.timeCounterStr import timeCounterStr
+
+from tierpsy.helper.misc import TimeCounter, print_flush
+
 
 def assignBlobTraj(trajectories_file, max_allowed_dist=20, area_ratio_lim=(0.5, 2)):
     
@@ -64,13 +66,16 @@ def assignBlobTraj(trajectories_file, max_allowed_dist=20, area_ratio_lim=(0.5, 
     
     #loop, save data and display progress
     base_name = os.path.basename(trajectories_file).replace('_trajectories.hdf5', '').replace('_skeletons.hdf5', '')
-    progressTime = timeCounterStr(base_name + ' Assigning trajectories.')  
+    
              
     frame_data_prev = None
     tot_worms = 0
     all_indexes = []
+
+    frames_grouped = plate_worms.groupby('frame_number')
     
-    for frame, frame_data in plate_worms.groupby('frame_number'):
+    progress_time = TimeCounter(base_name + ' Assigning trajectories.', len(frames_grouped))  
+    for frame, frame_data in frames_grouped:
         if frame_data is not None:
             if frame_data_prev is not None:    
                 _, prev_traj_ind = all_indexes[-1]
@@ -99,7 +104,7 @@ def assignBlobTraj(trajectories_file, max_allowed_dist=20, area_ratio_lim=(0.5, 
         frame_data_prev = frame_data
         if frame % 500 == 0:
             # calculate the progress and put it in a string
-            print_flush(progressTime.getStr(frame))
+            print_flush(progress_time.get_str(frame))
     
     if all_indexes:
         row_ind, traj_ind = map(np.concatenate, zip(*all_indexes))
@@ -109,7 +114,7 @@ def assignBlobTraj(trajectories_file, max_allowed_dist=20, area_ratio_lim=(0.5, 
             tbl = fid.get_node('/', 'plate_worms')
             tbl.modify_column(column=traj_ind, colname='worm_index_blob')
     
-        print_flush(progressTime.getStr(frame))    
+        print_flush(progress_time.get_str(frame))    
     
 
 def _validRowsByArea(plate_worms):
@@ -233,6 +238,9 @@ def joinGapsTrajectories(trajectories_file, min_track_size=50,
     max_time_gap -- time gap between joined trajectories
     '''
 
+    
+
+
     def _findNextTraj(df, area_ratio_lim, min_track_size, max_time_gap):
         '''
         area_ratio_lim -- allowed range between the area ratio of consecutive frames
@@ -341,14 +349,19 @@ def joinGapsTrajectories(trajectories_file, min_track_size=50,
         fid.flush()
 
 def joinBlobsTrajectories(trajectories_file, 
-                          is_single_worm, 
+                          analysis_type, 
                           max_allowed_dist, 
                           area_ratio_lim, 
                           min_track_size,
                           max_time_gap):
     
+    #allow to recieve int/float values
+    if not isinstance(area_ratio_lim, (tuple,list)):
+        area_ratio_lim = (1/area_ratio_lim, area_ratio_lim)
+
+    
     assignBlobTraj(trajectories_file, max_allowed_dist, area_ratio_lim)
-    if is_single_worm:
+    if analysis_type == 'SINGLE_WORM_SHAFER':
         correctSingleWormCase(trajectories_file)
     else:
         joinGapsTrajectories(trajectories_file, min_track_size, max_time_gap, area_ratio_lim)

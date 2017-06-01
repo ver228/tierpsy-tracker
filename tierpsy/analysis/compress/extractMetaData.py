@@ -4,17 +4,17 @@ Created on Wed Jan 13 13:57:54 2016
 
 @author: ajaver
 """
-import numpy as np
 import json
-import tables
-
 import os
 import subprocess as sp
+import warnings
 from collections import OrderedDict
 
-import warnings
-from tierpsy.helper.timeCounterStr import timeCounterStr
-from tierpsy.helper.misc import print_flush, ReadEnqueue, FFPROBE_CMD
+import numpy as np
+import tables
+
+from tierpsy.helper.misc import TimeCounter, print_flush, ReadEnqueue, FFPROBE_CMD
+
 
 def dict2recarray(dat):
     '''convert into recarray (pytables friendly)'''
@@ -46,9 +46,9 @@ def get_ffprobe_metadata(video_file):
         video_file]
     
     base_name = video_file.rpartition('.')[0].rpartition(os.sep)[-1]
-    progressTime = timeCounterStr(base_name + ' Extracting video metadata.')
+    progressTime = TimeCounter(base_name + ' Extracting video metadata.')
     
-    #from tierpsy.helper.runMultiCMD import cmdlist2str
+    #from tierpsy.helper.misc.RunMultiCMD import cmdlist2str
     #print( cmdlist2str(command))
     
     
@@ -69,7 +69,7 @@ def get_ffprobe_metadata(video_file):
             if "media_type" in line: #i use the filed "media_type" as a proxy for frame number (just in case the media does not have frame number)
                 frame_number += 1
                 if frame_number % 500 == 0:
-                    print_flush(progressTime.getStr(frame_number))
+                    print_flush(progressTime.get_str(frame_number))
         
         line = buf_reader_err.read()
         if line is not None:

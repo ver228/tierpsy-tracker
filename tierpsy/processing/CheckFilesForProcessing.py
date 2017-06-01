@@ -5,19 +5,25 @@ Created on Tue Jun  9 15:12:48 2015
 @author: ajaver
 """
 
-import os
 import multiprocessing as mp
+import os
+from functools import partial
 
-from tierpsy.helper.timeCounterStr import timeCounterStr
-from tierpsy.processing.batchProcHelperFunc import create_script
-from tierpsy.processing.ProcessWormsLocal import BATCH_SCRIPT_LOCAL
-from tierpsy.processing.AnalysisPoints import AnalysisPoints
+from tierpsy.helper.misc import TimeCounter, print_cmd_list
+from tierpsy.processing.AnalysisPoints import AnalysisPoints, init_analysis_point_lock
+from tierpsy.processing.ProcessLocal import BATCH_SCRIPT_LOCAL
+from tierpsy.processing.helper import create_script
+
+BREAK_L = '*********************************************'
+
 
 class CheckFilesForProcessing(object):
     def __init__(self, video_dir_root, mask_dir_root, 
                  results_dir_root, tmp_dir_root='', 
                  json_file='', analysis_checkpoints = [],
-                  is_copy_video = True, copy_unfinished=True):
+                  is_copy_video = True, 
+                  copy_unfinished=True,
+                  is_parallel_check=True):
         
         def _testFileExists(fname, type_str):
             if fname:
@@ -46,12 +52,12 @@ class CheckFilesForProcessing(object):
 
         self.analysis_checkpoints = analysis_checkpoints
         self.filtered_files = {}
-    
-
+        self.is_parallel_check = is_parallel_check
     def _checkIndFile(self, video_file):
         '''Check the progress in the file.'''
         
-
+        print(video_file)
+        
         video_dir, video_file_name = os.path.split(video_file)
         subdir_path = self._getSubDirPath(video_dir, self.video_dir_root)
         
@@ -59,14 +65,11 @@ class CheckFilesForProcessing(object):
         results_dir = os.path.join(self.results_dir_root, subdir_path)
         
         ap_obj = AnalysisPoints(video_file, mask_dir, results_dir, self.json_file)
-        
         unfinished_points = ap_obj.getUnfinishedPoints(self.analysis_checkpoints)
         
-
         if len(unfinished_points) == 0:
             msg = 'FINISHED_GOOD'
         else:
-            
             unmet_requirements = ap_obj.hasRequirements(unfinished_points[0])
             if len(unmet_requirements) > 0:
                 msg ='SOURCE_BAD'
@@ -77,8 +80,6 @@ class CheckFilesForProcessing(object):
             else:
                 msg = 'SOURCE_GOOD'
 
-        #else:
-        #    msg = 'EMPTY_ANALYSIS_LIST'
         
         return msg, ap_obj, unfinished_points
     
@@ -86,6 +87,11 @@ class CheckFilesForProcessing(object):
     def _getSubDirPath(self, source_dir, source_root_dir):
         '''Generate the destination dir path keeping the same structure 
         as the source directory'''
+
+        #if the source_root_dir is empty do not create a subdir_path
+        if not source_root_dir:
+            return ''
+
         subdir_path = source_dir.replace(source_root_dir, '')
 
         #TODO: What happends is there is MaskedVideos within the subdirectory 
@@ -113,8 +119,7 @@ class CheckFilesForProcessing(object):
         msd_dat = [ _vals2str(len(self.filtered_files[key]), msg) for key, msg in msg_pairs]
         tot_proc_files = len(self.filtered_files['SOURCE_GOOD']) + len(self.filtered_files['FINISHED_BAD'])
         
-        BREAK_L = '*********************************************' #use the list as below, otherwise it does weird copies of the list
-
+        
         s_msg = [BREAK_L]
         s_msg += ['Analysis Summary']
         s_msg += [BREAK_L]
@@ -130,24 +135,35 @@ class CheckFilesForProcessing(object):
         return s_msg
 
 
-    def filterFiles(self, valid_files):
+    def filterFiles(self, valid_files, print_cmd=False):
         # for ii, video_file in enumerate(valid_files):
         #     label, ap_obj, unfinished_points = self._checkIndFile(video_file)
         #     self.filtered_files[label].append((ap_obj, unfinished_points))
             
         #     if (ii % 10) == 0:
-        progress_timer = timeCounterStr('')
+
+
+        progress_timer = TimeCounter('')
+        
         n_batch = mp.cpu_count()
-        p = mp.Pool(n_batch)   
+        if self.is_parallel_check:
+            lock = mp.Lock()
+            p = mp.Pool(n_batch, initializer=init_analysis_point_lock, initargs=(lock,))
+        
         all_points = []
         tot_files = len(valid_files)
         for ii in range(0, tot_files, n_batch):
             dat = valid_files[ii:ii + n_batch]
-            res = list(p.map(self._checkIndFile, dat))
+            
+            if self.is_parallel_check:
+                res = list(p.map(self._checkIndFile, dat))
+            else:
+                res = list(map(self._checkIndFile, dat))
+            
             all_points.append(res)
             n_files = len(dat)
             print('Checking file {} of {}. Total time: {}'.format(ii + n_files, 
-                      tot_files, progress_timer.getTimeStr()))
+                      tot_files, progress_timer.get_time_str()))
         all_points = sum(all_points, []) #flatten
         
         # intialize filtered files lists
@@ -161,11 +177,23 @@ class CheckFilesForProcessing(object):
         for label, ap_obj, unfinished_points in all_points:
             self.filtered_files[label].append((ap_obj, unfinished_points))
 
+        print(BREAK_L)
+        print('''Finished to check files.\nTotal time elapsed {}'''.format(progress_timer.get_time_str()))
+        print(BREAK_L + '\n')
+
+        cmd_list = self.getCMDlist()
+        if print_cmd:
+            #print the commands to be executed
+            print(BREAK_L)
+            print('Commands to be executed.')
+            print(BREAK_L)
+            print_cmd_list(cmd_list)
+            print(BREAK_L + '\n')
+
         
-        print('''Finished to check files.\nTotal time elapsed {}\n'''.format(progress_timer.getTimeStr()))
         print(self.summary_msg)
         
-        return self.getCMDlist()
+        return cmd_list
     
     def _printUnmetReq(self):
         def _get_unmet_requirements(input_data):
