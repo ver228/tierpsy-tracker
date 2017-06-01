@@ -251,7 +251,7 @@ class BatchProcessing_GUI(QMainWindow):
             process_args[x] = self.mapper[x]
 
 
-        if 'COMPRESS' in process_args['analysis_checkpoints']:
+        if 'COMPRESS' == self.mapper['force_start_point']:
             if not os.path.exists(process_args['video_dir_root']):
                 QMessageBox.critical(
                     self,
