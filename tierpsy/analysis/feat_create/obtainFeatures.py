@@ -272,7 +272,8 @@ def getWormFeaturesFilt(
             
             #get splitted features
             splitted_worms = [x for x in worm.split(split_traj_frames) 
-            if x.n_valid_skel > feat_filt_param['min_num_skel']]
+            if x.n_valid_skel > feat_filt_param['min_num_skel'] and 
+            x.n_valid_skel/x.n_frames >= feat_filt_param['bad_seg_thresh']]
             
             dd = [getFeatStats(x, wStats)[1] for x in splitted_worms]
             splitted_feats = {stat:[x[stat] for x in dd] for stat in FUNC_FOR_DIV}
