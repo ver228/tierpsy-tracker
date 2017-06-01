@@ -224,9 +224,15 @@ class WormFromTable():
         return nw
 
     def split(self, split_size):
+        #subdivide so I do not have to start at the begining of a trajectory (it is more likely that there was an error here)
+        remainder =  self.n_frames % split_size
+        if remainder == 0:
+            ini_split = split_size
+        else:
+            ini_split = remainder//2
 
         #get the indexes to made the splits
-        split_ind = np.arange(split_size, self.n_frames, split_size, dtype=np.int)
+        split_ind = np.arange(ini_split, self.n_frames, split_size, dtype=np.int)
         n_splits = split_ind.size + 1
 
         #get the fields that will be splitted, they should be ndarrays with the same number of elements in the fisrt dimension
