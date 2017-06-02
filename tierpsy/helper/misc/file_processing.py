@@ -10,14 +10,30 @@ RESERVED_EXT = ['_skeletons.hdf5',
                 '_subsample.avi',
                 '.wcon.zip']
 
-def get_base_name(fname):
-    bn = os.path.basename(fname)
+def remove_ext(fname):
     for rext in RESERVED_EXT:
-        if bn.endswith(rext):
-            return bn.replace(rext, '')
+        if fname.endswith(rext):
+            return fname.replace(rext, '')
+    return os.path.splitext(fname)[0]
 
-    return os.path.splitext(bn)[0]
+def get_base_name(fname):
+    return os.path.basename(remove_ext(fname))
 
+def replace_subdir(original_dir, original_subdir, new_subdir):
+    # construct the results dir on base of the mask_dir_root
+    subdir_list = original_dir.split(os.sep)
+
+    for ii in range(len(subdir_list))[::-1]:
+        if subdir_list[ii] == original_subdir:
+            subdir_list[ii] = new_subdir
+            break
+    # the counter arrived to zero, add Results at the end of the directory
+    if ii == 0:
+        if subdir_list[-1] == '':
+            del subdir_list[-1]
+        subdir_list.append(new_subdir)
+
+    return (os.sep).join(subdir_list)
 
 def save_modified_table(file_name, modified_table, table_name):
     tab_recarray = modified_table.to_records(index=False)

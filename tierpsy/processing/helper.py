@@ -8,7 +8,7 @@ import os
 import errno
 import sys
 import fnmatch
-from tierpsy.helper.misc import RESERVED_EXT
+from tierpsy.helper.misc import RESERVED_EXT, replace_subdir
 from tierpsy.helper.params.tracker_param import valid_options
 from tierpsy.helper.params.docs_analysis_points import dflt_analysis_points
 
@@ -104,29 +104,13 @@ def remove_border_checkpoints(list_of_points, last_valid, index):
     
     return list_of_points
 
-def _replace_subdir(original_dir, original_subdir, new_subdir):
-    # construct the results dir on base of the mask_dir_root
-    subdir_list = original_dir.split(os.sep)
-
-    for ii in range(len(subdir_list))[::-1]:
-        if subdir_list[ii] == original_subdir:
-            subdir_list[ii] = new_subdir
-            break
-    # the counter arrived to zero, add Results at the end of the directory
-    if ii == 0:
-        if subdir_list[-1] == '':
-            del subdir_list[-1]
-        subdir_list.append(new_subdir)
-
-    return (os.sep).join(subdir_list)
-
 
 def get_results_dir(mask_files_dir):
-    return _replace_subdir(mask_files_dir, 'MaskedVideos', 'Results')
+    return replace_subdir(mask_files_dir, 'MaskedVideos', 'Results')
 
 
 def get_masks_dir(videos_dir):
     if 'Worm_Videos' in videos_dir:
-        return _replace_subdir(videos_dir, 'Worm_Videos', 'MaskedVideos')
+        return replace_subdir(videos_dir, 'Worm_Videos', 'MaskedVideos')
     else:
-        return _replace_subdir(videos_dir, 'RawVideos', 'MaskedVideos')
+        return replace_subdir(videos_dir, 'RawVideos', 'MaskedVideos')
