@@ -1,5 +1,5 @@
 # Tierpsy Tracker
-This repository contains the code of the multi-worm tracker for the [MRC-LMS](http://lms.mrc.ac.uk/) [Behavioral Genomics Group](http://behave.csc.mrc.ac.uk/). We aim to improve the C. elegans behavioural analysis by extracting both the collective behaviour and the postural information of individuals in high resolution videos. This code aims to be customizable and expandable to different experimental conditions.
+Tierpsy Tracker is a multi-animal developed in the [MRC-LMS](http://lms.mrc.ac.uk/) [Behavioural Genomics Group](http://behave.csc.mrc.ac.uk/) at Imperial College London. The project combines the throughput of multiworm tracking with the resolution of single worm tracking, which means you can extract detailed phenotypic fingerprints from more animals.  A large field of view also makes it possible to analyse collective behaviours that depend on animal interactions.  The code is open source and extensible and we have ongoing projects using the tracker to analyse fish, *Drosophila* larvae, and fluorescently labelled worms.
 
 <img src="https://cloud.githubusercontent.com/assets/8364368/26658216/8d5599b2-4660-11e7-911b-c390330a15ee.gif" width="480">
 
