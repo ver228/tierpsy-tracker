@@ -3,13 +3,13 @@ function [features_segworm, conversions] = convert2Segworm(features)
 %features  - structure with all the individual worm tracks and their
 %                       respective features in the MWTracker format (see readFeatureTable).
 %features_segworm - structure with individual worm tracks features formated
-%                   as the segworm worm struct. 
+%                   as the segworm worm struct.
 
 %NOTE - The conversions to segworm will not be one to one since the fields
 % are based on the openworm definitions. This is not too dificult
 % to correct by modifying the file conversion_table.csv. I want to be sure
 % that this function would be useful before doing those modifications.
-
+%%
 conversion_table = 'conversion_table.csv';
 dat = getFileData(conversion_table);
 conversions = struct();
@@ -32,31 +32,38 @@ for iw = 1:numel(worm_names)
     worm_name = worm_names{iw};
     old_worm = features.(worm_name);
     
-    new_worm = struct();
     
+    
+    new_worm = struct();
     %add skeletons fields
     new_worm.posture.skeleton.x = old_worm.skeletons_x;
     new_worm.posture.skeleton.y = old_worm.skeletons_y;
     old_worm = rmfield(old_worm, {'skeletons_x'; 'skeletons_y'});
+    
+    
     
     worm_fields = fieldnames(old_worm);
     for fn = 1:numel(worm_fields)
         old_field = worm_fields{fn};
         if any(strcmp(old_field, JUST_COPY_FIELDS))
             segworm_field_str = ['extra.', old_field];
-        else
+        elseif isfield(conversions, old_field)
             segworm_field_str = conversions.(old_field);
+        else
+            warning([old_field, ' : field not found in the conversions table.'])
         end
         
         segworm_fields = strsplit(segworm_field_str, '.');
         data = old_worm.(old_field);
         new_worm = addField(new_worm, segworm_fields, data);
         
+        
+        
         old_worm = rmfield(old_worm, old_field); %just to check that all the fields were really removed
     end
     assert(isempty(fieldnames(old_worm)))
     
-    
+    %adjust eigenworms to be the same as before
     new_postures = new_worm.posture;
     eigenProjection = zeros(6, length(new_worm.posture.eigen_projection0));
     for ei = 1:6
@@ -66,26 +73,30 @@ for iw = 1:numel(worm_names)
     end
     new_postures.eigenProjection = eigenProjection;
     new_worm.posture = new_postures;
-
+    
+    %correct timestamps, I was using -1 to indicate a missing time. Let's
+    %replace it with nan
+    new_worm.extra.timestamp(new_worm.extra.timestamp<0) = nan;
+    
     %add to the main worm
     features_segworm.(worm_name) = new_worm;
 end
 end
 
 function root = addField(root, field_names, data)
-        
-    if length(field_names) == 1
-        field_names = field_names{1};
+
+if length(field_names) == 1
+    field_names = field_names{1};
+end
+if ~iscell(field_names)
+    %null condition return root
+    root.(field_names) = data;
+else
+    current_field = field_names{1};
+    if ~isfield(root, current_field)
+        root.(current_field) = struct();
     end
-    if ~iscell(field_names)
-        %null condition return root
-        root.(field_names) = data;
-    else
-        current_field = field_names{1};
-        if ~isfield(root, current_field)
-            root.(current_field) = struct();
-        end
-        root.(current_field) = addField(root.(current_field), field_names(2:end), data);
-    end
+    root.(current_field) = addField(root.(current_field), field_names(2:end), data);
+end
 end
 
