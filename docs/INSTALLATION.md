@@ -1,12 +1,13 @@
 # Installation
 
-First you have to clone this repository. I recommend to install [Github Desktop](https://desktop.github.com/). Then open a new terminal (in Windows open Git Shell) and run: 
+To install Tierpsy tracker, download the latest version to your local machine.  This can be done manually [here](https://github.com/ver228/tierpsy-tracker/archive/master.zip).  If you use Git or [Github Desktop](https://desktop.github.com/), then open a new terminal (in Windows open Git Shell) and run: 
 
 ```bash
 git clone https://github.com/ver228/tierpsy-tracker
 ```
 ## Installation for OSX/Linux
-- Run `bash installation/installation_script.sh`
+
+Open a terminal window and run `bash installation/installation_script.sh`.
 
 ## Installation for Windows
 
@@ -16,18 +17,18 @@ git clone https://github.com/ver228/tierpsy-tracker
 - Run `./tierpsy-tracker/installation/installation_script.bat`.
 
 ## Possible Issues
-Most of the problems that can occur during the installation are due to missing/conflicting dependencies specially if there were older versions of miniconda installed. Try to upgrade and re-run the scripts. If the problem persist you can raise an issue I'll try to help you but most of the time the problems can be solved by doing a google search.
+Most of the problems that can occur during installation are due to missing/conflicting dependencies, especially if there were older versions of miniconda installed. Try updating miniconda and re-running the scripts. Many of these problems can be solved by searching for error messages online, but if problems persist, please raise an issue on Github [project page](https://github.com/ver228/tierpsy-tracker/issues).
 
-## Tests Examples
-In OSX/Linux the test examples can be downloaded executing: 
+## Test Examples
+On Mac OSX or Linux, some test examples can be downloaded by running 
 
 ```bash
 installation/instalation_script.sh --tests
 ```
 
-It can be also manually downloaded using [this link](https://imperiallondon-my.sharepoint.com/personal/ajaver_ic_ac_uk/_layouts/15/guestaccess.aspx?guestaccesstoken=ldZ18fLY%2bzlu7XuO9mbKVdyiKoH4naiesqiLXWU4vGQ%3d&docid=0cec4e52f4ccf4d5b8bb3a737020fc12f&rev=1). Uncompress the data and save it in the main repository folder `tests/data` .
+The tests can also be manually downloaded using [this link](https://imperiallondon-my.sharepoint.com/personal/ajaver_ic_ac_uk/_layouts/15/guestaccess.aspx?guestaccesstoken=ldZ18fLY%2bzlu7XuO9mbKVdyiKoH4naiesqiLXWU4vGQ%3d&docid=0cec4e52f4ccf4d5b8bb3a737020fc12f&rev=1). Uncompress the data and save it in the main repository folder `tests/data` .
 
-You can run the tests by running: 
+You can then run the tests by running: 
 
 ```bash
 python tests/run_tests.py

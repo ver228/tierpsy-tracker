@@ -1,6 +1,6 @@
 # Output Files
 
-Below are a description and contents of each of the files produced during the [analysis steps](EXPLANATION.md). The `basename` prefix in each of the files refers to the original video name without the extension. For example, if the video file is named as `myfile.avi`, the files will look like `myfile.hdf5`, `myfile_subsample.avi` `myfile_skeletons.hdf5`, `myfile_features.hdf5`, `myfile_intensities.hdf5`.
+The following output files are produced by Tierpsy Tracker during the [analysis steps](EXPLANATION.md). The `basename` prefix in each of the files refers to the original video name without the extension. For example, if the video file is named as `myfile.avi`, the files will look like `myfile.hdf5`, `myfile_subsample.avi` `myfile_skeletons.hdf5`, `myfile_features.hdf5`, `myfile_intensities.hdf5`.
   
 ## basename.hdf5
 Contains the compressed hdf5 video data.
@@ -77,7 +77,7 @@ Table containing the data of the trajectories used in the analysis and displayed
   * `hu0`, `hu1`, `hu2`, `hu3`, `hu4`, `hu5`, `hu6`: [Hu moments](http://docs.opencv.org/2.4/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html?highlight=drawcontours#humoments).
 
 
-#### /skeleton /contour_side1 /contour_side2
+#### /skeleton /contour\_side1 /contour_side2
 Normalized coordinates (same number of points) for the skeletons and the contour in each side of the worm. The head should correspond to the first index and the tail to the last.
 
 
@@ -88,14 +88,14 @@ Contour width along the skeleton.
 Contour width of the midbody. Used to calculate the intensity maps in [INT_PROFILE](EXPLANATION.md/#int_profile).
 
 
-#### /contour_side1_length /contour_side2_length /skeleton_length
+#### /contour\_side1\_length /contour\_side2\_length /skeleton_length
 Contours and skeleton length in pixels before normalization and smoothing. This value is likely to be larger than the length caculated in [FEAT_CREATE](EXPLANATION.md/#feat_create) due to the noiser contours and probably should be deprecated.
 
 #### /contour_area
 Area in pixels of the binary image used to calculate the skeletons. Probably should be deprecated.
 
 
-#### /intensity_analysis/switched_head_tail
+#### /intensity\_analysis/switched\_head\_tail
 Internal. Table with the skeleton switched in [INT_SKE_ORIENT](EXPLANATION.md/#int_ske_orient).
 
 #### /timestamp/raw /timestamp/time
@@ -103,18 +103,18 @@ Same as in [basename.hdf5](#basenamehdf5).
 
 ## basename_intensities.hdf5
 
-#### /trajectories_data_valid 
+#### /trajectories\_data\_valid 
 Same as [/trajectories_data](#trajectories_data) but only containing rows where `has_skeleton` is `true`.
 
-#### /straighten_worm_intensity 
+#### /straighten\_worm\_intensity 
 `Shape (tot_valid_skel, n_length, n_width)`
 
-Intensity maps of the straigten worms described in [INT_PROFILE](EXPLANATION.md/#int_profile). Each index in the first dimension correspond to the same row in [/trajectories_data_valid](#trajectories_data_valid). Note that the data type is [`float16`](https://en.wikipedia.org/wiki/Half-precision_floating-point_format). Cast this data to float32 or float64 before doing any operation to avoid overflows.
+Intensity maps of the straigten worms described in [INT_PROFILE](EXPLANATION.md/#int_profile). Each index in the first dimension correspond to the same row in [/trajectories\_data_valid](#trajectories_data_valid). Note that the data type is [`float16`](https://en.wikipedia.org/wiki/Half-precision_floating-point_format). Cast this data to float32 or float64 before doing any operation to avoid overflows.
 
-#### /straighten_worm_intensity_median 
+#### /straighten\_worm\_intensity\_median 
 `Shape (tot_valid_skel, n_length)`
 
-Averaged intensity along the skeleton. Calculated in [INT_PROFILE](EXPLANATION.md/#int_profile) and used by [INT_SKE_ORIENT](EXPLANATION.md/#int_ske_orient). The data is organized as in [/straighten_worm_intensity](#straighten_worm_intensity).
+Averaged intensity along the skeleton. Calculated in [INT_PROFILE](EXPLANATION.md/#int_profile) and used by [INT\_SKE\_ORIENT](EXPLANATION.md/#int_ske_orient). The data is organized as in [/straighten\_worm\_intensity](#straighten_worm_intensity).
 
 
 ## basename_features.hdf5
@@ -144,7 +144,7 @@ Table containing the features that can be represented as timeseries. Each row co
   * `tail_to_head_orientation` : direction the worm is facing is measured as the angle between the head and the tail.  This feature needs to be changed since its value is with respect to the image frame of reference that does not have a real meaning unless we are using chemotaxis experiments.
   * `head_orientation` `(degrees)`  direction of the head measured as the angle between 1/6 of the worm body from the head and the head tip.
   * `tail_orientation` `(degrees)`  direction of the tail measured as the angle between 1/6 of the worm body from the tail and the tail tip.
-  * `eigen_projection_1`, `eigen_projection_2`, `eigen_projection_3`,  `eigen_projection_4`, `eigen_projection_5`, `eigen_projection_6` : `(no units)` eigenworm coefficients calculated using the [Stephens et al., 2008](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000028) moethod. The eigenworms are calculated by applying [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis) to the angles between each subsequent skeleton point (an orientation-invariant representation). The PCA components are calculated on wild-type skeletons, and account for roughly 95% of the variance in N2 shapes. Another way of looking at this is that the worm shape is compressed with roughly 5% loss. 
+  * `eigen_projection_1`, `eigen_projection_2`, `eigen_projection_3`,  `eigen_projection_4`, `eigen_projection_5`, `eigen_projection_6` : `(no units)` eigenworm coefficients calculated using the [Stephens et al., 2008](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000028) method. The eigenworms are calculated by applying [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis) to the angles between each subsequent skeleton point (an orientation-invariant representation). The PCA components are calculated on wild-type skeletons, and account for roughly 95% of the variance in N2 shapes. Another way of looking at this is that the worm shape is compressed with roughly 5% loss. 
   * `head_bend_mean`, `neck_bend_mean`, `midbody_bend_mean`, `hips_bend_mean`, `tail_bend_mean` : `(degrees)` mean of the angles along the skeleton for each worm body region.
   * `head_bend_sd`, `neck_bend_sd`, `midbody_bend_sd`, `hips_bend_sd`, `tail_bend_sd` : `(degrees)` standard deviation of the angles along the skeleton for each worm body region. The sign is given by the corresponding `_bend_mean`.
   * `head_crawling_amplitude`, `head_crawling_frequency`, `midbody_crawling_amplitude`, `midbody_crawling_frequency` `tail_crawling_amplitude`, `tail_crawling_frequency`: Frequency and amplitude of the largest peak of the fourier transform over a time window of the body part bend_mean. 
@@ -155,7 +155,7 @@ Table containing the features that can be represented as timeseries. Each row co
   * `path_range` : `(micrometers)` distance of the worm’s midbody from the path centroid.
   * `path_curvature` : `(radians/micrometers)` the angle of the worm's path divided by the distance travelled.
 
-#### /features_events/worm_*
+#### /features\_events/worm_*
   * `worm_dwelling`, `head_dwelling`, `midbody_dwelling`, `tail_dwelling` : `(seconds)` time duration a body part spends in a specific region of the plate. The worm path is subdivided in uniform grids where each element diagonal is equal to the body part mean width. The stored vector contains the time spend in each grid, excluding the grids that the body part never visited.
 
 Each time frame can be labeled according to any of the following events definitions (modified from the Supplementary Material of [Yemini et al.](http://www.nature.com/nmeth/journal/v10/n9/full/nmeth.2560.html):
@@ -185,7 +185,7 @@ For each of the event each of the following features are calculated:
 * `_distance_ratio` : `(no units)` ratio between the total distance travelled during an event and the total distance travelled during the whole trajectory.
 
 #### /features_summary: 
-Set of features calculated by subdividing and reducing the features in [/features_timeseries](#features_timeseries) and the [/features_events/worm_* ](#features_eventsworm_).
+Set of features calculated by subdividing and reducing the features in [/features_timeseries](#features_timeseries) and the [/features\_events/worm_* ](#features_eventsworm_).
 
 The subdivisions can be done by movement type or/and by signed data. A feature was subdivided when the corresponding subfix is in its name. If a feature name does not contain any subdivision subfix then the reduction was applied on all the original data.
 
