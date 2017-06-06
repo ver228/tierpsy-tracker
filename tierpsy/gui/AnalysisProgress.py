@@ -68,6 +68,11 @@ class WorkerFunQt(QThread):
                 exc_traceback,
                 limit=2,
                 file=sys.stdout)
+
+        #if i don't add this the GUI could terminate before displaying the last text.
+        sys.stdout.flush()
+        time.sleep(1)
+        
         self.task_done.emit()
         self.exit(0)
 
