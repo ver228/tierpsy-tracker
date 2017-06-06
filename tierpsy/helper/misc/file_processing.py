@@ -27,7 +27,7 @@ def replace_subdir(original_dir, original_subdir, new_subdir):
         if subdir_list[ii] == original_subdir:
             subdir_list[ii] = new_subdir
             break
-    # the counter arrived to zero, add Results at the end of the directory
+    # the counter arrived to zero, add new_subdir at the end of the directory
     if ii == 0:
         if subdir_list[-1] == '':
             del subdir_list[-1]
