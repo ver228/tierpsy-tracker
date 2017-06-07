@@ -105,7 +105,7 @@ This widget is used to visualize the tracking results. You can move to a specifi
 
 ![MWTrackerViewer](https://cloud.githubusercontent.com/assets/8364368/26412511/eac27158-40a0-11e7-880c-5671c2c27099.gif)  
 
-You can manually correct the trajectories as shown below. Once you have finished, click `Calculate Features` to execute the [FEAT\_MANUAL\_CREATE](EXPLANATION.md/#feat_manual_create) step.
+You can manually correct the trajectories as shown below. Once you have finished, execute the [FEAT\_MANUAL\_CREATE](EXPLANATION.md/#feat_manual_create) step using [Batch Processing Multiple Files](#batch-processing-multiple-files).
 
 ![TrackJoined](https://cloud.githubusercontent.com/assets/8364368/26412212/e0e112f8-409f-11e7-867b-512cf044d717.gif) 
 
