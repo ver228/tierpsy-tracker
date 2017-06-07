@@ -68,7 +68,7 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         self.ui.comboBox_labelType.currentIndexChanged.connect(
             self.selectWormIndexType)
 
-        self.ui.pushButton_feats.clicked.connect(self.getManualFeatures)
+        
 
         # flags for RW and FF
         self.RW, self.FF = 1, 2
@@ -117,7 +117,11 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         self.ui.pushButton_join.setShortcut(QKeySequence(Qt.Key_J))
         self.ui.pushButton_split.setShortcut(QKeySequence(Qt.Key_S))
 
-    
+        
+        #This part is broken I think I will remove it from here, and force the user to use BatchProcessing
+        self.ui.pushButton_feats.hide() 
+        #self.ui.pushButton_feats.clicked.connect(self.getManualFeatures)
+
 
     def keyPressEvent(self, event):
         #MORE SHORTCUTS
