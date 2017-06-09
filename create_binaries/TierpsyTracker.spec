@@ -34,9 +34,9 @@ ow_eigen_dst = os.path.join('open_worm_analysis_toolbox', ow_eigen)
 
 #add ffmpeg and ffprobe
 ffmpeg_src = FFMPEG_CMD
-ffmpeg_dst = os.path.join('misc', os.path.basename(FFMPEG_CMD))
+ffmpeg_dst = os.path.join('extras', os.path.basename(FFMPEG_CMD))
 ffprobe_src = FFPROBE_CMD
-ffprobe_dst = os.path.join('misc', os.path.basename(FFPROBE_CMD))
+ffprobe_dst = os.path.join('extras', os.path.basename(FFPROBE_CMD))
 
 #add prev compiled binary (they should have been ran before)
 proccess_bin_dst = 'ProcessWorker'
@@ -55,8 +55,8 @@ added_datas = [(ow_feat_dst, ow_feat_src, 'DATA'),
 tierpsy_path = os.path.dirname(tierpsy.__file__)
 tierpsy_path += os.sep
 
-#add all the files in misc
-for (dirpath, dirnames, filenames) in os.walk(os.path.join(tierpsy_path, 'misc')):
+#add all the files in extras
+for (dirpath, dirnames, filenames) in os.walk(os.path.join(tierpsy_path, 'extras')):
   for fname in filenames:
     if not fname.startswith('.'):
       fname_src = os.path.join(dirpath, fname)
