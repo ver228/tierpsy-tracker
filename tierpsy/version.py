@@ -1,7 +1,10 @@
 # # -*- coding: utf-8 -*-
-__version__ = '1.2.2'
+__version__ = '1.3'
 '''
-1.2.2
+1.3
+- Major internal organization.
+- Documentation
+- First oficial release.
 
 1.2.1
 - Major changes in internal organization of TRAJ_CREATE TRAJ_JOIN
