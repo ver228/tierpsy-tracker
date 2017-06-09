@@ -31,8 +31,9 @@ class ParamWidget():
             self.widget = self._create(name, value)
 
         if isinstance(self.widget, (QDoubleSpinBox, QSpinBox)):
-            self.widget.setMinimum(int(-1e10))
-            self.widget.setMaximum(int(1e10))
+            # In windows 7 it seems this value is int16 so keep it smaller than that
+            self.widget.setMinimum(int(-1e9))
+            self.widget.setMaximum(int(1e9))
 
         elif isinstance(self.widget, QComboBox):
             if name in valid_options:
