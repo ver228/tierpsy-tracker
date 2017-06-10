@@ -136,10 +136,11 @@ function ubuntu_dependencies {
 }
 
 function redhat_dependencies {
-	sudo yum -y install git
-
-	# opencv3 dependencies (http://docs.opencv.org/3.0-beta/doc/py_tutorials/py_setup/py_setup_in_fedora/py_setup_in_fedora.html)
-	sudo yum -y install gcc gcc-c++ cmake gtk2-devel libdc1394-devel libv4l-devel ffmpeg-devel \
+	yum -y groupinstall "Development tools"
+	yum install -y bzip2 git
+	yum install -y epel-release
+	rpm -Uvh http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-1.el7.nux.noarch.rpm && \
+	yum -y install gtk2-devel libdc1394-devel libv4l-devel ffmpeg-devel \
 	gstreamer-plugins-base-devel libpng-devel libjpeg-turbo-devel jasper-devel openexr-devel \
 	libtiff-devel libwebp-devel tbb-devel eigen3-devel
 }
