@@ -119,7 +119,7 @@ function linux_dependencies {
 		"Ubuntu")
 		ubuntu_dependencies
 		;;
-		"RedHat*"|"CentOS")
+		"RedHat*"|"CentOS"|"Scientific")
 		redhat_dependencies
 		;;
 	esac
@@ -287,9 +287,6 @@ function exec_all {
 		osx_dependencies || :
 		;;
 		
-		"Linux"*)
-		linux_dependencies || :
-		;;
 	esac
 
 	if [[ $1 == 'brew' ]]; then
@@ -328,6 +325,9 @@ case $1 in
 	;;
 	"--tests")
 	download_examples
+	;;
+	"--linux_dependencies")
+	linux_dependencies
 	;;
 	*)
 	echo "Exiting... Unrecognized argument: $1"
