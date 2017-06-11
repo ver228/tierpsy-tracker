@@ -5,9 +5,16 @@ To install Tierpsy tracker, download the latest version to your local machine.  
 ```bash
 git clone https://github.com/ver228/tierpsy-tracker
 ```
-## Installation for OSX/Linux
+## Installation for OSX
+Open a terminal and run `bash installation/installation_script.sh`.
 
-Open a terminal window and run `bash installation/installation_script.sh`.
+## Installation for Linux
+For linux run
+``` bash
+bash installation/installation_script.sh --linux_dependencies #You need sudo permissions
+bash installation/installation_script.sh
+```
+I have tested the script in Centos7. If you have other versions take a look to the dependencies in the [installation_script.sh](https://github.com/ver228/tierpsy-tracker/blob/master/installation/installation_script.sh) on function `ubuntu_dependencies` or `redhat_dependencies` and adjust them according to your distribution.
 
 ## Installation for Windows
 
