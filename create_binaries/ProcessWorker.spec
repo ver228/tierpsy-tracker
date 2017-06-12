@@ -1,7 +1,14 @@
 # -*- mode: python -*-
-import os
+#hidden imports needed for tierpsy, maybe there is a better way to call this...
+import tierpsy.analysis
+base_name = os.path.dirname(tierpsy.analysis.__file__)
+analysis_steps = [x for x in os.listdir(base_name) if os.path.exists(os.path.join(base_name, x, '__init__.py'))]
+hidden_tierspy = ['tierpsy.analysis.' + x for x in analysis_steps]
+print(hidden_tierspy)
 
+import os
 from tierpsy.processing.ProcessWorker import BATCH_SCRIPT_WORKER
+
 
 SRC_SCRIPT_PATH = BATCH_SCRIPT_WORKER[1]
 DST_BUILD=os.path.abspath('.')
@@ -12,7 +19,7 @@ a = Analysis([SRC_SCRIPT_PATH],
              pathex=[DST_BUILD],
              binaries=None,
              datas=None,
-             hiddenimports=['h5py.defs', 'h5py.utils', 'h5py.h5ac', 'h5py._proxy'],
+             hiddenimports=['h5py.defs', 'h5py.utils', 'h5py.h5ac', 'h5py._proxy'] + hidden_tierspy,
              hookspath=[],
              runtime_hooks=[],
              excludes=['PyQt4', 'PyQt4.QtCore', 'PyQt4.QtGui'],

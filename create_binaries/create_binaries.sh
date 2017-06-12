@@ -30,8 +30,8 @@ function clean {
 	MWVER=`python3 -c "import tierpsy; print(tierpsy.__version__)"`
 	OSXVER=`python3 -c "import platform; print(platform.platform().replace('Darwin', 'MacOSX'))"`
 	mv ./dist/TierpsyTracker.app "./TierpsyTracker $MWVER - $OSXVER+.app"
-	rm -Rf ./dist
-	rm -Rf ./build	
+	#rm -Rf ./dist
+	#rm -Rf ./build	
 }
 
 build

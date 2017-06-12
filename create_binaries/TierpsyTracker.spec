@@ -1,22 +1,25 @@
 # -*- mode: python -*-
+#hidden imports needed for tierpsy, maybe there is a better way to call this...
+import tierpsy.analysis
+base_name = os.path.dirname(tierpsy.analysis.__file__)
+analysis_steps = [x for x in os.listdir(base_name) if os.path.exists(os.path.join(base_name, x, '__init__.py'))]
+hidden_tierspy = ['tierpsy.analysis.' + x for x in analysis_steps]
+print(hidden_tierspy)
+
 import os
 import sys
+from PyInstaller.compat import is_win, is_darwin, is_linux
+
 import tierpsy
 import open_worm_analysis_toolbox
-
-
 from tierpsy.helper.misc import FFMPEG_CMD, FFPROBE_CMD
 from tierpsy.gui import SelectApp
-
-IS_WIN =  (sys.platform == 'win32')
-IS_MAC =  (sys.platform == 'darwin')
-IS_LINUX =  (sys.platform == 'linux')
 
 #get TierpsyTracker main path
 SRC_SCRIPT_PATH = SelectApp.__file__
 
 DST_BUILD=os.path.abspath('.')
-CREATE_CONSOLE= IS_WIN #make a separated console only in windows. I have to do this due to a problem with pyinstaller
+CREATE_CONSOLE= is_win #make a separated console only in windows. I have to do this due to a problem with pyinstaller
 
 DEBUG = False
 
@@ -40,7 +43,7 @@ ffprobe_dst = os.path.join('extras', os.path.basename(FFPROBE_CMD))
 
 #add prev compiled binary (they should have been ran before)
 proccess_bin_dst = 'ProcessWorker'
-if IS_WIN:
+if is_win:
   proccess_bin_dst += '.exe'
 proccess_bin_src = os.path.join(DST_BUILD, 'dist', 'ProcessWorker', proccess_bin_dst)
 
@@ -64,7 +67,7 @@ for (dirpath, dirnames, filenames) in os.walk(os.path.join(tierpsy_path, 'extras
       added_datas.append((fname_dst, fname_src, 'DATA'))
 
 #copy additional dll in windows
-if IS_WIN:
+if is_win:
   import glob
   conda_bin = os.path.join(os.path.dirname(sys.executable), 'Library', 'bin')
   libopenh264_src = glob.glob(os.path.join(conda_bin, 'openh264*.dll'))
@@ -82,6 +85,8 @@ else:
       added_datas.append((dst, src, 'DATA'))
       print('<>><>>>>>>>>>>', dst)
 
+    #THIS LIBRARY IS PROBLEMATIC BECAUSE THERE ARE MANY VERSIONS IN THE SYSTEM I HAVE TO IMPORT IT MANUALLY, BUT THIS COULD BREAK IN THE FUTURE
+    
 
 block_cipher = None
 a = Analysis([SRC_SCRIPT_PATH],
@@ -89,7 +94,7 @@ a = Analysis([SRC_SCRIPT_PATH],
              binaries=None,
              datas = None,
              hiddenimports=['h5py.defs', 'h5py.utils', 'h5py.h5ac', 'h5py._proxy',
-             'cython', 'sklearn', 'sklearn.neighbors.typedefs'],
+             'cython', 'sklearn', 'sklearn.neighbors.typedefs', 'pywt._extensions._cwt'] + hidden_tierspy,
              hookspath=[],
              runtime_hooks=[],
              excludes=['PyQt4', 'PyQt4.QtCore', 'PyQt4.QtGui'],
@@ -97,8 +102,11 @@ a = Analysis([SRC_SCRIPT_PATH],
              win_private_assemblies=False,
              cipher=block_cipher)
 #i was having problems with adding datas using Analysis, i decided to add them directly to a.datas
-a.datas += added_datas
 
+a.datas += added_datas
+if is_darwin:
+  a.binaries.append(('libfreetype.6.dylib', '/usr/local/opt/freetype/lib/libfreetype.6.dylib', 'BINARY'))
+print([x for x in a.binaries if 'libfreetype' in x[0]])
 
 
 pyz = PYZ(a.pure, a.zipped_data,
@@ -118,7 +126,7 @@ if not DEBUG:
             upx=True,
             console=CREATE_CONSOLE )
 
-  if IS_MAC:
+  if is_darwin:
 
     app = BUNDLE(exe,
                  name='TierpsyTracker.app',

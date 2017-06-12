@@ -1,7 +1,7 @@
 
 create_binaries/*.app
-create_binaries/create_builds/build/*
-create_binaries/create_builds/dist/*
+create_binaries/build/*
+create_binaries/dist/*
 tests/data/*
 
 *.hdf5

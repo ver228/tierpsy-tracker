@@ -2,8 +2,7 @@
 
 * Got some issue related with different versions of libfreetype.6.dylib.
 I can check this using:
-	sudo find / -name libfreetype.6.dylib
-	otool -L path_to_libfreetype
+	sudo find / -name libfreetype.6.dylib -exec otool -L {} \;
 
 I find that I had an old version of PIL, and pyinstaller was pulling libfreetype.6.dylib. I deleted that folder (I installed too a new version of pillow, PIL seems discontinued).
 
