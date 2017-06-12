@@ -21,8 +21,8 @@ def get_base_name(fname):
 
 def replace_subdir(original_dir, original_subdir, new_subdir):
     # construct the results dir on base of the mask_dir_root
+    original_dir = os.path.normpath(original_dir)
     subdir_list = original_dir.split(os.sep)
-
     for ii in range(len(subdir_list))[::-1]:
         if subdir_list[ii] == original_subdir:
             subdir_list[ii] = new_subdir
