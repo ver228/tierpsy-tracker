@@ -22,3 +22,5 @@ hiddenimports=['h5py.defs', 'h5py.utils', 'h5py.h5ac', 'h5py._proxy',
 	conda install nomkl numpy scipy scikit-learn numexpr
 	conda remove mkl mkl-service
 
+* I recieve an error of a missing package 'future'. Just use:
+	conda install futures
