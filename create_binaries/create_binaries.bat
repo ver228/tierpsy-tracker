@@ -54,10 +54,8 @@ goto:eof
 for /f %%w in ('python -c "import tierpsy; print(tierpsy.__version__)"') do set MWVER=%%w
 for /f %%w in ('python -c "import platform; print(platform.platform())"') do set WINVER=%%w
 
-MOVE .\dist\MWConsole.exe ".\TierpsyTracker %MWVER% - %WINVER%.exe"
+MOVE .\dist\TierpsyTracker.exe ".\TierpsyTracker %MWVER% - %WINVER%.exe"
 RMDIR /S /Q .\dist
 RMDIR /S /Q .\build	
 
 goto:eof
-
-
