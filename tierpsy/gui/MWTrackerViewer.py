@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QApplication, QMessageBox, QShortcut
 from tierpsy.analysis.feat_create.obtainFeatures import getWormFeaturesFilt
 from tierpsy.analysis.ske_create.helperIterROI import getWormROI
 from tierpsy.analysis.ske_filt.getFilteredSkels import getValidIndexes
-from tierpsy.analysis.ske_filt import _get_feat_filt_param
+from tierpsy.analysis.ske_filt import get_feat_filt_param
 
 from tierpsy.gui.AnalysisProgress import WorkerFunQt, AnalysisProgress
 from tierpsy.gui.MWTrackerViewer_ui import Ui_MWTrackerViewer
@@ -244,7 +244,7 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
                 'bad_seg_thresh',
                 'min_displacement']}
             except (KeyError, tables.exceptions.NoSuchNodeError):
-                self.feat_filt_param = _get_feat_filt_param(self.param_default.p_dict)
+                self.feat_filt_param = get_feat_filt_param(self.param_default.p_dict)
 
         self.expected_fps = read_fps(self.vfilename)
         

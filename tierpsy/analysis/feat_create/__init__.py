@@ -1,9 +1,9 @@
 from .obtainFeatures import getWormFeaturesFilt
-from ..ske_filt import _get_feat_filt_param
+from ..ske_filt import get_feat_filt_param
 
 def _get_feats_param(p):
   return {
-    'feat_filt_param': _get_feat_filt_param(p),
+    'feat_filt_param': get_feat_filt_param(p),
     'split_traj_time' : p['split_traj_time'],
     'is_single_worm': p['analysis_type'] == 'SINGLE_WORM_SHAFER'
     }
