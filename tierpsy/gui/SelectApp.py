@@ -13,12 +13,12 @@ from tierpsy.gui.SWTrackerViewer import SWTrackerViewer_GUI
 from tierpsy.gui.BatchProcessing import BatchProcessing_GUI
         
 
-widget_lists = OrderedDict(
-    get_params = (GetMaskParams_GUI,"Set Parameters"),
-    batch_processing = (BatchProcessing_GUI,"Batch Processing Multiple Files"),
-    mwtracker = (MWTrackerViewer_GUI, "Tierpsy Tracker Viewer"),
-    swtracker = (SWTrackerViewer_GUI, "Single Worm Viewer")
-)
+dd = [('get_params', (GetMaskParams_GUI,"Set Parameters")),
+    ('batch_processing', (BatchProcessing_GUI,"Batch Processing Multiple Files")),
+    ('mwtracker', (MWTrackerViewer_GUI, "Tierpsy Tracker Viewer")),
+    ('swtracker', (SWTrackerViewer_GUI, "Single Worm Viewer"))
+    ]
+widget_lists = OrderedDict(dd)
 
 
 class SelectApp(QMainWindow):
