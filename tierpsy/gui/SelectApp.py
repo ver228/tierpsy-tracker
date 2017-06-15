@@ -7,6 +7,7 @@ from PyQt5.QtCore import Qt
 #from PyQt5 import QtCore, QtGui, QtWidgets
 
 #from tierpsy.gui.SelectApp_ui import Ui_SelectApp
+import tierpsy
 from tierpsy.gui.GetMaskParams import GetMaskParams_GUI
 from tierpsy.gui.MWTrackerViewer import MWTrackerViewer_GUI
 from tierpsy.gui.SWTrackerViewer import SWTrackerViewer_GUI
@@ -25,10 +26,12 @@ class SelectApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.resize(304, 249)
+        self.setWindowTitle('Tierpsy Tracker ' + tierpsy.__version__)
+
         self.centralwidget = QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
         self.setCentralWidget(self.centralwidget)
-
+         
         self.verticalLayout_C = QVBoxLayout(self.centralwidget)
         self.verticalLayout_C.setObjectName("verticalLayout_C")
 
