@@ -15,10 +15,10 @@ from tierpsy.helper.params import TrackerParams
 from tierpsy.helper.misc import print_flush
 from tierpsy.processing.AnalysisPoints import AnalysisPoints
 from tierpsy.processing.ProcessWorker import ProcessWorkerParser, ProcessWorker, BATCH_SCRIPT_WORKER
-from tierpsy.processing.helper import create_script
+from tierpsy.processing.helper import create_script, get_real_script_path
 
 #this path is not really going to be used if it is pyinstaller frozen (only the BATCH_SCRIPT_WORKER)
-BATCH_SCRIPT_LOCAL = [sys.executable, os.path.realpath(__file__)]
+BATCH_SCRIPT_LOCAL = get_real_script_path(__file__, 'ProcessLocal')
 
 class ProcessLocal(object):
     def __init__(self, main_file, masks_dir, results_dir, tmp_mask_dir='',
@@ -87,7 +87,7 @@ class ProcessLocal(object):
         args = [self.tmp_main_file]
         argkws = {'masks_dir':self.tmp_mask_dir, 'results_dir':self.tmp_results_dir, 
             'json_file':self.json_file, 'analysis_checkpoints':self.checkpoints2process}
-
+            
         return create_script(BATCH_SCRIPT_WORKER, args, argkws)
 
     def clean(self):

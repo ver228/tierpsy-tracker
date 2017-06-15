@@ -79,6 +79,12 @@ def processMultipleFilesFun(
       analysis_checkpoints = get_dflt_sequence(param.p_dict['analysis_type'])
     
     
+    if os.name == 'nt':
+        # This is giving problems in windows, specially while frozen. It shouldn't affect too much since it only speed up the check up of the files progress
+        is_parallel_check = False
+    else:
+        is_parallel_check = True
+
     remove_border_checkpoints(analysis_checkpoints, force_start_point, 0)
     remove_border_checkpoints(analysis_checkpoints, end_point, -1)
 
@@ -93,7 +99,8 @@ def processMultipleFilesFun(
                   'json_file' : json_file,
                   'analysis_checkpoints': analysis_checkpoints,
                   'is_copy_video': is_copy_video,
-                  'copy_unfinished': copy_unfinished}
+                  'copy_unfinished': copy_unfinished,
+                  'is_parallel_check': is_parallel_check}
     
     #get the list of valid videos
     if not videos_list:
