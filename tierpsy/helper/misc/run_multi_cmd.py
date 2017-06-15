@@ -39,10 +39,14 @@ class StartProcess():
 
         if local_obj:
             with CapturingOutput() as output:
-                
-                self.obj_cmd = local_obj(cmd[1:])
+                if cmd[0] == sys.executable:
+                    cmd = cmd[1:]
+                self.obj_cmd = local_obj(cmd)
                 
                 self.cmd = self.obj_cmd.start()
+
+                
+
             self.output += output
 
         else:
@@ -51,12 +55,11 @@ class StartProcess():
             self.output = ['Started\n']
 
         self.output += [cmdlist2str(self.cmd) + '\n']
-
+        
         self.proc = sp.Popen(self.cmd, stdout=sp.PIPE, stderr=sp.PIPE,
                              bufsize=1, close_fds=ON_POSIX)
         self.buf_reader = ReadEnqueue(self.proc .stdout)
-
-
+        
     def read_buff(self):
         while True:
             # read line without blocking

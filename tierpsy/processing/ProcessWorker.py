@@ -14,7 +14,8 @@ from tierpsy.processing.AnalysisPoints import AnalysisPoints
 from tierpsy.processing.trackProvenance import getGitCommitHash, execThisPoint
 from tierpsy.processing.helper import get_real_script_path
 
-BATCH_SCRIPT_WORKER = get_real_script_path(__file__)
+
+BATCH_SCRIPT_WORKER = get_real_script_path(__file__, 'ProcessWorker')
 
 class ProcessWorker(object):
     def __init__(self, main_file, masks_dir, results_dir, 

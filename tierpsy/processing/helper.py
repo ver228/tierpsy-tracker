@@ -57,6 +57,8 @@ def create_script(base_cmd, args, argkws):
 
     base_cmd arg1 ... --argkw_key1 argkw_val1 ...
     '''
+    base_cmd = [ x for x in base_cmd if x]
+
     cmd = base_cmd + args
     for key, dat in argkws.items():
         if isinstance(dat, bool):
@@ -68,16 +70,16 @@ def create_script(base_cmd, args, argkws):
             cmd += ['--' + key, str(dat)]
     return cmd
 
-def get_real_script_path(fullfile):
+def get_real_script_path(fullfile, base_name=''):
     '''get the path name that works with pyinstaller binaries'''
     try:
-        base_name = os.path.splitext(os.path.basename(fullfile))[0]
+        if not base_name:
+            base_name = os.path.splitext(os.path.basename(fullfile))[0]
         # use this directory if it is a one-file produced by pyinstaller
-        script_cmd = [os.path.join(sys._MEIPASS, base_name)]
+        exec_fname = os.path.join(sys._MEIPASS, base_name)
         if os.name == 'nt':
-            script_cmd[0] += '.exe'
-        return script_cmd
-    
+            exec_fname += '.exe'
+        return [exec_fname]
     except AttributeError:
         return [sys.executable, os.path.realpath(fullfile)]
 
