@@ -15,6 +15,8 @@ exec(open(module_name + '/version.py').read())
 # python3 setup.py build_ext --inplace
 path_parts = [module_name, 'analysis', 'ske_create', 'segWormPython', 'cython_files']
 cython_path = os.path.join(*path_parts)
+cython_path_e = os.path.join(module_name, 'analysis', 'stage_aligment')
+
 def _add_path(f_list):
 	return [os.path.join(cython_path, x) for x in f_list]
 
@@ -28,6 +30,7 @@ ext_files = {
 
 include_dirs = [numpy.get_include()]
 ext_modules = cythonize(os.path.join(cython_path, "*_cython.pyx"))
+ext_modules += cythonize(os.path.join(cython_path_e, "*.pyx"))
 ext_modules += [Extension(_get_mod_path(name), 
                           sources=_add_path(files), 
                           include_dirs=include_dirs) 

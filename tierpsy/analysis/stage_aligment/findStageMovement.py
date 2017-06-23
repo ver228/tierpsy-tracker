@@ -1,6 +1,34 @@
 import numpy as np
 import warnings
 from skimage.filters import threshold_otsu
+import tables
+from tierpsy.helper.misc import TimeCounter, print_flush, get_base_name
+from .get_mask_diff_var import get_mask_diff_var
+
+def getFrameDiffVar(masked_file):
+    base_name = get_base_name(masked_file, progress_refresh_rate_s=100)
+    progress_prefix = '{} Calculating variance of the difference between frames.'.format(base_name)
+    
+    with tables.File('masked_file', 'r') as fid:
+        masks = fid.get_node('/mask')
+
+        w, h, tot = masks.shape
+        progress_time = TimeCounter(progress_prefix, tot)
+        fps = read_fps(masked_file, dflt=25)
+        progress_refresh_rate = int(round(fps*progress_refresh_rate_s))
+
+        img_var_diff = np.zeros(tot-1)
+        frame_prev = masks[0]
+        for ii in range(1, tot):
+            frame_current = masks[ii]
+            img_var_diff[ii-1] = get_mask_diff_var(frame_current, frame_prev)
+            frame_prev = frame_current;
+
+            if ii % progress_refresh_rate == 0:
+                print_flush(progress_time.get_str(ii))
+
+        print_flush(progress_time.get_str(ii))
+    return img_var_diff
 
 def maxPeaksDistHeight(x, dist, height):
     """

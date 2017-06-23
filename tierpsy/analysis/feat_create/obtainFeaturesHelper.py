@@ -48,14 +48,12 @@ def _h_smooth_curve_all(curves, window=5, pol_degree=3):
     return curves
 
 
-
-
-class WormFromTable():
+class WormFromTableSimple():
     def __init__(self, 
                 file_name, 
                 worm_index, 
                 use_skel_filter=True,
-                worm_index_str='worm_index_joined',
+                worm_index_type='worm_index_joined',
                 smooth_window=-1, 
                 POL_DEGREE_DFLT=3):
         # Populates an empty normalized worm.
@@ -69,7 +67,7 @@ class WormFromTable():
         self.file_name = file_name
         self.worm_index = worm_index
         self.use_skel_filter = use_skel_filter
-        self.worm_index_str = worm_index_str
+        self.worm_index_type = worm_index_type
         # set to less than POL_DEGREE_DFLT to eliminate smoothing
         self.smooth_window = smooth_window
 
@@ -103,8 +101,8 @@ class WormFromTable():
             trajectories_data_f = ske_file_id['/trajectories_data']
 
             # get the rows of valid skeletons
-            assert self.worm_index_str in trajectories_data_f
-            good = trajectories_data_f[self.worm_index_str] == self.worm_index
+            assert self.worm_index_type in trajectories_data_f
+            good = trajectories_data_f[self.worm_index_type] == self.worm_index
             trajectories_data = trajectories_data_f.loc[good]
 
             skel_table_id = trajectories_data['skeleton_id'].values
@@ -195,33 +193,27 @@ class WormFromTable():
                 assert A.shape[1] == self.n_segments
             if A.ndim == 3:
                 assert A.shape[2] == 2
-           
 
-    def to_open_worm(self):
-        def _chage_axis(x):
-            A = np.rollaxis(x, 0, x.ndim)
-            return np.asfortranarray(A)
+    @property
+    def n_valid_skel(self):
+        # calculate the number of valid skeletons
+        return np.sum(~np.isnan(self.skeleton[:, 0, 0]))
 
-        fields = [
-            'skeleton',
-            'widths',
-            'ventral_contour',
-            'dorsal_contour']
-        args = [_chage_axis(getattr(self, ff)) for ff in fields]
+    @property
+    def n_frames(self):
+        return self.timestamp.size
+    
+    @property
+    def last_frame(self):
+        return self.timestamp[-1]
+    
+    @property
+    def first_frame(self):
+        return self.timestamp[0]
 
-        nw =  mv.NormalizedWorm.from_normalized_array_factory(*args)
-        nw.video_info.fps = self.fps
-        nw.video_info.set_ventral_mode(self.ventral_side)
-        if nw.video_info.ventral_mode != 0:
-            #check that the contour orientation and the ventral_mode are the same
-            signed_a = nw.signed_area[np.argmax(~np.isnan(nw.signed_area))] #first element not nan
-            if signed_a < 0:
-                assert nw.video_info.ventral_mode == 2 #anticlockwise
-            else:
-                assert nw.video_info.ventral_mode == 1
-
-
-        return nw
+class WormFromTable(WormFromTableSimple):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def split(self, split_size):
         #subdivide so I do not have to start at the begining of a trajectory (it is more likely that there was an error here)
@@ -255,23 +247,31 @@ class WormFromTable():
 
         return splitted_worms
 
-    @property
-    def n_valid_skel(self):
-        # calculate the number of valid skeletons
-        return np.sum(~np.isnan(self.skeleton[:, 0, 0]))
+    def to_open_worm(self):
+        def _chage_axis(x):
+            A = np.rollaxis(x, 0, x.ndim)
+            return np.asfortranarray(A)
 
-    @property
-    def n_frames(self):
-        return self.timestamp.size
-    
-    @property
-    def last_frame(self):
-        return self.timestamp[-1]
-    
-    @property
-    def first_frame(self):
-        return self.timestamp[0]
+        fields = [
+            'skeleton',
+            'widths',
+            'ventral_contour',
+            'dorsal_contour']
+        args = [_chage_axis(getattr(self, ff)) for ff in fields]
 
+        nw =  mv.NormalizedWorm.from_normalized_array_factory(*args)
+        nw.video_info.fps = self.fps
+        nw.video_info.set_ventral_mode(self.ventral_side)
+        if nw.video_info.ventral_mode != 0:
+            #check that the contour orientation and the ventral_mode are the same
+            signed_a = nw.signed_area[np.argmax(~np.isnan(nw.signed_area))] #first element not nan
+            if signed_a < 0:
+                assert nw.video_info.ventral_mode == 2 #anticlockwise
+            else:
+                assert nw.video_info.ventral_mode == 1
+
+
+        return nw
 
     def correct_schafer_worm(self):
         if hasattr(self, 'stage_vec_inv'):

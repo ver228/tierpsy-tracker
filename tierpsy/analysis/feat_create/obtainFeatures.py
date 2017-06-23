@@ -88,6 +88,10 @@ def getOpenWormData(worm, wStats=[]):
 
     return timeseries_data, events_data, worm_stats
 
+def hasManualJoin(skeletons_file):
+    with tables.File(skeletons_file, 'r') as fid:
+        return any(x in fid.get_node('/trajectories_data').colnames for x in ['worm_index_manual', 'worm_index_N'])
+
 def getGoodTrajIndexes(skeletons_file,
         use_skel_filter = True,
         use_manual_join = False,
@@ -102,12 +106,13 @@ def getGoodTrajIndexes(skeletons_file,
         colnames = table_fid.get_node('/trajectories_data').colnames
 
     if use_manual_join:
-        worm_index_str = 'worm_index_manual' if 'worm_index_manual' in colnames else 'worm_index_N'
+        worm_index_type = 'worm_index_manual' if 'worm_index_manual' in colnames else 'worm_index_N'
     else:
-        worm_index_str = 'worm_index_joined'
+        worm_index_type = 'worm_index_joined'
 
-    
-    
+    with pd.HDFStore(skeletons_file, 'r') as table_fid:
+        trajectories_data = table_fid['/trajectories_data']
+
     if not (use_manual_join or use_skel_filter):
         # filter the raw skeletons using the parameters in feat_filt_param
         dd = {
@@ -116,12 +121,10 @@ def getGoodTrajIndexes(skeletons_file,
                 'bad_seg_thresh',
                 'min_displacement']}
         good_traj_index, _ = getValidIndexes(
-            skeletons_file, **dd)
+            trajectories_data, **dd)
     else:
         
-        with pd.HDFStore(skeletons_file, 'r') as table_fid:
-            trajectories_data = table_fid['/trajectories_data']
-
+        
         if use_manual_join:
             # select tables that were manually labeled as worms
             good = trajectories_data['worm_label'] == WLAB['WORM']
@@ -133,20 +136,13 @@ def getGoodTrajIndexes(skeletons_file,
             trajectories_data = trajectories_data[good]
 
         
-        assert worm_index_str in trajectories_data
+        assert worm_index_type in trajectories_data
         
         #keep only the trajectories that have at least min_num_skel valid skeletons
-        N = trajectories_data.groupby(worm_index_str).agg({'has_skeleton': np.nansum})
+        N = trajectories_data.groupby(worm_index_type).agg({'has_skeleton': np.nansum})
         N = N[N > feat_filt_param['min_num_skel']].dropna()
         good_traj_index = N.index
-    return good_traj_index, worm_index_str
-
-
-
-def hasManualJoin(skeletons_file):
-    with tables.File(skeletons_file, 'r') as fid:
-        return any(x in fid.get_node('/trajectories_data').colnames for x in ['worm_index_manual', 'worm_index_N'])
-
+    return good_traj_index, worm_index_type
 
 def getWormFeaturesFilt(
         skeletons_file,
@@ -172,7 +168,7 @@ def getWormFeaturesFilt(
 
         # save some data used in the calculation as attributes
         fps, microns_per_pixel, _ = copy_unit_conversions(table_timeseries, skeletons_file)
-        table_timeseries._v_attrs['worm_index_str'] = worm_index_str
+        table_timeseries._v_attrs['worm_index_type'] = worm_index_type
 
         # node to save features events
         group_events = features_fid.create_group('/', 'features_events')
@@ -213,7 +209,7 @@ def getWormFeaturesFilt(
             progress_timer.get_time_str())
 
     #get the valid number of worms
-    good_traj_index, worm_index_str = getGoodTrajIndexes(skeletons_file,
+    good_traj_index, worm_index_type = getGoodTrajIndexes(skeletons_file,
         use_skel_filter,
         use_manual_join,
         is_single_worm, 
@@ -258,7 +254,7 @@ def getWormFeaturesFilt(
             skeletons_file,
             worm_index,
             use_skel_filter=use_skel_filter,
-            worm_index_str=worm_index_str,
+            worm_index_type=worm_index_type,
             smooth_window=5)
             
             if is_single_worm:
@@ -380,7 +376,7 @@ if __name__ == '__main__':
     use_skel_filter = True
     fps = 25
     
-    good_traj_index, worm_index_str = getGoodTrajIndexes(skeletons_file,
+    good_traj_index, worm_index_type = getGoodTrajIndexes(skeletons_file,
         use_skel_filter,
         use_manual_join,
         is_single_worm, 
@@ -392,7 +388,7 @@ if __name__ == '__main__':
                 skeletons_file,
                 worm_index,
                 use_skel_filter=use_skel_filter,
-                worm_index_str=worm_index_str,
+                worm_index_type=worm_index_type,
                 smooth_window=5)
     
     split_traj_frames = 300*fps
