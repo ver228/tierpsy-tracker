@@ -70,7 +70,7 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
                     # use default
                     self.strel_size = 5
 
-        except (IOError, KeyError):
+        except (IOError, KeyError, tables.exceptions.HDF5ExtError):
             self.trajectories_data = None
             self.traj_time_grouped = None
             self.skel_dat = {}

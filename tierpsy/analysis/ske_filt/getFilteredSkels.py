@@ -490,7 +490,7 @@ def getFilteredSkels(
         max_width_ratio=max_width_ratio,
         max_area_ratio=max_area_ratio)
 
-    with pd.HDFStore(skel_file, 'r') as table_fid:
+    with pd.HDFStore(skeletons_file, 'r') as table_fid:
         trajectories_data = table_fid['/trajectories_data']
 
     # get valid rows using the trajectory displacement and the
