@@ -16,6 +16,22 @@ from tierpsy.helper.misc import TimeCounter, print_flush
 
 
 def assignBlobTraj(trajectories_file, max_allowed_dist=20, area_ratio_lim=(0.5, 2)):
+    #loop, save data and display progress
+    base_name = os.path.basename(trajectories_file).replace('_trajectories.hdf5', '').replace('_skeletons.hdf5', '')
+    
+    with pd.HDFStore(trajectories_file, 'r') as fid:
+        plate_worms = fid['/plate_worms']
+    
+    traj_ind = assignBlobTrajDF(plate_worms, max_allowed_dist, area_ratio_lim, base_name=base_name)
+
+    if traj_ind is not None:
+        with tables.File(trajectories_file, 'r+') as fid:
+            tbl = fid.get_node('/', 'plate_worms')
+            tbl.modify_column(column=traj_ind, colname='worm_index_blob')
+
+        #print_flush(progress_time.get_str(frame))    
+
+def assignBlobTrajDF(traj_df, max_allowed_dist, area_ratio_lim, base_name=''):
     
     def _get_cost_matrix(frame_data, frame_data_prev):
         coord = frame_data[['coord_x', 'coord_y']].values
@@ -26,7 +42,12 @@ def assignBlobTraj(trajectories_file, max_allowed_dist=20, area_ratio_lim=(0.5, 
         area = frame_data['area'].values
         area_prev = frame_data_prev['area'].values
         area_ratio = area_prev[:, None]/area[None,:]
-        bad_ratio = (area_ratio<area_ratio_lim[0]) | (area_ratio>area_ratio_lim[1])
+        area_ratio[np.isnan(area_ratio)] = 1e20
+        
+        bad_ratio = (area_ratio<area_ratio_lim[0]) | \
+        (area_ratio>area_ratio_lim[1]) | \
+        np.isnan(costMatrix)
+        
         costMatrix[bad_ratio] = 1e20
         return costMatrix
     
@@ -61,46 +82,42 @@ def assignBlobTraj(trajectories_file, max_allowed_dist=20, area_ratio_lim=(0.5, 
         return map_to_prev
      
     
-    with pd.HDFStore(trajectories_file, 'r') as fid:
-        plate_worms = fid['/plate_worms']
-    
-    #loop, save data and display progress
-    base_name = os.path.basename(trajectories_file).replace('_trajectories.hdf5', '').replace('_skeletons.hdf5', '')
-    
-             
     frame_data_prev = None
     tot_worms = 0
     all_indexes = []
-
-    frames_grouped = plate_worms.groupby('frame_number')
+    frames_grouped = traj_df.groupby('frame_number')
+    
+    #if isinstance(area_ratio_lim, (float, int)):
+    #    area_ratio_lim = (1/area_ratio_lim, area_ratio_lim)
     
     progress_time = TimeCounter(base_name + ' Assigning trajectories.', len(frames_grouped))  
     for frame, frame_data in frames_grouped:
-        if frame_data is not None:
-            if frame_data_prev is not None:    
-                _, prev_traj_ind = all_indexes[-1]
-                costMatrix = _get_cost_matrix(frame_data, frame_data_prev)
-                map_to_prev = _get_prev_ind_match(costMatrix)
-                
-                traj_indexes = np.zeros_like(map_to_prev)
-                unmatched = map_to_prev == -1
-                matched = ~unmatched
-                
-                #assign matched index from the previous indexes
-                traj_indexes[matched] = prev_traj_ind[map_to_prev[matched]]
-                
-                vv = np.arange(1, np.sum(unmatched) + 1) + tot_worms
-                if vv.size > 0:
-                    tot_worms = vv[-1]
-                    traj_indexes[unmatched] = vv
-                    
-            else:
-                # initialize worm indexes
-                traj_indexes = tot_worms + np.arange(1, len(frame_data) + 1)
-                tot_worms = traj_indexes[-1]
-        
-            all_indexes.append((frame_data.index, traj_indexes))
+        #what happens if the frames are not continous?
+        if frame_data_prev is not None:    
+            _, prev_traj_ind = all_indexes[-1]
+            costMatrix = _get_cost_matrix(frame_data, frame_data_prev)
+            map_to_prev = _get_prev_ind_match(costMatrix)
             
+            traj_indexes = np.zeros_like(map_to_prev)
+            unmatched = map_to_prev == -1
+            matched = ~unmatched
+            
+            #assign matched index from the previous indexes
+            traj_indexes[matched] = prev_traj_ind[map_to_prev[matched]]
+            
+            vv = np.arange(1, np.sum(unmatched) + 1) + tot_worms
+            if vv.size > 0:
+                tot_worms = vv[-1]
+                traj_indexes[unmatched] = vv
+                
+        else:
+            # initialize worm indexes
+            traj_indexes = tot_worms + np.arange(1, len(frame_data) + 1)
+            tot_worms = traj_indexes[-1]
+        
+        all_indexes.append((frame_data.index, traj_indexes))
+            
+        
         frame_data_prev = frame_data
         if frame % 500 == 0:
             # calculate the progress and put it in a string
@@ -109,12 +126,9 @@ def assignBlobTraj(trajectories_file, max_allowed_dist=20, area_ratio_lim=(0.5, 
     if all_indexes:
         row_ind, traj_ind = map(np.concatenate, zip(*all_indexes))
         traj_ind = traj_ind[np.argsort(row_ind)]
+        return traj_ind
             
-        with tables.File(trajectories_file, 'r+') as fid:
-            tbl = fid.get_node('/', 'plate_worms')
-            tbl.modify_column(column=traj_ind, colname='worm_index_blob')
-    
-        print_flush(progress_time.get_str(frame))    
+        
     
 
 def _validRowsByArea(plate_worms):
@@ -230,29 +244,58 @@ def correctSingleWormCase(trajectories_file):
         traj_fid.remove_node('/', 'plate_worms')
         newT.rename('plate_worms')
 
-def joinGapsTrajectories(trajectories_file, min_track_size=50,
-                     max_time_gap=100, area_ratio_lim=(0.67, 1.5)):
+def joinGapsTrajectories(trajectories_file, 
+                         min_track_size=50,
+                         max_time_gap=100, 
+                         area_ratio_lim=(0.67, 1.5)):
+    #% get the first and last rows for each trajectory. Pandas is easier of manipulate than tables.
+    with pd.HDFStore(trajectories_file, 'r') as fid:
+        df = fid['plate_worms'][['worm_index_blob', 'frame_number',
+                                 'coord_x', 'coord_y', 'area', 'box_length']]
+
+    worm_index_joined = joinGapsTrajectoriesDF(df, 
+                           min_track_size=min_track_size,
+                           max_time_gap=max_time_gap, 
+                           area_ratio_lim=area_ratio_lim
+                           )
+
+    # update worm_index_joined field
+    with tables.open_file(trajectories_file, mode='r+') as fid:
+        plate_worms = fid.get_node('/plate_worms')
+        # add the result the column worm_index_joined
+        plate_worms.modify_column(
+            colname='worm_index_joined',
+            column=worm_index_joined)
+        fid.flush()
+
+def joinGapsTrajectoriesDF(plate_worms, 
+                           min_track_size=50,
+                           max_time_gap=100, 
+                           area_ratio_lim=(0.67, 1.5),
+                           worm_index_type='worm_index_blob'):
     '''
     area_ratio_lim -- allowed range between the area ratio of consecutive frames
     min_track_size -- minimum tracksize accepted
     max_time_gap -- time gap between joined trajectories
     '''
 
-    
 
 
-    def _findNextTraj(df, area_ratio_lim, min_track_size, max_time_gap):
+    def _findNextTraj(df, 
+                      area_ratio_lim, 
+                      min_track_size, 
+                      max_time_gap):
         '''
         area_ratio_lim -- allowed range between the area ratio of consecutive frames
         min_track_size -- minimum tracksize accepted
         max_time_gap -- time gap between joined trajectories
         '''
     
-        df = df[['worm_index_blob', 'frame_number',
-                 'coord_x', 'coord_y', 'area', 'box_length']]
+        df = df[[worm_index_type, 'frame_number',
+                 'coord_x', 'coord_y', 'area', 'box_length']].dropna()
         # select the first and last frame_number for each separate trajectory
-        tracks_data = df[['worm_index_blob', 'frame_number']]
-        tracks_data = tracks_data.groupby('worm_index_blob')
+        tracks_data = df[[worm_index_type, 'frame_number']]
+        tracks_data = tracks_data.groupby(worm_index_type)
         tracks_data = tracks_data.aggregate(
             {'frame_number': [np.argmin, np.argmax, 'count']})
     
@@ -306,8 +349,8 @@ def joinGapsTrajectories(trajectories_file, min_track_size=50,
         return relations_dict, valid_indexes
     
     
-    def _joinDict2Index(worm_index_blob, relations_dict, valid_indexes):
-        worm_index_joined = np.full_like(worm_index_blob, -1)
+    def _joinDict2Index(worm_index, relations_dict, valid_indexes):
+        worm_index_new = np.full_like(worm_index, -1)
     
         for ind in valid_indexes:
             # seach in the dictionary for the first index in the joined trajectory
@@ -317,36 +360,21 @@ def joinGapsTrajectories(trajectories_file, min_track_size=50,
                 ind_joined = relations_dict[ind_joined]
     
             # replace the previous index for the root index
-            worm_index_joined[worm_index_blob == ind] = ind_joined
+            worm_index_new[worm_index == ind] = ind_joined
     
-        return worm_index_joined
+        return worm_index_new
     
     
-    #% get the first and last rows for each trajectory. Pandas is easier of manipulate than tables.
-    with pd.HDFStore(trajectories_file, 'r') as fid:
-        df = fid['plate_worms'][['worm_index_blob', 'frame_number',
-                                 'coord_x', 'coord_y', 'area', 'box_length']]
+    
+    relations_dict, valid_indexes = _findNextTraj(plate_worms, area_ratio_lim, min_track_size, max_time_gap)
+    # read the worm_index_blob column, this is the index order that have to
+    # be conserved in the worm_index_joined column
+    worm_index_blob = plate_worms[worm_index_type].values
+    worm_index_joined = _joinDict2Index(worm_index_blob, relations_dict, valid_indexes)
 
-    relations_dict, valid_indexes = _findNextTraj(
-        df, area_ratio_lim, min_track_size, max_time_gap)
+    return worm_index_joined
 
-    # update worm_index_joined field
-    with tables.open_file(trajectories_file, mode='r+') as fid:
-        plate_worms = fid.get_node('/plate_worms')
 
-        # read the worm_index_blob column, this is the index order that have to
-        # be conserved in the worm_index_joined column
-        worm_index_blob = plate_worms.col('worm_index_blob')
-        worm_index_joined = _joinDict2Index(worm_index_blob, relations_dict, valid_indexes)
-
-        # add the result the column worm_index_joined
-        plate_worms.modify_column(
-            colname='worm_index_joined',
-            column=worm_index_joined)
-
-        # flag the join data as finished
-        plate_worms._v_attrs['has_finished'] = 2
-        fid.flush()
 
 def joinBlobsTrajectories(trajectories_file, 
                           analysis_type, 
