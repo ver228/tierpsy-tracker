@@ -270,16 +270,21 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
         # read the data of the particles that exists in the frame
         self.frame_data = self.getFrameData(self.frame_number)
+            
+
+            
+
 
 
         #draw extra info only if the worm_index_type is valid
         if self.frame_data is not None and \
-        self.frame_data.size > 0 and \
         self.worm_index_type in self.frame_data:
-
-            self.drawWormMarkers(self.frame_qimg)
-            self.updateROIcanvasN(1)
-            self.updateROIcanvasN(2)
+            #filter any -1 index
+            self.frame_data = self.frame_data[self.frame_data[self.worm_index_type]>=0]
+            if self.frame_data.size > 0:
+                self.drawWormMarkers(self.frame_qimg)
+                self.updateROIcanvasN(1)
+                self.updateROIcanvasN(2)
         else:
             self.ui.wormCanvas1.clear() 
             self.ui.wormCanvas2.clear()        
@@ -418,6 +423,7 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
             # no trajectories data presented, nothing to do here
             wormCanvas.clear()
             return
+
 
         # update valid index for the comboBox
         comboBox_ROI.clear()
