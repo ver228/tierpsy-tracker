@@ -12,8 +12,13 @@ import numpy as np
 import tables
 import pandas as pd
 import warnings
+
 from tierpsy.helper.params import read_fps
 from tierpsy.helper.misc import print_flush, get_base_name
+#%%
+from tierpsy.analysis.stage_aligment.findStageMovement import getFrameDiffVar, findStageMovement
+
+#%%
 
 def alignStageMotion(
         masked_image_file,
@@ -108,9 +113,6 @@ def _h_get_stage_inv(skeletons_file, timestamp):
     return stage_vec_inv
 #%%
 def alignStageMotion_new(masked_image_file, skeletons_file):
-    base_name = get_base_name(masked_image_file)
-    #is_prev_frame_diffs = False;
-    
     fps = read_fps(skeletons_file)
     with tables.File(skeletons_file, 'r+') as fid:
         # delete data from previous analysis if any
@@ -141,7 +143,7 @@ def alignStageMotion_new(masked_image_file, skeletons_file):
     # takes for a stage movement to complete. If the delay is too small, the
     # stage movements become chaotic. We load the value for the delay.
     with tables.File(masked_image_file, 'r') as fid:
-        xml_info = fid.get_node('/xml_info').read()
+        xml_info = fid.get_node('/xml_info').read().decode()
         g_mask = fid.get_node('/mask')
         #%% Read the scale conversions, we would need this when we want to convert the pixels into microns
         pixelPerMicronX = 1/g_mask._v_attrs['pixels2microns_x']
@@ -193,10 +195,11 @@ def alignStageMotion_new(masked_image_file, skeletons_file):
         #%extra at the end of the timestamp
         video_timestamp_ind = video_timestamp_ind[:frame_diffs_d.size + 1];
     
-    frame_diffs = np.full(np.max(video_timestamp_ind)-1, np.nan);
-    dd = video_timestamp_ind - np.min(video_timestamp_ind);
-    dd = dd[dd>0];
-
+    
+    frame_diffs = np.full(np.max(video_timestamp_ind), np.nan);
+    dd = video_timestamp_ind - np.min(video_timestamp_ind)-1; #shift data
+    dd = dd[dd>=0];
+    
     if frame_diffs_d.size != dd.size:
         exit_flag = 81;
         warnings.warn('Number of timestamps do not match the number read movie frames.\n No stage correction processed. Exiting with has_finished flag %i.', exit_flag)
@@ -210,7 +213,8 @@ def alignStageMotion_new(masked_image_file, skeletons_file):
     
     #%% try to run the aligment and return empty data if it fails 
     try:
-        [is_stage_move, movesI, stage_locations] = findStageMovement(frame_diffs, mediaTimes, locations, delay_frames, fps);
+        is_stage_move, movesI, stage_locations = \
+        findStageMovement(frame_diffs, mediaTimes, locations, delay_frames, fps);
         exit_flag = 1;
     except:
         exit_flag = 82;

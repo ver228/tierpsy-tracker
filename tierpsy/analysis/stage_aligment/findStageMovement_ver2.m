@@ -175,7 +175,7 @@ function [frames, movesI, locations] = ...
 % you must reproduce all copyright notices and other proprietary 
 % notices on any copies of the Software.
 verbose = false;
-
+%%
 % Check the frame rate.
 minFPS = .1;
 maxFPS = 100;
@@ -276,6 +276,7 @@ end
 frames = false(length(frameDiffs), 1); % stage movement status for frames
 movesI(1:length(mediaTimes), 1:2) = NaN; % stage movement indices
 movesI(1,:) = 0;
+
 if verbose
     peaksI(1:length(mediaTimes)) = NaN; % stage movement frame peaks
     endPeaksI = []; % peaks after the last stage movement
@@ -311,6 +312,7 @@ searchDiffs = frameDiffs(startI:endI);
 % Is the Otsu threshold large enough?
 otsuThr = graythresh(searchDiffs);
 isOtsu = otsuThr > gOtsuThr; % false if no global Otsu
+
 if ~isOtsu
     
     % Does the Otsu threshold separate the 99% of the small frame
@@ -367,6 +369,7 @@ if isOtsu
         end
     end
 end
+
 
 % We reached the end.
 endI = peakI + maxMoveFrames;
@@ -427,12 +430,12 @@ mediaTimeOff = 0; % the offset media time
 prevOtsuThr = gOtsuThr; % the previous small threshold
 prevSmallThr = gSmallThr; % the previous small threshold
 isShifted = false; % have we shifted the data to try another alignment?
+%%
 i = 1;
 while i < length(mediaTimes)
-    
     % Advance.
     i = i + 1;
-    
+    %%
     % Compute the offset media time.
     prevMediaTimeOff = mediaTimeOff;
     mediaTimeOff = mediaTimes(i) + timeOff;
@@ -450,6 +453,8 @@ while i < length(mediaTimes)
     end
     searchDiffs = frameDiffs(startI:endI);
     
+    disp([i, prevPeakEndI, mediaTimeOffI, maxMoveFrames])
+    %%
     % Is the Otsu threshold large enough?
     otsuThr = graythresh(searchDiffs);
     isOtsu = otsuThr > prevSmallThr || otsuThr > gOtsuThr;
@@ -495,7 +500,7 @@ while i < length(mediaTimes)
     if (verbose)
         otsuThrs(i) = otsuThr;
     end
-    
+    %%
     % If we're at the end, make sure we're using an appropriate threshold.
     if i == length(mediaTimes)
         
@@ -560,8 +565,12 @@ while i < length(mediaTimes)
         % Find at least one distinguishably large peak.
         [~, indices] = ...
             maxPeaksDistHeight(searchDiffs, maxMoveFrames, otsuThr);
+        
+        
+        disp(size(searchDiffs))
+        disp(indices)
     end
-    
+    %%
     % We can't find any distinguishably large peaks.
     peakI = [];
     if isempty(indices)
@@ -618,6 +627,7 @@ while i < length(mediaTimes)
         
     % Use the first peak.
     else
+        %%
         peakI = indices(1) + startI - 1;
         if verbose
             peaksI(i) = peakI;
@@ -649,6 +659,8 @@ while i < length(mediaTimes)
             
             % Ignore this wrong peak.
             peakI = [];
+            
+            %%
         end
     end
     
