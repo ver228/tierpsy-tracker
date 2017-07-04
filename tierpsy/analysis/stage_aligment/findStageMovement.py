@@ -3,7 +3,7 @@ import warnings
 import tables
 from tierpsy.helper.misc import TimeCounter, print_flush, get_base_name
 from tierpsy.helper.params import read_fps
-from .get_mask_diff_var import get_mask_diff_var
+from tierpsy.analysis.stage_aligment.get_mask_diff_var import get_mask_diff_var
 
 def getFrameDiffVar(masked_file, progress_refresh_rate_s=100):
     base_name = get_base_name(masked_file)

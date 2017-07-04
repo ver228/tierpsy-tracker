@@ -172,29 +172,7 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         progress_dialog.setAttribute(Qt.WA_DeleteOnClose)
         progress_dialog.exec_()
 
-    def selectWormIndexType(self):
-        # select between automatic and manual worm indexing and label
-        if self.ui.comboBox_labelType.currentIndex() == 0:
-            self.label_type = 'worm_label'
-            self.worm_index_type = 'worm_index_manual'
-            self.ui.pushButton_U.setEnabled(True)
-            self.ui.pushButton_W.setEnabled(True)
-            self.ui.pushButton_WS.setEnabled(True)
-            self.ui.pushButton_B.setEnabled(True)
-            self.ui.pushButton_join.setEnabled(True)
-            self.ui.pushButton_split.setEnabled(True)
-
-        else:
-            self.label_type = 'auto_label'
-            self.worm_index_type = 'worm_index_auto'
-            self.ui.pushButton_U.setEnabled(False)
-            self.ui.pushButton_W.setEnabled(False)
-            self.ui.pushButton_WS.setEnabled(False)
-            self.ui.pushButton_B.setEnabled(False)
-            self.ui.pushButton_join.setEnabled(False)
-            self.ui.pushButton_split.setEnabled(False)
-
-        self.updateImage()
+    
 
     def saveData(self):
         '''save data from manual labelling. pytables saving format is more convenient than pandas'''
@@ -212,6 +190,8 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
         self.updateSkelFile(self.skeletons_file)
 
+
+
     def updateSkelFile(self, skeletons_file):
         super().updateSkelFile(skeletons_file)
         
@@ -227,6 +207,8 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
             self.trajectories_data['worm_label'] = self.wlab['U']
             self.trajectories_data['worm_index_manual'] = self.trajectories_data[
                 'worm_index_joined']
+        
+        self.updateWormIndexTypeMenu()
         
         #read filter skeletons parameters
         with tables.File(self.skeletons_file, 'r') as skel_fid:
@@ -258,6 +240,50 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
         self.traj_for_plot = {} #delete previous plotted trajectories
         self.updateImage()
+
+    def updateWormIndexTypeMenu(self):
+        possible_indexes = [x.replace('worm_index_', '') for x in self.trajectories_data.columns if x.startswith('worm_index_')]
+        assert len(set(possible_indexes)) == len(possible_indexes) #all indexes ending must be different
+        
+        menu_names = sorted([x + ' index' for x in possible_indexes])
+        self.ui.comboBox_labelType.clear()
+        self.ui.comboBox_labelType.addItems(menu_names)
+        if 'manual' in possible_indexes:
+            dd = self.ui.comboBox_labelType.findText('manual index')
+            self.ui.comboBox_labelType.setCurrentIndex(dd);
+
+        self.selectWormIndexType()
+
+    def selectWormIndexType(self):
+        index_option = self.ui.comboBox_labelType.currentText()
+        
+        if not index_option:
+            return
+        assert index_option.endswith(' index')
+        self.worm_index_type = 'worm_index_' + index_option.replace(' index', '')
+        
+
+        # select between automatic and manual worm indexing and label
+        if self.worm_index_type == 'worm_index_manual':
+            self.label_type = 'worm_label'
+            self.ui.pushButton_U.setEnabled(True)
+            self.ui.pushButton_W.setEnabled(True)
+            self.ui.pushButton_WS.setEnabled(True)
+            self.ui.pushButton_B.setEnabled(True)
+            self.ui.pushButton_join.setEnabled(True)
+            self.ui.pushButton_split.setEnabled(True)
+
+        else:
+            self.label_type = 'auto_label'
+            self.ui.pushButton_U.setEnabled(False)
+            self.ui.pushButton_W.setEnabled(False)
+            self.ui.pushButton_WS.setEnabled(False)
+            self.ui.pushButton_B.setEnabled(False)
+            self.ui.pushButton_join.setEnabled(False)
+            self.ui.pushButton_split.setEnabled(False)
+
+        self.updateImage()
+
 
     # update image
     def updateImage(self):
@@ -296,7 +322,7 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         Draw traj worm trajectory.
         '''
         
-        if not self.label_type in self.frame_data or \
+        if not self.worm_index_type in self.frame_data or \
         self.ui.comboBox_showLabels.currentIndex() == self.showT['hide']:
             return
 
@@ -310,6 +336,9 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         fontsize = max(1, max(image.height(), image.width()) // 120)
         penwidth = max(1, max(image.height(), image.width()) // 800)
         penwidth = penwidth if penwidth % 2 == 1 else penwidth + 1
+
+        if not self.label_type in self.frame_data:
+            self.frame_data[self.label_type] = self.wlab['U']
 
         new_traj = {}
         for row_id, row_data in self.frame_data.iterrows():
@@ -327,6 +356,7 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
             x = int(round(x * self.img_h_ratio))
             y = int(round(y * self.img_w_ratio))
             label_type = self.wlabC[int(row_data[self.label_type])]
+            
             roi_size = row_data['roi_size']
 
             cb_ind = self.ui.comboBox_drawType.currentIndex()
