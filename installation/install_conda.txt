@@ -1,0 +1,10 @@
+#conda create --name tierpsy --clone=/apps/anaconda3/4.3.1
+
+conda config --add channels conda-forge 
+
+conda install -y numpy matplotlib pytables pandas gitpython pyqt=5 \
+h5py scipy scikit-learn scikit-image seaborn xlrd cython statsmodels
+
+conda install -y -c conda-forge tensorflow keras opencv
+
+pip install open_worm_analysis_toolbox
