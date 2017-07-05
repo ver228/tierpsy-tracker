@@ -1,5 +1,4 @@
 import tables
-import h5py
 import numpy as np
 import json
 import os
@@ -192,13 +191,7 @@ def copy_unit_conversions(group_to_save, original_file, dflt=1):
 
 def set_unit_conversions(group_to_save, expected_fps=None, microns_per_pixel=None, is_light_background=1):
 
-    #this is a not so pretty hack to be able to deal with h5py library that the compressVideo file uses
-    if isinstance(group_to_save, h5py._hl.dataset.Dataset):
-        attr_writer = getattr(group_to_save, 'attrs')
-    else:
-        attr_writer = getattr(group_to_save, '_v_attrs')
-
-
+    attr_writer = getattr(group_to_save, '_v_attrs')
     # save some data used in the calculation as attributes
     if microns_per_pixel is None or microns_per_pixel<=0:
         attr_writer['microns_per_pixel'] = 1

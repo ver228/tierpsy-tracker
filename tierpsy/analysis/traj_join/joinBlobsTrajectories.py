@@ -12,8 +12,7 @@ import pandas as pd
 import tables
 from scipy.spatial.distance import cdist
 
-from tierpsy.helper.misc import TimeCounter, print_flush
-
+from tierpsy.helper.misc import TimeCounter, print_flush, TABLE_FILTERS
 
 def assignBlobTraj(trajectories_file, max_allowed_dist=20, area_ratio_lim=(0.5, 2)):
     #loop, save data and display progress
@@ -232,14 +231,9 @@ def correctSingleWormCase(trajectories_file):
     plate_worms.loc[valid_rows, 'worm_index_joined'] = 1
 
     with tables.File(trajectories_file, "r+") as traj_fid:
-        table_filters = tables.Filters(
-            complevel=5,
-            complib='zlib',
-            shuffle=True,
-            fletcher32=True)
         newT = traj_fid.create_table('/', 'plate_worms_t',
                                      obj=plate_worms.to_records(index=False),
-                                     filters=table_filters)
+                                     filters=TABLE_FILTERS)
         newT._v_attrs['has_finished'] = 2
         traj_fid.remove_node('/', 'plate_worms')
         newT.rename('plate_worms')

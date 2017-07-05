@@ -83,8 +83,7 @@ def reformatRigMaskedVideo(original_file, new_file, plugin_param_file, expected_
         return
     save_full_interval, buffer_size, mask_params = _getReformatParams(plugin_params)
     with tables.File(original_file, 'r') as fid_old, \
-        h5py.File(new_file, 'w') as fid_new:
-        
+        tables.File(new_file, 'w') as fid_new:
         mask_old = fid_old.get_node('/mask')
         tot_frames, im_height, im_width = mask_old.shape
         progress_timer = TimeCounter('Reformating Gecko plugin hdf5 video.', tot_frames)    
@@ -95,8 +94,7 @@ def reformatRigMaskedVideo(original_file, new_file, plugin_param_file, expected_
                 is_light_background = True
                 )
         mask_new, full_new, _ =  initMasksGroups(fid_new, tot_frames, im_height, im_width, 
-        attr_params, save_full_interval)
-
+        attr_params, save_full_interval, is_expandable=False)
         mask_new.attrs['plugin_params'] = json.dumps(plugin_params)
         
         img_buff_ini = mask_old[:buffer_size]
@@ -118,9 +116,7 @@ def reformatRigMaskedVideo(original_file, new_file, plugin_param_file, expected_
                 progress_str = progress_timer.get_str(frame)
                 print_flush(base_name + ' ' + progress_str)
             
-        #tag as finished reformatting
-        mask_new.attrs['has_finished'] = 1
-
+        
         print_flush(
             base_name +
             ' Compressed video done. Total time:' +
