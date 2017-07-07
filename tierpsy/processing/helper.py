@@ -96,10 +96,7 @@ def get_dflt_sequence(analysis_type):
 
 def remove_border_checkpoints(list_of_points, last_valid, index):
     assert (index == 0) or (index == -1) #decide if start removing from the begining or the end
-    if last_valid:
-        if not last_valid in list_of_points:
-            raise ValueError("Point {} is not valid.".format(last_valid))
-        #move points until 
+    if last_valid and last_valid in list_of_points:
         while list_of_points and \
         list_of_points[index] != last_valid:
             list_of_points.pop(index)
