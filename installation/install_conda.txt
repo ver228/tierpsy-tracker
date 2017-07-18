@@ -5,6 +5,6 @@ h5py scipy scikit-learn scikit-image seaborn xlrd cython statsmodels
 
 conda install -y -c conda-forge tensorflow keras opencv
 
-
 ./installation/installation_script.sh --setup_modules
-./installation/installation_script.sh --tests
+
+python -c "import tierpsy; print('Tierpsy', tierpsy.__version__); import open_worm_analysis_toolbox as mv; print('OpenWormToolBox', mv.__version__)"
