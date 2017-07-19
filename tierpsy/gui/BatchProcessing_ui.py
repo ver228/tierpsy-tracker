@@ -146,7 +146,7 @@ class Ui_BatchProcessing(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_numMaxProc.sizePolicy().hasHeightForWidth())
         self.label_numMaxProc.setSizePolicy(sizePolicy)
-        self.label_numMaxProc.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_numMaxProc.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.label_numMaxProc.setWordWrap(True)
         self.label_numMaxProc.setObjectName("label_numMaxProc")
         self.gridLayout_3.addWidget(self.label_numMaxProc, 2, 1, 1, 1)

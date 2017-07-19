@@ -19,7 +19,7 @@ from tierpsy.gui.MWTrackerViewer_ui import Ui_MWTrackerViewer
 from tierpsy.gui.TrackerViewerAux import TrackerViewerAuxGUI
 
 from tierpsy.helper.misc import WLAB, save_modified_table
-from tierpsy.helper.params import TrackerParams, read_fps
+from tierpsy.helper.params import TrackerParams, read_fps, read_microns_per_pixel
 
 from tierpsy.processing.trackProvenance import getGitCommitHash, execThisPoint
 
@@ -38,6 +38,8 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         self.vfilename = '' if len(argv) <= 1 else argv[1]
         self.lastKey = ''
         self.traj_for_plot = {}
+
+        self.food_coordinates = None
 
         self.worm_index_roi1 = 1
         self.worm_index_roi2 = 1
@@ -68,7 +70,7 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         self.ui.comboBox_labelType.currentIndexChanged.connect(
             self.selectWormIndexType)
 
-        
+        self.ui.checkBox_showFood.stateChanged.connect(self.updateImage)
 
         # flags for RW and FF
         self.RW, self.FF = 1, 2
@@ -121,6 +123,8 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         #This part is broken I think I will remove it from here, and force the user to use BatchProcessing
         self.ui.pushButton_feats.hide() 
         #self.ui.pushButton_feats.clicked.connect(self.getManualFeatures)
+
+
 
 
     def keyPressEvent(self, event):
@@ -196,7 +200,18 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         super().updateSkelFile(skeletons_file)
         
         if not self.skeletons_file or self.trajectories_data is None:
+            self.food_coordinates = None
             return
+
+        microns_per_pixel = read_microns_per_pixel(self.skeletons_file)
+        with tables.File(self.skeletons_file, 'r') as fid:
+            if not '/food_cnt_coord' in fid:
+                self.food_coordinates = None
+                self.ui.checkBox_showFood.setEnabled(False)
+            else:
+                self.food_coordinates = fid.get_node('/food_cnt_coord')[:]
+                self.food_coordinates /= microns_per_pixel #go back to pixels
+                self.ui.checkBox_showFood.setEnabled(True)
 
         #correct the index in case it was given before as worm_index_N
         if 'worm_index_N' in self.trajectories_data:
@@ -297,27 +312,51 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         # read the data of the particles that exists in the frame
         self.frame_data = self.getFrameData(self.frame_number)
             
-
-            
-
-
-
         #draw extra info only if the worm_index_type is valid
         if self.frame_data is not None and \
         self.worm_index_type in self.frame_data:
             #filter any -1 index
             self.frame_data = self.frame_data[self.frame_data[self.worm_index_type]>=0]
             if self.frame_data.size > 0:
-                self.drawWormMarkers(self.frame_qimg)
+                self._draw_worm_markers(self.frame_qimg)
+                self._draw_food_contour(self.frame_qimg)
+
                 self.updateROIcanvasN(1)
                 self.updateROIcanvasN(2)
+
+                
+        
         else:
             self.ui.wormCanvas1.clear() 
             self.ui.wormCanvas2.clear()        
         # create the pixmap for the label
         self.mainImage.setPixmap(self.frame_qimg)
 
-    def drawWormMarkers(self, image):
+    def _draw_food_contour(self, image):
+        if self.food_coordinates is None or not self.ui.checkBox_showFood.isChecked():
+            return
+
+        painter = QPainter()
+        painter.begin(image)
+
+        penwidth = max(1, max(image.height(), image.width()) // 800)
+        self.img_h_ratio = image.height() / self.image_height
+        self.img_w_ratio = image.width() / self.image_width
+
+        col = QColor(255, 0, 0)
+        p = QPolygonF()
+        for x,y in self.food_coordinates:
+            p.append(QPointF(x,y))
+            
+        pen = QPen()
+        pen.setWidth(penwidth)
+        pen.setColor(col)
+        painter.setPen(pen)
+
+        painter.drawPolyline(p)
+        painter.end()
+
+    def _draw_worm_markers(self, image):
         '''
         Draw traj worm trajectory.
         '''
