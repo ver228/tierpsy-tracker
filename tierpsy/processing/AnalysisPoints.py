@@ -83,6 +83,7 @@ class AnalysisPoints(object):
             'trajectories',
             'skeletons',
             'features',
+            'featuresN',
             'feat_manual',
             'intensities']
 

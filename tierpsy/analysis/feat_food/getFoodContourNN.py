@@ -201,25 +201,37 @@ def get_food_contour_nn(mask_file, model=None, _is_debug=False):
     
     food_prob, original_size, bgnd_images = get_food_prob(mask_file, model, _is_debug=_is_debug)
     #bgnd_images are only used in debug mode
-    
+    #%%
     patch_m = (food_prob>0.5).astype(np.uint8)
-    patch_m = cv2.morphologyEx(patch_m, cv2.MORPH_CLOSE, disk(3), iterations=5)
     _, cnts, _ = cv2.findContours(patch_m, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-    
     #pick the largest contour
     cnt_areas = [cv2.contourArea(x) for x in cnts]
     ind = np.argmax(cnt_areas)
+    patch_m = np.zeros(patch_m.shape, np.uint8)
+    patch_m = cv2.drawContours(patch_m, cnts , ind, color=1, thickness=cv2.FILLED)
+    patch_m = cv2.morphologyEx(patch_m, cv2.MORPH_CLOSE, disk(3), iterations=5)
     
+    _, cnts, _ = cv2.findContours(patch_m, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    assert len(cnts) == 1
+    cnts = cnts[0]
+    
+    hull = cv2.convexHull(cnts)
+    hull_area = cv2.contourArea(hull)
+    cnt_solidity = cv2.contourArea(cnts)/hull_area
+    
+    food_cnt = np.squeeze(cnts).astype(np.float)
+    # rescale contour to be the same dimension as the original images
+    food_cnt[:,0] *= original_size[0]/food_prob.shape[0]
+    food_cnt[:,1] *= original_size[1]/food_prob.shape[1]
+    #%%
     if _is_debug:
         import matplotlib.pylab as plt
         img = bgnd_images[0]
-        hull = cv2.convexHull(cnts[ind])
-        hull_area = cv2.contourArea(hull)
-        cnt_solidity = cnt_areas[ind]/hull_area
+        
         
         #np.squeeze(food_cnt)
         patch_n = np.zeros(img.shape, np.uint8)
-        patch_n = cv2.drawContours(patch_n, cnts , ind, color=1, thickness=cv2.FILLED)
+        patch_n = cv2.drawContours(patch_n, [cnts], 0, color=1, thickness=cv2.FILLED)
         top = img.max()
         bot = img.min()
         img_n = (img-bot)/(top-bot) 
@@ -232,14 +244,8 @@ def get_food_contour_nn(mask_file, model=None, _is_debug=False):
         
         plt.plot(hull[:,:,0], hull[:,:,1], 'r')
         plt.title('solidity = {:.3}'.format(cnt_solidity))
-        
-    food_cnt = np.squeeze(cnts[ind]).astype(np.float)
-    # rescale contour to be the same dimension as the original images
-    food_cnt[:,0] *= original_size[0]/food_prob.shape[0]
-    food_cnt[:,1] *= original_size[1]/food_prob.shape[1]
-        
-    
-    return food_cnt, food_prob
+      #%%  
+    return food_cnt, food_prob, cnt_solidity
 
 
 
@@ -248,7 +254,7 @@ if __name__ == '__main__':
     mask_file = '/Users/ajaver/OneDrive - Imperial College London/optogenetics/Arantza/MaskedVideos/oig8/oig-8_ChR2_control_males_3_Ch1_11052017_161018.hdf5'
     
     #mask_file = '/Volumes/behavgenom_archive$/Avelino/Worm_Rig_Tests/short_movies_new/MaskedVideos/Double_picking_020317/trp-4_worms6_food1-3_Set4_Pos5_Ch3_02032017_153225.hdf5'
-    food_cnt, food_prob = get_food_contour_nn(mask_file, _is_debug=True)
+    food_cnt, food_prob,cnt_solidity = get_food_contour_nn(mask_file, _is_debug=True)
     
     
     
