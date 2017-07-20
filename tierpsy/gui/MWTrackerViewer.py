@@ -71,6 +71,9 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
             self.selectWormIndexType)
 
         self.ui.checkBox_showFood.stateChanged.connect(self.updateImage)
+        self.ui.checkBox_showFood.setEnabled(False)
+        self.ui.checkBox_showFood.setChecked(True)
+
 
         # flags for RW and FF
         self.RW, self.FF = 1, 2
@@ -203,14 +206,12 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
             self.food_coordinates = None
             return
 
-        microns_per_pixel = read_microns_per_pixel(self.skeletons_file)
         with tables.File(self.skeletons_file, 'r') as fid:
             if not '/food_cnt_coord' in fid:
                 self.food_coordinates = None
                 self.ui.checkBox_showFood.setEnabled(False)
             else:
                 self.food_coordinates = fid.get_node('/food_cnt_coord')[:]
-                self.food_coordinates /= microns_per_pixel #go back to pixels
                 self.ui.checkBox_showFood.setEnabled(True)
 
         #correct the index in case it was given before as worm_index_N

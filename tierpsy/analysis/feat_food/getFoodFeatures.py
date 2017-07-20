@@ -12,8 +12,8 @@ import matplotlib.path as mplPath
 from scipy.interpolate import interp1d
 from scipy.signal import savgol_filter
 
-from .getFoodContourNN import get_food_contour_nn
-from .getFoodContourMorph import get_food_contour_morph
+from tierpsy.analysis.feat_food.getFoodContourNN import get_food_contour_nn
+from tierpsy.analysis.feat_food.getFoodContourMorph import get_food_contour_morph
 
 from tierpsy.helper.params import read_microns_per_pixel
 from tierpsy.helper.misc import TABLE_FILTERS, remove_ext, \
@@ -138,6 +138,10 @@ def smooth_cnt(food_cnt, resampling_N = 1000, smooth_window=None, _is_debug=Fals
     if smooth_window is None:
         smooth_window = resampling_N//20
     
+    if food_cnt.size < 2 or food_cnt.ndim !=2 or food_cnt.shape[1] != 2:
+        #invalid contour arrays
+        return food_cnt
+        
     smooth_window = smooth_window if smooth_window%2 == 1 else smooth_window+1
     # calculate the cumulative length for each segment in the curve
     dx = np.diff(food_cnt[:, 0])
@@ -189,29 +193,34 @@ def getFoodFeatures(mask_file,
                                   method=cnt_method, 
                                   solidity_th=solidity_th,
                                   _is_debug=_is_debug)
-    
+    microns_per_pixel = read_microns_per_pixel(skeletons_file)
+    #store contour coordinates in pixels into the skeletons file for visualization purposes
+    food_cnt_pix = food_cnt/microns_per_pixel
     with tables.File(skeletons_file, 'r+') as fid:
         if '/food_cnt_coord' in fid:
             fid.remove_node('/food_cnt_coord')
-        tab = fid.create_array('/', 'food_cnt_coord', obj=food_cnt)
+        tab = fid.create_array('/', 
+                               'food_cnt_coord', 
+                               obj=food_cnt_pix)
         tab._v_attrs['method'] = cnt_method
     
     print_flush("{} Calculating food features {}".format(base_name, progress_timer.get_time_str()))
     
     feats_names = ['orient_to_food_cnt', 'dist_from_food_cnt', 'closest_cnt_ind']
-    microns_per_pixel = read_microns_per_pixel(skeletons_file)
+    feats_dtypes = [(x, np.float32) for x in feats_names]
+    
     with tables.File(skeletons_file, 'r') as fid:
         tot_rows = fid.get_node('/skeleton').shape[0]
-        features_df = np.recarray(tot_rows, 
-                              dtype = [(x, np.float32) for x in feats_names])
+        features_df = np.full(tot_rows, np.nan, dtype = feats_dtypes)
         
-        for ii in range(0, tot_rows, batch_size):
-            skeletons = fid.get_node('/skeleton')[ii:ii+batch_size]
-            skeletons *= microns_per_pixel
-            
-            outputs = get_cnt_feats(skeletons, food_cnt, _is_debug = _is_debug)
-            for irow, row in enumerate(zip(*outputs)):
-                features_df[irow]  = row
+        if food_cnt.size > 0:
+            for ii in range(0, tot_rows, batch_size):
+                skeletons = fid.get_node('/skeleton')[ii:ii+batch_size]
+                skeletons *= microns_per_pixel
+                
+                outputs = get_cnt_feats(skeletons, food_cnt, _is_debug = _is_debug)
+                for irow, row in enumerate(zip(*outputs)):
+                    features_df[irow]  = row
     
     
     with tables.File(features_file, 'a') as fid: 
@@ -235,9 +244,9 @@ def getFoodFeatures(mask_file,
 #%%
 if __name__ == '__main__':
     
-    mask_file = '/Volumes/behavgenom_archive$/Avelino/Worm_Rig_Tests/short_movies_new/MaskedVideos/Double_picking_020317/trp-4_worms6_food1-3_Set4_Pos5_Ch3_02032017_153225.hdf5'
+    #mask_file = '/Volumes/behavgenom_archive$/Avelino/Worm_Rig_Tests/short_movies_new/MaskedVideos/Double_picking_020317/trp-4_worms6_food1-3_Set4_Pos5_Ch3_02032017_153225.hdf5'
     #mask_file = '/Users/ajaver/OneDrive - Imperial College London/optogenetics/Arantza/MaskedVideos/control_pulse/pkd2_5min_Ch1_11052017_121414.hdf5'
-    #mask_file = '/Users/ajaver/OneDrive - Imperial College London/aggregation/N2_1_Ch1_29062017_182108_comp3.hdf5'
+    mask_file = '/Users/ajaver/OneDrive - Imperial College London/aggregation/N2_1_Ch1_29062017_182108_comp3.hdf5'
     
     skeletons_file = mask_file.replace('MaskedVideos','Results').replace('.hdf5', '_skeletons.hdf5')
     getFoodFeatures(mask_file, skeletons_file, _is_debug = False)
