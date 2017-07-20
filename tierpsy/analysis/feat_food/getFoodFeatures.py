@@ -109,6 +109,13 @@ def get_cnt_feats(skeletons,
     #%%  
     
     return orientation_food_cnt, dist_from_cnt, cnt_ind
+#%%
+def _is_valid_cnt(x):
+    return x is not None and \
+           x.size >= 2 and \
+           x.ndim ==2 and \
+           x.shape[1] == 2
+    
 
 #%%
 def calculate_food_cnt(mask_file, method='NN', _is_debug=False, solidity_th=0.98):
@@ -117,7 +124,7 @@ def calculate_food_cnt(mask_file, method='NN', _is_debug=False, solidity_th=0.98
     if method == 'NN':
         food_cnt, food_prob,cnt_solidity = get_food_contour_nn(mask_file, _is_debug=_is_debug)
         if cnt_solidity < solidity_th:
-            food_cnt = np.zeros([])
+            food_cnt = np.zeros(0)
         
         
     elif method == 'MORPH':
@@ -138,7 +145,7 @@ def smooth_cnt(food_cnt, resampling_N = 1000, smooth_window=None, _is_debug=Fals
     if smooth_window is None:
         smooth_window = resampling_N//20
     
-    if food_cnt.size < 2 or food_cnt.ndim !=2 or food_cnt.shape[1] != 2:
+    if not _is_valid_cnt(food_cnt):
         #invalid contour arrays
         return food_cnt
         
@@ -194,15 +201,17 @@ def getFoodFeatures(mask_file,
                                   solidity_th=solidity_th,
                                   _is_debug=_is_debug)
     microns_per_pixel = read_microns_per_pixel(skeletons_file)
+    
     #store contour coordinates in pixels into the skeletons file for visualization purposes
     food_cnt_pix = food_cnt/microns_per_pixel
     with tables.File(skeletons_file, 'r+') as fid:
         if '/food_cnt_coord' in fid:
             fid.remove_node('/food_cnt_coord')
-        tab = fid.create_array('/', 
-                               'food_cnt_coord', 
-                               obj=food_cnt_pix)
-        tab._v_attrs['method'] = cnt_method
+        if _is_valid_cnt(food_cnt):
+            tab = fid.create_array('/', 
+                                   'food_cnt_coord', 
+                                   obj=food_cnt_pix)
+            tab._v_attrs['method'] = cnt_method
     
     print_flush("{} Calculating food features {}".format(base_name, progress_timer.get_time_str()))
     
@@ -227,11 +236,12 @@ def getFoodFeatures(mask_file,
         if '/food' in fid:
             fid.remove_node('/food', recursive=True)
         fid.create_group('/', 'food')
-        fid.create_carray(
-                '/food',
-                'cnt_coordinates',
-                obj=food_cnt,
-                filters=TABLE_FILTERS) 
+        if _is_valid_cnt(food_cnt):
+            fid.create_carray(
+                    '/food',
+                    'cnt_coordinates',
+                    obj=food_cnt,
+                    filters=TABLE_FILTERS) 
         
         fid.create_table(
                 '/food',
@@ -247,7 +257,7 @@ if __name__ == '__main__':
     #mask_file = '/Volumes/behavgenom_archive$/Avelino/Worm_Rig_Tests/short_movies_new/MaskedVideos/Double_picking_020317/trp-4_worms6_food1-3_Set4_Pos5_Ch3_02032017_153225.hdf5'
     #mask_file = '/Users/ajaver/OneDrive - Imperial College London/optogenetics/Arantza/MaskedVideos/control_pulse/pkd2_5min_Ch1_11052017_121414.hdf5'
     mask_file = '/Users/ajaver/OneDrive - Imperial College London/aggregation/N2_1_Ch1_29062017_182108_comp3.hdf5'
-    
+    mask_file = '/Users/ajaver/Tmp/MaskedVideos/Development_C1_170617/development_c1_Set0_Pos0_Ch2_17062017_123028.hdf5'
     skeletons_file = mask_file.replace('MaskedVideos','Results').replace('.hdf5', '_skeletons.hdf5')
     getFoodFeatures(mask_file, skeletons_file, _is_debug = False)
 
