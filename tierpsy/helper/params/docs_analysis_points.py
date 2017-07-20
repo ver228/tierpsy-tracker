@@ -20,7 +20,7 @@ dflt_analysis_points = {
     'FEAT_CREATE'
     ],
 
-    'DEFAULT':
+    'WORM_RIG':
     ['COMPRESS',
     'VID_SUBSAMPLE',
     'TRAJ_CREATE',
