@@ -58,7 +58,7 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         self.worm_index_type = 'worm_index_manual'
         self.label_type = 'worm_label'
         self.frame_data = None
-
+        self.mean_intensity = None
 
         self.ui.comboBox_ROI1.activated.connect(self.selectROI1)
         self.ui.comboBox_ROI2.activated.connect(self.selectROI2)
@@ -197,7 +197,35 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
         self.updateSkelFile(self.skeletons_file)
 
+    def updateVideoFile(self, vfilename):
+        super().updateVideoFile(vfilename)
+        
+        #Useful for the optogenetic experiments. 
+        try:
+            mean_int = self.fid.get_node('/mean_intensity')[:]
+            
+            #calculate the intensity range and normalize the data. 
+            #I am ignoring any value less than 1. The viewer only works with uint8 data.
+            
+            dd = mean_int[mean_int>=1] 
+            if dd.size == 0:
+                raise ValueError
 
+            bot = np.min(dd)
+            top = np.max(dd)
+            rr = top-bot
+
+            # if the mean value change is less than 1 (likely continous image do nothing)
+            if rr <= 1:
+                raise ValueError
+
+            self.mean_intensity = (mean_int-bot)/(rr)
+
+        except (tables.exceptions.NoSuchNodeError, ValueError):
+            self.mean_intensity = None
+            self.ui.intensity_label.setStyleSheet('')
+        
+        self.updateImage()
 
     def updateSkelFile(self, skeletons_file):
         super().updateSkelFile(skeletons_file)
@@ -246,7 +274,6 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
         self.expected_fps = read_fps(self.vfilename)
         
-
         #TODO: THIS IS NOT REALLY THE INDEX I USE IN THE FEATURES FILES. I NEED A MORE CLEVER WAY TO SEE WHAT I AM REALLY FILTERING.
         dd = {x:self.feat_filt_param[x] for x in ['min_num_skel', 'bad_seg_thresh', 'min_displacement']}
         good_traj_index, _ = getValidIndexes(self.trajectories_data, **dd, worm_index_type=self.worm_index_type)
@@ -332,6 +359,12 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
             self.ui.wormCanvas2.clear()        
         # create the pixmap for the label
         self.mainImage.setPixmap(self.frame_qimg)
+
+        if self.mean_intensity is not None:
+            d = int(self.mean_intensity[self.frame_number]*255)
+            self.ui.intensity_label.setStyleSheet('QLabel {background-color: rgb(%i, %i, %i);}' % (0, 0, d))
+
+
 
     def _draw_food_contour(self, image):
         if self.food_coordinates is None or not self.ui.checkBox_showFood.isChecked():
