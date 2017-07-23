@@ -1,6 +1,6 @@
 # Installation
 
-*The instructions below are to install Tierpsy Tracker from the source code. I would recommend to use the double-click executables for Windows (7 or latest) or for OSX (Yosemite or latest) found in the [releases page](https://github.com/ver228/tierpsy-tracker/releases) unless you are using Linux or want to run the development version.*
+*The instructions below are to install Tierpsy Tracker from the source code. I would recommend to do this only if you are using Linux or want to run the development version, otherwise use the double-click executables for Windows (7 or latest) or for OSX (Yosemite or latest) found in the [releases page](https://github.com/ver228/tierpsy-tracker/releases).*
 
 To install Tierpsy tracker, download the clone latest version to your local machine.  This can be done manually [here](https://github.com/ver228/tierpsy-tracker/archive/master.zip).  If you use Git or [Github Desktop](https://desktop.github.com/), then open a new terminal (in Windows open Git Shell) and run: 
 
