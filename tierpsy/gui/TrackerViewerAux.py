@@ -80,8 +80,8 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
         else:
             self.ui.spinBox_frame.setValue(0)
 
-    def updateImGroup(self):
-        super().updateImGroup()
+    def updateImGroup(self, h5path):
+        super().updateImGroup(h5path)
         try:
             self.frame_save_interval = int(self.image_group._v_attrs['save_interval'])
         except:

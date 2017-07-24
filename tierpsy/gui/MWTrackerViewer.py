@@ -60,6 +60,8 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         self.frame_data = None
         self.mean_intensity = None
 
+        self.ui.intensity_label.setStyleSheet('') #avoid displaying color at the start of the programı
+
         self.ui.comboBox_ROI1.activated.connect(self.selectROI1)
         self.ui.comboBox_ROI2.activated.connect(self.selectROI2)
         self.ui.checkBox_ROI1.stateChanged.connect(
@@ -124,6 +126,7 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
         
         #This part is broken I think I will remove it from here, and force the user to use BatchProcessing
+        
         self.ui.pushButton_feats.hide() 
         #self.ui.pushButton_feats.clicked.connect(self.getManualFeatures)
 

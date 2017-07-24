@@ -187,9 +187,6 @@ class SimplePlayer(QtWidgets.QMainWindow):
     def frame_step(self, value):
         return self.ui.spinBox_step.setValue(value)
 
-
-    
-
 class HDF5VideoPlayerGUI(SimplePlayer):
 
     def __init__(self, ui=None):
@@ -199,8 +196,6 @@ class HDF5VideoPlayerGUI(SimplePlayer):
         super().__init__(ui)
 
         # Set up the user interface from Designer.
-        
-
         self.ui.setupUi(self)
 
         self.vfilename = None
@@ -208,11 +203,16 @@ class HDF5VideoPlayerGUI(SimplePlayer):
         self.image_group = None
         self.isPlay = False
         self.videos_dir = ''
-        self.h5path = self.ui.comboBox_h5path.itemText(0)
+        self.h5path = None
+        self.frame_img = None
+        self.frame_qimg = None
+
+        #default expected groups in the hdf5
+        self.ui.comboBox_h5path.setItemText(0, "/mask")
+        self.ui.comboBox_h5path.setItemText(1, "/full_data")
 
         self.ui.pushButton_video.clicked.connect(self.getVideoFile)
         self.ui.playButton.clicked.connect(self.playVideo)
-
 
         # set scroller
         sld_pressed = partial(self.ui.imageSlider.setCursor, QtCore.Qt.ClosedHandCursor)
@@ -274,12 +274,17 @@ class HDF5VideoPlayerGUI(SimplePlayer):
         if self.image_group is None:
             self.frame_qimg = None
             return
+        self.frame_img = self.image_group[self.frame_number, :, :]
+        self._normalizeImage()
+        
+
+    def _normalizeImage(self):
+        if self.frame_img is None:
+            return 
 
         dd = self.ui.mainGraphicsView.size()
         self.label_height = dd.height()
         self.label_width = dd.width()
-
-        self.frame_img = self.image_group[self.frame_number, :, :]
 
         # equalize and cast if it is not uint8
         if self.frame_img.dtype != np.uint8:
@@ -290,6 +295,7 @@ class HDF5VideoPlayerGUI(SimplePlayer):
             self.frame_img = np.round(self.frame_img).astype(np.uint8)
 
         self.frame_qimg = self._convert2Qimg(self.frame_img)
+
 
     def _convert2Qimg(self, img):
         qimg = QtGui.QImage(
@@ -334,7 +340,7 @@ class HDF5VideoPlayerGUI(SimplePlayer):
                 QtWidgets.QMessageBox.Ok)
             return
 
-        self.updateImGroup()
+        self.getImGroup(0)
 
     def updateGroupNames(self):
         valid_groups = []
@@ -362,17 +368,17 @@ class HDF5VideoPlayerGUI(SimplePlayer):
         self.updateImage()
 
     def getImGroup(self, index):
-        self.h5path = self.ui.comboBox_h5path.itemText(index)
-        self.updateImGroup()
+        h5path = self.ui.comboBox_h5path.itemText(index)
+        self.updateImGroup(h5path)
 
     # read a valid groupset from the hdf5
-    def updateImGroup(self):
+    def updateImGroup(self, h5path):
         if self.fid is None:
             self.image_group = None
             return
 
         #self.h5path = self.ui.comboBox_h5path.text()
-        if self.h5path not in self.fid:
+        if h5path not in self.fid:
             self.mainImage.cleanCanvas()
             QtWidgets.QMessageBox.critical(
                 self,
@@ -382,7 +388,7 @@ class HDF5VideoPlayerGUI(SimplePlayer):
             self.image_group == None
             return
 
-        self.image_group = self.fid.get_node(self.h5path)
+        self.image_group = self.fid.get_node(h5path)
         if len(self.image_group.shape) != 3:
             self.mainImage.cleanCanvas()
             QtWidgets.QMessageBox.critical(
