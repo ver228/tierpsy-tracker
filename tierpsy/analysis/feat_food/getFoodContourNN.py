@@ -9,9 +9,8 @@ Get food contour using a pre-trained neural network
 
 """
 
-from tensorflow.contrib import keras
-load_model = keras.models.load_model
-K = keras.backend
+from keras.models import load_model
+from keras import backend as K
 
 import tables
 import os
