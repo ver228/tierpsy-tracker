@@ -216,7 +216,9 @@ class WormFromTable(WormFromTableSimple):
         super().__init__(*args, **kwargs)
 
     def split(self, split_size):
-        #subdivide so I do not have to start at the begining of a trajectory (it is more likely that there was an error here)
+        '''subdivide so I do not have to start at the begining of a trajectory 
+        (it is more likely that there was an error here)
+        '''
         remainder =  self.n_frames % split_size
         if remainder == 0:
             ini_split = split_size
@@ -248,6 +250,9 @@ class WormFromTable(WormFromTableSimple):
         return splitted_worms
 
     def to_open_worm(self):
+        '''
+        Return a NormalizedWorm object compatible with the openworm toolbox
+        '''
         def _chage_axis(x):
             A = np.rollaxis(x, 0, x.ndim)
             return np.asfortranarray(A)
