@@ -203,30 +203,32 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
     def updateVideoFile(self, vfilename):
         super().updateVideoFile(vfilename)
         
-        #Useful for the optogenetic experiments. 
-        try:
-            mean_int = self.fid.get_node('/mean_intensity')[:]
-            
-            #calculate the intensity range and normalize the data. 
-            #I am ignoring any value less than 1. The viewer only works with uint8 data.
-            
-            dd = mean_int[mean_int>=1] 
-            if dd.size == 0:
-                raise ValueError
+        if self.fid is not None:
+            #get mean intensity information.
+            #Useful for the optogenetic experiments. 
+            try:
+                mean_int = self.fid.get_node('/mean_intensity')[:]
+                
+                #calculate the intensity range and normalize the data. 
+                #I am ignoring any value less than 1. The viewer only works with uint8 data.
+                
+                dd = mean_int[mean_int>=1] 
+                if dd.size == 0:
+                    raise ValueError
 
-            bot = np.min(dd)
-            top = np.max(dd)
-            rr = top-bot
+                bot = np.min(dd)
+                top = np.max(dd)
+                rr = top-bot
 
-            # if the mean value change is less than 1 (likely continous image do nothing)
-            if rr <= 1:
-                raise ValueError
+                # if the mean value change is less than 1 (likely continous image do nothing)
+                if rr <= 1:
+                    raise ValueError
 
-            self.mean_intensity = (mean_int-bot)/(rr)
+                self.mean_intensity = (mean_int-bot)/(rr)
 
-        except (tables.exceptions.NoSuchNodeError, ValueError):
-            self.mean_intensity = None
-            self.ui.intensity_label.setStyleSheet('')
+            except (tables.exceptions.NoSuchNodeError, ValueError):
+                self.mean_intensity = None
+                self.ui.intensity_label.setStyleSheet('')
         
         self.updateImage()
 
