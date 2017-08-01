@@ -21,7 +21,7 @@ from skimage.morphology import disk
 
 from tierpsy import AUX_FILES_DIR
 RESIZING_SIZE = 512 #the network was trained with images of this size 512
-MODEL_PATH = os.path.join(AUX_FILES_DIR, 'unet_norm_w_no_bn-04249-0.3976.h5')
+MODEL_PATH = os.path.join(AUX_FILES_DIR, 'unet_RMSprop-5-04999-0.3997.h5')
 
 def _get_sizes(im_size, d4a_size= 24, n_conv_layers=4):
     ''' Useful to determine the expected inputs and output sizes of a u-net.

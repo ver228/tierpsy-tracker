@@ -9,7 +9,7 @@ RESERVED_EXT = ['_skeletons.hdf5',
                 '_feat_manual.hdf5',
                 '_subsample.avi',
                 '.wcon.zip',
-                '_featsN.hdf5'
+                '_featuresN.hdf5'
                 ]
 
 def remove_ext(fname):
