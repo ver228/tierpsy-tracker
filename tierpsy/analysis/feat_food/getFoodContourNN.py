@@ -9,8 +9,7 @@ Get food contour using a pre-trained neural network
 
 """
 
-from keras.models import load_model
-from keras import backend as K
+
 
 import tables
 import os
@@ -77,7 +76,7 @@ def _preprocess(X,
             return img[np.newaxis, x:x+input_size, y:y+input_size, :]
        
     def _cast_tf(D):
-        D = D.astype(K.floatx())
+        D = D.astype(np.float32())
         if D.ndim == 2:
             D = D[..., None]
         return D
@@ -199,7 +198,9 @@ def get_food_contour_nn(mask_file, model=None, _is_debug=False):
     to load the model and tensorflow.
     '''
     
+
     if model is None:
+        from keras.models import load_model
         model = load_model(MODEL_PATH)
     
     food_prob, original_size, bgnd_images = get_food_prob(mask_file, model, _is_debug=_is_debug)
