@@ -34,6 +34,12 @@ function alignStageMotionSegwormFun(masked_image_file,skeletons_file)
     
     %% read time stamps. I probably should put this data into the masked files dir
     video_timestamp_ind = h5read(skeletons_file, '/timestamp/raw');
+    video_timestamp_time = h5read(skeletons_file, '/timestamp/time');
+    if isnan(video_timestamp_ind(end))
+        video_timestamp_ind(end) = video_timestamp_ind(end-1);
+        video_timestamp_time(end)  = video_timestamp_time(end-1);
+    end
+    
     video_timestamp_ind = video_timestamp_ind + 1; %correct for python indexing
     
     if any(isnan(video_timestamp_ind))
@@ -44,8 +50,8 @@ function alignStageMotionSegwormFun(masked_image_file,skeletons_file)
         return
     end
     
-    video_timestamp_time = h5read(skeletons_file, '/timestamp/time');
-    fps = 1/median(diff(video_timestamp_time));
+    
+    fps = 1/nanmedian(diff(video_timestamp_time));
     
     %% Open the information file and read the tracking delay time.
     % (help from segworm findStageMovement)

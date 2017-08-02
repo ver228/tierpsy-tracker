@@ -21,16 +21,16 @@ from tierpsy.analysis.stage_aligment.findStageMovement import getFrameDiffVar, f
 #%%
 
 def alignStageMotion(
-        masked_image_file,
+        masked_file,
         skeletons_file,
         tmp_dir=os.path.expanduser('~/Tmp')):
 
-    assert os.path.exists(masked_image_file)
+    assert os.path.exists(masked_file)
     assert os.path.exists(skeletons_file)
     if not os.path.exists(tmp_dir):
         os.makedirs(tmp_dir)
 
-    base_name = os.path.split(masked_image_file)[1].partition('.hdf5')[0]
+    base_name = os.path.split(masked_file)[1].partition('.hdf5')[0]
     # check if it was finished before
     # with tables.File(skeletons_file, 'r+') as fid:
     #     try:
@@ -51,7 +51,7 @@ def alignStageMotion(
         "end; exit; "
 
     script_cmd = script_cmd.format(
-        current_dir, masked_image_file, skeletons_file)
+        current_dir, masked_file, skeletons_file)
 
     # create temporary file to read as matlab script, works better than
     # passing a string in the command line.
@@ -115,8 +115,9 @@ def _h_get_stage_inv(skeletons_file, timestamp):
 
 
 #%%
-def alignStageMotion_new(masked_image_file, skeletons_file):
+def alignStageMotion_new(masked_file, skeletons_file):
     fps = read_fps(skeletons_file)
+    
     with tables.File(skeletons_file, 'r+') as fid:
         # delete data from previous analysis if any
         if not '/stage_movement':
@@ -131,13 +132,17 @@ def alignStageMotion_new(masked_image_file, skeletons_file):
         g_stage_movement._v_attrs['has_finished'] = 0
         
         video_timestamp_ind = fid.get_node('/timestamp/raw')[:]
+        #I can tolerate a nan in the last position
+        if np.isnan(video_timestamp_ind[-1]):
+            video_timestamp_ind[-1] = video_timestamp_ind[-2] 
+        
         if np.any(np.isnan(video_timestamp_ind)):
             exit_flag = 80;
             warnings.warns('The timestamp is corrupt or do not exist.\n No stage correction processed. Exiting with has_finished flag %i.' , exit_flag)
             #turn on the has_finished flag and exit
             g_stage_movement._v_attrs['has_finished'] = exit_flag
             return
-
+        video_timestamp_ind = video_timestamp_ind.astype(np.int)
     
     # Open the information file and read the tracking delay time.
     # (help from segworm findStageMovement)
@@ -145,14 +150,14 @@ def alignStageMotion_new(masked_image_file, skeletons_file):
     # minimum time between stage movements and, conversely, the maximum time it
     # takes for a stage movement to complete. If the delay is too small, the
     # stage movements become chaotic. We load the value for the delay.
-    with tables.File(masked_image_file, 'r') as fid:
+    with tables.File(masked_file, 'r') as fid:
         xml_info = fid.get_node('/xml_info').read().decode()
         g_mask = fid.get_node('/mask')
         #%% Read the scale conversions, we would need this when we want to convert the pixels into microns
         pixelPerMicronX = 1/g_mask._v_attrs['pixels2microns_x']
         pixelPerMicronY = 1/g_mask._v_attrs['pixels2microns_y']
 
-    with pd.HDFStore(masked_image_file, 'r') as fid:
+    with pd.HDFStore(masked_file, 'r') as fid:
         stage_log = fid['/stage_log']
     
     #%this is not the cleaneast but matlab does not have a xml parser from
@@ -179,7 +184,7 @@ def alignStageMotion_new(masked_image_file, skeletons_file):
     #% Ev's code uses the full vectors without dropping frames
     #% 1. video2Diff differentiates a video frame by frame and outputs the
     #% differential variance. We load these frame differences.
-    frame_diffs_d = getFrameDiffVar(masked_image_file);
+    frame_diffs_d = getFrameDiffVar(masked_file);
 
     #%% Read the media times and locations from the log file.
     #% (help from segworm findStageMovement)
@@ -189,8 +194,8 @@ def alignStageMotion_new(masked_image_file, skeletons_file):
     #% 1) to the media times in this log file. Therefore, we load these media
     #% times and stage locations.
     #%from the .log.csv file
-    mediaTimes = stage_log['stage_time'];
-    locations = stage_log[['stage_x', 'stage_y']];
+    mediaTimes = stage_log['stage_time'].values;
+    locations = stage_log[['stage_x', 'stage_y']].values;
     
     #%% The shift makes everything a bit more complicated. I have to remove the first frame, before resizing the array considering the dropping frames.
     if video_timestamp_ind.size > frame_diffs_d.size + 1:
@@ -199,8 +204,8 @@ def alignStageMotion_new(masked_image_file, skeletons_file):
         video_timestamp_ind = video_timestamp_ind[:frame_diffs_d.size + 1];
     
     
-    frame_diffs = np.full(np.max(video_timestamp_ind), np.nan);
-    dd = video_timestamp_ind - np.min(video_timestamp_ind)-1; #shift data
+    frame_diffs = np.full(int(np.max(video_timestamp_ind)), np.nan);
+    dd = video_timestamp_ind - np.min(video_timestamp_ind); #shift data
     dd = dd[dd>=0];
     
     if frame_diffs_d.size != dd.size:

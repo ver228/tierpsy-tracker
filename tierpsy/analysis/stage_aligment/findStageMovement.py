@@ -35,6 +35,7 @@ def graythreshmat(I):
     
     #it convert the image into a uint8 if it is a double it assumes 
     #it is between 0 and 1, 
+    I = I[~np.isnan(I)]
     
     assert np.all(I>=0) and np.all(I<=1)
     
@@ -70,7 +71,7 @@ def _get_small_otsu(frame_diffs, th):
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore")
         small_diffs = frame_diffs[frame_diffs < th];
-        small_th = np.median(small_diffs) + 3 * np.std(small_diffs, ddof=1);
+        small_th = np.nanmedian(small_diffs) + 3 * np.nanstd(small_diffs, ddof=1);
     return small_diffs, small_th
 
 
@@ -102,7 +103,7 @@ def maxPeaksDistHeight(x, dist, height):
     #% Is the vector larger than the search window?
     winSize = 2 * dist + 1;
     if x.size < winSize:
-        peak = np.max(x)
+        peak = np.nanmax(x)
         if peak < height:
             return np.zeros(0), np.zeros(0)
     
@@ -127,7 +128,7 @@ def maxPeaksDistHeight(x, dist, height):
             #% Check the untested values next to the previous maxima.
             if im is not None and ip - im <= 2 * dist:
                 #% Record the peak.
-                if p > np.max(x[(ip - dist):(im + dist+1)]):
+                if p > np.nanmax(x[(ip - dist):(im + dist+1)]):
                     indices.append(ip);
                     peaks.append(p);
                 
@@ -159,7 +160,7 @@ def _initial_checks(mediaTimes, locations, delayFrames, fps):
     
     if not isinstance(delayFrames, int):
         delayFrames = int(delayFrames)
-    
+    #%%
     # If there's more than one initial media time, use the latest one.
     if (mediaTimes.size > 1):
         i = 1;
@@ -175,6 +176,7 @@ def _initial_checks(mediaTimes, locations, delayFrames, fps):
             #% Dump the extraneous 0 media times and locations.
             mediaTimes = mediaTimes[i-1:]
             locations = locations[i-1:]
+    #%%
     return mediaTimes, locations, delayFrames, fps, spareZeroTimeLocation 
 
 def _norm_frame_diffs(frameDiffs): 
@@ -188,7 +190,7 @@ def _norm_frame_diffs(frameDiffs):
     
     #% Normalize the frame differences and shift them over one to align them
     #% with the video frames.
-    frameDiffs /= np.max(frameDiffs)
+    frameDiffs /= np.nanmax(frameDiffs)
     frameDiffs = np.insert(frameDiffs, 0 , frameDiffs[0])
     
     return frameDiffs
@@ -215,7 +217,7 @@ def _init_search(frameDiffs, gOtsuThr, gSmallDiffs, gSmallThr,
             warnings.warn('UnexpectedPeaks. There are {} large frame-difference ' \
                           'peaks even though the stage never moves'.format(indices.size));
         #% Finish.
-        frames = np.zeros(frameDiffs.shape);
+        frames = np.zeros(frameDiffs.size + 1);
         movesI = np.zeros((2,1), np.int);
         
         return None
@@ -279,7 +281,7 @@ def _init_search(frameDiffs, gOtsuThr, gSmallDiffs, gSmallThr,
         firstPeakI = indices[0];
         if firstPeakI <= maxMoveFrames:
             #% Find the largest frame-difference peak.
-            peakI = np.argmax(frameDiffs[:maxMoveFrames]);
+            peakI = np.nanargmax(frameDiffs[:maxMoveFrames]);
             prevPeakI = peakI;
             #% Compute the media time offset.
             timeOff = peakI / fps;
@@ -367,27 +369,27 @@ def get_otsu_thresh(frameDiffs,
         #% differences from the large ones?
         if np.isnan(prevSmallThr) or otsuThr > prevSmallThr or otsuThr > gSmallThr:
             smallDiffs, smallThr = _get_small_otsu(frameDiffs, otsuThr)
-            isOtsu = smallDiffs & np.sum(~np.isnan(smallDiffs)) > 0 & otsuThr >= smallThr;
+            isOtsu = smallDiffs & np.any(~np.isnan(smallDiffs)) & otsuThr >= smallThr;
         
         #% Try the global Otsu threshold or, if there is none, attempt to
         #% use half the search window's maximum frame difference.
         if not isOtsu:
             #% Try using half the search window's maximum frame difference.
             if np.isnan(gOtsuThr):
-                otsuThr = np.max(searchDiffs) / 2;
+                otsuThr = np.nanmax(searchDiffs) / 2;
                 
                 #% Does the half-maximum threshold separate the 99% of the
                 #% small frame differences from the large ones?
                 smallDiffs, smallThr = _get_small_otsu(frameDiffs, otsuThr)
-                isOtsu = smallDiffs & (np.sum(~np.isnan(smallDiffs)) > 0) & (otsuThr >= smallThr);
+                isOtsu = smallDiffs & np.any(~np.isnan(smallDiffs)) & (otsuThr >= smallThr);
                 
             #% Does the global Otsu threshold pull out any peaks?
-            elif np.sum(searchDiffs > gOtsuThr) > 0:
+            elif np.any(searchDiffs > gOtsuThr):
                 otsuThr = gOtsuThr;
                 isOtsu = True;
                 
             #% Does the global Otsu threshold pull out any peaks?
-            elif np.sum(searchDiffs > prevOtsuThr) > 0:
+            elif np.any(searchDiffs > prevOtsuThr):
                 otsuThr = prevOtsuThr;
                 isOtsu = True;
     
@@ -635,6 +637,7 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
     _initial_checks(mediaTimes, locations, delayFrames, fps)
     frameDiffs = _norm_frame_diffs(frameDiffs)
     
+    
     # Compute the global Otsu and small frame-difference thresholds.
     # Note 1: we use the Otsu to locate frame-difference peaks corresponding to
     # stage movement.
@@ -751,8 +754,7 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
              (abs(timeDiff) > maxMoveTime)) and \
             (mediaTimeOff > prevMediaTimeOff) and \
             (abs(timeDiff / prevTimeDiff) > 2):
-                import pdb
-                pdb.set_trace()
+                
                  #% Report the warning.
                 dd = ['FarPeak',
                      'Stage movement ({})'.format(i),
@@ -762,8 +764,8 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
                      'an error of {:.3} seconds.'.format(timeDiff),
                      'The previous media time, offset to {:.3} seconds,'.format(prevMediaTimeOff),
                      'is closer with an error only {:.3} seconds'.format(prevTimeDiff),
-                     '(less than half the current media time error). ' \
-                     'Therefore, we probably have either a false ' \
+                     '(less than half the current media time error). ',
+                     'Therefore, we probably have either a false ',
                      'peak, a shifted misalignment, or an abnormally long delay.'
                      ]
                 dd = ' '.join(dd)
@@ -804,7 +806,7 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
                 #% Time cannot be shifted due to misalignment between the media
                 #% times and frame-difference stage movements.
                 if not isShiftable:
-                    dd = 'TimeShiftAlignment ', \
+                    dd = 'TimeShiftAlignment ' \
                         'Time cannot be shifted forward because the' \
                         ' frame-difference stage movement at {:.3}'\
                         ' seconds would have a'\
@@ -814,18 +816,19 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
                         ' time and the previous media time is only {:.3}' \
                         ' seconds and,' \
                         ' therefore, smaller than the error from shifting.'
+                    
                     dd.format(moveTime,
                               predictedTime,
                               timeDiff,
                               mediaDiff
                             )
-                    warnings.warn();
+                    warnings.warn(dd);
                     
                 #% Shift everything forward using the spare 0 media time location.
-                elif spareZeroTimeLocation:
+                elif len(spareZeroTimeLocation)>0:
                     mediaTimes = np.insert(mediaTimes, 0,0)
                     locations = np.vstack((spareZeroTimeLocation, locations))
-                    movesI = np.vstack((movesI, np.zeros(1,2)))
+                    movesI = np.vstack((movesI, np.zeros((1,2))))
                     timeOff = prevPeakI / fps - mediaTimes[i - 1];
                     
                     #% Redo the match.
@@ -923,11 +926,11 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
                 moveSizes = np.zeros((movesI.shape[0],1));
                 for j in range(2, movesI.shape[0] - 1):
                     moveDiffs = frameDiffs[movesI(j,0):movesI[j,1]];
-                    moveSizes[j] = np.sum(moveDiffs[~np.isnan(moveDiffs)])
+                    moveSizes[j] = np.nansum(moveDiffs)
                 
                 #% Compute the statistics for stage movement sizes.
-                meanMoveSize = np.mean(moveSizes[1:]);
-                stdMoveSize = np.std(moveSizes[1:], ddof=1);
+                meanMoveSize = np.nanmean(moveSizes[1:]);
+                stdMoveSize = np.nanstd(moveSizes[1:], ddof=1);
                 smallMoveThr = meanMoveSize - 2.5 * stdMoveSize;
                 largeMoveThr = meanMoveSize + 2.5 * stdMoveSize;
                 
@@ -967,7 +970,7 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
                             mediaTimes[i],
                             mediaTimes[i]*fps)
             
-                warnings.warn(msg);
+                raise(ValueError(msg));
         
         if np.isnan(peakI):
             continue
@@ -1214,11 +1217,11 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
         moveSizes = np.zeros((movesI.shape[0],1));
         for j in range(1, movesI.shape[0]-1):
             moveDiffs = frameDiffs[movesI[j,0]:movesI[j,1]];
-            moveSizes[j] = np.sum(moveDiffs[~np.isnan(moveDiffs)]);
+            moveSizes[j] = np.nansum(moveDiffs);
         
         #% Compute the statistics for stage movement sizes.
-        meanMoveSize = np.mean(moveSizes[1:]);
-        stdMoveSize = np.std(moveSizes[1:], ddof=1);
+        meanMoveSize = np.nanmean(moveSizes[1:]);
+        stdMoveSize = np.nanstd(moveSizes[1:], ddof=1);
         smallMoveThr = meanMoveSize - 2.5 * stdMoveSize;
         largeMoveThr = meanMoveSize + 2.5 * stdMoveSize;
         
