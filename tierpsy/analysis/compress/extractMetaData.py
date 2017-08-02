@@ -233,20 +233,25 @@ def read_and_save_timestamp(masked_image_file, dst_file=''):
         tot_frames = mask_fid.get_node("/mask").shape[0]
 
     if tot_frames > timestamp.size:
-        # pad with nan the extra space
+        # pad with the same value the missing values
         N = tot_frames - timestamp.size
-        timestamp = np.hstack((timestamp, np.full(N, np.nan)))
-        timestamp_time = np.hstack((timestamp_time, np.full(N, np.nan)))
+        timestamp = np.pad(timestamp, (0, N), 'edge')
+        timestamp_time = np.pad(timestamp_time, (0, N), 'edge')
         assert tot_frames == timestamp.size
 
     # save timestamp into the dst_file
-    with tables.File(dst_file, 'r+') as dst_file:
-        dst_file.create_group('/', 'timestamp')
-        dst_file.create_carray('/timestamp', 'raw', obj=np.asarray(timestamp))
-        dst_file.create_carray(
+    with tables.File(dst_file, 'r+') as dst_fid:
+        if '/timestamp' in dst_fid:
+            dst_fid.remove_node('/timestamp', recursive=True)
+
+        dst_fid.create_group('/', 'timestamp')
+        dst_fid.create_carray('/timestamp', 'raw', obj=np.asarray(timestamp))
+        dst_fid.create_carray(
             '/timestamp',
             'time',
             obj=np.asarray(timestamp_time))
+
+    return timestamp, timestamp_time
 
 
 if __name__ == '__main__':
