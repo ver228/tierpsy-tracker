@@ -95,10 +95,12 @@ def _preprocess(X,
 
     return X
 
-def _food_prediction(Xi, 
+def get_unet_prediction(Xi, 
                   model_t, 
                   n_flips = 1,
                   im_size=None,
+                  n_conv_layers = 4,
+                  d4a_size = 24,
                   _is_debug=False):
     
     '''
@@ -120,6 +122,9 @@ def _food_prediction(Xi,
     if im_size is None:
         im_size = Xi.shape
     
+    input_size, output_size, pad_size, tile_corners = \
+    _get_sizes(im_size, d4a_size= d4a_size, n_conv_layers=n_conv_layers)
+
     Y_pred = np.zeros(im_size)
     for n_t in range(n_flips):
         
@@ -127,7 +132,6 @@ def _food_prediction(Xi,
         
         if im_size is None:
             im_size = X.shape 
-        input_size, output_size, pad_size, tile_corners = _get_sizes(im_size)
         x_crop = _preprocess(X, input_size, pad_size, tile_corners) 
         x_crop = np.concatenate(x_crop)
         y_pred = model_t.predict(x_crop)
@@ -174,7 +178,7 @@ def get_food_prob(mask_file, model, max_bgnd_images = 2, _is_debug = False):
         
         bgnd_s = [cv2.resize(x, dsize) for x in bgnd]
         for b_img in bgnd_s:
-            Y_pred = _food_prediction(b_img, model, n_flips=1)
+            Y_pred = get_unet_prediction(b_img, model, n_flips=1)
             
             if _is_debug:
                 import matplotlib.pylab as plt
