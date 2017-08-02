@@ -16,7 +16,7 @@ import warnings
 from tierpsy.helper.params import read_fps
 from tierpsy.helper.misc import print_flush, get_base_name
 #%%
-from tierpsy.analysis.stage_aligment.findStageMovement import getFrameDiffVar, findStageMovement
+from tierpsy.analysis.stage_aligment.findStageMovement import getFrameDiffVar, findStageMovement, shift2video_ref
 
 #%%
 
@@ -111,6 +111,9 @@ def _h_get_stage_inv(skeletons_file, timestamp):
 
 
     return stage_vec_inv
+
+
+
 #%%
 def alignStageMotion_new(masked_image_file, skeletons_file):
     fps = read_fps(skeletons_file)
@@ -211,6 +214,7 @@ def alignStageMotion_new(masked_image_file, skeletons_file):
     
     frame_diffs[dd] = frame_diffs_d;
     
+    
     #%% try to run the aligment and return empty data if it fails 
     try:
         is_stage_move, movesI, stage_locations = \
@@ -228,28 +232,8 @@ def alignStageMotion_new(masked_image_file, skeletons_file):
         stage_locations = [];
         movesI = [];
     
-    stage_vec = np.full((is_stage_move.size,2), np.nan);
-    if movesI.size == 2 and np.all(movesI==0):
-        #%there was no movements
-        stage_vec[:,0] = stage_locations[0];
-        stage_vec[:,1] = stage_locations[1];
-        
-    else:
-        #%convert output into a vector that can be added to the skeletons file to obtain the real worm displacements
-        for kk in range(stage_locations.shape[0]):
-            bot = max(1, movesI[kk,1]+1);
-            top = min(is_stage_move.size, movesI[kk+1,0]-1);
-            stage_vec[bot:top, 0] = stage_locations[kk,0];
-            stage_vec[bot:top, 1] = stage_locations[kk,1];
-        
-    #%the nan values must match the spected video motions
-    #assert(all(isnan(stage_vec(:,1)) == is_stage_move))
-    
-    #%% prepare vectors to save into the hdf5 file.
-    #%Go back to the original movie indexing. I do not want to include the missing frames at this point.
-    is_stage_move_d = is_stage_move[video_timestamp_ind].astype(np.int8);
-    stage_vec_d = stage_vec[video_timestamp_ind, :];
-    
+    #%% 
+    stage_vec_d, is_stage_move_d = shift2video_ref(is_stage_move, movesI, stage_locations, video_timestamp_ind)
     #%% save stage data into the skeletons.hdf5
     with tables.File(skeletons_file, 'r+') as fid:
         g_stage_movement = fid.get_node('/stage_movement')

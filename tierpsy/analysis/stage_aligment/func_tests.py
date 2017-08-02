@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 from tierpsy.helper.params import read_fps
 
-from tierpsy.analysis.stage_aligment.findStageMovement import getFrameDiffVar, findStageMovement
+from tierpsy.analysis.stage_aligment.findStageMovement import getFrameDiffVar, findStageMovement, shift2video_ref
 
 def test_var_diff(masked_file, skeletons_file):
     
@@ -44,60 +44,49 @@ def test_var_diff(masked_file, skeletons_file):
 masked_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/SCHAFER_LAB_SINGLE_WORM/MaskedVideos/L4_19C_1_R_2015_06_24__16_40_14__.hdf5'
 skeletons_file = masked_file.replace('MaskedVideos', 'Results').replace('.hdf5', '_skeletons.hdf5')
 
-#frame_diffs = test_var_diff(masked_file, skeletons_file)
-
-with pd.HDFStore(masked_file, 'r') as fid:
-    stage_log = fid['/stage_log']
-    xml_info = fid.get_node('/xml_info').read().decode()
+def test_aligment(masked_file, skeletons_file):
+    #frame_diffs = test_var_diff(masked_file, skeletons_file)
+    
+    with pd.HDFStore(masked_file, 'r') as fid:
+        stage_log = fid['/stage_log']
+        xml_info = fid.get_node('/xml_info').read().decode()
+            
+    
+    with tables.File(skeletons_file, 'r') as fid:
+        frame_diffs = fid.get_node('/stage_movement/frame_diffs')[:]
+        frame_diffs = np.squeeze(frame_diffs)
+        video_timestamp_ind = fid.get_node('/timestamp/raw')[:]
         
-
-with tables.File(skeletons_file, 'r') as fid:
-    frame_diffs = fid.get_node('/stage_movement/frame_diffs')[:]
-    frame_diffs = np.squeeze(frame_diffs)
-    video_timestamp_ind = fid.get_node('/timestamp/raw')[:]
+        stage_vec_o = fid.get_node('/stage_movement/stage_vec')[:]
+        stage_vec_o = np.squeeze(stage_vec_o)
+        is_stage_move_o = fid.get_node('/stage_movement/is_stage_move')[:]
+        is_stage_move_o = np.squeeze(is_stage_move_o)
+        
+    mediaTimes = stage_log['stage_time'].values;
+    locations = stage_log[['stage_x', 'stage_y']].values;
+    fps = read_fps(skeletons_file)
+    #%this is not the cleaneast but matlab does not have a xml parser from
+    #%text string
+    delay_str = xml_info.partition('<delay>')[-1].partition('</delay>')[0]
+    delay_time = float(delay_str) / 1000;
+    delay_frames = np.ceil(delay_time * fps);
     
-
-mediaTimes = stage_log['stage_time'].values;
-locations = stage_log[['stage_x', 'stage_y']].values;
-fps = read_fps(skeletons_file)
-#%this is not the cleaneast but matlab does not have a xml parser from
-#%text string
-delay_str = xml_info.partition('<delay>')[-1].partition('</delay>')[0]
-delay_time = float(delay_str) / 1000;
-delay_frames = np.ceil(delay_time * fps);
+    is_stage_move, movesI, stage_locations = \
+    findStageMovement(frame_diffs, mediaTimes, locations, delay_frames, fps);
     
-#%%
-frameDiffs = frame_diffs
-delayFrames = delay_frames
+    stage_vec_d, is_stage_move_d = shift2video_ref(is_stage_move, movesI, stage_locations, video_timestamp_ind)
 
-is_stage_move, movesI, stage_locations = \
-findStageMovement(frame_diffs, mediaTimes, locations, delay_frames, fps);
-##%%
-# 
-#from tierpsy.analysis.stage_aligment.findStageMovement import \
-#_norm_frame_diffs, graythreshmat, _get_small_otsu, _initial_checks, \
-#_init_search, maxPeaksDistHeight
-#
-#mediaTimes, locations, delayFrames, fps, spareZeroTimeLocation  = \
-#_initial_checks(mediaTimes, locations, delayFrames, fps)
-#frameDiffs = _norm_frame_diffs(frameDiffs)
-##%%
-## Compute the global Otsu and small frame-difference thresholds.
-## Note 1: we use the Otsu to locate frame-difference peaks corresponding to
-## stage movement.
-## Note 2: we use the small threshold to locate the boundaries between
-## frame differences corresponding to stage movement and frame differences
-## corresponding to a non-movement interval.
-#gOtsuThr = graythreshmat(frameDiffs);
-#
-#gSmallDiffs, gSmallThr = _get_small_otsu(frameDiffs, gOtsuThr)   
-##
-#maxMoveFrames = delayFrames + 1; #% maximum frames a movement takes
-#frames, movesI, prevPeakI, prevPeakEndI, maxMoveTime, timeOff  = \
-#_init_search(frameDiffs, gOtsuThr, gSmallDiffs, gSmallThr, 
-#                 mediaTimes, maxMoveFrames, fps)
-## Match the media time-stage movements to the frame-difference peaks.
-#mediaTimeOff = 0; #% the offset media time
-#prevOtsuThr = gOtsuThr; #% the previous small threshold
-#prevSmallThr = gSmallThr; #% the previous small threshold
-#isShifted = False; #% have we shifted the data to try another alignment?       
+    return (is_stage_move_d, is_stage_move_o), (stage_vec_o, stage_vec_d) 
+
+if __name__ == '__main__':
+    (is_stage_move_d, is_stage_move_o), (stage_vec_o, stage_vec_d)  = \
+    test_aligment(masked_file, skeletons_file)
+
+    #%%
+    plt.figure()
+    plt.plot(is_stage_move_o, 'x')
+    plt.plot(is_stage_move_d, '.')
+    #%%
+    plt.figure()
+    plt.plot(is_stage_move_o-is_stage_move_d, 'x')
+

@@ -453,7 +453,6 @@ while i < length(mediaTimes)
     end
     searchDiffs = frameDiffs(startI:endI);
     
-    disp([i, prevPeakEndI, mediaTimeOffI, maxMoveFrames])
     %%
     % Is the Otsu threshold large enough?
     otsuThr = graythresh(searchDiffs);
@@ -566,9 +565,6 @@ while i < length(mediaTimes)
         [~, indices] = ...
             maxPeaksDistHeight(searchDiffs, maxMoveFrames, otsuThr);
         
-        
-        disp(size(searchDiffs))
-        disp(indices)
     end
     %%
     % We can't find any distinguishably large peaks.
@@ -922,6 +918,7 @@ while i < length(mediaTimes)
     peakBackEndI = peakI - j + 1; % we flipped to choose the last min
     j = peakI - 1;
     
+    
     % If the temporary back end's frame difference is small, try to push
     % the back end forwards (closer to the stage movement).
     if minDiff <= prevSmallThr
@@ -958,7 +955,7 @@ while i < length(mediaTimes)
             frameDiffs(j + 1) > smallThr)
         j = j + 1;
     end
-    movesI(i - 1,2) = j - 1;
+    movesI(i - 1, 2) = j - 1;
     prevPeakEndI = j - 1;
     
     % Mark the previous stage movement.
@@ -1001,7 +998,7 @@ while i < length(mediaTimes)
         
     % Find a temporary front end for this stage movement.
     else
-        [minDiff j] = min(frameDiffs((peakI + 1):endI));
+        [minDiff, j] = min(frameDiffs((peakI + 1):endI));
         peakFrontEndI = peakI + j;
         
         % If the temporary front end's frame difference is large, try to
@@ -1012,6 +1009,7 @@ while i < length(mediaTimes)
                 all(isnan(frameDiffs((peakFrontEndI + 1):endI))))
             peakFrontEndI = endI;
         end
+        
     end
     
     % Try to push the temporary front end backwards (closer to the stage
@@ -1028,6 +1026,7 @@ while i < length(mediaTimes)
     % Advance.
     prevPeakI = peakI;
     prevPeakEndI = peakFrontEndI;
+    
 end
 
 % Do the frame differences end with a stage movement?
@@ -1041,7 +1040,6 @@ if prevPeakEndI > length(frameDiffs)
     
 % Find the front end for the last stage movement.
 else
-    
     % Is the Otsu threshold large enough?
     searchDiffs = frameDiffs(prevPeakEndI:end);
     otsuThr = graythresh(searchDiffs);

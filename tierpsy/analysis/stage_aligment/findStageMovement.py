@@ -70,7 +70,7 @@ def _get_small_otsu(frame_diffs, th):
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore")
         small_diffs = frame_diffs[frame_diffs < th];
-        small_th = np.median(small_diffs) + 3 * np.std(small_diffs);
+        small_th = np.median(small_diffs) + 3 * np.std(small_diffs, ddof=1);
     return small_diffs, small_th
 
 
@@ -291,6 +291,7 @@ def _init_search(frameDiffs, gOtsuThr, gSmallDiffs, gSmallThr,
                 if frameDiffs[i] < gSmallThr and frameDiffs[i - 1] < gSmallThr:
                     peakI = 1;
                     break;
+                    
     #% We reached the end.
     endI = peakI + maxMoveFrames;
     if endI >= frameDiffs.size-1:
@@ -444,7 +445,6 @@ def _get_peak_indices(frameDiffs,
                 searchDiffs = searchDiffs[0:(j - 1)];
                 break;
         
-        print(searchDiffs.size)
         #% Find at least one distinguishably large peak.
         _, indices = maxPeaksDistHeight(searchDiffs, maxMoveFrames, otsuThr);
     
@@ -660,7 +660,6 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
     #AEJ I am using a while instead of a for to be able to go back
     i = 0
     while i < mediaTimes.size-1:
-        #print(i-1, movesI[i-1])
         i += 1
         
         #%%
@@ -668,8 +667,6 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
         prevMediaTimeOff = mediaTimeOff;
         mediaTimeOff = mediaTimes[i] + timeOff;
         mediaTimeOffI = int(round(mediaTimeOff * fps));
-        
-        print(i, prevPeakEndI, mediaTimeOffI, maxMoveFrames)
         
         inputs_args = (frameDiffs, prevPeakEndI, mediaTimeOffI, maxMoveFrames)
         searchDiffs, startI, endI = _get_search_diff(*inputs_args)
@@ -686,12 +683,11 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
             isOtsu = smallDiffs.size>0 & np.any(~np.isnan(smallDiffs)) & (otsuThr >= smallThr);
             
             
-        inputs_args = (frameDiffs, searchDiffs, isOtsu, otsuThr, gOtsuThr, gSmallThr, prevOtsuThr,prevSmallThr,maxMoveFrames)
+        inputs_args = (frameDiffs, searchDiffs, isOtsu, otsuThr, 
+                       gOtsuThr, gSmallThr, prevOtsuThr, prevSmallThr, maxMoveFrames)
+        
         indices, prevOtsuThr, prevSmallThr = _get_peak_indices(*inputs_args)
         
-        print(indices)
-        #%%
-
         #%%
         #% We can't find any distinguishably large peaks.
         peakI = np.nan;
@@ -846,9 +842,11 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
                 #% location and swallowing earlier frames into the the first
                 #% stage movement.
                 else:
+                    
                     frames[:movesI[1,0]] = True;
                     movesI[:(i - 1),:] = movesI[1:i,:];
                     movesI[0,0] = 0;
+                    
                     timeOff = prevPeakI / fps - mediaTimes[i - 1];
                     
                     #% Redo the match.
@@ -929,7 +927,7 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
                 
                 #% Compute the statistics for stage movement sizes.
                 meanMoveSize = np.mean(moveSizes[1:]);
-                stdMoveSize = np.std(moveSizes[1:]);
+                stdMoveSize = np.std(moveSizes[1:], ddof=1);
                 smallMoveThr = meanMoveSize - 2.5 * stdMoveSize;
                 largeMoveThr = meanMoveSize + 2.5 * stdMoveSize;
                 
@@ -971,14 +969,14 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
             
                 warnings.warn(msg);
         
-    
         if np.isnan(peakI):
             continue
         #% Find a temporary back end for this stage movement.
         #% Note: this peak may serve as its own temporary back end.
         startI = max(peakI - maxMoveFrames, prevPeakEndI);
-        j = np.argmin(frameDiffs[startI:peakI][::-1])
-        minDiff = frameDiffs[j]
+        dd = frameDiffs[startI:peakI][::-1]
+        j = np.argmin(dd)
+        minDiff = dd[j]
         peakBackEndI = peakI - j; #% we flipped to choose the last min
         j = peakI - 1;
         
@@ -998,19 +996,27 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
             peakBackEndI = startI;
          
         #% Compute a threshold for stage movement.
-        smallDiffs, smallThr = _get_small_otsu(frameDiffs, gOtsuThr)
+        smallDiffs = frameDiffs[prevPeakEndI:peakBackEndI+1];
+        
+        #ddof=1 to have the same behaviour as MATLAB
+        smallThr = np.nanmean(smallDiffs) + 3*np.nanstd(smallDiffs, ddof=1);
+        
         if np.isnan(smallThr):
             smallThr = prevSmallThr;
         
         #% Find the front end for the previous stage movement.
-        j = prevPeakI;
+        #set the range using the previous peak as range
+        j = prevPeakI + 1;
         while j < peakI and \
         (np.isnan(frameDiffs[j]) or \
         frameDiffs[j] > smallThr) and \
-        (np.isnan(frameDiffs[j + 1]) or frameDiffs[j + 1] > smallThr):
+        (np.isnan(frameDiffs[j + 1]) or \
+         frameDiffs[j + 1] > smallThr):
             j = j + 1;
-        movesI[i - 1, 1] = j-1;
+        
+        movesI[i - 1, 1] = j if j > 1 else 0; #this is to deal with the first prevMove
         prevPeakEndI = j-1;
+        
         #%%
         #% Mark the previous stage movement.
         if movesI[i - 1,0] < 1:
@@ -1050,13 +1056,13 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
         #% We reached the end.
         endI = peakI + maxMoveFrames;
         if endI >= frameDiffs.size:
-            peakFrontEndI = frameDiffs.size;
+            peakFrontEndI = frameDiffs.size-1;
             
         #% Find a temporary front end for this stage movement.
         else:
             j = np.argmin(frameDiffs[(peakI + 1):endI])
-            minDiff = frameDiffs[j]
-            peakFrontEndI = peakI + j;
+            peakFrontEndI = peakI + j + 1;
+            minDiff = frameDiffs[peakFrontEndI]
             
             #% If the temporary front end's frame difference is large, try to
             #% push the front end forwards (further from the stage movement).
@@ -1066,8 +1072,10 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
                     np.all(np.isnan(frameDiffs[(peakFrontEndI + 1):endI]))):
                 peakFrontEndI = endI;
             
+            
         #% Try to push the temporary front end backwards (closer to the stage
         #% movement).
+       
         j = peakI + 1;
         while j < peakFrontEndI:
             if frameDiffs[j] <= smallThr:
@@ -1076,10 +1084,10 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
             
             j = j + 1;
         
+        
         #% Advance.
         prevPeakI = peakI;
         prevPeakEndI = peakFrontEndI;
-    
         
     #% Do the frame differences end with a stage movement?
     if prevPeakEndI > frameDiffs.size:
@@ -1157,8 +1165,8 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
                 
                 
         #% Compute a threshold for stage movement.
-        smallDiffs = frameDiffs[prevPeakEndI:peakBackEndI];
-        smallThr = np.nanmean(smallDiffs) + 3 * np.nanstd(smallDiffs);
+        smallDiffs = frameDiffs[prevPeakEndI:peakBackEndI+1];
+        smallThr = np.nanmean(smallDiffs) + 3 * np.nanstd(smallDiffs, ddof=1);
         if np.isnan(smallThr):
             smallThr = prevSmallThr;
         
@@ -1169,8 +1177,10 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
         (np.isnan(frameDiffs[i]) or frameDiffs[i] > smallThr) and \
         (np.isnan(frameDiffs[i + 1]) or frameDiffs[i + 1] > smallThr):
             i = i + 1;
+        
         movesI[-1,1] = i;
-        prevPeakEndI = i;
+        prevPeakEndI = i-1;
+        
         
         #% Mark the last logged stage movement.
         if movesI.shape[0] == 1:
@@ -1192,8 +1202,10 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
         while i > prevPeakEndI and (np.isnan(frameDiffs[i]) or \
                 frameDiffs[i] > smallThr):
             i = i - 1;
-        movesI = np.vstack((movesI, (i+1, frameDiffs.size + 1)))
+        movesI = np.vstack((movesI, (i+1, frameDiffs.size)))
         frames[movesI[-1,0]:] = True;
+        
+
     
     #% Are any of the stage movements considerably small or large?
     if isExtraPeaks:
@@ -1206,7 +1218,7 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
         
         #% Compute the statistics for stage movement sizes.
         meanMoveSize = np.mean(moveSizes[1:]);
-        stdMoveSize = np.std(moveSizes[1:]);
+        stdMoveSize = np.std(moveSizes[1:], ddof=1);
         smallMoveThr = meanMoveSize - 2.5 * stdMoveSize;
         largeMoveThr = meanMoveSize + 2.5 * stdMoveSize;
         
@@ -1241,5 +1253,33 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
                      'is considerably large'
                      ]
                 warnings.warn(' '.join(dd))
-    
+        
+        
+        
     return frames, movesI, locations
+
+#%%
+def shift2video_ref(is_stage_move, movesI, stage_locations, video_timestamp_ind):
+    stage_vec = np.full((is_stage_move.size,2), np.nan);
+    if movesI.size == 2 and np.all(movesI==0):
+        #%there was no movements
+        stage_vec[:,0] = stage_locations[0];
+        stage_vec[:,1] = stage_locations[1];
+        
+    else:
+        #%convert output into a vector that can be added to the skeletons file to obtain the real worm displacements
+        for kk in range(stage_locations.shape[0]):
+            bot = max(1, movesI[kk,1]+1);
+            top = min(is_stage_move.size, movesI[kk+1,0]-1);
+            stage_vec[bot:top, 0] = stage_locations[kk,0];
+            stage_vec[bot:top, 1] = stage_locations[kk,1];
+        
+    #%the nan values must match the spected video motions
+    #assert(all(isnan(stage_vec(:,1)) == is_stage_move))
+    
+    # prepare vectors to save into the hdf5 file.
+    #%Go back to the original movie indexing. I do not want to include the missing frames at this point.
+    is_stage_move_d = is_stage_move[video_timestamp_ind].astype(np.int8);
+    stage_vec_d = stage_vec[video_timestamp_ind, :];
+    
+    return stage_vec_d, is_stage_move_d
