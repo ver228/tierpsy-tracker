@@ -1,5 +1,5 @@
 clc
-masked_image_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/SCHAFER_LAB_SINGLE_WORM/MaskedVideos/L4_19C_1_R_2015_06_24__16_40_14__.hdf5';
+masked_image_file = '/Users/ajaver/OneDrive - Imperial College London/Local_Videos/miss_aligments/del-1 (ok150)X on food R_2012_03_08__13_16_35___7___6.hdf5'
 skeletons_file = strrep(masked_image_file, 'MaskedVideos', 'Results');
 skeletons_file = strrep(skeletons_file, '.hdf5', '_skeletons.hdf5');
 

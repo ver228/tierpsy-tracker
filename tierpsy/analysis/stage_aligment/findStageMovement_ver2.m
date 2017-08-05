@@ -228,6 +228,8 @@ gOtsuThr = graythresh(frameDiffs);
 gSmallDiffs = frameDiffs(frameDiffs < gOtsuThr);
 gSmallThr = median(gSmallDiffs) + 3 * std(gSmallDiffs);
 
+disp([-0.111111, gOtsuThr, gSmallThr])
+
 % The log file doesn't contain any stage movements.
 if length(mediaTimes) < 2
     warning('findStageMovements:NoStageMovements', 'The stage never moves');
@@ -257,9 +259,12 @@ if isempty(gSmallDiffs) || gOtsuThr < gSmallThr
     
     % Try half the maximum frame difference as a threshold to distinguish
     % large peaks.
+    
     gOtsuThr = .5;
     gSmallDiffs = frameDiffs(frameDiffs < gOtsuThr);
     gSmallThr = median(gSmallDiffs) + 3 * std(gSmallDiffs);
+    
+    disp(gOtsuThr, numel(gSmallDiffs))
     
     % Does a threshold at half the maximum frame difference separate the
     % 99% of the small frame differences from the large ones?
@@ -271,6 +276,7 @@ if isempty(gSmallDiffs) || gOtsuThr < gSmallThr
         gSmallThr = NaN;
     end
 end
+
 
 % Pre-allocate memory.
 frames = false(length(frameDiffs), 1); % stage movement status for frames
@@ -337,19 +343,22 @@ if (verbose)
     peaksI(1) = peakI;
     otsuThrs(1) = gOtsuThr;
 end
+
 if isOtsu
-    
     % Do the frame differences begin with a stage movement?
     indices = find(searchDiffs > otsuThr);
     firstPeakI = indices(1);
+    disp('hey!!!')
+    disp([numel(searchDiffs), firstPeakI, maxMoveFrames])
     if firstPeakI <= maxMoveFrames
-        
+    
         % Find the largest frame-difference peak.
         [~, peakI] = max(frameDiffs(1:maxMoveFrames));
         prevPeakI = peakI;
-        
         % Compute the media time offset.
         timeOff = peakI / fps;
+        
+        disp([timeOff, peakI])
         if verbose
             peaksI(1) = peakI;
             otsuThrs(1) = otsuThr;
@@ -401,6 +410,8 @@ else
     [minDiff i] = min(searchDiffs);
     peakFrontEndI = peakI + i - 1;
     
+    disp([peakI, i])
+    
     % If the temporary front end's frame difference is small, try to push
     % the front end backwards (closer to the stage movement).
     if minDiff <= gSmallThr
@@ -421,10 +432,13 @@ else
         peakFrontEndI = endI;
     end
     
+    
+        
     % Advance.
     prevPeakEndI = peakFrontEndI;
 end
 
+disp([-888, prevPeakI, prevPeakEndI])
 % Match the media time-stage movements to the frame-difference peaks.
 mediaTimeOff = 0; % the offset media time
 prevOtsuThr = gOtsuThr; % the previous small threshold
@@ -435,6 +449,7 @@ i = 1;
 while i < length(mediaTimes)
     % Advance.
     i = i + 1;
+    disp(i)
     %%
     % Compute the offset media time.
     prevMediaTimeOff = mediaTimeOff;
@@ -445,17 +460,26 @@ while i < length(mediaTimes)
     
     % Compute the search boundary for matching frame-difference peaks.
     mediaTimeOffI = round(mediaTimeOff * fps);
+    disp([mediaTimes(i), timeOff])
+    
     startI = prevPeakEndI;
     endI = max(startI + 2 * abs(mediaTimeOffI - startI), ...
         max(startI, mediaTimeOffI) + maxMoveFrames);
+    
+    disp(startI + 2 * abs(mediaTimeOffI - startI))
+    disp(max(startI, mediaTimeOffI) + maxMoveFrames)
+    disp([startI, mediaTimeOffI])
+    
     if endI > length(frameDiffs)
         endI = length(frameDiffs);
     end
     searchDiffs = frameDiffs(startI:endI);
-    
-    %%
     % Is the Otsu threshold large enough?
     otsuThr = graythresh(searchDiffs);
+    disp([-100, numel(searchDiffs), startI, endI])  
+    disp(otsuThr)
+    
+    %%
     isOtsu = otsuThr > prevSmallThr || otsuThr > gOtsuThr;
     if ~isOtsu
         
@@ -565,6 +589,8 @@ while i < length(mediaTimes)
         [~, indices] = ...
             maxPeaksDistHeight(searchDiffs, maxMoveFrames, otsuThr);
         
+        disp([otsuThr, smallThr])
+        disp([j, numel(searchDiffs), maxMoveFrames])
     end
     %%
     % We can't find any distinguishably large peaks.
@@ -625,6 +651,8 @@ while i < length(mediaTimes)
     else
         %%
         peakI = indices(1) + startI - 1;
+        disp([-3331, peakI, indices(1), startI])
+        
         if verbose
             peaksI(i) = peakI;
         end
@@ -711,7 +739,7 @@ while i < length(mediaTimes)
                 mediaTimes = [0 mediaTimes];
                 locations = [spareZeroTimeLocation; locations];
                 movesI(end + 1,:) = [0 0];
-                timeOff = prevPeakI / fps - mediaTimes(i - 1);
+                timeOff = prevPeakI  / fps - mediaTimes(i - 1);
                 if verbose
                     peaksI = [1 peaksI];
                     otsuThrs = [gOtsuThr otsuThrs];
@@ -910,15 +938,17 @@ while i < length(mediaTimes)
             end
         end
     end
-        
+    
+    disp([-333, peakI, prevPeakEndI])
     % Find a temporary back end for this stage movement.
     % Note: this peak may serve as its own temporary back end.
     startI = max(peakI - maxMoveFrames, prevPeakEndI);
     [minDiff j] = min(fliplr(frameDiffs(startI:peakI)));
+    disp([minDiff j])
     peakBackEndI = peakI - j + 1; % we flipped to choose the last min
     j = peakI - 1;
     
-    
+    disp([-66666, peakBackEndI, startI])
     % If the temporary back end's frame difference is small, try to push
     % the back end forwards (closer to the stage movement).
     if minDiff <= prevSmallThr
@@ -941,6 +971,10 @@ while i < length(mediaTimes)
     % Compute a threshold for stage movement.
     smallDiffs = frameDiffs(prevPeakEndI:peakBackEndI);
     smallThr = nanmean(smallDiffs) + 3 * nanstd(smallDiffs);
+    
+    disp([-1, prevPeakEndI, peakBackEndI])
+    disp(smallThr)
+    
     if isnan(smallThr)
         smallThr = prevSmallThr;
     end
@@ -955,6 +989,10 @@ while i < length(mediaTimes)
             frameDiffs(j + 1) > smallThr)
         j = j + 1;
     end
+    
+    disp([-2, j, prevPeakI])
+    disp(smallThr)
+    
     movesI(i - 1, 2) = j - 1;
     prevPeakEndI = j - 1;
     
@@ -971,7 +1009,11 @@ while i < length(mediaTimes)
             frameDiffs(j) > smallThr)
         j = j - 1;
     end
+    
     movesI(i, 1) = j + 1;
+    
+    disp([-3, j, peakI])
+    
     
     % Is the non-movement frame-differences threshold too large?
     if smallThr <= otsuThr && (isnan(gOtsuThr) || smallThr <= gOtsuThr)
@@ -1014,6 +1056,7 @@ while i < length(mediaTimes)
     
     % Try to push the temporary front end backwards (closer to the stage
     % movement).
+    disp([-123, peakI, peakFrontEndI])
     j = peakI + 1;
     while j < peakFrontEndI
         if frameDiffs(j) <= smallThr
@@ -1023,9 +1066,16 @@ while i < length(mediaTimes)
         j = j + 1;
     end
     
+    disp([-999, peakI, peakFrontEndI])
     % Advance.
     prevPeakI = peakI;
     prevPeakEndI = peakFrontEndI;
+    
+    disp(movesI(i-1, :))
+    disp(movesI(i, :))
+    disp(diff(movesI(i-1, :)))
+    disp('________________')
+    if i > 0, break; end
     
 end
 
@@ -1131,6 +1181,8 @@ else
             frameDiffs(i + 1) > smallThr))
         i = i + 1;
     end
+    
+    disp([-22, prevPeakI, peakI])
     movesI(end,2) = i - 1;
     prevPeakEndI = i - 1;
     
@@ -1159,6 +1211,10 @@ else
     end
     movesI(end + 1,:) = [i + 1, length(frameDiffs) + 1];
     frames(movesI(end,1):end) = true;
+    
+    disp('S2')
+    disp(movesI(end-1, :))
+    disp(movesI(end, :))
 end
 
 % Are any of the stage movements considerably small or large?
