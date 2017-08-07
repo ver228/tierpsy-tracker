@@ -365,7 +365,7 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         # create the pixmap for the label
         self.mainImage.setPixmap(self.frame_qimg)
 
-        if self.mean_intensity is not None:
+        if self.mean_intensity is not None and self.frame_number < self.mean_intensity.size:
             d = int(self.mean_intensity[self.frame_number]*255)
             self.ui.intensity_label.setStyleSheet('QLabel {background-color: rgb(%i, %i, %i);}' % (0, 0, d))
 
