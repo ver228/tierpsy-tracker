@@ -321,7 +321,7 @@ def _init_search(frameDiffs, gOtsuThr, gSmallDiffs, gSmallThr,
     else:
         searchDiffs = frameDiffs[peakI:endI+1];
         # Does the search window contain multiple stage movements?
-        if ~np.isnan(gOtsuThr) and ~np.isnan(gSmallThr):
+        if not (np.isnan(gOtsuThr) or np.isnan(gSmallThr)):
             
             foundMove = False;
             for i in range(searchDiffs.size):
@@ -447,7 +447,7 @@ def _get_peak_indices(frameDiffs,
                 
                 
             #% Use the previous small threshold.
-            elif ~np.isnan(prevSmallThr):
+            elif not np.isnan(prevSmallThr):
                 smallThr = prevSmallThr;   
         #% Compute the local thresholds.
         else:
@@ -1139,7 +1139,7 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
             
             #% Does the global Otsu threshold pull out any peaks?
             if not isOtsu:
-                if ~np.isnan(gOtsuThr) and np.sum(searchDiffs > gOtsuThr) > 1:
+                if not np.isnan(gOtsuThr) and (np.sum(searchDiffs > gOtsuThr) > 1):
                     otsuThr = gOtsuThr;
                     isOtsu = True;
         

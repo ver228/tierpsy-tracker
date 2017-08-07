@@ -17,11 +17,10 @@ from tierpsy.analysis.stage_aligment.findStageMovement import getFrameDiffVar, f
 def isGoodStageAligment(skeletons_file):
     with tables.File(skeletons_file, 'r') as fid:
         try:
-            good_aligment = fid.get_node('/stage_movement')._v_attrs['has_finished'][:]
+            good_aligment = fid.get_node('/stage_movement')._v_attrs['has_finished']
             print(good_aligment)
         except (KeyError, IndexError, tables.exceptions.NoSuchNodeError):
             good_aligment = 0
-
         return good_aligment in [1, 2]
 
 def _h_get_stage_inv(skeletons_file, timestamp):
@@ -74,12 +73,10 @@ def alignStageMotion(masked_file, skeletons_file):
         g_stage_movement._v_attrs['has_finished'] = 0
         
         video_timestamp_ind = fid.get_node('/timestamp/raw')[:]
-        #%%
-        #I can tolerate a nan in the last position
-        if np.isnan(video_timestamp_ind[-1]):
-            video_timestamp_ind[-1] = video_timestamp_ind[-2] 
-    
+        
         if np.any(np.isnan(video_timestamp_ind)):
+            
+            
             exit_flag = 80;
             warnings.warn('The timestamp is corrupt or do not exist.\n No stage correction processed. Exiting with has_finished flag {}.'.format(exit_flag))
             #turn on the has_finished flag and exit
@@ -204,10 +201,39 @@ def alignStageMotion(masked_file, skeletons_file):
 
 if __name__ == '__main__':
     #masked_file = '/Users/ajaver/OneDrive - Imperial College London/Local_Videos/miss_aligments/trp-2 (ok298) off food_2010_04_30__13_03_40___1___8.hdf5'
-    masked_file = '/Users/ajaver/Tmp/Results/N2_A_24C_R_6_2015_06_16__19_40_00__.hdf5'
+    #masked_file = '/Users/ajaver/Tmp/MaskedVideos/worm 1/L4_19C_1_R_2015_06_24__16_40_14__.hdf5'
+    masked_file = '/Users/ajaver/Tmp/MaskedVideos/worm 2/L4_H_18_2016_10_30__15_56_12__.hdf5'
     skeletons_file = masked_file.replace(
         'MaskedVideos',
         'Results').replace(
         '.hdf5',
         '_skeletons.hdf5')
     alignStageMotion(masked_file, skeletons_file)
+    
+    #%%
+    import tables
+    from tierpsy.analysis.compress.extractMetaData import store_meta_data, get_timestamp, read_and_save_timestamp
+    
+    # read timestamps from the masked_image_file
+    timestamp, timestamp_time = get_timestamp(masked_file)
+    with tables.File(masked_file, 'r') as mask_fid:
+        tot_frames = mask_fid.get_node("/mask").shape[0]
+
+    if tot_frames > timestamp.size:
+        # pad with the same value the missing values
+        N = tot_frames - timestamp.size
+        timestamp = np.pad(timestamp, (0, N), 'edge')
+        timestamp_time = np.pad(timestamp_time, (0, N), 'edge')
+        assert tot_frames == timestamp.size
+
+    # save timestamp into the dst_file
+    with tables.File(skeletons_file, 'r+') as dst_fid:
+        if '/timestamp' in dst_fid:
+            dst_fid.remove_node('/timestamp', recursive=True)
+
+        dst_fid.create_group('/', 'timestamp')
+        dst_fid.create_carray('/timestamp', 'raw', obj=np.asarray(timestamp))
+        dst_fid.create_carray(
+            '/timestamp',
+            'time',
+            obj=np.asarray(timestamp_time))
