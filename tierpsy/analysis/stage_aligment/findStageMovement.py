@@ -246,7 +246,7 @@ def _init_search(frameDiffs, gOtsuThr, gSmallDiffs, gSmallThr,
         #% Does a threshold at half the maximum frame difference separate the
         #% 99% of the small frame differences from the large ones?
         if gSmallDiffs.size==0 or gOtsuThr < gSmallThr:
-            warnings.warns('NoGlobalThresholds.  Cannot find a global threshold to ' \
+            warnings.warn('NoGlobalThresholds.  Cannot find a global threshold to ' \
                           'distinguish the large frame-difference peaks.');
             gOtsuThr = np.nan;
             gSmallThr = np.nan;

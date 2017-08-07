@@ -214,29 +214,3 @@ if __name__ == '__main__':
     alignStageMotion(masked_file, skeletons_file)
     
     #%%
-    import tables
-    from tierpsy.analysis.compress.extractMetaData import store_meta_data, get_timestamp, read_and_save_timestamp
-    
-    # read timestamps from the masked_image_file
-    timestamp, timestamp_time = get_timestamp(masked_file)
-    with tables.File(masked_file, 'r') as mask_fid:
-        tot_frames = mask_fid.get_node("/mask").shape[0]
-
-    if tot_frames > timestamp.size:
-        # pad with the same value the missing values
-        N = tot_frames - timestamp.size
-        timestamp = np.pad(timestamp, (0, N), 'edge')
-        timestamp_time = np.pad(timestamp_time, (0, N), 'edge')
-        assert tot_frames == timestamp.size
-
-    # save timestamp into the dst_file
-    with tables.File(skeletons_file, 'r+') as dst_fid:
-        if '/timestamp' in dst_fid:
-            dst_fid.remove_node('/timestamp', recursive=True)
-
-        dst_fid.create_group('/', 'timestamp')
-        dst_fid.create_carray('/timestamp', 'raw', obj=np.asarray(timestamp))
-        dst_fid.create_carray(
-            '/timestamp',
-            'time',
-            obj=np.asarray(timestamp_time))
