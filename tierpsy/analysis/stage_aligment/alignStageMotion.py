@@ -166,7 +166,7 @@ def alignStageMotion(masked_file, skeletons_file):
         is_stage_move, movesI, stage_locations = \
         findStageMovement(frame_diffs, mediaTimes, locations, delay_frames, fps);
         exit_flag = 1;
-    except:
+    except ValueError:
         exit_flag = 82;
         warnings.warn('Returning all nan stage vector. Exiting with has_finished flag {}'.format(exit_flag))
         
@@ -177,8 +177,11 @@ def alignStageMotion(masked_file, skeletons_file):
         is_stage_move = np.ones(frame_diffs.size+1);
         stage_locations = [];
         movesI = [];
+        return
+        
     
-    #%% 
+    #%%
+    
     stage_vec_d, is_stage_move_d = shift2video_ref(is_stage_move, movesI, stage_locations, video_timestamp_ind)
     
     #%% save stage data into the skeletons.hdf5

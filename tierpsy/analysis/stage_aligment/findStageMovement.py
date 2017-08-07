@@ -168,7 +168,7 @@ def _initial_checks(mediaTimes, locations, delayFrames, fps):
         warnings.warn('WeirdFPS: recorded at {} frames/second. An unusual frame rate'.format(fps))
     
     if mediaTimes.size > 0 and mediaTimes[0] != 0:
-        raise('NoInitialMediaTime. The first media time must be 0')
+        raise ValueError('NoInitialMediaTime. The first media time must be 0')
     
     
     if not isinstance(delayFrames, int):
@@ -196,7 +196,7 @@ def _norm_frame_diffs(frameDiffs):
     
     #% Are there enough frames?
     if np.sum(~np.isnan(frameDiffs)) < 2:
-        raise('InsufficientFrames. The video must have at least 2, non-dropped frames');
+        raise ValueError('InsufficientFrames. The video must have at least 2, non-dropped frames');
     
     #% No frame difference means the frame was dropped.
     frameDiffs[frameDiffs == 0] = np.nan;
@@ -1199,7 +1199,7 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
         
         #% Find the front end for the last logged stage movement.
         i = prevPeakI;
-        while (i < peakI) and \
+        while (i < peakI) and (i < frameDiffs.size-1) and  \
         (np.isnan(frameDiffs[i]) or (frameDiffs[i] > smallThr)) and \
         (np.isnan(frameDiffs[i + 1]) or (frameDiffs[i + 1] > smallThr)):
             i = i + 1;
@@ -1290,7 +1290,7 @@ def shift2video_ref(is_stage_move, movesI, stage_locations, video_timestamp_ind)
     stage_vec = np.full((is_stage_move.size,2), np.nan);
     
     
-    if movesI.size == 2 and np.all(movesI==0):
+    if len(movesI) <= 1 and np.all(movesI==0):
         #%there was no movements
         stage_vec[:,0] = stage_locations[0];
         stage_vec[:,1] = stage_locations[1];
