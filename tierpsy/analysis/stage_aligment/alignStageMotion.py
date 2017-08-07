@@ -5,71 +5,14 @@ Created on Thu Feb 11 22:01:59 2016
 @author: ajaver
 """
 
-import os
-import subprocess as sp
-import tempfile
 import numpy as np
 import tables
 import pandas as pd
 import warnings
 
 from tierpsy.helper.params import read_fps
-from tierpsy.helper.misc import print_flush, get_base_name
-#%%
+from tierpsy.helper.misc import print_flush
 from tierpsy.analysis.stage_aligment.findStageMovement import getFrameDiffVar, findStageMovement, shift2video_ref
-
-#%%
-
-def alignStageMotion(
-        masked_file,
-        skeletons_file,
-        tmp_dir=os.path.expanduser('~/Tmp')):
-
-    assert os.path.exists(masked_file)
-    assert os.path.exists(skeletons_file)
-    if not os.path.exists(tmp_dir):
-        os.makedirs(tmp_dir)
-
-    base_name = os.path.split(masked_file)[1].partition('.hdf5')[0]
-    # check if it was finished before
-    # with tables.File(skeletons_file, 'r+') as fid:
-    #     try:
-    #         has_finished = fid.get_node('/stage_movement')._v_attrs['has_finished'][:]
-    #     except (KeyError, IndexError, tables.exceptions.NoSuchNodeError):
-    #         has_finished = 0
-    # if has_finished > 0:
-    #     print_flush('%s The stage motion was previously aligned.' % base_name)
-    #     return
-
-    # get the current to add as a matlab path
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    start_cmd = ('matlab -nojvm -nosplash -nodisplay -nodesktop <').split()
-
-    script_cmd = "addpath('{}'); " \
-        "try, alignStageMotionSegwormFun('{}', '{}'); " \
-        "catch ME, disp(getReport(ME)); " \
-        "end; exit; "
-
-    script_cmd = script_cmd.format(
-        current_dir, masked_file, skeletons_file)
-
-    # create temporary file to read as matlab script, works better than
-    # passing a string in the command line.
-    tmp_fid, tmp_script_file = tempfile.mkstemp(
-        suffix='.m', dir=tmp_dir, text=True)
-    with open(tmp_script_file, 'w') as fid:
-        fid.write(script_cmd)
-
-    matlab_cmd = start_cmd + [tmp_script_file]
-
-    # call matlab and align the stage motion
-    print_flush('%s Aligning Stage Motion.' % base_name)
-    sp.call(matlab_cmd)
-    print_flush('%s Alignment finished.' % base_name)
-
-    # delete temporary file.
-    os.close(tmp_fid)
-    os.remove(tmp_script_file)
 
 def isGoodStageAligment(skeletons_file):
     with tables.File(skeletons_file, 'r') as fid:
@@ -112,15 +55,14 @@ def _h_get_stage_inv(skeletons_file, timestamp):
 
     return stage_vec_inv
 
-
-
-#%%
-def alignStageMotion_new(masked_file, skeletons_file):
+def alignStageMotion(masked_file, skeletons_file):
+    #%%
     fps = read_fps(skeletons_file)
     
     with tables.File(skeletons_file, 'r+') as fid:
+        
         # delete data from previous analysis if any
-        if not '/stage_movement':
+        if not '/stage_movement' in fid:
             g_stage_movement = fid.create_group('/', 'stage_movement')
         else:
             g_stage_movement = fid.get_node('/stage_movement')
@@ -132,18 +74,21 @@ def alignStageMotion_new(masked_file, skeletons_file):
         g_stage_movement._v_attrs['has_finished'] = 0
         
         video_timestamp_ind = fid.get_node('/timestamp/raw')[:]
+        #%%
         #I can tolerate a nan in the last position
         if np.isnan(video_timestamp_ind[-1]):
             video_timestamp_ind[-1] = video_timestamp_ind[-2] 
-        
+    
         if np.any(np.isnan(video_timestamp_ind)):
             exit_flag = 80;
-            warnings.warns('The timestamp is corrupt or do not exist.\n No stage correction processed. Exiting with has_finished flag %i.' , exit_flag)
+            warnings.warn('The timestamp is corrupt or do not exist.\n No stage correction processed. Exiting with has_finished flag {}.'.format(exit_flag))
             #turn on the has_finished flag and exit
             g_stage_movement._v_attrs['has_finished'] = exit_flag
             return
-        video_timestamp_ind = video_timestamp_ind.astype(np.int)
     
+        video_timestamp_ind = video_timestamp_ind.astype(np.int)
+        
+    #%%
     # Open the information file and read the tracking delay time.
     # (help from segworm findStageMovement)
     # 2. The info file contains the tracking delay. This delay represents the
@@ -153,7 +98,7 @@ def alignStageMotion_new(masked_file, skeletons_file):
     with tables.File(masked_file, 'r') as fid:
         xml_info = fid.get_node('/xml_info').read().decode()
         g_mask = fid.get_node('/mask')
-        #%% Read the scale conversions, we would need this when we want to convert the pixels into microns
+        # Read the scale conversions, we would need this when we want to convert the pixels into microns
         pixelPerMicronX = 1/g_mask._v_attrs['pixels2microns_x']
         pixelPerMicronY = 1/g_mask._v_attrs['pixels2microns_y']
 
@@ -166,12 +111,12 @@ def alignStageMotion_new(masked_file, skeletons_file):
     delay_time = float(delay_str) / 1000;
     delay_frames = np.ceil(delay_time * fps);
     
-    normScale = np.sqrt((pixelPerMicronX ^ 2 + pixelPerMicronX ^ 2) / 2);
+    normScale = np.sqrt((pixelPerMicronX ** 2 + pixelPerMicronX ** 2) / 2);
     pixelPerMicronScale =  normScale * np.array((np.sign(pixelPerMicronX), np.sign(pixelPerMicronY)));
     
     #% Compute the rotation matrix.
     #%rotation = 1;
-    angle = np.atan(pixelPerMicronY / pixelPerMicronX);
+    angle = np.arctan(pixelPerMicronY / pixelPerMicronX);
     if angle > 0:
         angle = np.pi / 4 - angle;
     else:
@@ -203,20 +148,19 @@ def alignStageMotion_new(masked_file, skeletons_file):
         #%extra at the end of the timestamp
         video_timestamp_ind = video_timestamp_ind[:frame_diffs_d.size + 1];
     
-    
-    frame_diffs = np.full(int(np.max(video_timestamp_ind)), np.nan);
-    dd = video_timestamp_ind - np.min(video_timestamp_ind); #shift data
+    dd = video_timestamp_ind - np.min(video_timestamp_ind) - 1; #shift data
     dd = dd[dd>=0];
-    
+    #%%
     if frame_diffs_d.size != dd.size:
         exit_flag = 81;
-        warnings.warn('Number of timestamps do not match the number read movie frames.\n No stage correction processed. Exiting with has_finished flag %i.', exit_flag)
+        warnings.warn('Number of timestamps do not match the number read movie frames.\n No stage correction processed. Exiting with has_finished flag {}.'.format(exit_flag))
         #%turn on the has_finished flag and exit
         
         with tables.File(skeletons_file, 'r+') as fid:
              fid.get_node('/stage_movement')._v_attrs['has_finished'] = exit_flag
         return
     
+    frame_diffs = np.full(int(np.max(video_timestamp_ind)), np.nan);
     frame_diffs[dd] = frame_diffs_d;
     
     
@@ -239,18 +183,19 @@ def alignStageMotion_new(masked_file, skeletons_file):
     
     #%% 
     stage_vec_d, is_stage_move_d = shift2video_ref(is_stage_move, movesI, stage_locations, video_timestamp_ind)
+    
     #%% save stage data into the skeletons.hdf5
     with tables.File(skeletons_file, 'r+') as fid:
         g_stage_movement = fid.get_node('/stage_movement')
         
-        g_stage_movement.create_carray(g_stage_movement, 'frame_diffs', obj=frame_diffs_d)
-        g_stage_movement.create_carray(g_stage_movement, 'stage_vec', obj=stage_vec_d)
-        g_stage_movement.create_carray(g_stage_movement, 'is_stage_move', obj=is_stage_move_d)
+        fid.create_carray(g_stage_movement, 'frame_diffs', obj=frame_diffs_d)
+        fid.create_carray(g_stage_movement, 'stage_vec', obj=stage_vec_d)
+        fid.create_carray(g_stage_movement, 'is_stage_move', obj=is_stage_move_d)
         
-        g_stage_movement._v_atttrs['fps'] = fps
-        g_stage_movement._v_atttrs['delay_frames'] = delay_frames
-        g_stage_movement._v_atttrs['microns_per_pixel_scale'] = pixelPerMicronScale
-        g_stage_movement._v_atttrs['rotation_matrix'] = rotation_matrix
+        g_stage_movement._v_attrs['fps'] = fps
+        g_stage_movement._v_attrs['delay_frames'] = delay_frames
+        g_stage_movement._v_attrs['microns_per_pixel_scale'] = pixelPerMicronScale
+        g_stage_movement._v_attrs['rotation_matrix'] = rotation_matrix
         g_stage_movement._v_attrs['has_finished'] = 1
     
     
@@ -258,10 +203,11 @@ def alignStageMotion_new(masked_file, skeletons_file):
     
 
 if __name__ == '__main__':
-    file_mask = '/Users/ajaver/Desktop/Videos/single_worm/agar_1/MaskedVideos/unc-7 (cb5) on food R_2010_09_10__12_27_57__4.hdf5'
-    file_skel = file_mask.replace(
+    #masked_file = '/Users/ajaver/OneDrive - Imperial College London/Local_Videos/miss_aligments/trp-2 (ok298) off food_2010_04_30__13_03_40___1___8.hdf5'
+    masked_file = '/Users/ajaver/Tmp/Results/N2_A_24C_R_6_2015_06_16__19_40_00__.hdf5'
+    skeletons_file = masked_file.replace(
         'MaskedVideos',
         'Results').replace(
         '.hdf5',
         '_skeletons.hdf5')
-    alignStageMotion(file_mask, file_skel)
+    alignStageMotion(masked_file, skeletons_file)
