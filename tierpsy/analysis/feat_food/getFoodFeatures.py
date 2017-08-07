@@ -229,8 +229,8 @@ def getFoodFeatures(mask_file,
                 
                 outputs = get_cnt_feats(skeletons, food_cnt, _is_debug = _is_debug)
                 for irow, row in enumerate(zip(*outputs)):
-                    features_df[irow]  = row
-    
+                    features_df[irow + ii]  = row
+
     
     with tables.File(features_file, 'a') as fid: 
         if '/food' in fid:
@@ -250,16 +250,58 @@ def getFoodFeatures(mask_file,
                 filters=TABLE_FILTERS) 
     #%%
     print_flush("{} Calculating food features {}".format(base_name, progress_timer.get_time_str()))
+
+
+def test_plots(mask_file, skeletons_file, first_ind_plot = 0, max_n_plots = 25):
+    with pd.HDFStore(skeletons_file, 'r') as fid:
+        trajectories_data = fid['/trajectories_data']
     
+    microns_per_pixel = read_microns_per_pixel(skeletons_file)
+    with tables.File(skeletons_file, 'r+') as fid:
+        food_cnt_pix = fid.get_node('/', 'food_cnt_coord')[:]
+    food_cnt = food_cnt_pix*microns_per_pixel
+    
+    g_data = trajectories_data.groupby('worm_index_joined')
+    
+    with tables.File(skeletons_file, 'r') as fid:
+        for ii, (worm_index, worm_data) in enumerate(g_data):
+            if worm_index < first_ind_plot:
+                continue
+            print(ii)
+            skeletons = fid.get_node('/skeleton')[worm_data['skeleton_id'].values, :, :]
+            skeletons *= microns_per_pixel
+            
+            get_cnt_feats(skeletons, food_cnt, _is_debug = True)
+            plt.suptitle(worm_index)
+            if ii > max_n_plots:
+                break
 #%%
 if __name__ == '__main__':
+    import pandas as pd
+    import matplotlib.pylab as plt
     
-    #mask_file = '/Volumes/behavgenom_archive$/Avelino/Worm_Rig_Tests/short_movies_new/MaskedVideos/Double_picking_020317/trp-4_worms6_food1-3_Set4_Pos5_Ch3_02032017_153225.hdf5'
-    #mask_file = '/Users/ajaver/OneDrive - Imperial College London/optogenetics/Arantza/MaskedVideos/control_pulse/pkd2_5min_Ch1_11052017_121414.hdf5'
-    mask_file = '/Users/ajaver/OneDrive - Imperial College London/aggregation/N2_1_Ch1_29062017_182108_comp3.hdf5'
-    mask_file = '/Users/ajaver/Tmp/MaskedVideos/Development_C1_170617/development_c1_Set0_Pos0_Ch2_17062017_123028.hdf5'
+    #mask_file = '/Users/ajaver/Tmp/MaskedVideos/Development_C1_170617/development_c1_Set0_Pos0_Ch2_17062017_123028.hdf5'
+    #mask_file = '/Volumes/behavgenom_archive$/Solveig/Experiment2/MaskedVideos/170724_matdeve_exp2/170724_matdeve_exp2co1_12_Set0_Pos0_Ch1_24072017_130036.hdf5'
+    mask_file = '/Volumes/behavgenom_archive$/Solveig/Experiment1/MaskedVideos/170714_deve_1_cohort2/170714_deve_cohort2_1_Set0_Pos0_Ch1_14072017_140002.hdf5'
     skeletons_file = mask_file.replace('MaskedVideos','Results').replace('.hdf5', '_skeletons.hdf5')
-    getFoodFeatures(mask_file, skeletons_file, _is_debug = False)
-
-
+    featN_file = mask_file.replace('MaskedVideos','Results').replace('.hdf5', '_featuresN.hdf5')
+    #getFoodFeatures(mask_file, skeletons_file, _is_debug = False)
+    
+    
+    with pd.HDFStore(skeletons_file, 'r') as fid:
+        trajectories_data = fid['/trajectories_data']
+    with pd.HDFStore(featN_file, 'r') as fid:
+        print(fid)
+        food_feats = fid['/food/features']
+    
+    food_feats_N = pd.concat([trajectories_data[['frame_number', 'worm_index_joined']], food_feats], axis=1)
+    
+    #%%
+    def count_neg(x): return np.sum(x<0)
+    def count_pos(x): return np.sum(x>0)
+    
+    dd = food_feats_N[['dist_from_food_cnt', 'worm_index_joined']].groupby('worm_index_joined')
+    dd_r = dd.agg([count_neg, count_pos])
+    print(dd_r)
+    
 
