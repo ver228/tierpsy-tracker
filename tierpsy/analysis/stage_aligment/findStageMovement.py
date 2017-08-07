@@ -37,7 +37,8 @@ def getFrameDiffVar(masked_file, progress_refresh_rate_s=100):
             if ii % progress_refresh_rate == 0:
                 print_flush(progress_time.get_str(ii))
 
-        print_flush(progress_time.get_str(ii))
+        if tot>1:
+            print_flush(progress_time.get_str(ii))
     return img_var_diff
 
 def graythreshmat(I_ori):
@@ -50,6 +51,7 @@ def graythreshmat(I_ori):
     
     #make nan zeros (that's what matlab does)
     I[np.isnan(I)]=0
+    I[I<0]=0
     assert np.all(I>=0) and np.all(I<=1)
     
     I = np.round(I*255).astype(np.uint8)
@@ -206,6 +208,8 @@ def _norm_frame_diffs(frameDiffs):
     frameDiffs /= np.nanmax(frameDiffs)
     frameDiffs = np.insert(frameDiffs, 0 , frameDiffs[0])
     
+    print(frameDiffs)
+
     return frameDiffs
     
 #%%
@@ -848,7 +852,7 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
                 elif len(spareZeroTimeLocation)>0:
                     mediaTimes = np.insert(mediaTimes, 0,0)
                     locations = np.vstack((spareZeroTimeLocation, locations))
-                    movesI = np.vstack((movesI, np.zeros((1,2))))
+                    movesI = np.vstack((movesI, np.zeros((1,2), np.int)))
                     timeOff = (prevPeakI+1) / fps - mediaTimes[i - 1];
                     
                     #% Redo the match.
