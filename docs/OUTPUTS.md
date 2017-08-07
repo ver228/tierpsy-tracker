@@ -167,22 +167,22 @@ interruptions not longer than 0.25 seconds (the interruptions allow for quick co
 
 * `paused` : the worm is moving motion is paused. It is defined over a period of 0.5 seconds where the forward and backward speed does not exceed 2.5% of the worms length per second. Similarly to `forward` the maximum permissible interruption must be less than 0.25 seconds.
 
-* `omega_turn` : the worm bends are used to find a contiguous sequence of frames wherein a large bend travels from the worm’s head, through its midbody, to its tail. The worm’s body is separated into three equal parts from its head to its tail.  The mean supplementary angle is measured along each third. For omega turns, this angle must initially exceed 30° at the first but not the last third of the body (the head but not the tail). The middle third must then exceed 30°. And finally, the last but not the first third of the body must exceed 30° (the tail but not the head). This sequence of a 30° mean supplementary angle, passing continuously along the worm from head to tail, is labeled an omega turn event.
+* `omega_turns` : the worm bends are used to find a contiguous sequence of frames wherein a large bend travels from the worm’s head, through its midbody, to its tail. The worm’s body is separated into three equal parts from its head to its tail.  The mean supplementary angle is measured along each third. For omega turns, this angle must initially exceed 30° at the first but not the last third of the body (the head but not the tail). The middle third must then exceed 30°. And finally, the last but not the first third of the body must exceed 30° (the tail but not the head). This sequence of a 30° mean supplementary angle, passing continuously along the worm from head to tail, is labeled an omega turn event.
 
-* `upsilon_turn` : computed nearly identically to the `omega_turn` but they capture all events that escaped being labeled omega turns, wherein the mean supplementary angle exceeded 15° on one side of the worm (the first or last third of the body) while not exceeding 30° on the opposite end. 
+* `upsilon_turns` : computed nearly identically to the `omega_turn` but they capture all events that escaped being labeled omega turns, wherein the mean supplementary angle exceeded 15° on one side of the worm (the first or last third of the body) while not exceeding 30° on the opposite end. 
 
 
-* `coil` : this feature is currently deactivated. It should use the annotations produced by [segWorm](https://github.com/openworm/SegWorm) during skeletonization. The original algorithm is based on the ratio between the contour midbody and head/tail width.
+* `coils` : this feature is currently deactivated. It should use the annotations produced by [segWorm](https://github.com/openworm/SegWorm) during skeletonization. The original algorithm is based on the ratio between the contour midbody and head/tail width.
 
 For each of the event each of the following features are calculated:
 
-* `_distance` : `(micromenters)` distance travelled during the events.
+* `*_distance` : `(micromenters)` distance travelled during the events.
 * `inter_*_distance` : `(micromenters)` distance travelled between different events.
-* `_time` : `(seconds)` time durations of each event.
+* `*_time` : `(seconds)` time durations of each event.
 * `inter_*_time` : `(seconds)` time between different events.
-* `_frequency` : `(1/seconds)` how often an event occurs per time unit `(n_events/total_time)`.
-* `_time_ratio` :  `(no units)` ratio between the time spend at the event over the total trajectory time.
-* `_distance_ratio` : `(no units)` ratio between the total distance travelled during an event and the total distance travelled during the whole trajectory.
+* `*_frequency` : `(1/seconds)` how often an event occurs per time unit `(n_events/total_time)`.
+* `*_time_ratio` :  `(no units)` ratio between the time spend at the event over the total trajectory time.
+* `*_distance_ratio` : `(no units)` ratio between the total distance travelled during an event and the total distance travelled during the whole trajectory.
 
 #### /features_summary: 
 Set of features calculated by subdividing and reducing the features in [/features_timeseries](#features_timeseries) and the [/features\_events/worm_* ](#features_eventsworm_).
@@ -191,14 +191,14 @@ The subdivisions can be done by movement type or/and by signed data. A feature w
 
 The movement subdivision are only valid for features in [/features_timeseries](#features_timeseries) and are:
 
-* `_forward` : worm is moving forwards (`motion_modes == 1`).
-* `_paused` : worm is paused (`motion_modes == 0`).
-* `_backward`  : worm is moving backwards (`motion_modes == -1`).
+* `*_forward` : worm is moving forwards (`motion_modes == 1`).
+* `*_paused` : worm is paused (`motion_modes == 0`).
+* `*_backward`  : worm is moving backwards (`motion_modes == -1`).
 
 The signed data subdivision are only applied to data where the sign have meaning, *e.g.* `midbody_speed` or `midbody_bend_mean` and not in features like `area` or `length`. The signed data subdivisions are:
-* `_neg` : only the negative data is considered.
-* `_pos` : only the positive data is considered.
-* `_abs` : the absolute value of the data is taken before doing the reduction.
+* `*_neg` : only the negative data is considered.
+* `*_pos` : only the positive data is considered.
+* `*_abs` : the absolute value of the data is taken before doing the reduction.
 
 The reduction can be done by any of the following operations on a given subdivision. The data is saved in the corresponding table name.
   
