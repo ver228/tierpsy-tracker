@@ -176,15 +176,17 @@ def _initial_checks(mediaTimes, locations, delayFrames, fps):
     if not isinstance(delayFrames, int):
         delayFrames = int(delayFrames)
     #%%
+
+    # Save the spare 0 media time location in case the corresponding
+    # stage-movement, frame difference occured after the video started.
+    spareZeroTimeLocation = [];
     # If there's more than one initial media time, use the latest one.
     if (mediaTimes.size > 1):
         i = 1;
         while (i < mediaTimes.size and mediaTimes[i] == 0):
             i = i + 1;
         
-        # Save the spare 0 media time location in case the corresponding
-        # stage-movement, frame difference occured after the video started.
-        spareZeroTimeLocation = [];
+        
         if i > 1:
             spareZeroTimeLocation = locations[i - 2,:];
         
@@ -227,14 +229,9 @@ def _init_search(frameDiffs, gOtsuThr, gSmallDiffs, gSmallThr,
         if gOtsuThr >= gSmallThr:
             _, indices = maxPeaksDistHeight(frameDiffs, maxMoveFrames-1, gOtsuThr);
         
-            warnings.warn('UnexpectedPeaks. There are {} large frame-difference ' \
+            raise ValueError('UnexpectedPeaks. There are {} large frame-difference ' \
                           'peaks even though the stage never moves'.format(indices.size));
-        #% Finish.
-        frames = np.zeros(frameDiffs.size + 1);
-        movesI = np.zeros((2,1), np.int);
         
-        return None
-    #%%
     #% Does the Otsu threshold separate the 99% of the small frame differences
     #% from the large ones?
     if gSmallDiffs.size==0 or gOtsuThr < gSmallThr:
@@ -674,10 +671,11 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
     
     maxMoveFrames = delayFrames + 1; #% maximum frames a movement takes
     
-    frames, movesI, prevPeakI, prevPeakEndI, maxMoveTime, timeOff  = \
-    _init_search(frameDiffs, gOtsuThr, gSmallDiffs, gSmallThr, 
+    frames, movesI, prevPeakI, prevPeakEndI, maxMoveTime, timeOff = \
+     _init_search(frameDiffs, gOtsuThr, gSmallDiffs, gSmallThr, 
                  mediaTimes, maxMoveFrames, fps)
     
+
     #% Match the media time-stage movements to the frame-difference peaks.
     mediaTimeOff = 0.; #% the offset media time
     prevOtsuThr = gOtsuThr; #% the previous small threshold
