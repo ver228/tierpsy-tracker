@@ -680,6 +680,9 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
     if var_init is not None:
         frames, movesI, prevPeakI, prevPeakEndI, maxMoveTime, timeOff = var_init
     else:
+        #return empty vectors if there was no movement
+        if len(locations) == 0:
+            locations = np.zeros((1,2));
         return np.zeros(frameDiffs.size, np.int), np.zeros((1,2), np.int), locations
     
 
@@ -1301,8 +1304,8 @@ def shift2video_ref(is_stage_move, movesI, stage_locations, video_timestamp_ind)
     
     if len(movesI) <= 1 and np.all(movesI==0):
         #%there was no movements
-        stage_vec[:,0] = stage_locations[0];
-        stage_vec[:,1] = stage_locations[1];
+        stage_vec[:,0] = stage_locations[:, 0];
+        stage_vec[:,1] = stage_locations[:, 1];
         
     else:
         #%convert output into a vector that can be added to the skeletons file to obtain the real worm displacements
