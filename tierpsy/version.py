@@ -1,6 +1,13 @@
 # # -*- coding: utf-8 -*-
-__version__ = '1.3'
+__version__ = '1.4.0b0'
 '''
+1.4.0b0
+- Remove MATLAB dependency.
+- Uniform the naming some features (coil/coils omega_turn/omega_turns forward_motion/forward ...)
+- Add food features and food contour analysis (experimental)
+- Improvements to the GUI
+- Bug fixes
+
 1.3
 - Major internal organization.
 - Documentation
