@@ -31,7 +31,7 @@ def _getCorrectedTimeVec(fid, tot_frames):
             #if there is not valid frames skip
             raise ValueError
 
-    except (tables.exceptions.NoSuchNodeError, ValueError):
+    except (tables.exceptions.NoSuchNodeError, ValueError, IndexError):
         return np.arange(tot_frames)
         
     #make sure to compensate for missing frames, so the video will have similar length.
