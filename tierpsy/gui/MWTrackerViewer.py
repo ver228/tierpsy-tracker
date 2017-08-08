@@ -708,16 +708,13 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         self.worm_index_roi2 = worm_ind1
         self.updateImage()
 
-        self.ui.spinBox_join1.setValue(worm_ind1)
-        self.ui.spinBox_join2.setValue(worm_ind1)
-
     def splitTraj(self):
         if self.worm_index_type != 'worm_index_manual' \
         or self.frame_data is None:
             return
 
         if self.ui.radioButton_ROI1.isChecked():
-            worm_ind = self.worm_index_roi1  # self.ui.spinBox_join1.value()
+            worm_ind = self.worm_index_roi1 
         elif self.ui.radioButton_ROI2.isChecked():
             worm_ind = self.worm_index_roi2
 
@@ -747,11 +744,6 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         self.worm_index_roi1 = new_ind1
         self.worm_index_roi2 = new_ind2
         self.updateImage()
-
-        self.ui.spinBox_join1.setValue(new_ind1)
-        self.ui.spinBox_join2.setValue(new_ind2)
-
-    
 
 if __name__ == '__main__':
     import sys
