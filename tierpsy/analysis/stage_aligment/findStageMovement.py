@@ -227,9 +227,11 @@ def _init_search(frameDiffs, gOtsuThr, gSmallDiffs, gSmallThr,
         if gOtsuThr >= gSmallThr:
             _, indices = maxPeaksDistHeight(frameDiffs, maxMoveFrames-1, gOtsuThr);
         
-            raise ValueError('UnexpectedPeaks. There are {} large frame-difference ' \
+            warnings.warn('UnexpectedPeaks. There are {} large frame-difference ' \
                           'peaks even though the stage never moves'.format(indices.size));
+        return None
         
+
     #% Does the Otsu threshold separate the 99% of the small frame differences
     #% from the large ones?
     if gSmallDiffs.size==0 or gOtsuThr < gSmallThr:
@@ -251,6 +253,8 @@ def _init_search(frameDiffs, gOtsuThr, gSmallDiffs, gSmallThr,
             gSmallThr = np.nan;
     #%%
     #% Pre-allocate memory.
+
+    print('S', mediaTimes.size)
     frames = np.zeros(frameDiffs.shape); #% stage movement status for frames
     movesI = np.full((mediaTimes.size, 2), -100, np.int)
     movesI[0,:] = 0;
@@ -669,9 +673,14 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
     
     maxMoveFrames = delayFrames + 1; #% maximum frames a movement takes
     
-    frames, movesI, prevPeakI, prevPeakEndI, maxMoveTime, timeOff = \
+    var_init = \
      _init_search(frameDiffs, gOtsuThr, gSmallDiffs, gSmallThr, 
                  mediaTimes, maxMoveFrames, fps)
+    
+    if var_init is not None:
+        frames, movesI, prevPeakI, prevPeakEndI, maxMoveTime, timeOff = var_init
+    else:
+        return np.zeros(frameDiffs.size, np.int), np.zeros((1,2), np.int), locations
     
 
     #% Match the media time-stage movements to the frame-difference peaks.
