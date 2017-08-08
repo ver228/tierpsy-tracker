@@ -34,7 +34,6 @@ def _getCorrectedTimeVec(fid, tot_frames):
     except (tables.exceptions.NoSuchNodeError, ValueError):
         return np.arange(tot_frames)
         
-    #%%
     #make sure to compensate for missing frames, so the video will have similar length.
     tt_vec = np.full(tot_timestamps+1, np.nan)
     current_frame = 0
