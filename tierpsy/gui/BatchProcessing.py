@@ -216,7 +216,12 @@ class BatchProcessing_GUI(QMainWindow):
         '''
         index - dum variable to be able to connect to currentIndexChanged
         '''
-        param = TrackerParams(self.mapper['json_file'])
+
+        try:
+            param = TrackerParams(self.mapper['json_file'])
+        except FileNotFoundError:
+            return
+
         analysis_checkpoints = get_dflt_sequence(param.p_dict['analysis_type'])
 
         if analysis_checkpoints[-1] != 'FEAT_MANUAL_CREATE':

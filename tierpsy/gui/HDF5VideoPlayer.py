@@ -18,14 +18,22 @@ def setChildrenFocusPolicy(obj, policy):
     recursiveSetChildFocusPolicy(obj)
 
 class LineEditDragDrop():
-    def __init__(self, line_edit_obj, update_fun, test_file_fun):
+    def __init__(self, main_obj, update_fun, test_file_fun):
         self.update_fun = update_fun
         self.test_file_fun = test_file_fun
 
-        self.line_edit_obj = line_edit_obj
-        self.line_edit_obj.setAcceptDrops(True)
-        self.line_edit_obj.dragEnterEvent = self.dragEnterEvent
-        self.line_edit_obj.dropEvent = self.dropEvent
+        self.main_obj = main_obj
+        if isinstance(self.main_obj, QtWidgets.QLineEdit):
+            self.line_edit_obj = self.main_obj
+        else:
+            self.line_edit_obj = self.main_obj.lineEdit()
+            
+
+        self.main_obj.setAcceptDrops(True)
+        self.main_obj.dragEnterEvent = self.dragEnterEvent
+        self.main_obj.dropEvent = self.dropEvent
+        self.line_edit_obj.returnPressed.connect(self.returnPressedFun)
+
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls:
@@ -38,6 +46,14 @@ class LineEditDragDrop():
             vfilename = url.toLocalFile()
             if self.test_file_fun(vfilename):
                 self.update_fun(vfilename)
+
+    def returnPressedFun(self):
+        vfilename = self.line_edit_obj.text()
+        if self.test_file_fun(vfilename):
+            self.update_fun(vfilename)
+
+
+
 
 
 class ViewsWithZoom():
