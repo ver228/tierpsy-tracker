@@ -139,7 +139,7 @@ def maxPeaksDistHeight(x, dist, height):
         
         
         #% Test the potential peak.
-        if not p is None and (i - ip >= dist) or i == x.size-1:
+        if (p is not None) and (i - ip >= dist) or (i == x.size-1):
             #% Check the untested values next to the previous maxima.
             if im is not None and ip - im <= 2 * dist:
                 #% Record the peak.
@@ -163,7 +163,7 @@ def maxPeaksDistHeight(x, dist, height):
         #% Advance.
         i = i + 1;
     
-    return np.array(peaks), np.array(indices)
+    return np.array(peaks),  np.array(indices)
 #%%
 def _initial_checks(mediaTimes, locations, delayFrames, fps):
     if fps < 0.1 or fps > 100:
@@ -772,9 +772,7 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
             
         # Use the first peak.
         else:
-            #%%
             peakI = indices[0] + startI
-            
             #% Is the current offset media time further from the frame-
             #% difference stage movement than the previous offset media time?
             peakTime = peakI / fps;

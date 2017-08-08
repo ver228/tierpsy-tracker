@@ -368,13 +368,13 @@ class HDF5VideoPlayerGUI(SimplePlayer):
         self.updateImage()
 
     def getImGroup(self, index):
-        h5path = self.ui.comboBox_h5path.itemText(index)
-        self.updateImGroup(h5path)
+        self.updateImGroup(self.ui.comboBox_h5path.itemText(index))
 
     # read a valid groupset from the hdf5
     def updateImGroup(self, h5path):
         if self.fid is None:
             self.image_group = None
+            self.h5path = None
             return
 
         #self.h5path = self.ui.comboBox_h5path.text()
@@ -388,6 +388,7 @@ class HDF5VideoPlayerGUI(SimplePlayer):
             self.image_group == None
             return
 
+        self.h5path = h5path
         self.image_group = self.fid.get_node(h5path)
         if len(self.image_group.shape) != 3:
             self.mainImage.cleanCanvas()

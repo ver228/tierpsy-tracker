@@ -21,21 +21,19 @@ def getSubSampleVidName(masked_image_file):
 
 def _getCorrectedTimeVec(fid, tot_frames):
     '''time vector used to account for missing frames'''
-    if '/timestamp/raw' in fid:
+    try:
         timestamp_ind = fid.get_node('/timestamp/raw')[:]
-    else:
-        #if there is not valid timestamp field considered that there are not missing frames
-        return np.arange(tot_frames)
-    
-    #remove any nan, I notice that sometimes the last number is a nan
-    timestamp_ind = timestamp_ind[~np.isnan(timestamp_ind)]
-    if timestamp_ind.size < tot_frames-1: #invalid timestamp
-        #if there is not valid frames skip
-        return np.arange(tot_frames)
+        #remove any nan, I notice that sometimes the last number is a nan
+        timestamp_ind = timestamp_ind[~np.isnan(timestamp_ind)]
+        tot_timestamps = int(timestamp_ind[-1])
 
+        if timestamp_ind.size < tot_frames-1 or tot_timestamps < tot_frames-1: #invalid timestamp
+            #if there is not valid frames skip
+            raise ValueError
 
-    tot_timestamps = int(timestamp_ind[-1])
-    
+    except (tables.exceptions.NoSuchNodeError, ValueError):
+        return np.arange(tot_frames)
+        
     #%%
     #make sure to compensate for missing frames, so the video will have similar length.
     tt_vec = np.full(tot_timestamps+1, np.nan)

@@ -205,12 +205,13 @@ def alignStageMotion(masked_file, skeletons_file):
 if __name__ == '__main__':
     #masked_file = '/Users/ajaver/OneDrive - Imperial College London/Local_Videos/miss_aligments/trp-2 (ok298) off food_2010_04_30__13_03_40___1___8.hdf5'
     #masked_file = '/Users/ajaver/Tmp/MaskedVideos/worm 1/L4_19C_1_R_2015_06_24__16_40_14__.hdf5'
-    masked_file = '/Users/ajaver/Tmp/MaskedVideos/worm 2/L4_H_18_2016_10_30__15_56_12__.hdf5'
+    #masked_file = '/Users/ajaver/Tmp/MaskedVideos/worm 2/L4_H_18_2016_10_30__15_56_12__.hdf5'
+    masked_file = '/Volumes/behavgenom_archive$/single_worm/unfinished/WT/PS312/food_mec-10,mec-4-L3/XX/30m_wait/clockwise/197 PS312 3 on mec-10,mec-4-L3 L_2011_07_06__15_33___3___1.hdf5'
     skeletons_file = masked_file.replace(
         'MaskedVideos',
         'Results').replace(
         '.hdf5',
         '_skeletons.hdf5')
-    alignStageMotion(masked_file, skeletons_file)
+    #alignStageMotion(masked_file, skeletons_file)
     
     #%%
