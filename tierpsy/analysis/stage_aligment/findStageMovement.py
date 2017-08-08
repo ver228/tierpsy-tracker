@@ -210,8 +210,6 @@ def _norm_frame_diffs(frameDiffs):
     frameDiffs /= np.nanmax(frameDiffs)
     frameDiffs = np.insert(frameDiffs, 0 , frameDiffs[0])
     
-    print(frameDiffs)
-
     return frameDiffs
     
 #%%
@@ -391,7 +389,7 @@ def get_otsu_thresh(frameDiffs,
         #% differences from the large ones?
         if np.isnan(prevSmallThr) or otsuThr > prevSmallThr or otsuThr > gSmallThr:
             smallDiffs, smallThr = _get_small_otsu(frameDiffs, otsuThr)
-            isOtsu = smallDiffs & np.any(~np.isnan(smallDiffs)) & otsuThr >= smallThr;
+            isOtsu = (len(smallDiffs)>0) & np.any(~np.isnan(smallDiffs)) & (otsuThr >= smallThr);
         
         #% Try the global Otsu threshold or, if there is none, attempt to
         #% use half the search window's maximum frame difference.
