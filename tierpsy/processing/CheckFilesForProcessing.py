@@ -55,10 +55,9 @@ class CheckFilesForProcessing(object):
         self.analysis_checkpoints = analysis_checkpoints
         self.filtered_files = {}
         self.is_parallel_check = is_parallel_check
+    
     def _checkIndFile(self, video_file):
         '''Check the progress in the file.'''
-        
-        print(video_file)
         
         video_dir, video_file_name = os.path.split(video_file)
         subdir_path = self._getSubDirPath(video_dir, self.video_dir_root)

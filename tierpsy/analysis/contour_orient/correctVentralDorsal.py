@@ -52,7 +52,7 @@ def isBadVentralOrient(skeletons_file):
                 cnt_side1 = fid.get_node('/contour_side1')[valid_ind[0], :, :]
                 cnt_side2 = fid.get_node('/contour_side2')[valid_ind[0], :, :]
                 A_sign = _h_calAreaSignedArray(cnt_side1, cnt_side2)
-    
+                
                 # if not (np.all(A_sign > 0) or np.all(A_sign < 0)):
                 #    raise ValueError('There is a problem. All the contours should have the same orientation.')
                 if ventral_side == 'clockwise':
