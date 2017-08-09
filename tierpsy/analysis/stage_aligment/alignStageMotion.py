@@ -13,6 +13,7 @@ import warnings
 from tierpsy.helper.params import read_fps
 from tierpsy.helper.misc import print_flush
 from tierpsy.analysis.stage_aligment.findStageMovement import getFrameDiffVar, findStageMovement, shift2video_ref
+from tierpsy.helper.misc import print_flush, get_base_name
 
 def isGoodStageAligment(skeletons_file):
     with tables.File(skeletons_file, 'r') as fid:
@@ -59,6 +60,9 @@ def _h_get_stage_inv(skeletons_file, timestamp):
     return stage_vec_inv
 
 def alignStageMotion(masked_file, skeletons_file):
+
+    base_name = get_base_name(masked_file)
+    print_flush(base_name + ' Aligning Stage Motion...')
     #%%
     fps = read_fps(skeletons_file)
     
@@ -120,6 +124,7 @@ def alignStageMotion(masked_file, skeletons_file):
     #% differential variance. We load these frame differences.
     frame_diffs_d = getFrameDiffVar(masked_file);
 
+    print_flush(base_name + ' Aligning Stage Motion...')
     #%% Read the media times and locations from the log file.
     #% (help from segworm findStageMovement)
     #% 3. The log file contains the initial stage location at media time 0 as
@@ -168,8 +173,7 @@ def alignStageMotion(masked_file, skeletons_file):
         fid.create_carray(g_stage_movement, 'is_stage_move', obj=is_stage_move_d)
         g_stage_movement._v_attrs['has_finished'] = 1
     
-    
-    print_flush('Finished.')
+    print_flush(base_name + ' Aligning Stage Motion. Finished.')
     
 
 if __name__ == '__main__':
