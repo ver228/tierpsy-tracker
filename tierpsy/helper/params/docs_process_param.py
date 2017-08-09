@@ -89,6 +89,11 @@ dflt_args_list = [
         'Refresh time in seconds of the progress screen.'
         ),
 
+    ('is_debug',
+        True,
+        'Print debug information after an error.'
+        ),
+
     ]
 
 process_valid_options = {}

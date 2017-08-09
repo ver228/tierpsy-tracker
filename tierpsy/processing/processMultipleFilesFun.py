@@ -56,7 +56,8 @@ def processMultipleFilesFun(
         is_copy_video=False,
         analysis_checkpoints=[],
         unmet_requirements = False,
-        copy_unfinished = False):
+        copy_unfinished = False,
+        is_debug = True):
 
     assert video_dir_root or mask_dir_root
     
@@ -120,4 +121,5 @@ def processMultipleFilesFun(
             cmd_list,
             local_obj = ProcessLocalParser,
             max_num_process = max_num_process,
-            refresh_time = refresh_time)
+            refresh_time = refresh_time,
+            is_debug = is_debug)
