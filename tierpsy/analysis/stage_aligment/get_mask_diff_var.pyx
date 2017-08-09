@@ -29,5 +29,5 @@ def get_mask_diff_var(np.ndarray[np.uint8_t, ndim=2] f, np.ndarray[np.uint8_t, n
         var_diff = sum_x2/tot_valid - mean_x*mean_x;
         return var_diff;
     else:
-        return -1;
+        return np.nan;
     

@@ -51,7 +51,6 @@ def graythreshmat(I_ori):
     
     #make nan zeros (that's what matlab does)
     I[np.isnan(I)]=0
-    I[I<0]=0
     assert np.all(I>=0) and np.all(I<=1)
     
     I = np.round(I*255).astype(np.uint8)
@@ -139,9 +138,9 @@ def maxPeaksDistHeight(x, dist, height):
         
         
         #% Test the potential peak.
-        if (p is not None) and (i - ip >= dist) or (i == x.size-1):
+        if (p is not None) and ((i - ip >= dist) or (i == x.size-1)):
             #% Check the untested values next to the previous maxima.
-            if im is not None and ip - im <= 2 * dist:
+            if (im is not None) and (ip - im <= 2 * dist):
                 #% Record the peak.
                 if p > np.nanmax(x[(ip - dist):(im + dist+1)]):
                     indices.append(ip);
