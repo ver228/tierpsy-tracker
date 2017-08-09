@@ -57,7 +57,8 @@ def processMultipleFilesFun(
         analysis_checkpoints=[],
         unmet_requirements = False,
         copy_unfinished = False,
-        is_debug = True):
+        is_debug = True
+        ):
 
     assert video_dir_root or mask_dir_root
     
@@ -112,7 +113,7 @@ def processMultipleFilesFun(
             
     files_checker = CheckFilesForProcessing(**check_args)
 
-    cmd_list = files_checker.filterFiles(valid_files, print_cmd=True)
+    cmd_list = files_checker.filterFiles(valid_files, print_cmd=is_debug)
     
     if unmet_requirements:
          files_checker._printUnmetReq()

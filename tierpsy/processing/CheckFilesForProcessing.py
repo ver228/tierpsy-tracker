@@ -194,7 +194,6 @@ class CheckFilesForProcessing(object):
 
         
         print(self.summary_msg)
-        
         return cmd_list
     
     def _printUnmetReq(self):

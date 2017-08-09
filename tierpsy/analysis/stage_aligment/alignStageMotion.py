@@ -8,12 +8,11 @@ Created on Thu Feb 11 22:01:59 2016
 import numpy as np
 import tables
 import pandas as pd
-import warnings
 
 from tierpsy.helper.params import read_fps
-from tierpsy.helper.misc import print_flush
-from tierpsy.analysis.stage_aligment.findStageMovement import getFrameDiffVar, findStageMovement, shift2video_ref
 from tierpsy.helper.misc import print_flush, get_base_name
+from tierpsy.analysis.stage_aligment.findStageMovement import getFrameDiffVar, findStageMovement, shift2video_ref
+
 
 def isGoodStageAligment(skeletons_file):
     with tables.File(skeletons_file, 'r') as fid:
