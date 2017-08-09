@@ -35,8 +35,13 @@ def is_valid_cnt_info(skeletons_file='', ventral_side=''):
 
 def isBadVentralOrient(skeletons_file):
     ventral_side = read_ventral_side(skeletons_file)
-    if ventral_side == 'unknown':
+
+    if not ventral_side in VALID_CNT:
+        return True
+
+    elif ventral_side == 'unknown':
         is_bad =  False
+    
     elif ventral_side in ['clockwise', 'anticlockwise']:
         with tables.File(skeletons_file, 'r') as fid:
             has_skeletons = fid.get_node('/trajectories_data').col('has_skeleton')
@@ -61,8 +66,11 @@ def isBadVentralOrient(skeletons_file):
                     is_bad = A_sign[0] > 0
                 else:
                     raise ValueError
-    else:
-        is_bad = True
+
+        if is_bad:
+            _switch_cnt(skeletons_file)
+            is_bad = False
+
 
     return is_bad
 
@@ -76,15 +84,18 @@ def _add_ventral_side(skeletons_file, ventral_side):
             fid.get_node('/trajectories_data').attrs['ventral_side'] = ventral_side
     return ventral_side
 
+def _switch_cnt(skeletons_file):
+    with tables.File(skeletons_file, 'r+') as fid:
+        # since here we are changing all the contours, let's just change
+        # the name of the datasets
+        side1 = fid.get_node('/contour_side1')
+        side2 = fid.get_node('/contour_side2')
+
+        side1.rename('contour_side1_bkp')
+        side2.rename('contour_side1')
+        side1.rename('contour_side2')
+
 def switchCntSingleWorm(skeletons_file, ventral_side=''):
     ventral_side = _add_ventral_side(skeletons_file, ventral_side)
-    if isBadVentralOrient(skeletons_file):
-        with tables.File(skeletons_file, 'r+') as fid:
-            # since here we are changing all the contours, let's just change
-            # the name of the datasets
-            side1 = fid.get_node('/contour_side1')
-            side2 = fid.get_node('/contour_side2')
-
-            side1.rename('contour_side1_bkp')
-            side2.rename('contour_side1')
-            side1.rename('contour_side2')
+    isBadVentralOrient(skeletons_file) #this function switch the contour if it is neccessary
+        

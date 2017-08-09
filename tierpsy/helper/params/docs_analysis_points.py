@@ -49,7 +49,6 @@ dflt_analysis_points = {
     'SKE_FILT',
     'SKE_ORIENT',
     'STAGE_ALIGMENT',
-    'CONTOUR_ORIENT', #orientation must occur before the intensity map calculation.
     'INT_PROFILE',
     'INT_SKE_ORIENT',
     'FEAT_CREATE',
