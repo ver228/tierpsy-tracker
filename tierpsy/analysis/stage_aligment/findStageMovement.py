@@ -1094,18 +1094,19 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
         #% Find a temporary front end for this stage movement.
         else:
             dd = frameDiffs[peakI+1:endI+1]
-            j = np.nanargmin(dd)
-            minDiff = dd[j]
-            peakFrontEndI = peakI + j + 1;
-            
-            #% If the temporary front end's frame difference is large, try to
-            #% push the front end forwards (further from the stage movement).
-            
-            if (minDiff >= min(otsuThr, gOtsuThr)) or \
-                    (minDiff > max(smallThr, gSmallThr) and \
-                    (peakFrontEndI < endI) and \
-                    np.all(np.isnan(frameDiffs[(peakFrontEndI + 1):endI+1]))):
-                peakFrontEndI = endI
+            if not np.all(np.isnan(dd)):
+                j = np.nanargmin(dd)
+                minDiff = dd[j]
+                peakFrontEndI = peakI + j + 1;
+                
+                #% If the temporary front end's frame difference is large, try to
+                #% push the front end forwards (further from the stage movement).
+                
+                if (minDiff >= min(otsuThr, gOtsuThr)) or \
+                        (minDiff > max(smallThr, gSmallThr) and \
+                        (peakFrontEndI < endI) and \
+                        np.all(np.isnan(frameDiffs[(peakFrontEndI + 1):endI+1]))):
+                    peakFrontEndI = endI
             
         #% Try to push the temporary front end backwards (closer to the stage
         #% movement).
