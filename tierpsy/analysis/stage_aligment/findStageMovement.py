@@ -253,8 +253,6 @@ def _init_search(frameDiffs, gOtsuThr, gSmallDiffs, gSmallThr,
             gSmallThr = np.nan;
     #%%
     #% Pre-allocate memory.
-
-    print('S', mediaTimes.size)
     frames = np.zeros(frameDiffs.shape); #% stage movement status for frames
     movesI = np.full((mediaTimes.size, 2), -100, np.int)
     movesI[0,:] = 0;
@@ -302,7 +300,7 @@ def _init_search(frameDiffs, gOtsuThr, gSmallDiffs, gSmallThr,
         
         if firstPeakI < maxMoveFrames:
             #% Find the largest frame-difference peak.
-            peakI = np.nanargmax(frameDiffs[:maxMoveFrames+1]);
+            peakI = np.nanargmax(frameDiffs[:maxMoveFrames]);
             prevPeakI = peakI;
             #% Compute the media time offset.
             timeOff = (peakI +1) / fps;
@@ -759,7 +757,7 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
                         'at media time {:.3f} seconds (frame {} ) offset to {:.3} ' \
                         'seconds (frame {}) to the last frame {:.3} seconds ' \
                         '(frame {}), does not have any distinguishably large peaks.'
-            dd = dd.format(i, 
+            dd = dd.format(i+1, 
                         mediaTimes[i], 
                         round(mediaTimes[i] * fps),
                         mediaTimeOff,
@@ -787,7 +785,7 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
                 
                  #% Report the warning.
                 dd = ['FarPeak',
-                     'Stage movement ({})'.format(i),
+                     'Stage movement ({})'.format(i+1),
                      '(at media time {:.3f} seconds)'.format(mediaTimes[i]),
                      'offset to {:.3} seconds,'.format(mediaTimeOff),
                      'has its frame-difference peak at {:.3} seconds (frame {}),'.format(peakTime, peakI - 1),
@@ -847,7 +845,7 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
                         ' seconds and,' \
                         ' therefore, smaller than the error from shifting.'
                     
-                    dd.format(moveTime,
+                    dd = dd.format(moveTime,
                               predictedTime,
                               timeDiff,
                               mediaDiff
@@ -995,10 +993,11 @@ def findStageMovement(frameDiffs, mediaTimes, locations, delayFrames, fps):
                     
                 #% Construct the report.
                 msg = 'NoShift : We cannot find a matching peak nor shift the time ' \
-                     'for stage movement {} at media time {:.3} seconds (frame {:.3}).' \
-                     .format(i,
+                     'for stage movement {} at media time {:.3} seconds (frame {}).' \
+                     .format(i+1,
                             mediaTimes[i],
-                            mediaTimes[i]*fps)
+                            int(round(mediaTimes[i] * fps))
+                            )
             
                 raise(ValueError(msg));
         

@@ -18,7 +18,6 @@ def isGoodStageAligment(skeletons_file):
     with tables.File(skeletons_file, 'r') as fid:
         try:
             good_aligment = fid.get_node('/stage_movement')._v_attrs['has_finished']
-            print(good_aligment)
         except (KeyError, IndexError, tables.exceptions.NoSuchNodeError):
             good_aligment = 0
         return good_aligment in [1, 2]
@@ -43,6 +42,11 @@ def _h_get_stage_inv(skeletons_file, timestamp):
     good = (timestamp_ind >= first_frame) & (timestamp_ind <= last_frame)
 
     ind_ff = timestamp_ind[good] - first_frame
+    if timestamp_ind.shape[0] > stage_vec_ori.shape[0]:
+        #there are extra elements in the timestamp_ind, let's pad it with the same value in the stage vector
+        extra_n = timestamp_ind.shape[0] - stage_vec_ori.shape[0]
+        stage_vec_ori = np.pad(stage_vec_ori, ((0, extra_n),(0,0)), 'edge')
+
     stage_vec_ori = stage_vec_ori[good]
 
     stage_vec = np.full((timestamp.size, 2), np.nan)
@@ -61,27 +65,15 @@ def alignStageMotion(masked_file, skeletons_file):
     with tables.File(skeletons_file, 'r+') as fid:
         
         # delete data from previous analysis if any
-        if not '/stage_movement' in fid:
-            g_stage_movement = fid.create_group('/', 'stage_movement')
-        else:
-            g_stage_movement = fid.get_node('/stage_movement')
-
-        for field in ['stage_vec', 'is_stage_move', 'frame_diffs']:
-            if field in g_stage_movement:
-                fid.remove_node(g_stage_movement, field)
-
+        if '/stage_movement' in fid:
+            fid.remove_node('/stage_movement', recursive = True)
+        g_stage_movement = fid.create_group('/', 'stage_movement')
         g_stage_movement._v_attrs['has_finished'] = 0
         
         video_timestamp_ind = fid.get_node('/timestamp/raw')[:]
         
-        if np.any(np.isnan(video_timestamp_ind)):
-            
-            
-            exit_flag = 80;
-            warnings.warn('The timestamp is corrupt or do not exist.\n No stage correction processed. Exiting with has_finished flag {}.'.format(exit_flag))
-            #turn on the has_finished flag and exit
-            g_stage_movement._v_attrs['has_finished'] = exit_flag
-            return
+        if np.any(np.isnan(video_timestamp_ind)):        
+            raise ValueError('The timestamp all NaN. It is corrupt or do not exist.')
     
         video_timestamp_ind = video_timestamp_ind.astype(np.int)
         
@@ -149,53 +141,31 @@ def alignStageMotion(masked_file, skeletons_file):
     dd = dd[dd>=0];
     #%%
     if frame_diffs_d.size != dd.size:
-        exit_flag = 81;
-        warnings.warn('Number of timestamps do not match the number read movie frames.\n No stage correction processed. Exiting with has_finished flag {}.'.format(exit_flag))
-        #%turn on the has_finished flag and exit
+        raise ValueError('Number of timestamps do not match the number of frames in the movie.')
         
-        with tables.File(skeletons_file, 'r+') as fid:
-             fid.get_node('/stage_movement')._v_attrs['has_finished'] = exit_flag
-        return
-    
     frame_diffs = np.full(int(np.max(video_timestamp_ind)), np.nan);
     frame_diffs[dd] = frame_diffs_d;
+    #%% save stage data into the skeletons.hdf5
+    with tables.File(skeletons_file, 'r+') as fid:
+        # I am saving this data before for debugging purposes
+        g_stage_movement = fid.get_node('/stage_movement')
+        fid.create_carray(g_stage_movement, 'frame_diffs', obj=frame_diffs_d)
+        g_stage_movement._v_attrs['fps'] = fps
+        g_stage_movement._v_attrs['delay_frames'] = delay_frames
+        g_stage_movement._v_attrs['microns_per_pixel_scale'] = pixelPerMicronScale
+        g_stage_movement._v_attrs['rotation_matrix'] = rotation_matrix
     
-    
+
     #%% try to run the aligment and return empty data if it fails 
-    try:
-        is_stage_move, movesI, stage_locations = \
-        findStageMovement(frame_diffs, mediaTimes, locations, delay_frames, fps);
-        exit_flag = 1;
-    except ValueError:
-        exit_flag = 82;
-        warnings.warn('Returning all nan stage vector. Exiting with has_finished flag {}'.format(exit_flag))
-        
-        with tables.File(skeletons_file, 'r+') as fid:
-             fid.get_node('/stage_movement')._v_attrs['has_finished'] = exit_flag
-        
-        #%remove the if we want to create an empty 
-        is_stage_move = np.ones(frame_diffs.size+1);
-        stage_locations = [];
-        movesI = [];
-        return
-        
-    
-    #%%
-    
+    is_stage_move, movesI, stage_locations = \
+    findStageMovement(frame_diffs, mediaTimes, locations, delay_frames, fps);
     stage_vec_d, is_stage_move_d = shift2video_ref(is_stage_move, movesI, stage_locations, video_timestamp_ind)
     
     #%% save stage data into the skeletons.hdf5
     with tables.File(skeletons_file, 'r+') as fid:
         g_stage_movement = fid.get_node('/stage_movement')
-        
-        fid.create_carray(g_stage_movement, 'frame_diffs', obj=frame_diffs_d)
         fid.create_carray(g_stage_movement, 'stage_vec', obj=stage_vec_d)
         fid.create_carray(g_stage_movement, 'is_stage_move', obj=is_stage_move_d)
-        
-        g_stage_movement._v_attrs['fps'] = fps
-        g_stage_movement._v_attrs['delay_frames'] = delay_frames
-        g_stage_movement._v_attrs['microns_per_pixel_scale'] = pixelPerMicronScale
-        g_stage_movement._v_attrs['rotation_matrix'] = rotation_matrix
         g_stage_movement._v_attrs['has_finished'] = 1
     
     
@@ -214,4 +184,3 @@ if __name__ == '__main__':
         '_skeletons.hdf5')
     #alignStageMotion(masked_file, skeletons_file)
     
-    #%%

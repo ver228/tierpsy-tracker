@@ -78,12 +78,11 @@ class ProcessLocal(object):
     # we need to group steps into start and clean steps for the multiprocess
     # part
     def start(self):
+        #It is key that processlocal is a separated process since that is how i can parallelize the the process
         
         self.start_time = time.time()
-
         #copy tmp files
         self._copyFinaltoTmp()
-
         args = [self.tmp_main_file]
         argkws = {'masks_dir':self.tmp_mask_dir, 'results_dir':self.tmp_results_dir, 
             'json_file':self.json_file, 'analysis_checkpoints':self.checkpoints2process}
@@ -274,6 +273,7 @@ class ProcessLocal(object):
 
 class ProcessLocalParser(ProcessLocal, ProcessWorkerParser):
     
+
     def __init__(self, sys_argv):
         ProcessWorkerParser.__init__(self)
         self.add_argument(

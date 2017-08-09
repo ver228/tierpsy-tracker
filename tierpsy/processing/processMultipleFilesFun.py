@@ -11,9 +11,9 @@ from tierpsy.processing.CheckFilesForProcessing import CheckFilesForProcessing
 from tierpsy.processing.ProcessLocal import ProcessLocalParser
 from tierpsy.processing.helper import get_dflt_sequence, find_valid_files, \
 remove_border_checkpoints, get_results_dir, get_masks_dir 
+from tierpsy.processing.run_multi_cmd import RunMultiCMD
 
 from tierpsy.helper.params import TrackerParams
-from tierpsy.helper.misc import RunMultiCMD
 from tierpsy.helper.params.docs_process_param import dflt_args_list, process_valid_options
 
 class ProcessMultipleFilesParser(argparse.ArgumentParser):

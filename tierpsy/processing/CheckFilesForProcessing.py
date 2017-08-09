@@ -9,10 +9,12 @@ import multiprocessing as mp
 import os
 from functools import partial
 
-from tierpsy.helper.misc import TimeCounter, print_cmd_list
+from tierpsy.helper.misc import TimeCounter
 from tierpsy.processing.AnalysisPoints import AnalysisPoints, init_analysis_point_lock
 from tierpsy.processing.ProcessLocal import BATCH_SCRIPT_LOCAL
 from tierpsy.processing.helper import create_script
+from tierpsy.processing.run_multi_cmd import print_cmd_list
+
 
 BREAK_L = '*********************************************'
 
