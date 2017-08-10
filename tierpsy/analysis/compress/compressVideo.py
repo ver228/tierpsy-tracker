@@ -338,7 +338,9 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
 
                 # add image to the buffer
                 Ibuff[ind_buff, :, :] = image.copy()
-                mean_intensity.append(np.array([np.mean(image)]))
+                mean_int = np.mean(image)
+                assert mean_int > 0
+                mean_intensity.append(np.array([mean_int]))
 
             else:
                 # sometimes the last image is all zeros, control for this case
