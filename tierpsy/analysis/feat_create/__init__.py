@@ -21,6 +21,7 @@ def args_(fn, param):
 
     requirements += ['STAGE_ALIGMENT', ('is_valid_alignment', partial(isGoodStageAligment, fn['skeletons']))]
     main_func = partial(ventral_orient_wrapper, main_func, fn['skeletons'], param.p_dict['ventral_side'])
+    main_func.__name__ = getWormFeaturesFilt.__name__ # I use the name for provenance tracking
 
   #arguments used by AnalysisPoints.py
   return {

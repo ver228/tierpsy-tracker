@@ -23,6 +23,7 @@ def args_(fn, param):
         from functools import partial
         from ..contour_orient import ventral_orient_wrapper
         main_func = partial(ventral_orient_wrapper, main_func, fn['skeletons'], param.p_dict['ventral_side'])
+        main_func.__name__ = getIntensityProfile.__name__  # I use the name for provenance tracking
 
     #arguments used by AnalysisPoints.py
     return {
