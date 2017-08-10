@@ -1,9 +1,15 @@
 # # -*- coding: utf-8 -*-
-__version__ = '1.4.0b0'
+__version__ = '1.4.0'
 '''
+1.4.0
+- Schafer's lab tracker ready for release:
+	* Remove CNT_ORIENT as a separated checkpoint and add it rather as a pre-step using a decorator.
+	* Stage aligment failures throw errors instead of continue silently and setting an error flag.
+- Bug fixes
+
 1.4.0b0
 - Remove MATLAB dependency.
-- Uniform the naming some features (coil/coils omega_turn/omega_turns forward_motion/forward ...)
+- Uniformly the naming event features (coil/coils omega_turn/omega_turns forward_motion/forward ...)
 - Add food features and food contour analysis (experimental)
 - Improvements to the GUI
 - Bug fixes
@@ -28,7 +34,7 @@ skeletons calculation. The point SKEL_INIT now preceds SKEL_CREATION.
 - Cumulative changes and bug corrections.
 
 1.1.0 
-- Fish tracking and fluorescence tracking.
+- Fish tracking (experimental) and fluorescence tracking.
 - major changes in the internal paralization, should make easier to add or remove steps on the tracking.
 - correct several bugs.
 '''

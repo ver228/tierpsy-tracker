@@ -1,4 +1,4 @@
-from .correctVentralDorsal import ventral_orient_decorator
+from .correctVentralDorsal import ventral_orient_wrapper
 
 # from functools import partial
 #from .correctVentralDorsal import switchCntSingleWorm, is_valid_cnt_info, isGoodVentralOrient, switchCntSingleWorm

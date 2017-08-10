@@ -82,13 +82,10 @@ def isBadVentralOrient(skeletons_file, ventral_side=''):
 
     return is_bad
 
-def ventral_orient_decorator(func, skeletons_file, ventral_side):
-    #orient the ventral side before executing the code
-    def func_wrapper(*args, **argkws):
-        if isBadVentralOrient(skeletons_file, ventral_side):
-            raise ValueError('Cannot continue the ventral side {} given is empty or incorrect'.format(ventral_side))
-        return func(*args, **argkws)
-    return func_wrapper
+def ventral_orient_wrapper(func, skel_f, ventral_side, *args, **argkws):
+    if isBadVentralOrient(skel_f, ventral_side):
+        raise ValueError('Cannot continue the ventral side {} given is empty or incorrect'.format(ventral_side))
+    return func(*args, **argkws)
     
 
 
