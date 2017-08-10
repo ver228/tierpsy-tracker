@@ -32,10 +32,9 @@ def get_ffprobe_metadata(video_file):
     if not os.path.exists(video_file):
         raise FileNotFoundError(video_file)
 
-    if not FFPROBE_CMD:
-        warnings.warn('ffprobe do not found. Raw video metadata will not be extracted.')
-        return np.zeros(0)
-
+    if not os.path.exists(FFPROBE_CMD):
+        raise FileNotFoundError('ffprobe do not found. Set is_extract_timestamp to False in the json_file parameters file if you do not want to execute this step.')
+        
     command = [
         FFPROBE_CMD,
         '-v',
