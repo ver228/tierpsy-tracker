@@ -146,6 +146,8 @@ class AttrReader():
 
 
 def read_ventral_side(fname):
+    #I am giving priority to a contour stored in experiments_info, rather than one read by the json file.
+    #currently i am only using the experiments_info in the re-analysis of the old schafer database
     reader = AttrReader(fname)
     return reader.get_ventral_side()
     

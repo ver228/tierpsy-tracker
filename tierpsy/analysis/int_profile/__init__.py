@@ -20,7 +20,7 @@ def args_(fn, param):
     if p['analysis_type'] == 'SINGLE_WORM_SHAFER':
         from ..contour_orient import isGoodVentralOrient
         from functools import partial
-        requirements += [('is_valid_contour', partial(isGoodVentralOrient, fn['skeletons']))]
+        requirements += [('is_valid_contour', partial(isGoodVentralOrient, fn['skeletons'], param.p_dict['ventral_side']))]
         
     #arguments used by AnalysisPoints.py
     return {

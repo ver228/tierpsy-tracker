@@ -16,7 +16,7 @@ def args_(fn, param):
   if param.p_dict['analysis_type'] == 'SINGLE_WORM_SHAFER':
     from functools import partial
     from ..contour_orient import isGoodVentralOrient
-    requirements += [('is_valid_contour', partial(isGoodVentralOrient, fn['skeletons']))]
+    requirements += [('is_valid_contour', partial(isGoodVentralOrient, fn['skeletons'], param.p_dict['ventral_side']))]
     
     from ..stage_aligment import isGoodStageAligment 
     requirements += ['STAGE_ALIGMENT', ('is_valid_alignment', partial(isGoodStageAligment, fn['skeletons']))]

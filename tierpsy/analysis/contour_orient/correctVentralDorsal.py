@@ -9,33 +9,32 @@ from tierpsy.helper.params import read_ventral_side
 
 VALID_CNT = ['clockwise', 'anticlockwise', 'unknown']
 
-def _read_or_pass(skeletons_file, ventral_side):
-    #decide if to read or pass the value ventral_side. I give preference to read from file.
-    if skeletons_file:
-        #if it is not supplied try to read it from the file
-        ventral_side_f = read_ventral_side(skeletons_file)
-
+def _add_ventral_side(skeletons_file, ventral_side=''):
+    #I am giving priority to a contour stored in experiments_info, rather than one read by the json file.
+    #currently i am only using the experiments_info in the re-analysis of the old schafer database
+    ventral_side_f = read_ventral_side(skeletons_file)
     if ventral_side_f in VALID_CNT:
-        
-        return ventral_side_f
-    else:
-        return ventral_side
+        ventral_side = ventral_side_f
 
-def is_valid_cnt_info(skeletons_file='', ventral_side=''):
-    ventral_side = _read_or_pass(skeletons_file, ventral_side)
-    
-    is_valid = ventral_side in VALID_CNT
-    # if not is_valid:
-    #     base_name = os.path.basename(skeletons_file).replace('_skeletons.hdf5', '')
-    #     print('{} Not valid ventral_side:({}) in /experiments_info'.format(base_name, exp_info['ventral_side']))
-    
-    # only clockwise and anticlockwise are valid contour orientations
-    return is_valid
+    #add ventral side if given
+    if ventral_side in VALID_CNT:
+        with tables.File(skeletons_file, 'r+') as fid:
+            fid.get_node('/trajectories_data').attrs['ventral_side'] = ventral_side
+    return ventral_side
 
+def _switch_cnt(skeletons_file):
+    with tables.File(skeletons_file, 'r+') as fid:
+        # since here we are changing all the contours, let's just change
+        # the name of the datasets
+        side1 = fid.get_node('/contour_side1')
+        side2 = fid.get_node('/contour_side2')
 
-def isBadVentralOrient(skeletons_file):
-    ventral_side = read_ventral_side(skeletons_file)
+        side1.rename('contour_side1_bkp')
+        side2.rename('contour_side1')
+        side1.rename('contour_side2')
 
+def isBadVentralOrient(skeletons_file, ventral_side=''):
+    ventral_side = _add_ventral_side(skeletons_file, ventral_side) 
     if not ventral_side in VALID_CNT:
         return True
 
@@ -74,28 +73,7 @@ def isBadVentralOrient(skeletons_file):
 
     return is_bad
 
-def isGoodVentralOrient(skeletons_file):
-    return not isBadVentralOrient(skeletons_file)
-    
-def _add_ventral_side(skeletons_file, ventral_side):
-    ventral_side = _read_or_pass(skeletons_file, ventral_side)
-    if ventral_side in VALID_CNT:
-        with tables.File(skeletons_file, 'r+') as fid:
-            fid.get_node('/trajectories_data').attrs['ventral_side'] = ventral_side
-    return ventral_side
+def isGoodVentralOrient(skeletons_file, ventral_side=''):
+    return not isBadVentralOrient(skeletons_file, ventral_side=ventral_side)
 
-def _switch_cnt(skeletons_file):
-    with tables.File(skeletons_file, 'r+') as fid:
-        # since here we are changing all the contours, let's just change
-        # the name of the datasets
-        side1 = fid.get_node('/contour_side1')
-        side2 = fid.get_node('/contour_side2')
-
-        side1.rename('contour_side1_bkp')
-        side2.rename('contour_side1')
-        side1.rename('contour_side2')
-
-def switchCntSingleWorm(skeletons_file, ventral_side=''):
-    ventral_side = _add_ventral_side(skeletons_file, ventral_side)
-    isBadVentralOrient(skeletons_file) #this function switch the contour if it is neccessary
         
