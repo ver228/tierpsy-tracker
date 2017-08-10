@@ -65,7 +65,8 @@ def read_params(json_file=''):
                 raise ValueError('Parameter {} is not a valid parameter. Change its value in file {}'.format(key, self.json_file))
             
             if key in valid_options:
-                assert param_in_file[key] in valid_options[key]
+                if not param_in_file[key] in valid_options[key]:
+                    raise ValueError('Parameter {} is not in the list of valid options {}'.format(param_in_file[key],valid_options[key]))
 
     return input_param    
 

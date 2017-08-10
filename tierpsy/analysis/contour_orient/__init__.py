@@ -1,7 +1,7 @@
-from .correctVentralDorsal import switchCntSingleWorm, isGoodVentralOrient
+from .correctVentralDorsal import ventral_orient_decorator
 
 # from functools import partial
-#from .correctVentralDorsal import switchCntSingleWorm, is_valid_cnt_info, isGoodVentralOrient
+#from .correctVentralDorsal import switchCntSingleWorm, is_valid_cnt_info, isGoodVentralOrient, switchCntSingleWorm
 # def is_valid_cnt_info(skeletons_file='', ventral_side=''):
 #     ventral_side = _read_or_pass(skeletons_file, ventral_side)
     

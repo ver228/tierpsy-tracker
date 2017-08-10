@@ -5,16 +5,24 @@ import tables
 import warnings
 
 from tierpsy.analysis.ske_filt.getFilteredSkels import _h_calAreaSignedArray
-from tierpsy.helper.params import read_ventral_side
+from tierpsy.helper.params import read_ventral_side, single_db_ventral_side
+
 
 VALID_CNT = ['clockwise', 'anticlockwise', 'unknown']
 
 def _add_ventral_side(skeletons_file, ventral_side=''):
     #I am giving priority to a contour stored in experiments_info, rather than one read by the json file.
     #currently i am only using the experiments_info in the re-analysis of the old schafer database
-    ventral_side_f = read_ventral_side(skeletons_file)
+    try:
+        ventral_side_f = single_db_ventral_side(skeletons_file)
+    except (tables.exceptions.NoSuchNodeError, KeyError):
+        ventral_side_f = ''
+
     if ventral_side_f in VALID_CNT:
-        ventral_side = ventral_side_f
+        if not ventral_side or (ventral_side == ventral_side_f):
+            ventral_side = ventral_side_f
+        else:
+            raise ValueError('The given contour orientation ({}) and the orientation stored in /experiments_info group ({}) differ. Change /experiments_info or the parameters file to solve this issue.'.format(ventral_side, ventral_side_f) )
 
     #add ventral side if given
     if ventral_side in VALID_CNT:
@@ -34,6 +42,7 @@ def _switch_cnt(skeletons_file):
         side1.rename('contour_side2')
 
 def isBadVentralOrient(skeletons_file, ventral_side=''):
+    print(ventral_side)
     ventral_side = _add_ventral_side(skeletons_file, ventral_side) 
     if not ventral_side in VALID_CNT:
         return True
@@ -72,6 +81,17 @@ def isBadVentralOrient(skeletons_file, ventral_side=''):
 
 
     return is_bad
+
+def ventral_orient_decorator(func, skeletons_file, ventral_side):
+    #orient the ventral side before executing the code
+    def func_wrapper(*args, **argkws):
+        if isBadVentralOrient(skeletons_file, ventral_side):
+            raise ValueError('Cannot continue the ventral side {} given is empty or incorrect'.format(ventral_side))
+        return func(*args, **argkws)
+    return func_wrapper
+    
+
+
 
 def isGoodVentralOrient(skeletons_file, ventral_side=''):
     return not isBadVentralOrient(skeletons_file, ventral_side=ventral_side)

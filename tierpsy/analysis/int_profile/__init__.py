@@ -17,14 +17,15 @@ def args_(fn, param):
         }
 
     requirements = ['SKE_CREATE']
+    main_func = getIntensityProfile
+    
     if p['analysis_type'] == 'SINGLE_WORM_SHAFER':
-        from ..contour_orient import isGoodVentralOrient
-        from functools import partial
-        requirements += [('is_valid_contour', partial(isGoodVentralOrient, fn['skeletons'], param.p_dict['ventral_side']))]
-        
+        from ..contour_orient import ventral_orient_decorator
+        main_func = ventral_orient_decorator(main_func, fn['skeletons'], param.p_dict['ventral_side'])
+
     #arguments used by AnalysisPoints.py
     return {
-        'func': getIntensityProfile,
+        'func': main_func,
         'argkws': argkws_d,
         'input_files' : [fn['skeletons'],fn['masked_image']],
         'output_files': [fn['intensities'], fn['skeletons']],
