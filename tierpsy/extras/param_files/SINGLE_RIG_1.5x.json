@@ -1,0 +1,13 @@
+{
+    "analysis_type": "WORM",
+    "compression_buff": 25,
+    "dilation_size": 9,
+    "fps": 25.0,
+    "is_light_background": true,
+    "keep_border_data": false,
+    "max_area": 100000000,
+    "min_area": 50,
+    "thresh_C": 50,
+    "thresh_block_size": 61,
+    "microns_per_pixel": 12.0
+}
