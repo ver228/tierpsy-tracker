@@ -30,6 +30,7 @@ class BatchProcessing_GUI(QMainWindow):
         self.mask_files_dir = ''
         self.results_dir = ''
         self.videos_dir = ''
+        self.tmp_dir_root = ''
         self.analysis_checkpoints = []
 
         self.ui = Ui_BatchProcessing()
