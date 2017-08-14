@@ -41,7 +41,7 @@ def get_ffprobe_metadata(video_file):
         'error',
         '-show_frames',
         '-print_format',
-        'json',
+        'compact',
         video_file]
     
     base_name = video_file.rpartition('.')[0].rpartition(os.sep)[-1]
@@ -71,35 +71,52 @@ def get_ffprobe_metadata(video_file):
             buff_err.append(None)
 
 
-    buff = ''.join(buff)
-    #print(buff)
-    dat = json.loads(buff)
-
+    #the buff is in the shape
+    # frame|feat1=val1|feat2=val2|feat3=val3\n 
+    # I want to store each property as a vector
+    dat = [[d.split('=') for d in x.split('|')] for x in ''.join(buff).split('\n')]
+    
     # use the first frame as reference
-    frame_fields = list(dat['frames'][0].keys())
-
-    # consider data where the best_effort_timestamp was not calculated
-    valid_frames = [
-        x for x in dat['frames'] if all(
-            ff in x for ff in frame_fields)]
-
+    frame_fields = [x[0] for x in dat[0] if len(x) == 2]
+    
     # store data into numpy arrays
     video_metadata = OrderedDict()
-    for field in frame_fields:
-        video_metadata[field] = [frame[field] for frame in valid_frames]
-        
+    for row in dat:
+        row_fields = [x[0] for x in dat[0] if len(x) == 2]
+        for dd in row:
+            if (len(dd) != 2) or (not dd[0] in frame_fields):
+                continue
+            field, value = dd
 
-        try:  # if possible convert the data into float
-            video_metadata[field] = [float(dd) for dd in video_metadata[field]]
-        except (ValueError, TypeError):
-            # pytables does not support unicode strings (python3)
-            #the str before is to convert a possible dictionary into a string before converting it to bytes
-            video_metadata[field] = [bytes(str(dd), 'utf-8')
-                                     for dd in video_metadata[field]]
+            if not field in video_metadata:
+                video_metadata[field] = []
 
-        video_metadata[field] = np.asarray(video_metadata[field])
+            try:  # if possible convert the data into float
+                value = float(value)
+            except (ValueError, TypeError):
+                if value == 'N/A':
+                    value = np.nan
+                else:
+                    # pytables does not support unicode strings (python3)
+                    #the str before is to convert a possible dictionary into a string before converting it to bytes
+                    value = bytes(str(value), 'utf-8')
 
+            video_metadata[field].append(value)
+
+
+    #convert all the lists into numpy arrays
+    video_metadata = {field:np.asarray(values) for field,values in video_metadata.items()}
+    
+    #convert data into a recarray to store in pytables
     video_metadata = dict2recarray(video_metadata)
+
+    #sometimes the last frame throws a nan in the timestamp. I want to remove it
+    if np.isnan(video_metadata[-1]['best_effort_timestamp']):
+        video_metadata = video_metadata[:-1]
+
+    #if there is still nan's raise an error
+    if np.any(np.isnan(video_metadata['best_effort_timestamp'])):
+        raise ValueError('The timestamp contains nan values')
     return video_metadata
 
 
@@ -150,7 +167,6 @@ def get_timestamp(masked_file):
                   for row in mask_fid.get_node('/video_metadata/')]
 
             best_effort_timestamp, best_effort_timestamp_time = list(map(np.asarray, zip(*dd)))
-            
             assert best_effort_timestamp.size == best_effort_timestamp_time.size
             
             timestamp, timestamp_time = _correct_timestamp(best_effort_timestamp, best_effort_timestamp_time)
