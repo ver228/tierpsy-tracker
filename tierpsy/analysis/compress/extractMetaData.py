@@ -106,7 +106,7 @@ def get_ffprobe_metadata(video_file):
 def store_meta_data(video_file, masked_image_file):
     try:
         video_metadata = get_ffprobe_metadata(video_file)
-        if expected_frames == 0:  # nothing to do here. return a dum number of frames
+        if len(video_metadata) == 0:  # nothing to do here. return a dum number of frames
             raise ValueError('Metadata is empty.')
     except (json.decoder.JSONDecodeError, ValueError, FileNotFoundError):
             raise Exception('I could not extract the meta data. Set is_extract_timestamp to False in the json_file parameters file if you do not want to execute this step.')
