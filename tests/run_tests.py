@@ -78,7 +78,7 @@ class GECKO_VIDEOS(TestObj):
         '--pattern_include',
         '*.mjpg',
         '--json_file',
-        'filter_worms.json'
+        'MULTI_RIG.json'
         ]
         self.add_command(args)
 
@@ -115,7 +115,7 @@ class MANUAL_FEATS(TestObj):
         '--analysis_checkpoints',
         'FEAT_MANUAL_CREATE',
         "--json_file",
-        'filter_worms.json'
+        'MULTI_RIG.json'
         ]
         self.add_command(args)
 
@@ -139,7 +139,7 @@ class RIG_HDF5_VIDEOS(TestObj):
         '--pattern_include',
         '*.raw_hdf5',
         '--json_file',
-        'filter_worms.json'
+        'MULTI_RIG.json'
         ]
         self.add_command(args)
 
@@ -150,16 +150,6 @@ class SCHAFER_LAB_SINGLE_WORM(TestObj):
         self.description = "Schaffer's lab single worm tracker."
         super().__init__(*args)
 
-        original_param = os.path.join(tierpsy.DFLT_PARAMS_PATH, 'single_worm_on_food.json')
-        with open(original_param, 'r') as fid:
-            params_dict = json.load(fid)
-            params_dict['ventral_side'] = 'anticlockwise'
-
-        f_params = os.path.join(self.main_dir, 'params.json')
-        with open(f_params, 'w') as fid:
-            json.dump(params_dict, fid)
-
-
         args = [
         '--video_dir_root',
         self.raw_video_dir,
@@ -168,7 +158,7 @@ class SCHAFER_LAB_SINGLE_WORM(TestObj):
         '--results_dir_root',
         self.results_dir,
         '--json_file',
-        f_params,
+        'SINGLE_WORM_SHAFER_clockwise.json',
         '--pattern_include', 
         '*.avi',
         ]
@@ -189,7 +179,7 @@ class WORM_MOTEL(TestObj):
         '--results_dir_root',
         self.results_dir,
         '--json_file',
-        'worm_motel.json',
+        'MULTI_RIG_worm_motel',
         '--pattern_include', 
         '*.mjpg'
         ]
