@@ -8,6 +8,7 @@ Created on Thu Feb 11 22:01:59 2016
 import numpy as np
 import tables
 import pandas as pd
+import warnings
 
 from tierpsy.helper.params import read_fps
 from tierpsy.helper.misc import print_flush, get_base_name
@@ -65,21 +66,6 @@ def alignStageMotion(masked_file, skeletons_file):
     #%%
     fps = read_fps(skeletons_file)
     
-    with tables.File(skeletons_file, 'r+') as fid:
-        
-        # delete data from previous analysis if any
-        if '/stage_movement' in fid:
-            fid.remove_node('/stage_movement', recursive = True)
-        g_stage_movement = fid.create_group('/', 'stage_movement')
-        g_stage_movement._v_attrs['has_finished'] = 0
-        
-        video_timestamp_ind = fid.get_node('/timestamp/raw')[:]
-        
-        if np.any(np.isnan(video_timestamp_ind)):        
-            raise ValueError('The timestamp all NaN. It is corrupt or do not exist.')
-    
-        video_timestamp_ind = video_timestamp_ind.astype(np.int)
-        
     #%%
     # Open the information file and read the tracking delay time.
     # (help from segworm findStageMovement)
@@ -90,12 +76,16 @@ def alignStageMotion(masked_file, skeletons_file):
     with tables.File(masked_file, 'r') as fid:
         xml_info = fid.get_node('/xml_info').read().decode()
         g_mask = fid.get_node('/mask')
+
+        tot_frames = g_mask.shape[0]
         # Read the scale conversions, we would need this when we want to convert the pixels into microns
         pixelPerMicronX = 1/g_mask._v_attrs['pixels2microns_x']
         pixelPerMicronY = 1/g_mask._v_attrs['pixels2microns_y']
 
     with pd.HDFStore(masked_file, 'r') as fid:
         stage_log = fid['/stage_log']
+    
+
     
     #%this is not the cleaneast but matlab does not have a xml parser from
     #%text string
@@ -135,6 +125,26 @@ def alignStageMotion(masked_file, skeletons_file):
     mediaTimes = stage_log['stage_time'].values;
     locations = stage_log[['stage_x', 'stage_y']].values;
     
+
+    #ini stage movement fields
+    with tables.File(skeletons_file, 'r+') as fid:
+        # delete data from previous analysis if any
+        if '/stage_movement' in fid:
+            fid.remove_node('/stage_movement', recursive = True)
+        g_stage_movement = fid.create_group('/', 'stage_movement')
+        g_stage_movement._v_attrs['has_finished'] = 0
+        
+        #read and prepare timestamp
+        try:
+            video_timestamp_ind = fid.get_node('/timestamp/raw')[:]
+            if np.any(np.isnan(video_timestamp_ind)): 
+                raise ValueError()
+            else:
+                video_timestamp_ind = video_timestamp_ind.astype(np.int)
+        except(tables.exceptions.NoSuchNodeError, ValueError):
+            warnings.warn('It is corrupt or do not exist. I will assume no dropped frames and deduce it from the number of frames.')
+            video_timestamp_ind = np.arange(tot_frames, dtype=np.int)
+    
     #%% The shift makes everything a bit more complicated. I have to remove the first frame, before resizing the array considering the dropping frames.
     if video_timestamp_ind.size > frame_diffs_d.size + 1:
         #%i can tolerate one frame (two with respect to the frame_diff)
@@ -149,6 +159,8 @@ def alignStageMotion(masked_file, skeletons_file):
         
     frame_diffs = np.full(int(np.max(video_timestamp_ind)), np.nan);
     frame_diffs[dd] = frame_diffs_d;
+
+
     #%% save stage data into the skeletons.hdf5
     with tables.File(skeletons_file, 'r+') as fid:
         # I am saving this data before for debugging purposes
