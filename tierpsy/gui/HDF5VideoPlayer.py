@@ -123,7 +123,7 @@ class SimplePlayer(QtWidgets.QMainWindow):
         self.ui = ui
         self.isPlay = False
         self.image_group = None
-
+        self.frame_number = None
 
     def keyPressEvent(self, event):
         #HOT KEYS

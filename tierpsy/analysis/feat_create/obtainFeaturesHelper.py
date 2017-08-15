@@ -286,7 +286,7 @@ class WormFromTable(WormFromTableSimple):
         self.ventral_side = read_ventral_side(self.file_name)
         
         assert isGoodStageAligment(self.file_name)
-        self.stage_vec_inv = _h_get_stage_inv(self.file_name, self.timestamp)
+        self.stage_vec_inv, _ = _h_get_stage_inv(self.file_name, self.timestamp)
 
         #remove data where the stage is moving (the blurred image can induce artifacts)
         self.is_stage_move = np.isnan(self.stage_vec_inv[:,0])

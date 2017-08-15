@@ -57,7 +57,7 @@ def _h_get_stage_inv(skeletons_file, timestamp):
     stage_vec_inv = -np.dot(rotation_matrix_inv, stage_vec.T).T
 
 
-    return stage_vec_inv
+    return stage_vec_inv, ind_ff
 
 def alignStageMotion(masked_file, skeletons_file):
 
