@@ -144,10 +144,10 @@ class RIG_HDF5_VIDEOS(TestObj):
         self.add_command(args)
 
 
-class SCHAFER_LAB_SINGLE_WORM(TestObj):
+class WT2(TestObj):
     def __init__(self, *args):
-        self.name = 'SCHAFER_LAB_SINGLE_WORM'
-        self.description = "Schaffer's lab single worm tracker."
+        self.name = 'WT2'
+        self.description = "Worm Tracker 2.0 (Schafer's lab single worm)."
         super().__init__(*args)
 
         args = [
@@ -158,7 +158,7 @@ class SCHAFER_LAB_SINGLE_WORM(TestObj):
         '--results_dir_root',
         self.results_dir,
         '--json_file',
-        'SINGLE_WORM_SHAFER_clockwise.json',
+        'WT2_clockwise.json',
         '--pattern_include', 
         '*.avi',
         ]
@@ -205,7 +205,7 @@ if __name__ == '__main__':
                     AVI_VIDEOS, 
                     MANUAL_FEATS, 
                     RIG_HDF5_VIDEOS, 
-                    SCHAFER_LAB_SINGLE_WORM, 
+                    WT2, 
                     WORM_MOTEL
                     ]
     all_tests = [obj(examples_dir, script_dir) for obj in all_tests_obj]
