@@ -3,7 +3,7 @@
 # System Requirements 
 - Freshly installed [miniconda] (https://conda.io/miniconda.html) or at least setup up a new enviroment.
 - Optional [ffmpeg](https://ffmpeg.org/download.html): ffprobe must be accessible from the command line to calculate the video timestamps.
-- [C compiler compatible with cython] (http://cython.readthedocs.io/en/latest/src/quickstart/install.html). For Windows you can use [Visual C++ 2015 Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools). In OSX if you install [homebrew](https://brew.sh/) it will setup the C compiler without the need to download XCode from the appstore. 
+- [C compiler compatible with cython](http://cython.readthedocs.io/en/latest/src/quickstart/install.html). For Windows you can use [Visual C++ 2015 Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools). In OSX if you install [homebrew](https://brew.sh/) it will setup the C compiler without the need to download XCode from the appstore. 
 - [Git](https://git-scm.com/). [Here](https://gist.github.com/derhuerst/1b15ff4652a867391f03) are some instructions to install it.
 
 # Installation
@@ -33,9 +33,9 @@ installation/installation_script.bat #Windows
 ```
 
 ## Possible Issues
-- The most common problem in the installation is problems with OpenCV (error import cv2). Try a fresh installation of miniconda (or a fresh enviroment) and make sure your are using the [conda-forge](https://conda-forge.org/) packages. I am afraid you will have to solve the problem by yourself (Google is your friend).
+- The most common problem in the installation is OpenCV (error in import cv2). Try a fresh miniconda installation (or a fresh enviroment) and make sure your are using the [conda-forge](https://conda-forge.org/) packages. It this does not work I am afraid you would have to solve the problem by yourself (Google is your friend).
 
-- Other problem can be if you try to install the [Open Worm Analysis Toolbox](https://github.com/openworm/open-worm-analysis-toolbox) using pip. The installer is broken and it will create a corrupt [.egg](https://stackoverflow.com/questions/2051192/what-is-a-python-egg) in your packages folder. Manually delete the .egg and run installation_script.sh (use the error traceback to find the .egg location).
+- I known bug occurs if you install the [Open Worm Analysis Toolbox](https://github.com/openworm/open-worm-analysis-toolbox) using pip. The installer is broken and it will create a corrupt [.egg](https://stackoverflow.com/questions/2051192/what-is-a-python-egg) in your packages folder. Manually delete the .egg (use the error traceback to find the its location) and re-run `installation_script.sh`.
 
 
 # Test Examples
