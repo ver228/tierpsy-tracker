@@ -2,7 +2,7 @@
 Dictionary of the analysis points that will be executed for a given analysis_point.
 If the point is not in the dictionary the points used will be the ones in DEFAULT.
 '''
-valid_analysis_points = ['WORM', 'WORM_RIG', 'SINGLE_WORM_SHAFER', 'PHARYNX', 'ZEBRAFISH', 'MANUAL']
+valid_analysis_points = ['WORM', 'WORM_RIG', 'WT2', 'PHARYNX', 'ZEBRAFISH', 'MANUAL']
 
 dflt_analysis_points = {
     'DEFAULT':
@@ -37,7 +37,7 @@ dflt_analysis_points = {
     ],
 
 
-    'SINGLE_WORM_SHAFER' : 
+    'WT2' : 
     ['COMPRESS',
     'COMPRESS_ADD_DATA',
     'VID_SUBSAMPLE',
