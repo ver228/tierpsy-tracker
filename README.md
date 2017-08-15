@@ -10,3 +10,4 @@ Tierpsy Tracker is a multi-animal tracker developed in the [MRC-LMS](http://lms.
 ## [Installation Instructions](docs/INSTALLATION.md)
 ## [How to Use](docs/HOWTO.md)
 ## [Algorithm Explanation](docs/EXPLANATION.md)
+## [Output Files](docs/OUTPUTS.md)
