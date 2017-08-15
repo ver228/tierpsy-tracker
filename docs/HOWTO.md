@@ -62,6 +62,16 @@ Tierpsy Tracker will analyse of the video files that are present in `Original Vi
 
 Alternatively, one can create a text file with the list of files to be analysed (one file per line). The path to this file can then be set in `Individual File List`. 
 
+### Parameters Files
+Parameters files created using the [Set Parameters](#set-parameters) widget can be select in the `Parameter Files` box. You can also select some previously created files using the drop-down list. If no file is selected the [default values](https://github.com/ver228/tierpsy-tracker/blob/dev/tierpsy/helper/params/docs_tracker_param.py) will be used. 
+
+#### Worm Tracker 2.0 Option
+
+You can analyse videos created by the  [Worm Tracker 2.0](http://www.mrc-lmb.cam.ac.uk/wormtracker/) by selecting [WT2_clockwise.json](https://github.com/ver228/tierpsy-tracker/blob/development/tierpsy/extras/param_files/WT2_clockwise.json) or
+[WT2_anticlockwise.json](https://github.com/ver228/tierpsy-tracker/blob/development/tierpsy/extras/param_files/WT2_anticlockwise.json). Use the former if the ventral side in the videos is clockwise from the head, and the later if it is anticlockwise. You can either use the "Pattern include" option to select the files with a particular orientation or save different orientations in different folders. If you need to fine-tune the parameters you can either edit the .json files using a text editor or using `Set Parameters`.
+
+Note that each of the video files `.avi` must have a pair of files with the extensions `.info.xml` and `.log.csv`. Additionally, if the stage aligment step fails an error will be risen. If you do not want to see the error messages untick the option `Print debug information`.
+
 
 ### Analysis Progress 
 
@@ -70,15 +80,12 @@ Tierpsy Tracker will determine which analysis steps have already been completed 
 * To see only a summary of the files to be analysed without starting the analysis tick `Only Display Progress Summary`.
 
 * You can start or end the analysis at specific points by using the `Analysis Start Point` and `Analysis End Point` drop-down menus. 
-* If you want to re-analyse a file from an earlier step, delete or rename the output files that were created during the previous run. If you only want to overwrite a particular step, you have to delete the corresponding step in the `/provenance_tracking` node in the corresponding file. 
+* If you want to re-analyse a file from an earlier step, delete or rename the output files that were created during the previous run. If you only want to overwrite a particular step, you have to delete the corresponding step in the `/provenance_tracking` node in the corresponding file.
 
 ### Directory to Save the Output Files
 The masked videos created in the [compression step](EXPLANATION.md/#video-compression) are stored in `Masked Videos Dir`. The rest of the tracker results are stored in `Tracking Results Dir`. In both cases the subdirectory tree structure in `Original Videos Dir` is recreated. 
 
 The reason for creating the parallel directory structure is to make it easy to delete the analysis outputs to re-run with different parameter values.  It also makes it easy to delete the original videos to save space once you've arrived at good parameter values. If you prefer to have the output files in the same directory as the original videos you can set `Masked Videos Dir` and `Tracking Results Dir` to the same value.
-
-### Parameters Files
-Parameters files created using the [Set Parameters](#set-parameters) widget can be select in the `Parameter Files` box. You can also select some previously created files using the drop-down list. If no file is selected the [default values](https://github.com/ver228/tierpsy-tracker/blob/dev/tierpsy/helper/params/docs_tracker_param.py) will be used. 
 
 ### Temporary directory
 By default, Tierpsy Tracker creates files in the `Temporary Dir` and only moves them to the `Masked Videos Dir` or the `Tracking Results Dir` when the analysis has finished. The reasons to use a temporary directory are:
@@ -143,7 +150,6 @@ You can manually correct the trajectories as shown below. Once you have finished
 
 `Right key` : Decrease the frame by step size.
     
-## Single Worm Viewer
-This is simplified version of the [Tierpsy Tracker Viewer](#tierpsy-tracker-viewer) created specifically to view files created using [Worm Tracker 2.0](http://www.mrc-lmb.cam.ac.uk/wormtracker/) (the `SINGLE_WORM_SHAFER` case). It can be used as shown below.
-
+## Worm Tracker 2.0 Viewer
+This is simplified version of the [Tierpsy Tracker Viewer](#tierpsy-tracker-viewer) created specifically to view files created using [Worm Tracker 2.0](http://www.mrc-lmb.cam.ac.uk/wormtracker/) (the `WT2` case). [Above](worm-tracker-2.0-option) is described how to analyse this files.
 ![SWTrackerViewer](https://cloud.githubusercontent.com/assets/8364368/26412826/e608bfea-40a1-11e7-9d3e-d0b8bf482db2.gif) 
