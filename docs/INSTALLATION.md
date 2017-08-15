@@ -3,7 +3,7 @@
 # System Requirements 
 - Freshly installed [miniconda] (https://conda.io/miniconda.html) or at least setup up a new enviroment.
 - Optional [ffmpeg](https://ffmpeg.org/download.html): ffprobe must be accessible from the command line to calculate the video timestamps.
-- [C compiler compatible with cython](http://cython.readthedocs.io/en/latest/src/quickstart/install.html). For Windows you can use [Visual C++ 2015 Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools). In OSX if you install [homebrew](https://brew.sh/) it will setup the C compiler without the need to download XCode from the appstore. 
+- [C compiler compatible with cython](http://cython.readthedocs.io/en/latest/src/quickstart/install.html). In Windows, you can use [Visual C++ 2015 Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools). In OSX, if you install [homebrew](https://brew.sh/) it will setup the C compiler without the need to download XCode from the appstore. 
 - [Git](https://git-scm.com/). [Here](https://gist.github.com/derhuerst/1b15ff4652a867391f03) are some instructions to install it.
 
 # Installation
