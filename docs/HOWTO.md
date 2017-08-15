@@ -67,10 +67,10 @@ Parameters files created using the [Set Parameters](#set-parameters) widget can 
 
 #### Worm Tracker 2.0 Option
 
-You can analyse videos created by the  [Worm Tracker 2.0](http://www.mrc-lmb.cam.ac.uk/wormtracker/) by selecting [WT2_clockwise.json](https://github.com/ver228/tierpsy-tracker/blob/development/tierpsy/extras/param_files/WT2_clockwise.json) or
-[WT2_anticlockwise.json](https://github.com/ver228/tierpsy-tracker/blob/development/tierpsy/extras/param_files/WT2_anticlockwise.json). Use the former if the ventral side in the videos is clockwise from the head, and the later if it is anticlockwise. You can either use the "Pattern include" option to select the files with a particular orientation or save different orientations in different folders. If you need to fine-tune the parameters you can either edit the .json files using a text editor or using `Set Parameters`.
+You can analyse videos created by the [Worm Tracker 2.0](http://www.mrc-lmb.cam.ac.uk/wormtracker/) by selecting the parameters files [WT2_clockwise.json](https://github.com/ver228/tierpsy-tracker/blob/development/tierpsy/extras/param_files/WT2_clockwise.json) or
+[WT2_anticlockwise.json](https://github.com/ver228/tierpsy-tracker/blob/development/tierpsy/extras/param_files/WT2_anticlockwise.json). Use the former if the ventral side in the videos is located in the clockwise direction from the worm head, and the later if it is in the anticlockwise direction. To select a subset of files with a particular orientation you can save each subset in a different root directory or include the orientation information in the file name and use use the `Pattern include` option . If you need to fine-tune the parameters you can edit the .json files either with a text editor or with `Set Parameters`.
 
-Note that each of the video files `.avi` must have a pair of files with the extensions `.info.xml` and `.log.csv`. Additionally, if the stage aligment step fails an error will be risen. If you do not want to see the error messages untick the option `Print debug information`.
+Note that each of the video files `.avi` must have an additional pair of files with the extensions `.info.xml` and `.log.csv`. Additionally, keep in mind that if the stage aligment step fails, an error will be risen and the analysis of that video will be stopped. If you do not want to see the error messages untick the option `Print debug information`.
 
 
 ### Analysis Progress 
@@ -80,6 +80,7 @@ Tierpsy Tracker will determine which analysis steps have already been completed 
 * To see only a summary of the files to be analysed without starting the analysis tick `Only Display Progress Summary`.
 
 * You can start or end the analysis at specific points by using the `Analysis Start Point` and `Analysis End Point` drop-down menus. 
+
 * If you want to re-analyse a file from an earlier step, delete or rename the output files that were created during the previous run. If you only want to overwrite a particular step, you have to delete the corresponding step in the `/provenance_tracking` node in the corresponding file.
 
 ### Directory to Save the Output Files
@@ -151,6 +152,5 @@ You can manually correct the trajectories as shown below. Once you have finished
 `Right key` : Decrease the frame by step size.
     
 ## Worm Tracker 2.0 Viewer
-This is simplified version of the [Tierpsy Tracker Viewer](#tierpsy-tracker-viewer) created specifically to view files created using [Worm Tracker 2.0](http://www.mrc-lmb.cam.ac.uk/wormtracker/) (the `WT2` case). [Above](worm-tracker-20-option) is described how to analyse this type of files.
-
+This is simplified version of the [Tierpsy Tracker Viewer](#tierpsy-tracker-viewer) created specifically to view files created using [Worm Tracker 2.0](http://www.mrc-lmb.cam.ac.uk/wormtracker/) (the `WT2` case). [Above](#worm-tracker-20-option) is described how to analyse this type of files.
 ![SWTrackerViewer](https://cloud.githubusercontent.com/assets/8364368/26412826/e608bfea-40a1-11e7-9d3e-d0b8bf482db2.gif) 
