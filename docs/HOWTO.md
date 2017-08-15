@@ -153,4 +153,5 @@ You can manually correct the trajectories as shown below. Once you have finished
     
 ## Worm Tracker 2.0 Viewer
 This is simplified version of the [Tierpsy Tracker Viewer](#tierpsy-tracker-viewer) created specifically to view files created using [Worm Tracker 2.0](http://www.mrc-lmb.cam.ac.uk/wormtracker/) (the `WT2` case). [Above](#worm-tracker-20-option) is described how to analyse this type of files.
+
 ![SWTrackerViewer](https://cloud.githubusercontent.com/assets/8364368/26412826/e608bfea-40a1-11e7-9d3e-d0b8bf482db2.gif) 
