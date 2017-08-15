@@ -38,7 +38,7 @@ installation/installation_script.bat #Windows
 - Other problem can be if you try to install the [Open Worm Analysis Toolbox](https://github.com/openworm/open-worm-analysis-toolbox) using pip. The installer is broken and it will create a corrupt [.egg](https://stackoverflow.com/questions/2051192/what-is-a-python-egg) in your packages folder. Manually delete the .egg and run installation_script.sh (use the error traceback to find the .egg location).
 
 
-## Test Examples
+# Test Examples
 On Mac OSX or Linux, some test examples can be downloaded by running 
 
 ```bash
