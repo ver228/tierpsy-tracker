@@ -224,8 +224,6 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
                     if field in ske_file_id:
                         dat = ske_file_id.get_node(field)[skel_id]
                         dat = dat/self.microns_per_pixel - self.stage_position_pix[self.frame_number]
-
-                        print(dat)
                     else:
                         dat = np.full((1,2), np.nan)
 
