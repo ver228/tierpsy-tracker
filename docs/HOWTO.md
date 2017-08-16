@@ -6,7 +6,7 @@ After running the installation script in OSX or Windows there should be a clicka
 
 ```bash
 #(OSX/Linux)
-installation/installation_script.sh--link_desktop 
+installation/installation_script.sh --link_desktop 
 
 #(Windows)
 installation/installation_script.bat --link_desktop
