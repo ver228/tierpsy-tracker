@@ -1,8 +1,46 @@
 import tables
-import h5py
 import numpy as np
 import json
 import os
+
+def single_db_microns_per_pixel(file_name):
+    #this is used in the single worm case, but it would be deprecated. I want to use this argument when I read the data from original additional files
+    with tables.File(file_name, 'r') as fid:
+        microns_per_pixel_scale = fid.get_node('/stage_movement')._v_attrs['microns_per_pixel_scale']
+        if microns_per_pixel_scale.size == 2:
+            assert np.abs(
+                microns_per_pixel_scale[0]) == np.abs(
+                microns_per_pixel_scale[1])
+            microns_per_pixel = np.abs(microns_per_pixel_scale[0])
+    xy_units = 'micrometers'
+
+    return microns_per_pixel, xy_units
+
+
+def single_db_ventral_side(file_name):
+    #this for the shaffer's lab old database
+    with tables.File(file_name, 'r') as fid:
+        exp_info_b = fid.get_node('/experiment_info').read()
+        exp_info = json.loads(exp_info_b.decode("utf-8"))
+        ventral_side = exp_info['ventral_side']
+    return ventral_side
+
+
+def fps_from_timestamp(file_name):
+    #try to calculate the frames per second from the timestamp
+    with tables.File(file_name, 'r') as fid:
+        timestamp_time = fid.get_node('/timestamp/time')[:]
+        if np.all(np.isnan(timestamp_time)):
+            raise ValueError
+        fps = 1 / np.nanmedian(np.diff(timestamp_time))
+
+        if np.isnan(fps) or fps < 1:
+            raise ValueError
+
+        time_units = 'seconds'
+
+    return fps, time_units
+
 
 VALID_FIELDS = ['/mask', '/trajectories_data', '/features_timeseries']
 class AttrReader():
@@ -38,20 +76,9 @@ class AttrReader():
     def get_fps(self):
         expected_fps = self._read_attr('expected_fps', dflt=1)
         try:
+            fps, time_units = fps_from_timestamp(self.file_name)
 
-            #try to calculate the frames per second from the timestamp
-            with tables.File(self.file_name, 'r') as fid:
-                timestamp_time = fid.get_node('/timestamp/time')[:]
-                if np.all(np.isnan(timestamp_time)):
-                    raise ValueError
-                fps = 1 / np.nanmedian(np.diff(timestamp_time))
-
-                if np.isnan(fps) or fps < 1:
-                    raise ValueError
-
-                time_units = 'seconds'
-
-        except:# (tables.exceptions.NoSuchNodeError, IOError, ValueError):
+        except (tables.exceptions.NoSuchNodeError, IOError, ValueError, KeyError):
             fps = self._read_attr('fps', dflt=-1)
             if fps < 0:
                 #read the user defined timestamp
@@ -91,17 +118,8 @@ class AttrReader():
 
     def get_microns_per_pixel(self):
         try:
-            #this for the shaffer's lab single worm case...
-            with tables.File(self.file_name, 'r') as fid:
-                microns_per_pixel_scale = fid.get_node('/stage_movement')._v_attrs['microns_per_pixel_scale']
-                if microns_per_pixel_scale.size == 2:
-                    assert np.abs(
-                        microns_per_pixel_scale[0]) == np.abs(
-                        microns_per_pixel_scale[1])
-                    microns_per_pixel = np.abs(microns_per_pixel_scale[0])
-            xy_units = 'micrometers'
-
-        except (KeyError, tables.exceptions.NoSuchNodeError):
+            microns_per_pixel, xy_units = single_db_microns_per_pixel(self.file_name)
+        except (tables.exceptions.NoSuchNodeError, IOError, ValueError, KeyError):
             microns_per_pixel = self._read_attr('microns_per_pixel', dflt = 1)
             xy_units = self._read_attr('xy_units', dflt = None)
             if xy_units is None:
@@ -132,23 +150,28 @@ class AttrReader():
             self.get_microns_per_pixel()
             return self._xy_units
 
-    def get_ventral_side(self):
+    @property
+    def ventral_side(self):
         try:
-
-            with tables.File(self.file_name, 'r') as fid:
-                exp_info_b = fid.get_node('/experiment_info').read()
-                exp_info = json.loads(exp_info_b.decode("utf-8"))
-                ventral_side = exp_info['ventral_side']
-        
+            return self._ventral_side
         except:
-            ventral_side = self._read_attr('ventral_side', dflt = "")
-        
-        return ventral_side
+            try:
+                ventral_side = single_db_ventral_side(self.file_name)
+            except:
+                ventral_side = self._read_attr('ventral_side', dflt = "")
+            
+            self._ventral_side = ventral_side
+            return self._ventral_side
 
 
 def read_ventral_side(fname):
+
+    #I am giving priority to a contour stored in experiments_info, rather than one read by the json file.
+    #currently i am only using the experiments_info in the re-analysis of the old schafer database
     reader = AttrReader(fname)
-    return reader.get_ventral_side()
+    ventral_side = reader.ventral_side
+    print(ventral_side)
+    return ventral_side
     
 def read_fps(fname, dflt=1):
     assert isinstance(fname, str)
@@ -192,13 +215,7 @@ def copy_unit_conversions(group_to_save, original_file, dflt=1):
 
 def set_unit_conversions(group_to_save, expected_fps=None, microns_per_pixel=None, is_light_background=1):
 
-    #this is a not so pretty hack to be able to deal with h5py library that the compressVideo file uses
-    if isinstance(group_to_save, h5py._hl.dataset.Dataset):
-        attr_writer = getattr(group_to_save, 'attrs')
-    else:
-        attr_writer = getattr(group_to_save, '_v_attrs')
-
-
+    attr_writer = getattr(group_to_save, '_v_attrs')
     # save some data used in the calculation as attributes
     if microns_per_pixel is None or microns_per_pixel<=0:
         attr_writer['microns_per_pixel'] = 1

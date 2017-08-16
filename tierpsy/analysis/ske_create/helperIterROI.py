@@ -122,7 +122,7 @@ def generateMoviesROI(masked_file,
         progress_time = TimeCounter(progress_prefix, max(frames))
         
         fps = read_fps(masked_file, dflt=25)
-        progress_refresh_rate = fps*progress_refresh_rate_s
+        progress_refresh_rate = int(round(fps*progress_refresh_rate_s))
 
         for ii, (current_frame, img) in enumerate(img_generator):
             frame_data = traj_group_by_frame.get_group(current_frame)

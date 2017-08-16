@@ -24,3 +24,5 @@ hiddenimports=['h5py.defs', 'h5py.utils', 'h5py.h5ac', 'h5py._proxy',
 
 * I recieve an error of a missing package 'future'. Just use:
 	conda install futures
+
+* OSX the ffprobe of conda has relative links to the libraries and it is complicated to include in the binary. It is better to use the one of homebrew.

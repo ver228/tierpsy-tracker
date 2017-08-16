@@ -7,7 +7,7 @@ Created on Wed May 18 18:22:12 2016
 import os
 
 import cv2
-import h5py
+import tables
 import numpy as np
 
 from tierpsy.helper.params import read_fps
@@ -21,22 +21,19 @@ def getSubSampleVidName(masked_image_file):
 
 def _getCorrectedTimeVec(fid, tot_frames):
     '''time vector used to account for missing frames'''
-    if '/timestamp/raw' in fid:
-        timestamp_ind = fid['/timestamp/raw'][:]
-    else:
-        #if there is not valid timestamp field considered that there are not missing frames
-        return np.arange(tot_frames)
-    
-    #remove any nan, I notice that sometimes the last number is a nan
-    timestamp_ind = timestamp_ind[~np.isnan(timestamp_ind)]
-    if timestamp_ind.size < tot_frames-1: #invalid timestamp
-        #if there is not valid frames skip
-        return np.arange(tot_frames)
+    try:
+        timestamp_ind = fid.get_node('/timestamp/raw')[:]
+        #remove any nan, I notice that sometimes the last number is a nan
+        timestamp_ind = timestamp_ind[~np.isnan(timestamp_ind)]
+        tot_timestamps = int(timestamp_ind[-1])
 
+        if timestamp_ind.size < tot_frames-1 or tot_timestamps < tot_frames-1: #invalid timestamp
+            #if there is not valid frames skip
+            raise ValueError
 
-    tot_timestamps = int(timestamp_ind[-1])
-    
-    #%%
+    except (tables.exceptions.NoSuchNodeError, ValueError, IndexError):
+        return np.arange(tot_frames)
+        
     #make sure to compensate for missing frames, so the video will have similar length.
     tt_vec = np.full(tot_timestamps+1, np.nan)
     current_frame = 0
@@ -65,8 +62,8 @@ def createSampleVideo(masked_image_file,
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
     progressTime = TimeCounter('{} Generating subsampled video.'.format(base_name))
     
-    with h5py.File(masked_image_file, 'r') as fid:
-        masks = fid['/mask']
+    with tables.File(masked_image_file, 'r') as fid:
+        masks = fid.get_node('/mask')
         tot_frames, im_h, im_w = masks.shape
         im_h, im_w = im_h//size_factor, im_w//size_factor
         
@@ -80,7 +77,7 @@ def createSampleVideo(masked_image_file,
         assert vid_writer.isOpened()
         
         for frame_number in range(0, tot_frames, int(time_factor*skip_factor)):
-            current_frame = tt_vec[frame_number]
+            current_frame = int(tt_vec[frame_number])
             img = masks[current_frame]
             im_new = cv2.resize(img, (im_w,im_h))
             vid_writer.write(im_new)

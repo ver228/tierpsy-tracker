@@ -1,5 +1,5 @@
 {
-    "analysis_type": "WORM",
+    "analysis_type": "WORM_RIG",
     "compression_buff": 25,
     "dilation_size": 9,
     "expected_fps": 25,

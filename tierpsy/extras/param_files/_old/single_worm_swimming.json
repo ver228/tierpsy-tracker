@@ -1,6 +1,6 @@
 {"thresh_block_size": 61, 
 "thresh_C": 15, 
-"dilation_size": 10, 
+"dilation_size": 30, 
 "min_area": 100, 
 "resampling_N": 49, 
 "expected_fps": 30.0, 
@@ -8,8 +8,10 @@
 "is_extract_metadata": true,
 "keep_border_data": true, 
 "compression_buff": 1, 
-"worm_bw_thresh_factor":1.0, 
+"max_gap_allowed_block":3, 
+"worm_bw_thresh_factor":1.10, 
 "strel_size":10, 
+"int_max_gap_allowed_block":0, 
 "int_save_maps": true, 
 "filt_min_displacement":0,
-"analysis_type" : "SINGLE_WORM_SHAFER"}
+"analysis_type" : "WT2"}

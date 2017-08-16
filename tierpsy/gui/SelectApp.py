@@ -4,9 +4,7 @@ from collections import OrderedDict
 
 from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow, QPushButton, QVBoxLayout
 from PyQt5.QtCore import Qt
-#from PyQt5 import QtCore, QtGui, QtWidgets
 
-#from tierpsy.gui.SelectApp_ui import Ui_SelectApp
 import tierpsy
 from tierpsy.gui.GetMaskParams import GetMaskParams_GUI
 from tierpsy.gui.MWTrackerViewer import MWTrackerViewer_GUI
@@ -17,7 +15,7 @@ from tierpsy.gui.BatchProcessing import BatchProcessing_GUI
 dd = [('get_params', (GetMaskParams_GUI,"Set Parameters")),
     ('batch_processing', (BatchProcessing_GUI,"Batch Processing Multiple Files")),
     ('mwtracker', (MWTrackerViewer_GUI, "Tierpsy Tracker Viewer")),
-    ('swtracker', (SWTrackerViewer_GUI, "Single Worm Viewer"))
+    ('swtracker', (SWTrackerViewer_GUI, "Worm Tracker 2.0 Viewer"))
     ]
 widget_lists = OrderedDict(dd)
 

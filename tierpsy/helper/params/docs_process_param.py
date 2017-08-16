@@ -3,7 +3,16 @@ List of default values and description of the tierpsy.processing.progressMultipl
 '''
 
 import os
+from tierpsy import IS_FROZEN
 from .helper import repack_dflt_list
+
+#get 90% of the number of cores as the default max_num_process 
+import multiprocessing as mp
+_max_num_process = max(1, int(mp.cpu_count()*0.9)) 
+
+#set this to false if it is a compiled version (we do not want to scare the users with the traceback information)
+_is_debug = not IS_FROZEN
+
 
 dflt_args_list = [
     ('video_dir_root', 
@@ -42,7 +51,7 @@ dflt_args_list = [
         'File (.json) containing the tracking parameters.'
         ),
     ('max_num_process',
-        6,
+        _max_num_process,
         'Maximum number of files to be processed simultaneously.'
         ),
 
@@ -87,6 +96,11 @@ dflt_args_list = [
     ('refresh_time',
         10.,
         'Refresh time in seconds of the progress screen.'
+        ),
+    
+    ('is_debug',
+        _is_debug,
+        'Print debug information after an error.'
         ),
 
     ]

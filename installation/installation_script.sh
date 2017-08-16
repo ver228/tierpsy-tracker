@@ -285,28 +285,13 @@ function link_desktop {
 
 
 function exec_all {
-	##########
-	case "${OS}" in
-		"Darwin")
-		osx_dependencies || :
-		;;
-		
-	esac
-
-	if [[ $1 == 'brew' ]]; then
-		brew_python
-	else
-		get_anaconda
-	fi
-
-	compile_cython
 	setup_modules
 	link_desktop
 }
 
 
 case $1 in
-	""|"--all")
+	"")
 	exec_all
 	;;
 	"--compile_cython")
@@ -321,14 +306,11 @@ case $1 in
 	"--link_desktop")
 	link_desktop
 	;;
-	"--download_examples")
+	"--tests"|"--download_examples")
 	download_examples
 	;;
 	"--opencv")
 	opencv_anaconda
-	;;
-	"--tests")
-	download_examples
 	;;
 	"--linux_dependencies")
 	linux_dependencies

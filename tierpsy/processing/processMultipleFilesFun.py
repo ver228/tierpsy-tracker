@@ -7,15 +7,14 @@ Created on Tue Aug  9 00:26:10 2016
 import os
 import argparse
 
-from tierpsy.helper.params import TrackerParams
-from tierpsy.helper.misc import RunMultiCMD
-from tierpsy.helper.params.docs_process_param import dflt_args_list, process_valid_options
-
 from tierpsy.processing.CheckFilesForProcessing import CheckFilesForProcessing
 from tierpsy.processing.ProcessLocal import ProcessLocalParser
 from tierpsy.processing.helper import get_dflt_sequence, find_valid_files, \
 remove_border_checkpoints, get_results_dir, get_masks_dir 
+from tierpsy.processing.run_multi_cmd import RunMultiCMD
 
+from tierpsy.helper.params import TrackerParams
+from tierpsy.helper.params.docs_process_param import dflt_args_list, process_valid_options
 
 class ProcessMultipleFilesParser(argparse.ArgumentParser):
     def __init__(self):
@@ -57,7 +56,9 @@ def processMultipleFilesFun(
         is_copy_video=False,
         analysis_checkpoints=[],
         unmet_requirements = False,
-        copy_unfinished = False):
+        copy_unfinished = False,
+        is_debug = True
+        ):
 
     assert video_dir_root or mask_dir_root
     
@@ -79,7 +80,7 @@ def processMultipleFilesFun(
       analysis_checkpoints = get_dflt_sequence(param.p_dict['analysis_type'])
     
     
-    if os.name == 'nt':
+    if os.name == 'nt' or 'm4v' in pattern_include:
         # This is giving problems in windows, specially while frozen. It shouldn't affect too much since it only speed up the check up of the files progress
         is_parallel_check = False
     else:
@@ -112,7 +113,7 @@ def processMultipleFilesFun(
             
     files_checker = CheckFilesForProcessing(**check_args)
 
-    cmd_list = files_checker.filterFiles(valid_files, print_cmd=True)
+    cmd_list = files_checker.filterFiles(valid_files, print_cmd=is_debug)
     
     if unmet_requirements:
          files_checker._printUnmetReq()
@@ -121,4 +122,5 @@ def processMultipleFilesFun(
             cmd_list,
             local_obj = ProcessLocalParser,
             max_num_process = max_num_process,
-            refresh_time = refresh_time)
+            refresh_time = refresh_time,
+            is_debug = is_debug)

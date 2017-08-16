@@ -4,6 +4,7 @@ import numpy as np
 import tables
 import os
 import pandas as pd
+from functools import partial
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QPen
@@ -11,7 +12,7 @@ from PyQt5.QtWidgets import QApplication
 from tierpsy.gui.SWTrackerViewer_ui import Ui_SWTrackerViewer
 from tierpsy.gui.TrackerViewerAux import TrackerViewerAuxGUI
 from tierpsy.analysis.int_ske_orient.correctHeadTailIntensity import createBlocks, _fuseOverlapingGroups
-
+from tierpsy.helper.params import read_microns_per_pixel
 
 class EggWriter():
     def __init__(self):
@@ -67,10 +68,13 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
         self.skel_block = []
         self.skel_block_n = 0
         self.is_stage_move = []
+        self.is_feat_file = False
+
+        self.microns_per_pixels = None
+        self.stage_position_pix = None
 
         self.ui.spinBox_skelBlock.valueChanged.connect(self.changeSkelBlock)
         self.ui.checkBox_showLabel.stateChanged.connect(self.updateImage)
-        
 
         if mask_file:
             self.vfilename = mask_file
@@ -78,6 +82,10 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
         self.egg_writer = EggWriter()
     
+    def updateVideoFile(self, vfilename):
+        super().updateVideoFile(vfilename, possible_ext = ['_features.hdf5', '_skeletons.hdf5'])
+        self.updateImage()
+
     # change frame number using the keys
     def keyPressEvent(self, event):
         # go the previous block
@@ -99,14 +107,34 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
             self.egg_writer.tag_bad()
         super().keyPressEvent(event)
 
-    def updateSkelFile(self, skel_file):
+    def updateSkelFile(self, skel_file, dflt_skel_size = 10):
         super().updateSkelFile(skel_file)
-        try:
+        
+        self.ui.spinBox_skelBlock.setMaximum(max(len(self.skel_block) - 1, 0))
+        self.ui.spinBox_skelBlock.setMinimum(0)
 
-            with tables.File(self.skeletons_file, 'r') as fid:
-                if '/provenance_tracking/int_ske_orient' in fid:
-                    prov_str = fid.get_node(
-                        '/provenance_tracking/int_ske_orient').read()
+        if self.skel_block_n != 0:
+            self.skel_block_n = 0
+            self.ui.spinBox_skelBlock.setValue(0)
+        else:
+            self.changeSkelBlock(0)
+
+
+        self.skel_block = []
+        self.is_stage_move = []
+        self.stage_position_pix = None
+        self.is_feat_file = False
+
+        VALID_ERRORS = (IOError, KeyError, tables.exceptions.HDF5ExtError, tables.exceptions.NoSuchNodeError)
+        #try to read the information from the features file if possible
+        if not self.trajectories_data is None:
+            try:
+                
+                with tables.File(self.skeletons_file, 'r') as fid:
+                    self.stage_position_pix = fid.get_node('/stage_movement/stage_vec')[:]
+
+                    #only used for skeletons, and to test the head/tail orientation. I leave it but probably should be removed for in the future
+                    prov_str = fid.get_node('/provenance_tracking/INT_SKE_ORIENT').read()
                     func_arg_str = json.loads(
                         prov_str.decode("utf-8"))['func_arguments']
                     gap_size = json.loads(func_arg_str)['gap_size']
@@ -116,24 +144,53 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
                     if len(has_skel_group) > 0:
                         self.skel_block = _fuseOverlapingGroups(
                             has_skel_group, gap_size=gap_size)
-
-                if '/stage_movement/stage_vec' in fid:
-                    self.is_stage_move = np.isnan(
-                        fid.get_node('/stage_movement/stage_vec')[:, 0])
-                else:
-                    self.is_stage_move = []
-
-        except IOError:
-            self.skel_block = []
-
-        self.ui.spinBox_skelBlock.setMaximum(max(len(self.skel_block) - 1, 0))
-        self.ui.spinBox_skelBlock.setMinimum(0)
-
-        if self.skel_block_n != 0:
-            self.skel_block_n = 0
-            self.ui.spinBox_skelBlock.setValue(0)
+                
+            except VALID_ERRORS:
+                pass
         else:
-            self.changeSkelBlock(0)
+            try:
+
+                #load skeletons from _features.hdf5 
+                if '/stage_position_pix' in self.fid:
+                    self.stage_position_pix = self.fid.get_node('/stage_position_pix')[:]
+                else:
+                    n_frames = self.fid.get_node('/mask').shape[0]
+                    self.stage_position_pix = np.full((n_frames,2), np.nan)
+                
+                timestamp = self.fid.get_node('/timestamp/raw')[:]
+                self.microns_per_pixel = read_microns_per_pixel(self.skeletons_file)
+                
+                with pd.HDFStore(self.skeletons_file, 'r') as ske_file_id:
+                    #this could be better so I do not have to load everything into memory, but this is faster
+                    self.trajectories_data = ske_file_id['/features_timeseries']
+                    
+                    if self.trajectories_data['worm_index'].unique().size !=1:
+                        raise ValueError("There is more than one worm index. This file does not seem to have been analyzed with the WT2 option.")
+
+                    good = self.trajectories_data['timestamp'].isin(timestamp)
+                    self.trajectories_data = self.trajectories_data[good]
+                    self.trajectories_data.sort_values(by='timestamp', inplace=True)
+                    
+                    if np.any(self.trajectories_data['timestamp'] < 0) or np.any(self.trajectories_data['timestamp'].isnull()):
+                        raise ValueError('There are invalid values in the timestamp. I cannot get the stage movement information.')
+
+                    first_frame = np.where(timestamp==self.trajectories_data['timestamp'].min())[0][0]
+                    last_frame = np.where(timestamp==self.trajectories_data['timestamp'].max())[0][0]
+
+                    self.trajectories_data['frame_number'] = np.arange(first_frame, last_frame+1, dtype=np.int)
+                    self.trajectories_data['skeleton_id'] = self.trajectories_data.index
+                    self.traj_time_grouped = self.trajectories_data.groupby('frame_number')
+
+                self.is_feat_file = True
+
+            except VALID_ERRORS:
+                self.trajectories_data = None
+                self.traj_time_grouped = None
+                self.is_feat_file = False
+
+            if self.stage_position_pix is not None:
+                self.is_stage_move = np.isnan(self.stage_position_pix[:, 0])
+        self.updateImage()
 
     def drawSkelSingleWorm(self):
         frame_data = self.getFrameData(self.frame_number)
@@ -147,9 +204,34 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
             return
 
         isDrawSkel = self.ui.checkBox_showLabel.isChecked()
-        self.frame_qimg = self.drawSkelResult(self.frame_img,
-                    self.frame_qimg,
-                    row_data, isDrawSkel)
+        skel_id = int(row_data['skeleton_id'])
+
+        if not isDrawSkel or skel_id < 0:
+            return self.frame_qimg
+
+        elif self.is_feat_file:
+            #read skeletons from the features file
+            with tables.File(self.skeletons_file, 'r') as ske_file_id:
+                fields = {
+                    'dorsal_contours':'contour_side1', 
+                    'skeletons':'skeleton', 
+                    'ventral_contours':'contour_side2'
+                }
+
+                skel_dat = {}
+                for ff, tt in fields.items():
+                    field = '/coordinates/' + ff
+                    if field in ske_file_id:
+                        dat = ske_file_id.get_node(field)[skel_id]
+                        dat = dat/self.microns_per_pixel - self.stage_position_pix[self.frame_number]
+                    else:
+                        dat = np.full((1,2), np.nan)
+
+                    skel_dat[tt] = dat
+            super()._drawSkel(self.frame_qimg, skel_dat)
+
+        else:
+            self.frame_qimg = self.drawSkelResult(self.frame_img, self.frame_qimg, row_data, isDrawSkel)
 
         return self.frame_qimg
 

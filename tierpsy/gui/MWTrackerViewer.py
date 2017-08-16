@@ -19,7 +19,7 @@ from tierpsy.gui.MWTrackerViewer_ui import Ui_MWTrackerViewer
 from tierpsy.gui.TrackerViewerAux import TrackerViewerAuxGUI
 
 from tierpsy.helper.misc import WLAB, save_modified_table
-from tierpsy.helper.params import TrackerParams, read_fps
+from tierpsy.helper.params import TrackerParams, read_fps, read_microns_per_pixel
 
 from tierpsy.processing.trackProvenance import getGitCommitHash, execThisPoint
 
@@ -39,6 +39,8 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         self.lastKey = ''
         self.traj_for_plot = {}
 
+        self.food_coordinates = None
+
         self.worm_index_roi1 = 1
         self.worm_index_roi2 = 1
 
@@ -56,7 +58,9 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         self.worm_index_type = 'worm_index_manual'
         self.label_type = 'worm_label'
         self.frame_data = None
+        self.mean_intensity = None
 
+        self.ui.intensity_label.setStyleSheet('') #avoid displaying color at the start of the programı
 
         self.ui.comboBox_ROI1.activated.connect(self.selectROI1)
         self.ui.comboBox_ROI2.activated.connect(self.selectROI2)
@@ -68,7 +72,10 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         self.ui.comboBox_labelType.currentIndexChanged.connect(
             self.selectWormIndexType)
 
-        
+        self.ui.checkBox_showFood.stateChanged.connect(self.updateImage)
+        self.ui.checkBox_showFood.setEnabled(False)
+        self.ui.checkBox_showFood.setChecked(True)
+
 
         # flags for RW and FF
         self.RW, self.FF = 1, 2
@@ -119,8 +126,11 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
         
         #This part is broken I think I will remove it from here, and force the user to use BatchProcessing
+        
         self.ui.pushButton_feats.hide() 
         #self.ui.pushButton_feats.clicked.connect(self.getManualFeatures)
+
+
 
 
     def keyPressEvent(self, event):
@@ -172,29 +182,7 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         progress_dialog.setAttribute(Qt.WA_DeleteOnClose)
         progress_dialog.exec_()
 
-    def selectWormIndexType(self):
-        # select between automatic and manual worm indexing and label
-        if self.ui.comboBox_labelType.currentIndex() == 0:
-            self.label_type = 'worm_label'
-            self.worm_index_type = 'worm_index_manual'
-            self.ui.pushButton_U.setEnabled(True)
-            self.ui.pushButton_W.setEnabled(True)
-            self.ui.pushButton_WS.setEnabled(True)
-            self.ui.pushButton_B.setEnabled(True)
-            self.ui.pushButton_join.setEnabled(True)
-            self.ui.pushButton_split.setEnabled(True)
-
-        else:
-            self.label_type = 'auto_label'
-            self.worm_index_type = 'worm_index_auto'
-            self.ui.pushButton_U.setEnabled(False)
-            self.ui.pushButton_W.setEnabled(False)
-            self.ui.pushButton_WS.setEnabled(False)
-            self.ui.pushButton_B.setEnabled(False)
-            self.ui.pushButton_join.setEnabled(False)
-            self.ui.pushButton_split.setEnabled(False)
-
-        self.updateImage()
+    
 
     def saveData(self):
         '''save data from manual labelling. pytables saving format is more convenient than pandas'''
@@ -212,11 +200,52 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
         self.updateSkelFile(self.skeletons_file)
 
+    def updateVideoFile(self, vfilename):
+        super().updateVideoFile(vfilename)
+        
+        if self.fid is not None:
+            #get mean intensity information.
+            #Useful for the optogenetic experiments. 
+            try:
+                mean_int = self.fid.get_node('/mean_intensity')[:]
+                
+                #calculate the intensity range and normalize the data. 
+                #I am ignoring any value less than 1. The viewer only works with uint8 data.
+                
+                dd = mean_int[mean_int>=1] 
+                if dd.size == 0:
+                    raise ValueError
+
+                bot = np.min(dd)
+                top = np.max(dd)
+                rr = top-bot
+
+                # if the mean value change is less than 1 (likely continous image do nothing)
+                if rr <= 1:
+                    raise ValueError
+
+                self.mean_intensity = (mean_int-bot)/(rr)
+
+            except (tables.exceptions.NoSuchNodeError, ValueError):
+                self.mean_intensity = None
+                self.ui.intensity_label.setStyleSheet('')
+        
+        self.updateImage()
+
     def updateSkelFile(self, skeletons_file):
         super().updateSkelFile(skeletons_file)
         
         if not self.skeletons_file or self.trajectories_data is None:
+            self.food_coordinates = None
             return
+
+        with tables.File(self.skeletons_file, 'r') as fid:
+            if not '/food_cnt_coord' in fid:
+                self.food_coordinates = None
+                self.ui.checkBox_showFood.setEnabled(False)
+            else:
+                self.food_coordinates = fid.get_node('/food_cnt_coord')[:]
+                self.ui.checkBox_showFood.setEnabled(True)
 
         #correct the index in case it was given before as worm_index_N
         if 'worm_index_N' in self.trajectories_data:
@@ -227,6 +256,8 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
             self.trajectories_data['worm_label'] = self.wlab['U']
             self.trajectories_data['worm_index_manual'] = self.trajectories_data[
                 'worm_index_joined']
+        
+        self.updateWormIndexTypeMenu()
         
         #read filter skeletons parameters
         with tables.File(self.skeletons_file, 'r') as skel_fid:
@@ -248,16 +279,59 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
         self.expected_fps = read_fps(self.vfilename)
         
-
         #TODO: THIS IS NOT REALLY THE INDEX I USE IN THE FEATURES FILES. I NEED A MORE CLEVER WAY TO SEE WHAT I AM REALLY FILTERING.
         dd = {x:self.feat_filt_param[x] for x in ['min_num_skel', 'bad_seg_thresh', 'min_displacement']}
-        good_traj_index, _ = getValidIndexes(self.skeletons_file, **dd)
+        good_traj_index, _ = getValidIndexes(self.trajectories_data, **dd, worm_index_type=self.worm_index_type)
         self.trajectories_data['is_valid_index'] = self.trajectories_data[self.worm_index_type].isin(good_traj_index)
         
         self.traj_time_grouped = self.trajectories_data.groupby('frame_number')
 
         self.traj_for_plot = {} #delete previous plotted trajectories
         self.updateImage()
+
+    def updateWormIndexTypeMenu(self):
+        possible_indexes = [x.replace('worm_index_', '') for x in self.trajectories_data.columns if x.startswith('worm_index_')]
+        assert len(set(possible_indexes)) == len(possible_indexes) #all indexes ending must be different
+        
+        menu_names = sorted([x + ' index' for x in possible_indexes])
+        self.ui.comboBox_labelType.clear()
+        self.ui.comboBox_labelType.addItems(menu_names)
+        if 'manual' in possible_indexes:
+            dd = self.ui.comboBox_labelType.findText('manual index')
+            self.ui.comboBox_labelType.setCurrentIndex(dd);
+
+        self.selectWormIndexType()
+
+    def selectWormIndexType(self):
+        index_option = self.ui.comboBox_labelType.currentText()
+        
+        if not index_option:
+            return
+        assert index_option.endswith(' index')
+        self.worm_index_type = 'worm_index_' + index_option.replace(' index', '')
+        
+
+        # select between automatic and manual worm indexing and label
+        if self.worm_index_type == 'worm_index_manual':
+            self.label_type = 'worm_label'
+            self.ui.pushButton_U.setEnabled(True)
+            self.ui.pushButton_W.setEnabled(True)
+            self.ui.pushButton_WS.setEnabled(True)
+            self.ui.pushButton_B.setEnabled(True)
+            self.ui.pushButton_join.setEnabled(True)
+            self.ui.pushButton_split.setEnabled(True)
+
+        else:
+            self.label_type = 'auto_label'
+            self.ui.pushButton_U.setEnabled(False)
+            self.ui.pushButton_W.setEnabled(False)
+            self.ui.pushButton_WS.setEnabled(False)
+            self.ui.pushButton_B.setEnabled(False)
+            self.ui.pushButton_join.setEnabled(False)
+            self.ui.pushButton_split.setEnabled(False)
+
+        self.updateImage()
+
 
     # update image
     def updateImage(self):
@@ -270,28 +344,63 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
         # read the data of the particles that exists in the frame
         self.frame_data = self.getFrameData(self.frame_number)
-
-
+            
         #draw extra info only if the worm_index_type is valid
         if self.frame_data is not None and \
-        self.frame_data.size > 0 and \
         self.worm_index_type in self.frame_data:
+            #filter any -1 index
+            self.frame_data = self.frame_data[self.frame_data[self.worm_index_type]>=0]
+            if self.frame_data.size > 0:
+                self._draw_worm_markers(self.frame_qimg)
+                self._draw_food_contour(self.frame_qimg)
 
-            self.drawWormMarkers(self.frame_qimg)
-            self.updateROIcanvasN(1)
-            self.updateROIcanvasN(2)
+                self.updateROIcanvasN(1)
+                self.updateROIcanvasN(2)
+
+                
+        
         else:
             self.ui.wormCanvas1.clear() 
             self.ui.wormCanvas2.clear()        
         # create the pixmap for the label
         self.mainImage.setPixmap(self.frame_qimg)
 
-    def drawWormMarkers(self, image):
+        if self.mean_intensity is not None and self.frame_number < self.mean_intensity.size:
+            d = int(self.mean_intensity[self.frame_number]*255)
+            self.ui.intensity_label.setStyleSheet('QLabel {background-color: rgb(%i, %i, %i);}' % (0, 0, d))
+
+
+
+    def _draw_food_contour(self, image):
+        if self.food_coordinates is None or not self.ui.checkBox_showFood.isChecked():
+            return
+
+        painter = QPainter()
+        painter.begin(image)
+
+        penwidth = max(1, max(image.height(), image.width()) // 800)
+        self.img_h_ratio = image.height() / self.image_height
+        self.img_w_ratio = image.width() / self.image_width
+
+        col = QColor(255, 0, 0)
+        p = QPolygonF()
+        for x,y in self.food_coordinates:
+            p.append(QPointF(x,y))
+            
+        pen = QPen()
+        pen.setWidth(penwidth)
+        pen.setColor(col)
+        painter.setPen(pen)
+
+        painter.drawPolyline(p)
+        painter.end()
+
+    def _draw_worm_markers(self, image):
         '''
         Draw traj worm trajectory.
         '''
         
-        if not self.label_type in self.frame_data or \
+        if not self.worm_index_type in self.frame_data or \
         self.ui.comboBox_showLabels.currentIndex() == self.showT['hide']:
             return
 
@@ -305,6 +414,9 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         fontsize = max(1, max(image.height(), image.width()) // 120)
         penwidth = max(1, max(image.height(), image.width()) // 800)
         penwidth = penwidth if penwidth % 2 == 1 else penwidth + 1
+
+        if not self.label_type in self.frame_data:
+            self.frame_data[self.label_type] = self.wlab['U']
 
         new_traj = {}
         for row_id, row_data in self.frame_data.iterrows():
@@ -322,6 +434,7 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
             x = int(round(x * self.img_h_ratio))
             y = int(round(y * self.img_w_ratio))
             label_type = self.wlabC[int(row_data[self.label_type])]
+            
             roi_size = row_data['roi_size']
 
             cb_ind = self.ui.comboBox_drawType.currentIndex()
@@ -418,6 +531,7 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
             # no trajectories data presented, nothing to do here
             wormCanvas.clear()
             return
+
 
         # update valid index for the comboBox
         comboBox_ROI.clear()
@@ -594,16 +708,13 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         self.worm_index_roi2 = worm_ind1
         self.updateImage()
 
-        self.ui.spinBox_join1.setValue(worm_ind1)
-        self.ui.spinBox_join2.setValue(worm_ind1)
-
     def splitTraj(self):
         if self.worm_index_type != 'worm_index_manual' \
         or self.frame_data is None:
             return
 
         if self.ui.radioButton_ROI1.isChecked():
-            worm_ind = self.worm_index_roi1  # self.ui.spinBox_join1.value()
+            worm_ind = self.worm_index_roi1 
         elif self.ui.radioButton_ROI2.isChecked():
             worm_ind = self.worm_index_roi2
 
@@ -633,11 +744,6 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         self.worm_index_roi1 = new_ind1
         self.worm_index_roi2 = new_ind2
         self.updateImage()
-
-        self.ui.spinBox_join1.setValue(new_ind1)
-        self.ui.spinBox_join2.setValue(new_ind2)
-
-    
 
 if __name__ == '__main__':
     import sys

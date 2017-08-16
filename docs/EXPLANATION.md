@@ -69,11 +69,11 @@ This step identifies skeletons that are likely to have been produced by an inacc
 This step orients the skeleton head and tail by movement. The [SKE_CREATE](#ske_create) step produces a skeleton but does not determine which extreme of the curve is the head and which the tail. Since the head in one skeleton will not suddenly jump to the other side of the worm within a small amout of time, it is possible to assign "blocks" of skeletons with the same orientation as long as there is not a gap of missing skeletons larger than a few frames (set by `max_gap_allowed_block`). For each of these blocks we estimate the motility of each of the skeleton extremes as the standard deviation of their angular speed. The part corresponding to the head should have a larger motility than the one corresponding to the tail. This approach is able to correct most of the skeletons but further improvements can be archieve using the [image intensity](#int_ske_orient).
 
 ### STAGE_ALIGMENT
-Only used in for data from [Worm Tracker 2.0](http://www.mrc-lmb.cam.ac.uk/wormtracker/) (`SINGLE_WORM_SHAFER`). In Worm Tracker 2.0, a single worm is follow by a camera around the plate. Analysis of these videos requires the extra step of shifting skeletons coordinates from the image frame of reference to the stage frame of reference. In this step the recorded stage positions saved as a `.log.csv` file are aligned to the the video time. This step requires MATLAB to run the corresponding function from the original [segWorm](https://github.com/openworm/SegWorm) code. Please raise an [issue](https://github.com/ver228/tierpsy-tracker/issues) if you are interested in the development of a python only implementation.
+Only used in for data from [Worm Tracker 2.0](http://www.mrc-lmb.cam.ac.uk/wormtracker/) (`WT2`). In Worm Tracker 2.0, a single worm is follow by a camera around the plate. Analysis of these videos requires the extra step of shifting skeletons coordinates from the image frame of reference to the stage frame of reference. In this step the recorded stage positions saved as a `.log.csv` file are aligned to the the video time. This step requires MATLAB to run the corresponding function from the original [segWorm](https://github.com/openworm/SegWorm) code. Please raise an [issue](https://github.com/ver228/tierpsy-tracker/issues) if you are interested in the development of a python only implementation.
 
 
 ### CONTOUR_ORIENT
-Only used in `SINGLE_WORM_SHAFER`. This step switches the dorsal and ventral contours to match the `ventral_side` orientation specified in the `/experiment_info` field or in the JSON parameters file.
+Only used in `WT2`. This step switches the dorsal and ventral contours to match the `ventral_side` orientation specified in the `/experiment_info` field or in the JSON parameters file.
 
 ### INT_PROFILE
 This step uses worm intensity profiles to improve head-tail orientation detection.  Worms are first straightened using the previously extracted skeleton (see below A) and interpolating it into a 2D map (see below B top). The intensity map can be further smoothed by averaging data along the worm to obtain an intensity profile as shown below in B bottom.  
@@ -94,5 +94,5 @@ This step uses the [open worm analysis toolbox](https://github.com/openworm/open
 Same as [FEAT_CREATE](#feat_create) but it will only use the indexes that were manually identified as worms using the [Tierpsy Tracker Viewer](HOWTO.md#tierpsy-tracker-viewer). The results will be saved as `basename_feat_manual.hdf5`.
 
 ### WCON_EXPORT
-Currently only used in `SINGLE_WORM_SHAFER`. Export skeletons data in [`basename_features.hdf5`](OUTPUTS.md/#basename_features.hdf5) using the [WCON format](https://github.com/openworm/tracker-commons). In the future this step should be available in the default analysis sequence.
+Currently only used in `WT2`. Export skeletons data in [`basename_features.hdf5`](OUTPUTS.md/#basename_features.hdf5) using the [WCON format](https://github.com/openworm/tracker-commons). In the future this step should be available in the default analysis sequence.
 

@@ -32,25 +32,20 @@ def get_ffprobe_metadata(video_file):
     if not os.path.exists(video_file):
         raise FileNotFoundError(video_file)
 
-    if not FFPROBE_CMD:
-        warnings.warn('ffprobe do not found. Raw video metadata will not be extracted.')
-        return np.zeros(0)
-
+    if not os.path.exists(FFPROBE_CMD):
+        raise FileNotFoundError('ffprobe do not found.')
+        
     command = [
         FFPROBE_CMD,
         '-v',
         'error',
         '-show_frames',
         '-print_format',
-        'json',
+        'compact',
         video_file]
     
     base_name = video_file.rpartition('.')[0].rpartition(os.sep)[-1]
     progressTime = TimeCounter(base_name + ' Extracting video metadata.')
-    
-    #from tierpsy.helper.misc.RunMultiCMD import cmdlist2str
-    #print( cmdlist2str(command))
-    
     
     frame_number = 0
     buff = []
@@ -76,55 +71,64 @@ def get_ffprobe_metadata(video_file):
             buff_err.append(None)
 
 
-    buff = ''.join(buff)
-    #print(buff)
-
-    try:
-        dat = json.loads(buff)
-    except json.decoder.JSONDecodeError as e:
-        return np.zeros(0) 
-
-    if not dat:
-        print(buff_err)
-        print(base_name + ' Could not read the metadata.')
-        return np.zeros(0)
+    #the buff is in the shape
+    # frame|feat1=val1|feat2=val2|feat3=val3\n 
+    # I want to store each property as a vector
+    dat = [[d.split('=') for d in x.split('|')] for x in ''.join(buff).split('\n')]
     
     # use the first frame as reference
-    frame_fields = list(dat['frames'][0].keys())
-
-    # consider data where the best_effort_timestamp was not calculated
-    valid_frames = [
-        x for x in dat['frames'] if all(
-            ff in x for ff in frame_fields)]
-
+    frame_fields = [x[0] for x in dat[0] if len(x) == 2]
+    
     # store data into numpy arrays
     video_metadata = OrderedDict()
-    for field in frame_fields:
-        video_metadata[field] = [frame[field] for frame in valid_frames]
-        
+    for row in dat:
+        row_fields = [x[0] for x in dat[0] if len(x) == 2]
+        for dd in row:
+            if (len(dd) != 2) or (not dd[0] in frame_fields):
+                continue
+            field, value = dd
 
-        try:  # if possible convert the data into float
-            video_metadata[field] = [float(dd) for dd in video_metadata[field]]
-        except (ValueError, TypeError):
-            # pytables does not support unicode strings (python3)
-            #the str before is to convert a possible dictionary into a string before converting it to bytes
-            video_metadata[field] = [bytes(str(dd), 'utf-8')
-                                     for dd in video_metadata[field]]
+            if not field in video_metadata:
+                video_metadata[field] = []
 
-        video_metadata[field] = np.asarray(video_metadata[field])
+            try:  # if possible convert the data into float
+                value = float(value)
+            except (ValueError, TypeError):
+                if value == 'N/A':
+                    value = np.nan
+                else:
+                    # pytables does not support unicode strings (python3)
+                    #the str before is to convert a possible dictionary into a string before converting it to bytes
+                    value = bytes(str(value), 'utf-8')
 
+            video_metadata[field].append(value)
+
+
+    #convert all the lists into numpy arrays
+    video_metadata = {field:np.asarray(values) for field,values in video_metadata.items()}
+    
+    #convert data into a recarray to store in pytables
     video_metadata = dict2recarray(video_metadata)
+
+    #sometimes the last frame throws a nan in the timestamp. I want to remove it
+    if np.isnan(video_metadata[-1]['best_effort_timestamp']):
+        video_metadata = video_metadata[:-1]
+
+    #if there is still nan's raise an error
+    if np.any(np.isnan(video_metadata['best_effort_timestamp'])):
+        raise ValueError('The timestamp contains nan values')
     return video_metadata
 
 
 def store_meta_data(video_file, masked_image_file):
-
-    video_metadata = get_ffprobe_metadata(video_file)
+    try:
+        video_metadata = get_ffprobe_metadata(video_file)
+        if len(video_metadata) == 0:  # nothing to do here. return a dum number of frames
+            raise ValueError('Metadata is empty.')
+    except (json.decoder.JSONDecodeError, ValueError, FileNotFoundError):
+            raise Exception('I could not extract the meta data. Set is_extract_timestamp to False in the json_file parameters file if you do not want to execute this step.')
+    
     expected_frames = len(video_metadata)
-
-    if expected_frames == 0:  # nothing to do here. return a dum number of frames
-        return 1
-
     with tables.File(masked_image_file, 'r+') as mask_fid:
         if '/video_metadata' in mask_fid:
             mask_fid.remove_node('/', 'video_metadata')
@@ -146,51 +150,13 @@ def _correct_timestamp(best_effort_timestamp, best_effort_timestamp_time):
             timestamp = timestamp/deli_min
     
     return timestamp, timestamp_time
-# def _correct_timestamp(best_effort_timestamp, best_effort_timestamp_time):
-    
-#     def _get_deltas(v_timestamp):
-#         # delta from the best effort indexes
-#         delta_vec = np.diff(v_timestamp)
-#         good = (delta_vec != 0)  # & ~np.isnan(xx)
-#         delta = np.median(delta_vec[good])
-#         return delta_vec, delta, good
-    
-#     def _normalize_delta(delta_vec, delta):
-#         return np.round(delta_vec / delta).astype(np.int)
-    
-        
-#     # delta from the best effort indexes
-#     delta_step_vec, delta_step, good_step = _get_deltas(best_effort_timestamp)
-    
-#     # delta from the best effort times
-#     delta_t_vec, delta_t, good_t = _get_deltas(best_effort_timestamp_time)
-    
-#     if not np.all(good_t == good_step):
-#         raise ValueError('The zero delta from the index and time timestamps are not the same.')
 
-#     # check that the normalization factors make sense
-#     delta_step_normalized = _normalize_delta(delta_step_vec, delta_step)
-#     delta_t_normalized = _normalize_delta(delta_t_vec, delta_t)
-    
-#     if not np.all(delta_step_normalized == delta_t_normalized):
-#         raise ValueError('The normalization in time or in index does not match.')
-
-#     # get the indexes with a valid frame
-#     # add one to consider compensate for the np.diff
-#     timestamp = np.arange(1, len(delta_t_normalized) + 1)
-#     timestamp = timestamp[good_step] + delta_t_normalized[good_step] - 1
-#     timestamp = np.hstack((0, timestamp))
-
-#     timestamp_time = timestamp * delta_t
-
-#     return timestamp, timestamp_time
 
 
 def get_timestamp(masked_file):
     '''
     Read the timestamp from the video_metadata, if this field does not exists return an array of nan
     '''
-#%%
     with tables.File(masked_file, 'r') as mask_fid:
         # get the total number of frmes previously processed
         tot_frames = mask_fid.get_node("/mask").shape[0]
@@ -201,22 +167,15 @@ def get_timestamp(masked_file):
                   for row in mask_fid.get_node('/video_metadata/')]
 
             best_effort_timestamp, best_effort_timestamp_time = list(map(np.asarray, zip(*dd)))
-            
             assert best_effort_timestamp.size == best_effort_timestamp_time.size
             
             timestamp, timestamp_time = _correct_timestamp(best_effort_timestamp, best_effort_timestamp_time)
-            # try:
-            #     timestamp, timestamp_time = _correct_timestamp(best_effort_timestamp, best_effort_timestamp_time)
-            # except ValueError:
-            #     #there was a problem in the normalization, return the original timestamps 
-            #     timestamp, timestamp_time = best_effort_timestamp.astype(np.int), best_effort_timestamp_time
         else:
             #no metadata return empty frames
             timestamp = np.full(tot_frames, np.nan)
             timestamp_time = np.full(tot_frames, np.nan)
 
         assert timestamp.size == timestamp_time.size
-#%%
         return timestamp, timestamp_time
 
 
@@ -233,20 +192,25 @@ def read_and_save_timestamp(masked_image_file, dst_file=''):
         tot_frames = mask_fid.get_node("/mask").shape[0]
 
     if tot_frames > timestamp.size:
-        # pad with nan the extra space
+        # pad with the same value the missing values
         N = tot_frames - timestamp.size
-        timestamp = np.hstack((timestamp, np.full(N, np.nan)))
-        timestamp_time = np.hstack((timestamp_time, np.full(N, np.nan)))
+        timestamp = np.pad(timestamp, (0, N), 'edge')
+        timestamp_time = np.pad(timestamp_time, (0, N), 'edge')
         assert tot_frames == timestamp.size
 
     # save timestamp into the dst_file
-    with tables.File(dst_file, 'r+') as dst_file:
-        dst_file.create_group('/', 'timestamp')
-        dst_file.create_carray('/timestamp', 'raw', obj=np.asarray(timestamp))
-        dst_file.create_carray(
+    with tables.File(dst_file, 'r+') as dst_fid:
+        if '/timestamp' in dst_fid:
+            dst_fid.remove_node('/timestamp', recursive=True)
+
+        dst_fid.create_group('/', 'timestamp')
+        dst_fid.create_carray('/timestamp', 'raw', obj=np.asarray(timestamp))
+        dst_fid.create_carray(
             '/timestamp',
             'time',
             obj=np.asarray(timestamp_time))
+
+    return timestamp, timestamp_time
 
 
 if __name__ == '__main__':

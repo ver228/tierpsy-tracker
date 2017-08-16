@@ -17,14 +17,17 @@ def args_(fn, param):
         }
 
     requirements = ['SKE_CREATE']
-    if p['analysis_type'] == 'SINGLE_WORM_SHAFER':
-        from ..contour_orient import isGoodVentralOrient
+    main_func = getIntensityProfile
+    
+    if p['analysis_type'] == 'WT2':
         from functools import partial
-        requirements += ['CONTOUR_ORIENT', ('is_valid_contour', partial(isGoodVentralOrient, fn['skeletons']))]
-        
+        from ..contour_orient import ventral_orient_wrapper
+        main_func = partial(ventral_orient_wrapper, main_func, fn['skeletons'], param.p_dict['ventral_side'])
+        main_func.__name__ = getIntensityProfile.__name__  # I use the name for provenance tracking
+
     #arguments used by AnalysisPoints.py
     return {
-        'func': getIntensityProfile,
+        'func': main_func,
         'argkws': argkws_d,
         'input_files' : [fn['skeletons'],fn['masked_image']],
         'output_files': [fn['intensities'], fn['skeletons']],

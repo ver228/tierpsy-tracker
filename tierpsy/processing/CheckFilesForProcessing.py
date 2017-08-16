@@ -9,10 +9,12 @@ import multiprocessing as mp
 import os
 from functools import partial
 
-from tierpsy.helper.misc import TimeCounter, print_cmd_list
+from tierpsy.helper.misc import TimeCounter
 from tierpsy.processing.AnalysisPoints import AnalysisPoints, init_analysis_point_lock
 from tierpsy.processing.ProcessLocal import BATCH_SCRIPT_LOCAL
 from tierpsy.processing.helper import create_script
+from tierpsy.processing.run_multi_cmd import print_cmd_list
+
 
 BREAK_L = '*********************************************'
 
@@ -53,10 +55,9 @@ class CheckFilesForProcessing(object):
         self.analysis_checkpoints = analysis_checkpoints
         self.filtered_files = {}
         self.is_parallel_check = is_parallel_check
+    
     def _checkIndFile(self, video_file):
         '''Check the progress in the file.'''
-        
-        print(video_file)
         
         video_dir, video_file_name = os.path.split(video_file)
         subdir_path = self._getSubDirPath(video_dir, self.video_dir_root)
@@ -192,7 +193,6 @@ class CheckFilesForProcessing(object):
 
         
         print(self.summary_msg)
-        
         return cmd_list
     
     def _printUnmetReq(self):

@@ -15,6 +15,19 @@ from tierpsy.analysis.ske_create.getSkeletonsTables import getWormMask
 from tierpsy.analysis.ske_create.segWormPython.mainSegworm import getSkeleton
 
 
+
+BAD_SKEL_COLOURS = dict(
+    skeleton = (102, 0, 0),
+    contour_side1 = (102, 0, 0),
+    contour_side2 = (102, 0, 0)
+    )
+GOOD_SKEL_COLOURS = dict(
+    skeleton = (27, 158, 119),
+    contour_side1 = (217, 95, 2),
+    contour_side2 = (231, 41, 138)
+    )
+
+
 class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
 
     def __init__(self, ui=''):
@@ -44,7 +57,7 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
 
         self.updateSkelFile(selected_file)
 
-    def updateSkelFile(self, selected_file):
+    def updateSkelFile(self, selected_file, dflt_skel_size = 5):
         
         self.skeletons_file = selected_file
         self.ui.lineEdit_skel.setText(self.skeletons_file)
@@ -68,9 +81,9 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
                     self.strel_size = strel_size
                 else:
                     # use default
-                    self.strel_size = 5
+                    self.strel_size = dflt_skel_size
 
-        except (IOError, KeyError):
+        except (IOError, KeyError, tables.exceptions.HDF5ExtError):
             self.trajectories_data = None
             self.traj_time_grouped = None
             self.skel_dat = {}
@@ -80,14 +93,14 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
         else:
             self.ui.spinBox_frame.setValue(0)
 
-    def updateImGroup(self):
-        super().updateImGroup()
+    def updateImGroup(self, h5path):
+        super().updateImGroup(h5path)
         try:
             self.frame_save_interval = int(self.image_group._v_attrs['save_interval'])
         except:
             self.frame_save_interval = 1
 
-    def updateVideoFile(self, vfilename):
+    def updateVideoFile(self, vfilename, possible_ext = ['_skeletons.hdf5']):
         super().updateVideoFile(vfilename)
         if self.image_group is None:
             return
@@ -111,11 +124,12 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
                     videos_dir, 'Results')]
 
             for new_dir in possible_dirs:
-                new_skel_file = os.path.join(new_dir, basename + '_skeletons.hdf5')
-                if os.path.exists(new_skel_file):
-                    self.skeletons_file = new_skel_file
-                    self.results_dir = new_dir
-                    break
+                for ext_p in possible_ext:
+                    new_skel_file = os.path.join(new_dir, basename + ext_p)
+                    if os.path.exists(new_skel_file):
+                        self.skeletons_file = new_skel_file
+                        self.results_dir = new_dir
+                        break
 
 
 
@@ -152,16 +166,14 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
         return qimg
 
     def drawSkel(self, worm_img, worm_qimg, row_data, roi_corner=(0, 0)):
-        if not self.skeletons_file or self.trajectories_data is None or worm_img.size == 0:
+        if not self.skeletons_file or self.trajectories_data is None or worm_img.size == 0 or worm_qimg is None:
             return
 
         c_ratio_y = worm_qimg.width() / worm_img.shape[1]
         c_ratio_x = worm_qimg.height() / worm_img.shape[0]
 
         skel_id = int(row_data['skeleton_id'])
-
-        qPlg = {}
-
+        skel_dat = {}
         with tables.File(self.skeletons_file, 'r') as ske_file_id:
             for tt in ['skeleton', 'contour_side1', 'contour_side2']:
                 field = '/' + tt
@@ -172,27 +184,29 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
                 else:
                     dat = np.full((1,2), np.nan)
 
+                skel_dat[tt] = dat
 
-                # for nn in range(2):
-                #    dat[:,nn] = savgol_filter(dat[:,nn], window_length=5, polyorder=3)
+        if 'is_good_skel' in row_data and row_data['is_good_skel'] == 0:
+            skel_colors = BAD_SKEL_COLOURS
+        else:
+            skel_colors = GOOD_SKEL_COLOURS
 
-                qPlg[tt] = QPolygonF()
-                for p in dat:
+        self._drawSkel(worm_qimg, skel_dat, skel_colors = skel_colors)
+
+
+    def _drawSkel(self, worm_qimg, skel_dat, skel_colors = GOOD_SKEL_COLOURS):
+
+        qPlg = {}
+        for tt, dat in skel_dat.items():
+            qPlg[tt] = QPolygonF()
+            for p in dat:
+                #do not add point if it is nan
+                if p[0] == p[0]: 
                     qPlg[tt].append(QPointF(*p))
 
 
-        if 'is_good_skel' in row_data and row_data['is_good_skel'] == 0:
-            self.skel_colors = {
-                'skeleton': (
-                    102, 0, 0), 'contour_side1': (
-                    102, 0, 0), 'contour_side2': (
-                    102, 0, 0)}
-        else:
-            self.skel_colors = {
-                'skeleton': (
-                    27, 158, 119), 'contour_side1': (
-                    217, 95, 2), 'contour_side2': (
-                    231, 41, 138)}
+        if len(qPlg['skeleton']) == 0:
+            return
 
         pen = QPen()
         pen.setWidth(1)
@@ -200,7 +214,7 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
         painter = QPainter()
         painter.begin(worm_qimg)
 
-        for tt, color in self.skel_colors.items():
+        for tt, color in skel_colors.items():
             pen.setColor(QColor(*color))
             painter.setPen(pen)
             painter.drawPolyline(qPlg[tt])
@@ -211,7 +225,6 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
 
         radius = 3
         painter.drawEllipse(qPlg['skeleton'][0], radius, radius)
-
         painter.drawEllipse(QPointF(0,0), radius, radius)
 
         painter.end()
@@ -231,9 +244,7 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
                                       roi_center_x=c1, roi_center_y=c2, min_blob_area=min_blob_area,
                                       is_light_background = self.is_light_background)
 
-        #worm_mask = np.zeros_like(worm_mask)
-        #cv2.drawContours(worm_mask, [worm_cnt.astype(np.int32)], 0, 1, -1)
-
+        
         worm_mask = QImage(
             worm_mask.data,
             worm_mask.shape[1],

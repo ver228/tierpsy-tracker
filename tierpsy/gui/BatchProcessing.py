@@ -17,6 +17,12 @@ from tierpsy import DFLT_PARAMS_FILES
 from tierpsy.helper.params import TrackerParams
 from tierpsy.helper.params.docs_process_param import proccess_args_dflt, proccess_args_info
 
+
+#If a widget is not enabled ParamWidgetMapper wiil return the value in proccess_args_dflt,
+#however for the tmp directory I want to change this behaviour so when it is not enabled it is left empty so it is not used.
+TMP_DIR_ROOT = proccess_args_dflt['tmp_dir_root']
+proccess_args_dflt['tmp_dir_root'] = ''
+
 class BatchProcessing_GUI(QMainWindow):
 
     def __init__(self):
@@ -24,6 +30,7 @@ class BatchProcessing_GUI(QMainWindow):
         self.mask_files_dir = ''
         self.results_dir = ''
         self.videos_dir = ''
+        self.tmp_dir_root = ''
         self.analysis_checkpoints = []
 
         self.ui = Ui_BatchProcessing()
@@ -37,7 +44,6 @@ class BatchProcessing_GUI(QMainWindow):
                                         default_param=proccess_args_dflt,
                                         info_param=proccess_args_info, 
                                         valid_options=valid_options)
-
 
         self.ui.p_json_file.currentIndexChanged.connect(self.updateCheckpointsChange)
         self.ui.p_force_start_point.currentIndexChanged.connect(self.updateStartPointChange)
@@ -114,7 +120,7 @@ class BatchProcessing_GUI(QMainWindow):
         self.ui.pushButton_tmpDir.setEnabled(is_enable)
         self.ui.p_tmp_dir_root.setEnabled(is_enable)
 
-        tmp_dir_root = proccess_args_dflt['tmp_dir_root'] if is_enable else ''
+        tmp_dir_root = TMP_DIR_ROOT if is_enable else ''
         self.updateTmpDir(tmp_dir_root)
 
     def getTmpDir(self):
@@ -126,8 +132,7 @@ class BatchProcessing_GUI(QMainWindow):
             self.updateTmpDir(tmp_dir_root)
 
     def updateTmpDir(self, tmp_dir_root):
-        self.tmp_dir_root = tmp_dir_root
-        self.ui.p_tmp_dir_root.setText(self.tmp_dir_root)
+        self.mapper['tmp_dir_root'] = tmp_dir_root
 
     def getVideosDir(self):
         videos_dir = QFileDialog.getExistingDirectory(
@@ -212,7 +217,12 @@ class BatchProcessing_GUI(QMainWindow):
         '''
         index - dum variable to be able to connect to currentIndexChanged
         '''
-        param = TrackerParams(self.mapper['json_file'])
+
+        try:
+            param = TrackerParams(self.mapper['json_file'])
+        except FileNotFoundError:
+            return
+
         analysis_checkpoints = get_dflt_sequence(param.p_dict['analysis_type'])
 
         if analysis_checkpoints[-1] != 'FEAT_MANUAL_CREATE':
@@ -237,13 +247,12 @@ class BatchProcessing_GUI(QMainWindow):
         if self.mapper['force_start_point'] == 'COMPRESS':
             self.ui.pushButton_videosDir.setEnabled(True)
             self.ui.p_video_dir_root.setEnabled(True)
-            self.mapper['pattern_include'] = '*.mjpg'
+            #self.mapper['pattern_include'] = '*.avi'
         else:
             self.ui.pushButton_videosDir.setEnabled(False)
             self.ui.p_video_dir_root.setEnabled(False)
-
-            if not '.hdf5' in self.mapper['pattern_include']:
-                self.mapper['pattern_include'] = '*.hdf5'
+            #if not '.hdf5' in self.mapper['pattern_include']:
+            #    self.mapper['pattern_include'] = '*.hdf5'
 
 
 
@@ -257,9 +266,9 @@ class BatchProcessing_GUI(QMainWindow):
         process_args = proccess_args_dflt.copy()
         #append the root dir if we are using any of the default parameters files. I didn't add the dir before because it is easy to read them in this way.
         process_args['analysis_checkpoints'] = self.analysis_checkpoints
+        
         for x in self.mapper:
             process_args[x] = self.mapper[x]
-
 
         if 'COMPRESS' == self.mapper['force_start_point']:
             if not os.path.exists(process_args['video_dir_root']):
@@ -277,6 +286,7 @@ class BatchProcessing_GUI(QMainWindow):
                 QMessageBox.Ok)
             return
 
+        print(process_args)
         analysis_worker = WorkerFunQt(processMultipleFilesFun, process_args)
         progress = AnalysisProgress(analysis_worker)
         progress.exec_()

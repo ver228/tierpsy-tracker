@@ -1,36 +1,48 @@
+*The instructions below are to install Tierpsy Tracker from the source code. I would recommend to do this only if you are using Linux or want to run the development version, otherwise use the double-click executables available for Windows (7 or latest) and OSX (Yosemite or latest) in the [releases page](https://github.com/ver228/tierpsy-tracker/releases).*
+
+# System Requirements 
+- Freshly installed [miniconda] (https://conda.io/miniconda.html) or at least setup up a new enviroment.
+- Optional [ffmpeg](https://ffmpeg.org/download.html): ffprobe must be accessible from the command line to calculate the video timestamps.
+- [C compiler compatible with cython](http://cython.readthedocs.io/en/latest/src/quickstart/install.html). In Windows, you can use [Visual C++ 2015 Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools). In OSX, if you install [homebrew](https://brew.sh/) it will setup the C compiler without the need to download XCode from the appstore. 
+- [Git](https://git-scm.com/). [Here](https://gist.github.com/derhuerst/1b15ff4652a867391f03) are some instructions to install it.
+
 # Installation
 
-To install Tierpsy tracker, download the latest version to your local machine.  This can be done manually [here](https://github.com/ver228/tierpsy-tracker/archive/master.zip).  If you use Git or [Github Desktop](https://desktop.github.com/), then open a new terminal (in Windows open Git Shell) and run: 
-
+1. Clone this repository either using the [Github Desktop](https://desktop.github.com/) or from the command line as:
 ```bash
 git clone https://github.com/ver228/tierpsy-tracker
 ```
-## Installation for OSX
-Open a terminal and run `bash installation/installation_script.sh`.
+ 
+2. Install the conda dependencies from the conda-forge channel:
+```bash
+conda config --add channels conda-forge 
 
-## Installation for Linux
-For linux run
-``` bash
-bash installation/installation_script.sh --linux_dependencies #You need sudo permissions
-bash installation/installation_script.sh
+conda install -y numpy matplotlib pytables pandas gitpython pyqt=5 \
+h5py scipy scikit-learn scikit-image seaborn xlrd cython statsmodels
+
+conda install -y -c conda-forge keras opencv
+pip install tensorflow 
 ```
-I have tested the script in Centos7. If you have other versions take a look to the dependencies in the [installation_script.sh](https://github.com/ver228/tierpsy-tracker/blob/master/installation/installation_script.sh) on function `ubuntu_dependencies` or `redhat_dependencies` and adjust them according to your distribution.
 
-## Installation for Windows
+3. Install the rest of the modules:
+On the tierpsy-tracker root folder (the folder with the cloned repository) type:
+```bash
+bash installation/installation_script.sh #OSX or Linux
 
-- Download and install [miniconda](https://conda.io/miniconda.html).
-- Install [ffmpeg](https://ffmpeg.org/download.html). Friendly installation instructions can be found [here](http://adaptivesamples.com/how-to-install-ffmpeg-on-windows/).
-- Install [Visual C++ 2015 Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools).
-- Run `./tierpsy-tracker/installation/installation_script.bat`.
+installation/installation_script.bat #Windows
+```
 
 ## Possible Issues
-Most of the problems that can occur during installation are due to missing/conflicting dependencies, especially if there were older versions of miniconda installed. Try updating miniconda and re-running the scripts. Many of these problems can be solved by searching for error messages online, but if problems persist, please raise an issue on Github [project page](https://github.com/ver228/tierpsy-tracker/issues).
+- The most common problem in the installation is OpenCV (error in import cv2). Try a fresh miniconda installation (or a fresh enviroment) and make sure your are using the [conda-forge](https://conda-forge.org/) packages. It this does not work I am afraid you would have to solve the problem by yourself (Google is your friend).
 
-## Test Examples
+- I known bug occurs if you install the [Open Worm Analysis Toolbox](https://github.com/openworm/open-worm-analysis-toolbox) using pip. The installer is broken and it will create a corrupt [.egg](https://stackoverflow.com/questions/2051192/what-is-a-python-egg) in your packages folder. Manually delete the .egg (use the error traceback to find the its location) and re-run `installation_script.sh`.
+
+
+# Test Examples
 On Mac OSX or Linux, some test examples can be downloaded by running 
 
 ```bash
-installation/instalation_script.sh --tests
+installation/instalation_script.sh --download_examples
 ```
 
 The tests can also be manually downloaded using [this link](https://imperiallondon-my.sharepoint.com/personal/ajaver_ic_ac_uk/_layouts/15/guestaccess.aspx?guestaccesstoken=ldZ18fLY%2bzlu7XuO9mbKVdyiKoH4naiesqiLXWU4vGQ%3d&docid=0cec4e52f4ccf4d5b8bb3a737020fc12f&rev=1). Uncompress the data and save it in the main repository folder `tests/data` .

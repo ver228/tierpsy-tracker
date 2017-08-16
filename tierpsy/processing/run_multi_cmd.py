@@ -11,6 +11,7 @@ import sys
 import os
 import time
 import subprocess as sp
+from functools import partial
 from io import StringIO
 from tierpsy.helper.misc import TimeCounter, ReadEnqueue
 
@@ -34,7 +35,8 @@ ON_POSIX = 'posix' in sys.builtin_module_names
 
 class StartProcess():
 
-    def __init__(self, cmd, local_obj=''):
+    def __init__(self, cmd, local_obj='', is_debug = True):
+        self.is_debug = is_debug
         self.output = ['Started\n']
 
         if local_obj:
@@ -73,12 +75,19 @@ class StartProcess():
 
     def close(self):
         if self.proc.poll() != 0:
+            error_outputs = self.proc.stderr.read().decode("utf-8")
             # print errors details if there was any
             self.output[-1] += 'ERROR: \n'
 
-            self.output[-1] += cmdlist2str(self.cmd) + '\n'
-            self.output[-1] += self.proc.stderr.read().decode("utf-8")
-            self.proc.stderr.flush()
+            #I want to add only the last line of the error. No traceback info in order to do not overwhelm the user.
+            dd = error_outputs.split('\n')
+            if len(dd) > 1:
+                self.output[-1] += dd[-2] + '\n'
+
+            if self.is_debug:
+                self.output[-1] += error_outputs
+                self.output[-1] += cmdlist2str(self.cmd) + '\n'
+                self.proc.stderr.flush()
 
         if self.obj_cmd and self.proc.poll() == 0:
             with CapturingOutput() as output:
@@ -90,9 +99,16 @@ class StartProcess():
         self.proc.stderr.close()
 
 
-def RunMultiCMD(cmd_list, local_obj='', max_num_process=3, refresh_time=10):
+def RunMultiCMD(cmd_list, 
+                local_obj='', 
+                max_num_process=3, 
+                refresh_time=10,
+                is_debug = True):
     '''Start different process using the command is cmd_list'''
     
+
+    start_obj = partial(StartProcess, local_obj=local_obj, is_debug=is_debug)
+
     total_timer = TimeCounter() #timer to meassure the total time 
 
     cmd_list = cmd_list[::-1]  # since I am using pop to get the next element i need to invert the list to get athe same order
@@ -106,11 +122,10 @@ def RunMultiCMD(cmd_list, local_obj='', max_num_process=3, refresh_time=10):
     current_tasks = []
     for ii in range(max_num_process):
         cmd = cmd_list.pop()
-        current_tasks.append(StartProcess(cmd, local_obj))
+        current_tasks.append(start_obj(cmd))
 
-    # keep loop tasks as long as there is any task alive and
-    # the number of tasks stated is less than the total number of tasks
-    while cmd_list or any(tasks.proc.poll() is None for tasks in current_tasks):
+    # keep loop tasks as long as there are tasks in the list
+    while current_tasks:
         time.sleep(refresh_time)
 
         print(GUI_CLEAR_SIGNAL)
@@ -142,12 +157,12 @@ def RunMultiCMD(cmd_list, local_obj='', max_num_process=3, refresh_time=10):
                 # add new task once the previous one was finished
                 if cmd_list and len(next_tasks) < max_num_process:
                     cmd = cmd_list.pop()
-                    next_tasks.append(StartProcess(cmd, local_obj))
+                    next_tasks.append(start_obj(cmd))
 
         # if there is stlll space add a new tasks.
         while cmd_list and len(next_tasks) < max_num_process:
             cmd = cmd_list.pop()
-            next_tasks.append(StartProcess(cmd, local_obj))
+            next_tasks.append(start_obj(cmd))
 
 
         #close tasks (copy finished files to final destination)

@@ -14,3 +14,7 @@ tests/data/*
 tierpsy.egg-info/
 _site/
 Gemfile*
+
+*.o
+
+tierpsy/extras/unet_RMSprop-5-04999-0.3997.h5

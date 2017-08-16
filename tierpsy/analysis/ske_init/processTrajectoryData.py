@@ -176,11 +176,13 @@ def getSmoothedTraj(trajectories_file,
         skeleton_id = np.arange(curr_rows, new_total, dtype=np.int32)
         curr_rows = new_total
 
-        # store the indexes in the original plate_worms table
-        plate_worm_id = np.empty(tnew.size, dtype=np.int32)
-        plate_worm_id.fill(-1)
-        plate_worm_id[tnew - first_frame] = worm_data.index
 
+
+        # store the indexes in the original plate_worms table
+        plate_worm_id = np.full(tnew.size, -1, dtype=np.int32)
+        
+        plate_worm_id[t - first_frame] = worm_data.index
+        
         trajectories_df['worm_index_joined'][skeleton_id] = worm_index
         trajectories_df['coord_x'][skeleton_id] = xnew
         trajectories_df['coord_y'][skeleton_id] = ynew

@@ -4,6 +4,7 @@ import numpy as np
 import tables
 import os
 
+
 from tierpsy import AUX_FILES_DIR
 from tierpsy.analysis.ske_create.helperIterROI import generateMoviesROI, getROIFixSize
 from tierpsy.helper.params import read_fps
@@ -52,8 +53,11 @@ def indentifyValidWorms(masked_file,
         frame_subsamplig - number of frames skipped. We do not need to calculate in 
                             every frame. A value of near the number of fps is sensible.
     '''
-    from keras.models import load_model
+    
+    from keras.models import load_model # I do a hidden import because the loading of keras is slow, and it will do everytime tierpsy is initialized
+    
     model = load_model(model_path)
+
     roi_size = model.input_shape[2]
     proba_func = partial(getWormProba, roi_size=roi_size, model=model)
     

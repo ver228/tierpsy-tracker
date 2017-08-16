@@ -7,7 +7,7 @@ Created on Thu Apr  2 13:19:58 2015
 import os
 
 import cv2
-import h5py
+import tables
 import numpy as np
 from scipy.ndimage.filters import median_filter
 
@@ -15,13 +15,7 @@ from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
 from tierpsy.analysis.compress.extractMetaData import store_meta_data, read_and_save_timestamp
 from tierpsy.analysis.compress.selectVideoReader import selectVideoReader
 from tierpsy.helper.params import compress_defaults, set_unit_conversions
-from tierpsy.helper.misc import TimeCounter, print_flush
-
-IMG_FILTERS = {"compression":"gzip",
-        "compression_opts":4,
-        "shuffle":True,
-
-        "fletcher32":True}
+from tierpsy.helper.misc import TimeCounter, print_flush, TABLE_FILTERS
 
 def getROIMask(
         image,
@@ -137,54 +131,72 @@ def reduceBuffer(Ibuff, is_light_background):
     else:
         return np.max(Ibuff, axis=0)
 
-def createImgGroup(fid, name, tot_frames, im_height, im_width):
-    img_dataset = fid.create_dataset(
-        name,
-        (tot_frames,
-         im_height,
-         im_width),
-        dtype="u1",
-        maxshape=(
-            None,
-            im_height,
-            im_width),
-        chunks=(
-            1,
-            im_height,
-            im_width),
-        **IMG_FILTERS)
+def createImgGroup(fid, name, tot_frames, im_height, im_width, is_expandable=True):
+    parentnode, _, name = name.rpartition('/')
+    parentnode += '/'
 
-    img_dataset.attrs["CLASS"] = np.string_("IMAGE")
-    img_dataset.attrs["IMAGE_SUBCLASS"] = np.string_("IMAGE_GRAYSCALE")
-    img_dataset.attrs["IMAGE_WHITE_IS_ZERO"] = np.array(0, dtype="uint8")
-    img_dataset.attrs["DISPLAY_ORIGIN"] = np.string_("UL")  # not rotated
-    img_dataset.attrs["IMAGE_VERSION"] = np.string_("1.2")
+    if is_expandable:
+        img_dataset = fid.create_earray(
+                        parentnode,
+                        name,
+                        atom=tables.UInt8Atom(),
+                        shape =(0,
+                             im_height,
+                             im_width),
+                        chunkshape=(1,
+                             im_height,
+                             im_width),
+                        expectedrows=tot_frames,
+                        filters=TABLE_FILTERS
+                        )
+    else:
+        img_dataset = fid.create_carray(
+                        parentnode,
+                        name,
+                        atom=tables.UInt8Atom(),
+                        shape =(tot_frames,
+                             im_height,
+                             im_width),
+                        filters=TABLE_FILTERS
+                        )
+
+    img_dataset._v_attrs["CLASS"] = np.string_("IMAGE")
+    img_dataset._v_attrs["IMAGE_SUBCLASS"] = np.string_("IMAGE_GRAYSCALE")
+    img_dataset._v_attrs["IMAGE_WHITE_IS_ZERO"] = np.array(0, dtype="uint8")
+    img_dataset._v_attrs["DISPLAY_ORIGIN"] = np.string_("UL")  # not rotated
+    img_dataset._v_attrs["IMAGE_VERSION"] = np.string_("1.2")
 
     return img_dataset
 
 def initMasksGroups(fid, expected_frames, im_height, im_width, 
-    attr_params, save_full_interval):
-
-    
+    attr_params, save_full_interval, is_expandable=True):
 
     # open node to store the compressed (masked) data
-    mask_dataset = createImgGroup(fid, "/mask", expected_frames, im_height, im_width)
+    mask_dataset = createImgGroup(fid, "/mask", expected_frames, im_height, im_width, is_expandable)
     
 
     tot_save_full = (expected_frames // save_full_interval) + 1
-    full_dataset = createImgGroup(fid, "/full_data", tot_save_full, im_height, im_width)
-    full_dataset.attrs['save_interval'] = save_full_interval
+    full_dataset = createImgGroup(fid, "/full_data", tot_save_full, im_height, im_width, is_expandable)
+    full_dataset._v_attrs['save_interval'] = save_full_interval
     
 
     assert all(x in ['expected_fps', 'is_light_background', 'microns_per_pixel'] for x in attr_params)
     set_unit_conversions(mask_dataset, **attr_params)
     set_unit_conversions(full_dataset, **attr_params)
 
-    mean_intensity = fid.create_dataset('/mean_intensity',
-                                            (expected_frames,),
-                                            dtype="float32",
-                                            maxshape=(None,),
-                                            **IMG_FILTERS)
+    if is_expandable:
+        mean_intensity = fid.create_earray('/', 
+                                        'mean_intensity',
+                                        atom=tables.Float32Atom(),
+                                        shape=(0,),
+                                        expectedrows=expected_frames,
+                                        filters=TABLE_FILTERS)
+    else:
+        mean_intensity = fid.create_carray('/', 
+                                        'mean_intensity',
+                                        atom=tables.Float32Atom(),
+                                        shape=(expected_frames,),
+                                        filters=TABLE_FILTERS)
     
     return mask_dataset, full_dataset, mean_intensity
 
@@ -231,7 +243,7 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
     vid = selectVideoReader(video_file)
     
     # delete any previous  if it existed
-    with h5py.File(masked_image_file, "w") as mask_fid:
+    with tables.File(masked_image_file, "w") as mask_fid:
         pass
     
     #Extract metadata
@@ -267,7 +279,7 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
         progressTime = TimeCounter('Compressing video.', expected_frames)
 
 
-    with h5py.File(masked_image_file, "r+") as mask_fid:
+    with tables.File(masked_image_file, "r+") as mask_fid:
 
         #initialize masks groups
         attr_params = dict(
@@ -281,13 +293,13 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
         
         if vid.dtype != np.uint8:
             # this will worm as flags to be sure that the normalization took place.
-            normalization_range = mask_fid.create_dataset(
-                '/normalization_range',
-                (expected_frames, 2),
-                dtype='f4',
-                maxshape=(None, 2),
-                chunks=True,
-                **IMG_FILTERS)
+            normalization_range = mask_fid.create_earray('/', 
+                                        'normalization_range',
+                                        atom=tables.Float32Atom(),
+                                        shape=(0, 2),
+                                        expectedrows=expected_frames,
+                                        filters=TABLE_FILTERS
+                                        )
     
         while frame_number < max_frame:
 
@@ -305,32 +317,15 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
                     # normalise image intensities if the data type is other
                     # than uint8
                     image, img_norm_range = normalizeImage(image)
-
-                    if normalization_range.shape[0] <= frame_number + 1:
-                        normalization_range.resize(frame_number + 1000, axis=0)
-                    normalization_range[frame_number] = img_norm_range
+                    normalization_range.append(img_norm_range)
 
                 #limit the image range to 1 to 255, 0 is a reserved value for the background
                 assert image.dtype == np.uint8
                 image = np.clip(image, 1,255)
 
-
-                # Resize mask array every 1000 frames (doing this every frame
-                # does not impact much the performance)
-                if mask_dataset.shape[0] <= frame_number + 1:
-                    mask_dataset.resize(frame_number + 1000, axis=0)
-                    mean_intensity.resize(frame_number + 1000, axis=0)
-
                 # Add a full frame every save_full_interval
                 if frame_number % save_full_interval == 1:
-                    if full_dataset.shape[0] <= full_frame_number+1:
-                        full_dataset.resize(full_frame_number + 1, axis=0)
-                        # just to be sure that the index we are saving in is
-                        # what we what we are expecting
-                        assert(frame_number //
-                               save_full_interval == full_frame_number)
-
-                    full_dataset[full_frame_number, :, :] = image.copy()
+                    full_dataset.append(image[np.newaxis, :, :])
                     full_frame_number += 1
 
                 # buffer index
@@ -343,7 +338,9 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
 
                 # add image to the buffer
                 Ibuff[ind_buff, :, :] = image.copy()
-                mean_intensity[frame_number] = np.mean(image)
+                mean_int = np.mean(image)
+                assert mean_int >= 0
+                mean_intensity.append(np.array([mean_int]))
 
             else:
                 # sometimes the last image is all zeros, control for this case
@@ -376,7 +373,7 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
 
                 # add buffer to the hdf5 file
                 frame_first_buff = frame_number - Ibuff.shape[0]
-                mask_dataset[frame_first_buff:frame_number, :, :] = Ibuff
+                mask_dataset.append(Ibuff)
 
             if frame_number % 500 == 0:
                 # calculate the progress and put it in a string
@@ -387,30 +384,10 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
             if ret == 0:
                 break
 
-
-
-        # once we finished to read the whole video, we need to make sure that
-        # the hdf5 array sizes are correct.
-        if mask_dataset.shape[0] != frame_number:
-            mask_dataset.resize(frame_number, axis=0)
-            mean_intensity.resize(frame_number, axis=0)
-
-
-        if full_dataset.shape[0] != full_frame_number:
-            full_dataset.resize(full_frame_number, axis=0)
-
-        # reshape or remove the normalization range
-        if vid.dtype != np.uint8:
-                normalization_range.resize(frame_number, axis=0)
-
         # close the video
         vid.release()
 
     read_and_save_timestamp(masked_image_file)
-    # attribute to indicate the program finished correctly
-    with h5py.File(masked_image_file, "r+") as mask_fid:
-        mask_fid['/mask'].attrs['has_finished'] = 1
-
     print_flush(base_name + ' Compressed video done.')
     
 

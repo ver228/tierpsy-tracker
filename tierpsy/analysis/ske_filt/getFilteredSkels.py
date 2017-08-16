@@ -34,21 +34,19 @@ worm_partitions = {'neck': (8, 16),
 name_width_fun = lambda part: 'width_' + part
 
 def getValidIndexes(
-        skel_file,
+        trajectories_data_f,
         min_num_skel=100,
         bad_seg_thresh=0.8,
-        min_displacement=5):
+        min_displacement=5,
+        worm_index_type = 'worm_index_joined'):
     # min_num_skel - ignore trajectories that do not have at least this number of skeletons
     # min_dist - minimum distance explored by the blob to be consider a real
     # worm
-    with pd.HDFStore(skel_file, 'r') as table_fid:
-        trajectories_data = table_fid['/trajectories_data']
-
-    trajectories_data = trajectories_data[
-        trajectories_data['worm_index_joined'] > 0]
+    
+    trajectories_data = trajectories_data_f[trajectories_data_f[worm_index_type] > 0]
     valid_ind_str = 'is_good_skel' if 'is_good_skel' in trajectories_data else 'has_skeleton'
 
-    if len(trajectories_data['worm_index_joined'].unique()) == 1:
+    if len(trajectories_data[worm_index_type].unique()) == 1:
         good_skel_row = trajectories_data['skeleton_id'][
             trajectories_data[valid_ind_str].values.astype(np.bool)].values
         return (np.array([1]), good_skel_row)
@@ -62,7 +60,7 @@ def getValidIndexes(
                 'max', 'min', 'count'], 'coord_y': [
                 'max', 'min']}
         tracks_data = trajectories_data.groupby(
-            'worm_index_joined').agg(how2agg)
+            worm_index_type).agg(how2agg)
 
         delX = tracks_data['coord_x']['max'] - tracks_data['coord_x']['min']
         delY = tracks_data['coord_y']['max'] - tracks_data['coord_y']['min']
@@ -80,11 +78,14 @@ def getValidIndexes(
 
         good_traj_index = good_worm[good_worm].index
 
-        good_row = (trajectories_data.worm_index_joined.isin(good_traj_index)) \
+        good_row = (trajectories_data[worm_index_type].isin(good_traj_index)) \
             & (trajectories_data[valid_ind_str].values.astype(np.bool))
-
         good_skel_row = trajectories_data.loc[good_row, 'skeleton_id'].values
-        assert np.all(good_skel_row == trajectories_data[good_row].index)
+        
+        if not np.all(good_skel_row == trajectories_data[good_row].index):
+            import pdb
+            pdb.set_trace()
+            raise ValueError('Something wrong skeleton_id does not match the trajectories_data indexes.')
 
         return (good_traj_index, good_skel_row)
 
@@ -489,10 +490,13 @@ def getFilteredSkels(
         max_width_ratio=max_width_ratio,
         max_area_ratio=max_area_ratio)
 
+    with pd.HDFStore(skeletons_file, 'r') as table_fid:
+        trajectories_data = table_fid['/trajectories_data']
+
     # get valid rows using the trajectory displacement and the
     # skeletonization success. These indexes will be used to calculate statistics of what represent a valid skeleton.
     good_traj_index, good_skel_row = getValidIndexes(
-        skeletons_file, min_num_skel=min_num_skel, bad_seg_thresh=bad_seg_thresh, min_displacement=min_displacement)
+        trajectories_data, min_num_skel=min_num_skel, bad_seg_thresh=bad_seg_thresh, min_displacement=min_displacement)
 
     #filter skeletons depending the population morphology (area, width and length)
     filterByPopulationMorphology(
@@ -500,7 +504,3 @@ def getFilteredSkels(
         good_skel_row,
         critical_alpha=critical_alpha)
 
-    with tables.File(skeletons_file, "r+") as ske_file_id:
-        skeleton_table = ske_file_id.get_node('/skeleton')
-        # label as finished
-        skeleton_table._v_attrs['has_finished'] = 2
