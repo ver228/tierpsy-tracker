@@ -172,7 +172,7 @@ class WormFromTableSimple():
             self.dorsal_contour[ind_ff] = \
             ske_file_id.get_node('/contour_side2')[skel_table_id, :, :] * self.microns_per_pixel
             self.widths[ind_ff] = \
-            ske_file_id.get_node('/contour_width')[skel_table_id, :] * microns_per_pixel_abs
+            ske_file_id.get_node('/contour_width')[skel_table_id, :] * self.microns_per_pixel
             
             
     def _h_assert_data_dim(self):
