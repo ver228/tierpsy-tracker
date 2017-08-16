@@ -247,13 +247,12 @@ class BatchProcessing_GUI(QMainWindow):
         if self.mapper['force_start_point'] == 'COMPRESS':
             self.ui.pushButton_videosDir.setEnabled(True)
             self.ui.p_video_dir_root.setEnabled(True)
-            self.mapper['pattern_include'] = '*.avi'
+            #self.mapper['pattern_include'] = '*.avi'
         else:
             self.ui.pushButton_videosDir.setEnabled(False)
             self.ui.p_video_dir_root.setEnabled(False)
-
-            if not '.hdf5' in self.mapper['pattern_include']:
-                self.mapper['pattern_include'] = '*.hdf5'
+            #if not '.hdf5' in self.mapper['pattern_include']:
+            #    self.mapper['pattern_include'] = '*.hdf5'
 
 
 
@@ -287,6 +286,7 @@ class BatchProcessing_GUI(QMainWindow):
                 QMessageBox.Ok)
             return
 
+        print(process_args)
         analysis_worker = WorkerFunQt(processMultipleFilesFun, process_args)
         progress = AnalysisProgress(analysis_worker)
         progress.exec_()
