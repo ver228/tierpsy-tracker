@@ -8,7 +8,7 @@ from functools import partial
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QPen
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QMessageBox
 from tierpsy.gui.SWTrackerViewer_ui import Ui_SWTrackerViewer
 from tierpsy.gui.TrackerViewerAux import TrackerViewerAuxGUI
 from tierpsy.analysis.int_ske_orient.correctHeadTailIntensity import createBlocks, _fuseOverlapingGroups
@@ -50,11 +50,6 @@ class EggWriter():
                     frame_numbers = sorted(set(frame_numbers))
                     line = '\t'.join([base_name] + list(map(str, frame_numbers))) + '\n'
                     fid.write(line)
-
-
-
-           
-
 
 class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
@@ -165,14 +160,25 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
                     self.trajectories_data = ske_file_id['/features_timeseries']
                     
                     if self.trajectories_data['worm_index'].unique().size !=1:
-                        raise ValueError("There is more than one worm index. This file does not seem to have been analyzed with the WT2 option.")
+                        QMessageBox.critical(
+                        self,
+                        '',
+                        "There is more than one worm index. This file does not seem to have been analyzed with the WT2 option.",
+                        QMessageBox.Ok)
+                        
+                        raise KeyError()
 
                     good = self.trajectories_data['timestamp'].isin(timestamp)
                     self.trajectories_data = self.trajectories_data[good]
                     self.trajectories_data.sort_values(by='timestamp', inplace=True)
                     
                     if np.any(self.trajectories_data['timestamp'] < 0) or np.any(self.trajectories_data['timestamp'].isnull()):
-                        raise ValueError('There are invalid values in the timestamp. I cannot get the stage movement information.')
+                        QMessageBox.critical(
+                        self,
+                        '',
+                        'There are invalid values in the timestamp. I cannot get the stage movement information.',
+                        QMessageBox.Ok)
+                        raise KeyError()
 
                     first_frame = np.where(timestamp==self.trajectories_data['timestamp'].min())[0][0]
                     last_frame = np.where(timestamp==self.trajectories_data['timestamp'].max())[0][0]
