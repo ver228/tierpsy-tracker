@@ -14,4 +14,4 @@
 "int_max_gap_allowed_block":0, 
 "int_save_maps": true, 
 "filt_min_displacement":0,
-"analysis_type" : "SINGLE_WORM_SHAFER"}
+"analysis_type" : "WT2"}

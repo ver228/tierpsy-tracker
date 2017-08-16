@@ -4,7 +4,7 @@ import json
 import os
 
 def single_db_microns_per_pixel(file_name):
-    #this for the shaffer's lab single worm case...
+    #this is used in the single worm case, but it would be deprecated. I want to use this argument when I read the data from original additional files
     with tables.File(file_name, 'r') as fid:
         microns_per_pixel_scale = fid.get_node('/stage_movement')._v_attrs['microns_per_pixel_scale']
         if microns_per_pixel_scale.size == 2:

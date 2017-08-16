@@ -5,7 +5,7 @@ def _get_feats_param(p):
   return {
     'feat_filt_param': get_feat_filt_param(p),
     'split_traj_time' : p['split_traj_time'],
-    'is_single_worm': p['analysis_type'] == 'SINGLE_WORM_SHAFER'
+    'is_single_worm': p['analysis_type'] == 'WT2'
     }
 
 
@@ -14,7 +14,7 @@ def args_(fn, param):
   # getWormFeatures
   main_func = getWormFeaturesFilt
   requirements = ['SKE_CREATE']
-  if param.p_dict['analysis_type'] == 'SINGLE_WORM_SHAFER':
+  if param.p_dict['analysis_type'] == 'WT2':
     from functools import partial
     from ..contour_orient import ventral_orient_wrapper
     from ..stage_aligment import isGoodStageAligment 

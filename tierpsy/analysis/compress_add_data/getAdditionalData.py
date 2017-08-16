@@ -58,6 +58,15 @@ def storeXMLInfo(info_file, masked_image_file):
         masks_node.attrs['pixels2microns_x'] = pixels2microns_x
         masks_node.attrs['pixels2microns_y'] = pixels2microns_y
 
+        # Read the scale conversions, we would need this when we want to convert the pixels into microns
+        pixelPerMicronX = 1/pixels2microns_x
+        pixelPerMicronY = 1/pixels2microns_y
+        normScale = np.sqrt((pixelPerMicronX ** 2 + pixelPerMicronX ** 2) / 2);
+        pixelPerMicronScale =  normScale * np.array((np.sign(pixelPerMicronX), np.sign(pixelPerMicronY)));
+        assert np.abs(pixelPerMicronScale[0]) == np.abs(pixelPerMicronScale[1])
+        
+        masks_node.attrs['microns_per_pixel'] = np.abs(pixelPerMicronScale[0])
+        masks_node.attrs['xy_units'] = 'micrometers'
 
 #%% Read/Store the CSV file with the stage positions
 def storeStageData(stage_file, masked_image_file):

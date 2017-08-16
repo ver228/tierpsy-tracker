@@ -39,9 +39,6 @@ def change_attrs(fname, field_name):
         
     read_unit_conversions(fname)
 
-#for mask_file in masked_files:
-#    change_attrs(mask_file, '/mask')
-
 
 for skeletons_file in skeletons_files:
     change_attrs(skeletons_file, '/trajectories_data')
