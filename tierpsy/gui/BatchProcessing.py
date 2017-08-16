@@ -247,7 +247,7 @@ class BatchProcessing_GUI(QMainWindow):
         if self.mapper['force_start_point'] == 'COMPRESS':
             self.ui.pushButton_videosDir.setEnabled(True)
             self.ui.p_video_dir_root.setEnabled(True)
-            self.mapper['pattern_include'] = '*.mjpg'
+            self.mapper['pattern_include'] = '*.avi'
         else:
             self.ui.pushButton_videosDir.setEnabled(False)
             self.ui.p_video_dir_root.setEnabled(False)

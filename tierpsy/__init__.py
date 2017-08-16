@@ -23,7 +23,10 @@ DFLT_PARAMS_FILES = [x for x in os.listdir(DFLT_PARAMS_PATH) if x.endswith('.jso
 
 DFLT_FILTER_FILES = [x for x in os.listdir(AUX_FILES_DIR) if x.endswith('.h5') and x.startswith('model')]
 
-if getattr(sys, 'frozen', False):
+#this will be true if it is a pyinstaller "frozen" binary
+IS_FROZEN = getattr(sys, 'frozen', False)
+
+if IS_FROZEN: 
     # force qt5 to be the backend of matplotlib.
     # otherwise the pyinstaller packages might have some problems in the
     # binaries.
