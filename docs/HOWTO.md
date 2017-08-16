@@ -158,5 +158,5 @@ This is simplified version of the [Tierpsy Tracker Viewer](#tierpsy-tracker-view
 
 
 ## Plotting the Analysis Results
-The analysis will produce a set of files described [here](https://github.com/ver228/tierpsy-tracker/blob/development/docs/OUTPUTS.md). The extracted features are store in the files that end with [features.hdf5](https://github.com/ver228/tierpsy-tracker/blob/development/docs/OUTPUTS.md#basename_featureshdf5). You can access to them using [pandas](http://pandas.pydata.org/) and [pytables](http://www.pytables.org/). There are some examples on how to do it in MATLAB in the [tierpsy_tools](https://github.com/aexbrown/tierpsy_tools) repository.
+The analysis will produce a set of files described [here](https://github.com/ver228/tierpsy-tracker/blob/development/docs/OUTPUTS.md). The extracted features are store in the files that end with [features.hdf5](https://github.com/ver228/tierpsy-tracker/blob/development/docs/OUTPUTS.md#basename_featureshdf5). You can access to them using [pandas](http://pandas.pydata.org/) and [pytables](http://www.pytables.org/). There are examples on how to do it in MATLAB in the [tierpsy_tools](https://github.com/aexbrown/tierpsy_tools) repository.
 
