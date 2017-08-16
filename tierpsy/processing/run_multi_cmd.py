@@ -126,7 +126,7 @@ def RunMultiCMD(cmd_list,
 
     # keep loop tasks as long as there is any task alive and
     # the number of tasks stated is less than the total number of tasks
-    while cmd_list or any(tasks.proc.poll() is None for tasks in current_tasks):
+    while cmd_list or current_tasks:
         time.sleep(refresh_time)
 
         print(GUI_CLEAR_SIGNAL)
