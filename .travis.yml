@@ -43,7 +43,7 @@ install:
   
 before_script:
   #download examples
-  - installation/instalation_script.sh --download_examples
+  - bash installation/instalation_script.sh --download_examples
 
 script:
   - which python3 
