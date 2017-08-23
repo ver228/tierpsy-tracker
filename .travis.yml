@@ -31,7 +31,7 @@ install:
   
   # create testing enviroment
   - conda config --add channels conda-forge 
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON 
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION 
     numpy matplotlib pytables pandas gitpython pyqt=5 
     h5py scipy scikit-learn scikit-image seaborn xlrd 
     cython statsmodels keras opencv
