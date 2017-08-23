@@ -35,14 +35,14 @@ installation/installation_script.bat #Windows
 ## Possible Issues
 - The most common problem in the installation is OpenCV (error in import cv2). Try a fresh miniconda installation (or a fresh enviroment) and make sure your are using the [conda-forge](https://conda-forge.org/) packages. It this does not work I am afraid you would have to solve the problem by yourself (Google is your friend).
 
-- I known bug occurs if you install the [Open Worm Analysis Toolbox](https://github.com/openworm/open-worm-analysis-toolbox) using pip. The installer is broken and it will create a corrupt [.egg](https://stackoverflow.com/questions/2051192/what-is-a-python-egg) in your packages folder. Manually delete the .egg (use the error traceback to find the its location) and re-run `installation_script.sh`.
+- You do not need to install manually the [Open Worm Analysis Toolbox](https://github.com/openworm/open-worm-analysis-toolbox). However if you do (and I do not recommend it), be aware that there is a bug with the pip installer: it is missing some dependencies and it will create a corrupt [.egg](https://stackoverflow.com/questions/2051192/what-is-a-python-egg) in your packages folder. Manually delete the .egg (use the error traceback to find the its location) and re-run `installation_script.sh`. The script will download the Open Worm Analysis Toolbox repository and install it using `python setup.py develop`. 
 
 
 # Test Examples
 On Mac OSX or Linux, some test examples can be downloaded by running 
 
 ```bash
-installation/instalation_script.sh --download_examples
+installation/installation_script.sh --download_examples
 ```
 
 The tests can also be manually downloaded using [this link](https://imperiallondon-my.sharepoint.com/personal/ajaver_ic_ac_uk/_layouts/15/guestaccess.aspx?guestaccesstoken=ldZ18fLY%2bzlu7XuO9mbKVdyiKoH4naiesqiLXWU4vGQ%3d&docid=0cec4e52f4ccf4d5b8bb3a737020fc12f&rev=1). Uncompress the data and save it in the main repository folder `tests/data` .

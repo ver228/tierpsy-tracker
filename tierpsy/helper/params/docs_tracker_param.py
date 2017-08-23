@@ -274,7 +274,7 @@ dflt_param_list = [
 
     ('ventral_side', 
         '', 
-        'Ventral side orientation. Used in SINGLE_WORM_SHAFER if the dataset **/experiment_info** does not exists.'
+        'Ventral side orientation. Used only if "analysis_type" is set to "WT2".'
         ),
     ]
 

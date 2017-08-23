@@ -8,7 +8,7 @@ from functools import partial
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QPen
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QMessageBox
 from tierpsy.gui.SWTrackerViewer_ui import Ui_SWTrackerViewer
 from tierpsy.gui.TrackerViewerAux import TrackerViewerAuxGUI
 from tierpsy.analysis.int_ske_orient.correctHeadTailIntensity import createBlocks, _fuseOverlapingGroups
@@ -50,11 +50,6 @@ class EggWriter():
                     frame_numbers = sorted(set(frame_numbers))
                     line = '\t'.join([base_name] + list(map(str, frame_numbers))) + '\n'
                     fid.write(line)
-
-
-
-           
-
 
 class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
@@ -154,7 +149,8 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
                 if '/stage_position_pix' in self.fid:
                     self.stage_position_pix = self.fid.get_node('/stage_position_pix')[:]
                 else:
-                    self.stage_position_pix = np.full((self.get_node('/mask').shape[0],2), np.nan)
+                    n_frames = self.fid.get_node('/mask').shape[0]
+                    self.stage_position_pix = np.full((n_frames,2), np.nan)
                 
                 timestamp = self.fid.get_node('/timestamp/raw')[:]
                 self.microns_per_pixel = read_microns_per_pixel(self.skeletons_file)
@@ -162,13 +158,27 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
                 with pd.HDFStore(self.skeletons_file, 'r') as ske_file_id:
                     #this could be better so I do not have to load everything into memory, but this is faster
                     self.trajectories_data = ske_file_id['/features_timeseries']
-                    assert (self.trajectories_data['worm_index'] == 1).all()
+                    
+                    if self.trajectories_data['worm_index'].unique().size !=1:
+                        QMessageBox.critical(
+                        self,
+                        '',
+                        "There is more than one worm index. This file does not seem to have been analyzed with the WT2 option.",
+                        QMessageBox.Ok)
+                        
+                        raise KeyError()
 
                     good = self.trajectories_data['timestamp'].isin(timestamp)
                     self.trajectories_data = self.trajectories_data[good]
                     self.trajectories_data.sort_values(by='timestamp', inplace=True)
                     
-                    assert np.all((self.trajectories_data['timestamp'] >= 0) & (~self.trajectories_data['timestamp'].isnull()))
+                    if np.any(self.trajectories_data['timestamp'] < 0) or np.any(self.trajectories_data['timestamp'].isnull()):
+                        QMessageBox.critical(
+                        self,
+                        '',
+                        'There are invalid values in the timestamp. I cannot get the stage movement information.',
+                        QMessageBox.Ok)
+                        raise KeyError()
 
                     first_frame = np.where(timestamp==self.trajectories_data['timestamp'].min())[0][0]
                     last_frame = np.where(timestamp==self.trajectories_data['timestamp'].max())[0][0]

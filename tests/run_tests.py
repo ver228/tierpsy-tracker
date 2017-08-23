@@ -179,7 +179,7 @@ class WORM_MOTEL(TestObj):
         '--results_dir_root',
         self.results_dir,
         '--json_file',
-        'MULTI_RIG_worm_motel',
+        'MULTI_RIG_worm_motel.json',
         '--pattern_include', 
         '*.mjpg'
         ]

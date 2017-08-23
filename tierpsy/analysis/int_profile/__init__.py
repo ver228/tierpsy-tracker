@@ -19,7 +19,7 @@ def args_(fn, param):
     requirements = ['SKE_CREATE']
     main_func = getIntensityProfile
     
-    if p['analysis_type'] == 'SINGLE_WORM_SHAFER':
+    if p['analysis_type'] == 'WT2':
         from functools import partial
         from ..contour_orient import ventral_orient_wrapper
         main_func = partial(ventral_orient_wrapper, main_func, fn['skeletons'], param.p_dict['ventral_side'])

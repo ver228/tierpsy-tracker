@@ -6,7 +6,7 @@ from .processVideo import processVideo, isGoodVideo
 def args_(fn, param):
     #step requirements
     requirements = [('can_read_video', partial(isGoodVideo, fn['original_video']))]
-    if param.p_dict['analysis_type'] == 'SINGLE_WORM_SHAFER':
+    if param.p_dict['analysis_type'] == 'WT2':
         from ..compress_add_data import storeAdditionalDataSW, hasAdditionalFiles
         #if a shaffer single worm video does not have the additional files (info.xml log.csv) do not even execute the compression 
         requirements += [('has_additional_files', partial(hasAdditionalFiles, fn['original_video']))]

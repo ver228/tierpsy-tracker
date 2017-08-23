@@ -10,7 +10,7 @@ import tables
 import pandas as pd
 import warnings
 
-from tierpsy.helper.params import read_fps
+from tierpsy.helper.params import read_fps, read_microns_per_pixel
 from tierpsy.helper.misc import print_flush, get_base_name
 from tierpsy.analysis.stage_aligment.findStageMovement import getFrameDiffVar, findStageMovement, shift2video_ref
 
@@ -58,6 +58,18 @@ def _h_get_stage_inv(skeletons_file, timestamp):
 
 
     return stage_vec_inv, ind_ff
+
+def _h_add_stage_position_pix(mask_file, skeletons_file):
+    # if the stage was aligned correctly add the information into the mask file    
+    microns_per_pixel = read_microns_per_pixel(mask_file)
+    with tables.File(mask_file, 'r+') as fid:
+        timestamp_c = fid.get_node('/timestamp/raw')[:]
+        timestamp = np.arange(np.min(timestamp_c), np.max(timestamp_c)+1)
+        stage_vec_inv, ind_ff = _h_get_stage_inv(skeletons_file, timestamp)
+        stage_vec_pix = stage_vec_inv[ind_ff]/microns_per_pixel
+        if '/stage_position_pix' in fid: 
+            fid.remove_node('/', 'stage_position_pix')
+        fid.create_array('/', 'stage_position_pix', obj=stage_vec_pix)
 
 def alignStageMotion(masked_file, skeletons_file):
 
@@ -184,6 +196,8 @@ def alignStageMotion(masked_file, skeletons_file):
         fid.create_carray(g_stage_movement, 'is_stage_move', obj=is_stage_move_d)
         g_stage_movement._v_attrs['has_finished'] = 1
     
+
+    _h_add_stage_position_pix(masked_file, skeletons_file)
     print_flush(base_name + ' Aligning Stage Motion. Finished.')
     
 

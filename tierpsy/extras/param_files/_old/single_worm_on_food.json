@@ -13,5 +13,5 @@
 	"strel_size":10, 
 	"int_save_maps": true, 
 	"filt_min_displacement":0,
-	"analysis_type" : "SINGLE_WORM_SHAFER"
+	"analysis_type" : "WT2"
 }

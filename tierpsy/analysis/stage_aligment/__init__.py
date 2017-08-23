@@ -6,6 +6,6 @@ def args_(fn, param):
         'func': alignStageMotion,
         'argkws': {'masked_file': fn['masked_image'], 'skeletons_file': fn['skeletons']},
         'input_files' : [fn['skeletons'], fn['masked_image']],
-        'output_files': [fn['skeletons']],
+        'output_files': [fn['skeletons'], fn['masked_image']],
         'requirements' : ['COMPRESS_ADD_DATA', 'SKE_CREATE'],
     }
