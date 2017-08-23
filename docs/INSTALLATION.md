@@ -42,7 +42,7 @@ installation/installation_script.bat #Windows
 On Mac OSX or Linux, some test examples can be downloaded by running 
 
 ```bash
-installation/instalation_script.sh --download_examples
+installation/installation_script.sh --download_examples
 ```
 
 The tests can also be manually downloaded using [this link](https://imperiallondon-my.sharepoint.com/personal/ajaver_ic_ac_uk/_layouts/15/guestaccess.aspx?guestaccesstoken=ldZ18fLY%2bzlu7XuO9mbKVdyiKoH4naiesqiLXWU4vGQ%3d&docid=0cec4e52f4ccf4d5b8bb3a737020fc12f&rev=1). Uncompress the data and save it in the main repository folder `tests/data` .
