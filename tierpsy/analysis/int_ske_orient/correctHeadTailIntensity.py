@@ -21,9 +21,6 @@ def medabsdev(x): return np.median(np.abs(np.median(x) - x))
 
 def createBlocks(flags_vector, min_block_size=0):
     # divide data into groups of continous indexes
-    blocks = np.zeros(flags_vector.shape, np.int)
-
-    lab_ind = 0
     prev_ind = False
     group_ini = []
     group_fin = []
