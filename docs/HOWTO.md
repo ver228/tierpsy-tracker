@@ -113,7 +113,9 @@ This widget is used to visualize the tracking results. You can move to a specifi
 
 ![MWTrackerViewer](https://cloud.githubusercontent.com/assets/8364368/26412511/eac27158-40a0-11e7-880c-5671c2c27099.gif)  
 
-You can manually correct the trajectories as shown below. Once you have finished, execute the [FEAT\_MANUAL\_CREATE](EXPLANATION.md/#feat_manual_create) step using [Batch Processing Multiple Files](#batch-processing-multiple-files).
+### Manually Joining Trajectories
+
+You can manually correct the trajectories as shown below. Once you have finished open [Batch Processing Multiple Files](#batch-processing-multiple-files) and re-run the analysis selecting FEAT\_MANUAL\_CREATE from the Analysis Start Point drop menu. This will execute the step [FEAT\_MANUAL\_CREATE](EXPLANATION.md/#feat_manual_create), and create a file with the extension basename_feat_manual.hdf5 with the same contents as [`basename_features.hdf5`](OUTPUTS.md/#basename_features.hdf5) but with the manually joined indexes.
 
 ![TrackJoined](https://cloud.githubusercontent.com/assets/8364368/26412212/e0e112f8-409f-11e7-867b-512cf044d717.gif) 
 
