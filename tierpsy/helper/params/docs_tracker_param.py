@@ -142,6 +142,11 @@ dflt_param_list = [
         25, 
         'Maximum displacement between frames for two particles to consider part of the same track.'
         ),
+    ('traj_max_frames_gap',
+        0,
+        'Max gap in frames allowed between joined trajectories.'
+        ),
+
     ('traj_area_ratio_lim', 
         2, 
         'Area ratio between blob areas in different frames to be considered part of the same trajectory.'
