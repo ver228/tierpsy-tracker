@@ -78,7 +78,7 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
         self.egg_writer = EggWriter()
     
     def updateVideoFile(self, vfilename):
-        super().updateVideoFile(vfilename, possible_ext = ['_features.hdf5', '_skeletons.hdf5'])
+        super().updateVideoFile(vfilename, possible_ext = ['_skeletons.hdf5', '_features.hdf5'])
         self.updateImage()
 
     # change frame number using the keys
