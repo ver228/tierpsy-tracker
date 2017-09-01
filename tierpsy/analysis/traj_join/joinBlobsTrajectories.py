@@ -330,7 +330,7 @@ def joinGapsTrajectoriesDF(plate_worms,
             R = np.sqrt((possible_rows['coord_x'] -
                          last_rows['coord_x'][curr_index]) ** 2 +
                         (possible_rows['coord_y'] -
-                         last_rows['coord_x'][curr_index]) ** 2)
+                         last_rows['coord_y'][curr_index]) ** 2)
     
             indmin = np.argmin(R)
             # only join trajectories that move at most one worm body
