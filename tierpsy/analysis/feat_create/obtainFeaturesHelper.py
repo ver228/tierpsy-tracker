@@ -104,21 +104,31 @@ class WormFromTableSimple():
             assert self.worm_index_type in trajectories_data_f
             good = trajectories_data_f[self.worm_index_type] == self.worm_index
             trajectories_data = trajectories_data_f.loc[good]
-
-            skel_table_id = trajectories_data['skeleton_id'].values
+                        
             try:
                 # try to read the time stamps, if there are repeated or not a
                 # number use the frame nuber instead
                 timestamp_raw = trajectories_data['timestamp_raw'].values
-                if np.any(np.isnan(timestamp_raw)) or np.any(np.diff(timestamp_raw) == 0):
+                if np.any(np.isnan(timestamp_raw)):
                     raise ValueError
                 else:
                     timestamp_inds = timestamp_raw.astype(np.int)
+                    
+                    #deal in the case they are repeating indexes (this happends sometimes in the last frame)
+                    timestamp_inds, ind = np.unique(timestamp_inds, return_index=True)
+                    #I only tolerate at most 2 repeated values
+                    if timestamp_inds.size + 2 < skel_table_id.size:
+                        raise ValueError
+                    
+                    trajectories_data = trajectories_data.loc[ind]
+                                        
             except (ValueError, KeyError):
                 # if the time stamp fails use the frame_number value instead
                 # (the index of the mask) and return nan as the fps
                 timestamp_inds = trajectories_data['frame_number'].values
-                
+            
+
+            skel_table_id = trajectories_data['skeleton_id'].values
             # we need to use (.values) to be able to use the & operator
             good_skeletons = (trajectories_data['has_skeleton'] == 1).values
             if self.use_skel_filter and 'is_good_skel' in trajectories_data:
@@ -126,9 +136,10 @@ class WormFromTableSimple():
                 # the filtering step
                 good_skeletons &= (
                     trajectories_data['is_good_skel'] == 1).values
-
             skel_table_id = skel_table_id[good_skeletons]
             timestamp_inds = timestamp_inds[good_skeletons]
+            
+            
             return skel_table_id, timestamp_inds
 
 
