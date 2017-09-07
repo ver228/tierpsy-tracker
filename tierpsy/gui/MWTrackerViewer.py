@@ -19,7 +19,7 @@ from tierpsy.gui.MWTrackerViewer_ui import Ui_MWTrackerViewer
 from tierpsy.gui.TrackerViewerAux import TrackerViewerAuxGUI
 
 from tierpsy.helper.misc import WLAB, save_modified_table
-from tierpsy.helper.params import TrackerParams, read_fps, read_microns_per_pixel
+from tierpsy.helper.params import TrackerParams, read_fps
 
 from tierpsy.processing.trackProvenance import getGitCommitHash, execThisPoint
 
@@ -129,9 +129,6 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
         
         self.ui.pushButton_feats.hide() 
         #self.ui.pushButton_feats.clicked.connect(self.getManualFeatures)
-
-
-
 
     def keyPressEvent(self, event):
         #MORE SHORTCUTS
@@ -252,10 +249,15 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
             self.trajectories_data = self.trajectories_data.rename(
                 columns={'worm_index_N': 'worm_index_manual'})
         
+
+
         if not 'worm_index_manual' in self.trajectories_data:
             self.trajectories_data['worm_label'] = self.wlab['U']
-            self.trajectories_data['worm_index_manual'] = self.trajectories_data[
-                'worm_index_joined']
+            self.trajectories_data['worm_index_manual'] = self.trajectories_data['worm_index_joined']
+            
+
+        if not 'has_skeleton' in self.trajectories_data:
+            self.trajectories_data['has_skeleton'] = self.trajectories_data['skeleton_id'] >= 0
         
         self.updateWormIndexTypeMenu()
         
@@ -514,10 +516,6 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
                 self.worm_index_roi2,
                 self.ui.comboBox_ROI2,
                 self.ui.checkBox_ROI2.isChecked())
-
-        
-
-                
 
     # function that generalized the updating of the ROI
     def updateROIcanvas(

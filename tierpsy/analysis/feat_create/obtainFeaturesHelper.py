@@ -117,11 +117,12 @@ class WormFromTableSimple():
                     #deal in the case they are repeating indexes (this happends sometimes in the last frame)
                     timestamp_inds, ind = np.unique(timestamp_inds, return_index=True)
                     #I only tolerate at most 2 repeated values
-                    if timestamp_inds.size + 2 < skel_table_id.size:
+                    if timestamp_inds.size + 2 < trajectories_data.shape[0]:
                         raise ValueError
+
+                    trajectories_data = trajectories_data.iloc[ind]
                     
-                    trajectories_data = trajectories_data.loc[ind]
-                                        
+
             except (ValueError, KeyError):
                 # if the time stamp fails use the frame_number value instead
                 # (the index of the mask) and return nan as the fps
@@ -153,7 +154,6 @@ class WormFromTableSimple():
         first_frame = np.min(timestamp_inds)
         last_frame = np.max(timestamp_inds)
         n_frames = last_frame - first_frame + 1
-
         
         # get the apropiate index in the object array
         ind_ff = timestamp_inds - first_frame
@@ -163,7 +163,7 @@ class WormFromTableSimple():
             self.n_segments = ske_file_id.get_node('/skeleton').shape[1]
  
         # add the data from the skeleton_id's and timestamps used
-        self.timestamp = np.arange(first_frame, last_frame+1)
+        self.timestamp = np.arange(first_frame, last_frame + 1)
         
         self.skeleton_id = np.full(n_frames, -1, np.int32)
         self.skeleton_id[ind_ff] = skel_table_id

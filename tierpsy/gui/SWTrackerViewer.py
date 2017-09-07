@@ -65,8 +65,7 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
         self.is_stage_move = []
         self.is_feat_file = False
 
-        self.microns_per_pixels = None
-        self.stage_position_pix = None
+        
 
         self.ui.spinBox_skelBlock.valueChanged.connect(self.changeSkelBlock)
         self.ui.checkBox_showLabel.stateChanged.connect(self.updateImage)
@@ -117,7 +116,6 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
         self.skel_block = []
         self.is_stage_move = []
-        self.stage_position_pix = None
         self.is_feat_file = False
 
         VALID_ERRORS = (IOError, KeyError, tables.exceptions.HDF5ExtError, tables.exceptions.NoSuchNodeError)
@@ -126,8 +124,6 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
             try:
                 
                 with tables.File(self.skeletons_file, 'r') as fid:
-                    self.stage_position_pix = fid.get_node('/stage_movement/stage_vec')[:]
-
                     #only used for skeletons, and to test the head/tail orientation. I leave it but probably should be removed for in the future
                     prov_str = fid.get_node('/provenance_tracking/INT_SKE_ORIENT').read()
                     func_arg_str = json.loads(
@@ -144,17 +140,11 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
                 pass
         else:
             try:
-
-                #load skeletons from _features.hdf5 
-                if '/stage_position_pix' in self.fid:
-                    self.stage_position_pix = self.fid.get_node('/stage_position_pix')[:]
-                else:
+                if self.stage_position_pix is None:
                     n_frames = self.fid.get_node('/mask').shape[0]
                     self.stage_position_pix = np.full((n_frames,2), np.nan)
                 
                 timestamp = self.fid.get_node('/timestamp/raw')[:]
-                self.microns_per_pixel = read_microns_per_pixel(self.skeletons_file)
-                
                 with pd.HDFStore(self.skeletons_file, 'r') as ske_file_id:
                     #this could be better so I do not have to load everything into memory, but this is faster
                     self.trajectories_data = ske_file_id['/features_timeseries']
@@ -212,31 +202,7 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
         isDrawSkel = self.ui.checkBox_showLabel.isChecked()
         skel_id = int(row_data['skeleton_id'])
 
-        if not isDrawSkel or skel_id < 0:
-            return self.frame_qimg
-
-        elif self.is_feat_file:
-            #read skeletons from the features file
-            with tables.File(self.skeletons_file, 'r') as ske_file_id:
-                fields = {
-                    'dorsal_contours':'contour_side1', 
-                    'skeletons':'skeleton', 
-                    'ventral_contours':'contour_side2'
-                }
-
-                skel_dat = {}
-                for ff, tt in fields.items():
-                    field = '/coordinates/' + ff
-                    if field in ske_file_id:
-                        dat = ske_file_id.get_node(field)[skel_id]
-                        dat = dat/self.microns_per_pixel - self.stage_position_pix[self.frame_number]
-                    else:
-                        dat = np.full((1,2), np.nan)
-
-                    skel_dat[tt] = dat
-            super()._drawSkel(self.frame_qimg, skel_dat)
-
-        else:
+        if isDrawSkel and skel_id >= 0:
             self.frame_qimg = self.drawSkelResult(self.frame_img, self.frame_qimg, row_data, isDrawSkel)
 
         return self.frame_qimg

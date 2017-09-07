@@ -82,11 +82,6 @@ def getValidIndexes(
             & (trajectories_data[valid_ind_str].values.astype(np.bool))
         good_skel_row = trajectories_data.loc[good_row, 'skeleton_id'].values
         
-        if not np.all(good_skel_row == trajectories_data[good_row].index):
-            import pdb
-            pdb.set_trace()
-            raise ValueError('Something wrong skeleton_id does not match the trajectories_data indexes.')
-
         return (good_traj_index, good_skel_row)
 
 def _h_nodes2Array(skeletons_file, nodes4fit, valid_index=-1):

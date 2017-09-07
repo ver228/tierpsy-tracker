@@ -312,7 +312,7 @@ def joinGapsTrajectoriesDF(plate_worms,
             # within a timegap given by max_frames_gap
             possible_rows = first_rows[
                 (first_rows['frame_number'] > last_rows['frame_number'][curr_index]) & (
-                    first_rows['frame_number'] < last_rows['frame_number'][curr_index] +
+                    first_rows['frame_number'] <= last_rows['frame_number'][curr_index] +
                     max_frames_gap)]
     
             # the area change must be smaller than the one given by area_ratio_lim
