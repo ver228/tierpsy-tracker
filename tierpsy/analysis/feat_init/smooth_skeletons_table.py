@@ -10,7 +10,7 @@ import pandas as pd
 import tables
 from scipy.interpolate import interp1d
 
-from tierpsy_features import SmoothedWorm, get_timeseries_features
+from tierpsy_features import SmoothedWorm
 from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormFromTable
 from tierpsy.analysis.stage_aligment.alignStageMotion import _h_get_stage_inv
 
@@ -18,6 +18,10 @@ from tierpsy.helper.misc import TimeCounter, print_flush, get_base_name, TABLE_F
 from tierpsy.helper.params import copy_unit_conversions, read_fps, read_microns_per_pixel
 
 def _fill_dropped_frames(worm_data, dflt_val):
+    '''
+    fill the dropped frames data for a individual worm dataframe  (worm_data)
+    obtained from skeletons.hdf5 /trajectory_data
+    '''
     ini_t = worm_data['timestamp_raw'].min()
     fin_t = worm_data['timestamp_raw'].max()
     n_size = fin_t-ini_t + 1
@@ -44,6 +48,10 @@ def _fill_dropped_frames(worm_data, dflt_val):
     return worm_df
 
 def _r_fill_trajectories_data(skeletons_file):
+    '''
+    Read the /trajectories_data, interpolate any dropped frames, 
+    change some fields and make sure the data format is 32bit (less space)
+    '''
     valid_fields = ['timestamp_raw', 'timestamp_time', 'worm_index_joined', 
                     'coord_x', 'coord_y', 
                     'threshold', 'roi_size',  'area', 
@@ -107,6 +115,12 @@ def _r_fill_trajectories_data(skeletons_file):
     return trajectories_data
 
 def _r_fill_blob_features(skeletons_file, trajectories_data_f, is_WT2):
+    '''
+    Read previously calculated blob features, convert features with units
+    `pixels` into microns and if it is_WT2 add the stage movement to the centroid
+    coordinates.
+    '''
+
     microns_per_pixel = read_microns_per_pixel(skeletons_file)
     
     with pd.HDFStore(skeletons_file, 'r') as fid:
@@ -140,7 +154,7 @@ def _r_fill_blob_features(skeletons_file, trajectories_data_f, is_WT2):
     blob_features = blob_features.interpolate()
     return blob_features
 
-def _h_smooth_skeletons_table(skeletons_file, 
+def smooth_skeletons_table(skeletons_file, 
                             features_file,
                             is_WT2 = False,
                             skel_smooth_window = 5,
@@ -255,94 +269,7 @@ def _h_smooth_skeletons_table(skeletons_file,
                 obj = blob_features.to_records(index=False),
                 filters = TABLE_FILTERS)
 
-def _h_get_timeseries_feats_table(features_file, 
-                                  delta_time,
-                                  curvature_window):
-    timeseries_features = []
-    fps = read_fps(features_file)
-    with pd.HDFStore(features_file, 'r') as fid:
-        trajectories_data = fid['/trajectories_data']
-    #only use data that was skeletonized
-    trajectories_data = trajectories_data[trajectories_data['skeleton_id']>=0]
-    
-    
-    trajectories_data_g = trajectories_data.groupby('worm_index_joined')
-    progress_timer = TimeCounter('')
-    base_name = get_base_name(features_file)
-    tot_worms = len(trajectories_data_g)
-    def _display_progress(n):
-            # display progress
-        dd = " Smoothing skeletons. Worm %i of %i done." % (n+1, tot_worms)
-        print_flush(
-            base_name +
-            dd +
-            ' Total time:' +
-            progress_timer.get_time_str())
-    
-    _display_progress(0)
-    
-    
-    for ind_n, (worm_index, worm_data) in enumerate(trajectories_data_g):
-        with tables.File(features_file, 'r') as fid:
-            skel_id = worm_data['skeleton_id'].values
-            args = []
-            for p in ('skeletons', 'widths', 'dorsal_contours', 'ventral_contours'):
-                 dd = fid.get_node('/coordinates/' + p)
-                 if len(dd.shape) == 3:
-                     args.append(dd[skel_id, :, :])
-                 else:
-                     args.append(dd[skel_id, :])
-                
-        feats = get_timeseries_features(*args, 
-                                        fps = fps,
-                                        delta_time = delta_time, #delta time in seconds to calculate the velocity
-                                        curvature_window = curvature_window
-                                        )
-        feats = feats.astype(np.float32)
-        feats['worm_index'] = np.int32(worm_index)
-        feats['timestamp'] = worm_data['timestamp_raw'].values
-        
-        #move the last fields to the first columns
-        cols = feats.columns.tolist()
-        cols = cols[-2:] + cols[:-2]
-        timeseries_features.append(feats[cols])
-        
-        _display_progress(ind_n+1)
-        
-    timeseries_features = pd.concat(timeseries_features, ignore_index=True)
-    
-    with tables.File(features_file, 'r+') as fid:
-        if '/timeseries_features' in fid:
-            fid.remove_node('/timeseries_features')
 
-        fid.create_table(
-                '/',
-                'timeseries_features',
-                obj = timeseries_features.to_records(index=False),
-                filters = TABLE_FILTERS)
-
-def get_tierpsy_features(
-        skeletons_file, 
-        features_file,
-        is_WT2 = False,
-        skel_smooth_window = 5,
-        coords_smooth_window_s = 0.25,
-        gap_to_interp_s = 0.25,
-        delta_time = 1/3,
-        curvature_window = 7
-        ):
-    
-    _h_smooth_skeletons_table(skeletons_file, 
-                              features_file, 
-                              is_WT2 = is_WT2,
-                              skel_smooth_window = skel_smooth_window,
-                              coords_smooth_window_s = coords_smooth_window_s,
-                              gap_to_interp_s = gap_to_interp_s)
-   
-    _h_get_timeseries_feats_table(features_file, 
-                                delta_time,
-                                curvature_window
-                                )
     
 if __name__ == '__main__':
     
@@ -361,12 +288,11 @@ if __name__ == '__main__':
     skeletons_file = base_file + '_skeletons.hdf5'
     features_file = base_file + '_featuresN.hdf5'
     
-    get_tierpsy_features(
+    smooth_skeletons_table(
         skeletons_file, 
         features_file,
         is_WT2,
         skel_smooth_window = 5,
         coords_smooth_window_s = 0.25,
-        gap_to_interp_s = 0.25,
-        delta_time = 1/3
+        gap_to_interp_s = 0.25
         )

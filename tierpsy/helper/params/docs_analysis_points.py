@@ -70,6 +70,7 @@ dflt_analysis_points = {
     'SKE_ORIENT',
     'INT_PROFILE',
     'INT_SKE_ORIENT',
+    'FEAT_INIT',
     'FEAT_TIERPSY'
     ],
 }

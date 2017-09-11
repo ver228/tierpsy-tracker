@@ -1,19 +1,21 @@
-from .obtain_tierpsy_features import get_tierpsy_features
+from .get_tierpsy_features import get_tierpsy_features
 
 def args_(fn, param):
   # getWormFeatures
   main_func = get_tierpsy_features
-  requirements = ['SKE_CREATE']
+  requirements = ['FEAT_INIT']
   
-  is_WT2 = param.p_dict['analysis_type'] == 'WT2'
   #arguments used by AnalysisPoints.py
   return {
         'func': main_func,
-        'argkws': {'skeletons_file': fn['skeletons'], 
+        'argkws': {
                   'features_file': fn['featuresN'],
-                  'is_WT2' : is_WT2
+                  'velocity_delta_time' : 1/3,
+                  'curvature_window' : 7
                   },
-        'input_files' : [fn['skeletons']],
+        'input_files' : [fn['featuresN']],
         'output_files': [fn['featuresN']],
         'requirements' : requirements
     }
+
+    
