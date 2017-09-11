@@ -32,8 +32,7 @@ dflt_analysis_points = {
     'SKE_ORIENT',
     'INT_PROFILE',
     'INT_SKE_ORIENT',
-    'FEAT_CREATE',
-    'FEAT_FOOD'
+    'FEAT_CREATE'
     ],
 
 
@@ -60,7 +59,6 @@ dflt_analysis_points = {
 
     'TEST':
     ['COMPRESS',
-    'VID_SUBSAMPLE',
     'TRAJ_CREATE',
     'TRAJ_JOIN',
     'SKE_INIT',
@@ -70,6 +68,7 @@ dflt_analysis_points = {
     'SKE_ORIENT',
     'INT_PROFILE',
     'INT_SKE_ORIENT',
+    'FOOD_CNT',
     'FEAT_INIT',
     'FEAT_TIERPSY'
     ],

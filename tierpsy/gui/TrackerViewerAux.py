@@ -88,6 +88,33 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
                     # use default
                     self.strel_size = dflt_skel_size
 
+        
+
+
+            #If i am using the smoothed skeletons (_featuresN.hdf5) we have to use a different field and divided by the microns per pixels scale
+            self.stage_position_pix =  None
+            with tables.File(self.skeletons_file, 'r') as skel_file_id:
+                if '/coordinates' in skel_file_id:
+                    self.skel_microns_per_pixel = read_microns_per_pixel(self.skeletons_file)
+                    self.coordinates_group = '/coordinates/'
+                    self.coordinates_fields = {
+                        'dorsal_contours':'contour_side2', 
+                        'skeletons':'skeleton', 
+                        'ventral_contours':'contour_side1'
+                    }
+                    if '/stage_position_pix' in self.fid:
+                        self.stage_position_pix = self.fid.get_node('/stage_position_pix')[:]
+                
+                else:
+                    self.skel_microns_per_pixel = None
+                    self.coordinates_group = '/'
+
+                    self.coordinates_fields = {
+                        'contour_side1':'contour_side1', 
+                        'skeleton':'skeleton', 
+                        'contour_side2':'contour_side2'
+                    }
+
         except (IOError, KeyError, tables.exceptions.HDF5ExtError):
             self.trajectories_data = None
             self.traj_time_grouped = None
@@ -97,31 +124,6 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
             self.updateImage()
         else:
             self.ui.spinBox_frame.setValue(0)
-
-
-        #If i am using the smoothed skeletons (_featuresN.hdf5) we have to use a different field and divided by the microns per pixels scale
-        self.stage_position_pix =  None
-        with tables.File(self.skeletons_file, 'r') as skel_file_id:
-            if '/coordinates' in skel_file_id:
-                self.skel_microns_per_pixel = read_microns_per_pixel(self.skeletons_file)
-                self.coordinates_group = '/coordinates/'
-                self.coordinates_fields = {
-                    'dorsal_contours':'contour_side2', 
-                    'skeletons':'skeleton', 
-                    'ventral_contours':'contour_side1'
-                }
-                if '/stage_position_pix' in self.fid:
-                    self.stage_position_pix = self.fid.get_node('/stage_position_pix')[:]
-            
-            else:
-                self.skel_microns_per_pixel = None
-                self.coordinates_group = '/'
-
-                self.coordinates_fields = {
-                    'contour_side1':'contour_side1', 
-                    'skeleton':'skeleton', 
-                    'contour_side2':'contour_side2'
-                }
 
     def updateImGroup(self, h5path):
         super().updateImGroup(h5path)

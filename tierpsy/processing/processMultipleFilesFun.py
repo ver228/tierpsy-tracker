@@ -86,6 +86,8 @@ def processMultipleFilesFun(
     else:
         is_parallel_check = True
 
+    is_parallel_check = False
+
     remove_border_checkpoints(analysis_checkpoints, force_start_point, 0)
     remove_border_checkpoints(analysis_checkpoints, end_point, -1)
 
