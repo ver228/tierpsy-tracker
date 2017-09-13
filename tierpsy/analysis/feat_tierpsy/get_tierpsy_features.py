@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import tables
 
-from tierpsy_features import get_timeseries_features
+from tierpsy_features import get_timeseries_features, all_columns
 
 from tierpsy.helper.misc import TimeCounter, print_flush, get_base_name, TABLE_FILTERS
 from tierpsy.helper.params import read_fps
@@ -19,6 +19,7 @@ def _h_get_timeseries_feats_table(features_file,
                                   curvature_window = None):
     timeseries_features = []
     fps = read_fps(features_file)
+    
     with pd.HDFStore(features_file, 'r') as fid:
         trajectories_data = fid['/trajectories_data']
     #only use data that was skeletonized
@@ -31,7 +32,7 @@ def _h_get_timeseries_feats_table(features_file,
     tot_worms = len(trajectories_data_g)
     def _display_progress(n):
             # display progress
-        dd = " Smoothing skeletons. Worm %i of %i done." % (n+1, tot_worms)
+        dd = " Calculating tierpsy features. Worm %i of %i done." % (n+1, tot_worms)
         print_flush(
             base_name +
             dd +
@@ -41,68 +42,76 @@ def _h_get_timeseries_feats_table(features_file,
     _display_progress(0)
     
     
-    for ind_n, (worm_index, worm_data) in enumerate(trajectories_data_g):
-        with tables.File(features_file, 'r') as fid:
-            skel_id = worm_data['skeleton_id'].values
-            args = []
-            for p in ('skeletons', 'widths', 'dorsal_contours', 'ventral_contours'):
-                 dd = fid.get_node('/coordinates/' + p)
-                 if len(dd.shape) == 3:
-                     args.append(dd[skel_id, :, :])
-                 else:
-                     args.append(dd[skel_id, :])
-                
-        feats = get_timeseries_features(*args, 
-                                        fps = fps,
-                                        delta_time = velocity_delta_time, #delta time in seconds to calculate the velocity
-                                        curvature_window = curvature_window
-                                        )
-        feats = feats.astype(np.float32)
-        feats['worm_index'] = np.int32(worm_index)
-        feats['timestamp'] = worm_data['timestamp_raw'].values
-        
-        #move the last fields to the first columns
-        cols = feats.columns.tolist()
-        cols = cols[-2:] + cols[:-2]
-        timeseries_features.append(feats[cols])
-        
-        _display_progress(ind_n+1)
-        
-    timeseries_features = pd.concat(timeseries_features, ignore_index=True)
-    
     with tables.File(features_file, 'r+') as fid:
         if '/timeseries_features' in fid:
             fid.remove_node('/timeseries_features')
-
-        fid.create_table(
+            
+            
+        feat_dtypes = [(x, np.float32) for x in all_columns]
+        feat_dtypes = [('worm_index', np.int32), ('timestamp', np.float32)] + feat_dtypes
+        
+        
+        timeseries_features = fid.create_table(
                 '/',
                 'timeseries_features',
-                obj = timeseries_features.to_records(index=False),
+                obj = np.recarray(0, feat_dtypes),
                 filters = TABLE_FILTERS)
-
+        
+        if '/food_cnt_coord' in fid:
+            food_cnt = fid.get_node('/food_cnt_coord')[:]
+        else:
+            food_cnt = None
+    
+        for ind_n, (worm_index, worm_data) in enumerate(trajectories_data_g):
+            with tables.File(features_file, 'r') as fid:
+                skel_id = worm_data['skeleton_id'].values
+                args = []
+                for p in ('skeletons', 'widths', 'dorsal_contours', 'ventral_contours'):
+                     dd = fid.get_node('/coordinates/' + p)
+                     if len(dd.shape) == 3:
+                         args.append(dd[skel_id, :, :])
+                     else:
+                         args.append(dd[skel_id, :])
+                    
+            feats = get_timeseries_features(*args, 
+                                            food_cnt = food_cnt,
+                                            fps = fps,
+                                            delta_time = velocity_delta_time, #delta time in seconds to calculate the velocity
+                                            curvature_window = curvature_window
+                                            )
+            feats = feats.astype(np.float32)
+            feats['worm_index'] = np.int32(worm_index)
+            feats['timestamp'] = worm_data['timestamp_raw'].values
+            
+            #move the last fields to the first columns
+            cols = feats.columns.tolist()
+            cols = cols[-2:] + cols[:-2]
+            feats = feats[cols]
+            
+            timeseries_features.append(feats.to_records(index=False))
+            
+            _display_progress(ind_n+1)
+            
 def get_tierpsy_features(
         features_file,
-        velocity_delta_time = 1/3,
-        curvature_window = 7
+        velocity_delta_time = 1/3
         ):
     
     _h_get_timeseries_feats_table(features_file, 
-                                velocity_delta_time,
-                                curvature_window
+                                velocity_delta_time
                                 )
     
 if __name__ == '__main__':
     #base_file = '/Volumes/behavgenom_archive$/single_worm/finished/mutants/gpa-10(pk362)V@NL1147/food_OP50/XX/30m_wait/clockwise/gpa-10 (pk362)V on food L_2009_07_16__12_55__4'
     #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/WT2/Results/WT2'
     #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/AVI_VIDEOS/Results/AVI_VIDEOS_4'
-    base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/GECKO_VIDEOS/Results/GECKO_VIDEOS'
+    #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/GECKO_VIDEOS/Results/GECKO_VIDEOS'
+    base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/RIG_HDF5_VIDEOS/Results/RIG_HDF5_VIDEOS'
     is_WT2 = False
-    
     
     features_file = base_file + '_featuresN.hdf5'
     
     get_tierpsy_features(
         features_file,
-        velocity_delta_time = 1/3,
-        curvature_window = 7
+        velocity_delta_time = 1/3
         )

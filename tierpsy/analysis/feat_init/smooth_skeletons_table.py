@@ -11,11 +11,28 @@ import tables
 from scipy.interpolate import interp1d
 
 from tierpsy_features import SmoothedWorm
+from tierpsy_features.food import _h_smooth_cnt
+
 from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormFromTable
 from tierpsy.analysis.stage_aligment.alignStageMotion import _h_get_stage_inv
 
 from tierpsy.helper.misc import TimeCounter, print_flush, get_base_name, TABLE_FILTERS
 from tierpsy.helper.params import copy_unit_conversions, read_fps, read_microns_per_pixel
+
+def read_food_contour(skeletons_file):
+    try:
+        with tables.File(skeletons_file, 'r') as fid:
+            food_cnt_pix = fid.get_node('/food_cnt_coord')[:]
+            
+        #smooth contours
+        microns_per_pixel = read_microns_per_pixel(skeletons_file)
+        food_cnt = microns_per_pixel*food_cnt_pix
+        food_cnt = _h_smooth_cnt(food_cnt)
+        
+    except tables.exceptions.NoSuchNodeError:
+        food_cnt = None
+    
+    return food_cnt
 
 def _fill_dropped_frames(worm_data, dflt_val):
     '''
@@ -161,6 +178,11 @@ def smooth_skeletons_table(skeletons_file,
                             coords_smooth_window_s = 0.25,
                             gap_to_interp_s = 0.25
                             ):
+    
+    #%%
+    
+    
+    
     #%%
     fps = read_fps(skeletons_file)
     coords_smooth_window = int(np.round(fps*coords_smooth_window_s))
@@ -187,11 +209,17 @@ def smooth_skeletons_table(skeletons_file,
     
     _display_progress(0)
     #%%
+    
+    
     #initialize arrays
+    food_cnt = read_food_contour(skeletons_file)
     with tables.File(skeletons_file, 'r') as fid:
         n_segments = fid.get_node('/skeleton').shape[1]
     
     with tables.File(features_file, 'w') as fid_features:
+        if food_cnt is not None:
+            fid_features.create_array('/', 'food_cnt_coord', obj=food_cnt.astype(np.float32))
+        
         worm_coords_array = {}
         w_node = fid_features.create_group('/', 'coordinates')
         for array_name in ['skeletons', 'dorsal_contours', 'ventral_contours', 'widths']:
@@ -279,12 +307,10 @@ if __name__ == '__main__':
     #is_WT2 = True
     
     #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/AVI_VIDEOS/Results/AVI_VIDEOS_4'
-    base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/GECKO_VIDEOS/Results/GECKO_VIDEOS'
+    #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/GECKO_VIDEOS/Results/GECKO_VIDEOS'
+    base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/RIG_HDF5_VIDEOS/Results/RIG_HDF5_VIDEOS'
     is_WT2 = False
     
-    
-    #/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/GECKO_VIDEOS/MaskedVideos/GECKO_VIDEOS.hdf5
-    #'/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/AVI_VIDEOS/MaskedVideos/AVI_VIDEOS_4.hdf5'
     skeletons_file = base_file + '_skeletons.hdf5'
     features_file = base_file + '_featuresN.hdf5'
     

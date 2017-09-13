@@ -241,7 +241,12 @@ class MWTrackerViewer_GUI(TrackerViewerAuxGUI):
                 self.food_coordinates = None
                 self.ui.checkBox_showFood.setEnabled(False)
             else:
+                #change from microns to pixels
                 self.food_coordinates = fid.get_node('/food_cnt_coord')[:]
+                if self.skel_microns_per_pixel is not None:
+                        self.food_coordinates /= self.skel_microns_per_pixel
+                    
+
                 self.ui.checkBox_showFood.setEnabled(True)
 
         #correct the index in case it was given before as worm_index_N

@@ -39,7 +39,7 @@ def getFoodContour(mask_file,
     base_name = get_base_name(mask_file)
     
     progress_timer = TimeCounter('')
-    print_flush("{} Calculating food features {}".format(base_name, progress_timer.get_time_str()))
+    print_flush("{} Calculating food contour {}".format(base_name, progress_timer.get_time_str()))
     
     
     food_cnt = calculate_food_cnt(mask_file,  

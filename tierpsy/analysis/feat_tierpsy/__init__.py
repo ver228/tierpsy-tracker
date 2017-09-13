@@ -9,9 +9,7 @@ def args_(fn, param):
   return {
         'func': main_func,
         'argkws': {
-                  'features_file': fn['featuresN'],
-                  'velocity_delta_time' : 1/3,
-                  'curvature_window' : 7
+                  'features_file': fn['featuresN']
                   },
         'input_files' : [fn['featuresN']],
         'output_files': [fn['featuresN']],
