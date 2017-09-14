@@ -101,8 +101,6 @@ def remove_border_checkpoints(list_of_points, last_valid, index):
         list_of_points[index] != last_valid:
             list_of_points.pop(index)
     
-    return list_of_points
-
 
 def get_results_dir(mask_files_dir):
     return replace_subdir(mask_files_dir, 'MaskedVideos', 'Results')

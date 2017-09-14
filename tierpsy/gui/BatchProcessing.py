@@ -234,12 +234,13 @@ class BatchProcessing_GUI(QMainWindow):
         self.ui.p_force_start_point.setCurrentIndex(0)
 
     def updateStartPointChange(self, index):
-        remaining_points = remove_border_checkpoints(self.analysis_checkpoints.copy(), 
+        remaining_points = self.analysis_checkpoints.copy()
+        remove_border_checkpoints(remaining_points, 
                                     self.mapper['force_start_point'], 
                                     0)
 
         #Force to be able to select FEAT_MANUAL_CREATE only from p_force_start_point
-        if len(remaining_points) > 1 and remaining_points[-1] == 'FEAT_MANUAL_CREATE':
+        if len(remaining_points) >= 1 and remaining_points[-1] == 'FEAT_MANUAL_CREATE':
             remaining_points = remaining_points[:-1]
 
 
