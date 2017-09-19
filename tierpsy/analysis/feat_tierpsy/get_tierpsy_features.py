@@ -19,9 +19,10 @@ def _h_get_timeseries_feats_table(features_file,
                                   curvature_window = None):
     timeseries_features = []
     fps = read_fps(features_file)
-    
+    #%%
     with pd.HDFStore(features_file, 'r') as fid:
         trajectories_data = fid['/trajectories_data']
+    #%%
     #only use data that was skeletonized
     trajectories_data = trajectories_data[trajectories_data['skeleton_id']>=0]
     
@@ -48,7 +49,7 @@ def _h_get_timeseries_feats_table(features_file,
             
             
         feat_dtypes = [(x, np.float32) for x in all_columns]
-        feat_dtypes = [('worm_index', np.int32), ('timestamp', np.float32)] + feat_dtypes
+        feat_dtypes = [('worm_index', np.int32), ('timestamp', np.int32)] + feat_dtypes
         
         
         timeseries_features = fid.create_table(
