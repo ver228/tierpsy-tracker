@@ -92,7 +92,7 @@ def _h_get_timeseries_feats_table(features_file,
             timeseries_features.append(feats.to_records(index=False))
             
             _display_progress(ind_n+1)
-            
+#%%            
 def get_tierpsy_features(
         features_file,
         velocity_delta_time = 1/3
@@ -101,7 +101,7 @@ def get_tierpsy_features(
     _h_get_timeseries_feats_table(features_file, 
                                 velocity_delta_time
                                 )
-    
+#%%    
 if __name__ == '__main__':
     #base_file = '/Volumes/behavgenom_archive$/single_worm/finished/mutants/gpa-10(pk362)V@NL1147/food_OP50/XX/30m_wait/clockwise/gpa-10 (pk362)V on food L_2009_07_16__12_55__4'
     #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/WT2/Results/WT2'
