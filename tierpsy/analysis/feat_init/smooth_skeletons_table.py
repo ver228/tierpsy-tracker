@@ -258,7 +258,6 @@ def smooth_skeletons_table(skeletons_file,
                          coords_smooth_window = coords_smooth_window,
                          gap_to_interp = gap_to_interp
                         )
-            
             dat_index = pd.Series(False, index = worm_data['timestamp_raw'].values)
             dat_index[worm.timestamp] = True
             
@@ -268,7 +267,7 @@ def smooth_skeletons_table(skeletons_file,
             tot_skeletons = skeleton_id[-1] + 1
             row_ind = worm_data.index[dat_index.values]
             trajectories_data.loc[row_ind, 'skeleton_id'] = skeleton_id
-            
+            #%%
             #add data
             worm_coords_array['skeletons'].append(getattr(wormN, 'skeleton'))
             worm_coords_array['dorsal_contours'].append(getattr(wormN, 'dorsal_contour'))
@@ -307,8 +306,8 @@ if __name__ == '__main__':
     #is_WT2 = True
     
     #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/AVI_VIDEOS/Results/AVI_VIDEOS_4'
-    #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/GECKO_VIDEOS/Results/GECKO_VIDEOS'
-    base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/RIG_HDF5_VIDEOS/Results/RIG_HDF5_VIDEOS'
+    base_file = '/Users/ajaver/OneDrive - Imperial College London/optogenetics/Arantza/Results/oig8/oig-8_ChR2_ATR_herms_6_Ch1_11052017_182219'
+    #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/RIG_HDF5_VIDEOS/Results/RIG_HDF5_VIDEOS'
     is_WT2 = False
     
     skeletons_file = base_file + '_skeletons.hdf5'

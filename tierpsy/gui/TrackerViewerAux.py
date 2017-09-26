@@ -70,8 +70,6 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
                 self.trajectories_data = ske_file_id['/trajectories_data']
                 self.traj_time_grouped = self.trajectories_data.groupby('frame_number')
 
-
-
                 # read the size of the structural element used in to calculate
                 # the mask
                 if '/provenance_tracking/int_ske_orient' in ske_file_id:
@@ -87,10 +85,11 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
                 else:
                     # use default
                     self.strel_size = dflt_skel_size
-
+        except (IOError, KeyError, tables.exceptions.HDF5ExtError):
+            self.trajectories_data = None
+            self.traj_time_grouped = None
         
-
-
+        try:
             #If i am using the smoothed skeletons (_featuresN.hdf5) we have to use a different field and divided by the microns per pixels scale
             self.stage_position_pix =  None
             with tables.File(self.skeletons_file, 'r') as skel_file_id:
@@ -180,6 +179,8 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
 
     def drawSkelResult(self, img, qimg, row_data, isDrawSkel, 
         roi_corner=(0,0), read_center=True):
+
+
         if isDrawSkel and isinstance(row_data, pd.Series):
             if 'has_skeleton' in row_data and row_data['has_skeleton'] == 0:
                 self.drawThreshMask(
@@ -217,12 +218,10 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
                 field = self.coordinates_group + ff
                 if field in ske_file_id:
                     dat = ske_file_id.get_node(field)[skel_id]
-                    #print(dat, self.skel_microns_per_pixel, self.stage_position_pix)
                     if self.skel_microns_per_pixel is not None:
                         #change from microns to pixels
                         dat /= self.skel_microns_per_pixel
                     
-
                     if self.stage_position_pix is not None:
                         #subtract stage motion if necessary
                         dat -= self.stage_position_pix[self.frame_number]

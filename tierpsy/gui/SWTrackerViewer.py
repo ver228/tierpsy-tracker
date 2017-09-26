@@ -122,7 +122,7 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
         #try to read the information from the features file if possible
         if not self.trajectories_data is None:
             try:
-                
+                # I am reading an skeleton file, so there is information about the intensity blocks
                 with tables.File(self.skeletons_file, 'r') as fid:
                     #only used for skeletons, and to test the head/tail orientation. I leave it but probably should be removed for in the future
                     prov_str = fid.get_node('/provenance_tracking/INT_SKE_ORIENT').read()
@@ -137,12 +137,16 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
                             has_skel_group, gap_size=gap_size)
                 
             except VALID_ERRORS:
-                pass
+                self.skel_block = []
+
         else:
             try:
                 if self.stage_position_pix is None:
-                    n_frames = self.fid.get_node('/mask').shape[0]
-                    self.stage_position_pix = np.full((n_frames,2), np.nan)
+                    if '/stage_position_pix' in self.fid:
+                        self.stage_position_pix = self.fid.get_node('/stage_position_pix')[:]
+                    else:
+                        n_frames = self.fid.get_node('/mask').shape[0]
+                        self.stage_position_pix = np.full((n_frames,2), np.nan)
                 
                 timestamp = self.fid.get_node('/timestamp/raw')[:]
                 with pd.HDFStore(self.skeletons_file, 'r') as ske_file_id:
@@ -154,7 +158,8 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
                         self,
                         '',
                         "There is more than one worm index. This file does not seem to have been analyzed with the WT2 option.",
-                        QMessageBox.Ok)
+                        QMessageBox.Ok
+                        )
                         
                         raise KeyError()
 
@@ -175,8 +180,10 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
 
                     self.trajectories_data['frame_number'] = np.arange(first_frame, last_frame+1, dtype=np.int)
                     self.trajectories_data['skeleton_id'] = self.trajectories_data.index
+
                     self.traj_time_grouped = self.trajectories_data.groupby('frame_number')
 
+                    
                 self.is_feat_file = True
 
             except VALID_ERRORS:
