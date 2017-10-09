@@ -10,7 +10,6 @@ import sys
 import fnmatch
 from tierpsy.helper.misc import RESERVED_EXT, replace_subdir
 from tierpsy.helper.params.tracker_param import valid_options
-from tierpsy.helper.params.docs_analysis_points import dflt_analysis_points
 
 def find_valid_files(root_dir, pattern_include='*', pattern_exclude=''):
     '''
@@ -82,16 +81,6 @@ def get_real_script_path(fullfile, base_name=''):
         return [exec_fname]
     except AttributeError:
         return [sys.executable, os.path.realpath(fullfile)]
-
-
-def get_dflt_sequence(analysis_type):
-    assert analysis_type in valid_options['analysis_type']
-    if analysis_type in dflt_analysis_points:
-        analysis_checkpoints = dflt_analysis_points[analysis_type]
-    else:
-        analysis_checkpoints = dflt_analysis_points['DEFAULT']
-        
-    return analysis_checkpoints
 
 
 def remove_border_checkpoints(list_of_points, last_valid, index):

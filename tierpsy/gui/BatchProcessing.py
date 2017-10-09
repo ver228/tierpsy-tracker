@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 from PyQt5.QtCore import Qt
 
 from tierpsy.processing.processMultipleFilesFun import processMultipleFilesFun
-from tierpsy.processing.helper import get_dflt_sequence, remove_border_checkpoints, get_results_dir, get_masks_dir 
+from tierpsy.processing.helper import remove_border_checkpoints, get_results_dir, get_masks_dir 
 
 from tierpsy.gui.AnalysisProgress import AnalysisProgress, WorkerFunQt
 from tierpsy.gui.HDF5VideoPlayer import LineEditDragDrop
@@ -15,6 +15,7 @@ from tierpsy.gui.GetAllParameters import ParamWidgetMapper
 #get default parameters files
 from tierpsy import DFLT_PARAMS_FILES
 from tierpsy.helper.params import TrackerParams
+from tierpsy.helper.params.tracker_param import get_dflt_sequence
 from tierpsy.helper.params.docs_process_param import proccess_args_dflt, proccess_args_info
 
 
@@ -223,7 +224,9 @@ class BatchProcessing_GUI(QMainWindow):
         except FileNotFoundError:
             return
 
-        analysis_checkpoints = get_dflt_sequence(param.p_dict['analysis_type'])
+        analysis_checkpoints = param.p_dict['analysis_checkpoints'].copy()
+        if not analysis_checkpoints:
+            analysis_checkpoints = get_dflt_sequence(param.p_dict['analysis_type'])
 
         if analysis_checkpoints[-1] != 'FEAT_MANUAL_CREATE':
             analysis_checkpoints.append('FEAT_MANUAL_CREATE')

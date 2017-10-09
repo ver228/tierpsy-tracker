@@ -10,6 +10,10 @@ dflt_param_list = [
         'WORM', 
         'Flag that defines the type of data expected and the consequent code that would be executed.'
         ),
+    ('analysis_checkpoints',
+        [],
+        'Analysis points to be executed, if it is empty the points will be deduced from the analysis_type.'
+        ),
     ('mask_min_area', 
         50, 
         'Minimum area in pixels for an object to be included in the compression mask.'
