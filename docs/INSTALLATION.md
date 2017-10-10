@@ -20,7 +20,7 @@ conda config --add channels conda-forge
 conda install -y numpy matplotlib pytables pandas gitpython pyqt=5 \
 h5py scipy scikit-learn scikit-image seaborn xlrd cython statsmodels
 
-conda install -y -c conda-forge keras opencv
+conda install -y -c conda-forge keras opencv=3.2
 pip install tensorflow 
 ```
 
