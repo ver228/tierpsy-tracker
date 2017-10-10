@@ -22,6 +22,9 @@ class TestObj():
         if not dlft_script:
             dlft_script = self.process_script
 
+        if not '--is_debug' in args:
+            args.append('--is_debug')
+
         command = [sys.executable, dlft_script] + args
 
         cmd_dd = []
