@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import tables
 
-from tierpsy_features import get_timeseries_features, timeseries_columns
+from tierpsy_features import get_timeseries_features, timeseries_columns, aux_columns
 
 from tierpsy.helper.misc import TimeCounter, print_flush, get_base_name, TABLE_FILTERS
 from tierpsy.helper.params import read_fps
@@ -44,20 +44,29 @@ def _h_get_timeseries_feats_table(features_file,
     
     
     with tables.File(features_file, 'r+') as fid:
-        if '/timeseries_features' in fid:
-            fid.remove_node('/timeseries_features')
-            
+        
+        for gg in ['/timeseries_features', '/aux_features']:
+            if gg in fid:
+                fid.remove_node(gg)
+                
             
         feat_dtypes = [(x, np.float32) for x in timeseries_columns]
         feat_dtypes = [('worm_index', np.int32), ('timestamp', np.int32)] + feat_dtypes
-        
-        
         timeseries_features = fid.create_table(
                 '/',
                 'timeseries_features',
                 obj = np.recarray(0, feat_dtypes),
                 filters = TABLE_FILTERS)
         
+        feat_dtypes_aux = [(x, np.float32) for x in aux_columns]
+        aux_features = fid.create_table(
+                '/',
+                'aux_features',
+                obj = np.recarray(0, feat_dtypes_aux),
+                filters = TABLE_FILTERS)
+        
+
+
         if '/food_cnt_coord' in fid:
             food_cnt = fid.get_node('/food_cnt_coord')[:]
         else:
@@ -74,23 +83,27 @@ def _h_get_timeseries_feats_table(features_file,
                      else:
                          args.append(dd[skel_id, :])
                     
-            feats = get_timeseries_features(*args, 
+            feats, f_aux = get_timeseries_features(*args, 
                                             food_cnt = food_cnt,
                                             fps = fps,
                                             delta_time = velocity_delta_time, #delta time in seconds to calculate the velocity
                                             curvature_window = curvature_window
                                             )
+            
+            #save timeseries features data
             feats = feats.astype(np.float32)
             feats['worm_index'] = np.int32(worm_index)
             feats['timestamp'] = worm_data['timestamp_raw'].values
-            
             #move the last fields to the first columns
             cols = feats.columns.tolist()
             cols = cols[-2:] + cols[:-2]
             feats = feats[cols]
-            
             timeseries_features.append(feats.to_records(index=False))
             
+            #save auxiliar features
+            f_aux = f_aux.astype(np.float32)
+            aux_features.append(f_aux.to_records(index=False))
+
             _display_progress(ind_n+1)
 #%%            
 def get_tierpsy_features(
@@ -107,7 +120,9 @@ if __name__ == '__main__':
     #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/WT2/Results/WT2'
     #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/AVI_VIDEOS/Results/AVI_VIDEOS_4'
     #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/GECKO_VIDEOS/Results/GECKO_VIDEOS'
-    base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/RIG_HDF5_VIDEOS/Results/RIG_HDF5_VIDEOS'
+    #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/RIG_HDF5_VIDEOS/Results/RIG_HDF5_VIDEOS'
+    #base_file = '/Users/ajaver/OneDrive - Imperial College London/tierpsy_features/test_data/multiworm/MY16_worms5_food1-10_Set5_Pos4_Ch1_02062017_131004'
+    base_file = '/Users/ajaver/OneDrive - Imperial College London/tierpsy_features/test_data/multiworm/170817_matdeve_exp7co1_12_Set0_Pos0_Ch1_17082017_140001'
     is_WT2 = False
     
     features_file = base_file + '_featuresN.hdf5'
