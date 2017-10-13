@@ -129,7 +129,9 @@ if __name__ == '__main__':
     import os
     #save_dir = '/Volumes/behavgenom_archive$/Avelino/screening/CeNDR/'
     save_dir = '/Users/ajaver/OneDrive - Imperial College London/swiss_strains'
-    
+    #save_dir = '/Volumes/behavgenom_archive$/single_worm/finished'
+    save_dir = '/Users/ajaver/OneDrive - Imperial College London/tierpsy_features/test_data/multiworm/'
+
     features_files = glob.glob(os.path.join(save_dir, '**', '*_featuresN.hdf5'), recursive=True)
     for ii, features_file in enumerate(features_files):
         print(ii+1, len(features_files))
@@ -139,4 +141,4 @@ if __name__ == '__main__':
         #            fid.remove_node(gg)
             
         get_tierpsy_features(features_file)
-        break
+        
