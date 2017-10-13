@@ -127,14 +127,16 @@ if __name__ == '__main__':
     
     import glob
     import os
-    save_dir = '/Volumes/behavgenom_archive$/Avelino/screening/CeNDR/'
+    #save_dir = '/Volumes/behavgenom_archive$/Avelino/screening/CeNDR/'
+    save_dir = '/Users/ajaver/OneDrive - Imperial College London/swiss_strains'
     
     features_files = glob.glob(os.path.join(save_dir, '**', '*_featuresN.hdf5'), recursive=True)
     for ii, features_file in enumerate(features_files):
         print(ii+1, len(features_files))
-        with tables.File(features_file, 'r+') as fid:
-            for gg in ['/provenance_tracking/FEAT_TIERPSY', '/timeseries_features']:
-                if gg in fid:
-                    fid.remove_node(gg)
+        #with tables.File(features_file, 'r+') as fid:
+        #    for gg in ['/provenance_tracking/FEAT_TIERPSY', '/timeseries_features']:
+        #        if gg in fid:
+        #            fid.remove_node(gg)
             
-        #get_tierpsy_features(features_file)
+        get_tierpsy_features(features_file)
+        break
