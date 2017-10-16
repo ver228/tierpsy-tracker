@@ -8,6 +8,7 @@ Created on Tue Sep  5 18:31:24 2017
 import numpy as np
 import pandas as pd
 import tables
+import warnings
 from scipy.interpolate import interp1d
 
 from tierpsy_features import SmoothedWorm
@@ -248,16 +249,19 @@ def smooth_skeletons_table(skeletons_file,
         
             if is_WT2:
                 worm.correct_schafer_worm()
-                
-            wormN = SmoothedWorm(
-                         worm.skeleton, 
-                         worm.widths, 
-                         worm.ventral_contour, 
-                         worm.dorsal_contour,
-                         skel_smooth_window = skel_smooth_window,
-                         coords_smooth_window = coords_smooth_window,
-                         gap_to_interp = gap_to_interp
-                        )
+            if np.sum(~np.isnan(worm.skeleton[:, 0, 0])) <= 2:
+                warnings.warn('Not enough data to smooth. Empty file?')
+                wormN = worm
+            else:
+                wormN = SmoothedWorm(
+                             worm.skeleton, 
+                             worm.widths, 
+                             worm.ventral_contour, 
+                             worm.dorsal_contour,
+                             skel_smooth_window = skel_smooth_window,
+                             coords_smooth_window = coords_smooth_window,
+                             gap_to_interp = gap_to_interp
+                            )
             dat_index = pd.Series(False, index = worm_data['timestamp_raw'].values)
             dat_index[worm.timestamp] = True
             

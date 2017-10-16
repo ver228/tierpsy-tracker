@@ -95,7 +95,7 @@ def _h_get_timeseries_feats_table(features_file):
     
             timeseries_features.append(feats)
             _display_progress(ind_n)
-    
+
 def _h_feats_stats(features_file):
     with pd.HDFStore(features_file, 'r') as fid:
         fps = fid.get_storer('/trajectories_data').attrs['fps']
