@@ -163,7 +163,6 @@ class AttrReader():
             self._ventral_side = ventral_side
             return self._ventral_side
 
-
 def read_ventral_side(fname):
 
     #I am giving priority to a contour stored in experiments_info, rather than one read by the json file.

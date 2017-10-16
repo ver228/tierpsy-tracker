@@ -52,10 +52,6 @@ class LineEditDragDrop():
         if self.test_file_fun(vfilename):
             self.update_fun(vfilename)
 
-
-
-
-
 class ViewsWithZoom():
 
     def __init__(self, view):

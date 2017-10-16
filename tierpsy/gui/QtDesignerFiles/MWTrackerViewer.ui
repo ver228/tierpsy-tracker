@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1138</width>
-    <height>957</height>
+    <width>1170</width>
+    <height>855</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -28,8 +28,49 @@
    </property>
    <layout class="QGridLayout" name="gridLayout_4">
     <item row="1" column="0">
-     <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,0,0,0,0,0,0,0" columnminimumwidth="0,0,0,0,0,0,0,0,0,0">
-      <item row="0" column="9">
+     <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,0,0,0,0,0,0,0,0,0,0">
+      <item row="4" column="5" colspan="8">
+       <widget class="QLineEdit" name="lineEdit_video">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0" colspan="2">
+       <widget class="QPushButton" name="pushButton_h5groups">
+        <property name="text">
+         <string>Update Groups</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QSpinBox" name="spinBox_step">
+        <property name="maximum">
+         <number>100000</number>
+        </property>
+        <property name="value">
+         <number>1</number>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="5" colspan="8">
+       <widget class="QComboBox" name="comboBox_h5path">
+        <property name="editable">
+         <bool>true</bool>
+        </property>
+        <item>
+         <property name="text">
+          <string>/mask</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>/full_data</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="0" column="12">
        <widget class="QPushButton" name="playButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -45,44 +86,7 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="0" colspan="2">
-       <widget class="QPushButton" name="pushButton_h5groups">
-        <property name="text">
-         <string>Update Groups</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QSpinBox" name="spinBox_frame"/>
-      </item>
-      <item row="1" column="8">
-       <widget class="QPushButton" name="pushButton_W">
-        <property name="text">
-         <string>Single Worms</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="7">
-       <widget class="QPushButton" name="pushButton_B">
-        <property name="text">
-         <string>Bad</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="5">
-       <widget class="QPushButton" name="pushButton_WS">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Worm Cluster</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
+      <item row="2" column="0">
        <widget class="QLabel" name="label_step">
         <property name="font">
          <font>
@@ -97,61 +101,7 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QSpinBox" name="spinBox_step">
-        <property name="maximum">
-         <number>100000</number>
-        </property>
-        <property name="value">
-         <number>1</number>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="9" rowspan="2">
-       <widget class="QPushButton" name="pushButton_save">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>SAVE</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox_fps">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="maximum">
-         <double>100.000000000000000</double>
-        </property>
-        <property name="value">
-         <double>25.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_frame">
-        <property name="font">
-         <font>
-          <pointsize>13</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Frame</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0" colspan="2">
+      <item row="5" column="0" colspan="2">
        <widget class="QPushButton" name="pushButton_skel">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -169,99 +119,7 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0" colspan="2">
-       <widget class="QPushButton" name="pushButton_video">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>13</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Select Video File</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_fps">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>13</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>FPS display</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="6">
-       <widget class="QPushButton" name="pushButton_U">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Undefined</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="5" colspan="4">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="3" column="5" colspan="5">
-       <widget class="QLineEdit" name="lineEdit_video">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="5" colspan="5">
-       <widget class="QLineEdit" name="lineEdit_skel"/>
-      </item>
-      <item row="5" column="5" colspan="5">
-       <widget class="QComboBox" name="comboBox_h5path">
-        <property name="editable">
-         <bool>true</bool>
-        </property>
-        <item>
-         <property name="text">
-          <string>/mask</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>/full_data</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="0" column="5" colspan="4">
+      <item row="0" column="5" colspan="7">
        <widget class="QSlider" name="imageSlider">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -295,6 +153,158 @@
         </property>
        </widget>
       </item>
+      <item row="4" column="0" colspan="2">
+       <widget class="QPushButton" name="pushButton_video">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>13</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Select Video File</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="5" colspan="8">
+       <widget class="QLineEdit" name="lineEdit_skel"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_frame">
+        <property name="font">
+         <font>
+          <pointsize>13</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Frame</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QDoubleSpinBox" name="doubleSpinBox_fps">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximum">
+         <double>100.000000000000000</double>
+        </property>
+        <property name="value">
+         <double>25.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="spinBox_frame"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_fps">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>13</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>FPS display</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="12" rowspan="2">
+       <widget class="QPushButton" name="pushButton_save">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>SAVE</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="6">
+       <widget class="QComboBox" name="feature_column"/>
+      </item>
+      <item row="2" column="11">
+       <widget class="QPushButton" name="pushButton_WS">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Worm Cluster</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="5">
+       <widget class="QCheckBox" name="is_color_features">
+        <property name="text">
+         <string>Color Features</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="10">
+       <widget class="QPushButton" name="pushButton_U">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Undefined</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="5">
+       <widget class="QDoubleSpinBox" name="feat_min_value"/>
+      </item>
+      <item row="3" column="6">
+       <widget class="QDoubleSpinBox" name="feat_max_value"/>
+      </item>
+      <item row="3" column="11">
+       <widget class="QPushButton" name="pushButton_W">
+        <property name="text">
+         <string>Single Worms</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="10">
+       <widget class="QPushButton" name="pushButton_B">
+        <property name="text">
+         <string>Bad</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="8">
+       <widget class="QCheckBox" name="checkBox_showFood">
+        <property name="text">
+         <string>Show Food Contour</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item row="0" column="0">
@@ -312,13 +322,6 @@
         </property>
         <property name="text">
          <string>&lt;&lt;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="6">
-       <widget class="QCheckBox" name="checkBox_showFood">
-        <property name="text">
-         <string>Show Food Contour</string>
         </property>
        </widget>
       </item>
@@ -480,13 +483,6 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="7">
-       <widget class="QPushButton" name="pushButton_feats">
-        <property name="text">
-         <string>Calculate Features</string>
-        </property>
-       </widget>
-      </item>
       <item row="4" column="2">
        <widget class="QComboBox" name="comboBox_drawType">
         <item>
@@ -598,7 +594,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1138</width>
+     <width>1170</width>
      <height>22</height>
     </rect>
    </property>

@@ -9,10 +9,11 @@ import numpy as np
 import pandas as pd
 import tables
 
-from tierpsy_features import get_timeseries_features, timeseries_columns, durations_columns
+from tierpsy_features import get_timeseries_features, timeseries_columns
+from tierpsy_features.summary_stats import get_feat_stats_all
 
 from tierpsy.helper.misc import TimeCounter, print_flush, get_base_name, TABLE_FILTERS
-from tierpsy.helper.params import read_fps
+from tierpsy.helper.params import read_fps, read_ventral_side
 
 def _h_get_timeseries_feats_table(features_file):
     timeseries_features = []
@@ -23,7 +24,6 @@ def _h_get_timeseries_feats_table(features_file):
     
     #only use data that was skeletonized
     trajectories_data = trajectories_data[trajectories_data['skeleton_id']>=0]
-    
     
     trajectories_data_g = trajectories_data.groupby('worm_index_joined')
     progress_timer = TimeCounter('')
@@ -39,8 +39,6 @@ def _h_get_timeseries_feats_table(features_file):
             progress_timer.get_time_str())
     
     _display_progress(0)
-    
-    
     with tables.File(features_file, 'r+') as fid:
         
         for gg in ['/timeseries_data', '/event_durations', '/timeseries_features']:
@@ -56,23 +54,14 @@ def _h_get_timeseries_feats_table(features_file):
                 obj = np.recarray(0, feat_dtypes),
                 filters = TABLE_FILTERS)
         
-        #deal with event_type that is string (pandas save df strings as 'O', but pytables does not like that)
-        e_durations_dtypes = [(x, np.float32) if x != 'event_type' else (x, np.dtype('S16')) for x in durations_columns]
-        e_durations_dtypes = [('worm_index', np.int32)] + e_durations_dtypes
-        
-        event_durations = fid.create_table(
-                '/',
-                'event_durations',
-                obj = np.recarray(0, e_durations_dtypes),
-                filters = TABLE_FILTERS)
-        
-
-
         if '/food_cnt_coord' in fid:
             food_cnt = fid.get_node('/food_cnt_coord')[:]
         else:
             food_cnt = None
     
+        #If i find the ventral side in the multiworm case this has to change
+        ventral_side = read_ventral_side(features_file)
+            
         for ind_n, (worm_index, worm_data) in enumerate(trajectories_data_g):
             with tables.File(features_file, 'r') as fid:
                 skel_id = worm_data['skeleton_id'].values
@@ -83,36 +72,59 @@ def _h_get_timeseries_feats_table(features_file):
                          args.append(dd[skel_id, :, :])
                      else:
                          args.append(dd[skel_id, :])
-                    
-            feats, e_dur = get_timeseries_features(*args, 
-                                                   timestamp = worm_data['timestamp_raw'].values,
-                                                   food_cnt = food_cnt,
-                                                   fps = fps
-                                                   )
+                
+                timestamp = worm_data['timestamp_raw'].values.astype(np.int32)
             
+            feats = get_timeseries_features(*args, 
+                                           timestamp = timestamp,
+                                           food_cnt = food_cnt,
+                                           fps = fps,
+                                           ventral_side = ventral_side
+                                           )
             #save timeseries features data
             feats = feats.astype(np.float32)
-            feats['worm_index'] = np.int32(worm_index)
+            feats['worm_index'] = worm_index
             #move the last fields to the first columns
             cols = feats.columns.tolist()
             cols = cols[-1:] + cols[:-1]
             feats = feats[cols]
-            timeseries_features.append(feats.to_records(index=False))
             
-            #save the event duration data
-            e_dur['worm_index'] = np.int32(worm_index)
-            #move the last fields to the first columns
-            cols = e_dur.columns.tolist()
-            cols = cols[-1:] + cols[:-1]
-            
-            dd = e_dur[cols].to_records(index=False).astype(e_durations_dtypes)
-            event_durations.append(dd)
+            feats['worm_index'] = feats['worm_index'].astype(np.int32)
+            feats['timestamp'] = feats['timestamp'].astype(np.int32)
+            feats = feats.to_records(index=False)
+    
+            timeseries_features.append(feats)
+            _display_progress(ind_n)
+    
+def _h_feats_stats(features_file):
+    with pd.HDFStore(features_file, 'r') as fid:
+        fps = fid.get_storer('/trajectories_data').attrs['fps']
+        timeseries_data = fid['/timeseries_data']
+        blob_features = fid['/blob_features']    
+    
+    
+    #Now I want to calculate the stats of the video
+    exp_feats = get_feat_stats_all(timeseries_data, blob_features, fps)
+    
+    dtypes = [('name', 'S50'), ('value', np.float32)]
+    exp_feats_rec = np.array(list(zip(exp_feats.index, exp_feats)), dtype = dtypes)
+    with tables.File(features_file, 'r+') as fid:
+        for gg in ['/features_stats']:
+            if gg in fid:
+                fid.remove_node(gg)
+        fid.create_table(
+                '/',
+                'features_stats',
+                obj = exp_feats_rec,
+                filters = TABLE_FILTERS)    
 
-            _display_progress(ind_n+1)
+
 #%%            
 def get_tierpsy_features(features_file):
     #I am adding this so if I add the parameters to calculate the features i can pass it to this function
     _h_get_timeseries_feats_table(features_file)
+    _h_feats_stats(features_file)
+    
 #%%    
 if __name__ == '__main__':
     #base_file = '/Volumes/behavgenom_archive$/single_worm/finished/mutants/gpa-10(pk362)V@NL1147/food_OP50/XX/30m_wait/clockwise/gpa-10 (pk362)V on food L_2009_07_16__12_55__4'
@@ -128,10 +140,12 @@ if __name__ == '__main__':
     import glob
     import os
     #save_dir = '/Volumes/behavgenom_archive$/Avelino/screening/CeNDR/'
-    save_dir = '/Users/ajaver/OneDrive - Imperial College London/swiss_strains'
+    #save_dir = '/Users/ajaver/OneDrive - Imperial College London/swiss_strains'
     #save_dir = '/Volumes/behavgenom_archive$/single_worm/finished'
     save_dir = '/Users/ajaver/OneDrive - Imperial College London/tierpsy_features/test_data/multiworm/'
-
+    
+    #save_dir = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/WT2/AC/Results/'
+    
     features_files = glob.glob(os.path.join(save_dir, '**', '*_featuresN.hdf5'), recursive=True)
     for ii, features_file in enumerate(features_files):
         print(ii+1, len(features_files))
@@ -139,6 +153,17 @@ if __name__ == '__main__':
         #    for gg in ['/provenance_tracking/FEAT_TIERPSY', '/timeseries_features']:
         #        if gg in fid:
         #            fid.remove_node(gg)
-            
+        #import warnings
+        #warnings.filterwarnings('error')
+        #_h_feats_stats(features_file)
         get_tierpsy_features(features_file)
+        
+    #%%
+#    import matplotlib.pylab as plt
+#    with pd.HDFStore('/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/WT2/C/Results/WT2_featuresN.hdf5') as fid:
+#        d1 = fid['/timeseries_data']
+#    with pd.HDFStore('/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/WT2/AC/Results/WT2_featuresN.hdf5') as fid:
+#        d2 = fid['/timeseries_data']
+#        
+#    plt.plot(d1['eigen_projection_1'], d2['eigen_projection_1'], '.')
         

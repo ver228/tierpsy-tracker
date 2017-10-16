@@ -69,7 +69,6 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
             with pd.HDFStore(self.skeletons_file, 'r') as ske_file_id:
                 self.trajectories_data = ske_file_id['/trajectories_data']
                 self.traj_time_grouped = self.trajectories_data.groupby('frame_number')
-
                 # read the size of the structural element used in to calculate
                 # the mask
                 if '/provenance_tracking/int_ske_orient' in ske_file_id:

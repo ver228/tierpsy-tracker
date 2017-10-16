@@ -17,7 +17,7 @@ from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormFromTable
 from tierpsy.analysis.stage_aligment.alignStageMotion import _h_get_stage_inv
 
 from tierpsy.helper.misc import TimeCounter, print_flush, get_base_name, TABLE_FILTERS
-from tierpsy.helper.params import copy_unit_conversions, read_fps, read_microns_per_pixel
+from tierpsy.helper.params import copy_unit_conversions, read_fps, read_microns_per_pixel, read_ventral_side
 
 def read_food_contour(skeletons_file):
     try:
@@ -199,7 +199,7 @@ def smooth_skeletons_table(skeletons_file,
     tot_worms = len(trajectories_data_g)
     def _display_progress(n):
             # display progress
-        dd = " Smoothing skeletons. Worm %i of %i done." % (n+1, tot_worms)
+        dd = " Smoothing skeletons. Worm %i of %i done." % (n, tot_worms)
         print_flush(
             base_name +
             dd +
@@ -285,7 +285,7 @@ def smooth_skeletons_table(skeletons_file,
                 filters = TABLE_FILTERS)
         copy_unit_conversions(newT, skeletons_file)
         newT._v_attrs['is_WT2'] = is_WT2
-        
+        newT._v_attrs['ventral_side'] = read_ventral_side(skeletons_file)
         
         #save blob features interpolating in dropped frames and stage movement (WT2)
         blob_features = _r_fill_blob_features(skeletons_file, trajectories_data, is_WT2)
@@ -303,10 +303,12 @@ if __name__ == '__main__':
     
     #base_file = '/Volumes/behavgenom_archive$/single_worm/finished/mutants/gpa-10(pk362)V@NL1147/food_OP50/XX/30m_wait/clockwise/gpa-10 (pk362)V on food L_2009_07_16__12_55__4'
     #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/WT2/Results/WT2'
-    #is_WT2 = True
+    base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/WT2/AC/Results/WT2'
+    
+    is_WT2 = True
     
     #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/AVI_VIDEOS/Results/AVI_VIDEOS_4'
-    base_file = '/Users/ajaver/OneDrive - Imperial College London/optogenetics/Arantza/Results/oig8/oig-8_ChR2_ATR_herms_6_Ch1_11052017_182219'
+    #base_file = '/Users/ajaver/OneDrive - Imperial College London/optogenetics/Arantza/Results/oig8/oig-8_ChR2_ATR_herms_6_Ch1_11052017_182219'
     #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/RIG_HDF5_VIDEOS/Results/RIG_HDF5_VIDEOS'
     is_WT2 = False
     
