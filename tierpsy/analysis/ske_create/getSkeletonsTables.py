@@ -93,8 +93,9 @@ def getWormMask(
 
     # create a new mask having only the best contour
     worm_mask = np.zeros_like(worm_mask)
-    cv2.drawContours(worm_mask, [worm_cnt.astype(np.int32)], 0, 1, -1)
-
+    if worm_cnt.size > 0:
+        cv2.drawContours(worm_mask, [worm_cnt.astype(np.int32)], 0, 1, -1)
+    
     # let's do closing with a larger structural element to close any gaps inside the worm.
     # It is faster to do several iterations rather than use a single larger
     # strel.
@@ -109,8 +110,9 @@ def getWormMask(
         worm_mask, min_blob_area=min_blob_area, roi_center_x=roi_center_x, roi_center_y=roi_center_y)
 
     worm_mask = np.zeros_like(worm_mask)
-    cv2.drawContours(worm_mask, [worm_cnt.astype(np.int32)], 0, 1, -1)
-
+    if worm_cnt.size > 0:
+        cv2.drawContours(worm_mask, [worm_cnt.astype(np.int32)], 0, 1, -1)
+    
     return worm_mask, worm_cnt, cnt_area
 
 
