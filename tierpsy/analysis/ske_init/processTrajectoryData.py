@@ -124,10 +124,11 @@ def getSmoothedTraj(trajectories_file,
     curr_rows = 0
     for worm_index, worm_data in df.groupby('worm_index_joined'):
         worm_data = worm_data[['coord_x', 'coord_y', 'frame_number', 'threshold', 'area']]
+        worm_data = worm_data.drop_duplicates(subset='frame_number')
 
         x = worm_data['coord_x'].values
         y = worm_data['coord_y'].values
-        t = worm_data['frame_number'].values
+        t = worm_data['frame_number'].values.astype(np.int)
         thresh = worm_data['threshold'].values
         area = worm_data['area'].values
 
@@ -143,9 +144,10 @@ def getSmoothedTraj(trajectories_file,
         #add a random shift in case there is a duplicated value (interp1 will produce a nan otherwise)
         delt = np.diff(t)
         if np.any(delt == 0):
-            t = t.astype(np.float64)
-            t[1:-1] = np.random.rand(t.size-2)*(np.median(delt)/100)
-        
+        	#Ugly patch
+            raise ValueError('Time frame duplicate?')
+
+
         # iterpolate missing points in the trajectory and smooth data using the
         # savitzky golay filter
         fx = interp1d(t, x)
