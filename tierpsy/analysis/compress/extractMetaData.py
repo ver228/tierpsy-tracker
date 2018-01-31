@@ -18,14 +18,18 @@ from tierpsy.helper.misc import TimeCounter, print_flush, ReadEnqueue, FFPROBE_C
 
 def dict2recarray(dat):
     '''convert into recarray (pytables friendly)'''
-    dtype = [(kk, dat[kk].dtype) for kk in dat]
-    N = len(dat[dtype[0][0]])
 
-    recarray = np.recarray(N, dtype)
-    for kk in dat:
-        recarray[kk] = dat[kk]
+    if len(dat) > 0:
+        dtype = [(kk, dat[kk].dtype) for kk in dat]
+        N = len(dat[dtype[0][0]])
+        recarray = np.recarray(N, dtype)
+        for kk in dat:
+            recarray[kk] = dat[kk]
+        return recarray
+    else:
+        return np.array([])
 
-    return recarray
+    
 
 
 def get_ffprobe_metadata(video_file):
@@ -111,12 +115,13 @@ def get_ffprobe_metadata(video_file):
     video_metadata = dict2recarray(video_metadata)
 
     #sometimes the last frame throws a nan in the timestamp. I want to remove it
-    if np.isnan(video_metadata[-1]['best_effort_timestamp']):
-        video_metadata = video_metadata[:-1]
+    if video_metadata.size > 0:
+        if np.isnan(video_metadata[-1]['best_effort_timestamp']):
+            video_metadata = video_metadata[:-1]
 
-    #if there is still nan's raise an error
-    if np.any(np.isnan(video_metadata['best_effort_timestamp'])):
-        raise ValueError('The timestamp contains nan values')
+        #if there is still nan's raise an error
+        if np.any(np.isnan(video_metadata['best_effort_timestamp'])):
+            raise ValueError('The timestamp contains nan values')
     return video_metadata
 
 
