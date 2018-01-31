@@ -1,3 +1,5 @@
+from tierpsy.gui.HDF5VideoPlayer_ui import Ui_HDF5VideoPlayer
+
 import sys
 import tables
 import os
@@ -7,7 +9,7 @@ from functools import partial
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import Qt
-from tierpsy.gui.HDF5VideoPlayer_ui import Ui_HDF5VideoPlayer
+
 
 def setChildrenFocusPolicy(obj, policy):
     # recursively change the focus policy of all the objects in the widgets
@@ -441,6 +443,7 @@ class HDF5VideoPlayerGUI(SimplePlayer):
         super(HDF5VideoPlayerGUI, self).closeEvent(event)
 
 if __name__ == '__main__':
+    print('hello!!')
     app = QtWidgets.QApplication(sys.argv)
 
     ui = HDF5VideoPlayerGUI()
