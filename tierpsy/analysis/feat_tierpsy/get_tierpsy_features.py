@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import tables
 
-from tierpsy_features import get_timeseries_features, timeseries_columns
+from tierpsy_features import get_timeseries_features, timeseries_all_columns
 from tierpsy_features.summary_stats import get_feat_stats_all
 
 from tierpsy.helper.misc import TimeCounter, print_flush, get_base_name, TABLE_FILTERS
@@ -46,7 +46,7 @@ def _h_get_timeseries_feats_table(features_file):
                 fid.remove_node(gg)
                 
             
-        feat_dtypes = [(x, np.float32) for x in timeseries_columns]
+        feat_dtypes = [(x, np.float32) for x in timeseries_all_columns]
         feat_dtypes = [('worm_index', np.int32), ('timestamp', np.int32)] + feat_dtypes
         timeseries_features = fid.create_table(
                 '/',

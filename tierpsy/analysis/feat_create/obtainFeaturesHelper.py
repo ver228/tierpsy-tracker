@@ -116,10 +116,6 @@ class WormFromTableSimple():
                     
                     #deal in the case they are repeating indexes (this happends sometimes in the last frame)
                     timestamp_inds, ind = np.unique(timestamp_inds, return_index=True)
-                    #I only tolerate at most %99
-                    if timestamp_inds.size/trajectories_data.shape[0] < 0.99:
-                        raise ValueError
-
                     trajectories_data = trajectories_data.iloc[ind]
                     
 

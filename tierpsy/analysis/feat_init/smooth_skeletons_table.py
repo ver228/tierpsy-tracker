@@ -40,6 +40,10 @@ def _fill_dropped_frames(worm_data, dflt_val):
     fill the dropped frames data for a individual worm dataframe  (worm_data)
     obtained from skeletons.hdf5 /trajectory_data
     '''
+    if len(worm_data) < 2:
+        #not enough frames to interpolate nothing to do there
+        return worm_data
+
     ini_t = worm_data['timestamp_raw'].min()
     fin_t = worm_data['timestamp_raw'].max()
     n_size = fin_t-ini_t + 1
@@ -70,6 +74,7 @@ def _r_fill_trajectories_data(skeletons_file):
     Read the /trajectories_data, interpolate any dropped frames, 
     change some fields and make sure the data format is 32bit (less space)
     '''
+    #%%
     valid_fields = ['timestamp_raw', 'timestamp_time', 'worm_index_joined', 
                     'coord_x', 'coord_y', 
                     'threshold', 'roi_size',  'area', 
@@ -89,7 +94,7 @@ def _r_fill_trajectories_data(skeletons_file):
     
     trajectories_data['skeleton_id'] = np.int32(-1)
     trajectories_data['old_trajectory_data_index'] = trajectories_data.index.values.astype(np.int32)
-    
+    #%%
     #change table to 32bits if necessary
     for col in trajectories_data:
         if trajectories_data[col].dtype == np.int64:
@@ -101,13 +106,17 @@ def _r_fill_trajectories_data(skeletons_file):
     
     assert set(x for _,x in trajectories_data.dtypes.items()) == \
     {np.dtype('uint8'), np.dtype('int32'), np.dtype('float32')}
-    
-    if trajectories_data['timestamp_raw'].isnull().all():
+    #%%
+    nan_timestamps = trajectories_data['timestamp_raw'].isnull()
+    if nan_timestamps.all():
         fps = read_fps(skeletons_file)
         trajectories_data['timestamp_raw'] = trajectories_data['frame_number']
         trajectories_data['timestamp_time'] = trajectories_data['frame_number']*fps
         
     else:
+        if nan_timestamps.any():
+            warnings.warn('There are still some frames with nan timestamps. I am getting read of them.')
+            trajectories_data = trajectories_data[~nan_timestamps]
         #if it is not nan convert this data into int
         trajectories_data['timestamp_raw'] = trajectories_data['timestamp_raw'].astype(np.int32)
         
@@ -118,7 +127,9 @@ def _r_fill_trajectories_data(skeletons_file):
         dflt_val = tuple([dflt_d[x] for _,x in trajectories_data.dtypes.items()])
         
         all_worm_data = []
+        #%%
         for worm_index, worm_data in trajectories_data.groupby('worm_index_joined'):
+            
             worm_data = worm_data.dropna(subset = ['timestamp_raw'])
             worm_data = worm_data.drop_duplicates(subset = ['timestamp_raw'], 
                                       keep = 'first')
@@ -129,7 +140,7 @@ def _r_fill_trajectories_data(skeletons_file):
             all_worm_data.append(worm_data)
     
         trajectories_data = pd.concat(all_worm_data, ignore_index=True)
-    
+        #%%
     return trajectories_data
 
 def _r_fill_blob_features(skeletons_file, trajectories_data_f, is_WT2):
@@ -252,6 +263,7 @@ def smooth_skeletons_table(skeletons_file,
             if np.sum(~np.isnan(worm.skeleton[:, 0, 0])) <= 2:
                 warnings.warn('Not enough data to smooth. Empty file?')
                 wormN = worm
+            
             else:
                 wormN = SmoothedWorm(
                              worm.skeleton, 
@@ -263,9 +275,13 @@ def smooth_skeletons_table(skeletons_file,
                              gap_to_interp = gap_to_interp
                             )
             dat_index = pd.Series(False, index = worm_data['timestamp_raw'].values)
-            dat_index[worm.timestamp] = True
             
-            
+            try:
+            	dat_index[worm.timestamp] = True
+            except ValueError:
+            	import pdb
+            	pdb.set_trace()
+
             #%%
             skeleton_id = np.arange(wormN.skeleton.shape[0]) + tot_skeletons
             tot_skeletons = skeleton_id[-1] + 1
