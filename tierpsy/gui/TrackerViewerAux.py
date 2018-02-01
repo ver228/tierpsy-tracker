@@ -225,8 +225,8 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
                         #subtract stage motion if necessary
                         dat -= self.stage_position_pix[self.frame_number]
                     
-                    dat[:, 0] = (dat[:, 0] - roi_corner[0]) * c_ratio_x
-                    dat[:, 1] = (dat[:, 1] - roi_corner[1]) * c_ratio_y
+                    dat[:, 0] = (dat[:, 0] - roi_corner[0] + 0.5) * c_ratio_x
+                    dat[:, 1] = (dat[:, 1] - roi_corner[1] + 0.5) * c_ratio_y
 
                 else:
                     dat = np.full((1,2), np.nan)
