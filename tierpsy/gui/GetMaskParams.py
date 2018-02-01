@@ -174,7 +174,7 @@ class ParamsGUI(QMainWindow):
 
     # file dialog to the the hdf5 file
     def getParamFile(self):
-        json_dir = os.path.dirname(json_file)
+        json_dir = os.path.dirname(self.ui.lineEdit_paramFile.text())
         json_file, _ = QFileDialog.getSaveFileName(self, "Find parameters file", json_dir, "JSON files (*.json);; All (*)")
         if json_file:
             self.updateParamFile(json_file)
