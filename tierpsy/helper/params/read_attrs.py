@@ -32,7 +32,11 @@ def fps_from_timestamp(file_name):
         timestamp_time = fid.get_node('/timestamp/time')[:]
         if np.all(np.isnan(timestamp_time)):
             raise ValueError
-        fps = 1 / np.nanmedian(np.diff(timestamp_time))
+
+        delT = np.nanmedian(np.diff(timestamp_time))
+        if delT == 0:
+            raise ValueError
+        fps = 1 / delT
 
         if np.isnan(fps) or fps < 1:
             raise ValueError

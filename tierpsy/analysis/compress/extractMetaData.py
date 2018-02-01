@@ -86,7 +86,6 @@ def get_ffprobe_metadata(video_file):
     # store data into numpy arrays
     video_metadata = OrderedDict()
     for row in dat:
-        row_fields = [x[0] for x in dat[0] if len(x) == 2]
         for dd in row:
             if (len(dd) != 2) or (not dd[0] in frame_fields):
                 continue
@@ -165,17 +164,21 @@ def get_timestamp(masked_file):
     with tables.File(masked_file, 'r') as mask_fid:
         # get the total number of frmes previously processed
         tot_frames = mask_fid.get_node("/mask").shape[0]
-
-        if '/video_metadata' in mask_fid:
+        
+        try:        
             # try to read data from video_metadata
             dd = [(row['best_effort_timestamp'], row['best_effort_timestamp_time'])
                   for row in mask_fid.get_node('/video_metadata/')]
-
+            
+            if abs(tot_frames - len(dd)) > 2: 
+                warnings.warn('The total number of frames is {}, but the timestamp is {}. Either you are using a list of images or there is something weird with the timestamps.'.format(tot_frames, len(dd)))
+                raise ValueError
+            
             best_effort_timestamp, best_effort_timestamp_time = list(map(np.asarray, zip(*dd)))
             assert best_effort_timestamp.size == best_effort_timestamp_time.size
             
             timestamp, timestamp_time = _correct_timestamp(best_effort_timestamp, best_effort_timestamp_time)
-        else:
+        except (tables.exceptions.NoSuchNodeError, ValueError):
             #no metadata return empty frames
             timestamp = np.full(tot_frames, np.nan)
             timestamp_time = np.full(tot_frames, np.nan)
