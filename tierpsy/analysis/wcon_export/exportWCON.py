@@ -18,7 +18,8 @@ from tierpsy.helper.misc import print_flush
 from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStats
 from tierpsy.helper.params import read_unit_conversions, read_ventral_side, read_fps
 
-wcon_metadata_fields = ['id', 'lab', 'who', 'timestamp', 'temperature', 'humidity', 'arena', 'food', 'media', 'sex', 'stage', 'age', 'strain', 'protocol', 'interpolate', 'software']
+wcon_metadata_fields = ['id', 'lab', 'who', 'timestamp', 'temperature', 'humidity', 'arena', 
+'food', 'media', 'sex', 'stage', 'age', 'strain', 'protocol', 'interpolate', 'software']
 
 def wcon_reformat_metadata(metadata_dict):
     wcon_metadata = OrderedDict()

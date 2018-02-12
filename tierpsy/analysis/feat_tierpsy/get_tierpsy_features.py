@@ -23,7 +23,7 @@ def _h_get_timeseries_feats_table(features_file):
         trajectories_data = fid['/trajectories_data']
     
     #only use data that was skeletonized
-    trajectories_data = trajectories_data[trajectories_data['skeleton_id']>=0]
+    #trajectories_data = trajectories_data[trajectories_data['skeleton_id']>=0]
     
     trajectories_data_g = trajectories_data.groupby('worm_index_joined')
     progress_timer = TimeCounter('')
@@ -65,14 +65,26 @@ def _h_get_timeseries_feats_table(features_file):
         for ind_n, (worm_index, worm_data) in enumerate(trajectories_data_g):
             with tables.File(features_file, 'r') as fid:
                 skel_id = worm_data['skeleton_id'].values
+                
+                #deal with any nan in the skeletons
+                good_id = skel_id>=0
+                skel_id_val = skel_id[good_id]
+                traj_size = skel_id.size
+
                 args = []
                 for p in ('skeletons', 'widths', 'dorsal_contours', 'ventral_contours'):
-                     dd = fid.get_node('/coordinates/' + p)
-                     if len(dd.shape) == 3:
-                         args.append(dd[skel_id, :, :])
-                     else:
-                         args.append(dd[skel_id, :])
-                
+                    node = fid.get_node('/coordinates/' + p)
+                    
+                    dat = np.full((traj_size, *node.shape[1:]), np.nan)
+                    if skel_id_val.size > 0:
+                        if len(node.shape) == 3:
+                            dd = node[skel_id_val, :, :]
+                        else:
+                            dd = node[skel_id_val, :]
+                        dat[good_id] = dd
+                    
+                    args.append(dat)
+
                 timestamp = worm_data['timestamp_raw'].values.astype(np.int32)
             
             feats = get_timeseries_features(*args, 

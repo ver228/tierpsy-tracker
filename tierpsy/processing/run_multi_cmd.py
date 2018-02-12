@@ -60,7 +60,7 @@ class StartProcess():
         
         self.proc = sp.Popen(self.cmd, stdout=sp.PIPE, stderr=sp.PIPE,
                              bufsize=1, close_fds=ON_POSIX)
-        self.buf_reader = ReadEnqueue(self.proc .stdout)
+        self.buf_reader = ReadEnqueue(self.proc.stdout)
         
     def read_buff(self):
         while True:

@@ -702,6 +702,11 @@ class MWTrackerViewer_GUI(MarkersDrawer, ContourDrawer, BlobLabeler, IntensityLa
     def updateSkelFile(self, skeletons_file):
         super().updateSkelFile(skeletons_file)
         
+        if self.trajectories_data is None:
+            #empty file nothing to do here
+            self.updateImage()
+            return 
+
         #correct the index in case it was given before as worm_index_N
         if 'worm_index_N' in self.trajectories_data:
             self.trajectories_data = self.trajectories_data.rename(
