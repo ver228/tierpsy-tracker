@@ -383,7 +383,7 @@ def joinBlobsTrajectories(trajectories_file,
 
     
     assignBlobTraj(trajectories_file, max_allowed_dist, area_ratio_lim)
-    if analysis_type == 'WT2':
+    if analysis_type == 'WT2' or analysis_type=='WORM_SINGLE':
         correctSingleWormCase(trajectories_file)
     else:
         joinGapsTrajectories(trajectories_file, min_track_size, max_frames_gap, area_ratio_lim)
