@@ -327,19 +327,21 @@ class GetMaskParams_GUI(ParamsGUI):
             self, "Find video file", self.videos_dir, "All files (*)")
         self.updateVideoFile(video_file)
 
+    def _start_video(self, video_file):
+        vid = selectVideoReader(video_file)
+        if vid.width == 0 or vid.height == 0:
+            raise ValueError
+        else:
+            if self.vid is not None:
+                self.vid.release()
+            self.vid, self.im_width, self.im_height = vid, vid.width, vid.height
+            self.bgnd_subtractor = None #make sure this get restarted when a new file is initialized
+            self.frame_number = 0
+        
     def updateVideoFile(self, video_file):
         if video_file and os.path.exists(video_file):
             try:
-                vid = selectVideoReader(video_file)
-                if vid.width == 0 or vid.height == 0:
-                    raise ValueError
-                else:
-                    if self.vid is not None:
-                        self.vid.release()
-                    self.vid, self.im_width, self.im_height = vid, vid.width, vid.height
-                    self.bgnd_subtractor = None #make sure this get restarted when a new file is initialized
-                    self.frame_number = 0
-
+                self._start_video(video_file)
             except (OSError, ValueError, IOError):
                 QMessageBox.critical(
                     self,
@@ -365,16 +367,16 @@ class GetMaskParams_GUI(ParamsGUI):
 
     def updateReducedBuff(self):
         if self.Ibuff.size > 0:
-            is_light_background = self.mapper['is_light_background']
+            #update the image used to create the mask
             
-            #update IsubtB image
-            if not self.ui.checkBox_is_bgnd_subtraction.isChecked():
-                self.Imin = reduceBuffer(self.Ibuff, is_light_background)
-            elif self.bgnd_subtractor is not None:
+            is_light_background = self.mapper['is_light_background']
+            if self.ui.checkBox_is_bgnd_subtraction.isChecked() and self.bgnd_subtractor is not None:
                 Ibuff_b = self.bgnd_subtractor.apply(self.Ibuff, self.frame_number)
-                oposite_flag = not is_light_background
-                self.Imin = 255-reduceBuffer(Ibuff_b, oposite_flag)
+            else:
+                Ibuff_b = self.Ibuff
                 
+            self.Imin = reduceBuffer(Ibuff_b, is_light_background)
+            
             self.updateMask()
 
     def getNextChunk(self):
@@ -390,6 +392,7 @@ class GetMaskParams_GUI(ParamsGUI):
                  self.im_width),
                 dtype=np.uint8)
 
+            
             tot = 0
             for ii in range(self.buffer_size):
                 # get video frame, stop program when no frame is retrive (end
@@ -397,7 +400,8 @@ class GetMaskParams_GUI(ParamsGUI):
                 ret, image = self.vid.read()
                 if ret == 0:
                     if ii == 0:
-                        self.updateVideoFile(self.video_file) #restart video
+                        #restart video
+                        self._start_video(self.video_file) 
                         ret, image = self.vid.read() #try to read again, if you cannot again just quit
                         if ret == 0: 
                             break
@@ -483,7 +487,8 @@ class GetMaskParams_GUI(ParamsGUI):
 
             if self.Ifull.size > 0 and self.bgnd_subtractor is not None:
                 self.IsubtrB = self.bgnd_subtractor.subtract_bgnd(self.Ifull)
-
+                #debug!!!
+                #self.IsubtrB = self.bgnd_subtractor.bgnd.astype(np.uint8)
         else:
             self.IsubtrB = self.Ifull
 

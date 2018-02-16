@@ -352,22 +352,15 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
                 Ibuff = Ibuff[:ind_buff + 1]
 
             # mask buffer and save data into the hdf5 file
-            if (ind_buff == buffer_size - 1 or ret == 0) and Ibuff.size > 0:
-
-                #TODO this can be done in a more clever way
-                
-                # Subtract background if flag set
+            if (ind_buff == buffer_size - 1 or ret == 0) and Ibuff.size > 0:                
                 if is_bgnd_subtraction:
-                    #use the oposite (like that we can avoid an unecessary subtraction)
-                    oposite_flag = not mask_param['is_light_background']
-                    Ibuff_b  = bgnd_subtractor.apply(Ibuff, last_frame=frame_number)
-                    img_reduce = 255 - reduceBuffer(Ibuff_b, oposite_flag)
+                    Ibuff_b  = bgnd_subtractor.apply(Ibuff, last_frame = frame_number)
                 else:
-                    #calculate the max/min in the of the buffer
-                    img_reduce = reduceBuffer(Ibuff, mask_param['is_light_background'])
-
-
+                    Ibuff_b = Ibuff
                 
+                #calculate the max/min in the of the buffer
+                img_reduce = reduceBuffer(Ibuff_b, mask_param['is_light_background'])
+
                 mask = getROIMask(img_reduce, **mask_param)
                 Ibuff *= mask
 
