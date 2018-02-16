@@ -1,22 +1,23 @@
 
-import os
+from tierpsy.helper.misc import IMG_EXT
 
 from .Readers.ReadVideoFFMPEG import ReadVideoFFMPEG
 from .Readers.readVideoHDF5 import readVideoHDF5
 from .Readers.readDatFiles import readDatFiles
-from .Readers.readTifFiles import readTifFiles
+from .Readers.readImages import readImages
 from .Readers.readVideoCapture import readVideoCapture
 from .Readers.readLoopBio import readLoopBio
-from .Readers.readJPGFiles import readJPGFiles
+
+import os
 
 def selectVideoReader(video_file):
     # open video to read
     isHDF5video = video_file.endswith('hdf5')
     isMJPGvideo = video_file.endswith('.mjpg')
     isDATfiles = video_file.endswith('spool.dat')
-    isTIFfiles = video_file.endswith('.tif')
     isLoopBio = video_file.endswith('.yaml')
-    isJPGfiles = video_file.endswith('.jpg')
+    
+    isImages = any(video_file.endswith(x) for x in IMG_EXT)
 
 
     if isHDF5video:
@@ -30,26 +31,21 @@ def selectVideoReader(video_file):
     elif isDATfiles:
         video_dir = os.path.split(video_file)[0]
         vid = readDatFile(video_dir)
-    elif isTIFfiles:
-        # TODO: this currently requires just the first image file. make it so
-        # that one can supply a path to multiple folders, and run compression
-        # on the files inside in parallel
-        video_dir = os.path.split(video_file)[0]
-        vid = readTifFiles(video_dir)
     elif isLoopBio:
         # use opencv VideoCapture
         vid = readLoopBio(video_file)
-    elif isJPGfiles:
-        video_dir = os.path.split(video_file)[0]
-        vid = readJPGFiles(video_dir)
+    elif isImages:
+        #I am assuming I am recieving the first file of a directory full of images.
+        video_dir, fname = os.path.split(video_file)
+        bn, f_ext = os.path.splitext(fname)
+
+        vid = readImages(video_dir, f_ext)
     else:
         vid = readVideoCapture(video_file)
         
     #raise an error if it is not a valid video (cannot read a frame)
     if vid.width == 0 or vid.height == 0:
         raise RuntimeError
-
-
 
     return vid
 

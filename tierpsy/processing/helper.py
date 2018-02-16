@@ -8,8 +8,30 @@ import os
 import errno
 import sys
 import fnmatch
-from tierpsy.helper.misc import RESERVED_EXT, replace_subdir
+from tierpsy.helper.misc import RESERVED_EXT, IMG_EXT, replace_subdir
 from tierpsy.helper.params.tracker_param import valid_options
+
+
+def filter_img_directories(fnames):
+    '''
+    This is my version to filter directory with images.
+    by only selecting the first image.
+    '''
+    ext_d = {}
+    for fname in fnames:
+        f_ext = os.path.splitext(fname)[1]
+        if not f_ext in ext_d:
+            ext_d[f_ext] = []
+        ext_d[f_ext].append(fname)
+
+    fnames_filtered = []
+    for f_ext, f_list in ext_d.items():
+        if f_ext in IMG_EXT:
+            #only select the first image if there are images in the directory
+            f_list = [min(f_list)]
+        fnames_filtered += f_list
+    
+    return fnames_filtered
 
 def find_valid_files(root_dir, pattern_include='*', pattern_exclude=''):
     '''
@@ -38,6 +60,8 @@ def find_valid_files(root_dir, pattern_include='*', pattern_exclude=''):
 
     valid_files = []
     for dpath, dnames, fnames in os.walk(root_dir):
+        fnames = filter_img_directories(fnames)
+
         for fname in fnames:
             good_patterns = any(fnmatch.fnmatch(fname, dd)
                                 for dd in pattern_include)
@@ -47,6 +71,7 @@ def find_valid_files(root_dir, pattern_include='*', pattern_exclude=''):
                 fullfilename = os.path.abspath(os.path.join(dpath, fname))
                 assert os.path.exists(fullfilename)
                 valid_files.append(fullfilename)
+
 
     return valid_files
 
@@ -100,3 +125,10 @@ def get_masks_dir(videos_dir):
         return replace_subdir(videos_dir, 'Worm_Videos', 'MaskedVideos')
     else:
         return replace_subdir(videos_dir, 'RawVideos', 'MaskedVideos')
+
+#%%
+
+if __name__ == '__main__':
+    dname = '/Users/ajaver/OneDrive - Imperial College London/paper_tierpsy_tracker/benchmarks/'
+    v_files = find_valid_files(dname, pattern_include='*.avi')
+    print(v_files)
