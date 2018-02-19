@@ -126,6 +126,9 @@ class ParamsGUI(QMainWindow):
 
 
     def _link_slider_spinbox(self):
+        '''
+        Link a given slider to a spinbox so when the value of one changes the other changes too.
+        '''
         def _single_link(slider, spinbox, connect_func):
             slider.sliderReleased.connect(connect_func)
             spinbox.editingFinished.connect(connect_func)
@@ -214,6 +217,7 @@ class ParamsGUI(QMainWindow):
         self.json_param = json_param
         self.ui.lineEdit_paramFile.setText(self.json_file)
         
+    
 class GetMaskParams_GUI(ParamsGUI):
 
     def __init__(self, default_videos_dir='', scripts_dir=''):
@@ -235,10 +239,9 @@ class GetMaskParams_GUI(ParamsGUI):
                          bgnd=self.ui.tabWidget.indexOf(self.ui.tab_bgnd))
         
         self.ui.p_keep_border_data.stateChanged.connect(self.updateMask)
-        self.ui.p_is_light_background.stateChanged.connect(self.updateReducedBuff)
-        self.ui.p_mask_bgnd_buff_size.editingFinished.connect(self.delBSubstractor)
-        self.ui.p_mask_bgnd_frame_gap.editingFinished.connect(self.delBSubstractor)
-        
+        self.ui.p_is_light_background.stateChanged.connect(self.updateBgnd)
+        self.ui.pushButton_update_bgnd.clicked.connect(self.updateBgnd)
+
         self.ui.pushButton_video.clicked.connect(self.getVideoFile)
         self.ui.pushButton_next.clicked.connect(self.getNextChunk)
 
@@ -364,6 +367,11 @@ class GetMaskParams_GUI(ParamsGUI):
             # fit the image to the canvas size
             self.twoViews.zoomFitInView()
 
+            
+            #set the valid limits for the block size
+            max_block = min(self.Ifull.shape)
+            min_block = 3
+            self.ui.p_thresh_block_size.setRange(min_block, max_block)
 
     def updateReducedBuff(self):
         if self.Ibuff.size > 0:
@@ -425,9 +433,7 @@ class GetMaskParams_GUI(ParamsGUI):
             self.Ifull = self.Ibuff[0].copy()
             
             
-            self._updateISubtrB()
-            #reduce buffer after background subtraction
-            self.updateReducedBuff()
+            self.updateBgnd()
             
 
     def _numpy2qimage(self, im_ori):
@@ -467,41 +473,40 @@ class GetMaskParams_GUI(ParamsGUI):
         mask = getROIMask(self.Imin.copy(), **mask_param)
         self.Imask = mask * self.Ifull
         self.updateROIs()
-
-
-    def delBSubstractor(self):
-        self.bgnd_subtractor = None
         
-    def _updateISubtrB(self):
+    def _updateBgnd(self):
         if self.vid is None:
             return 
 
-        if self.ui.checkBox_is_bgnd_subtraction.isChecked():
-            if self.bgnd_subtractor is None:
-                keys = ['is_light_background', 'mask_bgnd_buff_size', 'mask_bgnd_frame_gap']
-                kwargs = {x.replace('mask_bgnd_', ''):self.mapper[x] for x in keys}
+        if self.bgnd_subtractor is None:
+            #try to calculate the background if the parameters are corrected
+            keys = ['is_light_background', 'mask_bgnd_buff_size', 'mask_bgnd_frame_gap']
+            kwargs = {x.replace('mask_bgnd_', ''):self.mapper[x] for x in keys}
 
-                if kwargs['buff_size'] >0 and kwargs['frame_gap']>0:
-                    self.bgnd_subtractor = BackgroundSubtractor(self.video_file, **kwargs)
+            if kwargs['buff_size'] >0 and kwargs['frame_gap']>0:
+                self.bgnd_subtractor = BackgroundSubtractor(self.video_file, **kwargs)
 
-
-            if self.Ifull.size > 0 and self.bgnd_subtractor is not None:
-                self.IsubtrB = self.bgnd_subtractor.subtract_bgnd(self.Ifull)
-                #debug!!!
-                #self.IsubtrB = self.bgnd_subtractor.bgnd.astype(np.uint8)
+        #if the background substraction is checked and it was calculated correctly update the background
+        if self.ui.checkBox_is_bgnd_subtraction.isChecked() and \
+        self.Ifull.size > 0 and self.bgnd_subtractor is not None:
+            self.IsubtrB = self.bgnd_subtractor.subtract_bgnd(self.Ifull)
+            #debug!!!
+            #self.IsubtrB = self.bgnd_subtractor.bgnd.astype(np.uint8)
         else:
             self.IsubtrB = self.Ifull
+
+        self.updateReducedBuff()
+
+    def updateBgnd(self):
+        self.bgnd_subtractor = None
+        self._updateBgnd()
 
     def updateCheckedBgndSubtr(self):
         valid = self.ui.checkBox_is_bgnd_subtraction.isChecked()
         self.ui.p_mask_bgnd_frame_gap.setEnabled(valid)
         self.ui.p_mask_bgnd_buff_size.setEnabled(valid)
-
-        self._updateISubtrB()
-        self.updateReducedBuff()
+        self._updateBgnd()
     
-    
-
     
     def updateParamFile(self, json_file):
         super().updateParamFile(json_file)

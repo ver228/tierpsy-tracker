@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1038</width>
-    <height>952</height>
+    <height>922</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -31,7 +31,7 @@
            <string notr="true"/>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="tab_mask">
            <attribute name="title">
@@ -363,6 +363,9 @@
                   <property name="keyboardTracking">
                    <bool>true</bool>
                   </property>
+                  <property name="showGroupSeparator" stdset="0">
+                   <bool>false</bool>
+                  </property>
                   <property name="minimum">
                    <number>10</number>
                   </property>
@@ -371,9 +374,6 @@
                   </property>
                   <property name="value">
                    <number>5000</number>
-                  </property>
-                  <property name="showGroupSeparator" stdset="0">
-                   <bool>false</bool>
                   </property>
                  </widget>
                 </item>
@@ -554,6 +554,13 @@
                 </property>
                </widget>
               </item>
+              <item row="4" column="0">
+               <widget class="QPushButton" name="pushButton_update_bgnd">
+                <property name="text">
+                 <string>Update Background</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
             <item>
@@ -649,7 +656,16 @@
           <item>
            <widget class="QWidget" name="widget" native="true">
             <layout class="QHBoxLayout" name="horizontalLayout_3">
-             <property name="margin">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
               <number>0</number>
              </property>
              <item>
@@ -715,11 +731,11 @@
                    <property name="accelerated">
                     <bool>false</bool>
                    </property>
-                   <property name="maximum">
-                    <number>100000000</number>
-                   </property>
                    <property name="showGroupSeparator" stdset="0">
                     <bool>false</bool>
+                   </property>
+                   <property name="maximum">
+                    <number>100000000</number>
                    </property>
                   </widget>
                  </item>

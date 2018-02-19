@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'MWTrackerViewer.ui'
 #
-# Created by: PyQt5 UI code generator 5.6
+# Created by: PyQt5 UI code generator 5.10
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -26,7 +26,6 @@ class Ui_MWTrackerViewer(object):
         self.gridLayout_4.setSpacing(6)
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.gridLayout = QtWidgets.QGridLayout()
-        self.gridLayout.setContentsMargins(11, 11, 11, 11)
         self.gridLayout.setSpacing(6)
         self.gridLayout.setObjectName("gridLayout")
         self.lineEdit_video = QtWidgets.QLineEdit(self.centralWidget)
@@ -184,7 +183,6 @@ class Ui_MWTrackerViewer(object):
         self.gridLayout_4.addLayout(self.gridLayout, 1, 0, 1, 1)
         self.gridLayout_3 = QtWidgets.QGridLayout()
         self.gridLayout_3.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
-        self.gridLayout_3.setContentsMargins(11, 11, 11, 11)
         self.gridLayout_3.setSpacing(6)
         self.gridLayout_3.setObjectName("gridLayout_3")
         self.pushButton_ROI2_RW = QtWidgets.QPushButton(self.centralWidget)

@@ -42,6 +42,8 @@ def getROIMask(
     IM_LIMX = image.shape[0] - 2
     IM_LIMY = image.shape[1] - 2
 
+    #this value must be at least 3 in order to work with the blocks
+    thresh_block_size = max(3, thresh_block_size)
     if thresh_block_size % 2 == 0:
         thresh_block_size += 1  # this value must be odd
 
