@@ -7,7 +7,6 @@ valid_analysis_points = ['WORM', 'WORM_SINGLE', 'WORM_RIG', 'WT2', 'PHARYNX', 'Z
 dflt_analysis_points = {
     'DEFAULT':
     ['COMPRESS',
-    'VID_SUBSAMPLE',
     'TRAJ_CREATE',
     'TRAJ_JOIN',
     'SKE_INIT',
@@ -22,7 +21,6 @@ dflt_analysis_points = {
 
     'WORM_RIG':
     ['COMPRESS',
-    'VID_SUBSAMPLE',
     'TRAJ_CREATE',
     'TRAJ_JOIN',
     'SKE_INIT',
@@ -39,7 +37,6 @@ dflt_analysis_points = {
     'WT2' : 
     ['COMPRESS',
     'COMPRESS_ADD_DATA',
-    'VID_SUBSAMPLE',
     'TRAJ_CREATE',
     'TRAJ_JOIN',
     'SKE_INIT',
