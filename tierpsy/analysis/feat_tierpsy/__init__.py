@@ -9,11 +9,11 @@ def args_(fn, param):
   return {
         'func': main_func,
         'argkws': {
-                  'features_file': fn['featuresN']
+                  'features_file': fn['featuresN'],
+                  'derivate_delta_time' : param.p_dict['feat_derivate_delta_time']
                   },
         'input_files' : [fn['featuresN']],
         'output_files': [fn['featuresN']],
         'requirements' : requirements
     }
-
     

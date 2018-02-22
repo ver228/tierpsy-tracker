@@ -12,11 +12,12 @@ def args_(fn, param):
         'argkws': {'skeletons_file': fn['skeletons'], 
                   'features_file': fn['featuresN'],
                   'is_WT2' : is_WT2,
-                  'skel_smooth_window' : 5,
-                  'coords_smooth_window_s' : 0.25,
-                  'gap_to_interp_s' : 0.25
+                  'skel_smooth_window' : param.p_dict['feat_skel_smooth_window'],
+                  'coords_smooth_window_s' : param.p_dict['feat_coords_smooth_window_s'],
+                  'gap_to_interp_s' : param.p_dict['feat_gap_to_interp_s']
                   },
         'input_files' : [fn['skeletons']],
         'output_files': [fn['featuresN']],
         'requirements' : requirements
     }
+

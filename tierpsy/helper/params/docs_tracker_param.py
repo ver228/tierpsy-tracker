@@ -285,6 +285,23 @@ dflt_param_list = [
         '', 
         'Ventral side orientation. Used only if "analysis_type" is set to "WT2".'
         ),
+
+    ('feat_skel_smooth_window',
+        5,
+        'Window (in number segments) used to smooth each individual skeleton by Tierpsy Features.'
+        ),
+    ('feat_coords_smooth_window_s',
+        0.25,
+        'Window (in number seconds) used to smooth each of the skeletons coordinates over time by Tierpsy Features.'
+        ),
+    ('feat_gap_to_interp_s',
+        0.25,
+        'Maximum time gap between missing skeletons be interpolated by Tierpsy Features.'
+        ),
+    ('feat_derivate_delta_time',
+        1/3,
+        'Time window used to calculate the derivatives (including velocity) by Tierpsy Features.'
+        ),
     ]
 
 

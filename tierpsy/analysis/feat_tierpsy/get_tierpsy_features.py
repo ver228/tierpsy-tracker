@@ -15,7 +15,7 @@ from tierpsy_features.summary_stats import get_feat_stats_all
 from tierpsy.helper.misc import TimeCounter, print_flush, get_base_name, TABLE_FILTERS
 from tierpsy.helper.params import read_fps, read_ventral_side
 
-def _h_get_timeseries_feats_table(features_file):
+def _h_get_timeseries_feats_table(features_file, derivate_delta_time):
     timeseries_features = []
     fps = read_fps(features_file)
     
@@ -91,7 +91,8 @@ def _h_get_timeseries_feats_table(features_file):
                                            timestamp = timestamp,
                                            food_cnt = food_cnt,
                                            fps = fps,
-                                           ventral_side = ventral_side
+                                           ventral_side = ventral_side,
+                                           derivate_delta_time = derivate_delta_time
                                            )
             #save timeseries features data
             feats = feats.astype(np.float32)
@@ -132,9 +133,9 @@ def _h_feats_stats(features_file):
 
 
 #%%            
-def get_tierpsy_features(features_file):
+def get_tierpsy_features(features_file, derivate_delta_time = 1/3):
     #I am adding this so if I add the parameters to calculate the features i can pass it to this function
-    _h_get_timeseries_feats_table(features_file)
+    _h_get_timeseries_feats_table(features_file, derivate_delta_time)
     _h_feats_stats(features_file)
     
 #%%    
