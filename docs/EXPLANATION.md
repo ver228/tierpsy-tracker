@@ -35,15 +35,13 @@ The second step is to join the identified particles into trajectories. We link t
 
 In a subsequent step, Tierpsy Tracker tries to join trajectories that have a small time gap between them *i.e.* the worm was lost for a few frames. Additionally we will remove any spurious trajectories shorter than `min_track_size` .
 
-Additionally, if a valid [keras model](https://keras.io/) was trained. It is possible to use a neural network to filter worms from eggs and other spurious particles.
-
 Below there is an example of how the trajectories look after tracking.
 
 ![trajectories](https://cloud.githubusercontent.com/assets/8364368/26301795/25eb72ac-3eda-11e7-8a52-99dd6c49bc07.gif)
 
 ### SKE_INIT
 This is a refinement step to clean [/plate_worms](OUTPUTS.md/#plate_worms). For each trajectory we interpolate any time gap, calculate a fixed region of interest size, and smooth the threshold and centroid over time. The purpose of these modifications is to make the thresholding more robust and the data suitable for the [next step](#calculate-skeletons). The data is stored in the [trajectories_data](OUTPUTS.md/#trajectories_data) table. This is the main table since it contains the data of the trajectories that are used in the subsequent steps and displayed by the [viewer](HOWTO.md/#tierpsy-tracker-viewer).
-
+If a valid [keras model](https://keras.io/) was trained. It is possible to use a neural network to filter worms from eggs and other spurious particles.
 
 ### BLOB_FEATS
 
