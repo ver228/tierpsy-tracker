@@ -36,5 +36,9 @@
     ],
     "traj_max_allowed_dist": 25,
     "traj_min_area": 25,
-    "worm_bw_thresh_factor": 1.05
+    "worm_bw_thresh_factor": 1.05,
+
+    "feat_coords_smooth_window_s" : 0.0, 
+    "feat_gap_to_interp_s" : 0.1,
+    "feat_derivate_delta_time" : 0.1
 }
