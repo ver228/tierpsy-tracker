@@ -364,7 +364,7 @@ class WormStats():
             Return the feature list as an ordered dictionary.
         '''
         
-        if isinstance(worm_features, dict):
+        if isinstance(worm_features, (dict, pd.DataFrame)):
             def read_feat(feat_name):
                 if feat_name in worm_features:
                     return worm_features[feat_name]
