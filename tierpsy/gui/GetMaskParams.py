@@ -19,8 +19,12 @@ from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
 from tierpsy.processing.ProcessWorker import ProcessWorker
 from tierpsy.helper.params.tracker_param import TrackerParams, default_param
 
-class twoViewsWithZoom():
 
+
+class twoViewsWithZoom():
+    '''
+    Object useful to sincronize the pan/zoom of two images i.e. original and masked
+    '''
     def __init__(self, view_full, view_mask):
         self.view_full = ViewsWithZoom(view_full)
         self.view_mask = ViewsWithZoom(view_mask)
@@ -141,6 +145,8 @@ class ParamsGUI(QMainWindow):
             _single_link(slider, spinbox, self.updateMask)
 
     def saveParamFile(self):
+        self.json_file = self.ui.lineEdit_paramFile.text()
+        
         if not self.json_file:
             QMessageBox.critical(
                 self,
@@ -162,23 +168,60 @@ class ParamsGUI(QMainWindow):
             if reply == QMessageBox.No:
                 return
 
-        # read all the values in the GUI
+        dname = os.path.dirname(self.json_file)
+        if not os.path.isdir(dname):
+            QMessageBox.critical(
+                self,
+                'Invalid directory.',
+                'The directory in the file path name does not exists. Please be sure the path name is correct.',
+                QMessageBox.Ok)
+            return
+
+
+        # save data into the json file
+        #update before saving
+        self._update_json_params()
+
+        try:
+            save_params_json(self.json_file, self.json_param)
+        except OSError:
+            QMessageBox.critical(
+                self,
+                'Invalid file name.',
+                'I was not able to save the file. Please be sure the path name is correct.',
+                QMessageBox.Ok)
+            return
+
+
+    def _update_json_params(self):
+        '''
+        update json_params field from the gui vaues.
+        '''
         for param_name in self.mapper:
             assert param_name in self.json_param
             self.json_param[param_name] = self.mapper[param_name]
-        # save data into the json file
-        save_params_json(self.json_file, self.json_param)
+
+    def _update_gui_params(self, json_param):
+        checkit = (json_param['mask_bgnd_buff_size']>0) and (json_param['mask_bgnd_frame_gap']>0)
+
+        self.ui.checkBox_is_bgnd_subtraction.setChecked(checkit)
+        # set correct widgets to the values given in the json file
+        for param_name in json_param:
+            if param_name in self.mapper:
+               self.mapper[param_name] = json_param[param_name]
 
     def getMoreParams(self):
-        json_file = self.ui.lineEdit_paramFile.text()
-        allparamGUI = GetAllParameters(json_file)
-        allparamGUI.file_saved.connect(self.updateParamFile)
+        self._update_json_params()
+        allparamGUI = GetAllParameters(self.json_param)
+        
+        #the gui must have updated the dictioary in json_param 
         allparamGUI.exec_()
+        self._update_gui_params(self.json_param)
 
     # file dialog to the the hdf5 file
     def getParamFile(self):
         json_dir = os.path.dirname(self.ui.lineEdit_paramFile.text())
-        json_file, _ = QFileDialog.getSaveFileName(self, "Find parameters file", json_dir, "JSON files (*.json);; All (*)")
+        json_file, _ = QFileDialog.getOpenFileName(self, "Find parameters file", json_dir, "JSON files (*.json);; All (*)")
         if json_file:
             self.updateParamFile(json_file)
 
@@ -200,19 +243,9 @@ class ParamsGUI(QMainWindow):
         else:
             json_param = default_param.copy()
 
-        checkit = (json_param['mask_bgnd_buff_size']>0) and (json_param['mask_bgnd_frame_gap']>0)
+        
 
-        self.ui.checkBox_is_bgnd_subtraction.setChecked(checkit)
-
-
-        # set correct widgets to the values given in the json file
-        for param_name in json_param:
-            if param_name in self.mapper:
-               self.mapper[param_name] = json_param[param_name]
-
-
-
-
+        self._update_gui_params(json_param)
         self.json_file = json_file
         self.json_param = json_param
         self.ui.lineEdit_paramFile.setText(self.json_file)
