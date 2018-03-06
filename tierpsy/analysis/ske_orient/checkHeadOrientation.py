@@ -43,23 +43,34 @@ def getAnglesDelta(dx, dy):
     return angles, meanAngle
 
 
-def calculateHeadTailAng(skeletons, segment4angle, good):
+def calculateHeadTailAng(skeletons, segment4angle, good = None):
     '''
     For each skeleton two angles are caculated: one vector between the index 0 and segment4angle ('head'), and the other from the index -1 and -segment4angle-1 ('tail').
     '''
-    angles_head = np.empty(skeletons.shape[0])
-    angles_head.fill(np.nan)
-    angles_tail = angles_head.copy()
+    tot = skeletons.shape[0]
+    
+    
+    if good is not None:
+        skeletons = skeletons[good]
+    
+    dx_h = skeletons[:, segment4angle, 0] - skeletons[:, 0, 0]
+    dy_h = skeletons[:, segment4angle, 1] - skeletons[:, 0, 1]
 
-    dx = skeletons[good, segment4angle, 0] - skeletons[good, 0, 0]
-    dy = skeletons[good, segment4angle, 1] - skeletons[good, 0, 1]
-
-    angles_head[good], _ = getAnglesDelta(dx, dy)
-
-    dx = skeletons[good, -segment4angle - 1, 0] - skeletons[good, -1, 0]
-    dy = skeletons[good, -segment4angle - 1, 1] - skeletons[good, -1, 1]
-
-    angles_tail[good], _ = getAnglesDelta(dx, dy)
+    dx_t = skeletons[:, -segment4angle - 1, 0] - skeletons[:, -1, 0]
+    dy_t = skeletons[:, -segment4angle - 1, 1] - skeletons[:, -1, 1]
+    
+    ang_h, _ = getAnglesDelta(dx_h, dy_h)
+    ang_t, _ = getAnglesDelta(dx_t, dy_t)
+    
+    if good is None:
+        angles_head, angles_tail = ang_h, ang_t
+    else:
+        angles_head = np.full(tot, np.nan)
+        angles_tail = np.full(tot, np.nan)
+        
+        angles_head[good] = ang_h
+        angles_tail[good] = ang_t
+    
     return angles_head, angles_tail
 
 

@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import tables
 
+from scipy.signal import savgol_filter
 from tierpsy.analysis.ske_orient.checkHeadOrientation import isWormHTSwitched
 from tierpsy.helper.misc import print_flush
 
@@ -40,16 +41,66 @@ def getHeadProbMov(
                 '/skeleton')[skeletons_id, :, :]
         else:
             return np.nan, skel_group
-
-    is_switch_skel, roll_std = isWormHTSwitched(skeletons, segment4angle=segment4angle, max_gap_allowed=max_gap_allowed,
-                                                window_std=window_std, min_block_size=min_block_size)
-
-    head_angle = np.nanmean(roll_std['head_angle'])
-    tail_angle = np.nanmean(roll_std['tail_angle'])
-
-    p_mov = head_angle / (head_angle + tail_angle)
-
-    return p_mov, skel_group
+    
+    #savgol_filter does not accept even windows
+    if window_std % 2 == 0:
+        window_std += 1
+    
+    #get the indexes of valid skeletons
+    skel_ind_valid = ~np.isnan(skeletons[:, 0, 0])
+    
+    #smooth on time to reduce the variance but only on the points that are going to be used to calculate the angles
+    for nn in [0, segment4angle, -segment4angle -1 , -1]:
+        for ii in range(2):
+            dat = pd.Series(skeletons[:, nn, ii]).fillna(method='ffill').fillna(method='bfill')
+            dat = savgol_filter(dat, window_std, 3)
+            skeletons[:, nn, ii] = dat
+    
+    
+    #total range in coordinates of the head movement
+    top = np.max(skeletons[:, 0], axis=0)
+    bot = np.min(skeletons[:, 0], axis=0)
+    head_path_range = np.sqrt(np.sum((top-bot)**2))
+    
+    #average head tail distance
+    ht_dist = np.sqrt(((skeletons[:, 0] - skeletons[:, -1])**2).sum(axis=1))
+    ht_dist_avg = np.nanmean(ht_dist)/2
+    
+    #%%
+    if head_path_range < ht_dist_avg:
+        #here I find that it works better to use a very large window since the movement is less
+        window_std = window_std*50
+        
+        #make sure the the window is at most half of the total size of the valid skeletons window
+        dd, = np.where(skel_ind_valid)
+        bot, top = dd[0], dd[-1]
+        
+        N = max(1, (top-bot + 1)//2)
+        window_std = min(window_std, N)
+    
+    
+    is_switch_skel, roll_std = isWormHTSwitched(skeletons, 
+                                                segment4angle=segment4angle, 
+                                                max_gap_allowed=max_gap_allowed, 
+                                                window_std = window_std, 
+                                                min_block_size=min_block_size)
+    #%%
+    #calculate the head tail probability at each point and get the average
+    p_mov = roll_std['head_angle']/(roll_std['head_angle'] +roll_std['tail_angle'])
+    
+    
+    #remove values that are too small, if the std is zero i cannot really calculate this values
+    dd = roll_std['head_angle'] + roll_std['tail_angle']
+    ind_valid = skel_ind_valid & (dd > 1e-3)
+    p_mov = p_mov.values[ind_valid]
+    
+    if p_mov.size == 0:
+        import pdb
+        pdb.set_trace()
+    #average using only the indexes of valid skeletons
+    p_mov_avg = np.nanmean(p_mov)
+    
+    return p_mov_avg, skel_group
 
 
 def searchIntPeaks(
@@ -175,7 +226,7 @@ def checkFinalOrientation(
 
     return p_tot, [skel_group], [int_group]
 
-
+#%%
 if __name__ == '__main__':
     from tierpsy.analysis.int_ske_orient.correctHeadTailIntensity import switchBlocks
 
