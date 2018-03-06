@@ -10,12 +10,12 @@ import pandas as pd
 import tables
 
 from tierpsy_features import get_timeseries_features, timeseries_all_columns
-from tierpsy_features.summary_stats import get_feat_stats_all
+from tierpsy_features.summary_stats import get_summary_stats
 
 from tierpsy.helper.misc import TimeCounter, print_flush, get_base_name, TABLE_FILTERS
 from tierpsy.helper.params import read_fps, read_ventral_side
 
-def _h_get_timeseries_feats_table(features_file, derivate_delta_time):
+def save_timeseries_feats_table(features_file, derivate_delta_time):
     timeseries_features = []
     fps = read_fps(features_file)
     
@@ -45,8 +45,10 @@ def _h_get_timeseries_feats_table(features_file, derivate_delta_time):
             if gg in fid:
                 fid.remove_node(gg)
                 
-            
+        
         feat_dtypes = [(x, np.float32) for x in timeseries_all_columns]
+        
+
         feat_dtypes = [('worm_index', np.int32), ('timestamp', np.int32)] + feat_dtypes
         timeseries_features = fid.create_table(
                 '/',
@@ -109,7 +111,7 @@ def _h_get_timeseries_feats_table(features_file, derivate_delta_time):
             timeseries_features.append(feats)
             _display_progress(ind_n)
 
-def _h_feats_stats(features_file):
+def save_feats_stats(features_file, derivate_delta_time):
     with pd.HDFStore(features_file, 'r') as fid:
         fps = fid.get_storer('/trajectories_data').attrs['fps']
         timeseries_data = fid['/timeseries_data']
@@ -117,7 +119,11 @@ def _h_feats_stats(features_file):
     
     
     #Now I want to calculate the stats of the video
-    exp_feats = get_feat_stats_all(timeseries_data, blob_features, fps)
+    exp_feats = get_summary_stats(timeseries_data, 
+                      fps,  
+                      blob_features, 
+                      derivate_delta_time)
+    
     
     dtypes = [('name', 'S50'), ('value', np.float32)]
     exp_feats_rec = np.array(list(zip(exp_feats.index, exp_feats)), dtype = dtypes)
@@ -132,51 +138,11 @@ def _h_feats_stats(features_file):
                 filters = TABLE_FILTERS)    
 
 
-#%%            
+            
 def get_tierpsy_features(features_file, derivate_delta_time = 1/3):
     #I am adding this so if I add the parameters to calculate the features i can pass it to this function
-    _h_get_timeseries_feats_table(features_file, derivate_delta_time)
-    _h_feats_stats(features_file)
+    save_timeseries_feats_table(features_file, derivate_delta_time)
+    save_feats_stats(features_file, derivate_delta_time)
     
-#%%    
-if __name__ == '__main__':
-    #base_file = '/Volumes/behavgenom_archive$/single_worm/finished/mutants/gpa-10(pk362)V@NL1147/food_OP50/XX/30m_wait/clockwise/gpa-10 (pk362)V on food L_2009_07_16__12_55__4'
-    #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/WT2/Results/WT2'
-    #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/AVI_VIDEOS/Results/AVI_VIDEOS_4'
-    #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/GECKO_VIDEOS/Results/GECKO_VIDEOS'
-    #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/RIG_HDF5_VIDEOS/Results/RIG_HDF5_VIDEOS'
-    #base_file = '/Users/ajaver/OneDrive - Imperial College London/tierpsy_features/test_data/multiworm/MY16_worms5_food1-10_Set5_Pos4_Ch1_02062017_131004'
-    #base_file = '/Users/ajaver/OneDrive - Imperial College London/tierpsy_features/test_data/multiworm/170817_matdeve_exp7co1_12_Set0_Pos0_Ch1_17082017_140001'
-    #features_file = base_file + '_featuresN.hdf5'
-    #is_WT2 = False
-    
-    import glob
-    import os
-    #save_dir = '/Volumes/behavgenom_archive$/Avelino/screening/CeNDR/'
-    #save_dir = '/Users/ajaver/OneDrive - Imperial College London/swiss_strains'
-    #save_dir = '/Volumes/behavgenom_archive$/single_worm/finished'
-    save_dir = '/Users/ajaver/OneDrive - Imperial College London/tierpsy_features/test_data/multiworm/'
-    
-    #save_dir = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/WT2/AC/Results/'
-    
-    features_files = glob.glob(os.path.join(save_dir, '**', '*_featuresN.hdf5'), recursive=True)
-    for ii, features_file in enumerate(features_files):
-        print(ii+1, len(features_files))
-        #with tables.File(features_file, 'r+') as fid:
-        #    for gg in ['/provenance_tracking/FEAT_TIERPSY', '/timeseries_features']:
-        #        if gg in fid:
-        #            fid.remove_node(gg)
-        #import warnings
-        #warnings.filterwarnings('error')
-        #_h_feats_stats(features_file)
-        get_tierpsy_features(features_file)
-        
-    #%%
-#    import matplotlib.pylab as plt
-#    with pd.HDFStore('/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/WT2/C/Results/WT2_featuresN.hdf5') as fid:
-#        d1 = fid['/timeseries_data']
-#    with pd.HDFStore('/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/WT2/AC/Results/WT2_featuresN.hdf5') as fid:
-#        d2 = fid['/timeseries_data']
-#        
-#    plt.plot(d1['eigen_projection_1'], d2['eigen_projection_1'], '.')
+
         
