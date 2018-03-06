@@ -24,7 +24,8 @@ microns_per_pixel = params.p_dict['microns_per_pixel']
 #main_dir = '/Volumes/behavgenom_archive$/Adam/screening'
 #fnames = glob.glob(os.path.join(main_dir, '**', '*.hdf5'), recursive=True)
 
-dname = '/Volumes/behavgenom_archive$/Ida/test_3/**/*.hdf5'
+#dname = '/Volumes/behavgenom_archive$/Ida/test_3/**/*.hdf5'
+dname = '/Volumes/behavgenom_archive$/Ida/LoopBio_rig/180222_blue_light/3/**/*.hdf5'
 fnames = glob.glob(dname, recursive=True)
 
 masked_files = [x for x in fnames if not any(x.endswith(ext) for ext in RESERVED_EXT)]
@@ -43,6 +44,7 @@ def change_attrs(fname, field_name):
     read_unit_conversions(fname)
 
 
-for skeletons_file in masked_files:
-    change_attrs(skeletons_file, '/mask')
- 
+#for fname in masked_files:
+#    change_attrs(fname, '/mask')
+for fname in skeletons_files:
+    change_attrs(fname, '/trajectories_data')
