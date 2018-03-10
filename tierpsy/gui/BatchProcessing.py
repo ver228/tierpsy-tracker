@@ -22,7 +22,7 @@ from tierpsy.helper.params.docs_process_param import proccess_args_dflt, procces
 #If a widget is not enabled ParamWidgetMapper wiil return the value in proccess_args_dflt,
 #however for the tmp directory I want to change this behaviour so when it is not enabled it is left empty so it is not used.
 TMP_DIR_ROOT = proccess_args_dflt['tmp_dir_root']
-proccess_args_dflt['tmp_dir_root'] = ''
+proccess_args_dflt_r['tmp_dir_root'] = ''
 
 class BatchProcessing_GUI(QMainWindow):
 
@@ -42,8 +42,9 @@ class BatchProcessing_GUI(QMainWindow):
 
         valid_options = dict(json_file = [''] + DFLT_PARAMS_FILES)
         self.mapper = ParamWidgetMapper(self.ui,
-                                        default_param=proccess_args_dflt,
-                                        info_param=proccess_args_info, 
+                                        #do not want to pass this values by reference
+                                        default_param=proccess_args_dflt_r.copy(), 
+                                        info_param=proccess_args_info.copy(), 
                                         valid_options=valid_options)
 
         self.ui.p_json_file.currentIndexChanged.connect(self.updateCheckpointsChange)
@@ -113,6 +114,23 @@ class BatchProcessing_GUI(QMainWindow):
             self.updateTxtFileList(videos_list)
 
     def updateTxtFileList(self, videos_list):
+        if videos_list:
+            #test that it is a valid text file with a list of files inside of it.
+            try:
+                with open(videos_list, 'r') as fid:
+                    first_line = fid.readline().strip()
+                    if not os.path.exists(first_line):
+                        raise FileNotFoundError
+            except:
+                QMessageBox.critical(
+                        self,
+                        "It is not a text file with a valid list of files.",
+                        "The selected file does not seem to contain a list of valid files to process.\n"
+                        "Plase make sure to select a text file that contains a list of existing files.",
+                        QMessageBox.Ok)
+                return
+
+
         self.videos_list = videos_list
         self.ui.p_videos_list.setText(videos_list)
 
@@ -267,7 +285,7 @@ class BatchProcessing_GUI(QMainWindow):
         self.ui.p_end_point.setCurrentIndex(nn-1)
 
     def startAnalysis(self):
-        process_args = proccess_args_dflt.copy()
+        process_args = proccess_args_dflt_r.copy()
         #append the root dir if we are using any of the default parameters files. I didn't add the dir before because it is easy to read them in this way.
         process_args['analysis_checkpoints'] = self.analysis_checkpoints
         
