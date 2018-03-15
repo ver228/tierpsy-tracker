@@ -20,7 +20,7 @@ git clone https://github.com/ver228/tierpsy-tracker
 conda config --add channels conda-forge 
 
 conda install -y numpy matplotlib pytables pandas gitpython pyqt=5 \
-h5py scipy scikit-learn scikit-image seaborn xlrd cython statsmodels
+h5py scipy scikit-learn scikit-image seaborn xlrd cython statsmodels numba
 
 conda install -y -c conda-forge keras opencv
 pip install tensorflow 
