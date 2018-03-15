@@ -19,9 +19,10 @@ from tierpsy.helper.params.tracker_param import get_dflt_sequence
 from tierpsy.helper.params.docs_process_param import proccess_args_dflt, proccess_args_info
 
 
-#If a widget is not enabled ParamWidgetMapper wiil return the value in proccess_args_dflt,
+#If a widget is not enabled ParamWidgetMapper will return the value in proccess_args_dflt,
 #however for the tmp directory I want to change this behaviour so when it is not enabled it is left empty so it is not used.
 TMP_DIR_ROOT = proccess_args_dflt['tmp_dir_root']
+proccess_args_dflt_r = proccess_args_dflt.copy()
 proccess_args_dflt_r['tmp_dir_root'] = ''
 
 class BatchProcessing_GUI(QMainWindow):
