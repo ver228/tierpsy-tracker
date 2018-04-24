@@ -8,13 +8,7 @@
 
 # Installation
 
-1. Clone this repository either using the [Github Desktop](https://desktop.github.com/) or from the command line as:
-
-```bash
-git clone https://github.com/ver228/tierpsy-tracker
-```
- 
-2. Install the conda dependencies from the conda-forge channel:
+1. Install the conda dependencies from the conda-forge channel:
 
 ```bash
 conda config --add channels conda-forge 
@@ -22,12 +16,21 @@ conda config --add channels conda-forge
 conda install -y numpy matplotlib pytables pandas gitpython pyqt=5 \
 h5py scipy scikit-learn scikit-image seaborn xlrd cython statsmodels numba
 
-conda install -y -c conda-forge keras opencv
-pip install tensorflow 
+conda install -y -c conda-forge keras opencv tensorflow
 ```
 
-3. Install the rest of the modules. On the tierpsy-tracker root folder (the folder with the cloned repository) type:
+2. Clone this repository either using the [Github Desktop](https://desktop.github.com/) or from the command line as:
 
+```bash
+git clone https://github.com/ver228/tierpsy-tracker
+```
+
+
+3. Install the rest of the modules. Firts move to the tierpsy-tracker root folder (the folder with the cloned repository) as:
+```bash
+cd tierpsy-tracker
+```
+Then install the rest of the modules using the following command according to your operative system.
 ```bash
 bash installation/installation_script.sh #OSX or Linux
 
