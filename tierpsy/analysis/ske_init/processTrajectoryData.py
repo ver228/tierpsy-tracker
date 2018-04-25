@@ -81,12 +81,19 @@ def getSmoothedTraj(trajectories_file,
         # we need this number to reserve space in the recarray
         # get the total length of each track, this is more accurate than using
         # count since parts of the track could have got lost for a few frames
+        
+        if df.size == 0:
+            return 0
+        
+
         tracks_data = df.groupby('worm_index_joined').aggregate(['max', 'min'])
         track_lenghts = (
             tracks_data['frame_number']['max'] -
             tracks_data['frame_number']['min'] +
             1)
         tot_num_rows = track_lenghts[track_lenghts > min_track_size].sum()
+        
+
         return tot_num_rows
     
     # a track size less than 2 will break the interp_1 function
@@ -100,7 +107,6 @@ def getSmoothedTraj(trajectories_file,
     df, timestamp_raw, timestamp_time = _read_plate_worms(trajectories_file)
     roi_range = _get_roi_size(df)
     tot_num_rows = _get_total_number_rows(df, min_track_size)
-    
     
     # initialize output data as a numpy recarray (pytables friendly format)
     trajectories_df = np.recarray(tot_num_rows, dtype=[('frame_number', np.int32),
@@ -124,10 +130,11 @@ def getSmoothedTraj(trajectories_file,
     curr_rows = 0
     for worm_index, worm_data in df.groupby('worm_index_joined'):
         worm_data = worm_data[['coord_x', 'coord_y', 'frame_number', 'threshold', 'area']]
+        worm_data = worm_data.drop_duplicates(subset='frame_number')
 
         x = worm_data['coord_x'].values
         y = worm_data['coord_y'].values
-        t = worm_data['frame_number'].values
+        t = worm_data['frame_number'].values.astype(np.int)
         thresh = worm_data['threshold'].values
         area = worm_data['area'].values
 
@@ -143,9 +150,10 @@ def getSmoothedTraj(trajectories_file,
         #add a random shift in case there is a duplicated value (interp1 will produce a nan otherwise)
         delt = np.diff(t)
         if np.any(delt == 0):
-            t = t.astype(np.float64)
-            t[1:-1] = np.random.rand(t.size-2)*(np.median(delt)/100)
-        
+        	#Ugly patch
+            raise ValueError('Time frame duplicate?')
+
+
         # iterpolate missing points in the trajectory and smooth data using the
         # savitzky golay filter
         fx = interp1d(t, x)

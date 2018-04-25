@@ -208,7 +208,13 @@ def get_food_contour_nn(mask_file, model=None, _is_debug=False):
     #%%
     patch_m = (food_prob>0.5).astype(np.uint8)
     _, cnts, _ = cv2.findContours(patch_m, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    
     #pick the largest contour
+
+    if not cnts:
+        return np.zeros([]), food_prob, 0.
+
+
     cnt_areas = [cv2.contourArea(x) for x in cnts]
     ind = np.argmax(cnt_areas)
     patch_m = np.zeros(patch_m.shape, np.uint8)
@@ -216,8 +222,15 @@ def get_food_contour_nn(mask_file, model=None, _is_debug=False):
     patch_m = cv2.morphologyEx(patch_m, cv2.MORPH_CLOSE, disk(3), iterations=5)
     
     _, cnts, _ = cv2.findContours(patch_m, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-    assert len(cnts) == 1
-    cnts = cnts[0]
+    
+    if len(cnts) == 1:
+        cnts = cnts[0]
+    elif len(cnts) > 1:
+        #too many contours select the largest
+        cnts = max(cnts, key=cv2.contourArea)
+    else:
+        return np.zeros([]), food_prob, 0.
+    
     
     hull = cv2.convexHull(cnts)
     hull_area = cv2.contourArea(hull)

@@ -43,23 +43,34 @@ def getAnglesDelta(dx, dy):
     return angles, meanAngle
 
 
-def calculateHeadTailAng(skeletons, segment4angle, good):
+def calculateHeadTailAng(skeletons, segment4angle, good = None):
     '''
     For each skeleton two angles are caculated: one vector between the index 0 and segment4angle ('head'), and the other from the index -1 and -segment4angle-1 ('tail').
     '''
-    angles_head = np.empty(skeletons.shape[0])
-    angles_head.fill(np.nan)
-    angles_tail = angles_head.copy()
+    tot = skeletons.shape[0]
+    
+    
+    if good is not None:
+        skeletons = skeletons[good]
+    
+    dx_h = skeletons[:, segment4angle, 0] - skeletons[:, 0, 0]
+    dy_h = skeletons[:, segment4angle, 1] - skeletons[:, 0, 1]
 
-    dx = skeletons[good, segment4angle, 0] - skeletons[good, 0, 0]
-    dy = skeletons[good, segment4angle, 1] - skeletons[good, 0, 1]
-
-    angles_head[good], _ = getAnglesDelta(dx, dy)
-
-    dx = skeletons[good, -segment4angle - 1, 0] - skeletons[good, -1, 0]
-    dy = skeletons[good, -segment4angle - 1, 1] - skeletons[good, -1, 1]
-
-    angles_tail[good], _ = getAnglesDelta(dx, dy)
+    dx_t = skeletons[:, -segment4angle - 1, 0] - skeletons[:, -1, 0]
+    dy_t = skeletons[:, -segment4angle - 1, 1] - skeletons[:, -1, 1]
+    
+    ang_h, _ = getAnglesDelta(dx_h, dy_h)
+    ang_t, _ = getAnglesDelta(dx_t, dy_t)
+    
+    if good is None:
+        angles_head, angles_tail = ang_h, ang_t
+    else:
+        angles_head = np.full(tot, np.nan)
+        angles_tail = np.full(tot, np.nan)
+        
+        angles_head[good] = ang_h
+        angles_tail[good] = ang_t
+    
     return angles_head, angles_tail
 
 
@@ -85,8 +96,8 @@ def getBlocksIDs(invalid, max_gap_allowed):
     return block_ids, tot_blocks
 
 
-def isWormHTSwitched(skeletons, segment4angle=5, max_gap_allowed=10,
-                     window_std=25, min_block_size=250):
+def isWormHTSwitched(skeletons, segment4angle, max_gap_allowed,
+                     window_std, min_block_size):
     '''
     Determine if the skeleton is correctly oriented going from head to tail. The skeleton array is divided in blocks of contingous skeletons with a gap between unskeletonized frames less than max_gap_allowed.
     For each skeleton two angles are caculated: one vector between the index 0 and segment4angle ('head'), and the other from the index -1 and -segment4angle-1 ('tail'). The amount of head/tail movement is determined by the time rolling (moving) standard deviation (std). If most of the skeletons in the rolling std in a given block are larger for the tail than for the head, the block is flagged as switched. Only blocks larger than min_block_size are used to determine orientation. If a block has less elements than min_block_size it is flagged according to the value of its nearest "big" block.
@@ -179,7 +190,8 @@ def correctHeadTail(skeletons_file, **params):
             is_switched_skel, roll_std = isWormHTSwitched(worm_data.skeleton,
                                                           segment4angle=segment4angle, max_gap_allowed=max_gap_allowed,
                                                           window_std=window_std, min_block_size=min_block_size)
-
+            roll_std.plot()
+            
             worm_data.switchHeadTail(is_switched_skel)
 
         worm_data.writeData()
@@ -198,7 +210,6 @@ if __name__ == "__main__":
     #root_dir = '/Users/ajaver/Desktop/Gecko_compressed/20150512/'
     #base_name = 'Capture_Ch3_12052015_194303'
 
-    skeletons_file = root_dir + '/Trajectories/' + base_name + '_skeletons.hdf5'
-
-    # correctHeadTail(skeletons_file, max_gap_allowed = 10, \
-    # window_std = 25, segment4angle = 5, min_block_size = 250)
+    skeletons_file = '/Users/ajaver/OneDrive - Imperial College London/paper_tierpsy_tracker/benchmarks/maggots/Results/w1118_l3_control_siamak_all_skeletons.hdf5'   
+    correctHeadTail(skeletons_file, max_gap_allowed = -1, \
+     window_std = -1, segment4angle = 16, min_block_size = -1)

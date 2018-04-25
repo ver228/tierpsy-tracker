@@ -8,6 +8,9 @@ Created on Mon Aug  8 17:24:27 2016
 import os
 from importlib import import_module
 
+
+from tierpsy.helper.misc import IMG_EXT
+
 from tierpsy.helper.params import TrackerParams
 from tierpsy.processing.CheckFinished import CheckFinished
 
@@ -73,10 +76,17 @@ class AnalysisPoints(object):
         self.checker = CheckFinished(checkpoints_args = self.checkpoints)
         
     def getFileNames(self, video_file, masks_dir, results_dir):
-        base_name = video_file.rpartition('.')[0].rpartition(os.sep)[-1]
+        if any(video_file.endswith(x) for x in IMG_EXT):
+            #This is a directory with a list of images. 
+            #Use the directory name as the basename instead.
+            base_name = os.path.basename(os.path.dirname(video_file))
+        else:
+            base_name = video_file.rpartition('.')[0].rpartition(os.sep)[-1]
+        
         results_dir = os.path.abspath(results_dir)
         
         output = {'base_name' : base_name, 'original_video' : video_file}
+        
         output['masked_image'] = os.path.join(masks_dir, base_name + '.hdf5')
     
         ext2add = [

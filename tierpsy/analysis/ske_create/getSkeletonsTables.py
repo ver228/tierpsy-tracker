@@ -46,9 +46,6 @@ def _zebra_func(worm_img, skel_args, resampling_N):
 
     return skeleton, ske_len, cnt_side1, cnt_side2, cnt_widths, cnt_area
 
-
-
-
 def getWormMask(
         worm_img,
         threshold,
@@ -59,7 +56,6 @@ def getWormMask(
         is_light_background=True):
     '''
     Calculate worm mask using an specific threshold.
-
     -> Used by trajectories2Skeletons
     '''
 

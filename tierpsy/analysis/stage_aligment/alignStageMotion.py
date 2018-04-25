@@ -24,6 +24,9 @@ def isGoodStageAligment(skeletons_file):
         return good_aligment in [1, 2]
 
 def _h_get_stage_inv(skeletons_file, timestamp):
+    if timestamp.size == 0:
+        return np.zeros((0, 2)), np.zeros(0)
+
     first_frame = timestamp[0]
     last_frame = timestamp[-1]
 

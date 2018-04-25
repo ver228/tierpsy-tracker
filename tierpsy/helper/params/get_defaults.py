@@ -72,10 +72,17 @@ def head_tail_defaults(fname, **params):
     resampling_N = _read_resampling_N(fname)
 
     convertions = dict(
+            
         max_gap_allowed = max(1, int(fps//2)),
-        window_std = int(round(fps)),
-        min_block_size = int(round(10 * fps)),
-        segment4angle = int(round(resampling_N / 10))
+        
+        #this value has to be larger than 3 otherwise it is imposible to calculate the std
+        window_std = max(int(round(fps)), 5), 
+        
+        #let's only use blocks that are 10s or at least 10 frames long
+        min_block_size = int(round(10 * max(1, fps))),
+        
+        #at least this must be one segment separated
+        segment4angle = max(1, int(round(resampling_N / 10)))
     )
     return _correct_dflts(params, convertions)
 

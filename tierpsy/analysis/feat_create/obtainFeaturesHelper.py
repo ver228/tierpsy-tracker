@@ -104,21 +104,28 @@ class WormFromTableSimple():
             assert self.worm_index_type in trajectories_data_f
             good = trajectories_data_f[self.worm_index_type] == self.worm_index
             trajectories_data = trajectories_data_f.loc[good]
-
-            skel_table_id = trajectories_data['skeleton_id'].values
+                        
             try:
                 # try to read the time stamps, if there are repeated or not a
                 # number use the frame nuber instead
                 timestamp_raw = trajectories_data['timestamp_raw'].values
-                if np.any(np.isnan(timestamp_raw)) or np.any(np.diff(timestamp_raw) == 0):
+                if np.any(np.isnan(timestamp_raw)):
                     raise ValueError
                 else:
                     timestamp_inds = timestamp_raw.astype(np.int)
+                    
+                    #deal in the case they are repeating indexes (this happends sometimes in the last frame)
+                    timestamp_inds, ind = np.unique(timestamp_inds, return_index=True)
+                    trajectories_data = trajectories_data.iloc[ind]
+                    
+
             except (ValueError, KeyError):
                 # if the time stamp fails use the frame_number value instead
                 # (the index of the mask) and return nan as the fps
                 timestamp_inds = trajectories_data['frame_number'].values
-                
+            
+
+            skel_table_id = trajectories_data['skeleton_id'].values
             # we need to use (.values) to be able to use the & operator
             good_skeletons = (trajectories_data['has_skeleton'] == 1).values
             if self.use_skel_filter and 'is_good_skel' in trajectories_data:
@@ -126,9 +133,10 @@ class WormFromTableSimple():
                 # the filtering step
                 good_skeletons &= (
                     trajectories_data['is_good_skel'] == 1).values
-
             skel_table_id = skel_table_id[good_skeletons]
             timestamp_inds = timestamp_inds[good_skeletons]
+            
+            
             return skel_table_id, timestamp_inds
 
 
@@ -142,7 +150,6 @@ class WormFromTableSimple():
         first_frame = np.min(timestamp_inds)
         last_frame = np.max(timestamp_inds)
         n_frames = last_frame - first_frame + 1
-
         
         # get the apropiate index in the object array
         ind_ff = timestamp_inds - first_frame
@@ -152,7 +159,7 @@ class WormFromTableSimple():
             self.n_segments = ske_file_id.get_node('/skeleton').shape[1]
  
         # add the data from the skeleton_id's and timestamps used
-        self.timestamp = np.arange(first_frame, last_frame+1)
+        self.timestamp = np.arange(first_frame, last_frame + 1)
         
         self.skeleton_id = np.full(n_frames, -1, np.int32)
         self.skeleton_id[ind_ff] = skel_table_id
@@ -357,7 +364,7 @@ class WormStats():
             Return the feature list as an ordered dictionary.
         '''
         
-        if isinstance(worm_features, dict):
+        if isinstance(worm_features, (dict, pd.DataFrame)):
             def read_feat(feat_name):
                 if feat_name in worm_features:
                     return worm_features[feat_name]

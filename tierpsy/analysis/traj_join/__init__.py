@@ -6,8 +6,8 @@ def args_(fn, param):
 	argkws_d = {
 		'trajectories_file': fn['skeletons'],
 		'max_allowed_dist': p['traj_max_allowed_dist'],
-        'min_track_size': 0, 
-        'max_time_gap': 0, 
+        'min_track_size': 0,
+        'max_frames_gap': p['traj_max_frames_gap'], 
         'area_ratio_lim': p['traj_area_ratio_lim'],
         'analysis_type': p['analysis_type']
 		}

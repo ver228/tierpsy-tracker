@@ -19,7 +19,7 @@ warnings.simplefilter(action="ignore", category=RuntimeWarning)
 # (http://www.pytables.org/usersguide/parameter_files.html)
 tables.parameters.MAX_COLUMNS = 1024
 
-from tierpsy.helper.misc import TimeCounter, print_flush, WLAB, TABLE_FILTERS
+from tierpsy.helper.misc import TimeCounter, print_flush, WLAB, TABLE_FILTERS, get_base_name
 from tierpsy.analysis.ske_filt.getFilteredSkels import getValidIndexes
 from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStats, WormFromTable
 from tierpsy.helper.params import copy_unit_conversions, read_fps, min_num_skel_defaults
@@ -219,7 +219,7 @@ def getWormFeaturesFilt(
     split_traj_frames = int(np.round(split_traj_time*fps)) #the fps could be non integer
     
     # function to calculate the progress time. Useful to display progress
-    base_name = skeletons_file.rpartition('.')[0].rpartition(os.sep)[-1].rpartition('_')[0]
+    base_name = get_base_name(skeletons_file)
     
     with tables.File(features_file, 'w') as features_fid:
         #check if the stage was not aligned correctly. Return empty features file otherwise.

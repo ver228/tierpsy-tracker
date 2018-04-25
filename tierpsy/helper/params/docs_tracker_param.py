@@ -10,6 +10,10 @@ dflt_param_list = [
         'WORM', 
         'Flag that defines the type of data expected and the consequent code that would be executed.'
         ),
+    ('analysis_checkpoints',
+        [],
+        'Analysis points to be executed, if it is empty the points will be deduced from the analysis_type.'
+        ),
     ('mask_min_area', 
         50, 
         'Minimum area in pixels for an object to be included in the compression mask.'
@@ -142,6 +146,11 @@ dflt_param_list = [
         25, 
         'Maximum displacement between frames for two particles to consider part of the same track.'
         ),
+    ('traj_max_frames_gap',
+        0,
+        'Max gap in frames allowed between joined trajectories.'
+        ),
+
     ('traj_area_ratio_lim', 
         2, 
         'Area ratio between blob areas in different frames to be considered part of the same trajectory.'
@@ -275,6 +284,23 @@ dflt_param_list = [
     ('ventral_side', 
         '', 
         'Ventral side orientation. Used only if "analysis_type" is set to "WT2".'
+        ),
+
+    ('feat_skel_smooth_window',
+        5,
+        'Window (in number segments) used to smooth each individual skeleton by Tierpsy Features.'
+        ),
+    ('feat_coords_smooth_window_s',
+        0.25,
+        'Window (in number seconds) used to smooth each of the skeletons coordinates over time by Tierpsy Features.'
+        ),
+    ('feat_gap_to_interp_s',
+        0.25,
+        'Maximum time gap between missing skeletons be interpolated by Tierpsy Features.'
+        ),
+    ('feat_derivate_delta_time',
+        1/3,
+        'Time window used to calculate the derivatives (including velocity) by Tierpsy Features.'
         ),
     ]
 

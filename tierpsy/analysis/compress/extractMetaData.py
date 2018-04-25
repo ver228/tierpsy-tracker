@@ -18,14 +18,18 @@ from tierpsy.helper.misc import TimeCounter, print_flush, ReadEnqueue, FFPROBE_C
 
 def dict2recarray(dat):
     '''convert into recarray (pytables friendly)'''
-    dtype = [(kk, dat[kk].dtype) for kk in dat]
-    N = len(dat[dtype[0][0]])
 
-    recarray = np.recarray(N, dtype)
-    for kk in dat:
-        recarray[kk] = dat[kk]
+    if len(dat) > 0:
+        dtype = [(kk, dat[kk].dtype) for kk in dat]
+        N = len(dat[dtype[0][0]])
+        recarray = np.recarray(N, dtype)
+        for kk in dat:
+            recarray[kk] = dat[kk]
+        return recarray
+    else:
+        return np.array([])
 
-    return recarray
+    
 
 
 def get_ffprobe_metadata(video_file):
@@ -82,7 +86,6 @@ def get_ffprobe_metadata(video_file):
     # store data into numpy arrays
     video_metadata = OrderedDict()
     for row in dat:
-        row_fields = [x[0] for x in dat[0] if len(x) == 2]
         for dd in row:
             if (len(dd) != 2) or (not dd[0] in frame_fields):
                 continue
@@ -111,12 +114,13 @@ def get_ffprobe_metadata(video_file):
     video_metadata = dict2recarray(video_metadata)
 
     #sometimes the last frame throws a nan in the timestamp. I want to remove it
-    if np.isnan(video_metadata[-1]['best_effort_timestamp']):
-        video_metadata = video_metadata[:-1]
+    if video_metadata.size > 0:
+        if np.isnan(video_metadata[-1]['best_effort_timestamp']):
+            video_metadata = video_metadata[:-1]
 
-    #if there is still nan's raise an error
-    if np.any(np.isnan(video_metadata['best_effort_timestamp'])):
-        raise ValueError('The timestamp contains nan values')
+        #if there is still nan's raise an error
+        if np.any(np.isnan(video_metadata['best_effort_timestamp'])):
+            raise ValueError('The timestamp contains nan values')
     return video_metadata
 
 
@@ -160,17 +164,21 @@ def get_timestamp(masked_file):
     with tables.File(masked_file, 'r') as mask_fid:
         # get the total number of frmes previously processed
         tot_frames = mask_fid.get_node("/mask").shape[0]
-
-        if '/video_metadata' in mask_fid:
+        
+        try:        
             # try to read data from video_metadata
             dd = [(row['best_effort_timestamp'], row['best_effort_timestamp_time'])
                   for row in mask_fid.get_node('/video_metadata/')]
-
+            
+            if abs(tot_frames - len(dd)) > 2: 
+                warnings.warn('The total number of frames is {}, but the timestamp is {}. Either you are using a list of images or there is something weird with the timestamps.'.format(tot_frames, len(dd)))
+                raise ValueError
+            
             best_effort_timestamp, best_effort_timestamp_time = list(map(np.asarray, zip(*dd)))
             assert best_effort_timestamp.size == best_effort_timestamp_time.size
             
             timestamp, timestamp_time = _correct_timestamp(best_effort_timestamp, best_effort_timestamp_time)
-        else:
+        except (tables.exceptions.NoSuchNodeError, ValueError):
             #no metadata return empty frames
             timestamp = np.full(tot_frames, np.nan)
             timestamp_time = np.full(tot_frames, np.nan)

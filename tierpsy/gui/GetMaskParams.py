@@ -19,8 +19,12 @@ from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
 from tierpsy.processing.ProcessWorker import ProcessWorker
 from tierpsy.helper.params.tracker_param import TrackerParams, default_param
 
-class twoViewsWithZoom():
 
+
+class twoViewsWithZoom():
+    '''
+    Object useful to sincronize the pan/zoom of two images i.e. original and masked
+    '''
     def __init__(self, view_full, view_mask):
         self.view_full = ViewsWithZoom(view_full)
         self.view_mask = ViewsWithZoom(view_mask)
@@ -126,6 +130,9 @@ class ParamsGUI(QMainWindow):
 
 
     def _link_slider_spinbox(self):
+        '''
+        Link a given slider to a spinbox so when the value of one changes the other changes too.
+        '''
         def _single_link(slider, spinbox, connect_func):
             slider.sliderReleased.connect(connect_func)
             spinbox.editingFinished.connect(connect_func)
@@ -138,6 +145,8 @@ class ParamsGUI(QMainWindow):
             _single_link(slider, spinbox, self.updateMask)
 
     def saveParamFile(self):
+        self.json_file = self.ui.lineEdit_paramFile.text()
+        
         if not self.json_file:
             QMessageBox.critical(
                 self,
@@ -159,23 +168,60 @@ class ParamsGUI(QMainWindow):
             if reply == QMessageBox.No:
                 return
 
-        # read all the values in the GUI
+        dname = os.path.dirname(self.json_file)
+        if not os.path.isdir(dname):
+            QMessageBox.critical(
+                self,
+                'Invalid directory.',
+                'The directory in the file path name does not exists. Please be sure the path name is correct.',
+                QMessageBox.Ok)
+            return
+
+
+        # save data into the json file
+        #update before saving
+        self._update_json_params()
+
+        try:
+            save_params_json(self.json_file, self.json_param)
+        except OSError:
+            QMessageBox.critical(
+                self,
+                'Invalid file name.',
+                'I was not able to save the file. Please be sure the path name is correct.',
+                QMessageBox.Ok)
+            return
+
+
+    def _update_json_params(self):
+        '''
+        update json_params field from the gui vaues.
+        '''
         for param_name in self.mapper:
             assert param_name in self.json_param
             self.json_param[param_name] = self.mapper[param_name]
-        # save data into the json file
-        save_params_json(self.json_file, self.json_param)
+
+    def _update_gui_params(self, json_param):
+        checkit = (json_param['mask_bgnd_buff_size']>0) and (json_param['mask_bgnd_frame_gap']>0)
+
+        self.ui.checkBox_is_bgnd_subtraction.setChecked(checkit)
+        # set correct widgets to the values given in the json file
+        for param_name in json_param:
+            if param_name in self.mapper:
+               self.mapper[param_name] = json_param[param_name]
 
     def getMoreParams(self):
-        json_file = self.ui.lineEdit_paramFile.text()
-        allparamGUI = GetAllParameters(json_file)
-        allparamGUI.file_saved.connect(self.updateParamFile)
+        self._update_json_params()
+        allparamGUI = GetAllParameters(self.json_param)
+        
+        #the gui must have updated the dictioary in json_param 
         allparamGUI.exec_()
+        self._update_gui_params(self.json_param)
 
     # file dialog to the the hdf5 file
     def getParamFile(self):
-        json_dir = os.path.dirname(json_file)
-        json_file, _ = QFileDialog.getSaveFileName(self, "Find parameters file", json_dir, "JSON files (*.json);; All (*)")
+        json_dir = os.path.dirname(self.ui.lineEdit_paramFile.text())
+        json_file, _ = QFileDialog.getOpenFileName(self, "Find parameters file", json_dir, "JSON files (*.json);; All (*)")
         if json_file:
             self.updateParamFile(json_file)
 
@@ -197,23 +243,14 @@ class ParamsGUI(QMainWindow):
         else:
             json_param = default_param.copy()
 
-        checkit = (json_param['mask_bgnd_buff_size']>0) and (json_param['mask_bgnd_frame_gap']>0)
+        
 
-        self.ui.checkBox_is_bgnd_subtraction.setChecked(checkit)
-
-
-        # set correct widgets to the values given in the json file
-        for param_name in json_param:
-            if param_name in self.mapper:
-               self.mapper[param_name] = json_param[param_name]
-
-
-
-
+        self._update_gui_params(json_param)
         self.json_file = json_file
         self.json_param = json_param
         self.ui.lineEdit_paramFile.setText(self.json_file)
         
+    
 class GetMaskParams_GUI(ParamsGUI):
 
     def __init__(self, default_videos_dir='', scripts_dir=''):
@@ -235,10 +272,9 @@ class GetMaskParams_GUI(ParamsGUI):
                          bgnd=self.ui.tabWidget.indexOf(self.ui.tab_bgnd))
         
         self.ui.p_keep_border_data.stateChanged.connect(self.updateMask)
-        self.ui.p_is_light_background.stateChanged.connect(self.updateReducedBuff)
-        self.ui.p_mask_bgnd_buff_size.editingFinished.connect(self.delBSubstractor)
-        self.ui.p_mask_bgnd_frame_gap.editingFinished.connect(self.delBSubstractor)
-        
+        self.ui.p_is_light_background.stateChanged.connect(self.updateBgnd)
+        self.ui.pushButton_update_bgnd.clicked.connect(self.updateBgnd)
+
         self.ui.pushButton_video.clicked.connect(self.getVideoFile)
         self.ui.pushButton_next.clicked.connect(self.getNextChunk)
 
@@ -327,19 +363,21 @@ class GetMaskParams_GUI(ParamsGUI):
             self, "Find video file", self.videos_dir, "All files (*)")
         self.updateVideoFile(video_file)
 
+    def _start_video(self, video_file):
+        vid = selectVideoReader(video_file)
+        if vid.width == 0 or vid.height == 0:
+            raise ValueError
+        else:
+            if self.vid is not None:
+                self.vid.release()
+            self.vid, self.im_width, self.im_height = vid, vid.width, vid.height
+            self.bgnd_subtractor = None #make sure this get restarted when a new file is initialized
+            self.frame_number = 0
+        
     def updateVideoFile(self, video_file):
         if video_file and os.path.exists(video_file):
             try:
-                vid = selectVideoReader(video_file)
-                if vid.width == 0 or vid.height == 0:
-                    raise ValueError
-                else:
-                    if self.vid is not None:
-                        self.vid.release()
-                    self.vid, self.im_width, self.im_height = vid, vid.width, vid.height
-                    self.bgnd_subtractor = None #make sure this get restarted when a new file is initialized
-                    self.frame_number = 0
-
+                self._start_video(video_file)
             except (OSError, ValueError, IOError):
                 QMessageBox.critical(
                     self,
@@ -362,19 +400,24 @@ class GetMaskParams_GUI(ParamsGUI):
             # fit the image to the canvas size
             self.twoViews.zoomFitInView()
 
+            
+            #set the valid limits for the block size
+            max_block = min(self.Ifull.shape)
+            min_block = 3
+            self.ui.p_thresh_block_size.setRange(min_block, max_block)
 
     def updateReducedBuff(self):
         if self.Ibuff.size > 0:
-            is_light_background = self.mapper['is_light_background']
+            #update the image used to create the mask
             
-            #update IsubtB image
-            if not self.ui.checkBox_is_bgnd_subtraction.isChecked():
-                self.Imin = reduceBuffer(self.Ibuff, is_light_background)
-            elif self.bgnd_subtractor is not None:
+            is_light_background = self.mapper['is_light_background']
+            if self.ui.checkBox_is_bgnd_subtraction.isChecked() and self.bgnd_subtractor is not None:
                 Ibuff_b = self.bgnd_subtractor.apply(self.Ibuff, self.frame_number)
-                oposite_flag = not is_light_background
-                self.Imin = 255-reduceBuffer(Ibuff_b, oposite_flag)
+            else:
+                Ibuff_b = self.Ibuff
                 
+            self.Imin = reduceBuffer(Ibuff_b, is_light_background)
+            
             self.updateMask()
 
     def getNextChunk(self):
@@ -390,6 +433,7 @@ class GetMaskParams_GUI(ParamsGUI):
                  self.im_width),
                 dtype=np.uint8)
 
+            
             tot = 0
             for ii in range(self.buffer_size):
                 # get video frame, stop program when no frame is retrive (end
@@ -397,7 +441,8 @@ class GetMaskParams_GUI(ParamsGUI):
                 ret, image = self.vid.read()
                 if ret == 0:
                     if ii == 0:
-                        self.updateVideoFile(self.video_file) #restart video
+                        #restart video
+                        self._start_video(self.video_file) 
                         ret, image = self.vid.read() #try to read again, if you cannot again just quit
                         if ret == 0: 
                             break
@@ -421,9 +466,7 @@ class GetMaskParams_GUI(ParamsGUI):
             self.Ifull = self.Ibuff[0].copy()
             
             
-            self._updateISubtrB()
-            #reduce buffer after background subtraction
-            self.updateReducedBuff()
+            self.updateBgnd()
             
 
     def _numpy2qimage(self, im_ori):
@@ -463,40 +506,40 @@ class GetMaskParams_GUI(ParamsGUI):
         mask = getROIMask(self.Imin.copy(), **mask_param)
         self.Imask = mask * self.Ifull
         self.updateROIs()
-
-
-    def delBSubstractor(self):
-        self.bgnd_subtractor = None
         
-    def _updateISubtrB(self):
+    def _updateBgnd(self):
         if self.vid is None:
             return 
 
-        if self.ui.checkBox_is_bgnd_subtraction.isChecked():
-            if self.bgnd_subtractor is None:
-                keys = ['is_light_background', 'mask_bgnd_buff_size', 'mask_bgnd_frame_gap']
-                kwargs = {x.replace('mask_bgnd_', ''):self.mapper[x] for x in keys}
+        if self.bgnd_subtractor is None:
+            #try to calculate the background if the parameters are corrected
+            keys = ['is_light_background', 'mask_bgnd_buff_size', 'mask_bgnd_frame_gap']
+            kwargs = {x.replace('mask_bgnd_', ''):self.mapper[x] for x in keys}
 
-                if kwargs['buff_size'] >0 and kwargs['frame_gap']>0:
-                    self.bgnd_subtractor = BackgroundSubtractor(self.video_file, **kwargs)
+            if kwargs['buff_size'] >0 and kwargs['frame_gap']>0:
+                self.bgnd_subtractor = BackgroundSubtractor(self.video_file, **kwargs)
 
-
-            if self.Ifull.size > 0 and self.bgnd_subtractor is not None:
-                self.IsubtrB = self.bgnd_subtractor.subtract_bgnd(self.Ifull)
-
+        #if the background substraction is checked and it was calculated correctly update the background
+        if self.ui.checkBox_is_bgnd_subtraction.isChecked() and \
+        self.Ifull.size > 0 and self.bgnd_subtractor is not None:
+            self.IsubtrB = self.bgnd_subtractor.subtract_bgnd(self.Ifull)
+            #debug!!!
+            #self.IsubtrB = self.bgnd_subtractor.bgnd.astype(np.uint8)
         else:
             self.IsubtrB = self.Ifull
+
+        self.updateReducedBuff()
+
+    def updateBgnd(self):
+        self.bgnd_subtractor = None
+        self._updateBgnd()
 
     def updateCheckedBgndSubtr(self):
         valid = self.ui.checkBox_is_bgnd_subtraction.isChecked()
         self.ui.p_mask_bgnd_frame_gap.setEnabled(valid)
         self.ui.p_mask_bgnd_buff_size.setEnabled(valid)
-
-        self._updateISubtrB()
-        self.updateReducedBuff()
+        self._updateBgnd()
     
-    
-
     
     def updateParamFile(self, json_file):
         super().updateParamFile(json_file)

@@ -11,6 +11,7 @@ import os
 #get default parameters files
 from tierpsy import DFLT_PARAMS_PATH, DFLT_PARAMS_FILES
 from .docs_tracker_param import default_param, info_param, valid_options
+from .docs_analysis_points import dflt_analysis_points
 
 #deprecated variables that will be ignored
 deprecated_fields = [
@@ -33,6 +34,15 @@ deprecated_alias = {
     'save_int_maps': 'int_save_maps',
     'is_extract_metadata':'is_extract_timestamp',
     }
+
+def get_dflt_sequence(analysis_type):
+    assert analysis_type in valid_options['analysis_type']
+    if analysis_type in dflt_analysis_points:
+        analysis_checkpoints = dflt_analysis_points[analysis_type]
+    else:
+        analysis_checkpoints = dflt_analysis_points['DEFAULT']
+        
+    return analysis_checkpoints
 
 def read_params(json_file=''):
     '''
@@ -62,11 +72,16 @@ def read_params(json_file=''):
             elif key in input_param:
                 input_param[key] = param_in_file[key]
             else:
-                raise ValueError('Parameter {} is not a valid parameter. Change its value in file {}'.format(key, self.json_file))
+                raise ValueError('Parameter {} is not a valid parameter. Change its value in file {}'.format(key, json_file))
             
             if key in valid_options:
                 if not param_in_file[key] in valid_options[key]:
                     raise ValueError('Parameter {} is not in the list of valid options {}'.format(param_in_file[key],valid_options[key]))
+
+
+        if not input_param['analysis_checkpoints']:
+            input_param['analysis_checkpoints'] = get_dflt_sequence(input_param['analysis_type'])
+
 
     return input_param    
 

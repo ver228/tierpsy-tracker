@@ -18,8 +18,27 @@ from tierpsy.helper.misc import print_flush
 from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStats
 from tierpsy.helper.params import read_unit_conversions, read_ventral_side, read_fps
 
+wcon_metadata_fields = ['id', 'lab', 'who', 'timestamp', 'temperature', 'humidity', 'arena', 
+'food', 'media', 'sex', 'stage', 'age', 'strain', 'protocol', 'interpolate', 'software']
 
-def getWCONMetaData(fname, READ_FEATURES=False, provenance_step='FEAT_CREATE'):
+def wcon_reformat_metadata(metadata_dict):
+    wcon_metadata = OrderedDict()
+    for field in wcon_metadata_fields:
+        if field in metadata_dict:
+            wcon_metadata[field] = metadata_dict[field]
+    
+    wcon_metadata['@OMG'] = OrderedDict()
+    for field in metadata_dict:
+        if not field in wcon_metadata_fields:
+            wcon_metadata['@OMG'][field] = metadata_dict[field]
+
+    if '@OMG' in metadata_dict:
+        for field in metadata_dict['@OMG']:
+            wcon_metadata['@OMG'][field] = metadata_dict['@OMG'][field]
+
+    return wcon_metadata
+
+def readMetaData(fname, provenance_step='FEAT_CREATE'):
     def _order_metadata(metadata_dict):
         ordered_fields = ['strain', 'timestamp', 'gene', 'chromosome', 'allele', 
         'strain_description', 'sex', 'stage', 'ventral_side', 'media', 'arena', 'food', 
@@ -55,15 +74,11 @@ def getWCONMetaData(fname, READ_FEATURES=False, provenance_step='FEAT_CREATE'):
         MWTracker_ver = {"name":"tierpsy (https://github.com/ver228/tierpsy-tracker)",
             "version": tierpsy_version,
             "featureID":"@OMG"}
-        
-        if not READ_FEATURES:
-            experiment_info["software"] = MWTracker_ver
-        else:
-            #add open_worm_analysis_toolbox info and save as a list of "softwares"
-            open_worm_ver = {"name":"open_worm_analysis_toolbox (https://github.com/openworm/open-worm-analysis-toolbox)",
-            "version":commit_hash['open_worm_analysis_toolbox'],
-            "featureID":""}
-            experiment_info["software"] = [MWTracker_ver, open_worm_ver]
+        #open_worm_ver = {"name":"open_worm_analysis_toolbox (https://github.com/openworm/open-worm-analysis-toolbox)",
+        #    "version":commit_hash['open_worm_analysis_toolbox'],
+        #    "featureID":""}
+
+        experiment_info["software"] = MWTracker_ver#[MWTracker_ver, open_worm_ver]
     
     return _order_metadata(experiment_info)
 
@@ -98,7 +113,7 @@ def __addOMGFeat(fid, worm_feat_time, worm_id):
     for feature_name in worm_node._v_children:
         feature_path = worm_path + '/' + feature_name
         worm_features[feature_name] = fid.get_node(feature_path)[:]
-    
+
     return worm_features
     
 
@@ -211,7 +226,8 @@ def _getUnits(features_file, READ_FEATURES=False):
     
     
 def exportWCONdict(features_file, READ_FEATURES=False):
-    metadata = getWCONMetaData(features_file, READ_FEATURES)
+    metadata = readMetaData(features_file)
+    metadata = wcon_reformat_metadata(metadata)
     data = _getData(features_file, READ_FEATURES)
     units = _getUnits(features_file, READ_FEATURES)
     

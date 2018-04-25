@@ -12,6 +12,8 @@ RESERVED_EXT = ['_skeletons.hdf5',
                 '_featuresN.hdf5'
                 ]
 
+IMG_EXT = ['.png', '.jpeg', '.jpg', '.tif', '.tiff', '.bmp']
+
 def remove_ext(fname):
     for rext in RESERVED_EXT:
         if fname.endswith(rext):

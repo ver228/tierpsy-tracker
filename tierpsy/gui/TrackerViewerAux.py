@@ -13,7 +13,7 @@ from tierpsy.gui.HDF5VideoPlayer import HDF5VideoPlayerGUI, LineEditDragDrop
 from tierpsy.gui.TrackerViewerAux_ui import Ui_TrackerViewerAux
 from tierpsy.analysis.ske_create.getSkeletonsTables import getWormMask
 from tierpsy.analysis.ske_create.segWormPython.mainSegworm import getSkeleton
-
+from tierpsy.helper.params import read_microns_per_pixel
 
 
 BAD_SKEL_COLOURS = dict(
@@ -42,6 +42,11 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
         self.traj_time_grouped = None
         self.frame_save_interval = 1 
 
+        self.skel_microns_per_pixel = None
+        self.stage_position_pix = None
+        self.coordinates_group = '/'
+        self.coordinates_fields = None
+
         self.ui.pushButton_skel.clicked.connect(self.getSkelFile)
         LineEditDragDrop(
             self.ui.lineEdit_skel,
@@ -58,15 +63,12 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
         self.updateSkelFile(selected_file)
 
     def updateSkelFile(self, selected_file, dflt_skel_size = 5):
-        
         self.skeletons_file = selected_file
         self.ui.lineEdit_skel.setText(self.skeletons_file)
-        
         try:
             with pd.HDFStore(self.skeletons_file, 'r') as ske_file_id:
                 self.trajectories_data = ske_file_id['/trajectories_data']
                 self.traj_time_grouped = self.trajectories_data.groupby('frame_number')
-
                 # read the size of the structural element used in to calculate
                 # the mask
                 if '/provenance_tracking/int_ske_orient' in ske_file_id:
@@ -82,6 +84,34 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
                 else:
                     # use default
                     self.strel_size = dflt_skel_size
+        except (IOError, KeyError, tables.exceptions.HDF5ExtError):
+            self.trajectories_data = None
+            self.traj_time_grouped = None
+        
+        try:
+            #If i am using the smoothed skeletons (_featuresN.hdf5) we have to use a different field and divided by the microns per pixels scale
+            self.stage_position_pix =  None
+            with tables.File(self.skeletons_file, 'r') as skel_file_id:
+                if '/coordinates' in skel_file_id:
+                    self.skel_microns_per_pixel = read_microns_per_pixel(self.skeletons_file)
+                    self.coordinates_group = '/coordinates/'
+                    self.coordinates_fields = {
+                        'dorsal_contours':'contour_side2', 
+                        'skeletons':'skeleton', 
+                        'ventral_contours':'contour_side1'
+                    }
+                    if '/stage_position_pix' in self.fid:
+                        self.stage_position_pix = self.fid.get_node('/stage_position_pix')[:]
+                
+                else:
+                    self.skel_microns_per_pixel = None
+                    self.coordinates_group = '/'
+
+                    self.coordinates_fields = {
+                        'contour_side1':'contour_side1', 
+                        'skeleton':'skeleton', 
+                        'contour_side2':'contour_side2'
+                    }
 
         except (IOError, KeyError, tables.exceptions.HDF5ExtError):
             self.trajectories_data = None
@@ -100,7 +130,7 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
         except:
             self.frame_save_interval = 1
 
-    def updateVideoFile(self, vfilename, possible_ext = ['_skeletons.hdf5']):
+    def updateVideoFile(self, vfilename, possible_ext = ['_featuresN.hdf5', '_skeletons.hdf5']):
         super().updateVideoFile(vfilename)
         if self.image_group is None:
             return
@@ -148,25 +178,31 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
 
     def drawSkelResult(self, img, qimg, row_data, isDrawSkel, 
         roi_corner=(0,0), read_center=True):
+
+
         if isDrawSkel and isinstance(row_data, pd.Series):
-            if row_data['has_skeleton'] == 1:
+            if 'has_skeleton' in row_data and row_data['has_skeleton'] == 0:
+                self.drawThreshMask(
+                    img,
+                    qimg,
+                    row_data,
+                    read_center=read_center)
+            else:
                 self.drawSkel(
                     img,
                     qimg,
                     row_data,
                     roi_corner = roi_corner
                     )
-            else:
-                self.drawThreshMask(
-                    img,
-                    qimg,
-                    row_data,
-                    read_center=read_center)
-
+            
         return qimg
 
     def drawSkel(self, worm_img, worm_qimg, row_data, roi_corner=(0, 0)):
-        if not self.skeletons_file or self.trajectories_data is None or worm_img.size == 0 or worm_qimg is None:
+        if not self.skeletons_file or \
+        self.trajectories_data is None or \
+        worm_img.size == 0 or \
+        worm_qimg is None or \
+        self.coordinates_fields is None:
             return
 
         c_ratio_y = worm_qimg.width() / worm_img.shape[1]
@@ -174,13 +210,24 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
 
         skel_id = int(row_data['skeleton_id'])
         skel_dat = {}
+
+
         with tables.File(self.skeletons_file, 'r') as ske_file_id:
-            for tt in ['skeleton', 'contour_side1', 'contour_side2']:
-                field = '/' + tt
+            for ff, tt in self.coordinates_fields.items():
+                field = self.coordinates_group + ff
                 if field in ske_file_id:
                     dat = ske_file_id.get_node(field)[skel_id]
-                    dat[:, 0] = (dat[:, 0] - roi_corner[0]) * c_ratio_x
-                    dat[:, 1] = (dat[:, 1] - roi_corner[1]) * c_ratio_y
+                    if self.skel_microns_per_pixel is not None:
+                        #change from microns to pixels
+                        dat /= self.skel_microns_per_pixel
+                    
+                    if self.stage_position_pix is not None:
+                        #subtract stage motion if necessary
+                        dat -= self.stage_position_pix[self.frame_number]
+                    
+                    dat[:, 0] = (dat[:, 0] - roi_corner[0] + 0.5) * c_ratio_x
+                    dat[:, 1] = (dat[:, 1] - roi_corner[1] + 0.5) * c_ratio_y
+
                 else:
                     dat = np.full((1,2), np.nan)
 

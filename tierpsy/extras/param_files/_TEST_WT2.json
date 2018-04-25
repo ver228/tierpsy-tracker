@@ -13,5 +13,6 @@
 	"strel_size":10, 
 	"int_save_maps": true, 
 	"filt_min_displacement":0,
-	"analysis_type" : "WT2"
+	"analysis_type" : "WT2",
+	"analysis_checkpoints" : ["FEAT_INIT", "FEAT_TIERPSY"]
 }

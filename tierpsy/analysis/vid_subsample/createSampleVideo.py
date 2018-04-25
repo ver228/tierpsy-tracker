@@ -51,7 +51,8 @@ def createSampleVideo(masked_image_file,
                     size_factor = 5,
                     skip_factor = 2, 
                     dflt_fps=30, 
-                    codec='MPEG'):
+                    codec='MPEG',
+                    shift_bgnd = False):
     #skip factor is to reduce the size of the movie by using less frames (so we use 15fps for example instead of 30fps)
 
     #%%
@@ -76,9 +77,21 @@ def createSampleVideo(masked_image_file,
                             cv2.VideoWriter_fourcc(*codec), fps/skip_factor, (im_w,im_h), isColor=False)
         assert vid_writer.isOpened()
         
+
+        if shift_bgnd:
+            #lazy bgnd calculation, just take the last and first frame and get the top 95 pixel value
+            mm = masks[[0,-1], :, :]
+            _bgnd_val = np.percentile(mm[mm!=0], [97.5])[0]
+
+
+
         for frame_number in range(0, tot_frames, int(time_factor*skip_factor)):
             current_frame = int(tt_vec[frame_number])
             img = masks[current_frame]
+
+            if shift_bgnd:
+               img[img==0] = _bgnd_val
+
             im_new = cv2.resize(img, (im_w,im_h))
             vid_writer.write(im_new)
 

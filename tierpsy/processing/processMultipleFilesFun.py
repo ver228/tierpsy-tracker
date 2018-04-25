@@ -9,7 +9,7 @@ import argparse
 
 from tierpsy.processing.CheckFilesForProcessing import CheckFilesForProcessing
 from tierpsy.processing.ProcessLocal import ProcessLocalParser
-from tierpsy.processing.helper import get_dflt_sequence, find_valid_files, \
+from tierpsy.processing.helper import find_valid_files, \
 remove_border_checkpoints, get_results_dir, get_masks_dir 
 from tierpsy.processing.run_multi_cmd import RunMultiCMD
 
@@ -77,7 +77,8 @@ def processMultipleFilesFun(
     json_file = param.json_file
     
     if not analysis_checkpoints:
-      analysis_checkpoints = get_dflt_sequence(param.p_dict['analysis_type'])
+      analysis_checkpoints = param.p_dict['analysis_checkpoints'].copy()#get_dflt_sequence(param.p_dict['analysis_type'])
+
     
     
     if True:#os.name == 'nt' or 'm4v' in pattern_include:
@@ -85,6 +86,8 @@ def processMultipleFilesFun(
         is_parallel_check = False
     else:
         is_parallel_check = True
+
+    is_parallel_check = False
 
     remove_border_checkpoints(analysis_checkpoints, force_start_point, 0)
     remove_border_checkpoints(analysis_checkpoints, end_point, -1)

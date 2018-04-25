@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'HDF5VideoPlayer.ui'
 #
-# Created by: PyQt5 UI code generator 5.6
+# Created by: PyQt5 UI code generator 5.10
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -20,7 +20,6 @@ class Ui_HDF5VideoPlayer(object):
         self.verticalLayout_2.setSpacing(6)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.verticalLayout = QtWidgets.QVBoxLayout()
-        self.verticalLayout.setContentsMargins(11, 11, 11, 11)
         self.verticalLayout.setSpacing(6)
         self.verticalLayout.setObjectName("verticalLayout")
         self.scrollArea = QtWidgets.QScrollArea(self.centralWidget)
@@ -47,7 +46,6 @@ class Ui_HDF5VideoPlayer(object):
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.verticalLayout.addWidget(self.scrollArea)
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_3.setContentsMargins(11, 11, 11, 11)
         self.horizontalLayout_3.setSpacing(6)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.spinBox_frame = QtWidgets.QSpinBox(self.centralWidget)
@@ -75,7 +73,6 @@ class Ui_HDF5VideoPlayer(object):
         self.horizontalLayout_3.addWidget(self.label_fps)
         self.verticalLayout.addLayout(self.horizontalLayout_3)
         self.horizontalLayout_6 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_6.setContentsMargins(11, 11, 11, 11)
         self.horizontalLayout_6.setSpacing(6)
         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
         self.comboBox_h5path = QtWidgets.QComboBox(self.centralWidget)
@@ -94,7 +91,6 @@ class Ui_HDF5VideoPlayer(object):
         self.horizontalLayout_6.addWidget(self.pushButton_h5groups)
         self.verticalLayout.addLayout(self.horizontalLayout_6)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_2.setContentsMargins(11, 11, 11, 11)
         self.horizontalLayout_2.setSpacing(6)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.imageSlider = QtWidgets.QSlider(self.centralWidget)
@@ -114,7 +110,6 @@ class Ui_HDF5VideoPlayer(object):
         self.horizontalLayout_2.addWidget(self.playButton)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
-        self.horizontalLayout.setContentsMargins(11, 11, 11, 11)
         self.horizontalLayout.setSpacing(6)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.lineEdit_video = QtWidgets.QLineEdit(self.centralWidget)
