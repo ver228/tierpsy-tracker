@@ -1,8 +1,26 @@
-# Manual
+## Example Data
+
+Example files can be found [here](https://imperiallondon-my.sharepoint.com/:u:/g/personal/ajaver_ic_ac_uk/EazhY5HZ4zRIhrCYIm_p4VcBq50QYBPzeaBVF2DRgRe2IQ?e=fdrkj7). The zip file contains a multiworm video recorded using a high resolution fixed camera and a single worm video recorded using the [WT2.0](https://www.mrc-lmb.cam.ac.uk/wormtracker/).
+
+You can analyze the videos using the [Batch Processing Multiple Files](#batch-processing-multiple-files) App. The videos require different analysis parameters since they belong to different setups, therefore they cannot be processed together.
+
+For the multiworm video the `Parameters File` must be set to `MULTI_RIG.json` and the `File Pattern to Include` as `*.mov` as shown below:
+
+<img width="450" alt="screen shot 2018-04-25 at 09 04 05" src="https://user-images.githubusercontent.com/8364368/39233808-6344ddca-4869-11e8-9c34-d3db9102109f.png">
+
+For the multiworm video the `Parameters File` must be set to `WT2_clockwise.json` and the `File Pattern to Include` as `*.avi` as shown below:
+
+<img width="450" alt="screen shot 2018-04-25 at 09 13 19" src="https://user-images.githubusercontent.com/8364368/39233903-9a07ec62-4869-11e8-921e-27769f3dc87c.png">
+
+The processing times for in MacBook Pro (15-inch, 2017) were 04:31 minutes for the multiworm video and 11:43 minutes for the singleworm video.
+
+# Detailed Instructions
 
 ## Getting Started
 
-After running the installation script in OSX or Windows there should be a clickable executable named `TierpsyTracker` on the Desktop. If the executable is missing you can re-create it by running:
+If you are using any of the [binary executables](https://github.com/ver228/tierpsy-tracker/releases) you only have to double click the file and the program should start after a few seconds.
+
+If you [installed tierpsy tracker from the source](https://github.com/ver228/tierpsy-tracker/blob/master/docs/INSTALLATION.md) in OSX or Windows there should be a clickable executable named `TierpsyTracker` on the Desktop. If the executable is missing you can re-create it by running:
 
 ```bash
 #(OSX/Linux)
