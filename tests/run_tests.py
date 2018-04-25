@@ -1,3 +1,4 @@
+import tierpsy
 
 import sys
 import os
@@ -7,7 +8,35 @@ import glob
 import json
 import argparse
 
-import tierpsy
+
+EXAMPLES_LINK="https://imperiallondon-my.sharepoint.com/personal/ajaver_ic_ac_uk/_layouts/15/guestaccess.aspx?guestaccesstoken=ldZ18fLY%2bzlu7XuO9mbKVdyiKoH4naiesqiLXWU4vGQ%3d&docid=0cec4e52f4ccf4d5b8bb3a737020fc12f&rev=1"
+def dowload_examples():
+    import tqdm
+    import requests
+    import math
+    import zipfile
+
+    # Streaming, so we can iterate over the response.
+    r = requests.get(EXAMPLES_LINK, stream=True)
+
+    # Total size in bytes.
+    total_size = int(r.headers.get('content-length', 0)); 
+    block_size = 1024
+    wrote = 0 
+
+    tmp_file = 'test_data.zip'
+    with open(tmp_file, 'wb') as f:
+        for data in tqdm.tqdm(r.iter_content(block_size), total=math.ceil(total_size//block_size) , unit='MB', unit_scale=True):
+            wrote = wrote  + len(data)
+            f.write(data)
+    if total_size != 0 and wrote != total_size:
+        print("ERROR, something went wrong") 
+
+    
+    with zipfile.ZipFile(tmp_file, "r") as zip_ref:
+        zip_ref.extractall("./")
+
+    os.remove(tmp_file)
 
 class TestObj():
     def __init__(self, examples_dir, script_dir):
@@ -46,7 +75,6 @@ class TestObj():
             print(self.description)
             os.system(cmd)
 
-    
     def remove_dir(self, dir2remove):
         if os.path.exists(dir2remove):
             if sys.platform == 'darwin':
@@ -103,8 +131,6 @@ class AVI_VIDEOS(TestObj):
         '*.avi'
         ]
         self.add_command(args)
-
-
 
 class MANUAL_FEATS(TestObj):
     def __init__(self, *args):
@@ -189,6 +215,8 @@ class WORM_MOTEL(TestObj):
         self.add_command(args)
 
 if __name__ == '__main__':
+    #dowload_examples()
+
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('n_tests', metavar='N', type=int, nargs='*',
                         help='Number of tests to be done. If it is empty it will execute all the tests.')

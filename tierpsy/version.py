@@ -1,6 +1,14 @@
 # # -*- coding: utf-8 -*-
-__version__ = '1.4.0'
+__version__ = '1.5.0-alpha'
 '''
+1.5.0-alpha
+- Add tierpsy features as FEAT_INIT, FEAT_TIERPSY.
+- Reorganize and improve GUIs, particularly "Set Parameters".
+- Fix background subtraction to deal with light background.
+- Add analysis point ('WORM_SINGLE') to tell the algorithm that it is expected only one worm in the video.
+- Make the calculation of FPS from timestamp more tolerant to missed/repeated frames.
+- Change head/tail identification to deal with worms with very low to none global displacement.
+
 1.4.0
 - Schafer's lab tracker ready for release:
 	* Remove CNT_ORIENT as a separated checkpoint and add it rather as a pre-step using a decorator.
