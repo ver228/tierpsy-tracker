@@ -288,6 +288,7 @@ class MarkersDrawer(TrackerViewerAuxGUI):
         else:
             skel_id = row_data['skeleton_id']
             label_color = self._h_assign_feat_color(skel_id)
+            
 
         pen = QPen()
         pen.setColor(label_color)

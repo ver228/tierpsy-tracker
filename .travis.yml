@@ -1,7 +1,6 @@
 language: python
 python: 
 # We don't actually use the Travis Python, but this keeps it organized.
-- "3.5"
 - "3.6"
 
 notifications:
@@ -10,13 +9,13 @@ notifications:
 matrix:
     include:
         - os: linux
-          sudo: required
+          #sudo: required
         - os: osx
 
-install:
+before_install:
   # install anaconda
-  - sudo apt-get update
-  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+  #- sudo apt-get update
+  - curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh;
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - hash -r
@@ -25,17 +24,15 @@ install:
   # Useful for debugging any issues with conda
   - conda info -a
   
+install:
   # create testing enviroment
   - conda config --add channels conda-forge 
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION 
-    numpy matplotlib pytables pandas gitpython pyqt=5 
-    h5py scipy scikit-learn scikit-image seaborn xlrd 
-    cython statsmodels keras opencv
+  - conda install -q numpy matplotlib pytables pandas gitpython pyqt=5 h5py scipy scikit-learn scikit-image seaborn xlrd cython statsmodels numba keras opencv tensorflow
   - source activate test-environment
-  - pip install tensorflow 
   
   # install tierpsy
-  - bash installation/installation_script.sh --setup_modules
+  - bash installation/installation_script.sh
   
 before_script:
   #download examples
