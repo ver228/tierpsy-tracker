@@ -190,8 +190,6 @@ def correctHeadTail(skeletons_file, **params):
             is_switched_skel, roll_std = isWormHTSwitched(worm_data.skeleton,
                                                           segment4angle=segment4angle, max_gap_allowed=max_gap_allowed,
                                                           window_std=window_std, min_block_size=min_block_size)
-            roll_std.plot()
-            
             worm_data.switchHeadTail(is_switched_skel)
 
         worm_data.writeData()
