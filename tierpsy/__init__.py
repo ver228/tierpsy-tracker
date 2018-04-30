@@ -9,7 +9,8 @@ import sys
 
 from .version import __version__
 
-#print(os.environ['PATH'])
+#I want to be sure tierpsy loads tensorflow flow backend
+os.environ['KERAS_BACKEND']='tensorflow' 
 
 try:
     # PyInstaller creates a temp folder and stores path in _MEIPASS

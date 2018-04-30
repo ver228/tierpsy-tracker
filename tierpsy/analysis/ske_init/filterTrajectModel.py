@@ -53,7 +53,6 @@ def indentifyValidWorms(masked_file,
         frame_subsamplig - number of frames skipped. We do not need to calculate in 
                             every frame. A value of near the number of fps is sensible.
     '''
-    
     from keras.models import load_model # I do a hidden import because the loading of keras is slow, and it will do everytime tierpsy is initialized
     
     model = load_model(model_path)
