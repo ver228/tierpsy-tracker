@@ -48,14 +48,15 @@ function download_examples {
 }
 
 function link_desktop {
-	if [[ "${OS}" -eq "Darwin" ]];
+	if [[ $OS == "Darwin" ]];
 	then
-		echo "Creating Desktop Link..."
+		echo $OS" Creating Desktop Link... "
 		DESKTOLINK="$HOME/Desktop/TierpsyTracker.command"
 	
 		EXIT_CMD="osascript -e 'tell application "Terminal" to close first window' & exit"
 		echo "python3 $MW_MAIN_DIR/cmd_scripts/TierpsyTrackerConsole.py; $EXIT_CMD" > $DESKTOLINK
 		chmod 744 $DESKTOLINK
+		echo "Done"
 	#I haven't implemented a similar short cut for linux
 	fi
 } 
