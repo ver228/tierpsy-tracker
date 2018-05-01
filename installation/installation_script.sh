@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+OS=$(uname -s)
+
 MW_MAIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"/..
 OPENWORM_DIR=$MW_MAIN_DIR/../open-worm-analysis-toolbox
 TIERPSYFEATURES_DIR=$MW_MAIN_DIR/../tierpsy-features
@@ -46,15 +48,15 @@ function download_examples {
 }
 
 function link_desktop {
-	
-	if [[ "${OS}" -eq "Darwin" ]]
+	if [[ "${OS}" -eq "Darwin" ]];
 	then
+		echo "Creating Desktop Link..."
 		DESKTOLINK="$HOME/Desktop/TierpsyTracker.command"
 	
 		EXIT_CMD="osascript -e 'tell application "Terminal" to close first window' & exit"
 		echo "python3 $MW_MAIN_DIR/cmd_scripts/TierpsyTrackerConsole.py; $EXIT_CMD" > $DESKTOLINK
 		chmod 744 $DESKTOLINK
-
+	#I haven't implemented a similar short cut for linux
 	fi
 } 
 
