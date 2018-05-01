@@ -46,18 +46,16 @@ function download_examples {
 }
 
 function link_desktop {
-	DESKTOLINK="$HOME/Desktop/TierpsyTracker.command"
 	
 	if [[ "${OS}" -eq "Darwin" ]]
 	then
+		DESKTOLINK="$HOME/Desktop/TierpsyTracker.command"
+	
 		EXIT_CMD="osascript -e 'tell application "Terminal" to close first window' & exit"
-	else
-		EXIT_CMD="exit"
+		echo "python3 $MW_MAIN_DIR/cmd_scripts/TierpsyTrackerConsole.py; $EXIT_CMD" > $DESKTOLINK
+		chmod 744 $DESKTOLINK
+
 	fi
-
-	echo "python3 $MW_MAIN_DIR/cmd_scripts/TierpsyTrackerConsole.py; $EXIT_CMD" > $DESKTOLINK
-
-	chmod 744 $DESKTOLINK
 } 
 
 

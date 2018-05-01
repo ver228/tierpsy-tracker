@@ -11,12 +11,17 @@ matrix:
     include:
         - os: linux
           sudo: required
-       # - os: osx
+        - os: osx
 
 before_install:
-  # install anaconda
-  - sudo apt-get update
-  - curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh;
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      MINICONDA_OS=Linux ;
+    else
+      MINICONDA_OS=MacOSX ;
+    fi ;
+    echo "Fetching miniconda for $MINICONDA_OS" ;
+    curl https://repo.continuum.io/miniconda/Miniconda3-latest-$MINICONDA_OS-x86_64.sh -o miniconda.sh
+  
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - hash -r
