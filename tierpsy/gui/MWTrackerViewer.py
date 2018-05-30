@@ -45,6 +45,7 @@ class ContourDrawer(TrackerViewerAuxGUI):
         self.ui.checkBox_showFood.setChecked(True)
         
     def updateSkelFile(self, skeletons_file):
+
         super().updateSkelFile(skeletons_file)
         if not self.skeletons_file or self.trajectories_data is None:
             self.food_coordinates = None
@@ -119,18 +120,24 @@ class MarkersDrawer(TrackerViewerAuxGUI):
 
     def updateSkelFile(self, skeletons_file):
         super().updateSkelFile(skeletons_file)
+        
         self.ui.feature_column.clear()
         self.traj_worm_index_grouped = None
         try:
             self.traj_colors = {}
             with pd.HDFStore(self.skeletons_file, 'r') as ske_file_id:
-                self.timeseries_data = ske_file_id['/timeseries_data']
-            
+                for field in ['/timeseries_data', '/features_timeseries']:
+                    if field in ske_file_id:
+                        self.timeseries_data = ske_file_id[field]
+                        break
+                else:
+                    raise KeyError
+
             if not 'skeleton_id' in self.trajectories_data:
                 raise KeyError
 
             self.enable_color_feats(True)
-            index_cols = ['worm_index', 'timestamp']
+            index_cols = ['worm_index', 'timestamp', 'motion_modes', 'skeleton_id']
             columns = [x for x in self.timeseries_data.columns if x not in index_cols]
             self.ui.feature_column.addItems(columns)
 
@@ -173,8 +180,9 @@ class MarkersDrawer(TrackerViewerAuxGUI):
             return Qt.black
         
         skel_id = int(skel_id)
+
         feat_val = self.timeseries_data.loc[skel_id, self.feat_column]
-        
+
         if (feat_val != feat_val):
             return Qt.black
         
@@ -241,10 +249,12 @@ class MarkersDrawer(TrackerViewerAuxGUI):
     
 
     def draw_trajectories(self, painter, row_data):
-
+        if self.traj_worm_index_grouped is None:
+            return
         worm_index = int(row_data[self.worm_index_type])
         current_frame = row_data['frame_number']
         traj_data = self._h_get_trajectory(worm_index, current_frame)
+        traj_data = traj_data.dropna(subset=['coord_x', 'coord_y'])
 
         x_v = traj_data['coord_x'].round()
         y_v = traj_data['coord_y'].round()
@@ -541,7 +551,7 @@ class ROIManager(TrackerViewerAuxGUI):
             comboBox_ROI,
             isDrawSkel):
 
-        if self.frame_data is None:
+        if self.frame_data is None or not self.worm_index_type:
             # no trajectories data presented, nothing to do here
             wormCanvas.clear()
             return
@@ -550,7 +560,7 @@ class ROIManager(TrackerViewerAuxGUI):
         comboBox_ROI.clear()
         comboBox_ROI.addItem(str(worm_index_roi))
         
-        for ind in self.frame_data[self.worm_index_type].data:
+        for ind in self.frame_data[self.worm_index_type]:
             comboBox_ROI.addItem(str(ind))
 
         # extract individual worm ROI
@@ -713,7 +723,7 @@ class MWTrackerViewer_GUI(MarkersDrawer, ContourDrawer, BlobLabeler, IntensityLa
             self.trajectories_data = self.trajectories_data.rename(
                 columns={'worm_index_N': 'worm_index_manual'})
 
-        if not 'worm_index_manual' in self.trajectories_data:
+        if not 'worm_index_manual' in self.trajectories_data and not self.is_estimated_trajectories_data:
             self.trajectories_data['worm_label'] = self.wlab['U']
             self.trajectories_data['worm_index_manual'] = self.trajectories_data['worm_index_joined']
             

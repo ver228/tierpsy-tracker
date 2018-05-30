@@ -27,6 +27,46 @@ GOOD_SKEL_COLOURS = dict(
     contour_side2 = (231, 41, 138)
     )
 
+#%%
+def _estimate_trajectories_data(ow_feat_file, timestamp, microns_per_pixel):
+    '''
+    I want to estimate the trajectorires_data table from the features_timeseries in the old features
+    so I can used them with the viewer.
+    '''
+
+    stamp2frame = {f:i for i, f in list(enumerate(timestamp))[::-1]}
+    
+    with pd.HDFStore(ow_feat_file, 'r') as fid:
+       features_timeseries = fid['features_timeseries']     
+    
+    features_timeseries['frame_number'] = features_timeseries['timestamp'].map(stamp2frame)
+    features_timeseries = features_timeseries.dropna(subset=['frame_number'])
+    
+    
+    
+    df = []
+    with tables.File(ow_feat_file, 'r') as fid:
+        skels = fid.get_node('/coordinates/skeletons')
+        mid_ind = skels.shape[1]//2
+        for w_ind, w_data in features_timeseries.groupby('worm_index'):
+            midbody_coords = skels[w_data.index, mid_ind, :]
+            
+            new_data = pd.DataFrame(midbody_coords, columns=['coord_x', 'coord_y'], index=w_data.index)/microns_per_pixel
+            new_data['worm_index_joined'] = w_ind
+            new_data['frame_number'] = features_timeseries['frame_number'] 
+            new_data['roi_size'] = w_data['length'].max()/microns_per_pixel
+            new_data['threshold'] = 255
+            new_data['area'] = w_data['area']/microns_per_pixel**2
+            new_data['was_skeletonized'] = True
+            new_data['skeleton_id'] = w_data.index
+            
+            new_data = new_data.drop_duplicates('frame_number')
+            
+            df.append(new_data)
+    trajectories_data = pd.concat(df)
+    
+    return trajectories_data
+#%%
 
 class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
 
@@ -39,6 +79,8 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
         self.results_dir = ''
         self.skeletons_file = ''
         self.trajectories_data = None
+        self.is_estimated_trajectories_data = False
+        
         self.traj_time_grouped = None
         self.frame_save_interval = 1 
 
@@ -63,33 +105,15 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
         self.updateSkelFile(selected_file)
 
     def updateSkelFile(self, selected_file, dflt_skel_size = 5):
+        self.trajectories_data = None
+        self.traj_time_grouped = None
+        self.traj_worm_index_grouped = None
+        self.skel_dat = {}
+        
         self.skeletons_file = selected_file
         self.ui.lineEdit_skel.setText(self.skeletons_file)
         try:
-            with pd.HDFStore(self.skeletons_file, 'r') as ske_file_id:
-                self.trajectories_data = ske_file_id['/trajectories_data']
-                self.traj_time_grouped = self.trajectories_data.groupby('frame_number')
-                # read the size of the structural element used in to calculate
-                # the mask
-                if '/provenance_tracking/int_ske_orient' in ske_file_id:
-                    prov_str = ske_file_id.get_node(
-                        '/provenance_tracking/ske_create').read()
-                    func_arg_str = json.loads(
-                        prov_str.decode("utf-8"))['func_arguments']
-                    strel_size = json.loads(func_arg_str)['strel_size']
-                    if isinstance(strel_size, (list, tuple)):
-                        strel_size = strel_size[0]
-
-                    self.strel_size = strel_size
-                else:
-                    # use default
-                    self.strel_size = dflt_skel_size
-        except (IOError, KeyError, tables.exceptions.HDF5ExtError):
-            self.trajectories_data = None
-            self.traj_time_grouped = None
-        
-        try:
-            #If i am using the smoothed skeletons (_featuresN.hdf5) we have to use a different field and divided by the microns per pixels scale
+            #find were to read the skeletons and pixel2microns transforming factor
             self.stage_position_pix =  None
             with tables.File(self.skeletons_file, 'r') as skel_file_id:
                 if '/coordinates' in skel_file_id:
@@ -112,16 +136,47 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
                         'skeleton':'skeleton', 
                         'contour_side2':'contour_side2'
                     }
+            
+            #read trajectories data, and other useful factors
+            with pd.HDFStore(self.skeletons_file, 'r') as ske_file_id:
+                if 'trajectories_data' in ske_file_id:
+                    self.trajectories_data = ske_file_id['/trajectories_data']
+                    self.is_estimated_trajectories_data = False
+                else:
+                    if '/timestamp/raw' in self.fid:
+                        timestamp = self.fid.get_node('/timestamp/raw')[:]
+                    else:
+                        tot = self.fid.get_node('/mask').shape[0]
+                        timestamp = np.arange(tot)
+                    self.trajectories_data = _estimate_trajectories_data(self.skeletons_file, timestamp, self.skel_microns_per_pixel)
+                    self.is_estimated_trajectories_data = True 
+                    
+                self.traj_time_grouped = self.trajectories_data.groupby('frame_number')
+                # read the size of the structural element used in to calculate
+                # the mask
+                if '/provenance_tracking/int_ske_orient' in ske_file_id:
+                    prov_str = ske_file_id.get_node(
+                        '/provenance_tracking/ske_create').read()
+                    func_arg_str = json.loads(
+                        prov_str.decode("utf-8"))['func_arguments']
+                    strel_size = json.loads(func_arg_str)['strel_size']
+                    if isinstance(strel_size, (list, tuple)):
+                        strel_size = strel_size[0]
+
+                    self.strel_size = strel_size
+                else:
+                    # use default
+                    self.strel_size = dflt_skel_size
+            
+            
 
         except (IOError, KeyError, tables.exceptions.HDF5ExtError):
             self.trajectories_data = None
             self.traj_time_grouped = None
             self.skel_dat = {}
 
-        if self.frame_number == 0:
-            self.updateImage()
-        else:
-            self.ui.spinBox_frame.setValue(0)
+        #here i am updating the image
+        self.ui.spinBox_frame.setValue(0)
 
     def updateImGroup(self, h5path):
         super().updateImGroup(h5path)
@@ -130,7 +185,7 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
         except:
             self.frame_save_interval = 1
 
-    def updateVideoFile(self, vfilename, possible_ext = ['_featuresN.hdf5', '_skeletons.hdf5']):
+    def updateVideoFile(self, vfilename, possible_ext = ['_featuresN.hdf5', '_features.hdf5', '_skeletons.hdf5']):
         super().updateVideoFile(vfilename)
         if self.image_group is None:
             return
