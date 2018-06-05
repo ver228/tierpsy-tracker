@@ -2,7 +2,6 @@ import os
 import json
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
-from PyQt5.QtCore import Qt
 
 from tierpsy.processing.processMultipleFilesFun import processMultipleFilesFun
 from tierpsy.processing.helper import remove_border_checkpoints, get_results_dir, get_masks_dir 

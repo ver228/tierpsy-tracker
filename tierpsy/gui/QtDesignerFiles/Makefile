@@ -6,3 +6,4 @@ all:
 	pyuic5 GetMaskParams.ui -o ../GetMaskParams_ui.py
 	pyuic5 AnalysisProgress.ui -o ../AnalysisProgress_ui.py
 	pyuic5 BatchProcessing.ui -o ../BatchProcessing_ui.py
+	pyuic5 Summarizer.ui -o ../Summarizer_ui.py

@@ -8,15 +8,13 @@ from tierpsy.analysis.compress.compressVideo import getROIMask, selectVideoReade
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QImage
 from PyQt5.QtWidgets import QApplication, QMainWindow, \
-QFileDialog, QMessageBox, QCheckBox, QButtonGroup, QLabel
+QFileDialog, QMessageBox
 
-from tierpsy.gui.AnalysisProgress import WorkerFunQt, AnalysisProgress
 from tierpsy.gui.GetAllParameters import GetAllParameters, ParamWidgetMapper, save_params_json
 from tierpsy.gui.GetMaskParams_ui import Ui_GetMaskParams
 from tierpsy.gui.HDF5VideoPlayer import LineEditDragDrop, ViewsWithZoom, setChildrenFocusPolicy
 
 from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
-from tierpsy.processing.ProcessWorker import ProcessWorker
 from tierpsy.helper.params.tracker_param import TrackerParams, default_param
 
 

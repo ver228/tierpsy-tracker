@@ -11,10 +11,12 @@ import numpy as np
 import pandas as pd
 import tables
 
+#openworm has a lot of warnings. I do not want to correct them...
 warnings.filterwarnings('ignore', '.*empty slice*',)
 warnings.filterwarnings('ignore', ".*Falling back to 'gelss' driver.",)
 warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 warnings.simplefilter(action="ignore", category=RuntimeWarning)
+warnings.simplefilter(action="ignore", category=UserWarning)
 
 # (http://www.pytables.org/usersguide/parameter_files.html)
 tables.parameters.MAX_COLUMNS = 1024

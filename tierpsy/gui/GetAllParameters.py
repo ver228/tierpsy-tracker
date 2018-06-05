@@ -1,16 +1,13 @@
 import sys
-import os
 import json
-from collections import OrderedDict
 
 from PyQt5.QtWidgets import QDialog, QApplication, QGridLayout, QLabel, \
     QSpinBox,  QDoubleSpinBox, QCheckBox, QPushButton, QLineEdit, QSizePolicy, \
-    QMessageBox, QSpacerItem, QFileDialog, QComboBox, QHBoxLayout, QVBoxLayout
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
+    QMessageBox, QSpacerItem, QComboBox, QHBoxLayout, QVBoxLayout
+from PyQt5.QtCore import Qt, pyqtSignal
 
 
-from tierpsy.helper.params.tracker_param import TrackerParams, info_param, default_param, valid_options
-from tierpsy.gui.HDF5VideoPlayer import LineEditDragDrop
+from tierpsy.helper.params.tracker_param import info_param, default_param, valid_options
 from tierpsy import DFLT_FILTER_FILES
 
 # i cannot really add this since i do not have a good way to get the data

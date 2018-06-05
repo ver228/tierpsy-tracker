@@ -4,7 +4,6 @@ import sys
 import tables
 import os
 import numpy as np
-import copy
 from functools import partial
 
 from PyQt5 import QtWidgets, QtCore, QtGui

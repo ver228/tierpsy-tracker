@@ -4,7 +4,6 @@ import numpy as np
 import tables
 import os
 import pandas as pd
-from functools import partial
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QPen
@@ -12,7 +11,6 @@ from PyQt5.QtWidgets import QApplication, QMessageBox
 from tierpsy.gui.SWTrackerViewer_ui import Ui_SWTrackerViewer
 from tierpsy.gui.TrackerViewerAux import TrackerViewerAuxGUI
 from tierpsy.analysis.int_ske_orient.correctHeadTailIntensity import createBlocks, _fuseOverlapingGroups
-from tierpsy.helper.params import read_microns_per_pixel
 
 class EggWriter():
     def __init__(self):
