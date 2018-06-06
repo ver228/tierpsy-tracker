@@ -171,12 +171,25 @@ You can manually correct the trajectories as shown below. Once you have finished
 
 `Right key` : Decrease the frame by step size.
     
-## Worm Tracker 2.0 Viewer
-This is simplified version of the [Tierpsy Tracker Viewer](#tierpsy-tracker-viewer) created specifically to view files created using [Worm Tracker 2.0](http://www.mrc-lmb.cam.ac.uk/wormtracker/) (the `WT2` case). [Above](#worm-tracker-20-option) is described how to analyse this type of files.
-
 ![SWTrackerViewer](https://cloud.githubusercontent.com/assets/8364368/26412826/e608bfea-40a1-11e7-9d3e-d0b8bf482db2.gif) 
 
-
-## Plotting the Analysis Results
+### Plotting the Analysis Results
 The analysis will produce a set of files described [here](https://github.com/ver228/tierpsy-tracker/blob/development/docs/OUTPUTS.md). The extracted features are store in the files that end with [features.hdf5](https://github.com/ver228/tierpsy-tracker/blob/development/docs/OUTPUTS.md#basename_featureshdf5). You can access to them using [pandas](http://pandas.pydata.org/) and [pytables](http://www.pytables.org/). There are examples on how to do it in MATLAB in the [tierpsy_tools](https://github.com/aexbrown/tierpsy_tools) repository.
 
+## Features Summary
+![FeatSummary](https://user-images.githubusercontent.com/8364368/41034550-d3665230-6981-11e8-97d9-63c74ff24661.png)
+* `Root Directory`: Directory containing the previously calculate features files. 
+* `Feature Type` : Select between the features calculated using the [OpenWorm Analysis Toolbox](https://github.com/openworm/open-worm-analysis-toolbox) or [Tierpsy Features](https://github.com/ver228/tierpsy-features).
+* `Use manually edited features?` Tick if you want to collect data from manually edited trajectories. Only trajectories labelled as either worm or worm cluster are going to be used.
+* `Summary Type` : Select what data is going to be collected from a video. Either a summary per video (`plate`), a summary for each trajectory available (`trajectory`) or multiple random subsamplings per video (`plate_augmented`).
+
+The files will be located by doing a recursive search for matching the extension according to the table below.
+
+| Feature Type | Is Manually Edited? | File Extension |
+| -------- | -------- | ------ | 
+| tierpsy | Ticked | featuresN.hdf5 |
+| tierpsy | Unticked | featuresN.hdf5 |
+| openworm | Ticked | feat_manual.hdf5 |
+| openworm | Unticked | features.hdf5 |
+
+The results are saved into two separated .csv file located in the root directory. The first file, `filenames_FEATURETYPE_SUMMARY_DATE.csv`, contains the names of all the files found in root the directory. The `is_good` column is set to `True` if the file is valid and used in the summary. The second file, `features_FEATURETYPE_SUMMARY_DATE.csv`, contains the corresponding features summarized as described in the [output files](https://github.com/ver228/tierpsy-tracker/blob/master/docs/OUTPUTS.md#features_summar) section. The two result files can be joined using the `file_id` column.
