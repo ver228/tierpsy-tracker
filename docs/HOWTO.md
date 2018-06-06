@@ -171,8 +171,6 @@ You can manually correct the trajectories as shown below. Once you have finished
 
 `Right key` : Decrease the frame by step size.
     
-![SWTrackerViewer](https://cloud.githubusercontent.com/assets/8364368/26412826/e608bfea-40a1-11e7-9d3e-d0b8bf482db2.gif) 
-
 ### Plotting the Analysis Results
 The analysis will produce a set of files described [here](https://github.com/ver228/tierpsy-tracker/blob/development/docs/OUTPUTS.md). The extracted features are store in the files that end with [features.hdf5](https://github.com/ver228/tierpsy-tracker/blob/development/docs/OUTPUTS.md#basename_featureshdf5). You can access to them using [pandas](http://pandas.pydata.org/) and [pytables](http://www.pytables.org/). There are examples on how to do it in MATLAB in the [tierpsy_tools](https://github.com/aexbrown/tierpsy_tools) repository.
 
