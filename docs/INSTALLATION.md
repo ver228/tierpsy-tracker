@@ -11,7 +11,8 @@
 1. Install the conda dependencies from the conda-forge channel:
 
 ```bash
-conda install numpy matplotlib pytables pandas gitpython pyqt h5py scipy scikit-learn scikit-image seaborn xlrd cython statsmodels numba keras opencv tensorflow --channel anaconda
+conda install --channel anaconda numpy matplotlib pytables pandas gitpython pyqt h5py \
+scipy scikit-learn scikit-image seaborn xlrd cython statsmodels numba keras opencv tensorflow 
 ```
 
 2. Clone this repository either using the [Github Desktop](https://desktop.github.com/) or from the command line as:
