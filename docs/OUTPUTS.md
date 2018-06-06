@@ -117,7 +117,7 @@ Intensity maps of the straigten worms described in [INT_PROFILE](EXPLANATION.md/
 Averaged intensity along the skeleton. Calculated in [INT_PROFILE](EXPLANATION.md/#int_profile) and used by [INT\_SKE\_ORIENT](EXPLANATION.md/#int_ske_orient). The data is organized as in [/straighten\_worm\_intensity](#straighten_worm_intensity).
 
 
-## basename_features.hdf5
+## basename_features.hdf5 ([OpenWorm Analysis Toolbox](https://github.com/openworm/open-worm-analysis-toolbox))
 This file contains the results of [FEAT_CREATE](EXPLANATION.md#feat_create). For a more detailed information of the features see the supplementary information of [Yemini et al](http://www.nature.com/nmeth/journal/v10/n9/full/nmeth.2560.html).
 
 #### /coordinates/*
@@ -209,4 +209,6 @@ The reduction can be done by any of the following operations on a given subdivis
 
 Finally, there are some tables that have the subfix `_split`. For this tables long trajectories are splitted in shorter ones of at most `split_traj_time` seconds before calculating the features. This is done as an attempt to balance uneven track sizes. Otherwise a trajectory that was followed for the whole duration of the video will be counted as a single feature vector, while a trajectory that was lost and found several times will be counted as many feature vectors. This is because each time a worm is lost it would be assigned a new id when it is found again.
 
+
+## basename_featuresN.hdf5 ([Tierpsy Features](https://github.com/ver228/tierpsy-features))
 
