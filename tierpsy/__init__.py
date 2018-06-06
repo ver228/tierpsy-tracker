@@ -12,6 +12,12 @@ from .version import __version__
 #I want to be sure tierpsy loads tensorflow flow backend
 os.environ['KERAS_BACKEND']='tensorflow' 
 
+os.environ['QT_PLUGIN_PATH']="" #https://stackoverflow.com/questions/25188153/this-application-failed-to-start-because-it-could-not-find-or-load-the-qt-platfo
+
+# force qt5 to be the backend of matplotlib.
+import matplotlib
+matplotlib.use('Qt5Agg')
+
 try:
     # PyInstaller creates a temp folder and stores path in _MEIPASS
     base_path = sys._MEIPASS
@@ -27,33 +33,22 @@ DFLT_FILTER_FILES = sorted([x for x in os.listdir(AUX_FILES_DIR) if x.endswith('
 #this will be true if it is a pyinstaller "frozen" binary
 IS_FROZEN = getattr(sys, 'frozen', False)
 if IS_FROZEN:
-	os.environ['QT_PLUGIN_PATH']="" #https://stackoverflow.com/questions/25188153/this-application-failed-to-start-because-it-could-not-find-or-load-the-qt-platfo
+    #if IS_FROZEN: 
+    if os.name == 'nt':
+            # load dll for numpy in windows
+            import ctypes
 
-	# force qt5 to be the backend of matplotlib.
-	import matplotlib
-	matplotlib.use('Qt5Agg')
+            # Override dll search path.
+            python_dir = os.path.split(sys.executable)[0]
+            ctypes.windll.kernel32.SetDllDirectoryW(
+                os.path.join(python_dir, 'Library', 'bin'))
 
+            # Init code to load external dll
+            ctypes.CDLL('mkl_avx2.dll')
+            ctypes.CDLL('mkl_def.dll')
+            ctypes.CDLL('mkl_vml_avx2.dll')
+            ctypes.CDLL('mkl_vml_def.dll')
 
+            # Restore dll search path.
+            ctypes.windll.kernel32.SetDllDirectoryW(sys._MEIPASS)
 
-#if IS_FROZEN: 
-if os.name == 'nt':
-        # load dll for numpy in windows
-        import ctypes
-
-        # Override dll search path.
-        python_dir = os.path.split(sys.executable)[0]
-        ctypes.windll.kernel32.SetDllDirectoryW(
-            os.path.join(python_dir, 'Library', 'bin'))
-
-        # Init code to load external dll
-        ctypes.CDLL('mkl_avx2.dll')
-        ctypes.CDLL('mkl_def.dll')
-        ctypes.CDLL('mkl_vml_avx2.dll')
-        ctypes.CDLL('mkl_vml_def.dll')
-
-        # Restore dll search path.
-        ctypes.windll.kernel32.SetDllDirectoryW(sys._MEIPASS)
-else:
-    if sys.platform == 'darwin':
-        # add homebrew directory to the path
-        os.environ["PATH"] += os.pathsep + '/usr/local/bin'
