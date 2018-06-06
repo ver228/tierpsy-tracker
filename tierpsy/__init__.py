@@ -26,15 +26,17 @@ DFLT_FILTER_FILES = sorted([x for x in os.listdir(AUX_FILES_DIR) if x.endswith('
 
 #this will be true if it is a pyinstaller "frozen" binary
 IS_FROZEN = getattr(sys, 'frozen', False)
+if IS_FROZEN:
+	os.environ['QT_PLUGIN_PATH']="" #https://stackoverflow.com/questions/25188153/this-application-failed-to-start-because-it-could-not-find-or-load-the-qt-platfo
 
-if IS_FROZEN: 
-    # force qt5 to be the backend of matplotlib.
-    # otherwise the pyinstaller packages might have some problems in the
-    # binaries.
-    import matplotlib
-    matplotlib.use('Qt5Agg')
+	# force qt5 to be the backend of matplotlib.
+	import matplotlib
+	matplotlib.use('Qt5Agg')
 
-    if os.name == 'nt':
+
+
+#if IS_FROZEN: 
+if os.name == 'nt':
         # load dll for numpy in windows
         import ctypes
 

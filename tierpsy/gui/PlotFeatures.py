@@ -6,6 +6,7 @@ import tables
 import pandas as pd
 
 from PyQt5.QtWidgets import QDialog, QApplication, QPushButton, QComboBox, QVBoxLayout, QHBoxLayout, QFileDialog
+from PyQt5.QtCore import Qt
 
 from matplotlib.backends.backend_qt5agg import FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -28,7 +29,7 @@ class PlotFeatures(QDialog):
                 parent = None):
         
         super().__init__(parent)
-        #self.setWindowFlags(Qt.WindowStaysOnTopHint)
+        
         self.plot_funcs = OrderedDict ([
             ('Single Trajectory, Time Series', self._plot_single_timeseries),
             ('All Trajectories, Time Series', self._plot_all_timeseries),
@@ -61,7 +62,7 @@ class PlotFeatures(QDialog):
         self.button_save_fig.clicked.connect(self.save_fig)
 
         # a figure instance to plot on
-        self.figure = Figure(figsize=(8, 4))
+        self.figure = Figure(figsize=(6, 3))
 
         # this is the Canvas Widget that displays the `figure`
         # it takes the `figure` instance as a parameter to __init__
@@ -171,9 +172,7 @@ class PlotFeatures(QDialog):
         self.timeseries_data['timestamp_s'] = self.timeseries_data['timestamp']/self.fps
         #self._ax.plot(feat_val['timestamp'], feat_val[feature])
         for _, worm_data in self.traj_worm_index_grouped:
-            valid_index = worm_data['skeleton_id']
-            valid_index = valid_index[valid_index>=0]
-            feat_val = self.timeseries_data.loc[valid_index]
+            feat_val = self.timeseries_data.loc[worm_data.index]
 
             self._ax.plot(feat_val['timestamp_s'], feat_val[feature], alpha=0.4)
 
@@ -194,10 +193,7 @@ class PlotFeatures(QDialog):
     
     def _plot_single_histogram(self, worm_index, feature):
         worm_data = self.traj_worm_index_grouped.get_group(worm_index)
-        valid_index = worm_data['skeleton_id']
-        valid_index = valid_index[valid_index>=0]
-        
-        feat_val = self.timeseries_data.loc[valid_index].dropna()
+        feat_val = self.timeseries_data.loc[worm_data.index].dropna()
 
         self._ax.clear()
 

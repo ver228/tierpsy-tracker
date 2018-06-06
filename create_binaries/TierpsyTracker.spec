@@ -1,5 +1,8 @@
 # -*- mode: python -*-
-#hidden imports needed for tierpsy, maybe there is a better way to call this...
+DEBUG = False
+
+#hidden imports needed for tierpsy. Each step is loaded dyniamically so I need to give the hint to pyinstaller
+
 import tierpsy.analysis
 base_name = os.path.dirname(tierpsy.analysis.__file__)
 analysis_steps = [x for x in os.listdir(base_name) if os.path.exists(os.path.join(base_name, x, '__init__.py'))]
@@ -9,6 +12,7 @@ print(hidden_tierspy)
 import os
 import sys
 from PyInstaller.compat import is_win, is_darwin, is_linux
+
 
 import tierpsy
 import open_worm_analysis_toolbox
@@ -21,9 +25,8 @@ SRC_SCRIPT_PATH = SelectApp.__file__
 DST_BUILD=os.path.abspath('.')
 CREATE_CONSOLE= is_win #make a separated console only in windows. I have to do this due to a problem with pyinstaller
 
-DEBUG = False
 
-#get additional files
+#get additional files for openworm
 #openworm additional files
 open_worm_path = os.path.dirname(open_worm_analysis_toolbox.__file__)
 
@@ -94,6 +97,9 @@ a = Analysis([SRC_SCRIPT_PATH],
              binaries=None,
              datas = None,
              hiddenimports=['h5py.defs', 'h5py.utils', 'h5py.h5ac', 'h5py._proxy',
+             'scipy._lib.messagestream', 'cytoolz.utils',
+             'pandas._libs.tslibs.np_datetime', 'pandas._libs.tslibs.nattype',
+             'pandas._libs.skiplist', 
              'cython', 'sklearn', 'sklearn.neighbors.typedefs', 'pywt._extensions._cwt'] + hidden_tierspy,
              hookspath=[],
              runtime_hooks=[],
@@ -147,7 +153,7 @@ else:
             name='TierpsyTracker',
             debug=False,
             strip=False,
-            upx=True,
+            upx=False,
             console=True )
 
   coll = COLLECT(exe,
@@ -155,5 +161,5 @@ else:
                  a.zipfiles,
                  a.datas,
                  strip=False,
-                 upx=True,
+                 upx=False,
                  name='TierpsyTracker')

@@ -7,6 +7,7 @@ from functools import partial
 import os
 import glob
 import datetime
+import tables
 import pandas as pd
 
 from tierpsy.helper.misc import TimeCounter, print_flush
@@ -82,13 +83,13 @@ def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, _
             df = summary_func(fname)
             df.insert(0, 'file_id', ifile)             
             all_summaries.append(df)
-        except:
+        except (IOError, KeyError, tables.exceptions.HDF5ExtError, tables.exceptions.NoSuchNodeError):
             continue
         
         df_files.loc[ifile, 'is_good'] = True
         _displayProgress(ifile)
         
-    all_summaries = pd.concat(all_summaries, ignore_index=True)
+    all_summaries = pd.concat(all_summaries, ignore_index=True, sort=False)
     
     
     f1 = os.path.join(root_dir, 'filenames_{}.csv'.format(save_base_name))
@@ -110,7 +111,8 @@ if __name__ == '__main__':
     is_manual_index = False
     #feature_type = 'tierpsy'
     feature_type = 'openworm'
-    summary_type = 'plate_augmented'
+    #summary_type = 'plate_augmented'
+    summary_type = 'plate'
     
     fold_args = dict(
                  n_folds = 2, 

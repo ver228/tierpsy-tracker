@@ -719,9 +719,10 @@ class MarkersDrawer(FeatureReaderBase):
             painter.fillRect(x + offset, y + offset, b_size, b_size, QBrush(label_color))
 
 
-class PlotComunicator(FeatureReaderBase, ROIManager):
+class PlotCommunicator(FeatureReaderBase, ROIManager):
     def __init__(self, ui=''):
         super().__init__(ui)
+        self.ui.pushButton_plot.setEnabled(False)
         self.ui.pushButton_plot.clicked.connect(self.show_plot)
         self.plotter = None
 
@@ -748,6 +749,8 @@ class PlotComunicator(FeatureReaderBase, ROIManager):
                                    self.xy_units,
                                    self.fps,
                                    parent = self)
+        
+        self.plotter.setWindowFlags(self.plotter.windowFlags() | Qt.WindowStaysOnTopHint)
 
         self.plotter.show()
         self.update_plot()
@@ -756,7 +759,7 @@ class PlotComunicator(FeatureReaderBase, ROIManager):
         if self.plotter:
             self.plotter.plot(self.current_worm_index, self.feat_column)
 
-class MWTrackerViewer_GUI( MarkersDrawer, PlotComunicator,
+class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
     ContourDrawer, BlobLabeler, IntensityLabeler, TrajectoryEditor):
 
     def __init__(self, ui='', argv=''):

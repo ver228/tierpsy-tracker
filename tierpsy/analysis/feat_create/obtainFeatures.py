@@ -4,6 +4,14 @@ Created on Thu Jun  4 11:30:53 2015
 
 @author: ajaver
 """
+from tierpsy.helper.misc import TimeCounter, print_flush, WLAB, TABLE_FILTERS, get_base_name
+from tierpsy.analysis.ske_filt.getFilteredSkels import getValidIndexes
+from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStats, WormFromTable
+from tierpsy.helper.params import copy_unit_conversions, read_fps, min_num_skel_defaults
+
+import open_worm_analysis_toolbox as mv
+
+
 import os
 import warnings
 from functools import partial
@@ -21,12 +29,6 @@ warnings.simplefilter(action="ignore", category=UserWarning)
 # (http://www.pytables.org/usersguide/parameter_files.html)
 tables.parameters.MAX_COLUMNS = 1024
 
-from tierpsy.helper.misc import TimeCounter, print_flush, WLAB, TABLE_FILTERS, get_base_name
-from tierpsy.analysis.ske_filt.getFilteredSkels import getValidIndexes
-from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStats, WormFromTable
-from tierpsy.helper.params import copy_unit_conversions, read_fps, min_num_skel_defaults
-
-import open_worm_analysis_toolbox as mv
     
 #%%%%%%%
 def _n_percentile(n, q): 
