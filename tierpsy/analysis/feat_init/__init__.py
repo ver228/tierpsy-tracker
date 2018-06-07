@@ -5,7 +5,7 @@ def args_(fn, param):
   main_func = smooth_skeletons_table
   requirements = ['SKE_CREATE']
   
-  is_WT2 = param.p_dict['analysis_type'] == 'WT2'
+  is_WT2 = param.is_WT2
   #arguments used by AnalysisPoints.py
   return {
         'func': main_func,

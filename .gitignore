@@ -18,3 +18,5 @@ Gemfile*
 *.o
 
 tierpsy/extras/unet_RMSprop-5-04999-0.3997.h5
+*.so
+*.so
