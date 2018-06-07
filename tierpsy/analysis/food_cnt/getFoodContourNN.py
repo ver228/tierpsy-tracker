@@ -19,7 +19,7 @@ import cv2
 from skimage.morphology import disk
 
 from tierpsy import AUX_FILES_DIR
-RESIZING_SIZE = 512 #the network was trained with images of this size 512
+DFLT_RESIZING_SIZE = 512 #the network was trained with images of this size 512
 MODEL_PATH = os.path.join(AUX_FILES_DIR, 'unet_RMSprop-5-04999-0.3997.h5')
 
 def _get_sizes(im_size, d4a_size= 24, n_conv_layers=4):
@@ -154,7 +154,7 @@ def get_unet_prediction(Xi,
     
     return Y_pred
 
-def get_food_prob(mask_file, model, max_bgnd_images = 2, _is_debug = False):    
+def get_food_prob(mask_file, model, max_bgnd_images = 2, _is_debug = False, resizing_size = DFLT_RESIZING_SIZE):    
     '''
     Predict the food probability for each pixel using a pretrained u-net model.
     '''
@@ -172,7 +172,7 @@ def get_food_prob(mask_file, model, max_bgnd_images = 2, _is_debug = False):
             bgnd = [np.squeeze(bgnd_o)]
         
         min_size = min(bgnd[0].shape)
-        resize_factor = min(RESIZING_SIZE, min_size)/min_size
+        resize_factor = min(resizing_size, min_size)/min_size
         dsize = tuple(int(x*resize_factor) for x in bgnd[0].shape[::-1])
         
         bgnd_s = [cv2.resize(x, dsize) for x in bgnd]
