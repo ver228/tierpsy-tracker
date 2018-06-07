@@ -1,5 +1,5 @@
 # -*- mode: python -*-
-DEBUG = False
+DEBUG = True
 
 #hidden imports needed for tierpsy. Each step is loaded dyniamically so I need to give the hint to pyinstaller
 
@@ -11,11 +11,13 @@ print(hidden_tierspy)
 
 import os
 import sys
+import glob
 from PyInstaller.compat import is_win, is_darwin, is_linux
 
 
 import tierpsy
 import open_worm_analysis_toolbox
+import tierpsy_features
 from tierpsy.helper.misc import FFMPEG_CMD, FFPROBE_CMD
 from tierpsy.gui import SelectApp
 
@@ -26,8 +28,7 @@ DST_BUILD=os.path.abspath('.')
 CREATE_CONSOLE= is_win #make a separated console only in windows. I have to do this due to a problem with pyinstaller
 
 
-#get additional files for openworm
-#openworm additional files
+#get additional files for openworm additional files
 open_worm_path = os.path.dirname(open_worm_analysis_toolbox.__file__)
 
 ow_feat = os.path.join('features', 'feature_metadata', 'features_list.csv')
@@ -37,6 +38,15 @@ ow_feat_dst = os.path.join('open_worm_analysis_toolbox', ow_feat)
 ow_eigen = os.path.join('features', 'master_eigen_worms_N2.mat')
 ow_eigen_src = os.path.join(open_worm_path, ow_eigen)
 ow_eigen_dst = os.path.join('open_worm_analysis_toolbox', ow_eigen)
+
+#get additional files for tierpsy_features
+tierpsy_feat = os.path.join('features', 'feature_metadata', 'features_list.csv')
+ow_feat_src = os.path.join(open_worm_path, ow_feat)
+ow_feat_dst = os.path.join('open_worm_analysis_toolbox', ow_feat)
+
+
+tierpsy_features_path = os.path.dirname(tierpsy_features.__file__)
+
 
 #add ffmpeg and ffprobe
 ffmpeg_src = FFMPEG_CMD
@@ -56,6 +66,14 @@ added_datas = [(ow_feat_dst, ow_feat_src, 'DATA'),
         (proccess_bin_dst, proccess_bin_src, 'DATA'),
         (ffmpeg_dst, ffmpeg_src, 'DATA'),
         (ffprobe_dst, ffprobe_src, 'DATA')]
+
+tierpsy_features_root = tierpsy_features_path.partition('tierpsy_features')[0]
+for fname_src in glob.glob(os.path.join(tierpsy_features_path, 'extras', '**', '*'), recursive=True):
+  if os.path.basename(fname_src).startswith('.'):
+    continue
+  fname_dst = fname_src.replace(tierpsy_features_root, '')
+  added_datas.append((fname_dst, fname_src, 'DATA'))
+
 
 #I add the file separator at the end, it makes my life easier later on
 tierpsy_path = os.path.dirname(tierpsy.__file__)
@@ -96,7 +114,9 @@ a = Analysis([SRC_SCRIPT_PATH],
              pathex=[DST_BUILD],
              binaries=None,
              datas = None,
-             hiddenimports=['h5py.defs', 'h5py.utils', 'h5py.h5ac', 'h5py._proxy',
+             hiddenimports=[
+             'ipywidgets',
+             'h5py.defs', 'h5py.utils', 'h5py.h5ac', 'h5py._proxy',
              'scipy._lib.messagestream', 'cytoolz.utils',
              'pandas._libs.tslibs.np_datetime', 'pandas._libs.tslibs.nattype',
              'pandas._libs.skiplist', 
@@ -153,7 +173,7 @@ else:
             name='TierpsyTracker',
             debug=False,
             strip=False,
-            upx=False,
+            upx=True,
             console=True )
 
   coll = COLLECT(exe,
@@ -163,3 +183,4 @@ else:
                  strip=False,
                  upx=False,
                  name='TierpsyTracker')
+

@@ -1,3 +1,12 @@
+* There is still problems with pyqt5...
+It seems pyinstaller cannot work with the anaconda pyqt5 version. Luckly there are pip installers for all teh libraries. Execute before running.
+
+pip install numpy matplotlib tables pandas pyqt5 h5py scipy scikit-learn scikit-image seaborn xlrd cython statsmodels numba keras tensorflow opencv-python-headless
+pip install https://github.com/pyinstaller/pyinstaller/tarball/develop
+
+* the pip version of pytables and h5py are not compatible in python 3.5, but they are compatible for 3.6
+
+
 * Version 3.2 does not import correctly pyqt5 in OSX (https://github.com/pyinstaller/pyinstaller/issues/1874). I had to download and install (python setup.py install) the development version (http://www.pyinstaller.org/).
 
 * Got some issue related with different versions of libfreetype.6.dylib.
