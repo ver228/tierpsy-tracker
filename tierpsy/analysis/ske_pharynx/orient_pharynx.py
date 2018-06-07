@@ -23,7 +23,7 @@ from tierpsy.helper.misc import TABLE_FILTERS, get_base_name
 
 DEBUG = False
 
-def get_pharynx_orient(worm_img, min_blob_area):#, min_dist_btw_peaks=5):
+def _pharynx_orient(worm_img, min_blob_area):#, min_dist_btw_peaks=5):
     #%%
     
     blur = cv2.GaussianBlur(worm_img,(5,5),0) 
@@ -77,7 +77,7 @@ def get_pharynx_orient(worm_img, min_blob_area):#, min_dist_btw_peaks=5):
     #%%
     return peaks_coords
 
-def generateIndividualROIs(ROIs_generator):
+def generateIndividualROIs(ROIs_generator, trajectories_data):
     for worms_in_frame in ROIs_generator:
         for worm_index, (worm_img, roi_corner) in worms_in_frame.items():
             row_data = trajectories_data.loc[worm_index]
@@ -89,18 +89,11 @@ def generateIndividualROIs(ROIs_generator):
 
 def _process_row(input_data):
     skeleton_id, worm_img, min_blob_area, roi_corner = input_data
-    peaks_coords = get_pharynx_orient(worm_img, min_blob_area)
+    peaks_coords = _pharynx_orient(worm_img, min_blob_area)
     peaks_coords += roi_corner
     output = skeleton_id, peaks_coords
     return output
 
-def process_batch(batch_input):
-    output = list(p.map(_process_row, batch_input))
-    skeletons_id, peaks_coords = map(np.array, zip(*output))
-    
-    skeletons[skeletons_id, :, :] = peaks_coords
-    has_skeleton[skeletons_id] = True
-    
 def init_data(ske_file_id, tot_rows):
     #create and reference all the arrays
     field = 'skeleton'
@@ -120,49 +113,51 @@ def init_data(ske_file_id, tot_rows):
     
     return skeletons, has_skeleton
 
+def orient_pharinx(masked_file, skeletons_file = None, n_batch = 1):
+    if skeletons_file is None:
+        skeletons_file = masked_file.replace('MaskedVideos', 'Results').replace('.hdf5', '_skeletons.hdf5')
+
+    base_name = get_base_name(masked_file)
+    progress_prefix =  base_name + ' Calculating skeletons.'
+    
+    with pd.HDFStore(skeletons_file, 'r') as ske_file_id:
+        trajectories_data = ske_file_id['/trajectories_data']
+    
+    frame_generator = generateMoviesROI(masked_file, 
+                                       trajectories_data, 
+                                       progress_prefix=progress_prefix)
+    ROIs_generator = generateIndividualROIs(frame_generator, trajectories_data)
+    
+    tot = 0
+    with tables.File(skeletons_file, "r+") as ske_file_id: 
+        tot_rows = len(trajectories_data)
+        skeletons, has_skeleton = init_data(ske_file_id, tot_rows)
+
+        batch_input = [] 
+        for input_data in ROIs_generator:
+            if n_batch <= 1:
+                #run a no parallelize version of the code and do not save the data into the hdf5
+                _process_row(input_data)
+                tot += 1
+                
+            else:
+                batch_input.append(input_data)
+                if len(batch_input) >= n_batch:
+                    p = mp.Pool(processes=n_batch)
+                    output = list(p.map(_process_row, batch_input))
+                    skeletons_id, peaks_coords = zip(*output)
+                    skeletons_id, peaks_coords = map(np.array, zip(*output))
+                    
+                    skeletons[skeletons_id, :, :] = peaks_coords
+                    for ind in skeletons_id:
+                        has_skeleton[ind] = True
+                    
+                    
+                    batch_input = [] 
+                tot += 1
+
 if __name__ == '__main__':
     filenames = glob.glob("/data2/shared/data/twoColour/MaskedVideos/*/*/*52.1g_X1.hdf5")
 
-    for masked_file in filenames:
-        skeletons_file = masked_file.replace('MaskedVideos', 'Results').replace('.hdf5', '_skeletons.hdf5')
-        
-        base_name = get_base_name(masked_file)
-        progress_prefix =  base_name + ' Calculating skeletons.'
-        
-        with pd.HDFStore(skeletons_file, 'r') as ske_file_id:
-            trajectories_data = ske_file_id['/trajectories_data']
-        
-        n_batch = 8 #mp.cpu_count()
-        
-        frame_generator = generateMoviesROI(masked_file, 
-                                           trajectories_data, 
-                                           progress_prefix=progress_prefix)
-        ROIs_generator = generateIndividualROIs(frame_generator)
-        
-        tot = 0
-        with tables.File(skeletons_file, "r+") as ske_file_id: 
-            tot_rows = len(trajectories_data)
-            skeletons, has_skeleton = init_data(ske_file_id, tot_rows)
-            
-            p = mp.Pool(processes=n_batch)
-            batch_input = [] 
-            for input_data in ROIs_generator:
-                if DEBUG:
-                    #run a no parallelize version of the code and do not save the data into the hdf5
-                    _process_row(input_data)
-                    tot += 1
-                    
-                else:
-                    batch_input.append(input_data)
-                    if len(batch_input) >= n_batch:
-                        output = list(p.map(_process_row, batch_input))
-                        skeletons_id, peaks_coords = zip(*output)
-                        skeletons_id, peaks_coords = map(np.array, zip(*output))
-                        
-                        skeletons[skeletons_id, :, :] = peaks_coords
-                        for ind in skeletons_id:
-                            has_skeleton[ind] = True
-                        
-                        
-                        batch_input = [] 
-                    tot += 1
+    for fname in filenames:
+        orient_pharinx(fname)
