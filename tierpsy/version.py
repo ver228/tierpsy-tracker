@@ -1,5 +1,17 @@
 # # -*- coding: utf-8 -*-
 __version__ = '1.5.0-alpha'
+
+try:
+    import os
+    import subprocess
+
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    sha = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=cwd).decode('ascii').strip()
+    __version__ += '+' + sha[:7]
+except Exception:
+    raise Exception
+    pass
+
 '''
 1.5.0-alpha
 - Add tierpsy features as FEAT_INIT, FEAT_TIERPSY.

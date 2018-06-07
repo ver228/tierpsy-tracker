@@ -1,32 +1,20 @@
 import os
 import json
 import tables
-import git
+import importlib
+
+def getPackagesVersion():
+    pkgs_versions = {}
+    for pkg in ['tierpsy', 'open_worm_analysis_toolbox', 'tierpsy_features']:
+        try:
+            mod = importlib(pkg)
+            ver = mod.__version__
+        except:
+            ver = ''
+        pkgs_versions[pkg] = ver
 
 
-def getVersion(main_package):
-    git_file = os.path.join(
-        (os.sep).join(
-            (main_package.__file__).split(
-                os.sep)[
-                0:-2]),
-        '.git')
-    try:
-        repo = git.Repo(git_file)
-        return repo.commit('HEAD').hexsha
-    except git.exc.NoSuchPathError:
-        return main_package.__version__
-
-
-def getGitCommitHash():
-    import tierpsy
-    import open_worm_analysis_toolbox
-
-    commits_hash = {
-        'tierpsy': getVersion(tierpsy),
-        'open_worm_analysis_toolbox': getVersion(open_worm_analysis_toolbox)}
-
-    return commits_hash
+    return pkgs_versions
 
 
 def execThisPoint(
@@ -34,7 +22,7 @@ def execThisPoint(
         func,
         argkws,
         provenance_file,
-        commit_hash,
+        pkgs_versions,
         cmd_original):
     # execute the function
     func(**argkws)
@@ -46,7 +34,7 @@ def execThisPoint(
     variables2save = {
         'func_name': func.__name__,
         'func_arguments': json.dumps(argkws),
-        'commit_hash': commit_hash,
+        'pkgs_versions': pkgs_versions,
         'cmd_original': cmd_original}
     variables2save = bytes(json.dumps(variables2save), 'utf-8')
 
