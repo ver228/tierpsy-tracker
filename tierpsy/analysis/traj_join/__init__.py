@@ -9,7 +9,7 @@ def args_(fn, param):
         'min_track_size': 0,
         'max_frames_gap': p['traj_max_frames_gap'], 
         'area_ratio_lim': p['traj_area_ratio_lim'],
-        'analysis_type': p['analysis_type']
+        'is_one_worm': param.is_one_worm
 		}
 
 	#arguments used by AnalysisPoints.py

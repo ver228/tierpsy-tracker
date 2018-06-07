@@ -11,7 +11,7 @@ import os
 #get default parameters files
 from tierpsy import DFLT_PARAMS_PATH, DFLT_PARAMS_FILES
 from .docs_tracker_param import default_param, info_param, valid_options
-from .docs_analysis_points import dflt_analysis_points
+from .docs_analysis_points import dflt_analysis_points, dlft_analysis_type, deprecated_analysis_alias
 
 #deprecated variables that will be ignored
 deprecated_fields = [
@@ -37,10 +37,11 @@ deprecated_alias = {
 
 def get_dflt_sequence(analysis_type):
     assert analysis_type in valid_options['analysis_type']
+
     if analysis_type in dflt_analysis_points:
         analysis_checkpoints = dflt_analysis_points[analysis_type]
     else:
-        analysis_checkpoints = dflt_analysis_points['DEFAULT']
+        analysis_checkpoints = dflt_analysis_points[dlft_analysis_type]
         
     return analysis_checkpoints
 
@@ -68,6 +69,13 @@ def read_params(json_file=''):
                 #special case of deprecated alias
                 input_param['mask_min_area'] = param_in_file['min_area']
                 input_param['traj_min_area'] = param_in_file['min_area']/2
+            if key == 'analysis_type':
+                #correct the name of a deprecated point
+                vv = input_param['analysis_type']
+                if vv in deprecated_analysis_alias:
+                    input_param['analysis_type'] = deprecated_analysis_alias[vv]
+                
+
 
             elif key in input_param:
                 input_param[key] = param_in_file[key]
@@ -97,7 +105,16 @@ class TrackerParams:
             json_file = os.path.join(DFLT_PARAMS_PATH, json_file)
 
         self.json_file = json_file
-        self.p_dict = read_params(json_file)    
+        self.p_dict = read_params(json_file)
+
+    @property
+    def is_WT2(self):
+        return self.p_dict['analysis_type'].endswih('WT2')
+
+    @property
+    def is_one_worm(self):
+        analysis_type = self.p_dict['analysis_type']
+        return analysis_type.endswith('WT2') or analysis_type.endswith('SINGLE')
 
 
 

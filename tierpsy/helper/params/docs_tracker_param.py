@@ -2,12 +2,12 @@
 List of default values and description of the tracker parameters. 
 '''
 
-from .docs_analysis_points import valid_analysis_points
+from .docs_analysis_points import valid_analysis_types, dlft_analysis_type
 from .helper import repack_dflt_list
 
 dflt_param_list = [
     ('analysis_type', 
-        'WORM', 
+        dlft_analysis_type, 
         'Flag that defines the type of data expected and the consequent code that would be executed.'
         ),
     ('analysis_checkpoints',
@@ -304,8 +304,6 @@ dflt_param_list = [
         ),
     ]
 
-
-
 # #not tested (used for the zebra fish)
 # ('zf_num_segments', 12, 'Number of segments to use in tail model.'),
 # ('zf_min_angle', -90, 'The lowest angle to test for each segment. Angles are set relative to the angle of the previous segment.'),
@@ -319,7 +317,7 @@ dflt_param_list = [
 # ('zf_auto_detect_tail_length', True, 'Flag to determine whether zebrafish tail length detection is used. If set to True, values for zf_tail_length, zf_num_segments and zf_test_width are ignored.')
 
 valid_options = {
-    'analysis_type': valid_analysis_points,
+    'analysis_type': valid_analysis_types,
     'ventral_side':['','clockwise','anticlockwise', 'unknown'],
     'head_tail_int_method':['MEDIAN_INT', 'HEAD_BRIGHTER']
 }
