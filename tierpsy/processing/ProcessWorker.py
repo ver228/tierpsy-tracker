@@ -43,7 +43,7 @@ class ProcessWorker(object):
             print_flush('%s No checkpoints given. It seems that there is a previous analysis finished. Exiting.' % base_name)
             return
         
-        pkgs_version = getPackagesVersion()
+        pkgs_versions = getPackagesVersion()
         
         print_flush('%s Starting checkpoint: %s' % (base_name, self.analysis_checkpoints[0]))
         initial_time = time.time()
@@ -62,7 +62,7 @@ class ProcessWorker(object):
             
             execThisPoint(current_point, 
                     **self.ap.getArgs(current_point),
-                    pkgs_versions = pkgs_version,
+                    pkgs_versions = pkgs_versions,
                     cmd_original = self.cmd_original)
     
         time_str = str(datetime.timedelta(seconds = round(time.time() -initial_time)))

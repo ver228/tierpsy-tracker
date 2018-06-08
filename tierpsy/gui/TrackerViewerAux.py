@@ -28,7 +28,7 @@ GOOD_SKEL_COLOURS = dict(
     )
 
 #%%
-def _estimate_trajectories_data(ow_feat_file, timestamp, microns_per_pixel):
+def _estimate_trajectories_data(ow_feat_file, timestamp, microns_per_pixel, stage_position_pix):
     '''
     I want to estimate the trajectorires_data table from the features_timeseries in the old features
     so I can used them with the viewer.
@@ -62,6 +62,14 @@ def _estimate_trajectories_data(ow_feat_file, timestamp, microns_per_pixel):
             
             new_data = new_data.drop_duplicates('frame_number')
             
+            if stage_position_pix is not None:
+                #subtract stage motion if necessary
+                ss = stage_position_pix[new_data['frame_number']]
+                new_data['coord_x'] -= ss[:, 0]
+                new_data['coord_y'] -= ss[:, 1]
+
+            
+
             df.append(new_data)
     trajectories_data = pd.concat(df)
     
@@ -164,7 +172,7 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
                         tot = self.fid.get_node('/mask').shape[0]
                         timestamp = np.arange(tot)
 
-                    self.trajectories_data = _estimate_trajectories_data(self.skeletons_file, timestamp, self.microns_per_pixel)
+                    self.trajectories_data = _estimate_trajectories_data(self.skeletons_file, timestamp, self.microns_per_pixel, self.stage_position_pix)
                     self.is_estimated_trajectories_data = True 
                 
                 #group data

@@ -67,14 +67,14 @@ def readMetaData(fname, provenance_step='FEAT_CREATE'):
         
         if 'commit_hash' in provenance_tracking:
         	#old name
-        	pkgs_version = provenance_tracking['commit_hash']
+        	pkgs_versions = provenance_tracking['commit_hash']
         else:
-        	pkgs_version = provenance_tracking['pkgs_version']
+        	pkgs_versions = provenance_tracking['pkgs_versions']
         
-        if 'tierpsy' in pkgs_version:
-            tierpsy_version = pkgs_version['tierpsy']
+        if 'tierpsy' in pkgs_versions:
+            tierpsy_version = pkgs_versions['tierpsy']
         else:
-            tierpsy_version = pkgs_version['MWTracker']
+            tierpsy_version = pkgs_versions['MWTracker']
         
         MWTracker_ver = {"name":"tierpsy (https://github.com/ver228/tierpsy-tracker)",
             "version": tierpsy_version,
