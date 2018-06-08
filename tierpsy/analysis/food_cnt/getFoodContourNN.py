@@ -9,18 +9,19 @@ Get food contour using a pre-trained neural network
 
 """
 
-
-
 import tables
 import os
 import numpy as np
 import cv2
+from keras.models import load_model
 
 from skimage.morphology import disk
 
 from tierpsy import AUX_FILES_DIR
+
 DFLT_RESIZING_SIZE = 512 #the network was trained with images of this size 512
-MODEL_PATH = os.path.join(AUX_FILES_DIR, 'unet_RMSprop-5-04999-0.3997.h5')
+
+
 
 def _get_sizes(im_size, d4a_size= 24, n_conv_layers=4):
     ''' Useful to determine the expected inputs and output sizes of a u-net.
@@ -191,17 +192,14 @@ def get_food_prob(mask_file, model, max_bgnd_images = 2, _is_debug = False, resi
         return Y_pred, original_size, bgnd_s
 
 
-def get_food_contour_nn(mask_file, model=None, _is_debug=False):
+def get_food_contour_nn(mask_file, model_path, _is_debug=False):
     '''
     Get the food contour using a pretrained u-net model.
     This function is faster if a preloaded model is given since it is very slow 
     to load the model and tensorflow.
     '''
     
-
-    if model is None:
-        from keras.models import load_model
-        model = load_model(MODEL_PATH)
+    model = load_model(model_path)
     
     food_prob, original_size, bgnd_images = get_food_prob(mask_file, model, _is_debug=_is_debug)
     #bgnd_images are only used in debug mode

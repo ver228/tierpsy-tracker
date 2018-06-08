@@ -3,9 +3,8 @@ from functools import partial
 import numpy as np
 import tables
 import os
+from keras.models import load_model
 
-
-from tierpsy import AUX_FILES_DIR
 from tierpsy.analysis.ske_create.helperIterROI import generateMoviesROI, getROIFixSize
 from tierpsy.helper.params import read_fps
 
@@ -53,8 +52,6 @@ def indentifyValidWorms(masked_file,
         frame_subsamplig - number of frames skipped. We do not need to calculate in 
                             every frame. A value of near the number of fps is sensible.
     '''
-    from keras.models import load_model # I do a hidden import because the loading of keras is slow, and it will do everytime tierpsy is initialized
-    
     model = load_model(model_path)
 
     roi_size = model.input_shape[2]
@@ -89,15 +86,12 @@ def indentifyValidWorms(masked_file,
     
     return valid_worms_indexes
 
-def filterModelWorms(masked_image_file, trajectories_data, model_name, frame_subsampling = -1):
-    
+def filterModelWorms(masked_image_file, trajectories_data, model_path, frame_subsampling = -1):
     if frame_subsampling ==-1:
         #use the expected number of frames per seconds as the subsampling period 
         frame_subsampling = read_fps(masked_image_file)
         frame_subsampling = int(frame_subsampling)
     
-
-    model_path = os.path.join(AUX_FILES_DIR, model_name)
     valid_worms = indentifyValidWorms(masked_image_file, 
                                         trajectories_data,
                                         model_path,

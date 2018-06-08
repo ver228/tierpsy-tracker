@@ -18,13 +18,17 @@ from tierpsy.helper.misc import TimeCounter, print_flush, ReadEnqueue, FFPROBE_C
 
 def dict2recarray(dat):
     '''convert into recarray (pytables friendly)'''
-
     if len(dat) > 0:
         dtype = [(kk, dat[kk].dtype) for kk in dat]
         N = len(dat[dtype[0][0]])
         recarray = np.recarray(N, dtype)
-        for kk in dat:
-            recarray[kk] = dat[kk]
+        for kk, val in dat.items():
+            if len(val) == N:
+                #there is something weird with those fields. Apparently something got changed with ffprobe.
+                #I do not want to figure out what it is...
+                recarray[kk] = dat[kk]
+
+
         return recarray
     else:
         return np.array([])

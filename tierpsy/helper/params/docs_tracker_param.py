@@ -5,6 +5,9 @@ List of default values and description of the tracker parameters.
 from .docs_analysis_points import valid_analysis_types, dlft_analysis_type
 from .helper import repack_dflt_list
 
+
+
+
 dflt_param_list = [
     ('analysis_type', 
         dlft_analysis_type, 
@@ -156,17 +159,6 @@ dflt_param_list = [
         'Area ratio between blob areas in different frames to be considered part of the same trajectory.'
         ),
 
-    ('n_cores_used', 
-        1, 
-        '''
-        EXPERIMENTAL. Number of core used. 
-        Currently it is only suported by TRAJ_CREATE and it is only recommended at high particle densities.
-        '''),
-
-    ('filter_model_name', 
-        '', 
-        'Path to the NN Keras model used to filter worms from spurious particles. If it is empty this step will be skiped.'
-        ),
 
     ('roi_size', 
         -1, 
@@ -292,16 +284,32 @@ dflt_param_list = [
         ),
     ('feat_coords_smooth_window_s',
         0.25,
-        'Window (in number seconds) used to smooth each of the skeletons coordinates over time by Tierpsy Features.'
+        'Window (in number seconds) used to smooth each of the skeletons coordinates over time by Tierpsy Features. Set to zero to deactivate the smoothing over time.'
         ),
     ('feat_gap_to_interp_s',
         0.25,
-        'Maximum time gap between missing skeletons be interpolated by Tierpsy Features.'
+        'Maximum time gap between missing skeletons be interpolated by Tierpsy Features. Set to zero to deactivate the interpolation over time.'
         ),
     ('feat_derivate_delta_time',
         1/3,
         'Time window used to calculate the derivatives (including velocity) by Tierpsy Features.'
         ),
+
+    ('n_cores_used', 
+        1, 
+        '''
+        EXPERIMENTAL. Number of core used. 
+        Currently it is only suported by TRAJ_CREATE and it is only recommended at high particle densities.
+        '''),
+
+    ('use_nn_filter', 
+        False, 
+        'Set to True if you want to use a pretrained neural network model to filter worms. This model is optimized for AEX setup and might not work with other setups. If analysis_type is setup to _AEX the filter will be used by default.'
+        ),
+    ('use_nn_food_cnt',
+        True,
+        'If true a pretrained neural network model is going to use in  FOOD_CNT, else it will attempt to use morphological operations to calculate the food contour.'
+        )
     ]
 
 # #not tested (used for the zebra fish)

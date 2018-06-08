@@ -109,7 +109,7 @@ class GECKO_VIDEOS(TestObj):
         '--pattern_include',
         '*.mjpg',
         '--json_file',
-        'MULTI_RIG.json'
+        '_AEX_RIG.json'
         ]
         self.add_command(args)
 
@@ -142,9 +142,7 @@ class MANUAL_FEATS(TestObj):
         '--mask_dir_root',
         self.masked_files_dir,
         '--analysis_checkpoints',
-        'FEAT_MANUAL_CREATE',
-        "--json_file",
-        'MULTI_RIG.json'
+        'FEAT_MANUAL_CREATE'
         ]
         self.add_command(args)
 
@@ -168,7 +166,7 @@ class RIG_HDF5_VIDEOS(TestObj):
         '--pattern_include',
         '*.raw_hdf5',
         '--json_file',
-        'MULTI_RIG.json'
+        '_AEX_RIG.json'
         ]
         self.add_command(args)
 
@@ -208,7 +206,7 @@ class WORM_MOTEL(TestObj):
         '--results_dir_root',
         self.results_dir,
         '--json_file',
-        'MULTI_RIG_worm_motel.json',
+        '_AEX_RIG_worm_motel.json',
         '--pattern_include', 
         '*.mjpg'
         ]

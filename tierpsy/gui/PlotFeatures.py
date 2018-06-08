@@ -138,9 +138,6 @@ class PlotFeatures(QDialog):
 
     def _plot_single_timeseries(self, worm_index, feature):
         worm_data = self.traj_worm_index_grouped.get_group(worm_index)
-        
-        #valid_index = worm_data['skeleton_id']
-        #valid_index = valid_index[valid_index>=0]
         feat_val = self.timeseries_data.loc[worm_data.index]
 
         self._ax.clear()
@@ -193,7 +190,7 @@ class PlotFeatures(QDialog):
     
     def _plot_single_histogram(self, worm_index, feature):
         worm_data = self.traj_worm_index_grouped.get_group(worm_index)
-        feat_val = self.timeseries_data.loc[worm_data.index].dropna()
+        feat_val = self.timeseries_data.loc[worm_data.index]
 
         self._ax.clear()
 
@@ -202,9 +199,10 @@ class PlotFeatures(QDialog):
         self._ax.set_ylabel('Counts')
         self._ax.set_title('W: {}'.format(worm_index))
 
-        counts, edges, _ = self._ax.hist(feat_val[feature])
+        counts, edges, _ = self._ax.hist(feat_val[feature].dropna())
         bins = edges[:-1] + (edges[1] - edges[0])/2
 
+        
         self.figure.tight_layout()
 
         self._ax.figure.canvas.draw()
