@@ -1,5 +1,5 @@
 # -*- mode: python -*-
-DEBUG = True
+DEBUG = False
 
 #hidden imports needed for tierpsy. Each step is loaded dyniamically so I need to give the hint to pyinstaller
 
@@ -44,9 +44,7 @@ tierpsy_feat = os.path.join('features', 'feature_metadata', 'features_list.csv')
 ow_feat_src = os.path.join(open_worm_path, ow_feat)
 ow_feat_dst = os.path.join('open_worm_analysis_toolbox', ow_feat)
 
-
 tierpsy_features_path = os.path.dirname(tierpsy_features.__file__)
-
 
 #add ffmpeg and ffprobe
 ffmpeg_src = FFMPEG_CMD
@@ -82,7 +80,7 @@ tierpsy_path += os.sep
 #add all the files in extras
 for (dirpath, dirnames, filenames) in os.walk(os.path.join(tierpsy_path, 'extras')):
   for fname in filenames:
-    if not fname.startswith('.'):
+    if not (fname.startswith('.') or fname.startswith('_')):
       fname_src = os.path.join(dirpath, fname)
       fname_dst = fname_src.replace(tierpsy_path, '')
       added_datas.append((fname_dst, fname_src, 'DATA'))
