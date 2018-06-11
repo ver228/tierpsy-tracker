@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1170</width>
-    <height>855</height>
+    <width>1081</width>
+    <height>845</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -298,10 +298,10 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="8">
-       <widget class="QCheckBox" name="checkBox_showFood">
+      <item row="2" column="7">
+       <widget class="QPushButton" name="pushButton_plot">
         <property name="text">
-         <string>Show Food Contour</string>
+         <string>PLOT</string>
         </property>
        </widget>
       </item>
@@ -583,6 +583,13 @@
         </property>
        </widget>
       </item>
+      <item row="4" column="6">
+       <widget class="QCheckBox" name="checkBox_showFood">
+        <property name="text">
+         <string>Show Food Contour</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
    </layout>
@@ -594,7 +601,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1170</width>
+     <width>1081</width>
      <height>22</height>
     </rect>
    </property>

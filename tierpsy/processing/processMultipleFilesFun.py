@@ -77,7 +77,7 @@ def processMultipleFilesFun(
     json_file = param.json_file
     
     if not analysis_checkpoints:
-      analysis_checkpoints = param.p_dict['analysis_checkpoints'].copy()#get_dflt_sequence(param.p_dict['analysis_type'])
+      analysis_checkpoints = param.p_dict['analysis_checkpoints'].copy()
 
     
     

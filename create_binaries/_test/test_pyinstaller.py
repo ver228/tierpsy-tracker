@@ -24,6 +24,11 @@ if __name__ == '__main__':
 
     print(cv2.__version__)
 
+    vid = cv2.VideoCapture('test.avi')
+    ret, image = vid.read()
+    print('Img size', image.shape)
+    vid.release()
+
     inputFiles = "test.h5"
     with h5py.File(inputFiles, 'w') as inputFileOpen:
         print('good h5py')

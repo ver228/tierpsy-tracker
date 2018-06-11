@@ -1,17 +1,13 @@
 import sys
-import os
 import json
-from collections import OrderedDict
 
 from PyQt5.QtWidgets import QDialog, QApplication, QGridLayout, QLabel, \
     QSpinBox,  QDoubleSpinBox, QCheckBox, QPushButton, QLineEdit, QSizePolicy, \
-    QMessageBox, QSpacerItem, QFileDialog, QComboBox, QHBoxLayout, QVBoxLayout
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
+    QMessageBox, QSpacerItem, QComboBox, QHBoxLayout, QVBoxLayout
+from PyQt5.QtCore import Qt, pyqtSignal
 
 
-from tierpsy.helper.params.tracker_param import TrackerParams, info_param, default_param, valid_options
-from tierpsy.gui.HDF5VideoPlayer import LineEditDragDrop
-from tierpsy import DFLT_FILTER_FILES
+from tierpsy.helper.params.tracker_param import info_param, default_param, valid_options
 
 # i cannot really add this since i do not have a good way to get the data
 _feats2ignore = ['analysis_checkpoints']
@@ -40,11 +36,7 @@ class ParamWidget():
         elif isinstance(self.widget, QComboBox):
             if name in valid_options:
                 self.widget.addItems(valid_options[name])
-            elif name == 'filter_model_name':
-                self.widget.addItems([''] + DFLT_FILTER_FILES)
-                self.widget.setEditable(True)
-
-
+            
         if not isinstance(self.widget, QGridLayout):
             self.widget.setToolTip(info_param[name])
         else:
@@ -58,7 +50,7 @@ class ParamWidget():
     def _create(self, name, value):
         value_type = type(value)
         
-        if name in valid_options or name == 'filter_model_name':
+        if name in valid_options:
             widget = QComboBox()
         
         elif value_type is bool:

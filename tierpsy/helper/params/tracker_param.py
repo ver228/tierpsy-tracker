@@ -7,11 +7,12 @@ Created on Thu Jun 25 12:44:07 2015
 
 import json
 import os
+import warnings
 
 #get default parameters files
 from tierpsy import DFLT_PARAMS_PATH, DFLT_PARAMS_FILES
 from .docs_tracker_param import default_param, info_param, valid_options
-from .docs_analysis_points import dflt_analysis_points
+from .docs_analysis_points import dflt_analysis_points, dlft_analysis_type, deprecated_analysis_alias
 
 #deprecated variables that will be ignored
 deprecated_fields = [
@@ -35,53 +36,64 @@ deprecated_alias = {
     'is_extract_metadata':'is_extract_timestamp',
     }
 
+
+
 def get_dflt_sequence(analysis_type):
     assert analysis_type in valid_options['analysis_type']
-    if analysis_type in dflt_analysis_points:
-        analysis_checkpoints = dflt_analysis_points[analysis_type]
-    else:
-        analysis_checkpoints = dflt_analysis_points['DEFAULT']
-        
+    analysis_checkpoints = dflt_analysis_points[analysis_type].copy()
     return analysis_checkpoints
+
+
+def fix_deprecated(param_in_file):
+    '''
+    basically look for deprecated or changed names and corrected with the newest versions them.
+    '''
+    corrected_params = {}
+    for key in param_in_file:
+        if key in deprecated_fields:
+            #ignore deprecated fields
+            continue
+        elif key in deprecated_alias:
+            #rename deprecated alias
+            corrected_params[deprecated_alias[key]] = param_in_file[key]
+        
+        elif key == 'min_area':
+            #special case of deprecated alias
+            corrected_params['mask_min_area'] = param_in_file['min_area']
+            corrected_params['traj_min_area'] = param_in_file['min_area']/2
+        elif key == 'analysis_type':
+            #correct the name of a deprecated analysis types
+            vv = param_in_file['analysis_type']
+            corrected_params['analysis_type'] = deprecated_analysis_alias[vv] if vv in deprecated_analysis_alias else vv
+            
+        elif key == 'filter_model_name':
+            corrected_params['use_nn_filter'] = len(param_in_file['filter_model_name']) > 0 #set to true if it is not empty
+        else:
+            corrected_params[key] = param_in_file[key]
+
+    return corrected_params
 
 def read_params(json_file=''):
     '''
-    Read and clean input.
+    Read input, and assign defults for the missing values.
     '''
-    
-    #basically look for deprecated or changed names and fix them.
     input_param = default_param.copy()
     if json_file:
         with open(json_file) as fid:
             param_in_file = json.load(fid)
-        
+        param_in_file = fix_deprecated(param_in_file)
+
         for key in param_in_file:
-
-            if key in deprecated_fields:
-                #ignore deprecated fields
-                continue
-            elif key in deprecated_alias:
-                #rename deprecated alias
-                input_param[deprecated_alias[key]] = param_in_file[key]
-            
-            elif key == 'min_area':
-                #special case of deprecated alias
-                input_param['mask_min_area'] = param_in_file['min_area']
-                input_param['traj_min_area'] = param_in_file['min_area']/2
-
-            elif key in input_param:
+            if key in input_param:
                 input_param[key] = param_in_file[key]
             else:
-                raise ValueError('Parameter {} is not a valid parameter. Change its value in file {}'.format(key, json_file))
+                raise ValueError('Parameter "{}" is not a valid parameter. Change its value in file "{}"'.format(key, json_file))
             
-            if key in valid_options:
-                if not param_in_file[key] in valid_options[key]:
-                    raise ValueError('Parameter {} is not in the list of valid options {}'.format(param_in_file[key],valid_options[key]))
-
+            if key in valid_options and (input_param[key] not in valid_options[key]):
+                raise ValueError('Parameter "{}" is not in the list of valid options {}'.format(param_in_file[key],valid_options[key]))
 
         if not input_param['analysis_checkpoints']:
             input_param['analysis_checkpoints'] = get_dflt_sequence(input_param['analysis_type'])
-
 
     return input_param    
 
@@ -97,8 +109,26 @@ class TrackerParams:
             json_file = os.path.join(DFLT_PARAMS_PATH, json_file)
 
         self.json_file = json_file
-        self.p_dict = read_params(json_file)    
+        self.p_dict = read_params(json_file)
 
+    @property
+    def is_WT2(self):
+        return self.p_dict['analysis_type'].endswith('WT2')
+
+    @property
+    def is_one_worm(self):
+        analysis_type = self.p_dict['analysis_type']
+        return analysis_type.endswith('WT2') or analysis_type.endswith('SINGLE')
+
+    @property
+    def use_nn_filter(self):
+        _use_nn_filter = self.p_dict['use_nn_filter']
+        if not _use_nn_filter and 'AEX' in self.p_dict['analysis_type']:
+            warnings.warn('the use_filter_flag would be set to True since the analysis type contains AEX.')
+            _use_nn_filter = True
+
+        return _use_nn_filter
+    
 
 
 if __name__=='__main__':

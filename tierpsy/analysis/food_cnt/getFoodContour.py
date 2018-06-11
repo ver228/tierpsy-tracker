@@ -5,7 +5,7 @@ Created on Tue Jul 18 16:55:14 2017
 
 @author: ajaver
 """
-
+import os
 import tables
 import numpy as np
 
@@ -14,26 +14,29 @@ from .getFoodContourMorph import get_food_contour_morph
 
 from tierpsy.helper.misc import TimeCounter, print_flush, get_base_name
 
-def calculate_food_cnt(mask_file, method='NN', _is_debug=False, solidity_th=0.98):
-    
-    assert method in ['NN', 'MORPH']
-    if method == 'NN':
-        food_cnt, food_prob,cnt_solidity = get_food_contour_nn(mask_file, _is_debug=_is_debug)
+
+
+def calculate_food_cnt(mask_file, use_nn_food_cnt, model_path, _is_debug=False, solidity_th=0.98):
+    if use_nn_food_cnt:
+        if not os.path.exists(model_path):
+          warning.warn('The model to obtain the food contour was not found. Nothing to do here...\n If you dont have a valid model. You could try to set `food_method=MORPH` to use a different algorithm.')
+          return
+
+        food_cnt, food_prob,cnt_solidity = get_food_contour_nn(mask_file, model_path, _is_debug=_is_debug)
         if cnt_solidity < solidity_th:
             food_cnt = np.zeros(0)
         
-    elif method == 'MORPH':
-        food_cnt = get_food_contour_morph(mask_file, _is_debug=_is_debug)
     else:
-        raise ValueError('Invalid method argument.')
+        food_cnt = get_food_contour_morph(mask_file, _is_debug=_is_debug)
+
     
     return food_cnt
 
 def getFoodContour(mask_file, 
                 skeletons_file,
-                cnt_method = 'NN',
+                use_nn_food_cnt,
+                model_path,
                 solidity_th=0.98,
-                batch_size = 100000,
                 _is_debug = False
                 ):
     base_name = get_base_name(mask_file)
@@ -43,7 +46,8 @@ def getFoodContour(mask_file,
     
     
     food_cnt = calculate_food_cnt(mask_file,  
-                                  method = cnt_method, 
+                                  use_nn_food_cnt = use_nn_food_cnt, 
+                                  model_path = model_path,
                                   solidity_th=  solidity_th,
                                   _is_debug = _is_debug)
     
@@ -62,5 +66,5 @@ def getFoodContour(mask_file,
                 tab = fid.create_array('/', 
                                        'food_cnt_coord', 
                                        obj=food_cnt)
-                tab._v_attrs['method'] = cnt_method
+                tab._v_attrs['use_nn_food_cnt'] = int(use_nn_food_cnt)
 

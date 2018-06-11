@@ -1,15 +1,6 @@
 import os
-from tierpsy import AUX_FILES_DIR
+from tierpsy.helper.params.models_path import DFLT_MODEL_FILTER_WORMS
 from .processTrajectoryData import processTrajectoryData
-
-def _correct_filter_model_name(filter_model_name):
-    if filter_model_name:
-        if not os.path.exists(filter_model_name):
-            #try to look for the file in the AUX_FILES_DIR
-            filter_model_name = os.path.join(AUX_FILES_DIR, filter_model_name)
-        assert  os.path.exists(filter_model_name)
-
-    return filter_model_name
 
 def args_(fn, param):
     p = param.p_dict
@@ -26,7 +17,7 @@ def args_(fn, param):
         'masked_image_file':fn['masked_image'],
         'trajectories_file': fn['skeletons'],
         'smoothed_traj_param': smoothed_traj_param,
-        'filter_model_name' : _correct_filter_model_name(p['filter_model_name'])
+        'filter_model_name' : DFLT_MODEL_FILTER_WORMS if param.use_nn_filter else '' #set the model if this flag is true
         }
     #arguments used by AnalysisPoints.py
     return {

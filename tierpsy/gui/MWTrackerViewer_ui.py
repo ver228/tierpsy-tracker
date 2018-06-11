@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'MWTrackerViewer.ui'
 #
-# Created by: PyQt5 UI code generator 5.10
+# Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MWTrackerViewer(object):
     def setupUi(self, MWTrackerViewer):
         MWTrackerViewer.setObjectName("MWTrackerViewer")
-        MWTrackerViewer.resize(1170, 855)
+        MWTrackerViewer.resize(1081, 845)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -177,9 +177,9 @@ class Ui_MWTrackerViewer(object):
         self.pushButton_B = QtWidgets.QPushButton(self.centralWidget)
         self.pushButton_B.setObjectName("pushButton_B")
         self.gridLayout.addWidget(self.pushButton_B, 3, 10, 1, 1)
-        self.checkBox_showFood = QtWidgets.QCheckBox(self.centralWidget)
-        self.checkBox_showFood.setObjectName("checkBox_showFood")
-        self.gridLayout.addWidget(self.checkBox_showFood, 2, 8, 1, 1)
+        self.pushButton_plot = QtWidgets.QPushButton(self.centralWidget)
+        self.pushButton_plot.setObjectName("pushButton_plot")
+        self.gridLayout.addWidget(self.pushButton_plot, 2, 7, 1, 1)
         self.gridLayout_4.addLayout(self.gridLayout, 1, 0, 1, 1)
         self.gridLayout_3 = QtWidgets.QGridLayout()
         self.gridLayout_3.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
@@ -318,10 +318,13 @@ class Ui_MWTrackerViewer(object):
         self.pushButton_split.setSizePolicy(sizePolicy)
         self.pushButton_split.setObjectName("pushButton_split")
         self.gridLayout_3.addWidget(self.pushButton_split, 4, 15, 1, 2)
+        self.checkBox_showFood = QtWidgets.QCheckBox(self.centralWidget)
+        self.checkBox_showFood.setObjectName("checkBox_showFood")
+        self.gridLayout_3.addWidget(self.checkBox_showFood, 4, 6, 1, 1)
         self.gridLayout_4.addLayout(self.gridLayout_3, 0, 0, 1, 1)
         MWTrackerViewer.setCentralWidget(self.centralWidget)
         self.menuBar = QtWidgets.QMenuBar(MWTrackerViewer)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 1170, 22))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 1081, 22))
         self.menuBar.setObjectName("menuBar")
         MWTrackerViewer.setMenuBar(self.menuBar)
         self.mainToolBar = QtWidgets.QToolBar(MWTrackerViewer)
@@ -352,7 +355,7 @@ class Ui_MWTrackerViewer(object):
         self.pushButton_U.setText(_translate("MWTrackerViewer", "Undefined"))
         self.pushButton_W.setText(_translate("MWTrackerViewer", "Single Worms"))
         self.pushButton_B.setText(_translate("MWTrackerViewer", "Bad"))
-        self.checkBox_showFood.setText(_translate("MWTrackerViewer", "Show Food Contour"))
+        self.pushButton_plot.setText(_translate("MWTrackerViewer", "PLOT"))
         self.pushButton_ROI2_RW.setText(_translate("MWTrackerViewer", "<<"))
         self.pushButton_ROI2_FF.setText(_translate("MWTrackerViewer", ">>"))
         self.comboBox_showLabels.setItemText(0, _translate("MWTrackerViewer", "hide labels"))
@@ -368,5 +371,6 @@ class Ui_MWTrackerViewer(object):
         self.checkBox_ROI1.setText(_translate("MWTrackerViewer", "Skeleton"))
         self.checkBox_ROI2.setText(_translate("MWTrackerViewer", "Skeleton"))
         self.pushButton_split.setText(_translate("MWTrackerViewer", "Split Trajectory"))
+        self.checkBox_showFood.setText(_translate("MWTrackerViewer", "Show Food Contour"))
         self.toolBar.setWindowTitle(_translate("MWTrackerViewer", "toolBar"))
 

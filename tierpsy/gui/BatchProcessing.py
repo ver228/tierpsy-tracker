@@ -2,7 +2,6 @@ import os
 import json
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
-from PyQt5.QtCore import Qt
 
 from tierpsy.processing.processMultipleFilesFun import processMultipleFilesFun
 from tierpsy.processing.helper import remove_border_checkpoints, get_results_dir, get_masks_dir 
@@ -247,9 +246,6 @@ class BatchProcessing_GUI(QMainWindow):
         if not analysis_checkpoints:
             analysis_checkpoints = get_dflt_sequence(param.p_dict['analysis_type'])
 
-        if analysis_checkpoints[-1] != 'FEAT_MANUAL_CREATE':
-            analysis_checkpoints.append('FEAT_MANUAL_CREATE')
-
         self.analysis_checkpoints = analysis_checkpoints
         self.ui.p_force_start_point.clear()
         self.ui.p_force_start_point.addItems(self.analysis_checkpoints)
@@ -261,11 +257,7 @@ class BatchProcessing_GUI(QMainWindow):
                                     self.mapper['force_start_point'], 
                                     0)
 
-        #Force to be able to select FEAT_MANUAL_CREATE only from p_force_start_point
-        if len(remaining_points) >= 1 and remaining_points[-1] == 'FEAT_MANUAL_CREATE':
-            remaining_points = remaining_points[:-1]
-
-
+        
 
         if self.mapper['force_start_point'] == 'COMPRESS':
             self.ui.pushButton_videosDir.setEnabled(True)

@@ -41,7 +41,7 @@ class ProcessLocal(object):
         
         self.json_file = json_file
         param = TrackerParams(json_file)
-        self.is_single_worm = param.p_dict['analysis_type'] == 'WT2'
+        self.is_WT2 = param.is_WT2
         self.is_copy_video = is_copy_video
         self.copy_unfinished = copy_unfinished
 
@@ -151,7 +151,7 @@ class ProcessLocal(object):
     def _getAddFilesForTmpSW(self):
         #patch to copy additional files for the case of Single Worm. For the moment I am copying, not cleaning. 
         files2copy = []
-        if self.is_single_worm and self.is_copy_video:
+        if self.is_WT2 and self.is_copy_video:
             try:
                 info_file, stage_file = getAdditionalFiles(self.main_file)
                 tmp_dir = os.path.split(self.tmp_main_file)[0]

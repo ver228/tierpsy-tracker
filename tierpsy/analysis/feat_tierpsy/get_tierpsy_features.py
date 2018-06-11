@@ -124,8 +124,8 @@ def save_feats_stats(features_file, derivate_delta_time):
                       blob_features, 
                       derivate_delta_time)
     
-    
-    dtypes = [('name', 'S50'), ('value', np.float32)]
+    tot = max(len(x) for x in exp_feats.index)
+    dtypes = [('name', 'S{}'.format(tot)), ('value', np.float32)]
     exp_feats_rec = np.array(list(zip(exp_feats.index, exp_feats)), dtype = dtypes)
     with tables.File(features_file, 'r+') as fid:
         for gg in ['/features_stats']:

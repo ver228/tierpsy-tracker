@@ -6,7 +6,7 @@ def args_(fn, param):
   argkws_d ={
       'skeletons_file': fn['skeletons'], 
       'features_file': fn['feat_manual'],
-      **_get_feats_param(param.p_dict),
+      **_get_feats_param(param),
       'use_skel_filter':  True, 
       'use_manual_join': True,
     }

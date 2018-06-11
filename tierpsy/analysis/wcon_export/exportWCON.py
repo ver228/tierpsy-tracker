@@ -64,21 +64,23 @@ def readMetaData(fname, provenance_step='FEAT_CREATE'):
         
         provenance_tracking = fid.get_node('/provenance_tracking/' + provenance_step).read()
         provenance_tracking = json.loads(provenance_tracking.decode('utf-8'))
-        commit_hash = provenance_tracking['commit_hash']
         
-        if 'tierpsy' in commit_hash:
-            tierpsy_version = commit_hash['tierpsy']
+        if 'commit_hash' in provenance_tracking:
+        	#old name
+        	pkgs_versions = provenance_tracking['commit_hash']
         else:
-            tierpsy_version = commit_hash['MWTracker']
+        	pkgs_versions = provenance_tracking['pkgs_versions']
+        
+        if 'tierpsy' in pkgs_versions:
+            tierpsy_version = pkgs_versions['tierpsy']
+        else:
+            tierpsy_version = pkgs_versions['MWTracker']
         
         MWTracker_ver = {"name":"tierpsy (https://github.com/ver228/tierpsy-tracker)",
             "version": tierpsy_version,
             "featureID":"@OMG"}
-        #open_worm_ver = {"name":"open_worm_analysis_toolbox (https://github.com/openworm/open-worm-analysis-toolbox)",
-        #    "version":commit_hash['open_worm_analysis_toolbox'],
-        #    "featureID":""}
-
-        experiment_info["software"] = MWTracker_ver#[MWTracker_ver, open_worm_ver]
+        
+        experiment_info["software"] = MWTracker_ver
     
     return _order_metadata(experiment_info)
 

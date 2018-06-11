@@ -18,3 +18,14 @@ Gemfile*
 *.o
 
 tierpsy/extras/unet_RMSprop-5-04999-0.3997.h5
+*.so
+*.so
+*.pyd
+*.so
+*.pyd
+tierpsy/analysis/ske_create/segWormPython/cython_files/segWorm_cython.c
+tierpsy/analysis/ske_create/segWormPython/cython_files/linearSkeleton_cython.c
+tierpsy/analysis/ske_create/segWormPython/cython_files/cleanWorm_cython.c
+tierpsy/analysis/stage_aligment/get_mask_diff_var.c
+tierpsy/analysis/ske_create/segWormPython/cython_files/curvspace.c
+tierpsy/analysis/ske_create/segWormPython/cython_files/circCurvature.c

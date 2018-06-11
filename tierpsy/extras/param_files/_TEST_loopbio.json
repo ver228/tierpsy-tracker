@@ -1,19 +1,5 @@
 {
-    "analysis_type": "TEST",
-    "analysis_checkpoints": [
-        "COMPRESS",
-        "TRAJ_CREATE",
-        "TRAJ_JOIN",
-        "SKE_INIT",
-        "BLOB_FEATS",
-        "SKE_CREATE",
-        "SKE_FILT",
-        "SKE_ORIENT",
-        "INT_PROFILE",
-        "INT_SKE_ORIENT",
-        "FEAT_INIT",
-        "FEAT_TIERPSY"
-    ],
+    "analysis_type": "TIERPSY",
     "mask_min_area": 50,
     "mask_max_area": 1000,
     "thresh_C": 50,

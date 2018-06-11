@@ -8,14 +8,14 @@ from PyQt5.QtCore import Qt
 import tierpsy
 from tierpsy.gui.GetMaskParams import GetMaskParams_GUI
 from tierpsy.gui.MWTrackerViewer import MWTrackerViewer_GUI
-from tierpsy.gui.SWTrackerViewer import SWTrackerViewer_GUI
+from tierpsy.gui.Summarizer import Summarizer_GUI
 from tierpsy.gui.BatchProcessing import BatchProcessing_GUI
         
 
 dd = [('get_params', (GetMaskParams_GUI,"Set Parameters")),
     ('batch_processing', (BatchProcessing_GUI,"Batch Processing Multiple Files")),
     ('mwtracker', (MWTrackerViewer_GUI, "Tierpsy Tracker Viewer")),
-    ('swtracker', (SWTrackerViewer_GUI, "Worm Tracker 2.0 Viewer"))
+    ('summarizer', (Summarizer_GUI, "Get Features Summary"))
     ]
 widget_lists = OrderedDict(dd)
 

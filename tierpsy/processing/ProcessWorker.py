@@ -11,7 +11,7 @@ import time
 
 from tierpsy.helper.misc import print_flush
 from tierpsy.processing.AnalysisPoints import AnalysisPoints
-from tierpsy.processing.trackProvenance import getGitCommitHash, execThisPoint
+from tierpsy.processing.trackProvenance import getPackagesVersion, execThisPoint
 from tierpsy.processing.helper import get_real_script_path
 
 
@@ -43,7 +43,7 @@ class ProcessWorker(object):
             print_flush('%s No checkpoints given. It seems that there is a previous analysis finished. Exiting.' % base_name)
             return
         
-        commit_hash = getGitCommitHash()
+        pkgs_versions = getPackagesVersion()
         
         print_flush('%s Starting checkpoint: %s' % (base_name, self.analysis_checkpoints[0]))
         initial_time = time.time()
@@ -62,7 +62,7 @@ class ProcessWorker(object):
             
             execThisPoint(current_point, 
                     **self.ap.getArgs(current_point),
-                    commit_hash = commit_hash,
+                    pkgs_versions = pkgs_versions,
                     cmd_original = self.cmd_original)
     
         time_str = str(datetime.timedelta(seconds = round(time.time() -initial_time)))
