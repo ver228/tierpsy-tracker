@@ -83,14 +83,27 @@ This step uses the profile intensity extracted in the [previous step](#int_profi
 
 Using this algorithm the errors in head-tail identification decrease to 0.01% compared to 4.48% in the original [segWorm](https://github.com/openworm/SegWorm) implementation. Since this algorithm uses the median profile to identify switched regions, it can fail if [SKE_ORIENT](#ske_orient) previously did not correctly oriented most of the skeletons.
 
-## Extract Features
+## Extract Features (OpenWorm route)
 
 ### FEAT_CREATE
-This step uses the [open worm analysis toolbox](https://github.com/openworm/open-worm-analysis-toolbox) to calculate the skeleton features explained in [`basename_features.hdf5`](OUTPUTS.md/#basename_features.hdf5).
+This step uses the [open worm analysis toolbox](https://github.com/openworm/open-worm-analysis-toolbox) to calculate the skeleton features explained in [`basename_features.hdf5`](OUTPUTS.md#basename_featureshdf5-openworm-analysis-toolbox).
 
 ### FEAT\_MANUAL\_CREATE
 Same as [FEAT_CREATE](#feat_create) but it will only use the indexes that were manually identified as worms using the [Tierpsy Tracker Viewer](HOWTO.md#tierpsy-tracker-viewer). The results will be saved as `basename_feat_manual.hdf5`.
 
 ### WCON_EXPORT
 Currently only used in `WT2`. Export skeletons data in [`basename_features.hdf5`](OUTPUTS.md/#basename_features.hdf5) using the [WCON format](https://github.com/openworm/tracker-commons). In the future this step should be available in the default analysis sequence.
+
+## Extract Features (Tierpsy Features route)
+
+### FOOD_CNT
+CURRENTLY AVAILABLE ONLY FOR [AEX](https://www.imperial.ac.uk/people/andre.brown) DATA. Calculate the food contour either using a pretrained neural network. The results are stored in [`/food_cnt_coord`](OUTPUTS.md/#food_cnt_coord). The process will be considered as failed if the contour solidity is larger than 0.98 and the results will not be saved. You can visualize the results using the [Tierpsy Tracker Viewer](HOWTO.md#tierpsy-tracker-viewer).
+
+### FEAT_INIT
+The smooth module in [tierpsy features](https://github.com/openworm/open-worm-analysis-toolbox) is used to smooth the skeletons over both time and space and to interpolate between small gaps of unskeletonized frames. As well to create the corresponding versions of the tables [`/blob_features`](OUTPUTS.md/#blob_features), [`/trajectories_data`](OUTPUTS.md/#trajectories_data) and [`/food_cnt_coord`](OUTPUTS.md/#food_cnt_coord)(if available) from the 
+[`basename_skeletons.hdf5`](OUTPUTS.md/#basename_skeletons.hdf5).
+
+### FEAT_TIERSY
+This step uses the [tierpsy features](https://github.com/openworm/open-worm-analysis-toolbox) to calculate the features explained in [`basename_featuresN.hdf5`](OUTPUTS.md#basename_featuresnhdf5-tierpsy-features).
+
 
