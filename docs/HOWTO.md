@@ -1,12 +1,12 @@
 ## Example Data
 
-Example files can be found [here](https://imperiallondon-my.sharepoint.com/:u:/g/personal/ajaver_ic_ac_uk/EazhY5HZ4zRIhrCYIm_p4VcBq50QYBPzeaBVF2DRgRe2IQ?e=fdrkj7). The zip file contains a multiworm video recorded using a high resolution fixed camera and a single worm video recorded using the [WT2.0](https://www.mrc-lmb.cam.ac.uk/wormtracker/).
+Example files can be found [here](https://imperiallondon-my.sharepoint.com/:u:/g/personal/ajaver_ic_ac_uk/EdoZILCgkw5HnTkMtbD_OEsBBSbXD_WnBnWkwdf2bojusg?e=3yKbXR). The zip file contains a multiworm video recorded using a high resolution fixed camera and a single worm video recorded using the [WT2.0](https://www.mrc-lmb.cam.ac.uk/wormtracker/).
 
 You can analyze the videos using the [Batch Processing Multiple Files](#batch-processing-multiple-files) App. The videos require different analysis parameters since they belong to different setups, therefore they cannot be processed together.
 
-For the multiworm video the `Parameters File` must be set to `MULTI_RIG.json` and the `File Pattern to Include` as `*.mov` as shown below:
+For the multiworm video the `Parameters File` must be set to `MULTIWORM_OPENWORM.json` and the `File Pattern to Include` as `*.mov` as shown below:
 
-<img width="450" alt="screen shot 2018-04-25 at 09 04 05" src="https://user-images.githubusercontent.com/8364368/39233808-6344ddca-4869-11e8-9c34-d3db9102109f.png">
+<img width="450" alt="screen shot 2018-06-11 at 12 47 16" src="https://user-images.githubusercontent.com/8364368/41229893-9c0ab892-6d75-11e8-97d8-553bae8b4ea8.png">
 
 For the multiworm video the `Parameters File` must be set to `WT2_clockwise.json` and the `File Pattern to Include` as `*.avi` as shown below:
 
@@ -171,12 +171,27 @@ You can manually correct the trajectories as shown below. Once you have finished
 
 `Right key` : Decrease the frame by step size.
     
-## Worm Tracker 2.0 Viewer
-This is simplified version of the [Tierpsy Tracker Viewer](#tierpsy-tracker-viewer) created specifically to view files created using [Worm Tracker 2.0](http://www.mrc-lmb.cam.ac.uk/wormtracker/) (the `WT2` case). [Above](#worm-tracker-20-option) is described how to analyse this type of files.
+### Visualizing Analysis Results
+The extracted features are store in the files that end with [featuresN.hdf5](https://github.com/ver228/tierpsy-tracker/blob/development/docs/OUTPUTS.md#basename_featuresNhdf5) if the tierpsy feature route was selected or in [features.hdf5](https://github.com/ver228/tierpsy-tracker/blob/development/docs/OUTPUTS.md#basename_featureshdf5) if the openworm route was selected. You can visualize the features in different ways as shown below:
 
-![SWTrackerViewer](https://cloud.githubusercontent.com/assets/8364368/26412826/e608bfea-40a1-11e7-9d3e-d0b8bf482db2.gif) 
+![features](https://user-images.githubusercontent.com/8364368/41231110-e89f2e14-6d79-11e8-96d7-523f13844555.gif)
 
+From the plotting window can either save the plots or export the data of individual features/trajectories into csv files. If you would like to compare the data of multiple experiments we strongly recommed you to use the [Features Summary](#features-summary) app. If you would like to work directly with the timeseries data we recommend you to use read the data using a scripting lenguage like python using the packages [pandas](http://pandas.pydata.org/) and [pytables](http://www.pytables.org/), or MATLAB following the examples in the [tierpsy_tools](https://github.com/aexbrown/tierpsy_tools) repository.
 
-## Plotting the Analysis Results
-The analysis will produce a set of files described [here](https://github.com/ver228/tierpsy-tracker/blob/development/docs/OUTPUTS.md). The extracted features are store in the files that end with [features.hdf5](https://github.com/ver228/tierpsy-tracker/blob/development/docs/OUTPUTS.md#basename_featureshdf5). You can access to them using [pandas](http://pandas.pydata.org/) and [pytables](http://www.pytables.org/). There are examples on how to do it in MATLAB in the [tierpsy_tools](https://github.com/aexbrown/tierpsy_tools) repository.
+## Features Summary
+![FeatSummary](https://user-images.githubusercontent.com/8364368/41034550-d3665230-6981-11e8-97d9-63c74ff24661.png)
+* `Root Directory`: Directory containing the previously calculate features files. 
+* `Feature Type` : Select between the features calculated using the [OpenWorm Analysis Toolbox](https://github.com/openworm/open-worm-analysis-toolbox) or [Tierpsy Features](https://github.com/ver228/tierpsy-features).
+* `Use manually edited features?` Tick if you want to collect data from manually edited trajectories. Only trajectories labelled as either worm or worm cluster are going to be used.
+* `Summary Type` : Select what data is going to be collected from a video. Either a summary per video (`plate`), a summary for each trajectory available (`trajectory`) or multiple random subsamplings per video (`plate_augmented`).
 
+The files will be located by doing a recursive search for matching the extension according to the table below.
+
+| Feature Type | Is Manually Edited? | File Extension |
+| -------- | -------- | ------ | 
+| tierpsy | Ticked | featuresN.hdf5 |
+| tierpsy | Unticked | featuresN.hdf5 |
+| openworm | Ticked | feat_manual.hdf5 |
+| openworm | Unticked | features.hdf5 |
+
+The results are saved into two separated .csv file located in the root directory. The first file, `filenames_FEATURETYPE_SUMMARY_DATE.csv`, contains the names of all the files found in root the directory. The `is_good` column is set to `True` if the file is valid and used in the summary. The second file, `features_FEATURETYPE_SUMMARY_DATE.csv`, contains the corresponding features summarized as described in the [output files](https://github.com/ver228/tierpsy-tracker/blob/master/docs/OUTPUTS.md#features_summar) section. The two result files can be joined using the `file_id` column.
