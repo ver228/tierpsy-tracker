@@ -131,7 +131,7 @@ a.datas += added_datas
 
 f2c = '/usr/local/opt/freetype/lib/libfreetype.6.dylib'
 if is_darwin and os.path.exists(f2c):
-  a.binaries.append(('libfreetype.6.dylib', , 'BINARY'))
+  a.binaries.append(('libfreetype.6.dylib', f2c, 'BINARY'))
 print([x for x in a.binaries if 'libfreetype' in x[0]])
 
 
