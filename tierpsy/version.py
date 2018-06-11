@@ -1,5 +1,5 @@
 # # -*- coding: utf-8 -*-
-__version__ = '1.5.0-alpha'
+__version__ = '1.5.0-beta'
 
 try:
     import os
@@ -9,7 +9,6 @@ try:
     sha = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=cwd).decode('ascii').strip()
     __version__ += '+' + sha[:7]
 except Exception:
-    raise Exception
     pass
 
 '''
