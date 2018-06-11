@@ -12,6 +12,15 @@ except Exception:
     pass
 
 '''
+1.5.0-beta
+- Complete the integration with tierpsy features formalizing two different feature paths.
+- Reorganize the types of analysis, and deal with deprecated values.
+- Add plot feature option in the tracker viewer to visualize individual worm features.
+- Make the tracker viewer compatible with the _features.hdf5 files and deprecate the WT2 viewer
+- Add app to collect the feature summary of different videos.
+
+
+
 1.5.0-alpha
 - Add tierpsy features as FEAT_INIT, FEAT_TIERPSY.
 - Reorganize and improve GUIs, particularly "Set Parameters".
