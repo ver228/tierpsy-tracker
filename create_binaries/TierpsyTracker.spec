@@ -128,8 +128,10 @@ a = Analysis([SRC_SCRIPT_PATH],
 #i was having problems with adding datas using Analysis, i decided to add them directly to a.datas
 
 a.datas += added_datas
-if is_darwin:
-  a.binaries.append(('libfreetype.6.dylib', '/usr/local/opt/freetype/lib/libfreetype.6.dylib', 'BINARY'))
+
+f2c = '/usr/local/opt/freetype/lib/libfreetype.6.dylib'
+if is_darwin and os.path.exists(f2c):
+  a.binaries.append(('libfreetype.6.dylib', , 'BINARY'))
 print([x for x in a.binaries if 'libfreetype' in x[0]])
 
 
