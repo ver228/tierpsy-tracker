@@ -307,11 +307,3 @@ This table contains the plate average for each corresponding feature stat accord
   | w_forward | only the points when the worm is going forwards |
   | w_backward | only the points when the worm is going barwards |
   | w_paused | only the points when the worm is paused |
-  
-
- 
-  
-  
- 
-  
-  

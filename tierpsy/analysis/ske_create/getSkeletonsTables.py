@@ -56,7 +56,6 @@ def getWormMask(
         is_light_background=True):
     '''
     Calculate worm mask using an specific threshold.
-
     -> Used by trajectories2Skeletons
     '''
 
@@ -90,7 +89,6 @@ def getWormMask(
 
     # create a new mask having only the best contour
     worm_mask = np.zeros_like(worm_mask)
-
     if worm_cnt.size > 0:
         cv2.drawContours(worm_mask, [worm_cnt.astype(np.int32)], 0, 1, -1)
     
@@ -110,7 +108,7 @@ def getWormMask(
     worm_mask = np.zeros_like(worm_mask)
     if worm_cnt.size > 0:
         cv2.drawContours(worm_mask, [worm_cnt.astype(np.int32)], 0, 1, -1)
-
+    
     return worm_mask, worm_cnt, cnt_area
 
 

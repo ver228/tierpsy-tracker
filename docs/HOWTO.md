@@ -195,3 +195,4 @@ The files will be located by doing a recursive search for matching the extension
 | openworm | Unticked | features.hdf5 |
 
 The results are saved into two separated .csv file located in the root directory. The first file, `filenames_FEATURETYPE_SUMMARY_DATE.csv`, contains the names of all the files found in root the directory. The `is_good` column is set to `True` if the file is valid and used in the summary. The second file, `features_FEATURETYPE_SUMMARY_DATE.csv`, contains the corresponding features summarized as described in the [output files](OUTPUTS.md#features_summar) section. The two result files can be joined using the `file_id` column.
+

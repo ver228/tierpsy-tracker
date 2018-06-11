@@ -81,7 +81,7 @@ def processMultipleFilesFun(
 
     
     
-    if os.name == 'nt' or 'm4v' in pattern_include:
+    if True:#os.name == 'nt' or 'm4v' in pattern_include:
         # This is giving problems in windows, specially while frozen. It shouldn't affect too much since it only speed up the check up of the files progress
         is_parallel_check = False
     else:
