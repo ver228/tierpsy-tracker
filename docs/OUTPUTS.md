@@ -70,7 +70,7 @@ Table containing the data of the trajectories used in the analysis and displayed
   * `coord_x`, `coord_y`, `box_length`, `box_width`, `box_orientation`. features calculated using [minAreaRect](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#minarearect).
   * `area`: [area](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#contourarea).
   * `perimeter`: [perimeter](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#arclength).
-  * `quirkiness`: defined as `sqrt(1 - box_width^2 / box_width^2)`.
+  * `quirkiness`: defined as `sqrt(1 - box_width^2 / box_length^2)`.
   * `compactness`: defined as `4 * pi * area / (perimeter^2)`.
   * `solidity`: `area / convex hull area` where the convex hull is calculated as [here](http://docs.opencv.org/3.0-beta/doc/tutorials/imgproc/shapedescriptors/hull/hull.html#).
   * `intensity_mean`, `intensity_std`: mean and standard deviation inside the thresholded region.
@@ -78,20 +78,29 @@ Table containing the data of the trajectories used in the analysis and displayed
 
 
 #### /skeleton /contour\_side1 /contour_side2
+`Shape (tot_valid_skel, n_segments, x-y coordinate)`
+
 Normalized coordinates (same number of points) for the skeletons and the contour in each side of the worm. The head should correspond to the first index and the tail to the last.
 
 
 #### /contour_width
+`Shape (tot_valid_skel, n_segments)`
+
 Contour width along the skeleton.
 
 #### /width_midbody
+`Shape (tot_valid_skel)`
+
 Contour width of the midbody. Used to calculate the intensity maps in [INT_PROFILE](EXPLANATION.md/#int_profile).
 
 
 #### /contour\_side1\_length /contour\_side2\_length /skeleton_length
+`Shape (tot_valid_skel)`
+
 Contours and skeleton length in pixels before normalization and smoothing. This value is likely to be larger than the length caculated in [FEAT_CREATE](EXPLANATION.md/#feat_create) due to the noiser contours and probably should be deprecated.
 
 #### /contour_area
+`Shape (tot_valid_skel)`
 Area in pixels of the binary image used to calculate the skeletons. Probably should be deprecated.
 
 
@@ -100,6 +109,11 @@ Internal. Table with the skeleton switched in [INT_SKE_ORIENT](EXPLANATION.md/#i
 
 #### /timestamp/raw /timestamp/time
 Same as in [basename.hdf5](#basenamehdf5).
+
+#### /food_cnt_coord
+`Shape (tot_points, x-y coordinate)`
+Optional see ([FOOD_CNT](EXPLANATION.md/#FOOD_CNT)).
+
 
 ## basename_intensities.hdf5
 
@@ -117,7 +131,7 @@ Intensity maps of the straigten worms described in [INT_PROFILE](EXPLANATION.md/
 Averaged intensity along the skeleton. Calculated in [INT_PROFILE](EXPLANATION.md/#int_profile) and used by [INT\_SKE\_ORIENT](EXPLANATION.md/#int_ske_orient). The data is organized as in [/straighten\_worm\_intensity](#straighten_worm_intensity).
 
 
-## basename_features.hdf5
+## basename_features.hdf5 ([OpenWorm Analysis Toolbox](https://github.com/openworm/open-worm-analysis-toolbox))
 This file contains the results of [FEAT_CREATE](EXPLANATION.md#feat_create). For a more detailed information of the features see the supplementary information of [Yemini et al](http://www.nature.com/nmeth/journal/v10/n9/full/nmeth.2560.html).
 
 #### /coordinates/*
@@ -210,3 +224,94 @@ The reduction can be done by any of the following operations on a given subdivis
 Finally, there are some tables that have the subfix `_split`. For this tables long trajectories are splitted in shorter ones of at most `split_traj_time` seconds before calculating the features. This is done as an attempt to balance uneven track sizes. Otherwise a trajectory that was followed for the whole duration of the video will be counted as a single feature vector, while a trajectory that was lost and found several times will be counted as many feature vectors. This is because each time a worm is lost it would be assigned a new id when it is found again.
 
 
+## basename_featuresN.hdf5 ([Tierpsy Features](https://github.com/ver228/tierpsy-features))
+
+#### /trajectories_data (basename_featuresN)
+Same as [`/trajectories_data`](#trajectories_data) but using the [video timestamp](timestamprawtimestamptime) to drop duplicated or interpolate missing frames. The columns `plate_worm_id`, `is_good_skel`, `has_skeleton`, `int_map_id` are removed and the following columns are added:
+  * `was_skeletonized` : flag to indiciate if this skeleton was originally skeletonized or it was obtained by interpolation.
+  * `old_trajectory_data_index` : helper columns that indicates the corresponding row in the `\trajectories_data` on the `basename_skeletons.hdf5`.
+
+#### /blob_features (basename_featuresN)
+Same as [`/blob_features`](#blob_features) in `basename_skeletons.hdf5`.
+
+#### /food_cnt_coord (basename_featuresN)
+Same as [`/food_cnt_coord`](#food_cnt_coord) in `basename_skeletons.hdf5`.
+  
+#### /coordinates/*
+Contour and skeleton coordinates after smoothing. This table is linked to [`/trajectories_data`](#features_timeseries) by the column `skeleton_id`. An `skeleton_id` value of -1 means that that that specific time point was not skeletonized.
+
+#### /timeseries_data/*
+ * `worm_index` : trajectory index. Same as `worm_index_joined` in [/trajectories_data](#trajectories_data).
+ * `timestamp` : video timestamp indexes. Should be continous. The real space between indexes should be `1/frames per second`. 
+ 
+ *Time Series Features:*
+ * `speed_{body_part}` : speed respect to the body part centroid. It is signed accordingly to the segment change of direction. Available `body_parts`= `head_tip`, `head_base`, `neck`, `midbody`, `hips`, `tail_base`, `tail_tip`. 
+ * `speed` : same as `speed_{body_part}` but using the worm `body`. 
+ * `angular_velocity_{body_part}` : angular speed of a specific body segments. Available` body_parts`= `head_tip`, `head_base`, `neck`, `midbody`, `hips`, `tail_base`, `tail_tip`. 
+ * `angular_velocity` : same as `angular_velocity_{body_part}` but using the worm `body`. 
+ * `relative_to_body_speed_midbody` : 
+ * `relative_to_{body_part1}_radial_{body_part2}` : 
+ * `relative_to_{body_part1}_angular_{body_part2}` : 
+ 
+| body_part1 | body_part2 |
+| ---------- | ---------- |
+| body | head_tip |
+| body | neck |
+| body | hips |
+| body | tail_tip |
+| neck | head_tip |
+| head_base | head_tip |
+| hips | tail_tip |
+| tail_base | tail_tip |
+ 
+ * `length` : `(microns)` skeleton length calculated using `/coordinates/skeleton`. 
+ * `area` : `(microns^2)` contour area calculated using the [shoelace formula](https://en.wikipedia.org/wiki/Shoelace_formula).
+ * `width_{body_part}` : `(microns)` contour width for each worm body region. Available body_parts= `head_base`, `midbody`, `tail_base`.
+ * `major_axis`, `minor_axis` : `(microns)` features calculated using [minAreaRect](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html#minarearect). `major_axis`=`box_length`, `minor_axis`=`box_width`.
+ * `quirkiness` : `sqrt(1 - minor_axis^2 / major_axis^2)`.
+ * `eigen_projection_[1-7]` : eigenworm coefficients calculated using the [Stephens et al., 2008](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000028) method. 
+ * `curvature_{body_part}` : [curvature](https://en.wikipedia.org/wiki/Curvature) of a specific point in the body. Available `body_parts`= `head`, `neck`, `midbody`, `hips`, `tail`.
+ * `curvature_mean_{body_part}` :  mean [curvature](https://en.wikipedia.org/wiki/Curvature) of a specific body range. Available `body_parts`= `head`, `neck`, `midbody`, `hips`, `tail`.
+ * `curvature_std_{body_part}` : standard deviation [curvature](https://en.wikipedia.org/wiki/Curvature) of a specific body range. Available `body_parts`= `head`, `neck`, `midbody`, `hips`, `tail`.
+ * `orientation_food_edge` : orientation of the head to tail vector respect to the closest point in the [food contour](#food_cnt_coord). It is negative if the worm head is pointing outside the food and positive if it is pointing towards the food. 
+ * `dist_from_food_edge` : distance of the worm centroid respect to  closest point in the [food contour](#food_cnt_coord). It is negative if the worm is outside the food, an positive if it is inside. 
+ * `path_curvature_{body_part}` : curvature along the centroid path of the respective `body part`. Available `body_parts`= `body`, `head`, `midbody`, `tail`. 
+
+ 
+ *Time derivatives:*
+ * `d_*` : Time derivative of the timeseries features.
+ 
+ *Event flags vectors:*
+ * `motion_mode` : `(no units)` vector indicating if the worm is `moving forward (1)`, `backwards (-1)` or it is `paused (0)`.
+ * `food_region` : `(no units)` vector indicating if the worm position related to the food patch `inside (1)`, `edge (0)` or `outside (-1)`.
+ * `turn` : `(no units)` vector indicating if the worm is turning (`inter (1)`) or not (`intra (1)`).
+ 
+ *Auxiliar columns:*
+ 
+ * `head_tail_distance` :  `(microns)` Euclidian Distance from the first to the last skeleton segment.
+ * `coord_{x/y}_{body_part}` : `(microns)` Centroid coordinates from a specific body_part. Available `body_parts`= `body`, `head`, `midbody`, `tail`.
+ 
+#### /features_stats/*
+This table contains the plate average for each corresponding feature stat according to the transformations explained [here](https://github.com/ver228/tierpsy-features/tree/master#transformations).
+  * `name` : feature name summary. The prefix correspond to one of the features in `/timeseries_data`. The meaning of the postfix is explained in the table below.
+   * `value` : corresponding value
+   
+  | postfix | meaning |
+  | ------- | ------ |
+  | 10th | 10th percentil |
+  | 50th | 50th percentil |
+  | 90th | 90th percentil |
+  | IQR | interquantile distance between the 25th to 75th percentile |
+  | norm | data normalized by the skeleton length |
+  | abs | use the absolute value a ventral/dorsal signed feature |
+  | w_forward | only the points when the worm is going forwards |
+  | w_backward | only the points when the worm is going barwards |
+  | w_paused | only the points when the worm is paused |
+  
+
+ 
+  
+  
+ 
+  
+  
