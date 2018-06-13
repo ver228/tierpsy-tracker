@@ -9,7 +9,6 @@ import os
 import cv2
 import tables
 import numpy as np
-from scipy.ndimage.filters import median_filter
 
 from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
 from tierpsy.analysis.compress.extractMetaData import store_meta_data, read_and_save_timestamp
@@ -48,7 +47,8 @@ def getROIMask(
         thresh_block_size += 1  # this value must be odd
 
     #let's add a median filter, this will smooth the image, and eliminate small variations in intensity
-    image = median_filter(image, 5)
+    # now done with opencv instead of scipy
+    image = cv2.medianBlur(image, 5)
 
     # adaptative threshold is the best way to find possible worms. The
     # parameters are set manually, they seem to work fine if there is no

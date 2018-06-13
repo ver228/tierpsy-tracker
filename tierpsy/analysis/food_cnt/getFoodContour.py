@@ -8,6 +8,7 @@ Created on Tue Jul 18 16:55:14 2017
 import os
 import tables
 import numpy as np
+import warnings
 
 from .getFoodContourNN import get_food_contour_nn
 from .getFoodContourMorph import get_food_contour_morph
@@ -19,7 +20,7 @@ from tierpsy.helper.misc import TimeCounter, print_flush, get_base_name
 def calculate_food_cnt(mask_file, use_nn_food_cnt, model_path, _is_debug=False, solidity_th=0.98):
     if use_nn_food_cnt:
         if not os.path.exists(model_path):
-          warning.warn('The model to obtain the food contour was not found. Nothing to do here...\n If you dont have a valid model. You could try to set `food_method=MORPH` to use a different algorithm.')
+          warnings.warn('The model to obtain the food contour was not found. Nothing to do here...\n If you dont have a valid model. You could try to set `food_method=MORPH` to use a different algorithm.')
           return
 
         food_cnt, food_prob,cnt_solidity = get_food_contour_nn(mask_file, model_path, _is_debug=_is_debug)
