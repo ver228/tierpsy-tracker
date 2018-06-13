@@ -6,15 +6,18 @@
 # """
 import os
 import sys
-
+import warnings
 from .version import __version__
 
 #I want to be sure tierpsy loads tensorflow flow backend
 os.environ['KERAS_BACKEND']='tensorflow' 
 
-# force qt5 to be the backend of matplotlib.
-import matplotlib
-matplotlib.use('Qt5Agg')
+with warnings.catch_warnings():
+    #to remove annoying warnings in case matplotlib was imported before
+    warnings.simplefilter("ignore")
+    # force qt5 to be the backend of matplotlib.
+    import matplotlib
+    matplotlib.use('Qt5Agg')
 
 try:
     # PyInstaller creates a temp folder and stores path in _MEIPASS
