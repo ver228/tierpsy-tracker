@@ -104,6 +104,6 @@ The smooth module in [tierpsy features](https://github.com/ver228/tierpsy-featur
 [`basename_skeletons.hdf5`](OUTPUTS.md/#basename_skeletons.hdf5).
 
 ### FEAT_TIERSY
-This step uses the [tierpsy features](https://github.com/openworm/open-worm-analysis-toolbox) to calculate the features explained in [`basename_featuresN.hdf5`](OUTPUTS.md#basename_featuresnhdf5-tierpsy-features).
+This step uses the [tierpsy features](https://github.com/ver228/tierpsy-features) to calculate the features explained in [`basename_featuresN.hdf5`](OUTPUTS.md#basename_featuresnhdf5-tierpsy-features).
 
 
