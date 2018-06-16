@@ -159,7 +159,9 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
                         'skeleton':'skeleton', 
                         'contour_side2':'contour_side2'
                     }
-            
+
+                self.coordinates_fields = {k:v for k,v in self.coordinates_fields.items() if (self.coordinates_group + k) in skel_file_id}
+                
             #read trajectories data, and other useful factors
             with pd.HDFStore(self.skeletons_file, 'r') as ske_file_id:
                 if 'trajectories_data' in ske_file_id:
@@ -341,10 +343,11 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
         painter = QPainter()
         painter.begin(worm_qimg)
 
-        for tt, color in skel_colors.items():
+        for k, pol_v in qPlg.items():
+            color = skel_colors[k]
             pen.setColor(QColor(*color))
             painter.setPen(pen)
-            painter.drawPolyline(qPlg[tt])
+            painter.drawPolyline(pol_v)
 
         pen.setColor(Qt.black)
         painter.setBrush(Qt.white)
