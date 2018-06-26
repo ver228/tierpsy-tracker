@@ -75,15 +75,19 @@ def save_timeseries_feats_table(features_file, derivate_delta_time):
 
                 args = []
                 for p in ('skeletons', 'widths', 'dorsal_contours', 'ventral_contours'):
-                    node = fid.get_node('/coordinates/' + p)
                     
-                    dat = np.full((traj_size, *node.shape[1:]), np.nan)
-                    if skel_id_val.size > 0:
-                        if len(node.shape) == 3:
-                            dd = node[skel_id_val, :, :]
-                        else:
-                            dd = node[skel_id_val, :]
-                        dat[good_id] = dd
+                    node_str = '/coordinates/' + p
+                    if node_str in fid:
+                        node = fid.get_node(node_str)
+                        dat = np.full((traj_size, *node.shape[1:]), np.nan)
+                        if skel_id_val.size > 0:
+                            if len(node.shape) == 3:
+                                dd = node[skel_id_val, :, :]
+                            else:
+                                dd = node[skel_id_val, :]
+                            dat[good_id] = dd
+                    else:
+                        dat = None
                     
                     args.append(dat)
 
@@ -115,7 +119,7 @@ def save_feats_stats(features_file, derivate_delta_time):
     with pd.HDFStore(features_file, 'r') as fid:
         fps = fid.get_storer('/trajectories_data').attrs['fps']
         timeseries_data = fid['/timeseries_data']
-        blob_features = fid['/blob_features']    
+        blob_features = fid['/blob_features'] if '/blob_features' in fid else None
     
     
     #Now I want to calculate the stats of the video

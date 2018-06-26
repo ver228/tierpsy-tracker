@@ -28,7 +28,7 @@ GOOD_SKEL_COLOURS = dict(
     )
 
 #%%
-def _estimate_trajectories_data(ow_feat_file, timestamp, microns_per_pixel, stage_position_pix):
+def _estimate_trajectories_data(ow_feat_file, timestamp, microns_per_pixel, stage_position_pix = None):
     '''
     I want to estimate the trajectorires_data table from the features_timeseries in the old features
     so I can used them with the viewer.
@@ -334,7 +334,7 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
                     qPlg[tt].append(QPointF(*p))
 
 
-        if len(qPlg['skeleton']) == 0:
+        if not qPlg or len(qPlg['skeleton']) == 0:
             return
 
         pen = QPen()
