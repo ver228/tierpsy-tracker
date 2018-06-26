@@ -10,6 +10,8 @@ tests/data/*
 *.DS_Store
 *.exe
 *.so
+*.Result
+*.lprof
 
 tierpsy.egg-info/
 _site/
