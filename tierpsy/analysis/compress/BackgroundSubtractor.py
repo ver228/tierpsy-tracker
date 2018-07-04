@@ -107,16 +107,18 @@ class BackgroundSubtractor():
             self._update_background(image, frame_n)
 
     def subtract_bgnd(self, image):
-        #be carefull you do not want to ended with a unit8 overflow
-        assert self.bgnd.dtype == np.int32
-        ss = image - self.bgnd
-
+        # new method using bitwise not
+        ss = np.zeros_like(image); #maybe can do this in place
         if self.is_light_background:
-            #make the worms darker again. 
-            ss += 255
-        
-        #here i am cliping and returning in the 8 bit format required
-        ss = np.clip(ss, 1, 255).astype(np.uint8) 
+            notbg = ~self.bgnd.astype(np.uint8) # should check if necessary at all to have self.bgnd as int32
+            for ii, this_frame in enumerate(image):
+                cv2.add(this_frame, notbg, ss[ii])
+        else:
+            bg = self.bgnd.astype(np.uint8)
+            for ii, this_frame in enumerate(image):
+                cv2.subtract(this_frame, bg, ss[ii])
+        # if
+        ss = np.clip( ss ,1,255);
         
         return ss
 
