@@ -111,13 +111,21 @@ class BackgroundSubtractor():
         ss = np.zeros_like(image); #maybe can do this in place
         if self.is_light_background:
             notbg = ~self.bgnd.astype(np.uint8) # should check if necessary at all to have self.bgnd as int32
-            for ii, this_frame in enumerate(image):
-                cv2.add(this_frame, notbg, ss[ii])
-        else:
+            # single image or buffer?
+            if image.ndim == 2:
+                cv2.add(image, notbg, ss)
+            else:
+                for ii, this_frame in enumerate(image):
+                    cv2.add(this_frame, notbg, ss[ii])
+        else: # fluorescence
             bg = self.bgnd.astype(np.uint8)
-            for ii, this_frame in enumerate(image):
-                cv2.subtract(this_frame, bg, ss[ii])
-        # if
+            if image.ndim == 2:
+                cv2.subtract(image, bg, ss)
+            else:
+                for ii, this_frame in enumerate(image):
+                    cv2.subtract(this_frame, bg, ss[ii])
+        # if bf or fluo
+        
         ss = np.clip( ss ,1,255);
         
         return ss
