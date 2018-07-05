@@ -3,6 +3,7 @@ create_binaries/*.app
 create_binaries/build/*
 create_binaries/dist/*
 tests/data/*
+debug_tests/*.txt
 
 *.hdf5
 *.pyc
