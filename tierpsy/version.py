@@ -1,5 +1,5 @@
 # # -*- coding: utf-8 -*-
-__version__ = '1.5.0-beta'
+__version__ = '1.5.0'
 
 try:
     import os
@@ -12,6 +12,9 @@ except Exception:
     pass
 
 '''
+1.5.0
+- Bug corrections.
+
 1.5.0-beta
 - Complete the integration with tierpsy features formalizing two different feature paths.
 - Reorganize the types of analysis, and deal with deprecated values.

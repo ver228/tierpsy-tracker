@@ -58,7 +58,18 @@ Other important parameters to set are:
 
 * `Frame per Second` (fps) is the frame rate of your video. An important value since it is used to calculate several other parameters. If `Extract Timestamp` is set to `true`, the software will try to extract the frame rate from the video timestamp. However, keep in mind that it is not always possible to recover the correct timestamp, and therefore it is recommended that you provide the value here.
 * `Frames to Average` is used to calculate the background mask. This value can significantly speed up the compression step. However, it will not work if the particles are highly motile. Use the buttons `Play` and `Next Chunk` to see how a selected value affects the mask. Note that the average is used only for the background mask, the foreground regions are kept intact for each individual frame. 
-* `Microns per Pixel`. This value is only used to calculate the [skeleton features](EXPLANATION.md/#feat_create), but the results will be in pixels instead of micrometers if the conversion factor is not set.
+* `Microns per Pixel`. This value is only used to in the steps to calculate the final features](EXPLANATION.md). If this value is set to be less than zero the features results will be in pixels instead of micrometers.
+* `Analysis Type`. The selected analysis type will determine the series of [steps](EXPLANATION.md) executed by the program according to the table below:
+
+ | Extension | Description | 
+ ---------|-------------------------------------------------------
+ | BASE\* | No features, only steps up to the skeleton orientation | 
+ | TIERPSY\* | Add the steps for the [tierpsy features](EXPLANATION.md/#extract-features-tierpsy-features-route) calculation. | 
+ | OPENWORM\* | Add the steps for the [openworm features](EXPLANATION.md/#extract-features-openworm-route) calculation. |
+ | \*WT2 | Add the necessary steps to analyze videos recorded using the [WormTracker 2.0](https://www.mrc-lmb.cam.ac.uk/wormtracker/).| 
+ | \*SINGLE | Same steps as BASE but the trajectories will be joined with the assumption that there is only a single worm in the video.  | 
+ | \*AEX | Add the steps to filter worms and obtain the food contour using deep learning models. This models might only work from data from the [Behavioural Genomics Laboratory](https://lms.mrc.ac.uk/research-group/behavioural-genomics/). | 
+ 
 
 You can access further parameters by clicking `Edit More Parameters`. The explanation of each parameter can be found by using the [contextual help](https://en.wikipedia.org/wiki/Tooltip). It is not always trivial to effectively adjust these other parameters, but if you believe you need too, I recommend using a small video (~100 frames) for testing.
 
