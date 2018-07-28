@@ -31,7 +31,11 @@ The first step is to identify possible particles. We divide the image into regio
 
 ### TRAJ_JOIN
 
-The second step is to join the identified particles into trajectories. We link the particles' trajectories by using their nearest neighbor in consecutive frames. The nearest neighbor must be less than `max_allowed_dist` away and the fractional change in area must be less than `area_ratio_lim`. One particle can only be joined to a single particle in consecutive frames, no split or merged trajectories are allowed. If these conditions are not satisfied it means that there was a problem in the trajectory *e.g.* two worms collided and therefore in the next frame the closest object is twice the area, or a worm disapeared from the field of view. If there is any conflict, the trajectory will be broken and a new label will be assigned to any unassigned particle. 
+The second step is to join the identified particles into trajectories. The algorithm changes depending if the analysis is selected for a single-worm or for multi-worm. See the instructions of the widget [Set Parameters](HOWTO.md/#set-parameters) for more information.
+
+In the **single-worm**, the algorithm the particles are first filter by area. The filter threshold is calculated with the assumption that in most of the frames the worm is the largest object. Only one trajectory is linked using the closest neighbors in consecutive frames.
+
+In the **multi-worm** case, we link the particles' trajectories by using their nearest neighbor in consecutive frames. The nearest neighbor must be less than `max_allowed_dist` away and the fractional change in area must be less than `area_ratio_lim`. One particle can only be joined to a single particle in consecutive frames, no split or merged trajectories are allowed. If these conditions are not satisfied it means that there was a problem in the trajectory *e.g.* two worms collided and therefore in the next frame the closest object is twice the area, or a worm disapeared from the field of view. If there is any conflict, the trajectory will be broken and a new label will be assigned to any unassigned particle. 
 
 In a subsequent step, Tierpsy Tracker tries to join trajectories that have a small time gap between them *i.e.* the worm was lost for a few frames. Additionally we will remove any spurious trajectories shorter than `min_track_size` .
 
