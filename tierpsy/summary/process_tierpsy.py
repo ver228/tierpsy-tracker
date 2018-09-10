@@ -5,9 +5,9 @@ Created on Mon Jun  4 10:30:17 2018
 
 @author: avelinojaver
 """
+from tierpsy.features.tierpsy_features.summary_stats import get_summary_stats
 from tierpsy.summary.helper import augment_data, add_trajectory_info
 from tierpsy.helper.params import read_fps
-from tierpsy_features.summary_stats import get_summary_stats
 from tierpsy.helper.misc import WLAB
 
 import pandas as pd

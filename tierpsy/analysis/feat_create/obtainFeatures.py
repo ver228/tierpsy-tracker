@@ -9,7 +9,7 @@ from tierpsy.analysis.ske_filt.getFilteredSkels import getValidIndexes
 from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormStats, WormFromTable
 from tierpsy.helper.params import copy_unit_conversions, read_fps, min_num_skel_defaults
 
-import open_worm_analysis_toolbox as mv
+import tierpsy.features.open_worm_analysis_toolbox as mv
 
 
 import os

@@ -11,8 +11,8 @@ import tables
 import warnings
 from scipy.interpolate import interp1d
 
-from tierpsy_features import SmoothedWorm
-from tierpsy_features.food import _h_smooth_cnt
+from tierpsy.features.tierpsy_features import SmoothedWorm
+from tierpsy.features.tierpsy_features.food import _h_smooth_cnt
 
 from tierpsy.analysis.feat_create.obtainFeaturesHelper import WormFromTable
 from tierpsy.analysis.stage_aligment.alignStageMotion import _h_get_stage_inv
