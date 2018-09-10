@@ -108,24 +108,24 @@ class BackgroundSubtractor():
 
     def subtract_bgnd(self, image):
         # new method using bitwise not
-        ss = np.zeros_like(image); #maybe can do this in place
-        if self.is_light_background:
-            notbg = ~self.bgnd.astype(np.uint8) # should check if necessary at all to have self.bgnd as int32
-            # single image or buffer?
+        def _remove_func(_img, _func, _bg):
+            #the reason to use opencv2 instead of numpy is to avoid buffer overflow
+            #https://stackoverflow.com/questions/45817037/opencv-image-subtraction-vs-numpy-subtraction/45817868
+            new_img = np.zeros_like(_img); #maybe can do this in place
             if image.ndim == 2:
-                cv2.add(image, notbg, ss)
+                _func(_img, _bg, new_img)
             else:
-                for ii, this_frame in enumerate(image):
-                    cv2.add(this_frame, notbg, ss[ii])
-        else: # fluorescence
-            bg = self.bgnd.astype(np.uint8)
-            if image.ndim == 2:
-                cv2.subtract(image, bg, ss)
-            else:
-                for ii, this_frame in enumerate(image):
-                    cv2.subtract(this_frame, bg, ss[ii])
-        # if bf or fluo
+                for ii, this_frame in enumerate(_img):
+                    _func(this_frame, _bg, new_img[ii])
+            return new_img
         
+        bg = ~self.bgnd.astype(np.uint8)
+        if self.is_light_background:
+            notbg = ~bg # should check if necessary at all to have self.bgnd as int32
+            ss = _remove_func(image, cv2.add, notbg)
+        else: # fluorescence
+            ss = _remove_func(image, cv2.subtract, bg)
+            
         ss = np.clip( ss ,1,255);
         
         return ss
