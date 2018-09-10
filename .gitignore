@@ -3,6 +3,7 @@ create_binaries/*.app
 create_binaries/build/*
 create_binaries/dist/*
 tests/data/*
+debug_tests/*.txt
 
 *.hdf5
 *.pyc
@@ -10,6 +11,8 @@ tests/data/*
 *.DS_Store
 *.exe
 *.so
+*.Result
+*.lprof
 
 tierpsy.egg-info/
 _site/
