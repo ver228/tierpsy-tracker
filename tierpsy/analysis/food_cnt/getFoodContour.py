@@ -8,6 +8,7 @@ Created on Tue Jul 18 16:55:14 2017
 import os
 import tables
 import numpy as np
+import warnings
 
 from .getFoodContourNN import get_food_contour_nn
 from .getFoodContourMorph import get_food_contour_morph

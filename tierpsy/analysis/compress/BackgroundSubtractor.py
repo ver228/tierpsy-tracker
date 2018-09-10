@@ -107,16 +107,26 @@ class BackgroundSubtractor():
             self._update_background(image, frame_n)
 
     def subtract_bgnd(self, image):
-        #be carefull you do not want to ended with a unit8 overflow
-        assert self.bgnd.dtype == np.int32
-        ss = image - self.bgnd
-
-        if self.is_light_background:
-            #make the worms darker again. 
-            ss += 255
+        # new method using bitwise not
+        def _remove_func(_img, _func, _bg):
+            #the reason to use opencv2 instead of numpy is to avoid buffer overflow
+            #https://stackoverflow.com/questions/45817037/opencv-image-subtraction-vs-numpy-subtraction/45817868
+            new_img = np.zeros_like(_img); #maybe can do this in place
+            if image.ndim == 2:
+                _func(_img, _bg, new_img)
+            else:
+                for ii, this_frame in enumerate(_img):
+                    _func(this_frame, _bg, new_img[ii])
+            return new_img
         
-        #here i am cliping and returning in the 8 bit format required
-        ss = np.clip(ss, 1, 255).astype(np.uint8) 
+        bg = ~self.bgnd.astype(np.uint8)
+        if self.is_light_background:
+            notbg = ~bg # should check if necessary at all to have self.bgnd as int32
+            ss = _remove_func(image, cv2.add, notbg)
+        else: # fluorescence
+            ss = _remove_func(image, cv2.subtract, bg)
+            
+        ss = np.clip( ss ,1,255);
         
         return ss
 
