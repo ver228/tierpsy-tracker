@@ -18,18 +18,18 @@ from pprint import pprint
 from tierpsy.analysis.compress.processVideo import processVideo
 from tierpsy.analysis.compress.selectVideoReader import selectVideoReader
 
-#video_file_list = ["/home/lferiani@cscdom.csc.mrc.ac.uk/Data/codec_testing_hqfast_10s_20180612_123152/metadata.yaml"]#,
+video_file_list = ["/home/lferiani@cscdom.csc.mrc.ac.uk/Data/codec_testing_hqfast_10s_20180612_123152/metadata.yaml"]#,
 #                  "/home/lferiani@cscdom.csc.mrc.ac.uk/Data/codec_testing_hqfast_20s_20180612_123119/metadata.yaml",
 #                  "/home/lferiani@cscdom.csc.mrc.ac.uk/Data/codec_testing_hqfast_30s_20180612_123038/metadata.yaml",
 #                  "/home/lferiani@cscdom.csc.mrc.ac.uk/Data/codec_testing_hqfast_60s_20180612_122923/metadata.yaml",
 #                  "/home/lferiani@cscdom.csc.mrc.ac.uk/Data/codec_testing_hqfast_long_20180612_134936/metadata.yaml"]
-#json_param_file = "/home/lferiani@cscdom.csc.mrc.ac.uk/Data/_my_TEST_loopbio.json"
+json_param_file = "/home/lferiani@cscdom.csc.mrc.ac.uk/Data/_my_TEST_loopbio.json"
 
 #video_file_list = ["/home/lferiani@cscdom.csc.mrc.ac.uk/Tierpsy/tierpsy-tracker/tests/data/GECKO_VIDEOS/RawVideos/GECKO_VIDEOS.mjpg"]
 #json_param_file = "/home/lferiani@cscdom.csc.mrc.ac.uk/Tierpsy/tierpsy-tracker/tierpsy/extras/param_files/_AEX_RIG.json"
 
-video_file_list = ["/home/lferiani@cscdom.csc.mrc.ac.uk/Data/Fluo_test/recording 3.1.avi"]
-json_param_file = "/home/lferiani@cscdom.csc.mrc.ac.uk/Data/Fluo_test/fluotest.json"
+#video_file_list = ["/home/lferiani@cscdom.csc.mrc.ac.uk/Data/Fluo_test/recording 3.1.avi"]
+#json_param_file = "/home/lferiani@cscdom.csc.mrc.ac.uk/Data/Fluo_test/fluotest.json"
 
 # read parameters
 with open(json_param_file) as data_file:    
@@ -73,7 +73,7 @@ n_videoframes = np.zeros(len(video_file_list))
 #compress_vid_param['bgnd_param'] = {}
 
 # set some parameters for background subtraction
-compress_vid_param['bgnd_param'] = {'buff_size': 10, 'frame_gap': 10, 'is_light_background': False}
+#compress_vid_param['bgnd_param'] = {'buff_size': 10, 'frame_gap': 10, 'is_light_background': False}
 
       #%%             
 vc = 0;
