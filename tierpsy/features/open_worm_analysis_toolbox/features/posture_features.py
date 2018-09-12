@@ -11,7 +11,7 @@ import scipy.ndimage.filters as filters
 import numpy as np
 import warnings
 import os
-import h5py
+import tables
 
 import cv2
 
@@ -1050,9 +1050,9 @@ def load_eigen_worms():
     os.path.dirname(os.path.realpath(__file__)),
     config.EIGENWORM_FILE)
 
-    h = h5py.File(eigen_worm_file_path, 'r')
-    eigen_worms = h['eigenWorms'].value
-
+    with tables.File(eigen_worm_file_path, 'r'):
+        eigen_worms = h.get_node('/eigenWorms')[:]
+    
     return np.transpose(eigen_worms)
 
 

@@ -17,7 +17,7 @@ nested_equal
 import numpy as np
 import warnings
 import copy
-import h5py
+import tables
 import matplotlib.pyplot as plt
 
 import json
@@ -209,11 +209,11 @@ class BasicWorm(JSON_Serializer):
     def from_schafer_file_factory(cls, data_file_path):
         bw = cls()
 
-        with h5py.File(data_file_path, 'r') as h:
+        with tables.File(data_file_path, 'r') as h:
             # These are all HDF5 'references'
-            all_ventral_contours_refs = h['all_vulva_contours'].value
-            all_dorsal_contours_refs = h['all_non_vulva_contours'].value
-            all_skeletons_refs = h['all_skeletons'].value
+            all_ventral_contours_refs = h.get_node('all_vulva_contours')[:]
+            all_dorsal_contours_refs = h.get_node('all_non_vulva_contours')[:]
+            all_skeletons_refs = h.get_node('all_skeletons')[:]
 
             is_stage_movement = utils._extract_time_from_disk(
                 h, 'is_stage_movement')

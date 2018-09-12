@@ -68,7 +68,6 @@ https://github.com/JimHokanson/SegwormMatlabClasses/blob/
 
 import numpy as np
 import operator
-import h5py
 import warnings
 
 from itertools import groupby
@@ -954,11 +953,7 @@ class EventListWithFeatures(EventList):
         if ref_format is 'MRC':
             frames = event_ref['frames']
 
-            if isinstance(frames, h5py._hl.dataset.Dataset):
-                self.is_null = True
-                return self
-            else:
-                self.is_null = False
+            
 
             # In Matlab this is a structure array
             # Our goal is to go from an array of structures to a

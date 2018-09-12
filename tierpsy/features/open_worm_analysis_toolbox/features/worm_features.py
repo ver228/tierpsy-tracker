@@ -28,7 +28,7 @@ import copy
 import csv
 import os
 import warnings
-import h5py  # For loading from disk
+import tables  # For loading from disk
 import numpy as np
 import collections  # For namedtuple, OrderedDict
 import pandas as pd
@@ -268,8 +268,7 @@ class WormLocomotion(object):
         """
         Parameters
         ----------
-        m_var : type???? h5py.Group???
-            ?? Why is this this called m_var????
+        
         """
 
         self = cls.__new__(cls)
@@ -775,10 +774,9 @@ class WormFeatures(object):
             spec.source = 'mrc'
 
         # Load file reference for getting files from disk
-        h = h5py.File(data_file_path, 'r')
-        worm = h['worm']
-        self.h = worm
-
+        with tables.File(data_file_path, 'r') as fid:
+            self.h = fid.get_node('worm')[:]
+        
         # Retrieve all features
         # Do we need to differentiate what we can and can not load?
         self._retrieve_all_features()

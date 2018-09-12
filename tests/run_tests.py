@@ -225,9 +225,9 @@ if __name__ == '__main__':
 
     n_tests = args.n_tests
     
-    root_dir = os.path.abspath(os.path.join(os.path.dirname(tierpsy.__file__), '..'))
+    root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     examples_dir = os.path.join(root_dir, 'tests', 'data')
-    script_dir = os.path.join(root_dir, 'cmd_scripts')
+    script_dir = os.path.join(root_dir, 'scripts')
 
     all_tests_obj = [
                     GECKO_VIDEOS, 

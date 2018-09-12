@@ -7,12 +7,10 @@ Created on Fri Oct 14 15:30:11 2016
 
 import json
 import os
-
-import h5py
 import tables
 
 from tierpsy.analysis.compress.compressVideo import compressVideo, initMasksGroups
-from  tierpsy.analysis.compress.selectVideoReader import selectVideoReader
+from tierpsy.analysis.compress.selectVideoReader import selectVideoReader
 from tierpsy.helper.misc import TimeCounter, print_flush
 
 #default parameters if wormencoder.ini does not exist

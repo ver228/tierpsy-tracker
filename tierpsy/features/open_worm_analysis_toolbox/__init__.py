@@ -2,8 +2,7 @@
 open-worm-analysis-toolbox: A Python library
 https://github.com/openworm/open-worm-analysis-toolbox
 
-Takes raw videos of C. elegans worms and processes them into features and
-statistics.
+Takes raw videos of C. elegans worms and processes them into features 
 
 The purpose is to be able to compare the behavior of worms statistically,
 and in particular to validate how closely the behaviour of OpenWorm's worm
@@ -19,7 +18,6 @@ from .version import __version__
 from .prefeatures.video_info import VideoInfo
 from .prefeatures.basic_worm import BasicWorm
 from .prefeatures.normalized_worm import NormalizedWorm
-from .prefeatures.worm_plotter import NormalizedWormPlottable
 
 # This is temporary; we will eventually remove it when the code is ready
 # to become WormFeatures
@@ -30,12 +28,7 @@ from .features import feature_manipulations
 from .features.worm_features import WormFeatures
 from .features.feature_processing_options import FeatureProcessingOptions
 
-from .statistics.histogram_manager import HistogramManager
-from .statistics.statistics_manager import StatisticsManager
-from .statistics.histogram import Histogram, MergedHistogram
 
-# JAH: Putting this on hold for now 2016-02-17
-#from .statistics.pathplot import *
 
 try:
     from . import user_config
@@ -52,9 +45,5 @@ __all__ = ['__version__',
            'NormalizedWorm',
            'VideoInfo',
            'WormFeatures',
-           'FeatureProcessingOptions',
-           'NormalizedWormPlottable',
-           'HistogramManager',
-           'StatisticsManager',
-           'Histogram',
-           'MergedHistogram']
+           'FeatureProcessingOptions'
+           ]
