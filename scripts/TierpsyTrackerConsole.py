@@ -1,13 +1,5 @@
-import os
+from tierpsy.gui.SelectApp import main
 import sys
 
-from tierpsy.gui.SelectApp import SelectApp
-from PyQt5.QtWidgets import QApplication
-
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-
-    ui = SelectApp()
-    ui.show()
-
-    sys.exit(app.exec_())
+    sys.exit(main())

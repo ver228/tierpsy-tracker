@@ -1,15 +1,15 @@
-
-from functools import partial
-from collections import OrderedDict
-
-from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow, QPushButton, QVBoxLayout
-from PyQt5.QtCore import Qt
-
 import tierpsy
 from tierpsy.gui.GetMaskParams import GetMaskParams_GUI
 from tierpsy.gui.MWTrackerViewer import MWTrackerViewer_GUI
 from tierpsy.gui.Summarizer import Summarizer_GUI
 from tierpsy.gui.BatchProcessing import BatchProcessing_GUI
+
+from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow, QPushButton, QVBoxLayout
+from PyQt5.QtCore import Qt
+
+import sys
+from functools import partial
+from collections import OrderedDict
         
 
 dd = [('get_params', (GetMaskParams_GUI,"Set Parameters")),
@@ -54,12 +54,16 @@ class SelectApp(QMainWindow):
         ui.show()
         ui.setAttribute(Qt.WA_DeleteOnClose)
         
-        
-
-if __name__ == '__main__':
-    import sys
-
+ 
+def main():
     app = QApplication(sys.argv)
+
     ui = SelectApp()
     ui.show()
-    sys.exit(app.exec_())
+
+    app.exec_()
+
+
+
+if __name__ == '__main__':
+   main()
