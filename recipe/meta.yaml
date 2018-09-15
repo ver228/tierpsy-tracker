@@ -1,6 +1,6 @@
 package:
   name: tierpsy
-  version: "1.5.1"
+  version: "1.5.1-beta"
 
 source:
   path: ..
