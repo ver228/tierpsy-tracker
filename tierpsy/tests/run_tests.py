@@ -273,9 +273,7 @@ def tierpsy_tests():
         return
 
     tests_given = args.tests
-    if not tests_given:
-        tests_given = _available_tests
-
+    
     test2run = []
     for tt in tests_given:
         if tt in _available_tests:
@@ -283,6 +281,10 @@ def tierpsy_tests():
         else:
             warnings.warn('Test "{}" is not a valid name, and it will be skiped. The valid tests are: {}'.format(tt, _available_tests_str))
     
+    if not tests_given:
+        print("No tests given. Please specify some valid tests {}.".format(_available_tests_str))
+        return
+
     for test_name in test2run:
         test = test_dict[test_name](args.data_dir, base_script)
         test.run()
