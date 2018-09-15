@@ -45,6 +45,9 @@ test:
     - tierpsy
     - tierpsy.features.tierpsy_features
     - tierpsy.features.open_worm_analysis_toolbox
+  commands:
+    - tierpsy_process -h
+    - tierpsy_tests -h
 
 about:
   home: https://github.com/ver228/tierpsy-tracker
