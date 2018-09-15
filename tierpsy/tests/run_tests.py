@@ -225,7 +225,7 @@ class WORM_MOTEL(TestObj):
 
 
 def tierpsy_tests():
-    script_name = ['tierpsy_process']
+    base_script = ['tierpsy_process']
     
     _all_tests_obj = [
                 GECKO_VIDEOS, 
