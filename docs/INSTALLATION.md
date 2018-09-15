@@ -16,7 +16,7 @@ source activate tierpsy
 ```
 - Finally, donwload the package from conda-forge
 ```bash
-pip install tierpsy
+conda install tierpsy -c conda-forge
 ```
 - After you can start tierpsy tracker by typing:
 ```bash
@@ -39,7 +39,7 @@ pip install opencv-python-headless
 git clone https://github.com/ver228/tierpsy-tracker
 cd tracker
 source create -n tierpsy #[optional]
-conda install --file requirements.txt -c conda-forge
+conda install --file requirements.txt
 pip install -e .
 ```
 
