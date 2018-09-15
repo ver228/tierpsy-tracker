@@ -225,13 +225,8 @@ class WORM_MOTEL(TestObj):
 
 
 def tierpsy_tests():
-    script_name = os.path.join(os.path.dirname(sys.executable), 'tierpsy_process')
-    if os.path.exists(script_name):
-        base_script = [script_name]
-    else:
-        script_name = os.path.join(os.path.dirname(__file__), '..', '..', 'scripts' , 'tierpsy_process.py')
-        base_script = [sys.executable, script_name]
-
+    script_name = ['tierpsy_process']
+    
     _all_tests_obj = [
                 GECKO_VIDEOS, 
                 AVI_VIDEOS, 
