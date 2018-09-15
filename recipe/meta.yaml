@@ -3,24 +3,25 @@ package:
   version: "1.5.1"
 
 source:
-  path: "/Users/avelinojaver/Documents/GitHub/tierpsy-tracker"
+  path: ..
   #git_rev: "v1.5.0"
   #git_url: "https://github.com/ver228/tierpsy-tracker"
 
 build:
-  entry_points:
-    - tierpsy = tierpsy.gui.SelectApp:main
   osx_is_app: True
 
 requirements:
   build:
-    - python {{PY_VER}}*,>=3.6
+    - python
     - numpy >=1.14
     - setuptools
     - cython
     
   run:
-    - python {{PY_VER}}*,>=3.6
+    - python
+    - keras=2.1.5 
+    - opencv 
+    - tensorflow 
     - numpy >=1.14
     - matplotlib 
     - pytables 
@@ -30,18 +31,16 @@ requirements:
     - scikit-learn 
     - scikit-image
     - statsmodels 
-    - numba 
-    - keras=2.1.5 
-    - opencv 
-    - tensorflow 
-
+    - numba
+    - tqdm
+    - requests
+    
 app:
-  entry: tierpsy
-  summary: Scientific Python Development Environment
+  entry: tierpsy_gui
+  summary: Tierpsy Tracker Multi-Worm Tracker
   type: desk
 
 test:
-  # Python imports
   imports:
     - tierpsy
     - tierpsy.features.tierpsy_features
@@ -51,4 +50,4 @@ about:
   home: https://github.com/ver228/tierpsy-tracker
   license: MIT
   license_file: LICENSE
-  summary: 'Tierpsy Tracker Multi-Worm Tracker'
+  summary: Tierpsy Tracker Multi-Worm Tracker

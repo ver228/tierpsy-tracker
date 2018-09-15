@@ -6,7 +6,8 @@ try:
     import subprocess
 
     cwd = os.path.dirname(os.path.abspath(__file__))
-    sha = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=cwd).decode('ascii').strip()
+    command = ['git', 'rev-parse', 'HEAD']    
+    sha = subprocess.check_output(command, cwd=cwd, stderr = subprocess.DEVNULL).decode('ascii').strip()
     __version__ += '+' + sha[:7]
 except Exception:
     pass
