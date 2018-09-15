@@ -7,7 +7,9 @@ from tierpsy.gui.BatchProcessing import BatchProcessing_GUI
 from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow, QPushButton, QVBoxLayout
 from PyQt5.QtCore import Qt
 
+import os
 import sys
+import stat
 from functools import partial
 from collections import OrderedDict
         
@@ -55,7 +57,34 @@ class SelectApp(QMainWindow):
         ui.setAttribute(Qt.WA_DeleteOnClose)
         
  
-def main():
+def _create_desktop_command():
+    #currently only works for OSX...
+    if sys.platform == 'darwin':
+        if 'CONDA_DEFAULT_ENV' in os.environ:
+            act_str = 'source activate ' + os.environ['CONDA_DEFAULT_ENV']
+            source_cmd = os.path.join(os.environ['CONDA_PREFIX'], 'bin', 'tierpsy_gui')
+        else:
+            act_str = ''
+            source_cmd = os.path.join(os.path.dirname(__file__), 'tierpsy_gui')
+
+        if not os.path.exists(source_cmd):
+            script_name = os.path.join(os.path.dirname(__file__), '..', '..', 'scripts' , 'tierpsy_gui.py')
+            script_name = os.path.realpath(script_name)
+            source_cmd = '{} {}'.format(sys.executable, script_name)
+        
+        cmd = '\n'.join([act_str, source_cmd])
+    
+        link_file = os.path.join(os.path.expanduser('~'), 'Desktop', 'tierpsy_gui.command')
+        with open(link_file, 'w') as fid:
+            fid.write(cmd)
+
+        
+        st = os.stat(link_file)
+        os.chmod(link_file, st.st_mode | stat.S_IEXEC)
+
+
+def tierpsy_gui():
+    _create_desktop_command()
     app = QApplication(sys.argv)
 
     ui = SelectApp()
@@ -66,4 +95,4 @@ def main():
 
 
 if __name__ == '__main__':
-   main()
+   tierpsy_gui()

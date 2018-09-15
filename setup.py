@@ -63,6 +63,16 @@ setup(name = MODULE_NAME,
    cmdclass = {'build_ext': build_ext},
    ext_modules = _get_ext_modules(),
    include_dirs = [numpy.get_include()],
-   package_data = {'tierpsy': PKG_DATA}
+   package_data = {'tierpsy': PKG_DATA},
+   entry_points= {
+          'gui_scripts': [
+              'tierpsy_gui = tierpsy.gui.SelectApp:tierpsy_gui',
+              'tierpsy_gui_simple = tierpsy.gui.HDF5VideoPlayer:tierpsy_gui_simple'
+          ],
+          'console_scripts': [
+              'tierpsy_process = tierpsy.processing.processMultipleFilesFun:tierpsy_process',
+              'tierpsy_tests = tierpsy.tests.run_tests:tierpsy_tests'
+          ]
+      }
    )
  

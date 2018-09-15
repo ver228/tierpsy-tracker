@@ -127,3 +127,7 @@ def processMultipleFilesFun(
             max_num_process = max_num_process,
             refresh_time = refresh_time,
             is_debug = is_debug)
+
+def tierpsy_process():
+    args = ProcessMultipleFilesParser().parse_args()
+    processMultipleFilesFun(**vars(args))
