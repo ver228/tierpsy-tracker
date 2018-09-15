@@ -241,7 +241,7 @@ def tierpsy_tests():
 
     help_test = 'Name of the tests to be executed. If not values are given all tests will be executed. The available tests are: {}'.format(_available_tests_str)
 
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Tierpsy Tracker tests.')
     parser.add_argument('tests', 
                         nargs='*',
                         help=help_test)
