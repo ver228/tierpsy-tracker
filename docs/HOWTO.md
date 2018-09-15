@@ -18,22 +18,9 @@ The processing times for in MacBook Pro (15-inch, 2017) were 04:31 minutes for t
 
 ## Getting Started
 
-If you are using any of the [binary executables](https://github.com/ver228/tierpsy-tracker/releases) you only have to double click the file and the program should start after a few seconds.
-
-If you [installed tierpsy tracker from the source](https://github.com/ver228/tierpsy-tracker/blob/master/docs/INSTALLATION.md) in OSX or Windows there should be a clickable executable named `TierpsyTracker` on the Desktop. If the executable is missing you can re-create it by running:
-
+Follow the installation [instuctions](INSTALLATION.md) and open a terminal or an Anaconda prompt (Windows) and type:
 ```bash
-#(OSX/Linux)
-installation/installation_script.sh --link_desktop 
-
-#(Windows)
-installation/installation_script.bat --link_desktop
-```  
-
-Alternatively open a terminal, go to the directory where Tierpsy Tracker is installed and type: 
-
-```bash
-python3 cmd_scripts/TierpsyTrackerConsole.py
+tierpsy_gui
 ```
 
 The main widget should look like the one below:

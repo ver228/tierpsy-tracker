@@ -9,8 +9,8 @@ import numpy as np
 import pandas as pd
 import tables
 
-from tierpsy_features import get_timeseries_features, timeseries_all_columns
-from tierpsy_features.summary_stats import get_summary_stats
+from tierpsy.features.tierpsy_features import get_timeseries_features, timeseries_all_columns
+from tierpsy.features.tierpsy_features.summary_stats import get_summary_stats
 
 from tierpsy.helper.misc import TimeCounter, print_flush, get_base_name, TABLE_FILTERS
 from tierpsy.helper.params import read_fps, read_ventral_side

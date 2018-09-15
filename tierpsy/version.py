@@ -1,17 +1,23 @@
 # # -*- coding: utf-8 -*-
-__version__ = '1.5.0'
+__version__ = '1.5.1-beta'
 
 try:
     import os
     import subprocess
 
-    cwd = os.path.dirname(os.path.abspath(__file__))
-    sha = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=cwd).decode('ascii').strip()
+    cwd = os.path.dirname(os.path.abspath(__file__)) 
+    command = ['git', 'rev-parse', 'HEAD']    
+    sha = subprocess.check_output(command, cwd=cwd, stderr = subprocess.DEVNULL).decode('ascii').strip()
     __version__ += '+' + sha[:7]
+
 except Exception:
     pass
 
 '''
+1.5.1-beta
+- Create a conda package. This will be the new way to distribute the package.
+- Merge part of the code in tierpsy-features and open-worm-analysis-toolbox to remove them as dependencies.
+
 1.5.0
 - Bug corrections.
 

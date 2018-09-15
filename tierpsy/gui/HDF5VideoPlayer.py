@@ -8,6 +8,7 @@ from functools import partial
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication
 
 
 def setChildrenFocusPolicy(obj, policy):
@@ -441,11 +442,13 @@ class HDF5VideoPlayerGUI(SimplePlayer):
             self.fid.close()
         super(HDF5VideoPlayerGUI, self).closeEvent(event)
 
-if __name__ == '__main__':
-    print('hello!!')
-    app = QtWidgets.QApplication(sys.argv)
+def tierpsy_gui_simple():
+    app = QApplication(sys.argv)
 
     ui = HDF5VideoPlayerGUI()
     ui.show()
 
-    sys.exit(app.exec_())
+    app.exec_()
+
+if __name__ == '__main__':
+    sys.exit(tierpsy_gui_simple())
