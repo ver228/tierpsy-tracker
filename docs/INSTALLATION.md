@@ -22,6 +22,8 @@ conda install tierpsy -c conda-forge
 ```bash
 tierpsy_gui
 ``` 
+On OSX the first time tierpsy is intialized it will create a file in the Desktop called tierpsy_gui.command. By double-cliking on this file tierpsy can be started without having to open a terminal.
+
 Do not forget to activate the enviroment every time you start a new session.
 
 Note: it seems that there might be some problems with the opencv version available through `conda`. If you have problems reading video files or encounter error related with `import cv2`, then you can try to install opencv using pip as:
