@@ -33,7 +33,7 @@ pip install opencv-python-headless
 ```
 
 ## Installation from source [for development]
-- Download Python >= 3.5 using [anaconda](https://www.anaconda.com/download/) or [miniconda](https://conda.io/miniconda.html).
+- Download Python >= 3.6 using [anaconda](https://www.anaconda.com/download/) or [miniconda](https://conda.io/miniconda.html).
 - Install [git](https://git-scm.com/). [Here](https://gist.github.com/derhuerst/1b15ff4652a867391f03) are some instructions to install it.
 - Install a [C compiler compatible with cython](http://cython.readthedocs.io/en/latest/src/quickstart/install.html). In Windows, you can use [Visual C++ 2015 Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/). In OSX, if you install [homebrew](https://brew.sh/) it will setup the C compiler without the need to download XCode from the appstore. 
 
