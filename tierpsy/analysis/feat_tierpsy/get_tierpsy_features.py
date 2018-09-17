@@ -9,8 +9,8 @@ import numpy as np
 import pandas as pd
 import tables
 
-from tierpsy_features import get_timeseries_features, timeseries_all_columns
-from tierpsy_features.summary_stats import get_summary_stats
+from tierpsy.features.tierpsy_features import get_timeseries_features, timeseries_all_columns
+from tierpsy.features.tierpsy_features.summary_stats import get_summary_stats
 
 from tierpsy.helper.misc import TimeCounter, print_flush, get_base_name, TABLE_FILTERS
 from tierpsy.helper.params import read_fps, read_ventral_side
@@ -75,15 +75,19 @@ def save_timeseries_feats_table(features_file, derivate_delta_time):
 
                 args = []
                 for p in ('skeletons', 'widths', 'dorsal_contours', 'ventral_contours'):
-                    node = fid.get_node('/coordinates/' + p)
                     
-                    dat = np.full((traj_size, *node.shape[1:]), np.nan)
-                    if skel_id_val.size > 0:
-                        if len(node.shape) == 3:
-                            dd = node[skel_id_val, :, :]
-                        else:
-                            dd = node[skel_id_val, :]
-                        dat[good_id] = dd
+                    node_str = '/coordinates/' + p
+                    if node_str in fid:
+                        node = fid.get_node(node_str)
+                        dat = np.full((traj_size, *node.shape[1:]), np.nan)
+                        if skel_id_val.size > 0:
+                            if len(node.shape) == 3:
+                                dd = node[skel_id_val, :, :]
+                            else:
+                                dd = node[skel_id_val, :]
+                            dat[good_id] = dd
+                    else:
+                        dat = None
                     
                     args.append(dat)
 
@@ -115,7 +119,7 @@ def save_feats_stats(features_file, derivate_delta_time):
     with pd.HDFStore(features_file, 'r') as fid:
         fps = fid.get_storer('/trajectories_data').attrs['fps']
         timeseries_data = fid['/timeseries_data']
-        blob_features = fid['/blob_features']    
+        blob_features = fid['/blob_features'] if '/blob_features' in fid else None
     
     
     #Now I want to calculate the stats of the video
@@ -124,18 +128,19 @@ def save_feats_stats(features_file, derivate_delta_time):
                       blob_features, 
                       derivate_delta_time)
     
-    tot = max(len(x) for x in exp_feats.index)
-    dtypes = [('name', 'S{}'.format(tot)), ('value', np.float32)]
-    exp_feats_rec = np.array(list(zip(exp_feats.index, exp_feats)), dtype = dtypes)
-    with tables.File(features_file, 'r+') as fid:
-        for gg in ['/features_stats']:
-            if gg in fid:
-                fid.remove_node(gg)
-        fid.create_table(
-                '/',
-                'features_stats',
-                obj = exp_feats_rec,
-                filters = TABLE_FILTERS)    
+    if len(exp_feats)>0:
+        tot = max(len(x) for x in exp_feats.index)
+        dtypes = [('name', 'S{}'.format(tot)), ('value', np.float32)]
+        exp_feats_rec = np.array(list(zip(exp_feats.index, exp_feats)), dtype = dtypes)
+        with tables.File(features_file, 'r+') as fid:
+            for gg in ['/features_stats']:
+                if gg in fid:
+                    fid.remove_node(gg)
+            fid.create_table(
+                    '/',
+                    'features_stats',
+                    obj = exp_feats_rec,
+                    filters = TABLE_FILTERS)    
 
 
             

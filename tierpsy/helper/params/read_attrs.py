@@ -177,7 +177,6 @@ def read_ventral_side(fname):
     return ventral_side
     
 def read_fps(fname, dflt=1):
-    assert isinstance(fname, str)
     reader = AttrReader(fname, dflt)
     return reader.fps
 

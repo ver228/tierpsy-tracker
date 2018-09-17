@@ -18,22 +18,9 @@ The processing times for in MacBook Pro (15-inch, 2017) were 04:31 minutes for t
 
 ## Getting Started
 
-If you are using any of the [binary executables](https://github.com/ver228/tierpsy-tracker/releases) you only have to double click the file and the program should start after a few seconds.
-
-If you [installed tierpsy tracker from the source](https://github.com/ver228/tierpsy-tracker/blob/master/docs/INSTALLATION.md) in OSX or Windows there should be a clickable executable named `TierpsyTracker` on the Desktop. If the executable is missing you can re-create it by running:
-
+Follow the installation [instuctions](INSTALLATION.md) and open a terminal or an Anaconda prompt (Windows) and type:
 ```bash
-#(OSX/Linux)
-installation/installation_script.sh --link_desktop 
-
-#(Windows)
-installation/installation_script.bat --link_desktop
-```  
-
-Alternatively open a terminal, go to the directory where Tierpsy Tracker is installed and type: 
-
-```bash
-python3 cmd_scripts/TierpsyTrackerConsole.py
+tierpsy_gui
 ```
 
 The main widget should look like the one below:
@@ -56,9 +43,20 @@ In some cases, even after adjusting the threshold there still remain large regio
 
 Other important parameters to set are:
 
-* `Frame per Seconds` (fps) is the frame rate of your video. An important value since it is used to calculate several other parameters. If `Extract Timestamp` is set to `true`, the software will try to extract the frame rate from the video timestamp. However, keep in mind that it is not always possible to recover the correct timestamp, and therefore it is recommended that you provide the value here.
+* `Frame per Second` (fps) is the frame rate of your video. An important value since it is used to calculate several other parameters. If `Extract Timestamp` is set to `true`, the software will try to extract the frame rate from the video timestamp. However, keep in mind that it is not always possible to recover the correct timestamp, and therefore it is recommended that you provide the value here.
 * `Frames to Average` is used to calculate the background mask. This value can significantly speed up the compression step. However, it will not work if the particles are highly motile. Use the buttons `Play` and `Next Chunk` to see how a selected value affects the mask. Note that the average is used only for the background mask, the foreground regions are kept intact for each individual frame. 
-* `Microns per Pixels`. This value is only used to calculate the [skeleton features](EXPLANATION.md/#feat_create), but the results will be in pixels instead of micrometers if the conversion factor is not set.
+* `Microns per Pixel`. This value is only used to in the steps to calculate the final features](EXPLANATION.md). If this value is set to be less than zero the features results will be in pixels instead of micrometers.
+* `Analysis Type`. The selected analysis type will determine the series of [steps](EXPLANATION.md) executed by the program according to the table below:
+
+ | Extension | Description | 
+ ---------|-------------------------------------------------------
+ | BASE\* | No features, only steps up to the skeleton orientation | 
+ | TIERPSY\* | Add the steps for the [tierpsy features](EXPLANATION.md/#extract-features-tierpsy-features-route) calculation. | 
+ | OPENWORM\* | Add the steps for the [openworm features](EXPLANATION.md/#extract-features-openworm-route) calculation. |
+ | \*WT2 | Add the necessary steps to analyze videos recorded using the [WormTracker 2.0](https://www.mrc-lmb.cam.ac.uk/wormtracker/).| 
+ | \*SINGLE | Same steps as BASE but the trajectories will be joined with the assumption that there is only a single worm in the video.  | 
+ | \*AEX | Add the steps to filter worms and obtain the food contour using deep learning models. This models might only work from data from the [Behavioural Genomics Laboratory](https://lms.mrc.ac.uk/research-group/behavioural-genomics/). | 
+ 
 
 You can access further parameters by clicking `Edit More Parameters`. The explanation of each parameter can be found by using the [contextual help](https://en.wikipedia.org/wiki/Tooltip). It is not always trivial to effectively adjust these other parameters, but if you believe you need too, I recommend using a small video (~100 frames) for testing.
 
@@ -176,14 +174,14 @@ The extracted features are store in the files that end with [featuresN.hdf5](htt
 
 ![features](https://user-images.githubusercontent.com/8364368/41231110-e89f2e14-6d79-11e8-96d7-523f13844555.gif)
 
-From the plotting window can either save the plots or export the data of individual features/trajectories into csv files. If you would like to compare the data of multiple experiments we strongly recommed you to use the [Features Summary](#features-summary) app. If you would like to work directly with the timeseries data we recommend you to use read the data using a scripting lenguage like python using the packages [pandas](http://pandas.pydata.org/) and [pytables](http://www.pytables.org/), or MATLAB following the examples in the [tierpsy_tools](https://github.com/aexbrown/tierpsy_tools) repository.
+From the plotting window can either save the plots or export the data of individual features/trajectories into csv files. If you would like to compare the data of multiple experiments we strongly recommed you to use the [Features Summary](#features-summary) app. If you would like to work directly with the timeseries data we recommend you to use read the data using a scripting language like python using the packages [pandas](http://pandas.pydata.org/) and [pytables](http://www.pytables.org/), or MATLAB following the examples in the [tierpsy_tools](https://github.com/aexbrown/tierpsy_tools) repository.
 
 ## Features Summary
 ![FeatSummary](https://user-images.githubusercontent.com/8364368/41034550-d3665230-6981-11e8-97d9-63c74ff24661.png)
-* `Root Directory`: Directory containing the previously calculate features files. 
+* `Root Directory`: Directory containing the previously calculated features files. 
 * `Feature Type` : Select between the features calculated using the [OpenWorm Analysis Toolbox](https://github.com/openworm/open-worm-analysis-toolbox) or [Tierpsy Features](https://github.com/ver228/tierpsy-features).
 * `Use manually edited features?` Tick if you want to collect data from manually edited trajectories. Only trajectories labelled as either worm or worm cluster are going to be used.
-* `Summary Type` : Select what data is going to be collected from a video. Either a summary per video (`plate`), a summary for each trajectory available (`trajectory`) or multiple random subsamplings per video (`plate_augmented`).
+* `Summary Type` : Select what data is going to be collected from a video. Either a summary for each trajectory available (`trajectory`), a summary pooling all the data per video (`plate`), or multiple random subsamplings per video (`plate_augmented`).
 
 The files will be located by doing a recursive search for matching the extension according to the table below.
 
@@ -194,5 +192,5 @@ The files will be located by doing a recursive search for matching the extension
 | openworm | Ticked | feat_manual.hdf5 |
 | openworm | Unticked | features.hdf5 |
 
-The results are saved into two separated .csv file located in the root directory. The first file, `filenames_FEATURETYPE_SUMMARY_DATE.csv`, contains the names of all the files found in root the directory. The `is_good` column is set to `True` if the file is valid and used in the summary. The second file, `features_FEATURETYPE_SUMMARY_DATE.csv`, contains the corresponding features summarized as described in the [output files](OUTPUTS.md#features_summar) section. The two result files can be joined using the `file_id` column.
+The results are saved into two separated .csv file located in the root directory. The first file, `filenames_FEATURETYPE_SUMMARY_DATE.csv`, contains the names of all the files found in the root directory. The `is_good` column is set to `True` if the file is valid and used in the summary. The second file, `features_FEATURETYPE_SUMMARY_DATE.csv`, contains the corresponding features summarized as described in the [output files](OUTPUTS.md#features_summar) section. The two result files can be joined using the `file_id` column.
 

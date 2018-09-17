@@ -8,7 +8,7 @@ Created on Thu Mar  2 19:15:50 2017
 from tierpsy.analysis.stage_aligment.alignStageMotion import isGoodStageAligment, _h_get_stage_inv
 from tierpsy.helper.params import read_fps, read_microns_per_pixel, read_ventral_side
 from tierpsy import AUX_FILES_DIR
-import open_worm_analysis_toolbox as mv
+import tierpsy.features.open_worm_analysis_toolbox as mv
 
 
 import copy

@@ -152,6 +152,7 @@ def _validRowsByArea(plate_worms):
 
     # median location, it is likely the worm spend more time here since the
     # stage movements tries to get it in the centre of the frame
+    # TODO this assuption could case errors if the videos were not taken using WT2
     CMx_med = plate_worms_f['coord_x'].median()
     CMy_med = plate_worms_f['coord_y'].median()
     L_med = plate_worms_f['box_length'].median()

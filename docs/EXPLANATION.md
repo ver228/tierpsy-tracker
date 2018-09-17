@@ -31,7 +31,11 @@ The first step is to identify possible particles. We divide the image into regio
 
 ### TRAJ_JOIN
 
-The second step is to join the identified particles into trajectories. We link the particles' trajectories by using their nearest neighbor in consecutive frames. The nearest neighbor must be less than `max_allowed_dist` away and the fractional change in area must be less than `area_ratio_lim`. One particle can only be joined to a single particle in consecutive frames, no split or merged trajectories are allowed. If these conditions are not satisfied it means that there was a problem in the trajectory *e.g.* two worms collided and therefore in the next frame the closest object is twice the area, or a worm disapeared from the field of view. If there is any conflict, the trajectory will be broken and a new label will be assigned to any unassigned particle. 
+The second step is to join the identified particles into trajectories. The algorithm changes depending if the analysis is selected for a single-worm or for multi-worm. See the instructions of the widget [Set Parameters](HOWTO.md/#set-parameters) for more information.
+
+In the **single-worm**, the algorithm the particles are first filter by area. The filter threshold is calculated with the assumption that in most of the frames the worm is the largest object. Only one trajectory is linked using the closest neighbors in consecutive frames.
+
+In the **multi-worm** case, we link the particles' trajectories by using their nearest neighbor in consecutive frames. The nearest neighbor must be less than `max_allowed_dist` away and the fractional change in area must be less than `area_ratio_lim`. One particle can only be joined to a single particle in consecutive frames, no split or merged trajectories are allowed. If these conditions are not satisfied it means that there was a problem in the trajectory *e.g.* two worms collided and therefore in the next frame the closest object is twice the area, or a worm disapeared from the field of view. If there is any conflict, the trajectory will be broken and a new label will be assigned to any unassigned particle. 
 
 In a subsequent step, Tierpsy Tracker tries to join trajectories that have a small time gap between them *i.e.* the worm was lost for a few frames. Additionally we will remove any spurious trajectories shorter than `min_track_size` .
 
@@ -100,10 +104,10 @@ Currently only used in `WT2`. Export skeletons data in [`basename_features.hdf5`
 CURRENTLY AVAILABLE ONLY FOR [AEX](https://www.imperial.ac.uk/people/andre.brown) DATA. Calculate the food contour either using a pretrained neural network. The results are stored in [`/food_cnt_coord`](OUTPUTS.md/#food_cnt_coord). The process will be considered as failed if the contour solidity is larger than 0.98 and the results will not be saved. You can visualize the results using the [Tierpsy Tracker Viewer](HOWTO.md#tierpsy-tracker-viewer).
 
 ### FEAT_INIT
-The smooth module in [tierpsy features](https://github.com/openworm/open-worm-analysis-toolbox) is used to smooth the skeletons over both time and space and to interpolate between small gaps of unskeletonized frames. As well to create the corresponding versions of the tables [`/blob_features`](OUTPUTS.md/#blob_features), [`/trajectories_data`](OUTPUTS.md/#trajectories_data) and [`/food_cnt_coord`](OUTPUTS.md/#food_cnt_coord)(if available) from the 
+The smooth module in [tierpsy features](https://github.com/ver228/tierpsy-features) is used to smooth the skeletons over both time and space and to interpolate between small gaps of unskeletonized frames. As well to create the corresponding versions of the tables [`/blob_features`](OUTPUTS.md/#blob_features), [`/trajectories_data`](OUTPUTS.md/#trajectories_data) and [`/food_cnt_coord`](OUTPUTS.md/#food_cnt_coord)(if available) from the 
 [`basename_skeletons.hdf5`](OUTPUTS.md/#basename_skeletons.hdf5).
 
 ### FEAT_TIERSY
-This step uses the [tierpsy features](https://github.com/openworm/open-worm-analysis-toolbox) to calculate the features explained in [`basename_featuresN.hdf5`](OUTPUTS.md#basename_featuresnhdf5-tierpsy-features).
+This step uses the [tierpsy features](https://github.com/ver228/tierpsy-features) to calculate the features explained in [`basename_featuresN.hdf5`](OUTPUTS.md#basename_featuresnhdf5-tierpsy-features).
 
 

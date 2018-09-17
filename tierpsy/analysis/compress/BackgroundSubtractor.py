@@ -209,7 +209,9 @@ class BackgroundSubtractorMasked(BackgroundSubtractor):
 
 #%%
 if __name__ == '__main__':
-    video_file = '/Users/ajaver/OneDrive - Imperial College London/paper_tierpsy_tracker/benchmarks/CeLeST/samples/RawVideos/Sample01/frame001.jpg'
+    from pathlib import Path
+    video_file = Path.home () / 'OneDrive - Imperial College London/paper_tierpsy_tracker/figures_data/different_setups/CeLeST/RawVideos/Sample01/frame001.jpg'
+    video_file = str(video_file)
     bngd_subtr = BackgroundSubtractor(video_file, buff_size = 5, frame_gap = 1000)
     assert (bngd_subtr.bgnd).sum() > 0
     print(np.mean(bngd_subtr.bgnd))

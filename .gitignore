@@ -1,8 +1,6 @@
-
-create_binaries/*.app
-create_binaries/build/*
-create_binaries/dist/*
-tests/data/*
+_old/create_binaries/*.app
+_old/create_binaries/build/*
+_old/create_binaries/dist/*
 debug_tests/*.txt
 
 *.hdf5
@@ -32,3 +30,5 @@ tierpsy/analysis/ske_create/segWormPython/cython_files/cleanWorm_cython.c
 tierpsy/analysis/stage_aligment/get_mask_diff_var.c
 tierpsy/analysis/ske_create/segWormPython/cython_files/curvspace.c
 tierpsy/analysis/ske_create/segWormPython/cython_files/circCurvature.c
+
+tierpsy/tests/data/*

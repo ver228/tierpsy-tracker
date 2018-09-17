@@ -5,7 +5,7 @@ Created on Mon Jun  4 10:45:29 2018
 
 @author: avelinojaver
 """
-from tierpsy_features.summary_stats import get_n_worms_estimate
+from tierpsy.features.tierpsy_features.summary_stats import get_n_worms_estimate
 import random
 import math
 

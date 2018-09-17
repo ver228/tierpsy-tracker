@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from setuptools import setup
+from setuptools import setup, find_packages
 from distutils.extension import Extension
 from Cython.Build import cythonize
 from Cython.Distutils import build_ext
@@ -43,18 +43,36 @@ def _get_ext_modules():
   			   for name, files in ext_files.items()]
   return ext_modules
 
+PKG_DATA = [
+  'extras/*',
+  'extras/param_files/*',
+  'features/tierpsy_features/extras/*',
+  'features/open_worm_analysis_toolbox/features/master_eigen_worms_N2.mat',
+  'features/open_worm_analysis_toolbox/features/feature_metadata/features_list.csv'
+]
 
 
 #install setup
-setup(name=MODULE_NAME,
-   version=VERSION,
-   description=DESCRIPTION,
-   author=AUTHOR,
-   author_email=AUTHOR_EMAIL,
-   url=URL,
-   packages=['tierpsy'],
-   cmdclass={'build_ext': build_ext},
-   ext_modules=_get_ext_modules(),
-   include_dirs=[numpy.get_include()],
-   include_package_data=True
+setup(name = MODULE_NAME,
+   version = VERSION,
+   description = DESCRIPTION,
+   author = AUTHOR,
+   author_email = AUTHOR_EMAIL,
+   url = URL,
+   packages = find_packages(),
+   cmdclass = {'build_ext': build_ext},
+   ext_modules = _get_ext_modules(),
+   include_dirs = [numpy.get_include()],
+   package_data = {'tierpsy': PKG_DATA},
+   entry_points= {
+          'gui_scripts': [
+              'tierpsy_gui = tierpsy.gui.SelectApp:tierpsy_gui',
+              'tierpsy_gui_simple = tierpsy.gui.HDF5VideoPlayer:tierpsy_gui_simple'
+          ],
+          'console_scripts': [
+              'tierpsy_process = tierpsy.processing.processMultipleFilesFun:tierpsy_process',
+              'tierpsy_tests = tierpsy.tests.run_tests:tierpsy_tests'
+          ]
+      }
    )
+ 
