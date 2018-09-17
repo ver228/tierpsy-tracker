@@ -1,5 +1,5 @@
 # # -*- coding: utf-8 -*-
-__version__ = '1.5.1-beta'
+__version__ = '1.5.1-beta2'
 
 try:
     import os
@@ -17,6 +17,7 @@ except Exception:
 1.5.1-beta
 - Create a conda package. This will be the new way to distribute the package.
 - Merge part of the code in tierpsy-features and open-worm-analysis-toolbox to remove them as dependencies.
+- Merge test suite into the main package.
 
 1.5.0
 - Bug corrections.
