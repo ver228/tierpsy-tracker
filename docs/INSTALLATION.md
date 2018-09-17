@@ -1,6 +1,6 @@
 # Installation Instructions
 
-## Installation from precompiled packages
+## Installation from precompiled packages [recommended]
 - Download python 3.6>= using [anaconda](https://www.anaconda.com/download/) or [miniconda](https://conda.io/miniconda.html) if you prefer a lighter installation.
 - Open a Terminal in OSX or Linux. In Windows you need to open the Anaconda Prompt.
 - [Optional] I would recommend to create and activate an [enviroment](https://conda.io/docs/user-guide/tasks/manage-environments.html) as:
@@ -22,24 +22,25 @@ conda install tierpsy -c ver228
 ```bash
 tierpsy_gui
 ``` 
-On OSX the first time tierpsy is intialized it will create a file in the Desktop called tierpsy_gui.command. By double-cliking on this file tierpsy can be started without having to open a terminal.
+Do not forget to activate the enviroment every time you start a new terminal session.
 
-Do not forget to activate the enviroment every time you start a new session.
+On OSX the first time `tierpsy_gui` is intialized it will create a file in the Desktop called tierpsy_gui.command. By double-cliking on this file tierpsy can be started without having to open a terminal.
 
-Note: it seems that there might be some problems with the opencv version available through `conda`. If you have problems reading video files or encounter error related with `import cv2`, then you can try to install opencv using pip as:
+#### Troubleshooting
+it seems that there might be some problems with the `opencv` version available through `conda`. If you have problems reading video files or encounter error related with `import cv2`, then you can try to install opencv using pip as:
 ```bash
 pip install opencv-python-headless
 ```
 
-## Installation from source
-- Download python 3.6>= using [anaconda](https://www.anaconda.com/download/)) or [miniconda](https://conda.io/miniconda.html)).
+## Installation from source [for development]
+- Download Python >= 3.5 using [anaconda](https://www.anaconda.com/download/) or [miniconda](https://conda.io/miniconda.html).
 - Install [git](https://git-scm.com/). [Here](https://gist.github.com/derhuerst/1b15ff4652a867391f03) are some instructions to install it.
 - Install a [C compiler compatible with cython](http://cython.readthedocs.io/en/latest/src/quickstart/install.html). In Windows, you can use [Visual C++ 2015 Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/). In OSX, if you install [homebrew](https://brew.sh/) it will setup the C compiler without the need to download XCode from the appstore. 
 
 - Open a Terminal or Anaconda prompt and type:
 ```bash
 git clone https://github.com/ver228/tierpsy-tracker
-cd tracker
+cd tierpsy-tracker
 source create -n tierpsy #[optional]
 conda install --file requirements.txt
 pip install -e .
@@ -49,4 +50,4 @@ pip install -e .
 The script `TierpsyTrackerConsole.py` was deprecated in favor of using the command `tierpsy_process`. Type `tierpsy_process -h` for help.
 
 # Tests
-After installing you can run the testing scripts using the command `tierpsy_tests` on the terminal. Type `tierpsy_tests -h` for help. I would recommed to run one test at the time since there is not currently a way to summarize the results of all the tests.
+After installing you can run the testing scripts using the command `tierpsy_tests` on the terminal. Type `tierpsy_tests -h` for help. Although the script supports running multiple tests consecutively, I would recommed to run one test at the time since there is not currently a way to summarize the results of several tests.
