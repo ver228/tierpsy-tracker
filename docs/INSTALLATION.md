@@ -16,7 +16,7 @@ source activate tierpsy
 ```
 - Finally, donwload the package from conda-forge
 ```bash
-conda install tierpsy -c conda-forge
+conda install tierpsy -c ver228
 ```
 - After you can start tierpsy tracker by typing:
 ```bash
