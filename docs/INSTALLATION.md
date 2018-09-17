@@ -6,13 +6,11 @@
 - [Optional] I would recommend to create and activate an [enviroment](https://conda.io/docs/user-guide/tasks/manage-environments.html) as:
 
 ```bash
-#Windows
-conda create -n tierpsy 
-conda activate tierpsy 
 
-#OSX or Linux
-source create -n tierpsy 
-source activate tierpsy 
+conda create -n tierpsy 
+
+conda activate tierpsy [#Windows]
+source activate tierpsy [#OSX or Linux]
 ```
 - Finally, donwload the package from conda-forge
 ```bash
