@@ -65,13 +65,8 @@ def _create_desktop_command():
             source_cmd = os.path.join(os.environ['CONDA_PREFIX'], 'bin', 'tierpsy_gui')
         else:
             act_str = ''
-            source_cmd = os.path.join(os.path.dirname(__file__), 'tierpsy_gui')
+            source_cmd = 'tierpsy_gui'
 
-        if not os.path.exists(source_cmd):
-            script_name = os.path.join(os.path.dirname(__file__), '..', '..', 'scripts' , 'tierpsy_gui.py')
-            script_name = os.path.realpath(script_name)
-            source_cmd = '{} {}'.format(sys.executable, script_name)
-        
         cmd = '\n'.join([act_str, source_cmd])
     
         link_file = os.path.join(os.path.expanduser('~'), 'Desktop', 'tierpsy_gui.command')

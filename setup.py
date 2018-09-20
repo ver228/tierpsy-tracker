@@ -66,10 +66,10 @@ setup(name = MODULE_NAME,
    package_data = {'tierpsy': PKG_DATA},
    entry_points= {
           'gui_scripts': [
-              'tierpsy_gui = tierpsy.gui.SelectApp:tierpsy_gui',
               'tierpsy_gui_simple = tierpsy.gui.HDF5VideoPlayer:tierpsy_gui_simple'
           ],
           'console_scripts': [
+              'tierpsy_gui = tierpsy.gui.SelectApp:tierpsy_gui', #windows bug, if I put tierpsy_gui as a gui application I cannot run batch processing since the command line stdout is supressed.
               'tierpsy_process = tierpsy.processing.processMultipleFilesFun:tierpsy_process',
               'tierpsy_tests = tierpsy.tests.run_tests:tierpsy_tests'
           ]
