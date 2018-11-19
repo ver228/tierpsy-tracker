@@ -1,7 +1,7 @@
-
 _old/create_binaries/*.app
 _old/create_binaries/build/*
 _old/create_binaries/dist/*
+debug_tests/*.txt
 
 *.hdf5
 *.pyc
