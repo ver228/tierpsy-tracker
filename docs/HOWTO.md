@@ -131,9 +131,12 @@ This widget is used to visualize the tracking results. You can move to a specifi
 
 ### Manually Joining Trajectories
 
-You can manually correct the trajectories as shown below. Once you have finished open [Batch Processing Multiple Files](#batch-processing-multiple-files) and re-run the analysis selecting FEAT\_MANUAL\_CREATE from the Analysis Start Point drop menu. This will execute the step [FEAT\_MANUAL\_CREATE](EXPLANATION.md/#feat_manual_create), and create a file with the extension basename_feat_manual.hdf5 with the same contents as [`basename_features.hdf5`](OUTPUTS.md/#basename_features.hdf5) but with the manually joined indexes.
+You can manually correct the trajectories as shown below. Only trajectories labeled as WORM (green box) will be considered in the features calculation.
 
 ![TrackJoined](https://cloud.githubusercontent.com/assets/8364368/26412212/e0e112f8-409f-11e7-867b-512cf044d717.gif) 
+
+In case you want to use the OpenWorm features, once you have finished open [Batch Processing Multiple Files](#batch-processing-multiple-files) and re-run the analysis selecting FEAT\_MANUAL\_CREATE from the Analysis Start Point drop menu. This will execute the step [FEAT\_MANUAL\_CREATE](EXPLANATION.md/#feat_manual_create), and create a file with the extension basename_feat_manual.hdf5 with the same contents as [`basename_features.hdf5`](OUTPUTS.md/#basename_features.hdf5) but with the manually joined indexes.
+
 
 ### Viewer Shortcuts
 
@@ -180,7 +183,7 @@ From the plotting window can either save the plots or export the data of individ
 ![FeatSummary](https://user-images.githubusercontent.com/8364368/41034550-d3665230-6981-11e8-97d9-63c74ff24661.png)
 * `Root Directory`: Directory containing the previously calculated features files. 
 * `Feature Type` : Select between the features calculated using the [OpenWorm Analysis Toolbox](https://github.com/openworm/open-worm-analysis-toolbox) or [Tierpsy Features](https://github.com/ver228/tierpsy-features).
-* `Use manually edited features?` Tick if you want to collect data from manually edited trajectories. Only trajectories labelled as either worm or worm cluster are going to be used.
+* `Use manually edited features?` Tick if you want to collect data from manually edited trajectories. **Only trajectories labelled as either worm or worm cluster would be used.** 
 * `Summary Type` : Select what data is going to be collected from a video. Either a summary for each trajectory available (`trajectory`), a summary pooling all the data per video (`plate`), or multiple random subsamplings per video (`plate_augmented`).
 
 The files will be located by doing a recursive search for matching the extension according to the table below.
