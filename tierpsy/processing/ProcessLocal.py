@@ -145,7 +145,6 @@ class ProcessLocal(object):
 
         files2copy += self._getAddFilesForTmpSW()
 
-
         self._copyFilesLocal(files2copy)
     
     def _getAddFilesForTmpSW(self):
@@ -263,10 +262,10 @@ class ProcessLocal(object):
     def _copyFilesLocal(self, files2copy):
         ''' copy files to the source directory'''
         for files in files2copy:
-            file_name, destination = files
+            file_name, destination = map(os.path.realpath, map(os.path.abspath, files))
             assert(os.path.exists(destination))
-    
-            if os.path.abspath(os.path.dirname(file_name)) != os.path.abspath(destination):
+            
+            if os.path.dirname(file_name) != destination:
                 print_flush('Copying %s to %s' % (file_name, destination))
                 shutil.copy(file_name, destination)
 
