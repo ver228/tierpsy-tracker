@@ -131,11 +131,13 @@ This widget is used to visualize the tracking results. You can move to a specifi
 
 ### Manually Joining Trajectories
 
-You can manually correct the trajectories as shown below. Only trajectories labeled as WORM (green box) will be considered in the features calculation.
+You can manually correct the trajectories as shown below. Label the trajectories you would like to include in the summary as *WORM* (green box). You can use the the `w` key as [shortcut](HOWTO.md#viewer-shortcuts). Trajectories with any other label will be ignored.
 
 ![TrackJoined](https://cloud.githubusercontent.com/assets/8364368/26412212/e0e112f8-409f-11e7-867b-512cf044d717.gif) 
 
-In case you want to use the OpenWorm features, once you have finished open [Batch Processing Multiple Files](#batch-processing-multiple-files) and re-run the analysis selecting FEAT\_MANUAL\_CREATE from the Analysis Start Point drop menu. This will execute the step [FEAT\_MANUAL\_CREATE](EXPLANATION.md/#feat_manual_create), and create a file with the extension basename_feat_manual.hdf5 with the same contents as [`basename_features.hdf5`](OUTPUTS.md/#basename_features.hdf5) but with the manually joined indexes.
+If you want to use [Tierpsy Features](EXPLANATION.md/#extract-features-tierpsy-features-route) you can use [Features Summary](HOWTO.md#features-summary) app by ticking the Is Manually Edited? box, selecting `tierpsy` as Features Type and re-runing the analysis. Make sure the file you edited in the viewer (Select Skeletons File, near the bottom of the app) has the extension `_featuresN.hdf5`. This is the default but an incomplete analysis might load the wrong extension.
+
+If you want to use [OpenWorm features](EXPLANATION.md/#extract-features-openworm-route) *the process is more complicated and might be deprecated in the feature.* First you must select a file with the `_skeletons.hdf5` extension in the viewer Select Skeletons File menu, before doing the manually editing of the trajectories. The software will try to select a file with `_features.hdf5` or `_featuresN.hdf5` extension by default. These file will not work with the OpenWorm pipeline. When you finish the editing, open the [Set Parameters](HOWTO.md#set-parameters) App and select `OPENWORM_MANUAL` as Analysis Type and save the parameters file. Alternatively you can open any parameters file with a text editor, and change the `analysis_type` field to `OPENWORM_MANUAL`. Then open the [Batch Processing Multiple Files](#batch-processing-multiple-files) app and select any parameters file with `OPENWORM_MANUAL` analysis type and and re-run the analysis. FEAT\_MANUAL\_CREATE should be the only option in the Analysis Start Point drop menu. This will execute the step [FEAT\_MANUAL\_CREATE](EXPLANATION.md/#feat_manual_create), and create a file with the extension basename_feat_manual.hdf5 with the same contents as [`basename_features.hdf5`](OUTPUTS.md/#basename_features.hdf5) but with the manually joined indexes. You can then run the analysis ticking the Is Manually Edited? box and selecting `openworm` as Feature Type.
 
 
 ### Viewer Shortcuts
