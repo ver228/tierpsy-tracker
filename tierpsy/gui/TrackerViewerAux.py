@@ -35,7 +35,9 @@ def _estimate_trajectories_data(ow_feat_file, timestamp, microns_per_pixel, stag
     '''
 
     stamp2frame = {f:i for i, f in list(enumerate(timestamp))[::-1]}
-    
+
+
+
     with pd.HDFStore(ow_feat_file, 'r') as fid:
        features_timeseries = fid['features_timeseries']     
     
@@ -168,11 +170,15 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
                     self.trajectories_data = ske_file_id['/trajectories_data']
                     self.is_estimated_trajectories_data = False
                 else:
+                    timestamp = [np.nan]
                     if '/timestamp/raw' in self.fid:
                         timestamp = self.fid.get_node('/timestamp/raw')[:]
-                    else:
+
+
+                    if np.any(np.isnan(timestamp)):
                         tot = self.fid.get_node('/mask').shape[0]
                         timestamp = np.arange(tot)
+
 
                     self.trajectories_data = _estimate_trajectories_data(self.skeletons_file, timestamp, self.microns_per_pixel, self.stage_position_pix)
                     self.is_estimated_trajectories_data = True 
