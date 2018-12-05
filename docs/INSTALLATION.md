@@ -25,10 +25,15 @@ Do not forget to activate the enviroment every time you start a new terminal ses
 On OSX the first time `tierpsy_gui` is intialized it will create a file in the Desktop called tierpsy_gui.command. By double-cliking on this file tierpsy can be started without having to open a terminal.
 
 #### Troubleshooting
-it seems that there might be some problems with the `opencv` version available through `conda`. If you have problems reading video files or encounter error related with `import cv2`, then you can try to install opencv using pip as:
+- It seems that there might be some problems with the `opencv` version available through `conda`. If you have problems reading video files or encounter error related with `import cv2`, then you can try to install opencv using pip as:
 ```bash
 pip install opencv-python-headless
 ```
+- In Windows, the default anaconda channel does not a valid `ffmpeg` version. Activate the tierpsy enviroment and use the anaconda channel instead.
+```bash
+conda install -c conda-forge ffmpeg
+```
+
 
 ## Installation from source [for development]
 - Download Python >= 3.6 using [anaconda](https://www.anaconda.com/download/) or [miniconda](https://conda.io/miniconda.html).
