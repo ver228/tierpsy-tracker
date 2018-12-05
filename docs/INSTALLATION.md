@@ -29,7 +29,7 @@ On OSX the first time `tierpsy_gui` is intialized it will create a file in the D
 ```bash
 pip install opencv-python-headless
 ```
-- In Windows, the default anaconda channel does not a valid `ffmpeg` version. Activate the tierpsy enviroment and use the anaconda channel instead.
+- In Windows, the default anaconda channel does not have a valid `ffmpeg` version. Activate the tierpsy enviroment and use the conda-forge channel instead as:
 ```bash
 conda install -c conda-forge ffmpeg
 ```
