@@ -83,7 +83,7 @@ def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, _
             df = summary_func(fname)
             df.insert(0, 'file_id', ifile)             
             all_summaries.append(df)
-        except (IOError, KeyError, tables.exceptions.HDF5ExtError, tables.exceptions.NoSuchNodeError):
+        except (AttributeError, IOError, KeyError, tables.exceptions.HDF5ExtError, tables.exceptions.NoSuchNodeError):
             continue
         
         df_files.loc[ifile, 'is_good'] = True

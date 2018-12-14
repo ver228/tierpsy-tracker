@@ -131,9 +131,14 @@ This widget is used to visualize the tracking results. You can move to a specifi
 
 ### Manually Joining Trajectories
 
-You can manually correct the trajectories as shown below. Once you have finished open [Batch Processing Multiple Files](#batch-processing-multiple-files) and re-run the analysis selecting FEAT\_MANUAL\_CREATE from the Analysis Start Point drop menu. This will execute the step [FEAT\_MANUAL\_CREATE](EXPLANATION.md/#feat_manual_create), and create a file with the extension basename_feat_manual.hdf5 with the same contents as [`basename_features.hdf5`](OUTPUTS.md/#basename_features.hdf5) but with the manually joined indexes.
+You can manually correct the trajectories as shown below. Label the trajectories you would like to include in the summary as *WORM* (green box). You can use the the `w` key as [shortcut](HOWTO.md#viewer-shortcuts). Trajectories with any other label will be ignored.
 
 ![TrackJoined](https://cloud.githubusercontent.com/assets/8364368/26412212/e0e112f8-409f-11e7-867b-512cf044d717.gif) 
+
+If you want to use [Tierpsy Features](EXPLANATION.md/#extract-features-tierpsy-features-route) you can use [Features Summary](HOWTO.md#features-summary) app by ticking the Is Manually Edited? box, selecting `tierpsy` as Features Type and re-runing the analysis. Make sure the file you edited in the viewer (Select Skeletons File, near the bottom of the app) has the extension `_featuresN.hdf5`. This is the default but an incomplete analysis might load the wrong extension.
+
+If you want to use [OpenWorm features](EXPLANATION.md/#extract-features-openworm-route) *the process is more complicated and might be deprecated in the feature.* First you must select a file with the `_skeletons.hdf5` extension in the viewer Select Skeletons File menu, before doing the manually editing of the trajectories. The software will try to select a file with `_features.hdf5` or `_featuresN.hdf5` extension by default. These file will not work with the OpenWorm pipeline. When you finish the editing, open the [Set Parameters](HOWTO.md#set-parameters) App and select `OPENWORM_MANUAL` as Analysis Type and save the parameters file. Alternatively you can open any parameters file with a text editor, and change the `analysis_type` field to `OPENWORM_MANUAL`. Then open the [Batch Processing Multiple Files](#batch-processing-multiple-files) app and select any parameters file with `OPENWORM_MANUAL` analysis type and and re-run the analysis. FEAT\_MANUAL\_CREATE should be the only option in the Analysis Start Point drop menu. This will execute the step [FEAT\_MANUAL\_CREATE](EXPLANATION.md/#feat_manual_create), and create a file with the extension basename_feat_manual.hdf5 with the same contents as [`basename_features.hdf5`](OUTPUTS.md/#basename_features.hdf5) but with the manually joined indexes. You can then run the analysis ticking the Is Manually Edited? box and selecting `openworm` as Feature Type.
+
 
 ### Viewer Shortcuts
 
@@ -180,7 +185,7 @@ From the plotting window can either save the plots or export the data of individ
 ![FeatSummary](https://user-images.githubusercontent.com/8364368/41034550-d3665230-6981-11e8-97d9-63c74ff24661.png)
 * `Root Directory`: Directory containing the previously calculated features files. 
 * `Feature Type` : Select between the features calculated using the [OpenWorm Analysis Toolbox](https://github.com/openworm/open-worm-analysis-toolbox) or [Tierpsy Features](https://github.com/ver228/tierpsy-features).
-* `Use manually edited features?` Tick if you want to collect data from manually edited trajectories. Only trajectories labelled as either worm or worm cluster are going to be used.
+* `Use manually edited features?` Tick if you want to collect data from manually edited trajectories. **Only trajectories labelled as either worm or worm cluster would be used.** 
 * `Summary Type` : Select what data is going to be collected from a video. Either a summary for each trajectory available (`trajectory`), a summary pooling all the data per video (`plate`), or multiple random subsamplings per video (`plate_augmented`).
 
 The files will be located by doing a recursive search for matching the extension according to the table below.
