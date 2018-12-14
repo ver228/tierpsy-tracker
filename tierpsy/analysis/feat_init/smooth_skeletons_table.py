@@ -111,7 +111,7 @@ def _r_fill_trajectories_data(skeletons_file):
     if nan_timestamps.all():
         fps = read_fps(skeletons_file)
         trajectories_data['timestamp_raw'] = trajectories_data['frame_number']
-        trajectories_data['timestamp_time'] = trajectories_data['frame_number']*fps
+        trajectories_data['timestamp_time'] = trajectories_data['frame_number']/fps
         
     else:
         if nan_timestamps.any():
