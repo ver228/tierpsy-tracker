@@ -30,9 +30,14 @@ blob_params = (min_area,
               worm_bw_thresh_factor,
               strel_size)
 img_generator = generateImages(str(mask_file), 
-                               is_bgnd_subtraction = True,
                                bgnd_param={'is_light_background' : 1}
                                )
+for frame_number, img in img_generator:
+    plt.figure()
+    plt.imshow(img)
+    break
+#%%
+
 f_blob_data = partial(getBlobsSimple, blob_params = blob_params)
 
 blobs_generator = map(f_blob_data,  img_generator)

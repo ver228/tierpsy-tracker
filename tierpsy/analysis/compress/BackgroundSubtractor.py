@@ -257,8 +257,9 @@ class BackgroundSubtractorPrecalculated(BackgroundSubtractorBase):
         #we only accept masked files
         assert self.video_file.endswith('hdf5')
         with tables.File(self.video_file, 'r') as fid:
-            self.save_interval = int(fid.get_node('/full_data')._v_attrs['save_interval']) #TODO. I NEED TO ADD save_interval AS AN ATRIBUTE IN /bgnd
-            self.precalculated_bgnd = fid.get_node('/bgnd')[:]
+            _bgnd = fid.get_node('/bgnd')
+            self.save_interval = int(_bgnd._v_attrs['save_interval'])  
+            self.precalculated_bgnd = _bgnd[:]
             
         self.last_frame = 0
         self.bgnd = self.precalculated_bgnd[0]
