@@ -85,6 +85,7 @@ def getBlobsFeats(skeletons_file, masked_image_file, strel_size):
     #get generators to get the ROI for each frame
     ROIs_generator = generateMoviesROI(masked_image_file, 
                                          trajectories_data, 
+                                         bgnd_param = bgnd_param,
                                          progress_prefix = progress_prefix)
     
     def _gen_rows_blocks():

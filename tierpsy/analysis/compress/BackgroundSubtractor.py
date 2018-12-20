@@ -1,44 +1,135 @@
 # -*- coding: utf-8 -*-
 import numpy as np
+import numpy.ma as ma
 import cv2
 import tables
 from  tierpsy.analysis.compress.selectVideoReader import selectVideoReader
 
-class BackgroundSubtractor():
-    def __init__(self, video_file, buff_size = 100, frame_gap = 10, is_light_background=True):
-        '''
-        Object to subtract background
-        '''
+class BackgroundSubtractorBase():
+    def __init__(self, 
+                 video_file, 
+                 buff_size = -1, 
+                 frame_gap = -1,
+                 is_light_background = True):
+        
         #input parameters
         self.video_file = video_file
         self.buff_size = buff_size
         self.frame_gap = frame_gap
         self.is_light_background = is_light_background
-
-        #internal variables
-        self.bgnd = None
-        self._buffer = None
-        self._buffer_ind = None
         
-        self.reduce_func = np.max if self.is_light_background else np.min
-
-        self._init_buffer()
-        self._calculate_bgnd()
-
-    def _get_buf_ind(self, frame_n):
-        return (frame_n//self.frame_gap)
-
-    def _is_update_bgnd(self,frame_n):
-        return (frame_n >= 0 and (frame_n % self.frame_gap) == 0)
-
+        self.bgnd = None
+        
+    def init_buffer(self):
+        '''Initilize the buffer. As the reading of the video progress, i will update this buffer.'''
+        pass
     
-    def _init_buffer(self):
+    def subtract_bgnd(self, imgage):
+        '''Function that deals how to do the background subtraction'''
+        pass
+    
+    def is_update_frame(self, current_frame):
+        '''Test if the current frame is valid to update the background'''
+        pass
+    
+    
+    def update_background(self, image, current_frame):
+        '''Update background on base of the current image and frame'''
+        pass
+    
+    
+    def _apply_single(self, image, current_frame):
+        #substract background from a single to a single frame
+        if self.is_update_frame(current_frame):
+            self.update_background(image, current_frame)
+        return self.subtract_bgnd(image)
+    
+    def apply(self, image, current_frame = np.nan):
+        #substract background from a single to a single frame and deal with a batch of several images
+        if image.ndim == 2:
+            return self._apply_single(image, current_frame)
+        elif image.ndim == 3:
+            out = [self._apply_single(img, current_frame + ii) for ii, img in enumerate(image)]
+            return np.array(out)
+        else:
+            raise ValueError
+    
+    def _subtract_bgnd_from_mask(self, img):
+        ss = np.zeros_like(img)
+        
+        if self.is_light_background:
+            cv2.subtract(self.bgnd, img, ss)
+        else:
+            cv2.subtract(img, self.bgnd, ss)
+        
+        ss[img==0] = 0
+        
+        return ss
+        
+class BackgroundSubtractorStream(BackgroundSubtractorBase):
+    def __init__(self,  
+                 *args,
+                 **argkws
+                 ):
+        
+        super().__init__(*args, **argkws)
+        
+        #make sure this values are correct
+        assert self.buff_size > 0
+        assert self.frame_gap > 0
+
+        self.reduce_func = np.max if self.is_light_background else np.min
+        
+        #internal variables
+        self.last_frame = -1
+        self.buffer = None
+        self.buffer_ind = -1
+        
+        self.init_buffer()
+        self.calculate_bgnd()
+        
+    
+    def is_update_frame(self, current_frame):
+        '''Test if the current frame is valid to update the background'''
+        #update only if the frame gap is larger between the current frame and the last frame used
+        _is_good = ((self.last_frame < 0) | (current_frame - self.last_frame >= self.frame_gap))
+        return  _is_good
+    
+    def update_background(self, image, current_frame):
+         self.update_buffer(image, current_frame)
+         self.calculate_bgnd()
+        
+    def calculate_bgnd(self):
+        '''Calculate the background from the buffer.'''
+        pass
+    
+    def update_buffer(self, image, current_frame):
+        '''Add new frame to the buffer.'''
+        
+        if image.sum() == 0:
+            #this is a black image that sometimes occurs, ignore it...
+            return
+        
+        self.last_frame = current_frame
+        #treat it as a circular buffer (if it exceds if size return to the beginning)
+        self.buffer_ind += 1
+        if self.buffer_ind >= self.buffer.shape[0]:
+            self.buffer_ind = 0
+        
+        self.buffer[self.buffer_ind] = image
+    
+
+class BackgroundSubtractorVideo(BackgroundSubtractorStream):
+    
+    def __init__(self, *args, **argkws):
+        super().__init__(*args, **argkws)
+        
+    def init_buffer(self):
         ret = 1
-        frame_n = 0
+        current_frame = 0
 
         vid = selectVideoReader(self.video_file)
-
-
+        
         d_info = np.iinfo(vid.dtype)
         if self.is_light_background:
             init_value = d_info.min
@@ -46,13 +137,12 @@ class BackgroundSubtractor():
             init_value = d_info.max
 
 
-        self._buffer = np.full((self.buff_size, vid.height, vid.width), init_value, vid.dtype)
-        
+        self.buffer = np.full((self.buff_size, vid.height, vid.width), init_value, vid.dtype)
+        self.buffer_ind = -1
 
         max_frames = self.buff_size*self.frame_gap
-        while frame_n < max_frames:
+        while current_frame < max_frames:
             ret, image = vid.read()
-
             #if not valid frame is returned return.
             if ret == 0:
                 break
@@ -60,52 +150,27 @@ class BackgroundSubtractor():
             if image.ndim == 3:
                 image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
             
-            if self._is_update_bgnd(frame_n):
-                if image.sum() == 0.:
-                    #here i am assuming that if there is an old black image the video finished
-                    break
-                
-                self._buffer_ind = self._get_buf_ind(frame_n)
-                self._buffer[self._buffer_ind] = image
-
-            frame_n += 1
+            if self.is_update_frame(current_frame):
+                self.update_buffer(image, current_frame)
+            
+            current_frame += 1
         vid.release()
 
-        self.last_frame = frame_n - 1
+        self.last_frame = current_frame - 1
 
-        if self._buffer_ind is None:
+        if self.buffer_ind < 0:
             #no valid frames read
-            self._buffer = None
+            self.buffer = None
         
-        elif self._buffer_ind<(self._buffer_ind-1):
-            #not many frames red
-            self._buffer = self._buffer[:(self._buffer_ind+1)]
-
-    def _calculate_bgnd(self):
-
-        self.bgnd = self.reduce_func(self._buffer, axis=0)
+        elif self.buffer_ind < (self.buff_size - 1):
+            #not enough frames to fill the buffer, reduce its size
+            self.buffer = self.buffer[:(self.buffer_ind+1)]
+    
+    def calculate_bgnd(self):
+        '''Calculate the background from the buffer.'''
+        self.bgnd = self.reduce_func(self.buffer, axis=0)
         self.bgnd = self.bgnd.astype(np.int32)
-
-    def _update_background(self, image, frame_n):
-        self.last_frame = frame_n
-        self.buff_ind = self._get_buf_ind(frame_n)
-        self.buff_ind += 1
-        if self.buff_ind >= self._buffer.shape[0]:
-            self.buff_ind=0
-        self._buffer[self.buff_ind] = image
-
-        self._calculate_bgnd()
-
-    def update_background(self, image, frame_n):
-        #update background only in the proper frames
-        if frame_n > self.last_frame and self._is_update_bgnd(frame_n):
-            # if it is a dark background I do not want to accept an all black image because 
-            #it will mess up the background calculation
-            if (not self.is_light_background) and (image.sum() == 0):
-                return 
-
-            self._update_background(image, frame_n)
-
+    
     def subtract_bgnd(self, image):
         # new method using bitwise not
         def _remove_func(_img, _func, _bg):
@@ -121,7 +186,7 @@ class BackgroundSubtractor():
         
         bg = self.bgnd.astype(np.uint8)
         if self.is_light_background:
-            notbg = ~bg # should check if necessary at all to have self.bgnd as int32
+            notbg = ~bg
             ss = _remove_func(image, cv2.add, notbg)
         else: # fluorescence
             ss = _remove_func(image, cv2.subtract, bg)
@@ -130,91 +195,131 @@ class BackgroundSubtractor():
         
         return ss
 
-    def apply(self, image, last_frame=-1):
-        if last_frame > 0:
-            #we have to decide if we are dealing with a single image or a buffer or images
-            if image.ndim == 2:
-                self.update_background(image, last_frame)
-            else:
-                first_frame = last_frame - image.shape[0]+1
-                for ii, frame_n in enumerate(range(first_frame, last_frame+1)):
-                    self.update_background(image[ii], frame_n)
-        
-        return self.subtract_bgnd(image)
-            
-
-class ReadFullImage():
-    def __init__(self, video_file):
-        self.video_file = video_file
-        self.current_index = 0
-        self.next_frame = 0
-        self.full_interval = None
-        self.full_img = None
-
-        self._update(0)
-    
-    def _update(self, frame_n):
-        if frame_n >= self.next_frame:
-            with tables.File(self.video_file, 'r') as fid:            
-                self.full_img = fid.get_node('/full_data')[self.current_index]
-                if self.full_interval is None:
-                    self.full_interval = int(fid.get_node('/full_data')._v_attrs['save_interval'])
-            
-            self.current_index += 1
-            self.next_frame = self.full_interval*(self.current_index + 1)
-
-    def  __getitem__(self, frame_n):
-        self._update(frame_n)
-        return self.full_img
-
-class BackgroundSubtractorMasked(BackgroundSubtractor):
+class BackgroundSubtractorMasked(BackgroundSubtractorStream):
     '''
-    Experimental...
     Object to subtract the background from a masked image. 
     '''
-    def __init__(self):
-        super().__init__()
-        self._full_img = None
-        self._full_img_reader = None
+    
+    def __init__(self, *args, **argkws):
+        self.full_img = None
+        super().__init__(*args, **argkws)
+        
 
-    def _init_buffer(self):    
+    def init_buffer(self):    
         #we only accept masked files
         assert self.video_file.endswith('hdf5')
         
         with tables.File(self.video_file, 'r') as fid:
             masks = fid.get_node('/mask')
             
-            n_frames = self.buff_size*self.frame_gap
-            self._buffer = masks[:n_frames:self.frame_gap]
-            self._buffer_ind = self._buffer.size 
-            self.last_frame = self._buffer_ind*self.frame_gap
+            #here i am using a masked numpy array to deal with the zeroed background
+            last_frame = self.buff_size*self.frame_gap - 1
+            self.buffer = masks[:last_frame + 1:self.frame_gap]
+            self.buffer = ma.masked_array(self.buffer, self.buffer==0)
+            
+            self.buffer_ind = self.buffer.shape[0] - 1
+            self.last_frame = last_frame
 
             if '/full_data' in fid:
-                self.full_img_reader = ReadFullImage(self.video_file)
-                self.full_img = self.full_img_reader[0]
-        
-    def _calculate_bgnd(self):
-        self.super()._calculate_bgnd()
-
+                #here i am using as the canonical background the results of using the reducing function in all the full frames
+                full_data = fid.get_node('/full_data')
+                self.full_img = self.reduce_func(full_data, axis=0)
+                
+             
+            
+    def calculate_bgnd(self):
+        fill_value = 0 if self.is_light_background else 255
+        self.bgnd = self.reduce_func(self.buffer, axis=0).filled(fill_value)
         if self.full_img is not None:
             dd = (self.bgnd, self.full_img)
             self.bgnd = self.reduce_func(dd, axis=0)
-            
+        
+    
     def _update_background(self, image, frame_n):
-        self.super()._update_background()
-        if self.full_img_reader is not None:
-            self.full_img = self.full_img_reader[frame_n]
-
-        self._calculate_bgnd()
-
+        super()._update_background(image, frame_n)
+        dd = self.buffer[self.buffer_ind]
+        self.buffer[self.buffer_ind] = ma.masked_array(dd, dd ==0)
+    
+    def subtract_bgnd(self, image):
+        return self._subtract_bgnd_from_mask(image)
+#%%
+class BackgroundSubtractorPrecalculated(BackgroundSubtractorBase):
+    def __init__(self, *args,  **argkws):
+        
+        self.save_interval = -1
+        self.precalculated_bgnd = None
+        self.full_img = None
+        
+        super().__init__(*args, **argkws)
+        self.init_buffer()
+    
+    def init_buffer(self):    
+        #we only accept masked files
+        assert self.video_file.endswith('hdf5')
+        with tables.File(self.video_file, 'r') as fid:
+            self.save_interval = int(fid.get_node('/full_data')._v_attrs['save_interval']) #TODO. I NEED TO ADD save_interval AS AN ATRIBUTE IN /bgnd
+            self.precalculated_bgnd = fid.get_node('/bgnd')[:]
+            
+        self.last_frame = 0
+        self.bgnd = self.precalculated_bgnd[0]
+    
+    def subtract_bgnd(self, image):
+        return self._subtract_bgnd_from_mask(image)
+        
+    def is_update_frame(self, current_frame):
+        '''Here the update is trivial so i can do it in every frame'''
+        return True
+    
+    def update_background(self, image, current_frame):
+        self.bgnd = self.precalculated_bgnd[current_frame//self.save_interval]
+    
+                
 #%%
 if __name__ == '__main__':
-    from pathlib import Path
-    video_file = Path.home () / 'OneDrive - Imperial College London/paper_tierpsy_tracker/figures_data/different_setups/CeLeST/RawVideos/Sample01/frame001.jpg'
-    video_file = str(video_file)
-    bngd_subtr = BackgroundSubtractor(video_file, buff_size = 5, frame_gap = 1000)
-    assert (bngd_subtr.bgnd).sum() > 0
-    print(np.mean(bngd_subtr.bgnd))
+    import matplotlib.pylab as plt
+    import tqdm
+    
+    #video_file = '/Users/avelinojaver/OneDrive - Nexus365/worms/Bertie_movies/CX11254_Ch1_05092017_075253.hdf5'
+    #video_file = '/Users/avelinojaver/OneDrive - Nexus365/worms/Bertie_movies/CX11314_Ch2_01072017_093003.hdf5'
+    
+    video_file = '/Users/avelinojaver/OneDrive - Nexus365/worms/Bertie_movies/CX11314_Ch1_04072017_103259.hdf5'
+    
+    
+    
+    #%%
+    #video_file = '/Users/avelinojaver/OneDrive - Imperial College London/tierpsy_examples/tierpsy_test_data/different_animals/worm_motel/MaskedVideos/Position6_Ch2_12012017_102810_s.hdf5'
+    
+    #_sub = BackgroundSubtractorMasked(video_file, buff_size = 5, frame_gap = 100)
+    _sub = BackgroundSubtractorPrecalculated(video_file)
+    
+    with tables.File(video_file, 'r') as fid:
+        masks = fid.get_node('/mask')
+        
+        
+        tot = min(1000000, masks.shape[0])
+        for frame_number in tqdm.tqdm(range(0, tot, 1000)):
+            img = masks[frame_number]
+        
+            img_s = _sub.apply(img, current_frame = frame_number)
+            
+            
+            fig, axs = plt.subplots(1,3, sharex = True, sharey=True)
+            axs[0].imshow(img)
+            axs[1].imshow(_sub.bgnd)
+            axs[2].imshow(img_s)
 
-    bngd_subtr.apply(bngd_subtr._buffer)
-
+    #%%
+    
+#    from pathlib import Path
+#    video_file = Path.home () / 'OneDrive - Imperial College London/documents/papers_in_progress/paper_tierpsy_tracker/figures_data/different_setups/CeLeST/RawVideos/Sample01/frame001.jpg'
+#    video_file = str(video_file)
+#    bngd_subtr = BackgroundSubtractorVideo(video_file, buff_size = 10, frame_gap = 50, is_light_background=False)
+#    assert (bngd_subtr.bgnd).sum() > 0
+#    print(np.mean(bngd_subtr.bgnd))
+#    
+#    img_s = bngd_subtr.apply(bngd_subtr.buffer)
+#    
+#    fig, axs = plt.subplots(1,2, sharex=True, sharey=True)
+#    axs[0].imshow(bngd_subtr.buffer[0])
+#    axs[1].imshow(img_s[0])
+    

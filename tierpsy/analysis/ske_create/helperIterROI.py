@@ -108,7 +108,7 @@ def generateMoviesROI(masked_file,
                     trajectories_data,
                     roi_size = -1, 
                     progress_prefix = '',
-                    bgnd_param={},
+                    bgnd_param = {},
                     progress_refresh_rate_s=20):
 
     if len(trajectories_data) == 0:
@@ -116,7 +116,10 @@ def generateMoviesROI(masked_file,
         
     else:
         frames = trajectories_data['frame_number'].unique()
-        img_generator = generateImages(masked_file, frames=frames, bgnd_param=bgnd_param)
+        
+        img_generator = generateImages(masked_file, 
+                                       frames = frames, 
+                                       bgnd_param = bgnd_param)
         
         traj_group_by_frame = trajectories_data.groupby('frame_number')
         progress_time = TimeCounter(progress_prefix, max(frames))
