@@ -1,0 +1,5 @@
+{
+	"analysis_type" : "TIERPSY_SINGLE",
+	"worm_bw_thresh_factor" : 0.9,
+	"is_full_bgnd_subtraction" : true
+}

@@ -16,7 +16,7 @@ import skimage.filters as skf
 import skimage.morphology as skm
 import tables
 
-from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
+from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractorMasked, BackgroundSubtractorPrecalculated
 from tierpsy.analysis.compress.extractMetaData import read_and_save_timestamp
 from tierpsy.helper.params import traj_create_defaults, read_unit_conversions, read_fps
 from tierpsy.helper.misc import TimeCounter, print_flush, TABLE_FILTERS
@@ -194,44 +194,63 @@ def getBlobDimesions(worm_cnt, ROI_bbox):
     blob_dims = (CMx, CMy, L, W, angle)
     return blob_dims, area, blob_bbox
     
-def generateImages(masked_image_file, frames=[], bgnd_param = {}):
+def generateImages(masked_image_file, 
+                   frames=[], 
+                   bgnd_param = {},
+                   progress_str='', 
+                   progress_refresh_rate_s=20):
     
-    if len(bgnd_param)==0:
-        bgnd_subtractor = None
-    else:
-        bgnd_subtractor = BackgroundSubtractor(masked_image_file, **bgnd_param)
+    #loop, save data and display progress
+    base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
+    progress_str = base_name + progress_str
+    fps = read_fps(masked_image_file, dflt=25)
+    
+    progress_refresh_rate = fps*progress_refresh_rate_s
+    
+    
     
     with tables.File(masked_image_file, 'r') as mask_fid:
         mask_dataset = mask_fid.get_node("/mask")
+        
+        tot_frames = mask_dataset.shape[0]
+        progress_time = TimeCounter(progress_str, tot_frames)  
+        
+        
+        if len(bgnd_param) > 0:
+            
+            if '/bgnd'  in mask_fid: 
+                bgnd_subtractor = BackgroundSubtractorPrecalculated(masked_image_file, **bgnd_param)
+            else:
+                bgnd_subtractor = BackgroundSubtractorMasked(masked_image_file, **bgnd_param)
+        else:
+            bgnd_subtractor = None
+        
+        
         
         if len(frames) == 0:
             frames = range(mask_dataset.shape[0])
         
         for frame_number in frames:
+            if frame_number % progress_refresh_rate == 0:
+                print_flush(progress_time.get_str(frame_number))
+                
             image = mask_dataset[frame_number]
             
             if bgnd_subtractor is not None:
-                image_b  = bgnd_subtractor.apply(image, last_frame=frame_number)
-                #image_buffer_b = 255 - image_buffer_b
-                image_b[image==0] = 0
-                image = image_b
-            
+                image  = bgnd_subtractor.apply(image, frame_number)
+                
             yield frame_number, image
+            
+    print_flush( progress_time.get_str(frame_number))
+    
+    
 
-def generateROIBuff(masked_image_file, buffer_size, bgnd_param, progress_str='', progress_refresh_rate_s=20):
-    img_generator = generateImages(masked_image_file, bgnd_param=bgnd_param)
+def generateROIBuff(masked_image_file, buffer_size, **argkws):
+    img_generator = generateImages(masked_image_file)
     
     with tables.File(masked_image_file, 'r') as mask_fid:
         tot_frames, im_h, im_w = mask_fid.get_node("/mask").shape
     
-
-    #loop, save data and display progress
-    base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
-    progress_str = base_name + progress_str
-    fps = read_fps(masked_image_file, dflt=25)
-    progress_refresh_rate = fps*progress_refresh_rate_s
-
-    progress_time = TimeCounter(progress_str, tot_frames)  
     for frame_number, image in img_generator:
         if frame_number % buffer_size == 0:
             if frame_number + buffer_size > tot_frames:
@@ -259,10 +278,7 @@ def generateROIBuff(masked_image_file, buffer_size, bgnd_param, progress_str='',
     
             yield ROI_cnts, image_buffer, ini_frame
         
-        if frame_number % progress_refresh_rate == 0:
-            print_flush(progress_time.get_str(frame_number))
-                
-    print_flush( progress_time.get_str(frame_number))
+
 
 
 def _cnt_to_ROIs(ROI_cnt, image_buffer, min_box_width):
@@ -281,9 +297,22 @@ def _cnt_to_ROIs(ROI_cnt, image_buffer, min_box_width):
 
     return ROI_buffer, ROI_bbox
 
+def _cnt_to_props(ROI_worms, current_frame, thresh, min_area, ROI_bbox=(0,0,0,0)):
+    
+    props = []
+    for worm_cnt in ROI_worms:
+        # obtain features for each worm
+        blob_dims, area, blob_bbox = getBlobDimesions(worm_cnt, ROI_bbox)
+        if area >= min_area:
+            # append data to pytables only if the object is larget than min_area
+            row = (-1, -1, current_frame, *blob_dims, area, *blob_bbox, thresh)
+            
+            props.append(row)
+    
+    return props
+
 
 def getBlobsData(buff_data, blob_params):
-    
     #I packed input data to be able top to map the function into generateROIBuff
     ROI_cnts, image_buffer, frame_number = buff_data
     
@@ -311,22 +340,39 @@ def getBlobsData(buff_data, blob_params):
                                                         thresh_block_size)
                 current_frame = frame_number + buff_ind
                 
-                for worm_ind, worm_cnt in enumerate(ROI_worms):
-                    # ignore contours from holes. This shouldn't occur with the flag RETR_EXTERNAL
-                    assert hierarchy[0][worm_ind][3] == -1
-                        
-    
-                    # obtain features for each worm
-                    blob_dims, area, blob_bbox = getBlobDimesions(worm_cnt, ROI_bbox)
-                    
-                    if area >= min_area:
-                        # append data to pytables only if the object is larget than min_area
-                        row = (-1, -1, current_frame, *blob_dims, area, *blob_bbox, thresh_buff)
-                        blobs_data.append(row)
-    
-                    
+                # make sure there are no holes in the contours. This shouldn't occur with the flag RETR_EXTERNAL
+                assert all([hierarchy[0][x][3] == -1 for x in range(len(ROI_worms))])
+                
+                blobs_data += _cnt_to_props(ROI_worms, current_frame, thresh_buff, min_area, ROI_bbox)
+                
     return blobs_data
 
+
+def getBlobsSimple(in_data, blob_params):
+    frame_number, image = in_data
+    min_area, worm_bw_thresh_factor, strel_size = blob_params
+    
+    
+    img_m = cv2.medianBlur(image, 3)
+    
+    valid_pix = img_m[img_m>0]
+    if len(valid_pix) == 0:
+        return []
+    
+    th = _thresh_bw(valid_pix)*worm_bw_thresh_factor
+    
+    _, bw = cv2.threshold(img_m, th,255,cv2.THRESH_BINARY)
+    if np.all(strel_size):
+        strel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, strel_size)
+        bw = cv2.morphologyEx(bw, cv2.MORPH_CLOSE, strel)
+    
+    _, cnts, hierarchy = cv2.findContours(bw, 
+                                           cv2.RETR_EXTERNAL, 
+                                           cv2.CHAIN_APPROX_NONE)
+    
+    
+    blobs_data = _cnt_to_props(cnts, frame_number, th, min_area)
+    return blobs_data
 
 def getBlobsTable(masked_image_file, 
                   trajectories_file,
@@ -339,22 +385,19 @@ def getBlobsTable(masked_image_file,
                     thresh_block_size=15,
                     n_cores_used = 1, 
                     bgnd_param = {}):
-
-
-
+    
     #correct strel if it is not a tuple or list
     if not isinstance(strel_size, (tuple,list)):
         strel_size = (strel_size, strel_size)
     assert len(strel_size) == 2
-
-
+    
     #read properties
     fps_out, _, is_light_background = read_unit_conversions(masked_image_file)
     expected_fps = fps_out[0]
 
     #find if it is using background subtraction
     if len(bgnd_param) > 0:
-        bgnd_param['is_light_background'] = is_light_background
+        bgnd_param['is_light_background'] = int(is_light_background)
     buffer_size = traj_create_defaults(masked_image_file, buffer_size)
     
 
@@ -398,24 +441,27 @@ def getBlobsTable(masked_image_file,
         read_and_save_timestamp(masked_image_file, trajectories_file)
         return plate_worms
     
-
-    
-    buff_generator = generateROIBuff(masked_image_file, buffer_size, bgnd_param,  progress_str = ' Calculating trajectories.')
-    
-
-    #switch the is_light_background flag if we are using background subtraction.
-    #I have it so after background subtraction we have a dark background.
-    is_light_background_b = is_light_background if len(bgnd_param)==0 else not is_light_background
-    
-    blob_params = (is_light_background_b,
-                  min_area,
-                  min_box_width,
+    progress_str = ' Calculating trajectories.'
+    if len(bgnd_param) == 0:
+        buff_generator = generateROIBuff(masked_image_file, buffer_size,  progress_str = progress_str)
+        blob_params = (is_light_background,
+                      min_area,
+                      min_box_width,
+                      worm_bw_thresh_factor,
+                      strel_size,
+                      analysis_type,
+                      thresh_block_size)
+        
+        f_blob_data = partial(getBlobsData, blob_params = blob_params)
+        
+    else:
+        blob_params = (min_area,
                   worm_bw_thresh_factor,
-                  strel_size,
-                  analysis_type,
-                  thresh_block_size)
-    
-    f_blob_data = partial(getBlobsData, blob_params = blob_params)
+                  strel_size)
+        buff_generator = generateImages(masked_image_file,
+                                        bgnd_param = bgnd_param,
+                                        progress_str = progress_str)
+        f_blob_data = partial(getBlobsSimple, blob_params = blob_params)
     
     
     if n_cores_used > 1:
@@ -426,8 +472,8 @@ def getBlobsTable(masked_image_file,
     
     with tables.open_file(trajectories_file, mode='w') as traj_fid:
         plate_worms = _ini_plate_worms(traj_fid, masked_image_file)
-        
         for ibuf, blobs_data in enumerate(blobs_generator):
             if blobs_data:
                 plate_worms.append(blobs_data)
-            
+             
+  
