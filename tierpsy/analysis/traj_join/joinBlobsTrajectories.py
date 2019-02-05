@@ -126,15 +126,15 @@ def assignBlobTrajDF(traj_df, max_allowed_dist, area_ratio_lim, base_name=''):
         row_ind, traj_ind = map(np.concatenate, zip(*all_indexes))
         traj_ind = traj_ind[np.argsort(row_ind)]
         return traj_ind
-            
-        
     
-
-def _validRowsByArea(plate_worms):
+#%%
+def _validRowsByArea(plate_worms, use_center = True):
+    #%%
     # here I am assuming that most of the time the largest area in the frame is a worm. Therefore a very large area is likely to be
     # noise
     groupsbyframe = plate_worms.groupby('frame_number')
     maxAreaPerFrame = groupsbyframe.agg({'area': 'max'})
+    
     med_area = np.median(maxAreaPerFrame)
     mad_area = np.median(np.abs(maxAreaPerFrame - med_area))
     min_area = med_area - mad_area * 6
@@ -149,59 +149,77 @@ def _validRowsByArea(plate_worms):
     valid_ind = median_area_by_index[good].index
 
     plate_worms_f = plate_worms[plate_worms['worm_index_blob'].isin(valid_ind)]
-
-    # median location, it is likely the worm spend more time here since the
-    # stage movements tries to get it in the centre of the frame
-    # TODO this assuption could case errors if the videos were not taken using WT2
-    CMx_med = plate_worms_f['coord_x'].median()
-    CMy_med = plate_worms_f['coord_y'].median()
-    L_med = plate_worms_f['box_length'].median()
-
+    
+   
+    
+    if use_center:
+         # median location, it is likely the worm spend more time here since the
+         # stage movements tries to get it in the centre of the frame
+         # This assuption could case errors if the videos were not taken using WT2
+        CMx_med, CMy_med = plate_worms_f[['coord_x', 'coord_y']].median()
+    else:
+        area_med = plate_worms_f['area'].median() #let's use the median area to select what particle to use as seed
+    
     # let's use a threshold of movement of at most a quarter of the worm size,
     # otherwise we discard frame.
+    L_med = plate_worms_f['box_length'].median()
     L_th = L_med / 4
 
     # now if there are still a lot of valid blobs we decide by choising the
     # closest blob
     valid_rows = []
     tot_frames = plate_worms['frame_number'].max() + 1
-
+    
     def get_valid_indexes(frame_number, prev_row):
+        
         try:
             current_group_f = groupbyframe_f.get_group(frame_number)
         except KeyError:
             # there are not valid index in the current group
-            prev_row = -1
+            prev_row = None
             return prev_row
-
+        
+        
+        th_cost = L_th
+        
         # pick the closest blob if there are more than one blob to pick
-        if not isinstance(prev_row, int):
+        if prev_row is not None:
+            #the closest to the previous one if there are prev_rows
             delX = current_group_f['coord_x'] - prev_row['coord_x']
             delY = current_group_f['coord_y'] - prev_row['coord_y']
+            _cost = np.sqrt(delX * delX + delY * delY)
+       
         else:
-            delX = current_group_f['coord_x'] - CMx_med
-            delY = current_group_f['coord_y'] - CMy_med
-
-        R = np.sqrt(delX * delX + delY * delY)
-        good_ind = np.argmin(R)
-        if R[good_ind] < L_th:
-            prev_row = current_group_f.loc[good_ind]
-            valid_rows.append(good_ind)
+            #we need a seed trajectory...
+            if use_center:
+                #here we use the trajectory that is closest to the centre (this is a good assumption in WT2 since the worm is moving around)
+                delX = current_group_f['coord_x'] - CMx_med
+                delY = current_group_f['coord_y'] - CMy_med
+                _cost = np.sqrt(delX * delX + delY * delY)
+            else:
+                _cost = (current_group_f['area'] - area_med).abs()/area_med
+                th_cost = 0.5
+        
+        #get the minimum cost
+        best_ind = _cost.idxmin()
+        if _cost[best_ind] < th_cost:
+            prev_row = current_group_f.loc[best_ind]
+            valid_rows.append(best_ind)
         else:
-            prev_row = -1
+            prev_row = None
 
         return prev_row
-
+    
     # group by frame
     groupbyframe_f = plate_worms_f.groupby('frame_number')
 
-    prev_row = -1
+    prev_row = None
     first_frame = tot_frames
     for frame_number in range(tot_frames):
         prev_row = get_valid_indexes(frame_number, prev_row)
         if not isinstance(prev_row, int) and first_frame > frame_number:
             first_frame = frame_number
-
+    
     # if the first_frame is larger than zero it means that it might have lost some data in from the begining
     # let's try to search again from opposite direction
     if frame_number > 0 and len(valid_rows) > 0:
@@ -209,12 +227,11 @@ def _validRowsByArea(plate_worms):
         for frame_number in range(frame_number, -1, -1):
             prev_row = get_valid_indexes(frame_number, prev_row)
 
-    #valid_rows = list(set(valid_rows))
-
+    
     return valid_rows
+#%%
 
-
-def correctSingleWormCase(trajectories_file):
+def correctSingleWormCase(trajectories_file, is_WT2):
     '''
     Only keep the object with the largest area when cosider the case of individual worms.
     '''
@@ -224,20 +241,23 @@ def correctSingleWormCase(trajectories_file):
     # emtpy table nothing to do here
     if len(plate_worms) == 0:
         return
-
-    valid_rows = _validRowsByArea(plate_worms)
+    
+    valid_rows = _validRowsByArea(plate_worms, use_center = is_WT2)
 
     # np.array(1, dtype=np.int32)
-    plate_worms['worm_index_joined'] = np.array(-1, dtype=np.int32)
-    plate_worms.loc[valid_rows, 'worm_index_joined'] = 1
+    worm_index_joined = np.full(len(plate_worms), -1, dtype=np.int32)
+    worm_index_joined[valid_rows] = 1
 
-    with tables.File(trajectories_file, "r+") as traj_fid:
-        newT = traj_fid.create_table('/', 'plate_worms_t',
-                                     obj=plate_worms.to_records(index=False),
-                                     filters=TABLE_FILTERS)
-        newT._v_attrs['has_finished'] = 2
-        traj_fid.remove_node('/', 'plate_worms')
-        newT.rename('plate_worms')
+
+
+    with tables.open_file(trajectories_file, mode='r+') as fid:
+        plate_worms = fid.get_node('/plate_worms')
+        # add the result the column worm_index_joined
+        plate_worms.modify_column(
+            colname='worm_index_joined',
+            column=worm_index_joined)
+        fid.flush()
+        
 
 def joinGapsTrajectories(trajectories_file, 
                          min_track_size=50,
@@ -373,6 +393,7 @@ def joinGapsTrajectoriesDF(plate_worms,
 
 def joinBlobsTrajectories(trajectories_file, 
                           is_one_worm, 
+                          is_WT2,
                           max_allowed_dist, 
                           area_ratio_lim, 
                           min_track_size,
@@ -385,7 +406,7 @@ def joinBlobsTrajectories(trajectories_file,
     
     assignBlobTraj(trajectories_file, max_allowed_dist, area_ratio_lim)
     if is_one_worm:
-        correctSingleWormCase(trajectories_file)
+        correctSingleWormCase(trajectories_file, is_WT2)
     else:
         joinGapsTrajectories(trajectories_file, min_track_size, max_frames_gap, area_ratio_lim)
 

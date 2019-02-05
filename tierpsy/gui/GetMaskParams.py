@@ -14,7 +14,7 @@ from tierpsy.gui.GetAllParameters import GetAllParameters, ParamWidgetMapper, sa
 from tierpsy.gui.GetMaskParams_ui import Ui_GetMaskParams
 from tierpsy.gui.HDF5VideoPlayer import LineEditDragDrop, ViewsWithZoom, setChildrenFocusPolicy
 
-from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
+from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractorVideo, BackgroundSubtractorMasked
 from tierpsy.helper.params.tracker_param import TrackerParams, default_param
 
 
@@ -515,7 +515,10 @@ class GetMaskParams_GUI(ParamsGUI):
             kwargs = {x.replace('mask_bgnd_', ''):self.mapper[x] for x in keys}
 
             if kwargs['buff_size'] >0 and kwargs['frame_gap']>0:
-                self.bgnd_subtractor = BackgroundSubtractor(self.video_file, **kwargs)
+                if not self.video_file.endswith('.hdf5'):
+                    self.bgnd_subtractor = BackgroundSubtractorVideo(self.video_file, **kwargs)
+                else:
+                   self.bgnd_subtractor = BackgroundSubtractorMasked(self.video_file, **kwargs)
 
         #if the background substraction is checked and it was calculated correctly update the background
         if self.ui.checkBox_is_bgnd_subtraction.isChecked() and \

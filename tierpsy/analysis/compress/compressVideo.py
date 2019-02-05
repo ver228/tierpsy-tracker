@@ -10,7 +10,7 @@ import cv2
 import tables
 import numpy as np
 
-from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractor
+from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractorVideo
 from tierpsy.analysis.compress.extractMetaData import store_meta_data, read_and_save_timestamp
 from tierpsy.analysis.compress.selectVideoReader import selectVideoReader
 from tierpsy.helper.params import compress_defaults, set_unit_conversions
@@ -262,7 +262,7 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
 
     if is_bgnd_subtraction:
         print_flush(base_name + ' Initializing background subtraction.')
-        bgnd_subtractor = BackgroundSubtractor(video_file, **bgnd_param)
+        bgnd_subtractor = BackgroundSubtractorVideo(video_file, **bgnd_param)
 
     # intialize some variables
     max_intensity, min_intensity = np.nan, np.nan
@@ -356,7 +356,7 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
             # mask buffer and save data into the hdf5 file
             if (ind_buff == buffer_size - 1 or ret == 0) and Ibuff.size > 0:                
                 if is_bgnd_subtraction:
-                    Ibuff_b  = bgnd_subtractor.apply(Ibuff, last_frame = frame_number)
+                    Ibuff_b  = bgnd_subtractor.apply(Ibuff, frame_number)
                 else:
                     Ibuff_b = Ibuff
                 

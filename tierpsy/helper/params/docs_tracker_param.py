@@ -122,6 +122,17 @@ dflt_param_list = [
         If it is a negative number the background subtraction is deactivated. 
         '''
         ),
+
+    ('is_full_bgnd_subtraction',
+        False,
+        '''
+        Set True if you want to use background subtraction even in the compressed files. The background subtraction 
+        could introduce artifacts in the worm shape if the background calculation is less than optimal. This has 
+        little impact in the compression since we only need an approximate location of the worm but could 
+        affect the skeletonization.
+        '''
+        ),
+
     ('worm_bw_thresh_factor', 
         1.05, 
         '''

@@ -6,17 +6,15 @@
 - [Optional] I would recommend to create and activate an [enviroment](https://conda.io/docs/user-guide/tasks/manage-environments.html) as:
 
 ```bash
-#Windows
-conda create -n tierpsy 
-conda activate tierpsy 
 
-#OSX or Linux
-source create -n tierpsy 
-source activate tierpsy 
+conda create -n tierpsy 
+
+conda activate tierpsy [#Windows]
+source activate tierpsy [#OSX or Linux]
 ```
 - Finally, donwload the package from conda-forge
 ```bash
-conda install tierpsy -c conda-forge
+conda install tierpsy -c ver228
 ```
 - After you can start tierpsy tracker by typing:
 ```bash
@@ -27,13 +25,18 @@ Do not forget to activate the enviroment every time you start a new terminal ses
 On OSX the first time `tierpsy_gui` is intialized it will create a file in the Desktop called tierpsy_gui.command. By double-cliking on this file tierpsy can be started without having to open a terminal.
 
 #### Troubleshooting
-it seems that there might be some problems with the `opencv` version available through `conda`. If you have problems reading video files or encounter error related with `import cv2`, then you can try to install opencv using pip as:
+- It seems that there might be some problems with the `opencv` version available through `conda`. If you have problems reading video files or encounter error related with `import cv2`, then you can try to install opencv using pip as:
 ```bash
 pip install opencv-python-headless
 ```
+- In Windows, the default anaconda channel does not have a valid `ffmpeg` version. Activate the tierpsy enviroment and use the conda-forge channel instead as:
+```bash
+conda install -c conda-forge ffmpeg
+```
+
 
 ## Installation from source [for development]
-- Download Python >= 3.5 using [anaconda](https://www.anaconda.com/download/) or [miniconda](https://conda.io/miniconda.html).
+- Download Python >= 3.6 using [anaconda](https://www.anaconda.com/download/) or [miniconda](https://conda.io/miniconda.html).
 - Install [git](https://git-scm.com/). [Here](https://gist.github.com/derhuerst/1b15ff4652a867391f03) are some instructions to install it.
 - Install a [C compiler compatible with cython](http://cython.readthedocs.io/en/latest/src/quickstart/install.html). In Windows, you can use [Visual C++ 2015 Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/). In OSX, if you install [homebrew](https://brew.sh/) it will setup the C compiler without the need to download XCode from the appstore. 
 
