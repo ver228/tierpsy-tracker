@@ -18,6 +18,9 @@ def time_to_frame_nb(time_windows,time_units,fps,timestamp,fname):
     Converts the time windows to units of frame numbers (if they were defined in seconds).
     It also defines the end frame of a window, if the index is set to -1 (end).
     """
+    if timestamp.empty:
+        return
+    
     from copy import deepcopy
     time_windows_frames = deepcopy(time_windows)
     if time_units == 'seconds':
@@ -66,6 +69,9 @@ def read_data(fname, time_windows, time_units, fps, is_manual_index):
     with pd.HDFStore(fname, 'r') as fid:        
         timeseries_data = fid['/timeseries_data']
         blob_features = fid['/blob_features']
+        if timeseries_data.empty:
+            #no data, nothing to do here
+            return
         
         if is_manual_index:
             #keep only data labeled as worm or worm clusters
@@ -78,7 +84,6 @@ def read_data(fname, time_windows, time_units, fps, is_manual_index):
             good = trajectories_data['worm_label'].isin(valid_labels)
             good = good & (trajectories_data['skeleton_id'] >= 0)
             skel_id = trajectories_data['skeleton_id'][good]
-            
             
             timeseries_data = timeseries_data.loc[skel_id]
             timeseries_data['worm_index'] = trajectories_data['worm_index_manual'][good].values
@@ -112,7 +117,7 @@ def tierpsy_plate_summary(fname, time_windows, time_units, is_manual_index = Fal
     # worm_index_manual, then data_in is None
     # if time_windows in seconds and fps is not defined (fps=-1), then data_in is None
     if data_in is None:
-        return
+        return [pd.DataFrame() for iwin in range(len(time_windows))]
     
     timeseries_data, blob_features = data_in
     
@@ -132,7 +137,7 @@ def tierpsy_trajectories_summary(fname, time_windows, time_units, is_manual_inde
     fps = read_fps(fname)
     data_in = read_data(fname, time_windows, time_units, fps, is_manual_index)
     if data_in is None:
-        return
+        return [pd.DataFrame() for iwin in range(len(time_windows))]
     timeseries_data, blob_features = data_in
     
     # initialize list of summaries for all time windows
@@ -170,7 +175,7 @@ def tierpsy_plate_summary_augmented(fname, time_windows, time_units, is_manual_i
     fps = read_fps(fname)
     data_in = read_data(fname, time_windows, time_units, fps, is_manual_index)
     if data_in is None:
-        return
+        return [pd.DataFrame() for iwin in range(len(time_windows))]
     timeseries_data, blob_features = data_in
 
     # initialize list of summaries for all time windows
@@ -208,7 +213,7 @@ def tierpsy_plate_summary_augmented(fname, time_windows, time_units, is_manual_i
 
 
 if __name__ == '__main__':
-    fname='/Users/em812/Documents/OneDrive - Imperial College London/Eleni/Tierpsy_GUI/test_results/N2_worms10_CSAA016712_1_Set3_Pos4_Ch1_14072017_184843_featuresN.hdf5'
+    fname='/Users/em812/Documents/OneDrive - Imperial College London/Eleni/Tierpsy_GUI/test_results_2/Set4_Ch3_18012019_130019_featuresN.hdf5'
     is_manual_index = False
     
     fold_args = dict(

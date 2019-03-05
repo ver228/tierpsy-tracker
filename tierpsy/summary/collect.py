@@ -154,7 +154,7 @@ def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, t
     return df_files, all_summaries
 
 if __name__ == '__main__':
-    root_dir = '/Users/em812/Documents/OneDrive - Imperial College London/Eleni/Tierpsy_GUI/test_results'
+    root_dir = '/Users/em812/Documents/OneDrive - Imperial College London/Eleni/Tierpsy_GUI/test_results_2'
     is_manual_index = False
     feature_type = 'tierpsy'
     #feature_type = 'openworm'
