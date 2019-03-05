@@ -5,7 +5,7 @@ Tierpsy Tracker is a multi-animal tracker developed in the [MRC-LMS](http://lms.
 
 The easiest way to install Tierpsy Tracker is to use the conda-forge as:
 ```
-conda install tierpsy -c ver228
+conda install tierpsy -c conda-forge
 ```
 For more details see the [installation](docs/INSTALLATION.md) instructions section.
 

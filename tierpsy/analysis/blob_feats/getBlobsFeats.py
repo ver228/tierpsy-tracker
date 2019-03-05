@@ -83,8 +83,9 @@ def getBlobsFeats(skeletons_file, masked_image_file, strel_size):
         bgnd_param = json.loads(bgnd_param.decode("utf-8"))
 
     #get generators to get the ROI for each frame
-    ROIs_generator = generateMoviesROI(masked_image_file,
+    ROIs_generator = generateMoviesROI(masked_image_file, 
                                          trajectories_data,
+                                         bgnd_param = bgnd_param,
                                          progress_prefix = progress_prefix)
 
     def _gen_rows_blocks():
@@ -93,7 +94,7 @@ def getBlobsFeats(skeletons_file, masked_image_file, strel_size):
         block = []
         for roi_dicts in ROIs_generator:
             for irow, (roi_image, roi_corner) in roi_dicts.items():
-                block.append((irow, (roi_image, roi_corner)))
+                block.append((irow, (roi_image.copy(), roi_corner)))
                 if len(block) == block_size:
                     yield block
                     block = []
@@ -144,6 +145,7 @@ def getBlobsFeats(skeletons_file, masked_image_file, strel_size):
                 obj=features_df,
                 filters=TABLE_FILTERS)
         assert all(x in feats_names for x in fid.get_node('/blob_features').colnames)
+
 
 if __name__ == '__main__':
     #masked_image_file = '/Volumes/behavgenom_archive$/Avelino/Worm_Rig_Tests/short_movies/MaskedVideos/double_pick_021216/N2_N6_Set4_Pos5_Ch5_02122016_160343.hdf5'
