@@ -99,9 +99,7 @@ def getHeadProbMov(
         w_ind = trajectories_worm['worm_index_joined'].iloc[0]
         warnings.warn('There is something weird with trajectory {} in file {}. No valid head tail movements found.'.format(w_ind, skeletons_file))
     #average using only the indexes of valid skeletons
-        p_mov_avg = np.nan
-    else:
-        p_mov_avg = np.nanmean(p_mov)
+    p_mov_avg = np.nanmean(p_mov)
 
     return p_mov_avg, skel_group
 
