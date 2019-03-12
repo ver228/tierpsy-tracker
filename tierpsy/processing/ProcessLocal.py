@@ -35,10 +35,7 @@ class ProcessLocal(object):
 
         for dname in [self.results_dir,  self.masks_dir]:
             if not os.path.exists(dname):
-                try:
-                    os.makedirs(dname)
-                except FileExistsError:
-                    pass
+                os.makedirs(dname,exist_ok=True)
         
         self.analysis_checkpoints = analysis_checkpoints
         
