@@ -2,7 +2,7 @@ cython
 keras=2.1.5 
 opencv 
 tensorflow 
-numpy >=1.14
+numpy >=1.14,<=1.15.4
 matplotlib 
 pytables 
 pandas 
