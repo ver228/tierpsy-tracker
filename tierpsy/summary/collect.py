@@ -9,6 +9,7 @@ import glob
 import datetime
 import tables
 import pandas as pd
+import multiprocessing as mp
 
 from tierpsy.helper.misc import TimeCounter, print_flush
 from tierpsy.summary.process_ow import ow_plate_summary, ow_trajectories_summary, ow_plate_summary_augmented
@@ -77,7 +78,25 @@ def time_windows_parser(time_windows):
                 assert window[0]<=window[1], "The end time of time window {}/{} is smaller than the start time.".format(iwin+1,len(windows))
         return windows
 
-def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, time_windows, time_units, _is_debug = False, **fold_args):
+def process_helper(dat_in, summary_func, time_windows_ints, time_units):
+    ifile, row = dat_in
+    fname = row['file_name']
+    try:
+        df_list = summary_func(fname, time_windows_ints, time_units)
+    except (AttributeError, IOError, KeyError, tables.exceptions.HDF5ExtError, tables.exceptions.NoSuchNodeError):
+        df_list = []
+    return ifile, df_list
+
+def calculate_summaries(root_dir, 
+                        feature_type, 
+                        summary_type, 
+                        is_manual_index, 
+                        time_windows, 
+                        time_units, 
+                        n_processes = 1,
+                        _is_debug = False, 
+                        **fold_args
+                        ):
     """
     Gets input from the GUI, calls the function that chooses the type of summary 
     and runs the summary calculation for each file in the root_dir.
@@ -102,7 +121,9 @@ def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, t
     ext = possible_ext[1] if is_manual_index else possible_ext[0]
     
     fnames = glob.glob(os.path.join(root_dir, '**', '*' + ext), recursive=True)
-    if not fnames:
+
+    
+    if len(fnames) == 0:
         print_flush('No valid files found. Nothing to do here.')
         return
     
@@ -116,25 +137,44 @@ def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, t
         args = (n + 1, len(df_files[0]), progress_timer.get_time_str())
         dd = "Extracting features summary. File {} of {} done. Total time: {}".format(*args)
         print_flush(dd)
-    
     _displayProgress(-1)
+    
     
     # EM :Make all_summaries list with one dataframe per time window
     all_summaries = [[] for x in range(len(time_windows_ints))]
-    for ifile, row in df_files[0].iterrows():
-        fname = row['file_name']
+    
+    #i need to use partial and redifine this otherwise multiprocessing since it will not be pickable
+    _process_row = partial(process_helper, 
+            summary_func=summary_func, 
+            time_windows_ints=time_windows_ints, 
+            time_units=time_units)
+    
+    
+    data2process = [x for x in df_files[0].iterrows()]
+    
+    all_df_lists = []
+    for ifile in range(0, len(data2process), n_processes):
+        if n_processes <= 1:
+            dat_out = _process_row(data2process[ifile])
+            all_df_lists.append(dat_out)
+        else:
+            #multi processing
+            p = mp.Pool(n_processes)
+            batch_ = data2process[ifile:ifile+n_processes]
+            dat_outs = [x for x in p.map(_process_row, batch_)]
+            all_df_lists += dat_outs
+            
+        _displayProgress(ifile + n_processes)
+    
+    
+    #reformat the outputs and remove any failed
+    for ifile, df_list in all_df_lists:
+        for iwin, df in enumerate(df_list):
+            df.insert(0, 'file_id', ifile)             
+            all_summaries[iwin].append(df)
+            if not df.empty:
+                df_files[iwin].loc[ifile, 'is_good'] = True
         
-        df_list = summary_func(fname,time_windows_ints,time_units)
-        for iwin,df in enumerate(df_list):
-            try:
-                df.insert(0, 'file_id', ifile)             
-                all_summaries[iwin].append(df)
-            except (AttributeError, IOError, KeyError, tables.exceptions.HDF5ExtError, tables.exceptions.NoSuchNodeError):
-                continue
-            else:
-                if not df.empty:
-                    df_files[iwin].loc[ifile, 'is_good'] = True
-        _displayProgress(ifile)
     
     for iwin in range(len(time_windows_ints)):
         all_summaries[iwin] = pd.concat(all_summaries[iwin], ignore_index=True, sort=False)
