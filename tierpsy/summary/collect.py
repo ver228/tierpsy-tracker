@@ -154,7 +154,7 @@ def calculate_summaries(root_dir,
     
     data2process = [x for x in df_files[0].iterrows()]
     
-    all_df_lists = []
+    
     
     n_processes = max(n_processes, 1)
     if n_processes <= 1:
@@ -163,17 +163,15 @@ def calculate_summaries(root_dir,
         p = mp.Pool(n_processes)
         gen = p.imap(_process_row, data2process)
 
-    for ifile in enumerate(gen):
-        _displayProgress(ifile + 1)
-    
-    
-    #reformat the outputs and remove any failed
-    for ifile, df_list in all_df_lists:
+
+    for ii, (ifile, df_list) in enumerate(gen):
+        #reformat the outputs and remove any failed
         for iwin, df in enumerate(df_list):
             df.insert(0, 'file_id', ifile)             
             all_summaries[iwin].append(df)
             if not df.empty:
                 df_files[iwin].loc[ifile, 'is_good'] = True
+        _displayProgress(ii + 1)
         
     
     for iwin in range(len(time_windows_ints)):
