@@ -161,7 +161,7 @@ def calculate_summaries(root_dir,
         gen = map(_process_row, data2process)
     else:
         p = mp.Pool(n_processes)
-        gen = p.map(_process_row, data2process)
+        gen = p.imap(_process_row, data2process)
 
     for ifile in enumerate(gen):
         _displayProgress(ifile + 1)
