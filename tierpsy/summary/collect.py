@@ -79,11 +79,13 @@ def time_windows_parser(time_windows):
         return windows
 
 def process_helper(dat_in, summary_func, time_windows_ints, time_units):
+    
     ifile, row = dat_in
     fname = row['file_name']
     try:
         df_list = summary_func(fname, time_windows_ints, time_units)
     except (AttributeError, IOError, KeyError, tables.exceptions.HDF5ExtError, tables.exceptions.NoSuchNodeError):
+        
         df_list = []
     return ifile, df_list
 
@@ -153,18 +155,16 @@ def calculate_summaries(root_dir,
     data2process = [x for x in df_files[0].iterrows()]
     
     all_df_lists = []
-    for ifile in range(0, len(data2process), n_processes):
-        if n_processes <= 1:
-            dat_out = _process_row(data2process[ifile])
-            all_df_lists.append(dat_out)
-        else:
-            #multi processing
-            p = mp.Pool(n_processes)
-            batch_ = data2process[ifile:ifile+n_processes]
-            dat_outs = [x for x in p.map(_process_row, batch_)]
-            all_df_lists += dat_outs
-            
-        _displayProgress(ifile + n_processes)
+    
+    n_processes = max(n_processes, 1)
+    if n_processes <= 1:
+        gen = map(_process_row, data2process)
+    else:
+        p = mp.Pool(n_processes)
+        gen = p.map(_process_row, data2process)
+
+    for ifile in enumerate(gen):
+        _displayProgress(ifile + 1)
     
     
     #reformat the outputs and remove any failed

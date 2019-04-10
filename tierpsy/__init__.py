@@ -9,11 +9,10 @@ import sys
 import warnings
 from .version import __version__
 
-#this is an anaconda program that should not cause problems.  https://github.com/ContinuumIO/anaconda-issues/issues/6678
-warnings.filterwarnings('ignore', message='numpy.dtype size changed, may indicate binary incompatibility.*')
-def warning_on_one_line(message, category, filename, lineno, file=None, line=''):
-    return '{}:{}: {}:{}\n'.format(filename, lineno, category.__name__, message)
-warnings.formatwarning = warning_on_one_line
+
+import warnings
+warnings.filterwarnings("ignore", message="numpy.dtype size changed")
+warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 
 #I want to be sure tierpsy loads tensorflow flow backend
 os.environ['KERAS_BACKEND']='tensorflow' 
