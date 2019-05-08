@@ -24,7 +24,6 @@ class Summarizer_GUI(QtWidgets.QMainWindow):
                 valid_options=summarizer_valid_options
                 )
 
-
         self.ui.pushButton_start.clicked.connect(self.startAnalysis)
         self.ui.pushButton_rootdir.clicked.connect(self.getRootDir)
         self.ui.p_summary_type.currentIndexChanged.connect(self.viewFoldArgs)
@@ -59,6 +58,8 @@ class Summarizer_GUI(QtWidgets.QMainWindow):
 
     def startAnalysis(self):
         process_args = {k:self.mapper[k] for k in self.mapper}
+        print('GUI MAPPER:')
+        print(process_args)
         analysis_worker = WorkerFunQt(calculate_summaries, process_args)
         progress = AnalysisProgress(analysis_worker)
         progress.exec_()

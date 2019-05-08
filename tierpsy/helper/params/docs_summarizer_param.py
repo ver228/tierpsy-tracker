@@ -6,7 +6,9 @@ from .helper import repack_dflt_list
 
 summarizer_valid_options = {
     'feature_type':['openworm','tierpsy'],
-    'summary_type' : ['plate', 'trajectory', 'plate_augmented']
+    'summary_type' : ['plate', 'trajectory', 'plate_augmented'],
+    'time_units' : ['frame_numbers', 'seconds'],
+    'feat_set' : ['all', 'tierpsy_8', 'tierpsy_16', 'tierpsy_256', 'tierpsy_2k']
 }
 
 dflt_args_list = [
@@ -43,6 +45,24 @@ dflt_args_list = [
     ('time_units',
         'frame_numbers',
         'Units of start time and end time in Time Windows.'
+        ),
+    ('feat_set',
+        'all',
+        '''
+        Choose a pre-selected subset of tierpsy features.
+        '''
+        ),
+    ('keywords_include',
+        '',
+        '''
+        Choose only features that contain any of the given keywords. Provide keywords separated by comma \',\'.
+        '''
+        ),
+    ('keywords_exclude',
+        '',
+        '''
+        Exclude features that contain any of the given keywords. Provide keywords separated by comma \',\'.
+        '''
         ),
     ('n_folds',
         5,
