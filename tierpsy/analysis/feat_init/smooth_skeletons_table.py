@@ -277,10 +277,10 @@ def smooth_skeletons_table(skeletons_file,
             dat_index = pd.Series(False, index = worm_data['timestamp_raw'].values)
             
             try:
-            	dat_index[worm.timestamp] = True
+                dat_index[worm.timestamp] = True
             except ValueError:
-            	import pdb
-            	pdb.set_trace()
+                import pdb
+                pdb.set_trace()
 
             #%%
             skeleton_id = np.arange(wormN.skeleton.shape[0]) + tot_skeletons
@@ -323,17 +323,24 @@ if __name__ == '__main__':
     
     #base_file = '/Volumes/behavgenom_archive$/single_worm/finished/mutants/gpa-10(pk362)V@NL1147/food_OP50/XX/30m_wait/clockwise/gpa-10 (pk362)V on food L_2009_07_16__12_55__4'
     #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/WT2/Results/WT2'
-    base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/WT2/AC/Results/WT2'
+    #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/WT2/AC/Results/WT2'
     
     is_WT2 = True
     
     #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/AVI_VIDEOS/Results/AVI_VIDEOS_4'
     #base_file = '/Users/ajaver/OneDrive - Imperial College London/optogenetics/Arantza/Results/oig8/oig-8_ChR2_ATR_herms_6_Ch1_11052017_182219'
     #base_file = '/Users/ajaver/Documents/GitHub/tierpsy-tracker/tests/data/RIG_HDF5_VIDEOS/Results/RIG_HDF5_VIDEOS'
+    #base_file = '/Users/lferiani/Desktop/GitHub/tierpsy-tracker/tests/data/RIG_HDF5_VIDEOS/Results/RIG_HDF5_VIDEOS'
+    base_file = '/Users/lferiani/Desktop/Data_FOVsplitter/Results/drugexperiment_1hrexposure_set1_20190712_131508.22436248/metadata'
+    
     is_WT2 = False
     
     skeletons_file = base_file + '_skeletons.hdf5'
     features_file = base_file + '_featuresN.hdf5'
+    
+    import shutil
+    shutil.copy(skeletons_file.replace('.hdf5','.bk'),skeletons_file)
+#    shutil.copy(features_file.replace('.hdf5','.bk'), features_file)
     
     smooth_skeletons_table(
         skeletons_file, 

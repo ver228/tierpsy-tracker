@@ -9,6 +9,7 @@ Created on Tue Mar  5 14:55:41 2019
 
 #%% import statements
 
+import re
 import cv2
 import pdb
 import itertools
@@ -20,6 +21,8 @@ from matplotlib import pyplot as plt
 from skimage.feature import peak_local_max
 from skimage.measure import label, regionprops
 from sklearn.neighbors import NearestNeighbors
+
+from tierpsy.helper.params import read_unit_conversions
 
 #%% constants
 
@@ -115,33 +118,55 @@ class FOVMultiWellsSplitter(object):
     """Class tasked with finding how to split a full-FOV image into single-wells images, 
     and then splitting new images that are passed to it."""
     
-    def __init__(self, img, camera, total_n_wells=48, whichsideup='upright', well_shape='square', px2um=12.4):
+    def __init__(self, masked_image_file=None, 
+                 img=None, camera_serial=None, 
+                 total_n_wells=96, whichsideup='upright', 
+                 well_shape='square', px2um=None):
         """Class constructor. 
         Creates wells, and parses the image to fill up the wells property
+        Either give the masked_image_file name, or pass an image AND camera serial number.
+        If the masked_image_file name is given, any img, camera_serial, or px2um
+        will be ignored and read from the masked_image_file
         img = a brightfield frame that will be used for well-finding
         n_wells = how many wells *in the entire multiwell plate*"""
-        # save the input image just to make some things easier
-        if len(img.shape) == 2:
-            self.img = img.copy()
-        elif len(img.shape) == 3:
-            # convert to grey
-            self.img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+        # parse input
+        if masked_image_file is not None:
+            self.img, self.camera_serial, self.px2um = \
+            read_data_from_masked(masked_image_file)
+        # if there was no masked_image_file and one other parameter is missing    
+        elif (img is None) or (camera_serial is None) or (px2um is None): 
+            raise ValueError('Either provide the masked video filename or an' +\
+                             ' image, camera_serial, and px2um.')
+        # no masked_image_file, and all other parameters exist    
+        else:
+            # save the input image just to make some things easier
+            if len(img.shape) == 2:
+                self.img = img.copy()
+            elif len(img.shape) == 3:
+                # convert to grey
+                self.img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+            # and store serial number and px2um    
+            self.camera_serial = camera_serial
+            self.px2um = px2um         # px2um = 12.4 is default for Hydra rig
+            
+        # assert that other input was given correctly
+        # whichsideup: was the cell upright or upside-down
+        assert whichsideup in ['upside-down', 'upright'], \
+            "Whichsideup can only be 'upside-down' or 'upright'"
+        # well_shape: either 'square' or 'circle'
+        assert well_shape in ['square', 'circle'], \
+            "well_shape can only be 'square' or 'circle'"    
+
         # save height and width of image
-        self.img_shape = img.shape
-        self.camera_name = camera
+        self.img_shape = self.img.shape
         # where was the camera on the rig? 
-        # TODO: input check. Dunno if it will be kept like this or parsed from a filename
-        self.channel = CAM2CH_DICT[self.camera_name]
+        self.channel = CAM2CH_DICT[self.camera_serial]
         # number of wells in the multiwell plate: 6 12 24 48 96?
         # TODO: input check. Dunno if it will be kept like this or parsed from a filename
         self.n_wells = total_n_wells
         # whichsideup: was the cell upright or upside-down
-        assert whichsideup in ['upside-down', 'upright'], \
-            "Whichsideup can only be 'upside-down' or 'upright'"
         self.whichsideup = whichsideup
         # well_shape: either 'square' or 'circle'
-        assert well_shape in ['square', 'circle'], \
-            "well_shape can only be 'square' or 'circle'"
         self.well_shape = well_shape
         # according to n_wells and whichsideup choose a dictionary for 
         #(channel,position) <==> well 
@@ -168,8 +193,7 @@ class FOVMultiWellsSplitter(object):
         self.wells = pd.DataFrame(columns = ['x','y','r','row','col',
                                           'x_min','x_max','y_min','y_max',
                                           'well_name'])
-        # px2um = 12.4 is default for Hydra rig
-        self.px2um = px2um
+        
         # METHODS
         # call method to fill in the wells variable
         if self.well_shape == 'circle':
@@ -183,7 +207,7 @@ class FOVMultiWellsSplitter(object):
         self.calculate_wells_dimensions()
 #        print(self.wells)
         self.name_wells()
-        print(self.wells)
+#        print(self.wells)
 
     
     def get_blur_im(self):
@@ -203,7 +227,7 @@ class FOVMultiWellsSplitter(object):
         return blur_im
     
     
-    def find_square_wells(self, xcorr_threshold=0.9):
+    def find_square_wells(self, xcorr_threshold=0.85):
         """Cross-correlate the frame with a template approximating a square well.
         Then clean up the results by removing points too close together, or not on a nice grid
         - xcorr_threshold: how high the value of the cross-correlation between 
@@ -214,6 +238,7 @@ class FOVMultiWellsSplitter(object):
         dwnscl_factor = self.img_shape[0]/self.blur_im.shape[0]
         # How many pixels in a square well, in the downscaled image?
         if self.n_wells == 96:
+            # TODO: make a dictionary global and call it
             well_size_mm = 8 # roughly, well size of 96wp square wells. Maybe have it as input?
             well_size_px = well_size_mm*1000/self.px2um/dwnscl_factor
         else: 
@@ -224,88 +249,53 @@ class FOVMultiWellsSplitter(object):
         
         # find template in image: cross correlation, then threshold and segment
         res = cv2.matchTemplate(self.blur_im, template, cv2.TM_CCORR_NORMED)
-        # old way
-        labelled_match = label(np.uint8(res > xcorr_threshold)) # threshold xcorr and label different regions
-        regions = regionprops(labelled_match) # get properties of regions
-        regions = [r for r in regions if (r.area > 1) and (r.perimeter > 0)] # clean "empty" regions
-        # get array of y,x coordinates of centroids 
-        X = np.array([region.centroid for region in regions]).astype(int)
-        # and how high was the xcorr value
-        xcorr_peaks = np.array( [res[r, c] for r,c in X] )
-        # alt way
-        
-        X=peak_local_max(res, min_distance=well_size_px//2, indices=True, exclude_border=False)
+        # find local maxima that are at least well_size_px apart
+        X=peak_local_max(res, min_distance=well_size_px//2, 
+                         indices=True, 
+                         exclude_border=False,
+                         threshold_abs=xcorr_threshold)
         xcorr_peaks = np.array( [res[r, c] for r,c in X] )
         
         if is_debug:
             plt.figure()
             ax = plt.axes()
-            ax.imshow(res)
-            plt.plot(X[:,1],X[:,0],'rx')
+            hi = ax.imshow(res)
+            plt.axis('off')
+            plt.colorbar(hi, ax=ax, fraction=0.03378, pad=0.01)
+            plt.tight_layout()
+            plt.plot(X[:,1],X[:,0],'ro', mfc='none')
 #            plt.plot(X2[:,1],X2[:,0],'bx')
             fig, axs = plt.subplots(1,2, figsize=(12.8, 4.8))
             axs[0].imshow(self.img, cmap='gray')
             axs[1].imshow(res)
-            axs[1].plot(X[:,1], X[:,0], '.')
+            axs[1].plot(X[:,1], X[:,0], 'ro', mfc='none')
         
         #NOTE: X contains row and column (y and x) of corner of template matching, 
         # and are values within res.shape.  
         # To get the centre, add half the template size. 
         # This is to be done at the end, to avoid out-of-bound problems in res 
-        
-        # now clean up points that were too close to one another:
-        # out of two points too close, pick the highest one in xcorr value
-        
-        # calculate distance to their first neighbour. 
-        # n_neighbours=1 each point is first neighbour with itself
-        nbrs = NearestNeighbors(n_neighbors=2, algorithm='auto').fit(X)
-        # indices is a N-by-2 matrix, first column is the closest point 
-        # to the points in X, so basically the point we're investigating, and the second column
-        # the true first neighbour
-        # distances is a N-by-2 matrix, first column is 0 and second 
-        # column is distance to first neighbour 
-        distances, indices = nbrs.kneighbors(X)
-        # find wells that are within a "radius" of each other
-        idx_too_close = distances[:,1] < well_size_px/2
-        # find wells whose Xcorr peak is weaker than their first neighbour:
-        # xcorr_peaks is N-by-2 matrix with first column the xcorr peak
-        # of the points indices[:,0], the second column the xcorr peaks of points in 
-        # indices[:,1]. So if diff along x axis is positive the first neighboutr 
-        # has higher xcorr than the point itself 
-        idx_weaker_than_neighbour = np.diff(xcorr_peaks[indices], axis=1) > 0
-        idx_weaker_than_neighbour = idx_weaker_than_neighbour.flatten()
-        # the points to remove are the ones that are:
-        # a) too close to their first neighbour
-        # b) weaker than their first neighbour
-        idx_point_to_remove = np.logical_and(idx_too_close, idx_weaker_than_neighbour)
-        # apply the filtering:
-        X = X[~idx_point_to_remove]
-        xcorr_peaks = xcorr_peaks[~idx_point_to_remove]
-        
-        if is_debug:
-            axs[1].plot(X[:,1], X[:,0], 'o', fillstyle=None)
-                
+
         # now get rid of points not nicely on a grid.
         
         # first get a good estimate of the lattice parameter
         # points on a grid will always have 2 neighbours at 
         # distance=lattice spacing
         nbrs = NearestNeighbors(n_neighbors=3, algorithm='auto').fit(X)
-        distances, indices = nbrs.kneighbors(X)
-        dist = distances[:,1:]
-        lattice_dist = np.median(dist) # this is average lattice spacing
-        delta = lattice_dist/10        # this is "grace" interval
+        distances, _ = nbrs.kneighbors(X)
+        distances = distances[:,1:]         # throw away the column of zeros (dist from itself)
+        lattice_dist = np.median(distances) # this is average lattice spacing
+        delta = lattice_dist/10             # this is "grace" interval
         # now look for wells not aligned along the x or y:
         # samecoord is N-by-N matrix. Element [i,j] is true when 
         # the coordinate of well i and well j is (roughly) the same
         alonealongcoord = np.zeros(X.shape)
         for i in [0,1]: # dimension counter: y and x
             samecoord = abs(X[:,[i,]] - X[:,i]) < delta
-            if is_debug: print(samecoord)
+            if is_debug: print(samecoord.astype(int))
             alonealongcoord[:,i] =  samecoord.sum(axis=1)==1
             if is_debug: print(alonealongcoord)
         # a point is not on a grid if it doesn't share its x or y coordinates 
-        # with at elast another point
+        # with at least another point
         idx_not_on_grid = alonealongcoord.any(axis=1)
         if is_debug: print(idx_not_on_grid)
         # apply the filtering
@@ -314,7 +304,8 @@ class FOVMultiWellsSplitter(object):
         if is_debug: print(X)
         
         if is_debug:
-            axs[1].plot(X[:,1], X[:,0], 'x')
+            axs[1].plot(X[:,1], X[:,0], 'rx')
+            ax.plot(X[:,1], X[:,0], 'rx')
         
         # write in self.wells
         X = X * dwnscl_factor
@@ -705,7 +696,166 @@ class FOVMultiWellsSplitter(object):
         plt.axis('off')
         return hf
     
+    
+    def find_well_of_xy(self, x, y):
+        """
+        Takes two numpy arrays (or pandas columns), returns an array of strings
+        of the same with the name of the well each x,y, pair falls into
+        """
+        # I think a quick way is by using implicit expansion
+        # treat the x array as column, and the *_min and *_max as rows
+        # these are all matrices len(x)-by-len(self.wells)
+        within_x = np.logical_and((x[:,None] - self.wells['x_min'][None,:]) >= 0,  # none creates new axis
+                                  (x[:,None] - self.wells['x_max'][None,:]) <= 0)
+        within_y = np.logical_and((y[:,None] - self.wells['y_min'][None,:]) >= 0,  # none creates new axis
+                                  (y[:,None] - self.wells['y_max'][None,:]) <= 0)
+        within_well = np.logical_and(within_x, within_y) 
+        # in each row of within_well, the column index of the "true" value is the well index
+        
+        # sanity check:
+        assert (within_well.sum(axis=1)>1).any() == False, \
+        "a coordinate is being assigned to more than one well?"
+        # now find index
+        ind_worms_in_wells, ind_well = np.nonzero(within_well)
+
+        # prepare the output panda series (as long as the input variable)
+        well_names = pd.Series(data=['n/a']*len(x), dtype='S3', name='well_name')
+        # and assign the well name (read using the ind_well variable from the self.well)
+        well_names.loc[ind_worms_in_wells] = self.wells.iloc[ind_well]['well_name'].astype('S3').values
+
+        return well_names
+    
+    
+    def find_well_from_trajectories_data(self, trajectories_data):
+        """Wrapper for find_well_of_xy, 
+        reads the coordinates from the right columns of trajectories_data"""
+        return self.find_well_of_xy(trajectories_data['coord_x'], 
+                                    trajectories_data['coord_y'])
+        
+    def get_wells_data(self):
+        """
+        Returns info about the wells for storage purposes, in hdf5 friendly format
+        """
+        wells_out = self.wells[['x_min','x_max','y_min','y_max']].copy()
+        wells_out['well_name'] = self.wells['well_name'].astype('S3')
+        return wells_out
+    
+    
+    def read_worm_counts(self, annotated_img, path_to_templates):
+        """
+        cross correlation of image with characters
+        """
+        
+        is_debug = True
+        
+        templates = []
+        for ii in range(10):
+            c = str(ii)
+            digit_name = path_to_templates / (c+".png")
+            digit_img = cv2.imread(str(digit_name))
+            digit_img = cv2.cvtColor(digit_img,cv2.COLOR_BGR2GRAY)
+            digit_img = 255*(digit_img==0).astype(np.uint8)
+            templates.append(digit_img)
+        
+        # loop on wells
+        worm_count_dict = {}
+        for i, well in self.wells.iterrows():
+            # cut out region of interest
+            roi = annotated_img[well['y_min']:well['y_max'],
+                           well['x_min']:well['x_max']]
+            roi_bw = 255*(roi==0).astype(np.uint8)
+
+            # compare roi wit all digits
+            is_digit_a_hit = np.zeros(10).astype(np.bool) # here store how well the digit matches the roi
+            is_digit_repeated = np.zeros(10).astype(np.bool)
+            x_coord_of_digit = np.nan * np.ones(10) 
+            for dc, digit in enumerate(templates):
+                res = cv2.matchTemplate(roi_bw, digit, cv2.TM_CCORR_NORMED)
+            
+                # find local maxima that are at least well_size_px apart
+                X=peak_local_max(res, min_distance=np.min(digit.shape)//2, 
+                                 indices=True, 
+                                 exclude_border=False,
+                                 threshold_abs=0.85)
+                print(res.max())
+                # save hits
+                if X.shape[0] == 1:
+                    is_digit_a_hit[dc] = True
+                    x_coord_of_digit[dc] = X[0,1] # X is a list of row, column couples
+                elif X.shape[0] == 2:
+                    is_digit_a_hit[dc] = True
+                    is_digit_repeated[dc] = True
+                    x_coord_of_digit[dc] = X[0,1] # since repeated we don't really care about this
+                elif X.shape[0] > 2:
+                    plt.imshow(res)
+                    import pdb
+                    pdb.set_trace()
+                    
+                else:
+#                    if is_debug:
+#                    plt.figure()
+#                    plt.imshow(roi)
+                    plt.figure(str(dc))
+                    plt.imshow(res)
+                    pass # do nothing
+
+            # how may different digits were found?
+            # only one:
+            if is_digit_a_hit.sum()==1:
+                which_digit_was_it = np.argmax(is_digit_a_hit) # position in is_digit_a_hit is indeed digit
+                # was the only found digit repeated?
+                if is_digit_repeated[which_digit_was_it]: # it was repeated
+                    number_out = which_digit_was_it * 11 # assuming <100 worms
+                else: # it was not
+                    number_out = which_digit_was_it
+            # two different digits
+            elif is_digit_a_hit.sum()==2:
+                which_digits = np.argwhere(is_digit_a_hit).flatten()
+                digits_coordinates = x_coord_of_digit[is_digit_a_hit]
+                assert len(which_digits)==len(digits_coordinates), 'different lengths'
+                digits_sorted = which_digits[np.argsort(digits_coordinates)]
+                number_out = 10*digits_sorted[0] + digits_sorted[1]
+            elif is_digit_a_hit.sum()==0:
+                import pdb
+                pdb.set_trace()
+                raise ValueError('No digits were found!')
+            elif is_digit_a_hit.sum()>2:
+                raise ValueError('Too many digits were found!')    
+            
+            # now give output
+            print('well name: {}, worm number: {}'.format(well['well_name'], number_out))
+            worm_count_dict[well['well_name']] = number_out
+            
+            if is_debug:
+                plt.figure('well name: {}, worm number: {}'.format(well.well_name, number_out))
+                plt.imshow(roi)
+                    
+        return worm_count_dict
+    
+    
+    
 # end of class
+
+
+def read_data_from_masked(masked_image_file):
+    """
+    - Opens the masked_image_file hdf5 file, reads the /full_data node and 
+      creates a "background" by taking the maximum value of each pixel over time.
+    - Parses the file name to find a camera serial number
+    - reads the pixel/um ratio from the masked_image_file
+    """
+    # read attributes of masked_image_file
+    _, (microns_per_pixel, xy_units) , is_light_background = read_unit_conversions(masked_image_file)
+    # get "background" and px2um
+    with pd.HDFStore(masked_image_file, 'r') as fid:
+        assert is_light_background, \
+        'MultiWell recognition is only available for brightfield at the moment'
+        img = np.max(fid.get_node('/full_data'), axis=0)
+    # find camera name
+    regex = r"(?<=20\d{6}\_\d{6}\.)\d{8}"
+    camera_serial = re.findall(regex, str(masked_image_file).lower())[0]
+    
+    return img, camera_serial, microns_per_pixel
 
 
 def make_square_template(n_pxls=150, rel_width=0.8, blurring=0.1):
@@ -732,30 +882,70 @@ if __name__ == '__main__':
 
     plt.close("all")
 
+    # test from images:
+    
 #    wd = Path.home() / 'Desktop/Data_FOVsplitter'
-#    img_dir = wd / 'RawVideos/96wpsquare_upright_150ulagar_l1dispensed_1_20190614_105312_firstframes_squares'
-    wd = Path('/Volumes/behavgenom$/Luigi/Data/LoopBio_calibrations/wells_mapping/20190710/')
-    img_dir = wd / 'Hydra04'
+#    img_dir = wd / 'RawVideos/96wpsquare_upright_150ulagar_l1dispensed_1_20190614_105312_firstframes'
+#    wd = Path.home() / 'Desktop/Data_FOVsplitter'
+#    img_dir = wd / 'RawVideos/drugexperiment_1hrexposure'
+#    wd = Path('/Volumes/behavgenom$/Luigi/Data/LoopBio_calibrations/wells_mapping/20190710/')
+#    img_dir = wd
+#    img_dir = wd / 'Hydra04'
     
-    fnames = list(img_dir.rglob('*.png'))
+#    fnames = list(img_dir.rglob('*.png'))
+##    fnames = fnames[2:3] # for code-review only
+#    for fname in fnames:
+#        # load image
+#        img_ = cv2.imread(str(fname))
+#        img = cv2.cvtColor(img_,cv2.COLOR_BGR2GRAY)
+#        # find camera name
+#        regex = r"(?<=20\d{6}\_\d{6}\.)\d{8}"
+#        camera_serial = re.findall(regex, str(fname).lower())[0]
+#        # run fov splitting
+#        fovsplitter = FOVMultiWellsSplitter(img=img, camera_serial=camera_serial, total_n_wells=96,
+#                                            whichsideup='upright', well_shape='square', px2um=12.4)
+#        fig = fovsplitter.plot_wells()
+#        plt.tight_layout()
+#        fig.savefig(camera_serial + '.png', bbox_inches='tight', pad_inches=0, transparent=True)
+     
+#    %% test on filename
     
-    for fname in fnames:
-        # load image
-        img_ = cv2.imread(str(fname))
-        img = cv2.cvtColor(img_,cv2.COLOR_BGR2GRAY)
-        # find camera name
-        regex = r"(?<=20\d{6}\_\d{6}\.)\d{8}"
-        camera_name = re.findall(regex, str(fname).lower())[0]
-        # run fov splitting
-        fovsplitter = FOVMultiWellsSplitter(img, camera_name, total_n_wells=96,
-                                            whichsideup='upright', well_shape='square', px2um=12.4)
-        fovsplitter.plot_wells()
+    masked_image_file = '/Users/lferiani/Desktop/Data_FOVsplitter/MaskedVideos/drugexperiment_1hrexposure_set1_20190712_131508.22436248/metadata.hdf5'   
+    features_file = masked_image_file.replace('MaskedVideos','Results').replace('.hdf5','_featuresN.hdf5')
+    import shutil
+    shutil.copy(features_file.replace('.hdf5','.bk'), features_file)
     
+    fovsplitter = FOVMultiWellsSplitter(masked_image_file=masked_image_file, total_n_wells=96,
+                                            whichsideup='upright', well_shape='square')   
     
+    foo_wells = fovsplitter.get_wells_data()
     
-   
+#    fig = fovsplitter.plot_wells()
     
-    
-    
-    
+#    with pd.HDFStore(features_file, 'r') as fid:
+#        traj_data = fid['/trajectories_data']
+#        well_names = fovsplitter.find_well_from_trajectories_data(traj_data)
+        
+        
+    #%% test worm counting
+#    img_dir = Path('/Volumes/behavgenom$/Ida/Data/LoopBio/20190719_MWPtest/firstframes/')
+#
+#    fnames = list(img_dir.rglob('*.png'))
+#    fnames = [f for f in fnames if 'annotated' not in str(f)]
+#     
+#    path_to_templates = Path('/Volumes/behavgenom$/Ida/numbers')
+#     
+#    for fname in fnames[6:7]:
+#        # load image
+#        img_ = cv2.imread(str(fname))
+#        annotated_img = cv2.cvtColor(img_,cv2.COLOR_BGR2GRAY)
+#        # find camera name
+#        regex = r"(?<=20\d{6}\_\d{6}\.)\d{8}"
+#        camera_serial = re.findall(regex, str(fname).lower())[0]
+#        # run fov splitting
+#        fovsplitter = FOVMultiWellsSplitter(img=annotated_img, camera_serial=camera_serial, total_n_wells=96,
+#                                            whichsideup='upright', well_shape='square', px2um=12.4)
+#        # read worms count
+#        fovsplitter.read_worm_counts(annotated_img, path_to_templates)
+        
     

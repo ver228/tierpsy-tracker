@@ -15,9 +15,42 @@ from tierpsy.features.tierpsy_features.summary_stats import get_summary_stats
 from tierpsy.helper.misc import TimeCounter, print_flush, get_base_name, TABLE_FILTERS
 from tierpsy.helper.params import read_fps, read_ventral_side
 
-def save_timeseries_feats_table(features_file, derivate_delta_time):
+from tierpsy.analysis.split_fov.FOVMultiWellsSplitter import FOVMultiWellsSplitter
+
+def save_timeseries_feats_table(features_file, derivate_delta_time, fovsplitter_param={}):
     timeseries_features = []
     fps = read_fps(features_file)
+    
+    # initialise class for splitting fov
+    if len(fovsplitter_param) > 0:
+        is_fov_tosplit = True
+        assert all(key in fovsplitter_param for key in ['total_n_wells', 'whichsideup', 'well_shape'])
+        assert fovsplitter_param['total_n_wells']>0
+    else:
+        is_fov_tosplit = False
+    print('is fov to split?',is_fov_tosplit)
+
+         
+    if is_fov_tosplit:
+        # split fov in wells
+        masked_image_file = features_file.replace('Results','MaskedVideos')
+        masked_image_file = masked_image_file.replace('_featuresN.hdf5','.hdf5')
+#        fovsplitter = FOVMultiWellsSplitter(masked_image_file=masked_image_file,
+#                                            total_n_wells=fovsplitter_param['total_n_wells'],
+#                                            whichsideup=fovsplitter_param['whichsideup'],
+#                                            well_shape=fovsplitter_param['well_shape'])
+        fovsplitter = FOVMultiWellsSplitter(masked_image_file=masked_image_file,
+                                            **fovsplitter_param)
+        # store wells data in the features file
+        with tables.File(features_file, 'r+') as fid:
+            if '/fov_wells' in fid:
+                fid.remove_node('/fov_wells')
+            fid.create_table(
+                    '/',
+                    'fov_wells',
+                    obj = fovsplitter.get_wells_data().to_records(index=False),
+                    filters = TABLE_FILTERS)
+    
     
     with pd.HDFStore(features_file, 'r') as fid:
         trajectories_data = fid['/trajectories_data']
@@ -47,9 +80,11 @@ def save_timeseries_feats_table(features_file, derivate_delta_time):
                 
         
         feat_dtypes = [(x, np.float32) for x in timeseries_all_columns]
-        
-
-        feat_dtypes = [('worm_index', np.int32), ('timestamp', np.int32)] + feat_dtypes
+            
+        feat_dtypes = [('worm_index', np.int32),
+                       ('timestamp', np.int32),
+                       ('well_name', 'S3')] + feat_dtypes 
+                       
         timeseries_features = fid.create_table(
                 '/',
                 'timeseries_data',
@@ -65,33 +100,33 @@ def save_timeseries_feats_table(features_file, derivate_delta_time):
         ventral_side = read_ventral_side(features_file)
             
         for ind_n, (worm_index, worm_data) in enumerate(trajectories_data_g):
-            with tables.File(features_file, 'r') as fid:
-                skel_id = worm_data['skeleton_id'].values
+
+            skel_id = worm_data['skeleton_id'].values
+            
+            #deal with any nan in the skeletons
+            good_id = skel_id>=0
+            skel_id_val = skel_id[good_id]
+            traj_size = skel_id.size
+
+            args = []
+            for p in ('skeletons', 'widths', 'dorsal_contours', 'ventral_contours'):
                 
-                #deal with any nan in the skeletons
-                good_id = skel_id>=0
-                skel_id_val = skel_id[good_id]
-                traj_size = skel_id.size
+                node_str = '/coordinates/' + p
+                if node_str in fid:
+                    node = fid.get_node(node_str)
+                    dat = np.full((traj_size, *node.shape[1:]), np.nan)
+                    if skel_id_val.size > 0:
+                        if len(node.shape) == 3:
+                            dd = node[skel_id_val, :, :]
+                        else:
+                            dd = node[skel_id_val, :]
+                        dat[good_id] = dd
+                else:
+                    dat = None
+                
+                args.append(dat)
 
-                args = []
-                for p in ('skeletons', 'widths', 'dorsal_contours', 'ventral_contours'):
-                    
-                    node_str = '/coordinates/' + p
-                    if node_str in fid:
-                        node = fid.get_node(node_str)
-                        dat = np.full((traj_size, *node.shape[1:]), np.nan)
-                        if skel_id_val.size > 0:
-                            if len(node.shape) == 3:
-                                dd = node[skel_id_val, :, :]
-                            else:
-                                dd = node[skel_id_val, :]
-                            dat[good_id] = dd
-                    else:
-                        dat = None
-                    
-                    args.append(dat)
-
-                timestamp = worm_data['timestamp_raw'].values.astype(np.int32)
+            timestamp = worm_data['timestamp_raw'].values.astype(np.int32)
             
             feats = get_timeseries_features(*args, 
                                            timestamp = timestamp,
@@ -103,9 +138,23 @@ def save_timeseries_feats_table(features_file, derivate_delta_time):
             #save timeseries features data
             feats = feats.astype(np.float32)
             feats['worm_index'] = worm_index
+            if is_fov_tosplit:
+                feats['well_name'] = fovsplitter.find_well_from_trajectories_data(worm_data)
+            else:
+                feats['well_name'] = 'n/a'
+            # cast well_name to the correct type 
+            # (before shuffling columns, so it remains the last entry)
+            # needed because for some reason this does not work:
+            # feats['well_name'] = feats['well_name'].astype('S3')
+            feats['_well_name'] = feats['well_name'].astype('S3')
+            feats.drop(columns='well_name', inplace=True)
+            feats.rename(columns={'_well_name':'well_name'}, inplace=True)
+            
             #move the last fields to the first columns
             cols = feats.columns.tolist()
-            cols = cols[-1:] + cols[:-1]
+            cols = cols[-2:] + cols[:-2]
+            cols[1], cols[2] = cols[2], cols[1]
+            
             feats = feats[cols]
             
             feats['worm_index'] = feats['worm_index'].astype(np.int32)
@@ -114,6 +163,7 @@ def save_timeseries_feats_table(features_file, derivate_delta_time):
     
             timeseries_features.append(feats)
             _display_progress(ind_n)
+            
 
 def save_feats_stats(features_file, derivate_delta_time):
     with pd.HDFStore(features_file, 'r') as fid:
@@ -121,17 +171,63 @@ def save_feats_stats(features_file, derivate_delta_time):
         timeseries_data = fid['/timeseries_data']
         blob_features = fid['/blob_features'] if '/blob_features' in fid else None
     
+    # do we need split-FOV sumaries?
+    if 'well_name' not in timeseries_data.columns:
+        # for some weird reason, save_feats_stats is being called on an old 
+        # featuresN file without calling save_timeseries_feats_table first
+        is_fov_tosplit = False
+    else:
+        # timeseries_data has been updated and now has a well_name column
+        if len(set(timeseries_data['well_name']) - set(['n/a'])) > 0:
+            is_fov_tosplit = True
+            print('have to split by fov')
+        else:
+            assert all(timeseries_data['well_name']=='n/a'), \
+                'Something is wrong with well naming - go check save_feats_stats'
+            is_fov_tosplit = False
+        
+    #Now I want to calculate the stats of the video    
+    if is_fov_tosplit:
+        # get summary stats per well and then concatenate them all
+        well_name_list = list(set(timeseries_data['well_name']) - set(['n/a']))
+        exp_feats = []
+        for wc, well in enumerate(well_name_list):
+            print('Processing well {} out of {}'.format(wc, len(well_name_list)))
+            idx = timeseries_data['well_name'] == well
+            # calculate stats per well
+            tmp = get_summary_stats(timeseries_data[idx].reset_index(),
+                                    fps,  
+                                    blob_features[idx].reset_index(), 
+                                    derivate_delta_time)
+            tmp = pd.DataFrame(zip(tmp.index, tmp), columns=['name','value'])
+            tmp['well_name'] = well
+            exp_feats.append(tmp)
+           
+        # now concat all
+        exp_feats = pd.concat(exp_feats, ignore_index=True)
+                
+    else: # we don't need to split the FOV
+        
+        exp_feats = get_summary_stats(timeseries_data,
+                                      fps,  
+                                      blob_features, 
+                                      derivate_delta_time)
     
-    #Now I want to calculate the stats of the video
-    exp_feats = get_summary_stats(timeseries_data, 
-                      fps,  
-                      blob_features, 
-                      derivate_delta_time)
-    
+    # save on disk
+    # now if is_fov_tosplit exp_feats is a dataframe, otherwise a series
     if len(exp_feats)>0:
-        tot = max(len(x) for x in exp_feats.index)
-        dtypes = [('name', 'S{}'.format(tot)), ('value', np.float32)]
-        exp_feats_rec = np.array(list(zip(exp_feats.index, exp_feats)), dtype = dtypes)
+        
+        # different syntax according to df or series
+        if is_fov_tosplit:
+            tot = max(len(x) for x in exp_feats['name'])
+            dtypes = {'name':'S{}'.format(tot), 'value':np.float32, 'well_name':'S3'}
+            exp_feats_rec = exp_feats.to_records(index=False, column_dtypes=dtypes)
+        else:
+            tot = max(len(x) for x in exp_feats.index)
+            dtypes = [('name', 'S{}'.format(tot)), ('value', np.float32)]
+            exp_feats_rec = np.array(list(zip(exp_feats.index, exp_feats)), dtype = dtypes)
+        
+        # write on hdf5 file
         with tables.File(features_file, 'r+') as fid:
             for gg in ['/features_stats']:
                 if gg in fid:
@@ -144,10 +240,21 @@ def save_feats_stats(features_file, derivate_delta_time):
 
 
             
-def get_tierpsy_features(features_file, derivate_delta_time = 1/3):
+def get_tierpsy_features(features_file, derivate_delta_time = 1/3, fovsplitter_param={}):
     #I am adding this so if I add the parameters to calculate the features i can pass it to this function
-    save_timeseries_feats_table(features_file, derivate_delta_time)
+    save_timeseries_feats_table(features_file, derivate_delta_time, fovsplitter_param)
     save_feats_stats(features_file, derivate_delta_time)
     
 
+if __name__ == '__main__':
+    
+    base_file = '/Users/lferiani/Desktop/Data_FOVsplitter/Results/drugexperiment_1hrexposure_set1_20190712_131508.22436248/metadata'
+        
+    features_file = base_file + '_featuresN.hdf5'
+
+    # restore features after previous step before testing    
+    import shutil
+    shutil.copy(features_file.replace('.hdf5','.bk'), features_file)
+    
+    get_tierpsy_features(features_file)
         
