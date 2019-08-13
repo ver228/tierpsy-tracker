@@ -39,18 +39,12 @@ def save_timeseries_feats_table(features_file, derivate_delta_time, fovsplitter_
 #                                            total_n_wells=fovsplitter_param['total_n_wells'],
 #                                            whichsideup=fovsplitter_param['whichsideup'],
 #                                            well_shape=fovsplitter_param['well_shape'])
-        fovsplitter = FOVMultiWellsSplitter(masked_image_file=masked_image_file,
+        fovsplitter = FOVMultiWellsSplitter(masked_image_file,
                                             **fovsplitter_param)
-        # store wells data in the features file
-        with tables.File(features_file, 'r+') as fid:
-            if '/fov_wells' in fid:
-                fid.remove_node('/fov_wells')
-            fid.create_table(
-                    '/',
-                    'fov_wells',
-                    obj = fovsplitter.get_wells_data().to_records(index=False),
-                    filters = TABLE_FILTERS)
-    
+        # store wells data in the features file        
+        fovsplitter.write_fov_wells_to_file(features_file)
+        
+        
     
     with pd.HDFStore(features_file, 'r') as fid:
         trajectories_data = fid['/trajectories_data']
@@ -256,5 +250,8 @@ if __name__ == '__main__':
     import shutil
     shutil.copy(features_file.replace('.hdf5','.bk'), features_file)
     
-    get_tierpsy_features(features_file)
+    fovsplitter_param = {'total_n_wells':96, 'whichsideup':'upright', 'well_shape':'square'}
+    get_tierpsy_features(features_file, 
+                         derivate_delta_time = 1/3, 
+                         fovsplitter_param=fovsplitter_param)
         

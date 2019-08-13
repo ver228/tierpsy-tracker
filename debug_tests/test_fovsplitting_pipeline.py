@@ -28,59 +28,73 @@ import subprocess
 # the above function sbould basically do the same (since I'm only calling it on one video) as running in the CLI
 #'/anaconda3/envs/tierpsy_dev/bin/python' '/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py' '/Users/lferiani/Desktop/Data_FOVsplitter/RawVideos/20190308_48wptest_short_20190308_155935.22436248/metadata.yaml' --masks_dir '/Users/lferiani/Desktop/Data_FOVsplitter/MaskedVideos/20190308_48wptest_short_20190308_155935.22436248' --results_dir '/Users/lferiani/Desktop/Data_FOVsplitter/Results/20190308_48wptest_short_20190308_155935.22436248' --tmp_mask_dir '/Users/lferiani/Tmp/MaskedVideos/' --tmp_results_dir '/Users/lferiani/Tmp/Results/' --json_file '/Users/lferiani/Desktop/Data_FOVsplitter/loopbio_rig_new_.json' --analysis_checkpoints 'COMPRESS'
 
-imgstore_name = 'drugexperiment_1hrexposure_set1_20190712_131508.22436248/'
+imgstore_name = 'drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22436248/'
 
+rootdir = '/Users/lferiani/Desktop/Data_FOVsplitter/short/'
+rawvideosdir = rootdir + 'RawVideos/' + imgstore_name
+maskedvideosdir = rootdir + 'MaskedVideos/' + imgstore_name
+resultsdir = rootdir + 'Results/' + imgstore_name
 
-basedir = '/Users/lferiani/Desktop/Data_FOVsplitter/'
-maskedvideosdir = basedir + 'MaskedVideos/' + imgstore_name
-resultsdir = basedir + 'Results/' + imgstore_name
+raw_video = rawvideosdir + 'metadata.yaml'
 masked_image_file = maskedvideosdir + 'metadata.hdf5'    
 features_file = resultsdir + 'metadata_featuresN.hdf5'
 skeletons_file = resultsdir + 'metadata_skeletons.hdf5'
+
+json_file = '/Users/lferiani/Desktop/Data_FOVsplitter/loopbio_rig_96WP_upright_Hydra05.json'
 # restore features after previous step before testing    
-import shutil
-shutil.copy(features_file.replace('.hdf5','.bk'), features_file)
+#import shutil
+#shutil.copy(features_file.replace('.hdf5','.bk'), features_file)
 
 
 # don't pass the path to python if calling it as a function
+# compress
+#sys_argv_list = ['/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py',
+#                 raw_video,
+#                 '--masks_dir', maskedvideosdir,
+#                 '--results_dir', resultsdir,
+#                 '--json_file', json_file,
+#                 '--analysis_checkpoints', 'COMPRESS']
+
+#sys_argv_list = ['/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py',
+#                 masked_image_file,
+#                 '--masks_dir', maskedvideosdir,
+#                 '--results_dir', resultsdir,
+#                 '--json_file', json_file,
+#                 '--analysis_checkpoints', 'TRAJ_CREATE',
+#                                            'TRAJ_JOIN',
+#                                            'SKE_INIT',
+#                                            'BLOB_FEATS']
+
 sys_argv_list = ['/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py',
                  masked_image_file,
                  '--masks_dir', maskedvideosdir,
                  '--results_dir', resultsdir,
-                 '--json_file', '/Users/lferiani/Desktop/Data_FOVsplitter/loopbio_rig_new_.json',
-                 '--analysis_checkpoints', 'FEAT_TIERPSY']
+                 '--json_file', json_file,
+                 '--analysis_checkpoints',  'SKE_CREATE',
+                                            'SKE_FILT',
+                                            'SKE_ORIENT',
+                                            'INT_PROFILE',
+                                            'INT_SKE_ORIENT',
+                                            'FEAT_INIT',
+                                            'FEAT_TIERPSY']
+
+
 local_obj = ProcessLocalParser(sys_argv_list)
 
-# until now, no tmp file has been created
+worker_cmd = local_obj.start()      # until now, no tmp file has been created
 
-
-#%%
-worker_cmd = local_obj.start()
-# until now, no tmp file has been created
-
-
-#%%
 # here take the cmd string that you could give to the terminal, and give it to python instead
 # giving the worker)cmd to the terminal starts the analysis
-
 worm_parser = ProcessWorkerParser()
-#%%
+
 # translate cmd list to a dictionary. vars returns the __dict__ of an object
 # in this case since ProcessWorkerParser is a subclass of argParse, a Namespace is returned, 
 # so __dict__ is what we want to read and vars() does that
- 
 args = vars(worm_parser.parse_args(worker_cmd[2:]))
     
-#%% this is the function that actually does the job
+# this is the function that actually does the job
 ProcessWorker(**args, cmd_original = subprocess.list2cmdline(sys_argv_list))
 
-#%%
 #clear temporary files
 local_obj.clean()    
-
-
-#print("this is outside of everything")
-#
-#if __name__=='__main__':
-#    print("this is in the main")
 
