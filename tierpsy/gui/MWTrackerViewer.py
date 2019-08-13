@@ -456,7 +456,7 @@ class TrajectoryEditor(ROIManager):
         self.updateImage()
 
 class FeatureReaderBase(TrackerViewerAuxGUI):
-    index_cols = ['worm_index', 'timestamp', 'motion_modes', 'skeleton_id']
+    index_cols = ['worm_index', 'timestamp', 'motion_modes', 'skeleton_id', 'well_name']
     valid_fields = ['/timeseries_data', '/features_timeseries']
 
     def __init__(self, ui):
@@ -550,6 +550,7 @@ class MarkersDrawer(FeatureReaderBase):
 
     def _h_find_feat_limits(self):
         self.feat_column = str(self.ui.feature_column.currentText())
+        print(self.feat_column)
         
         if self.feat_column and self.timeseries_data is not None:
             f_max = self.timeseries_data[self.feat_column].max()
