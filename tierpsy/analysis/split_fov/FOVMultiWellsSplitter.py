@@ -12,105 +12,21 @@ Created on Tue Mar  5 14:55:41 2019
 import re
 import cv2
 import pdb
+import tables
 import itertools
 import numpy as np
 import pandas as pd
+
 from matplotlib import cm
 from matplotlib import colors
 from matplotlib import pyplot as plt
 from skimage.feature import peak_local_max
-from skimage.measure import label, regionprops
 from sklearn.neighbors import NearestNeighbors
 
-from tierpsy.helper.params import read_unit_conversions
-
-#%% constants
-
-# dictionary to go from camera name to channel
-# to be updated as we get more copies of the LoopBio rig
-CAM2CH_DICT_legacy = {"22594549":'Ch1',
-                      "22594548":'Ch2',
-                      "22594546":'Ch3',
-                      "22436248":'Ch4',
-                      "22594559":'Ch5',
-                      "22594547":'Ch6'}
-
-CAM2CH_DICT = {"22956818":'Ch1', # Hydra01
-               "22956816":'Ch2',
-               "22956813":'Ch3',
-               "22956805":'Ch4',
-               "22956807":'Ch5',
-               "22956832":'Ch6',
-               "22956839":'Ch1', # Hydra02
-               "22956837":'Ch2',
-               "22956836":'Ch3',
-               "22956829":'Ch4',
-               "22956822":'Ch5',
-               "22956806":'Ch6',
-               "22956814":'Ch1', # Hydra03
-               "22956827":'Ch2',
-               "22956819":'Ch3',
-               "22956833":'Ch4',
-               "22956823":'Ch5',
-               "22956840":'Ch6',
-               "22956812":'Ch1', # Hydra04
-               "22956834":'Ch2',
-               "22956817":'Ch3',
-               "22956811":'Ch4',
-               "22956831":'Ch5',
-               "22956809":'Ch6',
-               "22594559":'Ch1', # Hydra05
-               "22594547":'Ch2',
-               "22594546":'Ch3',
-               "22436248":'Ch4',
-               "22594549":'Ch5',
-               "22594548":'Ch6'}
-
-# dictionaries to go from channel/(col, row) to well name.
-# there will be many as it depends on total number of wells, upright/upsidedown,
-# and in case of the 48wp how many wells in the fov
-
-UPRIGHT_48WP_669999 = pd.DataFrame.from_dict({ ('Ch1',0):['A1','B1','C1'],
-                                               ('Ch1',1):['A2','B2','C2'],
-                                               ('Ch2',0):['D1','E1','F1'],
-                                               ('Ch2',1):['D2','E2','F2'],
-                                               ('Ch3',0):['A3','B3','C3'],
-                                               ('Ch3',1):['A4','B4','C4'],
-                                               ('Ch3',2):['A5','B5','C5'],
-                                               ('Ch4',0):['D3','E3','F3'],
-                                               ('Ch4',1):['D4','E4','F4'],
-                                               ('Ch4',2):['D5','E5','F5'],
-                                               ('Ch5',0):['A6','B6','C6'],
-                                               ('Ch5',1):['A7','B7','C7'],
-                                               ('Ch5',2):['A8','B8','C8'],
-                                               ('Ch6',0):['D6','E6','F6'],
-                                               ('Ch6',1):['D7','E7','F7'],
-                                               ('Ch6',2):['D8','E8','F8']})
-
-UPRIGHT_96WP = pd.DataFrame.from_dict({('Ch1',0):[ 'A1', 'B1', 'C1', 'D1'],
-                                       ('Ch1',1):[ 'A2', 'B2', 'C2', 'D2'],
-                                       ('Ch1',2):[ 'A3', 'B3', 'C3', 'D3'],
-                                       ('Ch1',3):[ 'A4', 'B4', 'C4', 'D4'],
-                                       ('Ch2',0):[ 'E1', 'F1', 'G1', 'H1'],
-                                       ('Ch2',1):[ 'E2', 'F2', 'G2', 'H2'],
-                                       ('Ch2',2):[ 'E3', 'F3', 'G3', 'H3'],
-                                       ('Ch2',3):[ 'E4', 'F4', 'G4', 'H4'],
-                                       ('Ch3',0):[ 'A5', 'B5', 'C5', 'D5'],
-                                       ('Ch3',1):[ 'A6', 'B6', 'C6', 'D6'],
-                                       ('Ch3',2):[ 'A7', 'B7', 'C7', 'D7'],
-                                       ('Ch3',3):[ 'A8', 'B8', 'C8', 'D8'],
-                                       ('Ch4',0):[ 'E5', 'F5', 'G5', 'H5'],
-                                       ('Ch4',1):[ 'E6', 'F6', 'G6', 'H6'],
-                                       ('Ch4',2):[ 'E7', 'F7', 'G7', 'H7'],
-                                       ('Ch4',3):[ 'E8', 'F8', 'G8', 'H8'],
-                                       ('Ch5',0):[ 'A9', 'B9', 'C9', 'D9'],
-                                       ('Ch5',1):['A10','B10','C10','D10'],
-                                       ('Ch5',2):['A11','B11','C11','D11'],
-                                       ('Ch5',3):['A12','B12','C12','D12'],
-                                       ('Ch6',0):[ 'E9', 'F9', 'G9', 'H9'],
-                                       ('Ch6',1):['E10','F10','G10','H10'],
-                                       ('Ch6',2):['E11','F11','G11','H11'],
-                                       ('Ch6',3):['E12','F12','G12','H12']})
+from tierpsy.analysis.split_fov.helper import make_square_template
+from tierpsy.analysis.split_fov.helper import read_data_from_masked
+from tierpsy.analysis.split_fov.helper import get_mwp_map, CAM2CH_DICT
+from tierpsy.helper.misc import TABLE_FILTERS
 
 
 #%% Class definition
@@ -118,37 +34,80 @@ class FOVMultiWellsSplitter(object):
     """Class tasked with finding how to split a full-FOV image into single-wells images, 
     and then splitting new images that are passed to it."""
     
-    def __init__(self, masked_image_file=None, 
-                 img=None, camera_serial=None, 
-                 total_n_wells=96, whichsideup='upright', 
-                 well_shape='square', px2um=None):
-        """Class constructor. 
+    def __init__(self, masked_or_features_or_image, **kwargs):
+        """
+        Class constructor
+        According to what the input is, will call different constructors
         Creates wells, and parses the image to fill up the wells property
-        Either give the masked_image_file name, or pass an image AND camera serial number.
+        Either give the masked_image_file name or features file,
+        or pass an image AND camera serial number.
         If the masked_image_file name is given, any img, camera_serial, or px2um
         will be ignored and read from the masked_image_file
         img = a brightfield frame that will be used for well-finding
-        n_wells = how many wells *in the entire multiwell plate*"""
-        # parse input
-        if masked_image_file is not None:
-            self.img, self.camera_serial, self.px2um = \
-            read_data_from_masked(masked_image_file)
-        # if there was no masked_image_file and one other parameter is missing    
-        elif (img is None) or (camera_serial is None) or (px2um is None): 
+        n_wells = how many wells *in the entire multiwell plate*
+        """
+        # is it a string?
+        if not isinstance(masked_or_features_or_image,str):
+            # assume it is an image
+            self.constructor_from_image(masked_or_features_or_image, 
+                                        **kwargs)
+            
+        else:
+            # it is a string
+            is_skeletons = '_skeletons.hdf5' in masked_or_features_or_image
+            is_featuresN = '_featuresN.hdf5' in masked_or_features_or_image
+            is_masked = (is_skeletons == False) and (is_featuresN == False) and \
+                ('_features.hdf5' not in masked_or_features_or_image) and \
+                ('.hdf5' in masked_or_features_or_image)
+                
+            if is_skeletons:
+                # this is a skeletons file
+                raise ValueError("only works with masked videos or featuresN files")
+            if is_featuresN or is_masked:
+                # this either features or masked. 
+                # have the wells been detected already?
+                with pd.HDFStore(masked_or_features_or_image,'r') as fid:
+                    has_fov_wells = '/fov_wells' in fid
+                
+                if has_fov_wells:
+                    # construct from wells info
+                    self.constructor_from_fov_wells(masked_or_features_or_image)
+                else:
+                    # fall back on constructing from masked
+                    masked_image_file = masked_or_features_or_image.replace('_featuresN.hdf5','.hdf5')
+                    img, camera_serial, px2um = read_data_from_masked(masked_image_file)
+                    self.constructor_from_image(img, **kwargs)
+                        
+        # this is common to the two constructors paths
+        self.wells_mask = self.create_mask_wells()
+
+                    
+
+
+    def constructor_from_image(self, 
+                               img, 
+                               camera_serial=None,
+                               px2um=None,
+                               total_n_wells=96, 
+                               whichsideup='upright', 
+                               well_shape='square'):
+        print('constructor from image')
+        # very needed inputs
+        if (camera_serial is None) or (px2um is None): 
             raise ValueError('Either provide the masked video filename or an' +\
                              ' image, camera_serial, and px2um.')
-        # no masked_image_file, and all other parameters exist    
-        else:
-            # save the input image just to make some things easier
-            if len(img.shape) == 2:
-                self.img = img.copy()
-            elif len(img.shape) == 3:
-                # convert to grey
-                self.img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-            # and store serial number and px2um    
-            self.camera_serial = camera_serial
-            self.px2um = px2um         # px2um = 12.4 is default for Hydra rig
             
+        # save the input image just to make some things easier
+        print('image shape: {}'.format(img.shape))
+        if len(img.shape) == 2:
+            self.img = img.copy()
+        elif len(img.shape) == 3:
+            # convert to grey
+            self.img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+        # and store serial number and px2um    
+        self.camera_serial = camera_serial
+        self.px2um = px2um         # px2um = 12.4 is default for Hydra rig
+        
         # assert that other input was given correctly
         # whichsideup: was the cell upright or upside-down
         assert whichsideup in ['upside-down', 'upright'], \
@@ -170,15 +129,8 @@ class FOVMultiWellsSplitter(object):
         self.well_shape = well_shape
         # according to n_wells and whichsideup choose a dictionary for 
         #(channel,position) <==> well 
-        # TODO: the dictionaries will be imported from a helper module
         # TODO?: make user specify (if 48wp) which channels have 6 wells and not 9
-        # TODO: make this its own function
-        if (self.n_wells == 48) and (self.whichsideup == 'upright'):
-            self.mwp_df = UPRIGHT_48WP_669999[self.channel]
-        elif (self.n_wells == 96) and (self.whichsideup == 'upright'):
-            self.mwp_df = UPRIGHT_96WP[self.channel]
-        else:
-            raise Exception("This case hasn't been coded for yet")
+        self.mwp_df = get_mwp_map(self.n_wells, self.whichsideup)
         # create a scaled down, blurry image which is faster to analyse
         self.blur_im = self.get_blur_im()
         # wells is the most important property. 
@@ -207,8 +159,48 @@ class FOVMultiWellsSplitter(object):
         self.calculate_wells_dimensions()
 #        print(self.wells)
         self.name_wells()
-#        print(self.wells)
+    
+            
+    
+    def constructor_from_fov_wells(self, filename):
+        print('constructor from /fov_wells')        
+        with tables.File(filename, 'r') as fid:
+            self.img_shape     = fid.get_node('/fov_wells')._v_attrs['img_shape']
+            self.camera_serial = fid.get_node('/fov_wells')._v_attrs['camera_serial']
+            self.px2um         = fid.get_node('/fov_wells')._v_attrs['px2um']
+            self.channel       = fid.get_node('/fov_wells')._v_attrs['channel']
+            self.n_wells       = fid.get_node('/fov_wells')._v_attrs['n_wells']
+            self.whichsideup   = fid.get_node('/fov_wells')._v_attrs['whichsideup']
+            self.well_shape    = fid.get_node('/fov_wells')._v_attrs['well_shape']
 
+        # initialise the dataframe
+        self.wells = pd.DataFrame(columns = ['x','y','r','row','col',
+                                          'x_min','x_max','y_min','y_max',
+                                          'well_name'])
+        with pd.HDFStore(filename,'r') as fid:
+            wells_table = fid['/fov_wells']
+        for colname in ['x_min','x_max','y_min','y_max','well_name']:
+            self.wells[colname] = wells_table[colname]
+        
+    
+    
+    def write_fov_wells_to_file(self, filename):
+        with tables.File(filename, 'r+') as fid:
+            if '/fov_wells' in fid:
+                fid.remove_node('/fov_wells')
+            fid.create_table('/',
+                             'fov_wells',
+                             obj = self.get_wells_data().to_records(index=False),
+                             filters = TABLE_FILTERS)
+            fid.get_node('/fov_wells')._v_attrs['img_shape']     = self.img_shape
+            fid.get_node('/fov_wells')._v_attrs['camera_serial'] = self.camera_serial
+            fid.get_node('/fov_wells')._v_attrs['px2um']         = self.px2um
+            fid.get_node('/fov_wells')._v_attrs['channel']       = self.channel
+            fid.get_node('/fov_wells')._v_attrs['n_wells']       = self.n_wells
+            fid.get_node('/fov_wells')._v_attrs['whichsideup']   = self.whichsideup
+            fid.get_node('/fov_wells')._v_attrs['well_shape']    = self.well_shape
+
+    
     
     def get_blur_im(self):
         """downscale and blur the image"""
@@ -218,7 +210,10 @@ class FOVMultiWellsSplitter(object):
         new_shape = (self.img.shape[1]//dwnscl_factor, # as x,y, not row,columns
                      self.img.shape[0]//dwnscl_factor)
         
-        dwn_gray_im = cv2.resize(self.img, new_shape)
+        try:        
+            dwn_gray_im = cv2.resize(self.img, new_shape)
+        except:
+            pdb.set_trace()
         # apply blurring
         blur_im = cv2.GaussianBlur(dwn_gray_im, (blr_sigma,blr_sigma),0)
         # normalise between 0 and 255
@@ -741,6 +736,36 @@ class FOVMultiWellsSplitter(object):
         return wells_out
     
     
+    def create_mask_wells(self):
+        """
+        Create a black mask covering a 5% thick edge of the square region covering each well
+        """
+        mask = np.ones(self.img_shape).astype(np.uint8)
+        # average size of wells
+        mean_wells_width = np.round(np.mean(self.wells['x_max']-self.wells['x_min']))
+        mean_wells_height = np.round(np.mean(self.wells['y_max']-self.wells['y_min']))
+        # size of black edge
+        horz_edge = np.round(mean_wells_width * 0.10).astype(int)
+        vert_edge = np.round(mean_wells_height * 0.10).astype(int)
+        for x in np.unique(self.wells[['x_min','x_max']]):
+            m = max(x-horz_edge,0)
+            M = min(x+horz_edge, self.img_shape[1])
+            mask[:,m:M] = 0
+        for y in np.unique(self.wells[['y_min','y_max']]):
+            m = max(y-vert_edge,0)
+            M = min(y+vert_edge, self.img_shape[0])
+            mask[m:M,:] = 0
+        
+        return mask
+            
+    def apply_wells_mask(self, img):
+        """
+        performs img*= mask"""
+        img *= self.wells_mask
+    
+    
+    
+    
     def read_worm_counts(self, annotated_img, path_to_templates):
         """
         cross correlation of image with characters
@@ -836,46 +861,12 @@ class FOVMultiWellsSplitter(object):
     
 # end of class
 
-
-def read_data_from_masked(masked_image_file):
-    """
-    - Opens the masked_image_file hdf5 file, reads the /full_data node and 
-      creates a "background" by taking the maximum value of each pixel over time.
-    - Parses the file name to find a camera serial number
-    - reads the pixel/um ratio from the masked_image_file
-    """
-    # read attributes of masked_image_file
-    _, (microns_per_pixel, xy_units) , is_light_background = read_unit_conversions(masked_image_file)
-    # get "background" and px2um
-    with pd.HDFStore(masked_image_file, 'r') as fid:
-        assert is_light_background, \
-        'MultiWell recognition is only available for brightfield at the moment'
-        img = np.max(fid.get_node('/full_data'), axis=0)
-    # find camera name
-    regex = r"(?<=20\d{6}\_\d{6}\.)\d{8}"
-    camera_serial = re.findall(regex, str(masked_image_file).lower())[0]
-    
-    return img, camera_serial, microns_per_pixel
-
-
-def make_square_template(n_pxls=150, rel_width=0.8, blurring=0.1):
-    """Function that creates a template that approximates a square well"""
-    n_pxls = int(np.round(n_pxls))
-    x = np.linspace(-0.5, 0.5, n_pxls)
-    y = np.linspace(-0.5, 0.5, n_pxls)
-    xx, yy = np.meshgrid(x, y, sparse=False, indexing='ij')
-
-    # inspired by Mark Shattuck's function to make a colloid's template
-    zz = (1 - np.tanh( (abs(xx)-rel_width/2)/blurring ))
-    zz = zz * (1-np.tanh( (abs(yy)-rel_width/2)/blurring ))
-    zz = (zz/4*255).astype(np.uint8)
-    
-    return zz
     
 #%% main
         
 if __name__ == '__main__':
     
+    import time
     import re
     from pathlib import Path
 #    from scipy.signal import find_peaks
@@ -910,15 +901,19 @@ if __name__ == '__main__':
      
 #    %% test on filename
     
-    masked_image_file = '/Users/lferiani/Desktop/Data_FOVsplitter/MaskedVideos/drugexperiment_1hrexposure_set1_20190712_131508.22436248/metadata.hdf5'   
-    features_file = masked_image_file.replace('MaskedVideos','Results').replace('.hdf5','_featuresN.hdf5')
-    import shutil
-    shutil.copy(features_file.replace('.hdf5','.bk'), features_file)
+    masked_image_file = '/Users/lferiani/Desktop/Data_FOVsplitter/short/MaskedVideos/drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22436248/metadata.hdf5'   
+#    features_file = masked_image_file.replace('MaskedVideos','Results').replace('.hdf5','_featuresN.hdf5')
+#    import shutil
+#    shutil.copy(features_file.replace('.hdf5','.bk'), features_file)
     
-    fovsplitter = FOVMultiWellsSplitter(masked_image_file=masked_image_file, total_n_wells=96,
-                                            whichsideup='upright', well_shape='square')   
+    fovsplitter = FOVMultiWellsSplitter(masked_image_file)   
     
     foo_wells = fovsplitter.get_wells_data()
+    
+#    plt.imshow(fovsplitter.apply_mask_wells(fovsplitter.img),cmap='gray')
+    
+    #%%
+    
     
 #    fig = fovsplitter.plot_wells()
     
