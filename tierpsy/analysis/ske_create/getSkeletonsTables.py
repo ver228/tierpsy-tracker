@@ -219,13 +219,15 @@ def _initSkeletonsArrays(ske_file_id, tot_rows, resampling_N, worm_midbody):
                                   filters=TABLE_FILTERS)
         
     skel_arrays = {field:_create_array(field, dims) for field, dims in data_dims.items()}
+    inram_skel_arrays = {field:np.ones(dims, dtype=np.float32)*np.nan for field, dims in data_dims.items()}
     
     # flags to mark if a frame was skeletonized
     traj_dat = ske_file_id.get_node('/trajectories_data')
     has_skeleton = traj_dat.cols.has_skeleton
     has_skeleton[:] = np.zeros_like(has_skeleton) #delete previous
     
-    return skel_arrays, has_skeleton
+#    return skel_arrays, has_skeleton
+    return skel_arrays, has_skeleton, inram_skel_arrays
 
 
 
@@ -275,7 +277,7 @@ def trajectories2Skeletons(skeletons_file,
                                          progress_prefix = progress_prefix)
 
         # add data from the experiment info (currently only for singleworm)
-        with tables.File(skeletons_file, "r") as mask_fid:  
+        with tables.File(masked_image_file, "r") as mask_fid:  
             if '/experiment_info' in ske_file_id:
                     ske_file_id.remove_node('/', 'experiment_info')
             if '/experiment_info' in mask_fid:
@@ -285,8 +287,11 @@ def trajectories2Skeletons(skeletons_file,
                 
         #initialize arrays to save the skeletons data
         tot_rows = len(trajectories_data)
-        skel_arrays, has_skeleton = _initSkeletonsArrays(ske_file_id, tot_rows, resampling_N, worm_midbody)
-        
+#        skel_arrays, has_skeleton = _initSkeletonsArrays(ske_file_id, 
+        skel_arrays, has_skeleton, inram_skel_arrays = _initSkeletonsArrays(ske_file_id, 
+                                                                                tot_rows, 
+                                                                                resampling_N, 
+                                                                                worm_midbody)
         
         # dictionary to store previous skeletons
         prev_skeleton = {}
@@ -324,34 +329,68 @@ def trajectories2Skeletons(skeletons_file,
                     has_skeleton[skeleton_id] = True
                     
                     # save segwrom_results
-                    skel_arrays['skeleton_length'][skeleton_id] = ske_len
-                    skel_arrays['contour_width'][skeleton_id, :] = cnt_widths
+#                    skel_arrays['skeleton_length'][skeleton_id] = ske_len
+#                    skel_arrays['contour_width'][skeleton_id, :] = cnt_widths
+                    inram_skel_arrays['skeleton_length'][skeleton_id] = ske_len
+                    inram_skel_arrays['contour_width'][skeleton_id, :] = cnt_widths
                     
                     mid_width = np.median(cnt_widths[midbody_ind[0]:midbody_ind[1]+1])
-                    skel_arrays['width_midbody'][skeleton_id] = mid_width
+#                    skel_arrays['width_midbody'][skeleton_id] = mid_width
+                    inram_skel_arrays['width_midbody'][skeleton_id] = mid_width
 
                     # convert into the main image coordinates
-                    skel_arrays['skeleton'][skeleton_id, :, :] = skeleton + roi_corner
-                    skel_arrays['contour_side1'][skeleton_id, :, :] = cnt_side1 + roi_corner
-                    skel_arrays['contour_side2'][skeleton_id, :, :] = cnt_side2 + roi_corner
-                    skel_arrays['contour_area'][skeleton_id] = cnt_area
-
+#                    skel_arrays['skeleton'][skeleton_id, :, :] = skeleton + roi_corner
+#                    skel_arrays['contour_side1'][skeleton_id, :, :] = cnt_side1 + roi_corner
+#                    skel_arrays['contour_side2'][skeleton_id, :, :] = cnt_side2 + roi_corner
+#                    skel_arrays['contour_area'][skeleton_id] = cnt_area
+                    inram_skel_arrays['skeleton'][skeleton_id, :, :] = skeleton + roi_corner
+                    inram_skel_arrays['contour_side1'][skeleton_id, :, :] = cnt_side1 + roi_corner
+                    inram_skel_arrays['contour_side2'][skeleton_id, :, :] = cnt_side2 + roi_corner
+                    inram_skel_arrays['contour_area'][skeleton_id] = cnt_area
+#        import pdb
+#        pdb.set_trace()
+        
+#         now write on disk
+        for key in inram_skel_arrays:
+            skel_arrays[key][:] = inram_skel_arrays[key].astype(np.float32)
         
 if __name__ == '__main__':
-    root_dir = '/Volumes/behavgenom$/Andre/fishVideos/'
+    
+    import shutil
+    from tierpsy.helper.params.tracker_param import TrackerParams
+    
+#    root_dir = '/Volumes/behavgenom$/Andre/fishVideos/'
+    root_dir = '/Users/lferiani/Desktop/Data_FOVsplitter/short'
         
     #ff = 'N2_N10_F1-3_Set1_Pos7_Ch1_12112016_024337.hdf5'
     #ff = 'unc-9_N10_F1-3_Set1_Pos1_Ch5_17112016_193814.hdf5'
     #ff = 'trp-4_N1_Set3_Pos6_Ch1_19102016_172113.hdf5'
     #ff = 'trp-4_N10_F1-1_Set1_Pos2_Ch4_02112016_201534.hdf5'
-    ff = 'f3_ss_uncompressed.hdf5'
+    #ff = 'f3_ss_uncompressed.hdf5'
+    ff = 'drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22436248/metadata.hdf5'
     masked_image_file = os.path.join(root_dir, 'MaskedVideos', ff)    
     skeletons_file = os.path.join(root_dir, 'Results', ff.replace('.hdf5', '_skeletons.hdf5'))
+    # restore skeletons from backup
+    shutil.copy(skeletons_file.replace('.hdf5','.bk'), skeletons_file)
+
+#    json_file = os.path.join(root_dir, 'f3_ss_uncompressed.json')
+    json_file = '/Users/lferiani/Desktop/Data_FOVsplitter/loopbio_rig_96WP_upright_Hydra05.json'
     
-    json_file = os.path.join(root_dir, 'f3_ss_uncompressed.json')
-
+    # read parameters
     params = TrackerParams(json_file)
+    p = params.p_dict
+    skel_args = {'num_segments' : p['w_num_segments'],
+                     'head_angle_thresh' : p['w_head_angle_thresh']}
+    # trajectories2Skeletons
+    argkws_d = {
+        'resampling_N': p['resampling_N'],
+        'worm_midbody': (0.33, 0.67),
+        'min_blob_area': p['traj_min_area'],
+        'strel_size': p['strel_size'],
+        'analysis_type': p['analysis_type'],
+        'skel_args' : skel_args
+        }
 
+    
 
-
-    trajectories2Skeletons(skeletons_file, masked_image_file, **params.skeletons_param)
+    trajectories2Skeletons(skeletons_file, masked_image_file, **argkws_d)
