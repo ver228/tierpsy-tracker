@@ -25,6 +25,16 @@ def args_(fn, param):
     if bgnd_param_mask['buff_size']<=0 or bgnd_param_mask['frame_gap']<=0:
         bgnd_param_mask = {}
     
+    # FOV splitting
+    fovsplitter_param_f = ['MWP_total_n_wells', 'MWP_whichsideup', 'MWP_well_shape']
+    if not all(k in p for k in fovsplitter_param_f):
+        fovsplitter_param = {}
+    else:
+        fovsplitter_param = {x.replace('MWP_',''):p[x] for x in fovsplitter_param_f}   
+    
+    if fovsplitter_param['total_n_wells']<0:
+        fovsplitter_param = {}
+    
     compress_vid_param = {
             'buffer_size': p['compression_buff'],
             'save_full_interval': p['save_full_interval'],
@@ -32,7 +42,8 @@ def args_(fn, param):
             'bgnd_param': bgnd_param_mask,
             'expected_fps': p['expected_fps'],
             'microns_per_pixel' : p['microns_per_pixel'],
-            'is_extract_timestamp': p['is_extract_timestamp']
+            'is_extract_timestamp': p['is_extract_timestamp'],
+            'fovsplitter_param': fovsplitter_param,
         }
 
     argkws_d = {
