@@ -136,6 +136,7 @@ def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, t
                     df_files[iwin].loc[ifile, 'is_good'] = True
         _displayProgress(ifile)
     
+    # write output files
     for iwin in range(len(time_windows_ints)):
         all_summaries[iwin] = pd.concat(all_summaries[iwin], ignore_index=True, sort=False)
     
@@ -154,13 +155,14 @@ def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, t
     return df_files, all_summaries
 
 if __name__ == '__main__':
-    root_dir = '/Users/em812/Documents/OneDrive - Imperial College London/Eleni/Tierpsy_GUI/test_results_2'
+#    root_dir = '/Users/em812/Documents/OneDrive - Imperial College London/Eleni/Tierpsy_GUI/test_results_2'
+    root_dir = '/Users/lferiani/Desktop/Data_FOVsplitter/evgeny/Results/20190808_subset'
     is_manual_index = False
     feature_type = 'tierpsy'
     #feature_type = 'openworm'
     #summary_type = 'plate_augmented'
-    summary_type = 'plate'
-    #summary_type = 'trajectory'
+#    summary_type = 'plate'
+    summary_type = 'trajectory'
     
     fold_args = dict(
                  n_folds = 2, 
@@ -168,8 +170,11 @@ if __name__ == '__main__':
                  time_sample_seconds = 10*60
                  )
     
-    time_windows = '0:end,100000:101000'
+    time_windows = '0:60,480:540'
     time_units = 'frame numbers'
     
-    df_files, all_summaries = calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, time_windows, time_units, **fold_args)
+    df_files, all_summaries = calculate_summaries(root_dir, feature_type, 
+                                                  summary_type, is_manual_index, 
+                                                  time_windows, time_units, 
+                                                  **fold_args)
         

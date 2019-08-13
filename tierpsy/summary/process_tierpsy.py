@@ -9,8 +9,10 @@ from tierpsy.features.tierpsy_features.summary_stats import get_summary_stats
 from tierpsy.summary.helper import augment_data, add_trajectory_info
 from tierpsy.helper.params import read_fps
 from tierpsy.helper.misc import WLAB,print_flush
+from tierpsy.analysis.split_fov.helper import was_fov_split
 
 import pandas as pd
+import pdb
 
 #%%
 def time_to_frame_nb(time_windows,time_units,fps,timestamp,fname):
@@ -121,12 +123,45 @@ def tierpsy_plate_summary(fname, time_windows, time_units, is_manual_index = Fal
     
     timeseries_data, blob_features = data_in
     
+    # was the fov split in wells? only use the first window to detect that,
+    # and to extract the list of well names
+    is_fov_tosplit = was_fov_split(timeseries_data[0])
+#    is_fov_tosplit = False
+            
     # initialize list of plate summaries for all time windows
     plate_feats_list = []
     for iwin,window in enumerate(time_windows):
-        plate_feats = get_summary_stats(timeseries_data[iwin], fps,  blob_features[iwin], delta_time)
-        plate_feats_list.append(pd.DataFrame(plate_feats).T)
-    
+        if is_fov_tosplit == False:
+            plate_feats = get_summary_stats(timeseries_data[iwin], fps,  blob_features[iwin], delta_time)
+            plate_feats_list.append(pd.DataFrame(plate_feats).T)
+        else:
+            # get list of well names in this time window 
+            # (maybe some wells looked empty during a whole window, 
+            # this prevents errors later on)
+            well_names_list = list(set(timeseries_data[iwin]['well_name']) - set(['n/a']))
+            # create a list of well-specific, one-line long dataframes
+            well_feats_list = []
+            for well_name in well_names_list:
+                # find entries in timeseries_data[iwin] belonging to the right well
+                idx_well = timeseries_data[iwin]['well_name'] == well_name
+                well_feats = get_summary_stats(timeseries_data[iwin][idx_well].reset_index(), 
+                                               fps,  
+                                               blob_features[iwin][idx_well].reset_index(), 
+                                               delta_time)
+                # first prepend the well_name_s to the well_feats series,
+                # then transpose it so it is a single-row dataframe,
+                # and append it to the well_feats_list 
+                well_name_s = pd.Series({'well_name':well_name})
+                well_feats_list.append(pd.DataFrame(pd.concat([well_name_s,well_feats])).T)
+            # check: did we find any well?
+            if len(well_feats_list) == 0:
+                plate_feats_list.append(pd.DataFrame())
+            else:
+                # now concatenate all the single-row df in well_feats_list in a single df
+                # and append it to the growing list (1 entry = 1 window) 
+                plate_feats = pd.concat(well_feats_list, ignore_index=True, sort=False)
+                plate_feats_list.append(plate_feats)
+
     return plate_feats_list
 
 def tierpsy_trajectories_summary(fname, time_windows, time_units, is_manual_index = False, delta_time = 1/3):
@@ -213,7 +248,9 @@ def tierpsy_plate_summary_augmented(fname, time_windows, time_units, is_manual_i
 
 
 if __name__ == '__main__':
-    fname='/Users/em812/Documents/OneDrive - Imperial College London/Eleni/Tierpsy_GUI/test_results_2/Set4_Ch3_18012019_130019_featuresN.hdf5'
+#    fname='/Users/em812/Documents/OneDrive - Imperial College London/Eleni/Tierpsy_GUI/test_results_2/Set4_Ch3_18012019_130019_featuresN.hdf5'
+#    fname='/Users/lferiani/Desktop/Data_FOVsplitter/short/Results/drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22436248/metadata_featuresN.hdf5'
+    fname='/Users/lferiani/Desktop/Data_FOVsplitter/evgeny/Results/20190808_subset/evgeny_plate01_r1_20190808_114758.22956805/metadata_featuresN.hdf5'
     is_manual_index = False
     
     fold_args = dict(
@@ -224,11 +261,12 @@ if __name__ == '__main__':
     
 #    time_windows = [[0,10000],[10000,15000],[10000000,-1]]
 #    time_units = 'frameNb'
-    time_windows = [[0,300],[500,-1],[10000000,-1]]
+#    time_windows = [[0,60],[120,-1],[10000000,-1]]
+    time_windows = [[0,60],[10000000,-1]]
     time_units = 'seconds'
 #    summary = tierpsy_plate_summary(fname,time_windows,time_units)
-#    summary = tierpsy_trajectories_summary(fname,time_windows,time_units)
-    summary = tierpsy_plate_summary_augmented(fname,time_windows,time_units,is_manual_index=False,delta_time=1/3,**fold_args)
+    summary = tierpsy_trajectories_summary(fname,time_windows,time_units)
+#    summary = tierpsy_plate_summary_augmented(fname,time_windows,time_units,is_manual_index=False,delta_time=1/3,**fold_args)
     
     
     

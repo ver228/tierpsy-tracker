@@ -6,8 +6,11 @@ Created on Mon Jun  4 10:45:29 2018
 @author: avelinojaver
 """
 from tierpsy.features.tierpsy_features.summary_stats import get_n_worms_estimate
+from tierpsy.analysis.split_fov.helper import was_fov_split
+
 import random
 import math
+import pdb
 
 fold_args_dflt = {'n_folds' : 5, 
                  'frac_worms_to_keep' : 0.8,
@@ -20,8 +23,22 @@ def add_trajectory_info(df_stats, worm_index, timeseries_data, fps):
     df_stats['tot_time'] = timeseries_data['timestamp'].size/fps
     df_stats['frac_valid_skels'] = (~timeseries_data['length'].isnull()).mean()
     
+    is_fov_tosplit = was_fov_split(timeseries_data)
+    if is_fov_tosplit:
+        try:
+            assert len(set(timeseries_data['well_name']) - set(['n/a'])) == 1, \
+        "A single trajectory is spanning more than one well!"
+        except:
+            pdb.set_trace()
+        well_name = list(set(timeseries_data['well_name']) - set(['n/a']))[0]
+        df_stats['well_name'] = well_name
+    
     cols = df_stats.columns.tolist()   
-    cols = cols[-4:] + cols[:-4]
+    if not is_fov_tosplit:
+        cols = cols[-4:] + cols[:-4]
+    else: # there's one extra column
+        cols = cols[-5:] + cols[:-5]
+
 
     #import pdb
     #pdb.set_trace()    
