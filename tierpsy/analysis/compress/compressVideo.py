@@ -301,6 +301,7 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
                                             camera_serial=camera_serial,
                                             px2um=microns_per_pixel,
                                             **fovsplitter_param)
+        
 
 
     # initialize timers

@@ -28,7 +28,13 @@ import subprocess
 # the above function sbould basically do the same (since I'm only calling it on one video) as running in the CLI
 #'/anaconda3/envs/tierpsy_dev/bin/python' '/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py' '/Users/lferiani/Desktop/Data_FOVsplitter/RawVideos/20190308_48wptest_short_20190308_155935.22436248/metadata.yaml' --masks_dir '/Users/lferiani/Desktop/Data_FOVsplitter/MaskedVideos/20190308_48wptest_short_20190308_155935.22436248' --results_dir '/Users/lferiani/Desktop/Data_FOVsplitter/Results/20190308_48wptest_short_20190308_155935.22436248' --tmp_mask_dir '/Users/lferiani/Tmp/MaskedVideos/' --tmp_results_dir '/Users/lferiani/Tmp/Results/' --json_file '/Users/lferiani/Desktop/Data_FOVsplitter/loopbio_rig_new_.json' --analysis_checkpoints 'COMPRESS'
 
-imgstore_name = 'drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22436248/'
+#imgstore_name = 'drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22436248/'
+imgstore_name = 'drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22594546/'
+#imgstore_name = 'drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22594547/'
+#imgstore_name = 'drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22594548/'
+#imgstore_name = 'drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22594549/'
+#imgstore_name = 'drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22594559/'
+
 
 rootdir = '/Users/lferiani/Desktop/Data_FOVsplitter/short/'
 rawvideosdir = rootdir + 'RawVideos/' + imgstore_name
@@ -48,12 +54,12 @@ json_file = '/Users/lferiani/Desktop/Data_FOVsplitter/loopbio_rig_96WP_upright_H
 
 # don't pass the path to python if calling it as a function
 # compress
-#sys_argv_list = ['/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py',
-#                 raw_video,
-#                 '--masks_dir', maskedvideosdir,
-#                 '--results_dir', resultsdir,
-#                 '--json_file', json_file,
-#                 '--analysis_checkpoints', 'COMPRESS']
+sys_argv_list = ['/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py',
+                 raw_video,
+                 '--masks_dir', maskedvideosdir,
+                 '--results_dir', resultsdir,
+                 '--json_file', json_file,
+                 '--analysis_checkpoints', 'COMPRESS']
 
 #sys_argv_list = ['/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py',
 #                 masked_image_file,
@@ -65,18 +71,18 @@ json_file = '/Users/lferiani/Desktop/Data_FOVsplitter/loopbio_rig_96WP_upright_H
 #                                            'SKE_INIT',
 #                                            'BLOB_FEATS']
 
-sys_argv_list = ['/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py',
-                 masked_image_file,
-                 '--masks_dir', maskedvideosdir,
-                 '--results_dir', resultsdir,
-                 '--json_file', json_file,
-                 '--analysis_checkpoints',  'SKE_CREATE',
-                                            'SKE_FILT',
-                                            'SKE_ORIENT',
-                                            'INT_PROFILE',
-                                            'INT_SKE_ORIENT',
-                                            'FEAT_INIT',
-                                            'FEAT_TIERPSY']
+#sys_argv_list = ['/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py',
+#                 masked_image_file,
+#                 '--masks_dir', maskedvideosdir,
+#                 '--results_dir', resultsdir,
+#                 '--json_file', json_file,
+#                 '--analysis_checkpoints',  'SKE_CREATE',
+#                                            'SKE_FILT',
+#                                            'SKE_ORIENT',
+#                                            'INT_PROFILE',
+#                                            'INT_SKE_ORIENT',
+#                                            'FEAT_INIT',
+#                                            'FEAT_TIERPSY']
 
 
 local_obj = ProcessLocalParser(sys_argv_list)

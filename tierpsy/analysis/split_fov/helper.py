@@ -33,9 +33,9 @@ CAM2CH_DICT = {"22956818":'Ch1', # Hydra01
                "22956822":'Ch5',
                "22956806":'Ch6',
                "22956814":'Ch1', # Hydra03
-               "22956827":'Ch2',
+               "22956833":'Ch2',
                "22956819":'Ch3',
-               "22956833":'Ch4',
+               "22956827":'Ch4',
                "22956823":'Ch5',
                "22956840":'Ch6',
                "22956812":'Ch1', # Hydra04
@@ -244,8 +244,28 @@ def was_fov_split(timeseries_data):
 
 
 
-
-
+if __name__ == '__main__':
+    
+    # test that camera serials return the correct channel
+    serials_list = [line[0] for line in CAM2CH_list]
+#    serials_list.append('22594540') # this raise an exception as it does not exist
+    for serial in serials_list:
+        print('{} -> {}'.format(serial, serial2channel(serial)))
+    # that works as intended! 
+    
+    # let's now check that the camera name is parsed correctly I guess
+    from pathlib import Path
+    src_dir = Path('/Users/lferiani/Desktop/Data_FOVsplitter/evgeny/MaskedVideos/20190808')
+    masked_fnames = src_dir.rglob('*.hdf5')
+    for fname in masked_fnames:
+        camera_serial = parse_camera_serial(fname)
+        print(fname)
+        print(camera_serial)
+        print(serial2channel(camera_serial))
+        print(' ')
+    # this too works perfectly... but I saw wrong data was written in the masked videos
+    # so have to check what went wrong there
+    
 
 
 

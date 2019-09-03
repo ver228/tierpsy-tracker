@@ -76,7 +76,11 @@ class FOVMultiWellsSplitter(object):
                     # fall back on constructing from masked
                     masked_image_file = masked_or_features_or_image.replace('_featuresN.hdf5','.hdf5')
                     img, camera_serial, px2um = read_data_from_masked(masked_image_file)
-                    self.constructor_from_image(img, **kwargs)
+#                    print(img, camera_serial, px2um)
+                    self.constructor_from_image(img, 
+                                                camera_serial=camera_serial, 
+                                                px2um=px2um, 
+                                                **kwargs)
                         
         # this is common to the two constructors paths
         self.wells_mask = self.create_mask_wells()
@@ -92,6 +96,7 @@ class FOVMultiWellsSplitter(object):
                                whichsideup='upright', 
                                well_shape='square'):
         print('constructor from image')
+#        print(camera_serial, px2um)
         # very needed inputs
         if (camera_serial is None) or (px2um is None): 
             raise ValueError('Either provide the masked video filename or an' +\
@@ -555,10 +560,10 @@ class FOVMultiWellsSplitter(object):
         # for odd channels
         if int(self.channel[-1])%2==1:
             self.wells['well_name'] = \
-                [self.mwp_df.iloc[max_row-r, max_col-c] \
+                [self.mwp_df[self.channel].iloc[max_row-r, max_col-c] \
                  for r,c in self.wells[['row','col']].values]
         else:
-            self.wells['well_name'] = [self.mwp_df.iloc[r,c] \
+            self.wells['well_name'] = [self.mwp_df[self.channel].iloc[r,c] \
                          for r,c in self.wells[['row','col']].values]
         # the above code is equivalent (but faster than) the following two alternatives:
 #        ################### alternative 1
@@ -879,36 +884,36 @@ if __name__ == '__main__':
 #    img_dir = wd / 'RawVideos/96wpsquare_upright_150ulagar_l1dispensed_1_20190614_105312_firstframes'
 #    wd = Path.home() / 'Desktop/Data_FOVsplitter'
 #    img_dir = wd / 'RawVideos/drugexperiment_1hrexposure'
-#    wd = Path('/Volumes/behavgenom$/Luigi/Data/LoopBio_calibrations/wells_mapping/20190710/')
-#    img_dir = wd
-#    img_dir = wd / 'Hydra04'
+    wd = Path('/Volumes/behavgenom$/Luigi/Data/LoopBio_calibrations/wells_mapping/20190710/')
+    img_dir = wd
+    img_dir = wd / 'Hydra05'
     
-#    fnames = list(img_dir.rglob('*.png'))
+    fnames = list(img_dir.rglob('*.png'))
 ##    fnames = fnames[2:3] # for code-review only
-#    for fname in fnames:
-#        # load image
-#        img_ = cv2.imread(str(fname))
-#        img = cv2.cvtColor(img_,cv2.COLOR_BGR2GRAY)
-#        # find camera name
-#        regex = r"(?<=20\d{6}\_\d{6}\.)\d{8}"
-#        camera_serial = re.findall(regex, str(fname).lower())[0]
-#        # run fov splitting
-#        fovsplitter = FOVMultiWellsSplitter(img=img, camera_serial=camera_serial, total_n_wells=96,
-#                                            whichsideup='upright', well_shape='square', px2um=12.4)
-#        fig = fovsplitter.plot_wells()
-#        plt.tight_layout()
-#        fig.savefig(camera_serial + '.png', bbox_inches='tight', pad_inches=0, transparent=True)
-     
+    for fname in fnames:
+        # load image
+        img_ = cv2.imread(str(fname))
+        img = cv2.cvtColor(img_,cv2.COLOR_BGR2GRAY)
+        # find camera name
+        regex = r"(?<=20\d{6}\_\d{6}\.)\d{8}"
+        camera_serial = re.findall(regex, str(fname).lower())[0]
+        # run fov splitting
+        fovsplitter = FOVMultiWellsSplitter(img, camera_serial=camera_serial, total_n_wells=96,
+                                            whichsideup='upright', well_shape='square', px2um=12.4)
+        fig = fovsplitter.plot_wells()
+        plt.tight_layout()
+        fig.savefig(camera_serial + '.png', bbox_inches='tight', pad_inches=0, transparent=True)
+    plt.close('all')
 #    %% test on filename
     
-    masked_image_file = '/Users/lferiani/Desktop/Data_FOVsplitter/short/MaskedVideos/drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22436248/metadata.hdf5'   
+#    masked_image_file = '/Users/lferiani/Desktop/Data_FOVsplitter/short/MaskedVideos/drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22436248/metadata.hdf5'   
 #    features_file = masked_image_file.replace('MaskedVideos','Results').replace('.hdf5','_featuresN.hdf5')
 #    import shutil
 #    shutil.copy(features_file.replace('.hdf5','.bk'), features_file)
     
-    fovsplitter = FOVMultiWellsSplitter(masked_image_file)   
+#    fovsplitter = FOVMultiWellsSplitter(masked_image_file)   
     
-    foo_wells = fovsplitter.get_wells_data()
+#    foo_wells = fovsplitter.get_wells_data()
     
 #    plt.imshow(fovsplitter.apply_mask_wells(fovsplitter.img),cmap='gray')
     
