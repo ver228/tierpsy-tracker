@@ -255,6 +255,48 @@ class FOVMultiWellsSplitter(object):
                          exclude_border=False,
                          threshold_abs=xcorr_threshold)
         xcorr_peaks = np.array( [res[r, c] for r,c in X] )
+        print('Initially found {} wells. Removing the ones too close'.format(xcorr_peaks.shape[0]))
+        
+        # a bug in peak_local_max means that min_distance is sometimes overlooked.
+        # https://github.com/scikit-image/scikit-image/issues/4048
+        # seems to be only a problem with peaks with distance == 1
+        # adding my own proximity removal system, keeps the highest xcorr point 
+        # of the conflicting ones
+        
+        # create matrix of distances, using implicit expansion
+        pkdist2 = (X[:,[0,]] - X[:,0])**2 \
+                + (X[:,[1,]] - X[:,1])**2 # column - row makes a matrix, **2 squares it element-wise
+        # look for peaks closest than threshold (same as given before)
+        dist2_thresh = (well_size_px//2)**2
+        pkstooclose = pkdist2 <= dist2_thresh
+        # look in upper-diag matrix only
+        pkstooclose = np.triu(pkstooclose, k=0) # makes a upper-triangular matrix, keeps diag (k=0), and putls lower-triangular to 0
+        
+        # loop on the peaks (rows)
+        idx_to_remove = np.zeros(X.shape[0], dtype=bool)
+        for ind, row in enumerate(pkstooclose):
+            if sum(row) == 1: # only hit was on the diagonal
+                continue
+            print('more than one hit')
+            # more than one proximity hit
+            # find xcorr values and position in the list
+            pks = xcorr_peaks[row]
+            print(pks)
+            inds = np.argwhere(row)
+            print(inds)
+            # find where the highest peak is in the short selection of conflicting points
+            ind_max_pk = inds[np.argmax(pks)] 
+            print(ind_max_pk)
+            # store that we need to remove the conflicting points that are not the max peak
+            inds_to_remove = np.setdiff1d(inds, ind_max_pk) 
+            idx_to_remove[inds_to_remove] = True
+        # now remove the offending points from X and xcorr_peaks
+        X = X[~idx_to_remove]
+        xcorr_peaks = xcorr_peaks[~idx_to_remove]
+        print('Found {} wells'.format(xcorr_peaks.shape[0]))
+            
+#        import pdb
+#        pdb.set_trace()
         
         if is_debug:
             plt.figure()
@@ -508,6 +550,8 @@ class FOVMultiWellsSplitter(object):
             return
         elif n_detected_wells > n_expected_wells:
             # uncropped image? other errors?
+            import pdb
+            pdb.set_trace()
             raise Exception("Found more wells than expected. Aborting now.")
         # I only get here if n_detected_wells < n_expected_wells
         assert n_detected_wells < n_expected_wells, \

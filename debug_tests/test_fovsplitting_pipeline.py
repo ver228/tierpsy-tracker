@@ -28,15 +28,21 @@ import subprocess
 # the above function sbould basically do the same (since I'm only calling it on one video) as running in the CLI
 #'/anaconda3/envs/tierpsy_dev/bin/python' '/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py' '/Users/lferiani/Desktop/Data_FOVsplitter/RawVideos/20190308_48wptest_short_20190308_155935.22436248/metadata.yaml' --masks_dir '/Users/lferiani/Desktop/Data_FOVsplitter/MaskedVideos/20190308_48wptest_short_20190308_155935.22436248' --results_dir '/Users/lferiani/Desktop/Data_FOVsplitter/Results/20190308_48wptest_short_20190308_155935.22436248' --tmp_mask_dir '/Users/lferiani/Tmp/MaskedVideos/' --tmp_results_dir '/Users/lferiani/Tmp/Results/' --json_file '/Users/lferiani/Desktop/Data_FOVsplitter/loopbio_rig_new_.json' --analysis_checkpoints 'COMPRESS'
 
+#rootdir = '/Users/lferiani/Desktop/Data_FOVsplitter/short/'
 #imgstore_name = 'drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22436248/'
-imgstore_name = 'drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22594546/'
+#imgstore_name = 'drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22594546/'
 #imgstore_name = 'drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22594547/'
 #imgstore_name = 'drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22594548/'
 #imgstore_name = 'drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22594549/'
 #imgstore_name = 'drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22594559/'
+json_file = '/Users/lferiani/Desktop/Data_FOVsplitter/loopbio_rig_96WP_upright_Hydra05.json'
 
 
-rootdir = '/Users/lferiani/Desktop/Data_FOVsplitter/short/'
+rootdir = '/Volumes/hermes$/Recordings/20190822/'
+imgstore_name = 'evgeny_plat10_r5_20190822_125103.22594559/'
+json_file = '/Volumes/hermes$/Recordings/hydra_96WP_upright.json'
+
+
 rawvideosdir = rootdir + 'RawVideos/' + imgstore_name
 maskedvideosdir = rootdir + 'MaskedVideos/' + imgstore_name
 resultsdir = rootdir + 'Results/' + imgstore_name
@@ -46,7 +52,6 @@ masked_image_file = maskedvideosdir + 'metadata.hdf5'
 features_file = resultsdir + 'metadata_featuresN.hdf5'
 skeletons_file = resultsdir + 'metadata_skeletons.hdf5'
 
-json_file = '/Users/lferiani/Desktop/Data_FOVsplitter/loopbio_rig_96WP_upright_Hydra05.json'
 # restore features after previous step before testing    
 #import shutil
 #shutil.copy(features_file.replace('.hdf5','.bk'), features_file)
