@@ -422,7 +422,8 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
         vid.release()
         
     # save fovsplitting data
-    fovsplitter.write_fov_wells_to_file(masked_image_file)
+    if is_fov_tosplit:
+        fovsplitter.write_fov_wells_to_file(masked_image_file)
 
     read_and_save_timestamp(masked_image_file)
     print_flush(base_name + ' Compressed video done.')
