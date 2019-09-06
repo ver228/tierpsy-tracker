@@ -79,7 +79,7 @@ def getOrientation(frame, config):
 
 	ret, binary_img = cv2.threshold(frame, th_val, 255, cv2.THRESH_BINARY)
 
-	im, contours, hierarchy = cv2.findContours(binary_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+	contours, hierarchy = cv2.findContours(binary_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2:]
 
 	# Sort contours by area
 	contours.sort(key=lambda ar: cv2.contourArea(ar))
@@ -134,7 +134,7 @@ def rotateFishImage(img, angle_degrees, config):
 
 	# Find rotation angle again, this time only using the head half
 
-	im, contours, hierarchy = cv2.findContours(head_half.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+	contours, hierarchy = cv2.findContours(head_half.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2:]
 	contours.sort(key=lambda ar: ar.size)
 	largest_contour = contours[-1]
 
@@ -176,7 +176,7 @@ def getHeadMask(frame):
 
 	head_mask = np.zeros((img_thresh.shape[0], img_thresh.shape[1]), np.uint8)
 
-	im, contours, hierarchy = cv2.findContours(img_thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+	contours, hierarchy = cv2.findContours(img_thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2:]
 	contours.sort(key=lambda ar: ar.size)
 	head_contour = contours[-1]
 
@@ -190,7 +190,7 @@ def getHeadPoint(rotated_img, angle):
 	theta = math.radians(- angle)
 
 	img_binary = np.zeros(rotated_img.shape, np.uint8)
-	im, contours, hierarchy = cv2.findContours(rotated_img.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+	contours, hierarchy = cv2.findContours(rotated_img.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2:]
 	contours.sort(key=lambda ar: ar.size)
 	largest_contour = contours[-1]
 	cv2.drawContours(img_binary, [largest_contour], 0, 255, cv2.FILLED)
@@ -220,7 +220,7 @@ def getTailStartPoint(head_mask, head_point, config):
 	# Calculate the angle from the head point to the contour center
 	# Then, 'walk' down the line from the head point to the contour center point a set length
 
-	im, contours, hierarchy = cv2.findContours(head_mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+	contours, hierarchy = cv2.findContours(head_mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2:]
 	contour = contours[-1]
 
 	# Get contour center
@@ -498,7 +498,7 @@ def getZebrafishMask(frame, config):
 
 	worm_mask = cleaned_mask.copy()
 
-	im, contours, hierarchy = cv2.findContours(cleaned_mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+	contours, hierarchy = cv2.findContours(cleaned_mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2:]
 
 
 	if len(contours) == 0:
