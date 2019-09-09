@@ -20,10 +20,7 @@ os.environ['KERAS_BACKEND']='tensorflow'
 with warnings.catch_warnings():
     #to remove annoying warnings in case matplotlib was imported before
     warnings.simplefilter("ignore")
-    # force qt5 to be the backend of matplotlib.
-    import matplotlib
-    matplotlib.use('Qt5Agg')
-
+    
 try:
     # PyInstaller creates a temp folder and stores path in _MEIPASS
     base_path = sys._MEIPASS
