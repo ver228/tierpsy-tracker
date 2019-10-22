@@ -602,8 +602,8 @@ class FOVMultiWellsSplitter(object):
         # ("up" in the camera is always towards outside of the rig)
         # so flip the row [col] labels before going to read from the MWP_dataframe
         # for odd channels
-        import pdb
-        pdb.set_trace()
+#        import pdb
+#        pdb.set_trace()
         if int(self.channel[-1])%2==1:
             self.wells['well_name'] = \
                 [self.mwp_df[self.channel].iloc[max_row-r, max_col-c] \

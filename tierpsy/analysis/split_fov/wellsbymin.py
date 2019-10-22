@@ -161,24 +161,3 @@ axs[1].axis('off')
 fig.tight_layout()
 fig.savefig('/Users/lferiani/OneDrive - Imperial College London/Slides/20191021_group_meeting/grid_fitting_'+which_method+'.pdf')
 
-
-#%%
-
-def make_template(n_pxls=150):
-    import numpy as np
-    """Function that creates a template that approximates a square well"""
-    n_pxls = int(np.round(n_pxls))
-    theta=np.pi/4
-    x = np.linspace(-0.5, 0.5, n_pxls)
-    y = np.linspace(-0.5, 0.5, n_pxls)
-    xx, yy = np.meshgrid(x, y, sparse=False, indexing='ij')
-
-    zz = xx**4 + yy**4 - (xx*yy)**2
-    zz *= -1
-    zz -= zz.min()
-    zz /= zz.max()
-    return zz
-
-
-plt.close("all")
-plt.imshow(make_template())
