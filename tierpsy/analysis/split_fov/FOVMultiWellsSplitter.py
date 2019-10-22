@@ -25,7 +25,7 @@ from sklearn.neighbors import NearestNeighbors
 
 from tierpsy.analysis.split_fov.helper import make_square_template
 from tierpsy.analysis.split_fov.helper import read_data_from_masked
-from tierpsy.analysis.split_fov.helper import get_mwp_map, CAM2CH_DICT
+from tierpsy.analysis.split_fov.helper import get_mwp_map, serial2channel
 from tierpsy.helper.misc import TABLE_FILTERS
 
 
@@ -124,7 +124,7 @@ class FOVMultiWellsSplitter(object):
         # save height and width of image
         self.img_shape = self.img.shape
         # where was the camera on the rig? 
-        self.channel = CAM2CH_DICT[self.camera_serial]
+        self.channel = serial2channel(self.camera_serial)
         # number of wells in the multiwell plate: 6 12 24 48 96?
         # TODO: input check. Dunno if it will be kept like this or parsed from a filename
         self.n_wells = total_n_wells
@@ -602,6 +602,8 @@ class FOVMultiWellsSplitter(object):
         # ("up" in the camera is always towards outside of the rig)
         # so flip the row [col] labels before going to read from the MWP_dataframe
         # for odd channels
+        import pdb
+        pdb.set_trace()
         if int(self.channel[-1])%2==1:
             self.wells['well_name'] = \
                 [self.mwp_df[self.channel].iloc[max_row-r, max_col-c] \
@@ -787,7 +789,7 @@ class FOVMultiWellsSplitter(object):
     
     def create_mask_wells(self):
         """
-        Create a black mask covering a 5% thick edge of the square region covering each well
+        Create a black mask covering a 10% thick edge of the square region covering each well
         """
         mask = np.ones(self.img_shape).astype(np.uint8)
         # average size of wells
@@ -928,27 +930,44 @@ if __name__ == '__main__':
 #    img_dir = wd / 'RawVideos/96wpsquare_upright_150ulagar_l1dispensed_1_20190614_105312_firstframes'
 #    wd = Path.home() / 'Desktop/Data_FOVsplitter'
 #    img_dir = wd / 'RawVideos/drugexperiment_1hrexposure'
-    wd = Path('/Volumes/behavgenom$/Luigi/Data/LoopBio_calibrations/wells_mapping/20190710/')
-    img_dir = wd
-    img_dir = wd / 'Hydra05'
     
-    fnames = list(img_dir.rglob('*.png'))
-##    fnames = fnames[2:3] # for code-review only
-    for fname in fnames:
-        # load image
-        img_ = cv2.imread(str(fname))
-        img = cv2.cvtColor(img_,cv2.COLOR_BGR2GRAY)
-        # find camera name
-        regex = r"(?<=20\d{6}\_\d{6}\.)\d{8}"
-        camera_serial = re.findall(regex, str(fname).lower())[0]
-        # run fov splitting
-        fovsplitter = FOVMultiWellsSplitter(img, camera_serial=camera_serial, total_n_wells=96,
-                                            whichsideup='upright', well_shape='square', px2um=12.4)
-        fig = fovsplitter.plot_wells()
-        plt.tight_layout()
-        fig.savefig(camera_serial + '.png', bbox_inches='tight', pad_inches=0, transparent=True)
-    plt.close('all')
-#    %% test on filename
+#    wd = Path('/Volumes/behavgenom$/Luigi/Data/LoopBio_calibrations/wells_mapping/20190710/')
+#    img_dir = wd
+#    img_dir = wd / 'Hydra03'
+#    
+#    fnames = list(img_dir.rglob('*.png'))
+###    fnames = fnames[2:3] # for code-review only
+#    for fname in fnames:
+#        # load image
+#        img_ = cv2.imread(str(fname))
+#        img = cv2.cvtColor(img_,cv2.COLOR_BGR2GRAY)
+#        # find camera name
+#        regex = r"(?<=20\d{6}\_\d{6}\.)\d{8}"
+#        camera_serial = re.findall(regex, str(fname).lower())[0]
+#        # run fov splitting
+#        fovsplitter = FOVMultiWellsSplitter(img, camera_serial=camera_serial, total_n_wells=96,
+#                                            whichsideup='upright', well_shape='square', px2um=12.4)
+#        fig = fovsplitter.plot_wells()
+#        plt.tight_layout()
+#        fig.savefig(camera_serial + '.png', bbox_inches='tight', pad_inches=0, transparent=True)
+#    plt.close('all')
+    
+    #%% this file didn't work, why?
+    masked_image_file = '/Volumes/behavgenom$/Ida/Data/Hydra/PilotDrugExps/20191003/MaskedVideos/pilotdrugs_run1_20191003_161308.22956807/metadata.hdf5'
+    features_file = masked_image_file.replace('MaskedVideos','Results').replace('.hdf5','_featuresN.hdf5')
+    img, camera_serial, px2um = read_data_from_masked(masked_image_file)
+    #%%
+    fovsplitter = FOVMultiWellsSplitter(img, 
+                                    camera_serial=camera_serial, 
+                                    total_n_wells=96,
+                                    whichsideup='upright', 
+                                    well_shape='square', 
+                                    px2um=12.4)
+
+
+#fovsplitter = FOVMultiWellsSplitter(masked_image_file)
+
+    #%% test on filename
     
 #    masked_image_file = '/Users/lferiani/Desktop/Data_FOVsplitter/short/MaskedVideos/drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22436248/metadata.hdf5'   
 #    features_file = masked_image_file.replace('MaskedVideos','Results').replace('.hdf5','_featuresN.hdf5')
@@ -991,5 +1010,6 @@ if __name__ == '__main__':
 #                                            whichsideup='upright', well_shape='square', px2um=12.4)
 #        # read worms count
 #        fovsplitter.read_worm_counts(annotated_img, path_to_templates)
+    
         
     
