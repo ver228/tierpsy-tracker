@@ -327,6 +327,10 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
             expected_frames, vid.height, vid.width,
             attr_params, save_full_interval)
         
+        if is_bgnd_subtraction:
+            bg_dataset = createImgGroup(mask_fid, "/bg", 1, vid.height, vid.width, is_expandable=False)
+            bg_dataset[0,:,:] = img_fov
+        
         if vid.dtype != np.uint8:
             # this will worm as flags to be sure that the normalization took place.
             normalization_range = mask_fid.create_earray('/', 
@@ -398,6 +402,16 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
                 img_reduce = reduceBuffer(Ibuff_b, mask_param['is_light_background'])
 
                 mask = getROIMask(img_reduce, **mask_param)
+                if is_bgnd_subtraction:
+                    try:
+                        cv2.normalize(Ibuff_b, Ibuff,
+                                  alpha=1, beta=255, 
+                                  norm_type=cv2.NORM_MINMAX)
+                    except:
+                        import pdb
+                        pdb.set_trace()    
+                            
+                    
                 Ibuff *= mask
 
 

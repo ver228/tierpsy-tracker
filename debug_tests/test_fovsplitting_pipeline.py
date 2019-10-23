@@ -37,11 +37,16 @@ import subprocess
 #imgstore_name = 'drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22594559/'
 json_file = '/Users/lferiani/Desktop/Data_FOVsplitter/loopbio_rig_96WP_upright_Hydra05.json'
 
-
+#%% Evgeny's example data
 rootdir = '/Volumes/hermes$/Recordings/20190822/'
 imgstore_name = 'evgeny_plat10_r5_20190822_125103.22594559/'
 json_file = '/Volumes/hermes$/Recordings/hydra_96WP_upright.json'
+#%% other example data
+rootdir = '/Users/lferiani/Desktop/Data_FOVsplitter/short/'
+imgstore_name='drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22594546/'
+json_file = '/Users/lferiani/Desktop/Data_FOVsplitter/loopbio_rig_96WP_upright_Hydra05.json'
 
+#%%
 
 rawvideosdir = rootdir + 'RawVideos/' + imgstore_name
 maskedvideosdir = rootdir + 'MaskedVideos/' + imgstore_name
@@ -52,6 +57,10 @@ masked_image_file = maskedvideosdir + 'metadata.hdf5'
 features_file = resultsdir + 'metadata_featuresN.hdf5'
 skeletons_file = resultsdir + 'metadata_skeletons.hdf5'
 
+masked_image_file = maskedvideosdir + 'metadata_old.hdf5'    
+features_file = resultsdir + 'metadata_old_featuresN.hdf5'
+skeletons_file = resultsdir + 'metadata_old_skeletons.hdf5'
+
 # restore features after previous step before testing    
 #import shutil
 #shutil.copy(features_file.replace('.hdf5','.bk'), features_file)
@@ -59,36 +68,42 @@ skeletons_file = resultsdir + 'metadata_skeletons.hdf5'
 
 # don't pass the path to python if calling it as a function
 # compress
+#sys_argv_list = ['/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py',
+#                 raw_video,
+#                 '--masks_dir', maskedvideosdir,
+#                 '--results_dir', resultsdir,
+#                 '--json_file', json_file,
+#                 '--analysis_checkpoints', 'COMPRESS']
+
 sys_argv_list = ['/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py',
-                 raw_video,
+                 masked_image_file,
                  '--masks_dir', maskedvideosdir,
                  '--results_dir', resultsdir,
                  '--json_file', json_file,
-                 '--analysis_checkpoints', 'COMPRESS']
+                 '--analysis_checkpoints', 'TRAJ_CREATE',
+                                            'TRAJ_JOIN',
+                                            'SKE_INIT',
+                                            'BLOB_FEATS',
+                                            'SKE_CREATE',
+                                            'SKE_FILT',
+                                            'SKE_ORIENT',
+                                            'INT_PROFILE',
+                                            'INT_SKE_ORIENT']
 
 #sys_argv_list = ['/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py',
 #                 masked_image_file,
 #                 '--masks_dir', maskedvideosdir,
 #                 '--results_dir', resultsdir,
 #                 '--json_file', json_file,
-#                 '--analysis_checkpoints', 'TRAJ_CREATE',
-#                                            'TRAJ_JOIN',
-#                                            'SKE_INIT',
-#                                            'BLOB_FEATS']
+#                 '--analysis_checkpoints',  
 
 #sys_argv_list = ['/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py',
 #                 masked_image_file,
 #                 '--masks_dir', maskedvideosdir,
 #                 '--results_dir', resultsdir,
 #                 '--json_file', json_file,
-#                 '--analysis_checkpoints',  'SKE_CREATE',
-#                                            'SKE_FILT',
-#                                            'SKE_ORIENT',
-#                                            'INT_PROFILE',
-#                                            'INT_SKE_ORIENT',
-#                                            'FEAT_INIT',
+#                 '--analysis_checkpoints',  'FEAT_INIT',
 #                                            'FEAT_TIERPSY']
-
 
 local_obj = ProcessLocalParser(sys_argv_list)
 
