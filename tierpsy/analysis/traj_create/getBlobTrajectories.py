@@ -19,7 +19,8 @@ import tables
 from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractorMasked, BackgroundSubtractorPrecalculated
 from tierpsy.analysis.compress.extractMetaData import read_and_save_timestamp
 from tierpsy.helper.params import traj_create_defaults, read_unit_conversions, read_fps
-from tierpsy.helper.misc import TimeCounter, print_flush, TABLE_FILTERS
+from tierpsy.helper.misc import TimeCounter, print_flush, TABLE_FILTERS, IS_OPENCV3
+
 
 def _thresh_bw(pix_valid):
     # calculate otsu_threshold as lower limit. Otsu understimates the threshold.
@@ -101,9 +102,14 @@ def _remove_corner_blobs(ROI_image):
     # get the border of the ROI mask, this will be used to filter for valid
     # worms
     ROI_valid = (ROI_image != 0).astype(np.uint8)
-    _, ROI_border_ind, _ = cv2.findContours(ROI_valid, 
-                                            cv2.RETR_EXTERNAL, 
-                                            cv2.CHAIN_APPROX_NONE)
+    if IS_OPENCV3:
+        _, ROI_border_ind, _ = cv2.findContours(ROI_valid, 
+                                                cv2.RETR_EXTERNAL, 
+                                                cv2.CHAIN_APPROX_NONE)
+    else:
+        ROI_border_ind, _ = cv2.findContours(ROI_valid, 
+                                                cv2.RETR_EXTERNAL, 
+                                                cv2.CHAIN_APPROX_NONE)
 
     if len(ROI_border_ind) > 1:
         # consider the case where there is more than one contour in the blob
@@ -159,9 +165,15 @@ def getBlobContours(ROI_image,
         ROI_mask = cv2.morphologyEx(ROI_mask, cv2.MORPH_CLOSE, strel)
 
     # get worms, assuming each contour in the ROI is a worm
-    _, ROI_worms, hierarchy = cv2.findContours(ROI_mask, 
-                                               cv2.RETR_EXTERNAL, 
-                                               cv2.CHAIN_APPROX_NONE)
+    if IS_OPENCV3:
+        _, ROI_worms, hierarchy = cv2.findContours(ROI_mask, 
+                                                   cv2.RETR_EXTERNAL, 
+                                                   cv2.CHAIN_APPROX_NONE)
+    else:
+        ROI_worms, hierarchy = cv2.findContours(ROI_mask, 
+                                                cv2.RETR_EXTERNAL, 
+                                                cv2.CHAIN_APPROX_NONE)
+            
 
     return ROI_worms, hierarchy
 
@@ -272,9 +284,14 @@ def generateROIBuff(masked_image_file, buffer_size, **argkws):
             main_mask = main_mask.astype(np.uint8)
     
             #calculate the contours, only keep the external contours (no holes) and 
-            _, ROI_cnts, _ = cv2.findContours(main_mask, 
+            if IS_OPENCV3:
+                _, ROI_cnts, _ = cv2.findContours(main_mask, 
                                                 cv2.RETR_EXTERNAL, 
                                                 cv2.CHAIN_APPROX_NONE)
+            else:
+                ROI_cnts, _ = cv2.findContours(main_mask,
+                                               cv2.RETR_EXTERNAL,
+                                               cv2.CHAIN_APPROX_NONE)
     
             yield ROI_cnts, image_buffer, ini_frame
         
@@ -366,7 +383,12 @@ def getBlobsSimple(in_data, blob_params):
         strel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, strel_size)
         bw = cv2.morphologyEx(bw, cv2.MORPH_CLOSE, strel)
     
-    _, cnts, hierarchy = cv2.findContours(bw, 
+    if IS_OPENCV3:
+        _, cnts, hierarchy = cv2.findContours(bw, 
+                                              cv2.RETR_EXTERNAL, 
+                                              cv2.CHAIN_APPROX_NONE)
+    else:
+        cnts, hierarchy = cv2.findContours(bw, 
                                            cv2.RETR_EXTERNAL, 
                                            cv2.CHAIN_APPROX_NONE)
     
