@@ -31,6 +31,15 @@ class readLoopBio():
             return 1, img
         else:
             return 0, None
+        
+    def read_frame(self, frame_number):
+        frame_to_read = self.first_frame + frame_number
+        if frame_to_read < self.frame_max:
+            img, (frame_number, frame_timestamp) = self.vid.get_image(frame_to_read)
+            self.frames_read.append((frame_number, frame_timestamp))
+            return 1, img
+        else:
+            return 0, None
     
     def release(self):
         return self.vid.close()
