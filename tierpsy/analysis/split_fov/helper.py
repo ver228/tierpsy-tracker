@@ -7,7 +7,9 @@ Created on Wed Aug  7 17:50:47 2019
 """
 
 #%% import statements
+import numpy as np
 import pandas as pd
+from numpy.fft import fft2, ifft2, fftshift
 
 #%% constants
 
@@ -184,7 +186,7 @@ def parse_camera_serial(filename):
     return camera_serial
 
 
-def read_data_from_masked(masked_image_file):
+def calculate_bgnd_from_masked_fulldata(masked_image_file):
     """
     - Opens the masked_image_file hdf5 file, reads the /full_data node and 
       creates a "background" by taking the maximum value of each pixel over time.
@@ -220,6 +222,13 @@ def make_square_template(n_pxls=150, rel_width=0.8, blurring=0.1):
     zz = zz * (1-np.tanh( (abs(yy)-rel_width/2)/blurring ))
     zz = (zz/4*255).astype(np.uint8)
     
+    # add bright border
+    edge = int(0.05 * n_pxls)
+    zz[:edge,:] = 255
+    zz[-edge:,:] = 255
+    zz[:,:edge] = 255
+    zz[:,-edge:] = 255
+    
     return zz
 
 
@@ -242,6 +251,110 @@ def was_fov_split(timeseries_data):
             is_fov_split = False
     return is_fov_split
 
+
+def naive_normalise(img):
+    m = img.min()
+    M = img.max()
+    return (img - m) / (M-m)
+
+
+def fft_convolve2d(x,y):
+    """ 2D convolution, using FFT"""
+    fr = fft2(x)
+    fr2 = fft2(y)
+    cc = np.real(ifft2(fr*fr2))
+    cc = fftshift(cc)
+    return cc
+
+
+def simulate_wells_lattice(img_shape, x_off, y_off, sp, nwells=None, template_shape='square'): 
+    """
+    Create mock fov by placing well templates onto a square lattice
+    """
+    
+    # convert fractions into integers
+    x_offset = int(x_off*img_shape[0])
+    y_offset = int(y_off*img_shape[0])
+    spacing = int(sp*img_shape[0])
+    
+    # create a canvas with only true pixels where we want the wells to be
+#    canvas = np.zeros(img_shape)    
+#    if nwells is not None:
+#        canvas[y_offset:y_offset+nwells*spacing:spacing, 
+#               x_offset:x_offset+nwells*spacing:spacing] = 1
+#    else:
+#        canvas[y_offset::spacing, 
+#               x_offset::spacing] = 1
+#
+#    # pad the canvas to prevent edge artefacts with convolution 
+#    padding = canvas.shape[0]//4
+#    padded_canvas = np.pad(canvas, padding, 'constant', constant_values=0)
+    # create a padded canvas
+    # in the padded canvas, the only true pixels are where we want the wells 
+    # to be centred around, after de-padding
+    padding = img_shape[0]//2
+    padding_times_2 = padding*2
+    padded_shape = tuple(s+padding_times_2 for s in img_shape)
+    if nwells is not None:
+        r_wells = range(y_offset+padding,
+                        y_offset+padding+nwells*spacing,
+                        spacing) 
+        c_wells = range(x_offset+padding,
+                        x_offset+padding+nwells*spacing,
+                        spacing)
+    else:
+        r_wells = range(y_offset+padding,
+                        padding+img_shape[0],
+                        spacing) 
+        c_wells = range(x_offset+padding,
+                        padding+img_shape[1],
+                        spacing)
+    tmpl_pos_in_padded_canvas = [(r,c) for r in r_wells for c in c_wells]
+
+
+    # make the template for the wells
+    tmpl = make_square_template(n_pxls=spacing, 
+                                rel_width=0.7, 
+                                blurring=0.1)
+    # normalise to 0-1 range
+    tmpl = tmpl.astype(float)/255
+
+    ## this is how it was (nice but slow for this case)
+    # fft_convolve2d only acts on images same size. 
+    # So pad the small template to size of padded canvas
+#    lp = (padded_canvas.shape[1]-spacing)//2  # left padding
+#    rp = -((-padded_canvas.shape[1]+spacing)//2)  # right padding (==np.ceil)
+#    tp = (padded_canvas.shape[0]-spacing)//2  # top padding
+#    bp = -((-padded_canvas.shape[0]+spacing)//2) # bottom padding
+#    padded_tmpl = np.pad(tmpl,((tp,bp),(lp,rp)),'constant', constant_values=1)
+#
+#    # convolve
+#    convolved_padded_canvas = fft_convolve2d(padded_canvas, padded_tmpl)
+#    cutout_canvas = convolved_padded_canvas[padding:padding+canvas.shape[0],
+#                                            padding:padding+canvas.shape[1]]
+#    cutout_canvas = naive_normalise(cutout_canvas)
+#    return 1-cutout_canvas
+    
+    ## this does the same but much faster.
+    # works because template is *defined* of size spacing so no overlaps happen
+    # and padded_canvas is only zeros and ones and sparse
+    tmpl = 1-tmpl
+    ts = tmpl.shape[0]
+    combined_canvas = np.zeros(padded_shape)
+    for r,c in tmpl_pos_in_padded_canvas:
+        try:
+            combined_canvas[r-ts//2:r-(-ts//2), 
+                            c-ts//2:c-(-ts//2)] += tmpl
+        except Exception as e:
+            print(str(e))
+            import pdb
+            pdb.set_trace()
+
+    cutout_canvas = combined_canvas[padding:padding+img_shape[0],
+                                      padding:padding+img_shape[1]]
+    cutout_canvas = naive_normalise(cutout_canvas)
+    
+    return cutout_canvas
 
 
 if __name__ == '__main__':

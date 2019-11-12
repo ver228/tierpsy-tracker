@@ -16,15 +16,19 @@ import tables
 import itertools
 import numpy as np
 import pandas as pd
+import scipy.optimize
 
 from matplotlib import cm
 from matplotlib import colors
 from matplotlib import pyplot as plt
+from scipy.fftpack import next_fast_len
 from skimage.feature import peak_local_max
 from sklearn.neighbors import NearestNeighbors
 
+from tierpsy.analysis.split_fov.helper import naive_normalise
 from tierpsy.analysis.split_fov.helper import make_square_template
-from tierpsy.analysis.split_fov.helper import read_data_from_masked
+from tierpsy.analysis.split_fov.helper import simulate_wells_lattice
+from tierpsy.analysis.split_fov.helper import calculate_bgnd_from_masked_fulldata
 from tierpsy.analysis.split_fov.helper import get_mwp_map, serial2channel
 from tierpsy.helper.misc import TABLE_FILTERS
 
@@ -75,7 +79,7 @@ class FOVMultiWellsSplitter(object):
                 else:
                     # fall back on constructing from masked
                     masked_image_file = masked_or_features_or_image.replace('_featuresN.hdf5','.hdf5')
-                    img, camera_serial, px2um = read_data_from_masked(masked_image_file)
+                    img, camera_serial, px2um = calculate_bgnd_from_masked_fulldata(masked_image_file)
 #                    print(img, camera_serial, px2um)
                     self.constructor_from_image(img, 
                                                 camera_serial=camera_serial, 
@@ -86,7 +90,6 @@ class FOVMultiWellsSplitter(object):
         self.wells_mask = self.create_mask_wells()
 
                     
-
 
     def constructor_from_image(self, 
                                img, 
@@ -103,7 +106,7 @@ class FOVMultiWellsSplitter(object):
                              ' image, camera_serial, and px2um.')
             
         # save the input image just to make some things easier
-        print('image shape: {}'.format(img.shape))
+#        print('image shape: {}'.format(img.shape))
         if len(img.shape) == 2:
             self.img = img.copy()
         elif len(img.shape) == 3:
@@ -136,6 +139,8 @@ class FOVMultiWellsSplitter(object):
         #(channel,position) <==> well 
         # TODO?: make user specify (if 48wp) which channels have 6 wells and not 9
         self.mwp_df = get_mwp_map(self.n_wells, self.whichsideup)
+        self.wellsmap_in_fov_df = self.mwp_df[self.channel]
+        self.n_wells_in_fov = self.wellsmap_in_fov_df.size
         # create a scaled down, blurry image which is faster to analyse
         self.blur_im = self.get_blur_im()
         # wells is the most important property. 
@@ -150,22 +155,22 @@ class FOVMultiWellsSplitter(object):
         self.wells = pd.DataFrame(columns = ['x','y','r','row','col',
                                           'x_min','x_max','y_min','y_max',
                                           'well_name'])
-        
+
         # METHODS
         # call method to fill in the wells variable
+        # find_wells_on_grid is atm only implemented for square wells
         if self.well_shape == 'circle':
             self.find_circular_wells()
             self.remove_half_circles()
+            self.find_row_col_wells()
+            self.fill_lattice_defects()
+            self.find_wells_boundaries()
+            self.calculate_wells_dimensions()
         elif self.well_shape == 'square':
-            self.find_square_wells()
-        self.find_row_col_wells()
-        self.fill_lattice_defects()
-        self.find_wells_boundaries()
-        self.calculate_wells_dimensions()
-#        print(self.wells)
-        self.name_wells()
-    
-            
+            self.find_wells_on_grid()
+            self.calculate_wells_dimensions()
+            self.find_row_col_wells()
+        self.name_wells()            
     
     def constructor_from_fov_wells(self, filename):
         print('constructor from /fov_wells')        
@@ -226,6 +231,75 @@ class FOVMultiWellsSplitter(object):
                                 norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         return blur_im
     
+    
+    def find_wells_on_grid(self):
+        """
+        New method to find wells. Instead of trying to find all wells 
+        individually, minimise the abs diff between the real image and a
+        mock image created by placing a template on a grid. 
+        Minimisation yields the lattice parameters and thus the position of 
+        the wells
+        """
+        
+        # pad the image for better fft2 performance:
+        rowcol_padding = tuple(next_fast_len(size) - size 
+                               for size in self.blur_im.shape)
+        rowcol_split_padding = tuple((pad//2, -(-pad//2)) # -(-x//2) == np.ceil(x/2)
+                                     for pad in rowcol_padding)
+        img = np.pad(self.blur_im, rowcol_split_padding, 'edge') # now padded
+        img = 1 - naive_normalise(img) # normalised and inverted. This is a float
+        
+        # define function to minimise
+        # TODO: enable nwells along x and y
+        # not urgent as nwells only needed if more wells would fit into the fov 
+        # than we actually have
+        nwells = int(np.sqrt(self.n_wells_in_fov))
+        fun_to_minimise = lambda x: np.abs(
+                img - simulate_wells_lattice(
+                        img.shape,
+                        x[0],x[1],x[2],
+                        nwells=nwells,
+                        template_shape = self.well_shape
+                        )
+                ).sum()
+        # actual minimisation
+        # criterion for bounds choice:
+        # 1/2n is if well starts at edge, 1/well if there is another half well!
+        # bounds are relative to the size of the image (along the y axis)
+        # 1/(nwells+0.5) spacing allows for 1/4 an extra well on both side
+        # 1/(nwells-0.5) spacing allows for cut wells at the edges I guess
+        bounds = [(1/(2*nwells), 1/nwells),  # x_offset
+                  (1/(2*nwells), 1/nwells),  # y_offset
+                  (1/(nwells+0.5), 1/(nwells-0.5))]  # spacing
+        result = scipy.optimize.differential_evolution(fun_to_minimise, bounds, polish=True)
+        # extract output parameters for spacing grid
+        x_offset, y_offset, spacing = result.x.copy()
+        # create coordinates for the wells now
+        # convert to pixels
+        def _to_px(rel):
+            return rel * self.img.shape[0]
+        x_offset_px = _to_px(x_offset)
+        y_offset_px = _to_px(y_offset)
+        spacing_px = _to_px(spacing)
+        # create list of centres and sizes
+        # row and column could now come automatically as x and y are ordered
+        # but since odd and even channel need to be treated diferently, 
+        # leave it to the specialised function
+        xyr = np.array([
+                (x, y, spacing_px/2)
+                for x in np.arange(x_offset_px,self.img.shape[1],spacing_px)[:nwells]
+                for y in np.arange(y_offset_px,self.img.shape[0],spacing_px)[:nwells]
+                ])
+        # write into dataframe
+        self.wells['x'] = xyr[:,0].astype(int)  # centre
+        self.wells['y'] = xyr[:,1].astype(int)  # centre
+        self.wells['r'] = xyr[:,2].astype(int)  # half-width
+        # now calculate the rest. Don't need all the cleaning-up 
+        for d in ['x','y']:
+            self.wells[d+'_min'] = self.wells[d] - self.wells['r']
+            self.wells[d+'_max'] = self.wells[d] + self.wells['r']
+
+        
     
     def find_square_wells(self, xcorr_threshold=0.85):
         """Cross-correlate the frame with a template approximating a square well.
@@ -650,6 +724,7 @@ class FOVMultiWellsSplitter(object):
             raise Exception("Can only tile 2D or 3D objects")
             return
         
+        
     def tile_FOV_2D(self, img):
         """
         Function that chops an image according to the x/y_min/max coordinates in
@@ -778,6 +853,7 @@ class FOVMultiWellsSplitter(object):
         return self.find_well_of_xy(trajectories_data['coord_x'], 
                                     trajectories_data['coord_y'])
         
+        
     def get_wells_data(self):
         """
         Returns info about the wells for storage purposes, in hdf5 friendly format
@@ -808,7 +884,8 @@ class FOVMultiWellsSplitter(object):
             mask[m:M,:] = 0
         
         return mask
-            
+        
+    
     def apply_wells_mask(self, img):
         """
         performs img*= mask"""
@@ -816,109 +893,39 @@ class FOVMultiWellsSplitter(object):
     
     
     
-    
-    def read_worm_counts(self, annotated_img, path_to_templates):
-        """
-        cross correlation of image with characters
-        """
-        
-        is_debug = True
-        
-        templates = []
-        for ii in range(10):
-            c = str(ii)
-            digit_name = path_to_templates / (c+".png")
-            digit_img = cv2.imread(str(digit_name))
-            digit_img = cv2.cvtColor(digit_img,cv2.COLOR_BGR2GRAY)
-            digit_img = 255*(digit_img==0).astype(np.uint8)
-            templates.append(digit_img)
-        
-        # loop on wells
-        worm_count_dict = {}
-        for i, well in self.wells.iterrows():
-            # cut out region of interest
-            roi = annotated_img[well['y_min']:well['y_max'],
-                           well['x_min']:well['x_max']]
-            roi_bw = 255*(roi==0).astype(np.uint8)
-
-            # compare roi wit all digits
-            is_digit_a_hit = np.zeros(10).astype(np.bool) # here store how well the digit matches the roi
-            is_digit_repeated = np.zeros(10).astype(np.bool)
-            x_coord_of_digit = np.nan * np.ones(10) 
-            for dc, digit in enumerate(templates):
-                res = cv2.matchTemplate(roi_bw, digit, cv2.TM_CCORR_NORMED)
-            
-                # find local maxima that are at least well_size_px apart
-                X=peak_local_max(res, min_distance=np.min(digit.shape)//2, 
-                                 indices=True, 
-                                 exclude_border=False,
-                                 threshold_abs=0.85)
-                print(res.max())
-                # save hits
-                if X.shape[0] == 1:
-                    is_digit_a_hit[dc] = True
-                    x_coord_of_digit[dc] = X[0,1] # X is a list of row, column couples
-                elif X.shape[0] == 2:
-                    is_digit_a_hit[dc] = True
-                    is_digit_repeated[dc] = True
-                    x_coord_of_digit[dc] = X[0,1] # since repeated we don't really care about this
-                elif X.shape[0] > 2:
-                    plt.imshow(res)
-                    import pdb
-                    pdb.set_trace()
-                    
-                else:
-#                    if is_debug:
-#                    plt.figure()
-#                    plt.imshow(roi)
-                    plt.figure(str(dc))
-                    plt.imshow(res)
-                    pass # do nothing
-
-            # how may different digits were found?
-            # only one:
-            if is_digit_a_hit.sum()==1:
-                which_digit_was_it = np.argmax(is_digit_a_hit) # position in is_digit_a_hit is indeed digit
-                # was the only found digit repeated?
-                if is_digit_repeated[which_digit_was_it]: # it was repeated
-                    number_out = which_digit_was_it * 11 # assuming <100 worms
-                else: # it was not
-                    number_out = which_digit_was_it
-            # two different digits
-            elif is_digit_a_hit.sum()==2:
-                which_digits = np.argwhere(is_digit_a_hit).flatten()
-                digits_coordinates = x_coord_of_digit[is_digit_a_hit]
-                assert len(which_digits)==len(digits_coordinates), 'different lengths'
-                digits_sorted = which_digits[np.argsort(digits_coordinates)]
-                number_out = 10*digits_sorted[0] + digits_sorted[1]
-            elif is_digit_a_hit.sum()==0:
-                import pdb
-                pdb.set_trace()
-                raise ValueError('No digits were found!')
-            elif is_digit_a_hit.sum()>2:
-                raise ValueError('Too many digits were found!')    
-            
-            # now give output
-            print('well name: {}, worm number: {}'.format(well['well_name'], number_out))
-            worm_count_dict[well['well_name']] = number_out
-            
-            if is_debug:
-                plt.figure('well name: {}, worm number: {}'.format(well.well_name, number_out))
-                plt.imshow(roi)
-                    
-        return worm_count_dict
-    
-    
-    
 # end of class
 
+def process_image_from_name(image_name):
+    fname = str(image_name)
+#        print(fname)
+    img_ = cv2.imread(fname)
+    img = cv2.cvtColor(img_,cv2.COLOR_BGR2GRAY)
+    # find camera name
+    regex = r"(?<=20\d{6}\_\d{6}\.)\d{8}"
+    camera_serial = re.findall(regex, str(fname).lower())[0]
+    print(camera_serial)
+    # run fov splitting
+    fovsplitter = FOVMultiWellsSplitter(img, 
+                                        camera_serial=camera_serial, 
+                                        total_n_wells=96,
+                                        whichsideup='upright', 
+                                        well_shape='square', 
+                                        px2um=12.4)
+    fig = fovsplitter.plot_wells()
+    fig.savefig(fname.replace('.png','_wells.png'), 
+                bbox_inches='tight', 
+                pad_inches=0, 
+                transparent=True)
+    return
     
 #%% main
         
 if __name__ == '__main__':
     
+    import os
     import time
     import re
+    import tqdm
     from pathlib import Path
 #    from scipy.signal import find_peaks
 
@@ -931,41 +938,31 @@ if __name__ == '__main__':
 #    wd = Path.home() / 'Desktop/Data_FOVsplitter'
 #    img_dir = wd / 'RawVideos/drugexperiment_1hrexposure'
     
-#    wd = Path('/Volumes/behavgenom$/Luigi/Data/LoopBio_calibrations/wells_mapping/20190710/')
-#    img_dir = wd
+    wd = Path('/Volumes/behavgenom$/Luigi/Data/LoopBio_calibrations/wells_mapping/20190710/')
+    img_dir = wd
 #    img_dir = wd / 'Hydra03'
-#    
-#    fnames = list(img_dir.rglob('*.png'))
-###    fnames = fnames[2:3] # for code-review only
-#    for fname in fnames:
-#        # load image
-#        img_ = cv2.imread(str(fname))
-#        img = cv2.cvtColor(img_,cv2.COLOR_BGR2GRAY)
-#        # find camera name
-#        regex = r"(?<=20\d{6}\_\d{6}\.)\d{8}"
-#        camera_serial = re.findall(regex, str(fname).lower())[0]
-#        # run fov splitting
-#        fovsplitter = FOVMultiWellsSplitter(img, camera_serial=camera_serial, total_n_wells=96,
-#                                            whichsideup='upright', well_shape='square', px2um=12.4)
-#        fig = fovsplitter.plot_wells()
-#        plt.tight_layout()
-#        fig.savefig(camera_serial + '.png', bbox_inches='tight', pad_inches=0, transparent=True)
-#    plt.close('all')
+    
+    
+    fnames = list(img_dir.rglob('*.png'))
+    fnames = [str(f) for f in fnames if '_wells' not in str(f)]
+##    fnames = fnames[2:3] # for code-review only
+    for fname in tqdm.tqdm(fnames):
+        process_image_from_name(fname)
+    plt.close('all')
     
     #%% this file didn't work, why?
-    masked_image_file = '/Volumes/behavgenom$/Ida/Data/Hydra/PilotDrugExps/20191003/MaskedVideos/pilotdrugs_run1_20191003_161308.22956807/metadata.hdf5'
-    features_file = masked_image_file.replace('MaskedVideos','Results').replace('.hdf5','_featuresN.hdf5')
-    img, camera_serial, px2um = read_data_from_masked(masked_image_file)
-    #%%
-    fovsplitter = FOVMultiWellsSplitter(img, 
-                                    camera_serial=camera_serial, 
-                                    total_n_wells=96,
-                                    whichsideup='upright', 
-                                    well_shape='square', 
-                                    px2um=12.4)
+#    masked_image_file = '/Volumes/behavgenom$/Ida/Data/Hydra/PilotDrugExps/20191003/MaskedVideos/pilotdrugs_run1_20191003_161308.22956807/metadata.hdf5'
+#    features_file = masked_image_file.replace('MaskedVideos','Results').replace('.hdf5','_featuresN.hdf5')
+#    img, camera_serial, px2um = calculate_bgnd_from_masked_fulldata(masked_image_file)
+#    fovsplitter = FOVMultiWellsSplitter(img, 
+#                                        camera_serial=camera_serial, 
+#                                        total_n_wells=96,
+#                                        whichsideup='upright', 
+#                                        well_shape='square', 
+#                                        px2um=12.4)
 
 
-#fovsplitter = FOVMultiWellsSplitter(masked_image_file)
+#    fovsplitter = FOVMultiWellsSplitter(masked_image_file)
 
     #%% test on filename
     
@@ -989,27 +986,38 @@ if __name__ == '__main__':
 #        traj_data = fid['/trajectories_data']
 #        well_names = fovsplitter.find_well_from_trajectories_data(traj_data)
         
-        
-    #%% test worm counting
-#    img_dir = Path('/Volumes/behavgenom$/Ida/Data/LoopBio/20190719_MWPtest/firstframes/')
-#
-#    fnames = list(img_dir.rglob('*.png'))
-#    fnames = [f for f in fnames if 'annotated' not in str(f)]
-#     
-#    path_to_templates = Path('/Volumes/behavgenom$/Ida/numbers')
-#     
-#    for fname in fnames[6:7]:
-#        # load image
-#        img_ = cv2.imread(str(fname))
-#        annotated_img = cv2.cvtColor(img_,cv2.COLOR_BGR2GRAY)
-#        # find camera name
-#        regex = r"(?<=20\d{6}\_\d{6}\.)\d{8}"
-#        camera_serial = re.findall(regex, str(fname).lower())[0]
-#        # run fov splitting
-#        fovsplitter = FOVMultiWellsSplitter(img=annotated_img, camera_serial=camera_serial, total_n_wells=96,
-#                                            whichsideup='upright', well_shape='square', px2um=12.4)
-#        # read worms count
-#        fovsplitter.read_worm_counts(annotated_img, path_to_templates)
+     #%%   
+     
+#    wd = Path('/Volumes/behavgenom$/Luigi/Data/Blue_LEDs_tests/RawVideos/20191104/')
+##    wd = wd / 'blueled_tests_run01_20191104_172258_firstframes'
+#    fnames_to_delete = list(wd.rglob('*_wells.png'))
+#    for fname in fnames_to_delete:
+#        os.remove(str(fname))
+#    fnames = list(wd.rglob('*.png'))
+#    fnames = [str(f) for f in fnames]
+#    print('{} images to process'.format(len(fnames)))
+##    tic = time.time()
+##    process_image_from_name(fnames[2])
+##    print('totatl time:',time.time()-tic)
+#    
+#    
+#    import multiprocessing
+#    import tqdm
+#    
+#    if multiprocessing.get_start_method() != 'spawn':
+#        multiprocessing.set_start_method('spawn', force=True)
+#    
+#    batch_size = 6
+#    for ind in tqdm.tqdm(range(0, len(fnames), batch_size)):
+#        batched_fnames = fnames[ind:ind+batch_size]
+#        # process them in parallel
+#        with multiprocessing.Pool(batch_size) as p:
+#            outs = p.imap_unordered(process_image_from_name, batched_fnames)
+#            # do nothing with the outputs
+#            for _ in outs:
+#                pass
     
         
-    
+        
+        
+        
