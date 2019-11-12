@@ -319,7 +319,10 @@ class FOVMultiWellsSplitter(object):
             raise Exception("This case hasn't been coded for yet")
             
         # make square template approximating a well    
-        template = make_square_template(n_pxls=well_size_px, rel_width=0.7, blurring=0.1)
+        template = make_square_template(n_pxls=well_size_px, 
+                                        rel_width=0.7, 
+                                        blurring=0.1,
+                                        dtype_out='uint8')
         
         # find template in image: cross correlation, then threshold and segment
         res = cv2.matchTemplate(self.blur_im, template, cv2.TM_CCORR_NORMED)
@@ -938,18 +941,18 @@ if __name__ == '__main__':
 #    wd = Path.home() / 'Desktop/Data_FOVsplitter'
 #    img_dir = wd / 'RawVideos/drugexperiment_1hrexposure'
     
-    wd = Path('/Volumes/behavgenom$/Luigi/Data/LoopBio_calibrations/wells_mapping/20190710/')
-    img_dir = wd
-#    img_dir = wd / 'Hydra03'
-    
-    
-    fnames = list(img_dir.rglob('*.png'))
-    fnames = [str(f) for f in fnames if '_wells' not in str(f)]
-##    fnames = fnames[2:3] # for code-review only
-    for fname in tqdm.tqdm(fnames):
-        process_image_from_name(fname)
-    plt.close('all')
-    
+#    wd = Path('/Volumes/behavgenom$/Luigi/Data/LoopBio_calibrations/wells_mapping/20190710/')
+#    img_dir = wd
+##    img_dir = wd / 'Hydra03'
+#    
+#    
+#    fnames = list(img_dir.rglob('*.png'))
+#    fnames = [str(f) for f in fnames if '_wells' not in str(f)]
+###    fnames = fnames[2:3] # for code-review only
+#    for fname in tqdm.tqdm(fnames):
+#        process_image_from_name(fname)
+#    plt.close('all')
+#    
     #%% this file didn't work, why?
 #    masked_image_file = '/Volumes/behavgenom$/Ida/Data/Hydra/PilotDrugExps/20191003/MaskedVideos/pilotdrugs_run1_20191003_161308.22956807/metadata.hdf5'
 #    features_file = masked_image_file.replace('MaskedVideos','Results').replace('.hdf5','_featuresN.hdf5')
@@ -988,36 +991,44 @@ if __name__ == '__main__':
         
      #%%   
      
-#    wd = Path('/Volumes/behavgenom$/Luigi/Data/Blue_LEDs_tests/RawVideos/20191104/')
-##    wd = wd / 'blueled_tests_run01_20191104_172258_firstframes'
-#    fnames_to_delete = list(wd.rglob('*_wells.png'))
-#    for fname in fnames_to_delete:
-#        os.remove(str(fname))
-#    fnames = list(wd.rglob('*.png'))
-#    fnames = [str(f) for f in fnames]
-#    print('{} images to process'.format(len(fnames)))
-##    tic = time.time()
-##    process_image_from_name(fnames[2])
-##    print('totatl time:',time.time()-tic)
-#    
-#    
-#    import multiprocessing
-#    import tqdm
-#    
-#    if multiprocessing.get_start_method() != 'spawn':
-#        multiprocessing.set_start_method('spawn', force=True)
-#    
-#    batch_size = 6
-#    for ind in tqdm.tqdm(range(0, len(fnames), batch_size)):
-#        batched_fnames = fnames[ind:ind+batch_size]
-#        # process them in parallel
-#        with multiprocessing.Pool(batch_size) as p:
-#            outs = p.imap_unordered(process_image_from_name, batched_fnames)
-#            # do nothing with the outputs
-#            for _ in outs:
-#                pass
+    wd = Path('/Volumes/behavgenom$/Luigi/Data/Blue_LEDs_tests/RawVideos/20191104/')
+#    wd = wd / 'blueled_tests_run01_20191104_172258_firstframes'
+    fnames_to_delete = list(wd.rglob('*_wells.png'))
+    for fname in fnames_to_delete:
+        os.remove(str(fname))
+    fnames = list(wd.rglob('*.png'))
+    fnames = [str(f) for f in fnames]
+    print('{} images to process'.format(len(fnames)))
+#    tic = time.time()
+#    process_image_from_name(fnames[2])
+#    print('totatl time:',time.time()-tic)
     
-        
+    
+    import multiprocessing
+    import tqdm
+    
+    if multiprocessing.get_start_method() != 'spawn':
+        multiprocessing.set_start_method('spawn', force=True)
+    
+    batch_size = 6
+    
+    with multiprocessing.Pool(batch_size) as p:
+        for ind in tqdm.tqdm(range(0, len(fnames), batch_size)):
+            batched_fnames = fnames[ind:ind+batch_size]
+            # process them in parallel
+            outs = p.imap_unordered(process_image_from_name, batched_fnames)
+            # do nothing with the outputs
+            for _ in outs:
+                pass
+    
+    import subprocess as sp
+    wd = Path('/Volumes/behavgenom$/Luigi/Data/Blue_LEDs_tests/RawVideos/20191104/')
+    fnames_to_move = list(wd.rglob('*_wells.png'))
+    dst = wd / 'wells'
+    for fname in fnames_to_move:
+        cmdlist = ['mv', str(fname), str(dst)+'/']
+#        print(cmd)
+        sp.run(cmdlist)
         
         
         
