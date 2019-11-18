@@ -32,6 +32,9 @@ def args_(fn, param):
     else:
         fovsplitter_param = {x.replace('MWP_',''):p[x] for x in fovsplitter_param_f}   
     
+    if isinstance(fovsplitter_param['total_n_wells'], str):
+        fovsplitter_param['total_n_wells'] = int(fovsplitter_param['total_n_wells'])
+        
     if fovsplitter_param['total_n_wells']<0:
         fovsplitter_param = {}
     
