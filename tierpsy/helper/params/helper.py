@@ -24,7 +24,7 @@ def repack_dflt_list(dflt_list, valid_options={}):
 
 
         if name in valid_options:
-            info_txt += ' Valid_options ({})'.format(','.join(valid_options[name]))
+            info_txt += ' Valid_options ({})'.format(','.join([str(vo) for vo in valid_options[name]]))
         info_txt = textwrap.dedent(info_txt)
         info_txt = textwrap.fill(info_txt)
         return name, dftl_val, info_txt
