@@ -28,10 +28,13 @@ class Summarizer_GUI(QtWidgets.QMainWindow):
         self.ui.pushButton_rootdir.clicked.connect(self.getRootDir)
         self.ui.p_summary_type.currentIndexChanged.connect(self.viewFoldArgs)
         self.ui.p_feature_type.currentIndexChanged.connect(self.viewTimeWindows)
+        self.ui.p_select_feat.currentIndexChanged.connect(self.viewSelectByKeywords)
 
         LineEditDragDrop(self.ui.p_root_dir, self.updateRootDir, os.path.isdir)
 
         self.viewFoldArgs()
+        self.viewTimeWindows()
+        self.viewSelectByKeywords()
 
     def getRootDir(self):
         root_dir = QtWidgets.QFileDialog.getExistingDirectory(
@@ -55,6 +58,13 @@ class Summarizer_GUI(QtWidgets.QMainWindow):
             self.ui.TimeWindows.show()
         else:
             self.ui.TimeWindows.hide()
+
+    def viewSelectByKeywords(self):
+        if self.mapper['select_feat'] == 'select_by_keywords':
+            self.ui.SelectByKeywords.show()
+        else:
+            self.ui.SelectByKeywords.hide()
+
 
     def startAnalysis(self):
         process_args = {k:self.mapper[k] for k in self.mapper}

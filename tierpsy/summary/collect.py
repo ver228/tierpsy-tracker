@@ -27,7 +27,7 @@ valid_feature_types = list(feature_files_ext.keys())
 valid_summary_types = ['plate', 'trajectory', 'plate_augmented']
 valid_time_windows_connector = ':'
 valid_time_windows_separator = ','
-time_windows_format_explain = 'Each time window must be defined by the start time and the end time connected by \':\' (start_time:end_time). Different windows must be separated by {}.'.format(valid_time_windows_separator) 
+time_windows_format_explain = 'Each time window must be defined by the start time and the end time connected by \'-\' (start_time-end_time). Different windows must be separated by {}. A sequence of equally sized windows can be defined with the format start_time:end_time:step.'.format(valid_time_windows_separator) 
 
 def check_in_list(x, list_of_x, x_name):
     if not x in list_of_x:
@@ -64,13 +64,14 @@ def time_windows_parser(time_windows):
         windows = [[0,-1]]
         return windows
     if valid_time_windows_connector not in time_windows:
-        ValueError(time_windows_format_explain)
+        raise ValueError('Invalid format of time windows: '+time_windows_format_explain)
         return
     
     # Remove spaces and replace end with -1
     windows = time_windows.replace(' ','').replace('end','-1')
-    # Split at ; to separate time windows, then split each non-empty time window at :
-    windows = [x.split(':') for x in windows.split(valid_time_windows_separator) if x]
+    # Split at ',' to separate time windows, then split each non-empty time window at '-' or ':'
+    windows = [x.split(valid_time_windows_connector) for x in windows.split(valid_time_windows_separator) if x]
+    
     # Convert to integers
     try:
         windows = [[int(x) for x in wdw] for wdw in windows]
@@ -78,10 +79,26 @@ def time_windows_parser(time_windows):
         print_flush('Time windows input could not be converted to list of integers.'+time_windows_format_explain)
         raise
     else:
+        fin_windows = []
         for iwin,window in enumerate(windows):
-            if window[1]!=-1:
-                assert window[0]<=window[1], "The end time of time window {}/{} is smaller than the start time.".format(iwin+1,len(windows))
-        return windows
+            if len(window)==3:
+                if window[1]==-1:
+                    raise ValueError('Invalid format of time windows: When the format start_time:end_time:step is used, the end_time has to be defined explicitly in seconds or frames. It cannot be defined as \'end\' or \'-1\'.')
+                else:
+                    assert window[0]<=window[1], "Invalid format of time windows: The end time of time window {}/{} cannot be smaller than the start time.".format(iwin+1,len(windows))
+                    assert window[2]<=window[1]-window[0], "Invalid format of time windows: The step size in time window {}/{} cannot be larger than the (end_time-start_time).".format(iwin+1,len(windows))
+                start,end,step = window
+                step_wins = [[i,j] for i,j in zip(list(range(*window)),list(range(start+step,end,step))+[end])]
+                for add in step_wins:
+                    fin_windows.append(add)
+            elif len(window)==2:
+                if window[1]!=-1:
+                    assert window[0]<=window[1], "Invalid format of time windows: The end time of time window {}/{} cannot be smaller than the start time.".format(iwin+1,len(windows))
+                fin_windows.append(window)
+            else:
+                ValueError('Invalid format of time windows: '+time_windows_format_explain)
+            
+        return fin_windows
 
 def keywords_parser(keywords):
     """
@@ -97,19 +114,19 @@ def keywords_parser(keywords):
     else:
         return None
 
-def feat_set_parser(feat_set):
+def feat_set_parser(select_feat):
     """
     EM : gets the full path of the file containing the selected feature set.
     """    
-    if feat_set != 'all':
-        feat_set_file = os.path.join(FEAT_SET_DIR,feature_sets_filenames[feat_set])
+    if select_feat in feature_sets_filenames.keys():
+        feat_set_file = os.path.join(FEAT_SET_DIR,feature_sets_filenames[select_feat])
         selected_feat = pd.read_csv(feat_set_file, header=None, index_col=None)
         selected_feat = selected_feat.values.flatten().tolist()
     else:
         selected_feat = None
     return selected_feat
 
-def make_df_filenames(fnames,time_windows_ints):
+def make_df_filenames(fnames,time_windows_ints,time_units):
     """
     EM : Create dataframe with filename summaries and time window info for every time window
     """
@@ -119,23 +136,24 @@ def make_df_filenames(fnames,time_windows_ints):
         df_files[iwin]['is_good'] = False
         df_files[iwin]['window_id'] = iwin
         df_files[iwin]['start_time'] = time_windows_ints[iwin][0]
-        df_files[iwin]['end_time'] = time_windows_ints[iwin][1]    
+        df_files[iwin]['end_time'] = time_windows_ints[iwin][1]
+        df_files[iwin]['time_units'] = time_units  
     return df_files
 
 def select_features(win_summaries,keywords_in,keywords_ex,selected_feat):
     if not win_summaries.empty:
         if selected_feat is not None:
-            win_summaries = win_summaries[selected_feat]
+            win_summaries = win_summaries[['file_id']+selected_feat]
         if keywords_in is not None:
             filter_col = [x for x in win_summaries.columns if any(key in x for key in keywords_in)]
-            win_summaries = win_summaries[filter_col]
+            win_summaries = win_summaries[['file_id']+filter_col]
         if keywords_ex is not None:
             filter_col = [x for x in win_summaries.columns if any(key in x for key in keywords_ex)]
             win_summaries = win_summaries[win_summaries.columns.drop(filter_col)]
     return win_summaries
     
 def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, time_windows, time_units, 
-                        feat_set, keywords_include, keywords_exclude, _is_debug = False, **fold_args):
+                        select_feat, keywords_include, keywords_exclude, _is_debug = False, **fold_args):
     """
     Gets input from the GUI, calls the function that chooses the type of summary 
     and runs the summary calculation for each file in the root_dir.
@@ -152,12 +170,13 @@ def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, t
     # EM : convert time windows to list of integers in frame number units
     time_windows_ints = time_windows_parser(time_windows)
 
-    # EM : get list of keywords to include and to exclude
+    # EM : get list of keywords to include and to exclude 
+    # TODO: catch conflicts
     keywords_in = keywords_parser(keywords_include)
     keywords_ex = keywords_parser(keywords_exclude)
     
     # EM : get full path to feature set file
-    selected_feat = feat_set_parser(feat_set)
+    selected_feat = feat_set_parser(select_feat)
     
     #get summary function
     # INPUT time windows time units here
@@ -170,10 +189,10 @@ def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, t
     fnames = glob.glob(os.path.join(root_dir, '**', '*' + ext), recursive=True)
     if not fnames:
         print_flush('No valid files found. Nothing to do here.')
-        return
+        return None,None
     
     # EM :Make df_files list with one features_summaries dataframe per time window
-    df_files = make_df_filenames(fnames,time_windows_ints)
+    df_files = make_df_filenames(fnames,time_windows_ints,time_units)
     
     progress_timer = TimeCounter('')
     def _displayProgress(n):
@@ -207,10 +226,18 @@ def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, t
         all_summaries[iwin] = select_features(all_summaries[iwin],keywords_in,keywords_ex,selected_feat)
         
     # EM : Save results
-        f1 = os.path.join(root_dir, 'filenames_{}_window_{}.csv'.format(save_base_name,iwin))
-        df_files[iwin].to_csv(f1, index=False)
-        
-        f2 = os.path.join(root_dir,'features_{}_window_{}.csv'.format(save_base_name,iwin))
+        if select_feat != 'all':
+            win_save_base_name = save_base_name.replace('tierpsy',select_feat+'_tierpsy')
+        else:
+            win_save_base_name = save_base_name
+
+        if not (len(time_windows_ints)==1 and time_windows_ints[0]==[0,-1]):
+            win_save_base_name = win_save_base_name+'_window_{}.csv'.format(iwin)
+
+        f1 = os.path.join(root_dir, 'filenames_{}.csv'.format(win_save_base_name))
+        f2 = os.path.join(root_dir,'features_{}.csv'.format(win_save_base_name))
+            
+        df_files[iwin].to_csv(f1, index=False)        
         all_summaries[iwin].to_csv(f2, index=False)
     
     out = '****************************'
@@ -222,6 +249,8 @@ def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, t
     return df_files, all_summaries
 
 if __name__ == '__main__':
+    
+    
     root_dir = '/Users/em812/Documents/OneDrive - Imperial College London/Eleni/Tierpsy_GUI/test_results_2'
     is_manual_index = False
 #    feature_type = 'tierpsy'
@@ -236,11 +265,11 @@ if __name__ == '__main__':
                  time_sample_seconds = 10*60
                  )
     
-    time_windows = '0:end' #'0:end,100000:101000'
+    time_windows = '0-end,100000-101000' '0:end:1000' #'0:end' #
     time_units = 'frame numbers'
-    feat_set = 'all' #'tierpsy_2k'
+    select_feat = 'all' #'tierpsy_2k'
     keywords_include = ''
     keywords_exclude = '' #'curvature,velocity,norm,abs'
     
-    df_files, all_summaries = calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, time_windows, time_units, feat_set, keywords_include, keywords_exclude, **fold_args)
+    df_files, all_summaries = calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, time_windows, time_units, select_feat, keywords_include, keywords_exclude, **fold_args)
         

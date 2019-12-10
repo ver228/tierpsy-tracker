@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>656</width>
-    <height>516</height>
+    <width>632</width>
+    <height>514</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -72,13 +72,30 @@ edited trajectories?</string>
     <item>
      <widget class="QWidget" name="FoldArgs" native="true">
       <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="1">
-        <widget class="QDoubleSpinBox" name="p_frac_worms_to_keep">
-         <property name="maximum">
-          <double>1.000000000000000</double>
+       <item row="1" column="1">
+        <widget class="QLabel" name="label_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
-         <property name="singleStep">
-          <double>0.010000000000000</double>
+         <property name="text">
+          <string>Fraction of trajectories
+ to sample</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QSpinBox" name="p_n_folds"/>
+       </item>
+       <item row="0" column="2">
+        <widget class="QDoubleSpinBox" name="p_time_sample_seconds">
+         <property name="maximum">
+          <double>100000000000.000000000000000</double>
          </property>
         </widget>
        </item>
@@ -115,30 +132,13 @@ edited trajectories?</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QSpinBox" name="p_n_folds"/>
-       </item>
-       <item row="0" column="2">
-        <widget class="QDoubleSpinBox" name="p_time_sample_seconds">
+       <item row="0" column="1">
+        <widget class="QDoubleSpinBox" name="p_frac_worms_to_keep">
          <property name="maximum">
-          <double>100000000000.000000000000000</double>
+          <double>1.000000000000000</double>
          </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLabel" name="label_2">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Fraction of trajectories
- to sample</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+         <property name="singleStep">
+          <double>0.010000000000000</double>
          </property>
         </widget>
        </item>
@@ -148,10 +148,13 @@ edited trajectories?</string>
     <item>
      <widget class="QWidget" name="TimeWindows" native="true">
       <layout class="QGridLayout" name="gridLayout_3">
+       <item row="1" column="3">
+        <widget class="QComboBox" name="p_select_feat"/>
+       </item>
        <item row="1" column="1">
         <widget class="QLabel" name="label_7">
          <property name="text">
-          <string>Selected features</string>
+          <string>Select features</string>
          </property>
         </widget>
        </item>
@@ -175,6 +178,13 @@ edited trajectories?</string>
          </item>
         </widget>
        </item>
+       <item row="0" column="3">
+        <widget class="QLineEdit" name="p_time_windows">
+         <property name="text">
+          <string>0:end</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="1">
         <widget class="QLabel" name="label_6">
          <property name="sizePolicy">
@@ -188,31 +198,18 @@ edited trajectories?</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="3">
-        <widget class="QComboBox" name="p_feat_set"/>
-       </item>
-       <item row="0" column="3">
-        <widget class="QLineEdit" name="p_time_windows">
-         <property name="text">
-          <string>0:end</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </widget>
     </item>
     <item>
-     <widget class="QWidget" name="widget" native="true">
+     <widget class="QWidget" name="SelectByKeywords" native="true">
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_8">
+       <item row="0" column="0" colspan="2">
+        <widget class="QLabel" name="label_10">
          <property name="text">
-          <string>Include keywords</string>
+          <string>Select features by keywords :</string>
          </property>
         </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="p_keywords_include"/>
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_9">
@@ -224,12 +221,15 @@ edited trajectories?</string>
        <item row="2" column="1">
         <widget class="QLineEdit" name="p_keywords_exclude"/>
        </item>
-       <item row="0" column="0" colspan="2">
-        <widget class="QLabel" name="label_10">
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_8">
          <property name="text">
-          <string>Select features by keywords (optional) :</string>
+          <string>Include keywords</string>
          </property>
         </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="p_keywords_include"/>
        </item>
       </layout>
      </widget>
@@ -248,7 +248,7 @@ edited trajectories?</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>656</width>
+     <width>632</width>
      <height>22</height>
     </rect>
    </property>
