@@ -35,7 +35,7 @@ class ParamWidget():
 
         elif isinstance(self.widget, QComboBox):
             if name in valid_options:
-                self.widget.addItems(valid_options[name])
+                self.widget.addItems([str(op) for op in valid_options[name]])
             
         if not isinstance(self.widget, QGridLayout):
             self.widget.setToolTip(info_param[name])
@@ -105,7 +105,7 @@ class ParamWidget():
             for ii, val in enumerate(value):
                 self.widget.itemAt(ii).widget().setValue(val)
         elif isinstance(self.widget, QComboBox):
-            index = self.widget.findText(value)
+            index = self.widget.findText(str(value))
             self.widget.setCurrentIndex(index)
         else:
             raise ValueError('unknown type {}'.format(type(self.widget)))

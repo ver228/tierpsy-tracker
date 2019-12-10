@@ -17,6 +17,63 @@ from tierpsy.gui.PlotFeatures import PlotFeatures
 
 from tierpsy.helper.misc import WLAB, save_modified_table
 
+class WellsDrawer(TrackerViewerAuxGUI):
+    '''
+    Dummy class with the wells division drawer functions
+    '''
+    def __init__(self, ui):
+        super().__init__(ui)
+        # colour
+        self.wells = None
+        self.is_fov_tosplit = None
+        for k, v in self.__dict__.items():
+            print(k,v)
+        
+    def updateVideoFile(self, vfilename):
+        super().updateVideoFile(vfilename)
+        # check if /fov_wells exists in masked video
+        if self.fid is not None:
+            if '/fov_wells' not in self.fid:
+                self.is_fov_tosplit = False
+            else:
+                self.is_fov_tosplit = True
+            # if it exists, read it
+            if self.is_fov_tosplit:
+                self.wells = pd.DataFrame(self.fid.get_node('/fov_wells').read())
+            
+    def draw_wells(self, image):
+        '''
+        Draw wells.
+        '''
+        if self.is_fov_tosplit:
+            
+            # prepare constants for drawing          
+            self.fontsize = max(1, max(image.height(), image.width()) // 60)
+            penwidth = max(1, max(image.height(), image.width()) // 400)
+            self.penwidth = penwidth if penwidth % 2 == 1 else penwidth + 1
+            self.wellsC = QColor(250, 140, 0)
+            # Qt drawing code 
+            painter = QPainter()
+            painter.begin(image)
+            pen = QPen()
+            pen.setColor(self.wellsC)
+            pen.setWidth(self.penwidth)
+            painter.setPen(pen)
+            painter.setFont(QFont('Decorative', self.fontsize))
+            # loop on wells
+            for _, well in self.wells.iterrows():
+                # draw well name
+                painter.drawText(well['x_min'] + self.fontsize*0.4, 
+                                 well['y_min'] + self.fontsize*1.2, 
+                                 well['well_name'].decode('utf-8'))
+                # draw rectangle
+                painter.drawRect(well['x_min'], 
+                                 well['y_min'], 
+                                 well['x_max'] - well['x_min'], 
+                                 well['y_max'] - well['y_min'])
+            painter.end()
+
+
 
 class ContourDrawer(TrackerViewerAuxGUI):
     '''
@@ -32,7 +89,7 @@ class ContourDrawer(TrackerViewerAuxGUI):
             WLAB['WORMS']: Qt.blue,
             WLAB['BAD']: Qt.darkRed,
             WLAB['GOOD_SKE']: Qt.darkCyan
-            }
+            } 
         self.ui.checkBox_showFood.stateChanged.connect(self.updateImage)
         self.ui.checkBox_showFood.setEnabled(False)
         self.ui.checkBox_showFood.setChecked(True)
@@ -456,7 +513,7 @@ class TrajectoryEditor(ROIManager):
         self.updateImage()
 
 class FeatureReaderBase(TrackerViewerAuxGUI):
-    index_cols = ['worm_index', 'timestamp', 'motion_modes', 'skeleton_id']
+    index_cols = ['worm_index', 'timestamp', 'motion_modes', 'skeleton_id', 'well_name']
     valid_fields = ['/timeseries_data', '/features_timeseries']
 
     def __init__(self, ui):
@@ -550,6 +607,7 @@ class MarkersDrawer(FeatureReaderBase):
 
     def _h_find_feat_limits(self):
         self.feat_column = str(self.ui.feature_column.currentText())
+        print(self.feat_column)
         
         if self.feat_column and self.timeseries_data is not None:
             f_max = self.timeseries_data[self.feat_column].max()
@@ -760,7 +818,7 @@ class PlotCommunicator(FeatureReaderBase, ROIManager):
             self.plotter.plot(self.current_worm_index, self.feat_column)
 
 class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
-    ContourDrawer, BlobLabeler, IntensityLabeler, TrajectoryEditor):
+    ContourDrawer, BlobLabeler, IntensityLabeler, TrajectoryEditor, WellsDrawer):
 
     def __init__(self, ui='', argv=''):
         if not ui:
@@ -896,6 +954,8 @@ class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
 
         else:
             self.clearROIs()
+        # plot wells
+        self.draw_wells(self.frame_qimg)
         
         # create the pixmap for the label
         self.mainImage.setPixmap(self.frame_qimg)

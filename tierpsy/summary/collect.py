@@ -29,6 +29,8 @@ valid_time_windows_connector = ':'
 valid_time_windows_separator = ','
 time_windows_format_explain = 'Each time window must be defined by the start time and the end time connected by \'-\' (start_time-end_time). Different windows must be separated by {}. A sequence of equally sized windows can be defined with the format start_time:end_time:step.'.format(valid_time_windows_separator) 
 
+feat_df_id_cols = ['file_id','well_name']
+
 def check_in_list(x, list_of_x, x_name):
     if not x in list_of_x:
         raise ValueError('{} invalid {}. Valid options {}.'.format(x, x_name, list_of_x))
@@ -141,12 +143,14 @@ def make_df_filenames(fnames,time_windows_ints,time_units):
     return df_files
 
 def select_features(win_summaries,keywords_in,keywords_ex,selected_feat):
+    id_cols = [col for col in feat_df_id_cols if col in win_summaries.columns]
+    
     if not win_summaries.empty:
         if selected_feat is not None:
-            win_summaries = win_summaries[['file_id']+selected_feat]
+            win_summaries = win_summaries[id_cols+selected_feat]
         if keywords_in is not None:
             filter_col = [x for x in win_summaries.columns if any(key in x for key in keywords_in)]
-            win_summaries = win_summaries[['file_id']+filter_col]
+            win_summaries = win_summaries[id_cols+filter_col]
         if keywords_ex is not None:
             filter_col = [x for x in win_summaries.columns if any(key in x for key in keywords_ex)]
             win_summaries = win_summaries[win_summaries.columns.drop(filter_col)]
@@ -232,7 +236,7 @@ def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, t
             win_save_base_name = save_base_name
 
         if not (len(time_windows_ints)==1 and time_windows_ints[0]==[0,-1]):
-            win_save_base_name = win_save_base_name+'_window_{}.csv'.format(iwin)
+            win_save_base_name = win_save_base_name+'_window_{}'.format(iwin)
 
         f1 = os.path.join(root_dir, 'filenames_{}.csv'.format(win_save_base_name))
         f2 = os.path.join(root_dir,'features_{}.csv'.format(win_save_base_name))
@@ -250,7 +254,6 @@ def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, t
 
 if __name__ == '__main__':
     
-    
     root_dir = '/Users/em812/Documents/OneDrive - Imperial College London/Eleni/Tierpsy_GUI/test_results_2'
     is_manual_index = False
 #    feature_type = 'tierpsy'
@@ -258,6 +261,16 @@ if __name__ == '__main__':
     summary_type = 'plate_augmented'
 #    summary_type = 'plate'
     #summary_type = 'trajectory'
+
+# Luigi
+##    root_dir = '/Users/em812/Documents/OneDrive - Imperial College London/Eleni/Tierpsy_GUI/test_results_2'
+#    root_dir = '/Users/lferiani/Desktop/Data_FOVsplitter/evgeny/Results/20190808_subset'
+#    is_manual_index = False
+#    feature_type = 'tierpsy'
+#    #feature_type = 'openworm'
+#    #summary_type = 'plate_augmented'
+##    summary_type = 'plate'
+#    summary_type = 'trajectory'
     
     fold_args = dict(
                  n_folds = 2, 
@@ -265,11 +278,17 @@ if __name__ == '__main__':
                  time_sample_seconds = 10*60
                  )
     
-    time_windows = '0-end,100000-101000' '0:end:1000' #'0:end' #
+    time_windows = '0-end,100000-101000' '0:end:1000' #'0:end' # time_windows = '0:60,480:540'
     time_units = 'frame numbers'
     select_feat = 'all' #'tierpsy_2k'
     keywords_include = ''
     keywords_exclude = '' #'curvature,velocity,norm,abs'
     
     df_files, all_summaries = calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, time_windows, time_units, select_feat, keywords_include, keywords_exclude, **fold_args)
+    
+    # Luigi
+#    df_files, all_summaries = calculate_summaries(root_dir, feature_type, 
+#                                                  summary_type, is_manual_index, 
+#                                                  time_windows, time_units, 
+#                                                  **fold_args)
         

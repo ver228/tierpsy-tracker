@@ -141,22 +141,36 @@ class BackgroundSubtractorVideo(BackgroundSubtractorStream):
         self.buffer_ind = -1
 
         max_frames = self.buff_size*self.frame_gap
-        while current_frame < max_frames:
-            ret, image = vid.read()
-            #if not valid frame is returned return.
-            if ret == 0:
-                break
 
-            if image.ndim == 3:
-                image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-            
-            if self.is_update_frame(current_frame):
-                self.update_buffer(image, current_frame)
-            
-            current_frame += 1
+        if vid.__class__.__name__ != 'readLoopBio':
+            # for non-loopbio videos
+            while current_frame < max_frames:
+                ret, image = vid.read()
+                #if not valid frame is returned return.
+                if ret == 0:
+                    break
+    
+                if image.ndim == 3:
+                    image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+                
+                if self.is_update_frame(current_frame):
+                    self.update_buffer(image, current_frame)
+                
+                current_frame += 1
+            self.last_frame = current_frame - 1
+                
+        else:
+            # loopbio videos:
+            for fc in range(self.buff_size):
+                frame_to_read = fc * self.frame_gap
+                ret, image = vid.read_frame(frame_to_read)
+                # if not valid frame is returned return.
+                if ret == 0:
+                    break
+                self.update_buffer(image, frame_to_read)
+            self.last_frame = frame_to_read - self.frame_gap
+
         vid.release()
-
-        self.last_frame = current_frame - 1
 
         if self.buffer_ind < 0:
             #no valid frames read
