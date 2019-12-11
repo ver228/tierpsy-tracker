@@ -134,8 +134,8 @@ def binaryMask2Contour(
 
     # select only one contour in the binary mask
     # get contour
-    _, contour, hierarchy = cv2.findContours(
-        worm_mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    contour, hierarchy = cv2.findContours(
+        worm_mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2:]
 
     if len(contour) == 1:
         contour = np.squeeze(contour[0], axis=1)

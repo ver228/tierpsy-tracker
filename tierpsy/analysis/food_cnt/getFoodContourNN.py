@@ -205,7 +205,7 @@ def get_food_contour_nn(mask_file, model_path, _is_debug=False):
     #bgnd_images are only used in debug mode
     #%%
     patch_m = (food_prob>0.5).astype(np.uint8)
-    _, cnts, _ = cv2.findContours(patch_m, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    cnts, _ = cv2.findContours(patch_m, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2:]
     
     #pick the largest contour
 
@@ -219,7 +219,7 @@ def get_food_contour_nn(mask_file, model_path, _is_debug=False):
     patch_m = cv2.drawContours(patch_m, cnts , ind, color=1, thickness=cv2.FILLED)
     patch_m = cv2.morphologyEx(patch_m, cv2.MORPH_CLOSE, disk(3), iterations=5)
     
-    _, cnts, _ = cv2.findContours(patch_m, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    cnts, _ = cv2.findContours(patch_m, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2:]
     
     if len(cnts) == 1:
         cnts = cnts[0]

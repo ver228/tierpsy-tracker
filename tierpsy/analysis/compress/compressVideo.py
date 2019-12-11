@@ -72,8 +72,8 @@ def getROIMask(
 
     # find the contour of the connected objects (much faster than labeled
     # images)
-    _, contours, hierarchy = cv2.findContours(
-        mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours, hierarchy = cv2.findContours(
+        mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[-2:]
 
     # find good contours: between max_area and min_area, and do not touch the
     # image border

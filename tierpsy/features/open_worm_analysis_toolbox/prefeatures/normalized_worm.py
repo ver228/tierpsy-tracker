@@ -10,7 +10,7 @@ import scipy.io
 import copy
 import warnings
 import os
-import matplotlib.pyplot as plt
+
 
 from .. import config, utils
 from .basic_worm import WormPartition
@@ -710,76 +710,80 @@ class NormalizedWorm(WormPartition):
         # TODO: This omits the properties above ...
         return utils.print_object(self)
 
-    def plot_path(self, posture_index):
-        """
-        Plot the path of the contour, skeleton and widths
+    # def plot_path(self, posture_index):
+    #     """
+    #     Plot the path of the contour, skeleton and widths
 
-        Parameters
-        ----------------
-        posture_index: int
-            The desired posture point (along skeleton and contour) to plot.
+    #     Parameters
+    #     ----------------
+    #     posture_index: int
+    #         The desired posture point (along skeleton and contour) to plot.
 
-        """
-        vc = self.ventral_contour[posture_index, :, :]
-        nvc = self.dorsal_contour[posture_index, :, :]
-        skeleton_x = self.skeleton[posture_index, 0, :]
-        skeleton_y = self.skeleton[posture_index, 1, :]
+    #     """
+    #     vc = self.ventral_contour[posture_index, :, :]
+    #     nvc = self.dorsal_contour[posture_index, :, :]
+    #     skeleton_x = self.skeleton[posture_index, 0, :]
+    #     skeleton_y = self.skeleton[posture_index, 1, :]
 
-        plt.scatter(vc[0, :], vc[1, :])
-        plt.scatter(nvc[0, :], nvc[1, :])
-        plt.scatter(skeleton_x, skeleton_y)
-        plt.gca().set_aspect('equal', adjustable='box')
-        plt.show()
+    #     import matplotlib.pyplot as plt
+    #     plt.scatter(vc[0, :], vc[1, :])
+    #     plt.scatter(nvc[0, :], nvc[1, :])
+    #     plt.scatter(skeleton_x, skeleton_y)
+    #     plt.gca().set_aspect('equal', adjustable='box')
+    #     plt.show()
 
-    def plot_posture(self, frame_index):
-        """
-        Show a scatterplot of the contour, skeleton and widths of frame #frame
+    # def plot_posture(self, frame_index):
+    #     """
+    #     Show a scatterplot of the contour, skeleton and widths of frame #frame
 
-        Parameters
-        ----------------
-        frame_index: int
-            The desired frame # to plot.
+    #     Parameters
+    #     ----------------
+    #     frame_index: int
+    #         The desired frame # to plot.
 
-        """
-        vc = self.ventral_contour[:, :, frame_index]
-        nvc = self.dorsal_contour[:, :, frame_index]
-        skeleton = self.skeleton[:, :, frame_index]
+    #     """
+    #     vc = self.ventral_contour[:, :, frame_index]
+    #     nvc = self.dorsal_contour[:, :, frame_index]
+    #     skeleton = self.skeleton[:, :, frame_index]
 
-        plt.scatter(vc[:, 0], vc[:, 1], c='red')
-        plt.scatter(nvc[:, 0], nvc[:, 1], c='blue')
-        plt.scatter(skeleton[:, 0], skeleton[:, 1], c='black')
-        plt.gca().set_aspect('equal', adjustable='box')
-        plt.show()
+    #     import matplotlib.pyplot as plt
+    #     plt.scatter(vc[:, 0], vc[:, 1], c='red')
+    #     plt.scatter(nvc[:, 0], nvc[:, 1], c='blue')
+    #     plt.scatter(skeleton[:, 0], skeleton[:, 1], c='black')
+    #     plt.gca().set_aspect('equal', adjustable='box')
+    #     plt.show()
 
-    def plot_contour(self, frame_index):
-        NormalizedWorm.plot_contour_with_labels(
-            self.contour[:, :, frame_index])
+    # def plot_contour(self, frame_index):
+    #     NormalizedWorm.plot_contour_with_labels(
+    #         self.contour[:, :, frame_index])
 
-    @staticmethod
-    def plot_contour_with_labels(contour, frame_index=0):
-        """
-        Makes a beautiful plot with all the points labeled.
+    # @staticmethod
+    # def plot_contour_with_labels(contour, frame_index=0):
+    #     """
+    #     Makes a beautiful plot with all the points labeled.
 
-        Parameters:
-        One frame's worth of a contour
+    #     Parameters:
+    #     One frame's worth of a contour
 
-        """
-        contour_x = contour[:, 0, frame_index]
-        contour_y = contour[:, 1, frame_index]
-        plt.plot(contour_x, contour_y, 'r', lw=3)
-        plt.scatter(contour_x, contour_y, s=35)
-        labels = list(str(l) for l in range(0, len(contour_x)))
-        for label_index, (label, x, y), in enumerate(
-                zip(labels, contour_x, contour_y)):
-            # Orient the label for the first half of the points in one direction
-            # and the other half in the other
-            if label_index <= len(contour_x) // 2 - \
-                    1:  # Minus one since indexing
-                xytext = (20, -20)                     # is 0-based
-            else:
-                xytext = (-20, 20)
-            plt.annotate(
-                label, xy=(
-                    x, y), xytext=xytext, textcoords='offset points', ha='right', va='bottom', bbox=dict(
-                    boxstyle='round,pad=0.5', fc='yellow', alpha=0.5), arrowprops=dict(
-                    arrowstyle='->', connectionstyle='arc3,rad=0'))  # , xytext=(0,0))
+    #     """
+    #     contour_x = contour[:, 0, frame_index]
+    #     contour_y = contour[:, 1, frame_index]
+
+    #     import matplotlib.pyplot as plt
+    #     plt.plot(contour_x, contour_y, 'r', lw=3)
+    #     plt.scatter(contour_x, contour_y, s=35)
+    #     labels = list(str(l) for l in range(0, len(contour_x)))
+    #     for label_index, (label, x, y), in enumerate(
+    #             zip(labels, contour_x, contour_y)):
+    #         # Orient the label for the first half of the points in one direction
+    #         # and the other half in the other
+    #         if label_index <= len(contour_x) // 2 - \
+    #                 1:  # Minus one since indexing
+    #             xytext = (20, -20)                     # is 0-based
+    #         else:
+    #             xytext = (-20, 20)
+    #         plt.annotate(
+    #             label, xy=(
+    #                 x, y), xytext=xytext, textcoords='offset points', ha='right', va='bottom', bbox=dict(
+    #                 boxstyle='round,pad=0.5', fc='yellow', alpha=0.5), arrowprops=dict(
+    #                 arrowstyle='->', connectionstyle='arc3,rad=0'))  # , xytext=(0,0))

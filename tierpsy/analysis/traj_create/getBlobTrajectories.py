@@ -4,7 +4,7 @@ Created on Thu Apr  2 16:33:34 2015
 
 @author: ajaver
 """
-
+from pathlib import Path
 import json
 import multiprocessing as mp
 import os
@@ -101,9 +101,9 @@ def _remove_corner_blobs(ROI_image):
     # get the border of the ROI mask, this will be used to filter for valid
     # worms
     ROI_valid = (ROI_image != 0).astype(np.uint8)
-    _, ROI_border_ind, _ = cv2.findContours(ROI_valid, 
+    ROI_border_ind, _ = cv2.findContours(ROI_valid, 
                                             cv2.RETR_EXTERNAL, 
-                                            cv2.CHAIN_APPROX_NONE)
+                                            cv2.CHAIN_APPROX_NONE)[-2:]
 
     if len(ROI_border_ind) > 1:
         # consider the case where there is more than one contour in the blob
@@ -159,9 +159,9 @@ def getBlobContours(ROI_image,
         ROI_mask = cv2.morphologyEx(ROI_mask, cv2.MORPH_CLOSE, strel)
 
     # get worms, assuming each contour in the ROI is a worm
-    _, ROI_worms, hierarchy = cv2.findContours(ROI_mask, 
+    ROI_worms, hierarchy = cv2.findContours(ROI_mask, 
                                                cv2.RETR_EXTERNAL, 
-                                               cv2.CHAIN_APPROX_NONE)
+                                               cv2.CHAIN_APPROX_NONE)[-2:]
 
     return ROI_worms, hierarchy
 
@@ -201,7 +201,7 @@ def generateImages(masked_image_file,
                    progress_refresh_rate_s=20):
     
     #loop, save data and display progress
-    base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
+    base_name = Path(masked_image_file).stem
     progress_str = base_name + progress_str
     fps = read_fps(masked_image_file, dflt=25)
     
@@ -272,9 +272,9 @@ def generateROIBuff(masked_image_file, buffer_size, **argkws):
             main_mask = main_mask.astype(np.uint8)
     
             #calculate the contours, only keep the external contours (no holes) and 
-            _, ROI_cnts, _ = cv2.findContours(main_mask, 
+            ROI_cnts, _ = cv2.findContours(main_mask, 
                                                 cv2.RETR_EXTERNAL, 
-                                                cv2.CHAIN_APPROX_NONE)
+                                                cv2.CHAIN_APPROX_NONE)[-2:]
     
             yield ROI_cnts, image_buffer, ini_frame
         
@@ -366,9 +366,9 @@ def getBlobsSimple(in_data, blob_params):
         strel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, strel_size)
         bw = cv2.morphologyEx(bw, cv2.MORPH_CLOSE, strel)
     
-    _, cnts, hierarchy = cv2.findContours(bw, 
+    cnts, hierarchy = cv2.findContours(bw, 
                                            cv2.RETR_EXTERNAL, 
-                                           cv2.CHAIN_APPROX_NONE)
+                                           cv2.CHAIN_APPROX_NONE)[-2:]
     
     
     blobs_data = _cnt_to_props(cnts, frame_number, th, min_area)
