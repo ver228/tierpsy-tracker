@@ -21,6 +21,7 @@ from tierpsy.analysis.compress.extractMetaData import read_and_save_timestamp
 from tierpsy.helper.params import traj_create_defaults, read_unit_conversions, read_fps
 from tierpsy.helper.misc import TimeCounter, print_flush, TABLE_FILTERS
 
+
 def _thresh_bw(pix_valid):
     # calculate otsu_threshold as lower limit. Otsu understimates the threshold.
     try:
@@ -101,9 +102,11 @@ def _remove_corner_blobs(ROI_image):
     # get the border of the ROI mask, this will be used to filter for valid
     # worms
     ROI_valid = (ROI_image != 0).astype(np.uint8)
+
     ROI_border_ind, _ = cv2.findContours(ROI_valid, 
                                             cv2.RETR_EXTERNAL, 
                                             cv2.CHAIN_APPROX_NONE)[-2:]
+
 
     if len(ROI_border_ind) > 1:
         # consider the case where there is more than one contour in the blob
@@ -159,9 +162,11 @@ def getBlobContours(ROI_image,
         ROI_mask = cv2.morphologyEx(ROI_mask, cv2.MORPH_CLOSE, strel)
 
     # get worms, assuming each contour in the ROI is a worm
+
     ROI_worms, hierarchy = cv2.findContours(ROI_mask, 
                                                cv2.RETR_EXTERNAL, 
                                                cv2.CHAIN_APPROX_NONE)[-2:]
+
 
     return ROI_worms, hierarchy
 
@@ -272,9 +277,11 @@ def generateROIBuff(masked_image_file, buffer_size, **argkws):
             main_mask = main_mask.astype(np.uint8)
     
             #calculate the contours, only keep the external contours (no holes) and 
+
             ROI_cnts, _ = cv2.findContours(main_mask, 
                                                 cv2.RETR_EXTERNAL, 
                                                 cv2.CHAIN_APPROX_NONE)[-2:]
+
     
             yield ROI_cnts, image_buffer, ini_frame
         
@@ -365,10 +372,8 @@ def getBlobsSimple(in_data, blob_params):
     if np.all(strel_size):
         strel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, strel_size)
         bw = cv2.morphologyEx(bw, cv2.MORPH_CLOSE, strel)
-    
-    cnts, hierarchy = cv2.findContours(bw, 
-                                           cv2.RETR_EXTERNAL, 
-                                           cv2.CHAIN_APPROX_NONE)[-2:]
+
+    cnts, hierarchy = cv2.findContours(bw, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2:]
     
     
     blobs_data = _cnt_to_props(cnts, frame_number, th, min_area)

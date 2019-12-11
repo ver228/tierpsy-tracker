@@ -6,7 +6,9 @@ from .helper import repack_dflt_list
 
 summarizer_valid_options = {
     'feature_type':['openworm','tierpsy'],
-    'summary_type' : ['plate', 'trajectory', 'plate_augmented']
+    'summary_type' : ['plate', 'trajectory', 'plate_augmented'],
+    'time_units' : ['frame_numbers', 'seconds'],
+    'select_feat' : ['all', 'tierpsy_8', 'tierpsy_16', 'tierpsy_256', 'tierpsy_2k','select_by_keywords']
 }
 
 dflt_args_list = [
@@ -35,14 +37,33 @@ dflt_args_list = [
         '0:end',
         '''
         Define time windows to extract features from the parts of the video included in each window.
-        Each window must be defined by the start time and the end time connected by \':\'. 
-        Different windows must be separated by \',\'. 
-        Attention: the start time is included in the window, but the end time is not included.
+        Each window must be defined by the start_time and the end_time connected by \':\' (start_time:end_time). 
+        Different windows must be separated by \',\' (start_time_1:end_time_1, start_time_2:end_time_2).
+        A sequence of equally sized windows can be defined using the format \'start_time:end_time:step'\.
+        Attention: the start_time is included in the window, but the end_time is not included.
         '''
         ),
     ('time_units',
         'frame_numbers',
         'Units of start time and end time in Time Windows.'
+        ),
+    ('select_feat',
+        'all',
+        '''
+        Get a pre-selected subset of tierpsy features or select features by keywords.
+        '''
+        ),
+    ('keywords_include',
+        '',
+        '''
+        Select only features that contain any of the given keywords. Provide keywords separated by comma \',\'.
+        '''
+        ),
+    ('keywords_exclude',
+        '',
+        '''
+        Exclude features that contain any of the given keywords. Provide keywords separated by comma \',\'.
+        '''
         ),
     ('n_folds',
         5,

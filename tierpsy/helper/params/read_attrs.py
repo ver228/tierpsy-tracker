@@ -60,11 +60,11 @@ class AttrReader():
                 for field in VALID_FIELDS:
                     if field in fid:
                         return field
-        #raise KeyError("Not valid field {} found in {}".format(VALID_FIELDS, self.file_name)) 
+        #raise KeyError("Not valid field {} found in {}".format(VALID_FIELDS, self.file_name))
         return ''
 
     def _read_attr(self, attr_name, dflt=None):
-        
+
         if dflt is None:
             dflt = self.dflt
 
@@ -72,9 +72,9 @@ class AttrReader():
         if self.field:
             with tables.File(self.file_name, 'r') as fid:
                 node = fid.get_node(self.field)
-                
+
                 if attr_name in node._v_attrs:
-                    attr = node._v_attrs[attr_name] 
+                    attr = node._v_attrs[attr_name]
         return attr
 
     def get_fps(self):
@@ -94,9 +94,9 @@ class AttrReader():
                     time_units = 'frames'
                 else:
                     time_units = 'seconds'
-            
-            
-        
+
+
+
         self._fps = float(fps)
         self._expected_fps = float(expected_fps)
         self._time_units = time_units
@@ -131,9 +131,9 @@ class AttrReader():
                     xy_units = 'pixels'
                 else:
                     xy_units = 'micrometers'
- 
 
-            
+
+
         self._microns_per_pixel = float(microns_per_pixel)
         self._xy_units = xy_units
         return self._microns_per_pixel, self._xy_units
@@ -145,7 +145,7 @@ class AttrReader():
         except:
             self.get_microns_per_pixel()
             return self._microns_per_pixel
-    
+
     @property
     def xy_units(self):
         try:
@@ -163,7 +163,7 @@ class AttrReader():
                 ventral_side = single_db_ventral_side(self.file_name)
             except:
                 ventral_side = self._read_attr('ventral_side', dflt = "")
-            
+
             self._ventral_side = ventral_side
             return self._ventral_side
 
@@ -175,7 +175,7 @@ def read_ventral_side(fname):
     ventral_side = reader.ventral_side
     print(ventral_side)
     return ventral_side
-    
+
 def read_fps(fname, dflt=1):
     reader = AttrReader(fname, dflt)
     return reader.fps
@@ -187,10 +187,10 @@ def read_microns_per_pixel(fname, dflt=1):
 def read_unit_conversions(fname, dflt=1):
     reader = AttrReader(fname, dflt)
     fps_out = reader.get_fps()
-    
+
     microns_per_pixel_out = reader.get_microns_per_pixel()
     is_light_background = reader._read_attr('is_light_background', 1)
-    
+
     print(fps_out, microns_per_pixel_out, is_light_background)
     return fps_out, microns_per_pixel_out, is_light_background
 
@@ -205,10 +205,10 @@ def copy_unit_conversions(group_to_save, original_file, dflt=1):
 
     # save some data used in the calculation as attributes
     group_to_save._v_attrs['microns_per_pixel'] = microns_per_pixel
-    group_to_save._v_attrs['xy_units'] = xy_units 
-    
+    group_to_save._v_attrs['xy_units'] = xy_units
+
     group_to_save._v_attrs['fps'] = fps
-    group_to_save._v_attrs['expected_fps'] = expected_fps 
+    group_to_save._v_attrs['expected_fps'] = expected_fps
     group_to_save._v_attrs['time_units'] = time_units
 
     group_to_save._v_attrs['is_light_background'] = is_light_background
@@ -222,7 +222,7 @@ def set_unit_conversions(group_to_save, expected_fps=None, microns_per_pixel=Non
     if microns_per_pixel is None or microns_per_pixel<=0:
         attr_writer['microns_per_pixel'] = 1
         attr_writer['xy_units'] = 'pixels'
-    else: 
+    else:
         attr_writer['microns_per_pixel'] = microns_per_pixel
         attr_writer['xy_units'] = 'micrometers'
 
@@ -230,10 +230,7 @@ def set_unit_conversions(group_to_save, expected_fps=None, microns_per_pixel=Non
     if expected_fps is None or expected_fps<=0:
         attr_writer['expected_fps'] = 1
         attr_writer['time_units'] = 'frames'
-    else: 
+    else:
         attr_writer['expected_fps'] = expected_fps
         attr_writer['time_units'] = 'seconds'
     attr_writer['is_light_background'] = int(is_light_background) #bool is not be supported by hdf5
-
-
-

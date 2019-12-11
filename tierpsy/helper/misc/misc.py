@@ -4,7 +4,6 @@ import os
 import tables
 import warnings
 
-
 from threading import Thread
 from queue import Queue, Empty
 
@@ -80,6 +79,5 @@ class ReadEnqueue():
         except Empty:
             line  = None
         return line
-
 
 

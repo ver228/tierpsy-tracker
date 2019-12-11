@@ -320,7 +320,25 @@ dflt_param_list = [
     ('use_nn_food_cnt',
         True,
         'If true a pretrained neural network model is going to use in  FOOD_CNT, else it will attempt to use morphological operations to calculate the food contour.'
-        )
+        ),
+     
+    ('MWP_total_n_wells',
+        -1,
+        '''
+        If using a Multi Well Plate so that you have more than one well in your field of view, and you want to analyse each well separately.
+        This is the total number of wells in your MWP: 24 if you are using a 24-well plate, 48 fr a 48-well plate, etc.
+        If this number is -1, Tierpsy will *not* analyse the wells individually.
+        '''),
+    ('MWP_whichsideup',
+        'upright',
+        '''
+        If using a Multi Well Plate: was it placed under the microscope upright or upside-down?
+        '''),
+     ('MWP_well_shape',
+        'square',
+        '''
+        If using a Multi Well Plate: is each well a circle or a square?
+        ''')
     ]
 
 # #not tested (used for the zebra fish)
@@ -338,7 +356,10 @@ dflt_param_list = [
 valid_options = {
     'analysis_type': valid_analysis_types,
     'ventral_side':['','clockwise','anticlockwise', 'unknown'],
-    'head_tail_int_method':['MEDIAN_INT', 'HEAD_BRIGHTER']
+    'head_tail_int_method':['MEDIAN_INT', 'HEAD_BRIGHTER'],
+    'MWP_total_n_wells':[-1, 24, 48, 96], # caveat: whether the analysis will work or not depends on the code in tierpsy.analysis.compress.FOVMultiWellSplitter 
+    'MWP_whichsideup':['upright','upside-down'],
+    'MWP_well_shape':['circle','square'],
 }
 
 #repack data into dictionaries

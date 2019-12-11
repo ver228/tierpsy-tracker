@@ -89,8 +89,10 @@ def read_params(json_file=''):
             else:
                 raise ValueError('Parameter "{}" is not a valid parameter. Change its value in file "{}"'.format(key, json_file))
             
-            if key in valid_options and (input_param[key] not in valid_options[key]):
-                raise ValueError('Parameter "{}" is not in the list of valid options {}'.format(param_in_file[key],valid_options[key]))
+            if key in valid_options:
+                if input_param[key] not in valid_options[key] \
+                and (int(input_param[key]) not in valid_options[key]):
+                    raise ValueError('Parameter "{}" is not in the list of valid options {}'.format(param_in_file[key],valid_options[key]))
 
         if not input_param['analysis_checkpoints']:
             input_param['analysis_checkpoints'] = get_dflt_sequence(input_param['analysis_type'])

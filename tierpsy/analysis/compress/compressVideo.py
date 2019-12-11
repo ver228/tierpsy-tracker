@@ -15,6 +15,9 @@ from tierpsy.analysis.compress.extractMetaData import store_meta_data, read_and_
 from tierpsy.analysis.compress.selectVideoReader import selectVideoReader
 from tierpsy.helper.params import compress_defaults, set_unit_conversions
 from tierpsy.helper.misc import TimeCounter, print_flush, TABLE_FILTERS
+from tierpsy.analysis.split_fov.helper import parse_camera_serial
+from tierpsy.analysis.split_fov.FOVMultiWellsSplitter import FOVMultiWellsSplitter
+
 
 def getROIMask(
         image,
@@ -72,8 +75,10 @@ def getROIMask(
 
     # find the contour of the connected objects (much faster than labeled
     # images)
+
     contours, hierarchy = cv2.findContours(
         mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[-2:]
+
 
     # find good contours: between max_area and min_area, and do not touch the
     # image border
@@ -206,7 +211,8 @@ def initMasksGroups(fid, expected_frames, im_height, im_width,
 
 def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
                   microns_per_pixel=None, bgnd_param ={}, buffer_size=-1,
-                  save_full_interval=-1, max_frame=1e32, is_extract_timestamp=False):
+                  save_full_interval=-1, max_frame=1e32, is_extract_timestamp=False,
+                  fovsplitter_param={}):
     '''
     Compresses video by selecting pixels that are likely to have worms on it and making the rest of
     the image zero. By creating a large amount of redundant data, any lossless compression
@@ -237,6 +243,13 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
         assert bgnd_param['buff_size']>0 and bgnd_param['frame_gap']>0
     else:
         is_bgnd_subtraction = False
+
+    if len(fovsplitter_param) > 0:
+        is_fov_tosplit = True
+        assert all(key in fovsplitter_param for key in ['total_n_wells', 'whichsideup', 'well_shape'])
+        assert fovsplitter_param['total_n_wells']>0
+    else:
+        is_fov_tosplit = False
 
     # processes identifier.
     base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
@@ -269,6 +282,29 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
     frame_number = 0
     full_frame_number = 0
     image_prev = np.zeros([])
+    
+    # Initialise FOV splitting if needed
+    if is_fov_tosplit:
+        # masked video does not exist yet so have to initialise from data  
+        # use either background or first frame
+        if is_bgnd_subtraction:
+            img_fov = bgnd_subtractor.bgnd.astype(np.uint8)
+        else:
+            ret, img_fov = vid.read()
+            # close and reopen the video, to restart from the beginning
+            vid.release()
+            vid = selectVideoReader(video_file); 
+        # TODO: change class creator so it only needs the video name? by using 
+        # Tierpsy's functions such as selectVideoReader it can then read the first image by itself
+        
+        camera_serial = parse_camera_serial(masked_image_file)
+        
+        fovsplitter = FOVMultiWellsSplitter(img_fov,
+                                            camera_serial=camera_serial,
+                                            px2um=microns_per_pixel,
+                                            **fovsplitter_param)
+        
+
 
     # initialize timers
     print_flush(base_name + ' Starting video compression.')
@@ -293,6 +329,12 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
             expected_frames, vid.height, vid.width,
             attr_params, save_full_interval)
         
+        if is_bgnd_subtraction:
+            bg_dataset = createImgGroup(mask_fid, "/bgnd", 1, vid.height, vid.width, is_expandable=False)
+            # because we only save the one background:
+            bg_dataset._v_attrs['save_interval'] = vid.frame_max-vid.first_frame + 1 
+            bg_dataset[0,:,:] = img_fov
+            
         if vid.dtype != np.uint8:
             # this will worm as flags to be sure that the normalization took place.
             normalization_range = mask_fid.create_earray('/', 
@@ -364,8 +406,13 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
                 img_reduce = reduceBuffer(Ibuff_b, mask_param['is_light_background'])
 
                 mask = getROIMask(img_reduce, **mask_param)
+                
                 Ibuff *= mask
 
+                # now apply the well_mask if is MWP
+                if is_fov_tosplit:
+                    fovsplitter.apply_wells_mask(Ibuff) # Ibuff will be modified after this
+                    
                 # add buffer to the hdf5 file
                 frame_first_buff = frame_number - Ibuff.shape[0]
                 mask_dataset.append(Ibuff)
@@ -381,6 +428,10 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
 
         # close the video
         vid.release()
+        
+    # save fovsplitting data
+    if is_fov_tosplit:
+        fovsplitter.write_fov_wells_to_file(masked_image_file)
 
     read_and_save_timestamp(masked_image_file)
     print_flush(base_name + ' Compressed video done.')
