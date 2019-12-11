@@ -14,7 +14,7 @@ from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractorV
 from tierpsy.analysis.compress.extractMetaData import store_meta_data, read_and_save_timestamp
 from tierpsy.analysis.compress.selectVideoReader import selectVideoReader
 from tierpsy.helper.params import compress_defaults, set_unit_conversions
-from tierpsy.helper.misc import TimeCounter, print_flush, TABLE_FILTERS, IS_OPENCV3
+from tierpsy.helper.misc import TimeCounter, print_flush, TABLE_FILTERS
 from tierpsy.analysis.split_fov.helper import parse_camera_serial
 from tierpsy.analysis.split_fov.FOVMultiWellsSplitter import FOVMultiWellsSplitter
 
@@ -75,16 +75,10 @@ def getROIMask(
 
     # find the contour of the connected objects (much faster than labeled
     # images)
-    if IS_OPENCV3:
-        _, contours, hierarchy = cv2.findContours(
-                mask.copy(),
-                cv2.RETR_TREE,
-                cv2.CHAIN_APPROX_SIMPLE)
-    else:
-        contours, hierarchy = cv2.findContours(
-                mask.copy(),
-                cv2.RETR_TREE,
-                cv2.CHAIN_APPROX_SIMPLE)
+
+    contours, hierarchy = cv2.findContours(
+        mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[-2:]
+
 
     # find good contours: between max_area and min_area, and do not touch the
     # image border

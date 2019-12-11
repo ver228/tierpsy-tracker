@@ -49,9 +49,6 @@ def save_timeseries_feats_table(features_file, derivate_delta_time, fovsplitter_
     with pd.HDFStore(features_file, 'r') as fid:
         trajectories_data = fid['/trajectories_data']
     
-    #only use data that was skeletonized
-    #trajectories_data = trajectories_data[trajectories_data['skeleton_id']>=0]
-    
     trajectories_data_g = trajectories_data.groupby('worm_index_joined')
     progress_timer = TimeCounter('')
     base_name = get_base_name(features_file)
@@ -240,6 +237,7 @@ def get_tierpsy_features(features_file, derivate_delta_time = 1/3, fovsplitter_p
     save_feats_stats(features_file, derivate_delta_time)
     
 
+
 if __name__ == '__main__':
     
     base_file = '/Users/lferiani/Desktop/Data_FOVsplitter/Results/drugexperiment_1hrexposure_set1_20190712_131508.22436248/metadata'
@@ -255,3 +253,26 @@ if __name__ == '__main__':
                          derivate_delta_time = 1/3, 
                          fovsplitter_param=fovsplitter_param)
         
+
+
+#    #%%
+#    from tierpsy.features.tierpsy_features.velocities import _h_get_velocity
+#    from tierpsy.features.tierpsy_features.helper import get_delta_in_frames
+#    
+#    fname = '/Users/avelinojaver/Desktop/small_worms/Results/20191121_featuresN.hdf5'
+#    
+#    delta_time = 0.3
+#    
+#    
+#    with pd.HDFStore(fname, 'r') as fid:
+#        fps = fid.get_storer('/trajectories_data').attrs['fps']
+#        blob_features = fid['/blob_features']
+#        trajectories_data = fid['/trajectories_data']
+#        trajectories_data_g = trajectories_data.groupby('worm_index_joined').groups
+#        derivate_delta_frames = get_delta_in_frames(derivate_delta_time, fps)
+#        for ind_n, (worm_index, indexes) in enumerate(trajectories_data_g.items()):
+#            coords = blob_features.loc[indexes, ['coord_x', 'coord_y']].values
+#            velocity = _h_get_velocity(coords, derivate_delta_frames, fps)
+#    
+#            print(velocity.shape)
+

@@ -22,7 +22,7 @@ import tables
 from tierpsy.analysis.ske_create.helperIterROI import generateMoviesROI
 from tierpsy.analysis.ske_create.segWormPython.mainSegworm import getSkeleton, resampleAll
 from tierpsy.analysis.ske_create.zebrafishAnalysis import zebrafishAnalysis, zebrafishSkeleton
-from tierpsy.helper.misc import TABLE_FILTERS, IS_OPENCV3
+from tierpsy.helper.misc import TABLE_FILTERS
 
 def _zebra_func(worm_img, skel_args, resampling_N):
     # Get zebrafish mask
@@ -134,16 +134,10 @@ def binaryMask2Contour(
 
     # select only one contour in the binary mask
     # get contour
-    if IS_OPENCV3:
-        _, contour, hierarchy = cv2.findContours(
-                worm_mask.copy(), 
-                cv2.RETR_EXTERNAL, 
-                cv2.CHAIN_APPROX_NONE)
-    else:
-        contour, hierarchy = cv2.findContours(
-                worm_mask.copy(), 
-                cv2.RETR_EXTERNAL, 
-                cv2.CHAIN_APPROX_NONE)
+
+    contour, hierarchy = cv2.findContours(
+        worm_mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2:]
+
 
     if len(contour) == 1:
         contour = np.squeeze(contour[0], axis=1)

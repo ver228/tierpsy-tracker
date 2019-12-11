@@ -5,7 +5,7 @@
 
 """
 import numpy as np
-import matplotlib.pyplot as plt
+
 
 # If you are interested to know why the following line didn't work:
 # import scipy.signal.savgol_filter as sgolay
@@ -271,65 +271,66 @@ class SkeletonCalculatorType1(object):
             # print("Final skeleton shape of frame %d: %s" %
             #      (frame_index, str(h_skeleton[frame_index].shape)))
 
-            # DEBUG
-            # Optional plotting code
-            if frame_index in frames_to_plot:
-                fig = plt.figure()
-                # ARRANGE THE PLOTS AS:
-                # AX1 AX1 AX2
-                # AX1 AX1 AX3
-                ax1 = plt.subplot2grid((2, 3), (0, 0), rowspan=2, colspan=2)
-                #ax2 = plt.subplot2grid((2,3), (0,2))
-                ax3 = plt.subplot2grid((2, 3), (1, 2))
-                ax1.set_title("Frame #%d of %d" % (frame_index,
-                                                   len(h_ventral_contour)))
+            # # DEBUG
+            # # Optional plotting code
+            # if frame_index in frames_to_plot:
+            #     import matplotlib.pyplot as plt
+            #     fig = plt.figure()
+            #     # ARRANGE THE PLOTS AS:
+            #     # AX1 AX1 AX2
+            #     # AX1 AX1 AX3
+            #     ax1 = plt.subplot2grid((2, 3), (0, 0), rowspan=2, colspan=2)
+            #     #ax2 = plt.subplot2grid((2,3), (0,2))
+            #     ax3 = plt.subplot2grid((2, 3), (1, 2))
+            #     ax1.set_title("Frame #%d of %d" % (frame_index,
+            #                                        len(h_ventral_contour)))
 
-                # The points along one side of the worm
-                ax1.scatter(s1[0, :], s1[1, :], marker='o',
-                            edgecolors='r', facecolors='none')
-                # The points along the other side
-                ax1.scatter(s2[0, :], s2[1, :], marker='o',
-                            edgecolors='b', facecolors='none')
+            #     # The points along one side of the worm
+            #     ax1.scatter(s1[0, :], s1[1, :], marker='o',
+            #                 edgecolors='r', facecolors='none')
+            #     # The points along the other side
+            #     ax1.scatter(s2[0, :], s2[1, :], marker='o',
+            #                 edgecolors='b', facecolors='none')
 
-                # To plot the widths, we need to run
-                # plot([x1,x2],[y1,y2]), for each line segment
-                for i in range(s1_p.shape[1]):
-                    ax1.plot([s1_p[0, i], s1[0, i]], [s1_p[1, i], s1[1, i]],
+            #     # To plot the widths, we need to run
+            #     # plot([x1,x2],[y1,y2]), for each line segment
+            #     for i in range(s1_p.shape[1]):
+            #         ax1.plot([s1_p[0, i], s1[0, i]], [s1_p[1, i], s1[1, i]],
 
-                             # ax1.plot([s1_px[i], s1_x[i]], [s1_py[i],
-                             # s1_y[i]],
-                             color='g')
+            #                  # ax1.plot([s1_px[i], s1_x[i]], [s1_py[i],
+            #                  # s1_y[i]],
+            #                  color='g')
 
-                skeleton = h_skeleton[frame_index]
-                # The skeleton points
-                ax1.scatter(skeleton[0, :], skeleton[1, :], marker='D',
-                            edgecolors='b', facecolors='none')
-                # The skeleton points, connected
-                ax1.plot(skeleton[0, :], skeleton[1, :], color='navy')
+            #     skeleton = h_skeleton[frame_index]
+            #     # The skeleton points
+            #     ax1.scatter(skeleton[0, :], skeleton[1, :], marker='D',
+            #                 edgecolors='b', facecolors='none')
+            #     # The skeleton points, connected
+            #     ax1.plot(skeleton[0, :], skeleton[1, :], color='navy')
 
-                """
-                # TODO: Jim's original method for plotting this was:
-                # Width should really be plotted as a function of
-                # distance along the skeleton
-                cum_dist = h__getSkeletonDistance(skeleton_x, skeleton_y)
+            #     """
+            #     # TODO: Jim's original method for plotting this was:
+            #     # Width should really be plotted as a function of
+            #     # distance along the skeleton
+            #     cum_dist = h__getSkeletonDistance(skeleton_x, skeleton_y)
 
-                ax2.plot(cum_dist./cum_dist[-1], h_widths[frame_index],
-                         'r.-')
-                hold on
-                ax2.plot(np.linspace(0,1,49), nw_widths[:,iFrame], 'g.-')
-                hold off
-                """
+            #     ax2.plot(cum_dist./cum_dist[-1], h_widths[frame_index],
+            #              'r.-')
+            #     hold on
+            #     ax2.plot(np.linspace(0,1,49), nw_widths[:,iFrame], 'g.-')
+            #     hold off
+            #     """
 
-                # Now let's plot each of the 200+ width values as the
-                # y coordinate.
-                ax3.set_title = "Worm width at each calculation point"
-                ax3.set_xlabel("Calculation point")
-                ax3.set_ylabel("Width")
-                with plt.style.context('fivethirtyeight'):
-                    ax3.plot(h_widths[frame_index], color='green',
-                             linewidth=2)
+            #     # Now let's plot each of the 200+ width values as the
+            #     # y coordinate.
+            #     ax3.set_title = "Worm width at each calculation point"
+            #     ax3.set_xlabel("Calculation point")
+            #     ax3.set_ylabel("Width")
+            #     with plt.style.context('fivethirtyeight'):
+            #         ax3.plot(h_widths[frame_index], color='green',
+            #                  linewidth=2)
 
-                plt.show()
+            #     plt.show()
 
         # DEBUG
         # print(profile_times)
