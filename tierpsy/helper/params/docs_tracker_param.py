@@ -184,7 +184,7 @@ dflt_param_list = [
         '''
         Number of segments used to calculate the skeleton curvature 
         (or half the number of segments used for the contour curvature).  
-        Reduced for rounder objects and decreased for sharper organisms.'
+        Reduced for rounder objects and increase for sharper organisms.'
         '''
         ),
     ('w_head_angle_thresh', 
