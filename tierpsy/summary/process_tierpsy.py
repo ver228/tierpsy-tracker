@@ -215,7 +215,8 @@ def tierpsy_plate_summary_augmented(fname, time_windows, time_units, is_manual_i
 if __name__ == '__main__':
     #fname='/Users/em812/Documents/OneDrive - Imperial College London/Eleni/Tierpsy_GUI/test_results_2/Set4_Ch3_18012019_130019_featuresN.hdf5'
     fname = '/Users/avelinojaver/OneDrive - Imperial College London/tierpsy_examples/aggregation/N2_1_Ch1_29062017_182108_comp3_featuresN.hdf5'
-    is_manual_index = False
+    fname = '/Users/avelinojaver/Desktop/small_worms/Results/20191121_featuresN.hdf5'
+    #is_manual_index = False
     
     fold_args = dict(
                  n_folds = 2, 
@@ -225,10 +226,10 @@ if __name__ == '__main__':
     
 #    time_windows = [[0,10000],[10000,15000],[10000000,-1]]
 #    time_units = 'frameNb'
-    time_windows = [[0,300],[500,-1],[10000000,-1]]
+    time_windows = [[0,-1]]
     time_units = 'seconds'
     summary = tierpsy_plate_summary(fname,time_windows,time_units)
-#    summary = tierpsy_trajectories_summary(fname,time_windows,time_units)
+    #summary = tierpsy_trajectories_summary(fname,time_windows,time_units)
     #summary = tierpsy_plate_summary_augmented(fname,time_windows,time_units,is_manual_index=False,delta_time=1/3,**fold_args)
     
     

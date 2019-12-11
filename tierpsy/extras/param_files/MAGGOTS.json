@@ -6,48 +6,15 @@
     "thresh_block_size": 61,
     "dilation_size": 9,
     "is_extract_metadata": true,
-    "expected_fps": -1.0,
     "microns_per_pixel": 12.0,
-    "ventral_side": "",
-    "save_full_interval": -1,
     "compression_buff": 12,
     "keep_border_data": false,
-    "is_light_background": true,
-    "traj_min_area": 25,
-    "traj_max_allowed_dist": 25,
-    "traj_area_ratio_lim": [
-        0.5,
-        2.0
-    ],
-    "worm_bw_thresh_factor": 1.05,
-    "resampling_N": 49,
-    "max_gap_allowed_block": -1,
-    "strel_size": 5,
-    "fps_filter": 0,
-    "ht_orient_segment": -1,
-
-    "filt_bad_seg_thresh": 0.8,
-    "filt_min_displacement": 10,
-    "filt_critical_alpha": 0.01,
     
+
     "filt_max_width_ratio": 1e6,
     "filt_max_area_ratio": 1e6,
 
-    "int_save_maps": false,
-    "int_avg_width_frac": 0.3,
-    "int_width_resampling": 15,
-    "int_length_resampling": 131,
-    "int_max_gap_allowed_block": -1,
-    "head_tail_int_method": "MEDIAN_INT",
-    "split_traj_time": 300,
-    "roi_size": -1,
-    "filter_model_name": "",
-    "n_cores_used": 1,
-    "mask_bgnd_buff_size": 200,
-    "mask_bgnd_frame_gap": 50,
-    "traj_bgnd_buff_size": -1,
-    "traj_bgnd_frame_gap": -1,
-    
+
     "w_num_segments": 12,
     "w_head_angle_thresh": 45,
 
