@@ -3,7 +3,6 @@ import sys
 import os
 import tables
 import warnings
-import cv2
 
 from threading import Thread
 from queue import Queue, Empty
@@ -39,7 +38,7 @@ try:
         FFPROBE_CMD = get_local_or_sys_path('ffprobe.exe')
     else:
         FFPROBE_CMD = get_local_or_sys_path('ffprobe')
-except FileNotFoundError: 
+except FileNotFoundError:
     FFPROBE_CMD = ''
     warnings.warn('ffprobe do not found. This might cause problems while extracting the raw videos timestamps.')
 
@@ -80,6 +79,3 @@ class ReadEnqueue():
         except Empty:
             line  = None
         return line
-
-
-IS_OPENCV3 = cv2.getVersionMajor() == 3

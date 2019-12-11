@@ -72,7 +72,7 @@ def ow_plate_summary(fname):
     valid_order = [x for x in exp_feats.columns if x not in wStats.extra_fields]
     exp_feats = exp_feats.loc[:, valid_order]
     
-    return exp_feats
+    return [exp_feats]
 #%%
 def ow_trajectories_summary(fname):
     
@@ -109,7 +109,7 @@ def ow_trajectories_summary(fname):
         all_summary.append(exp_feats)
     all_summary = pd.concat(all_summary, ignore_index=True)
 
-    return all_summary
+    return [all_summary]
 #%%
 def ow_plate_summary_augmented(fname, **fold_args):
     #NOTE: I will only augment the timeseries features. 
@@ -147,7 +147,7 @@ def ow_plate_summary_augmented(fname, **fold_args):
     
     all_summary = pd.concat(all_summary, ignore_index=True)
    
-    return all_summary
+    return [all_summary]
 
 #%%
 

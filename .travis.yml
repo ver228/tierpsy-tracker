@@ -32,8 +32,9 @@ install:
   
   # create testing enviroment
   - conda config --add channels conda-forge 
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy matplotlib pytables pandas gitpython pyqt=5 h5py scipy scikit-learn scikit-image seaborn xlrd cython statsmodels numba keras opencv tensorflow
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION 
   - source activate test-environment
+  - conda install --file requirements.txt
   
   - printenv | sort
 
@@ -41,12 +42,12 @@ install:
   - printenv | sort
 
   # install tierpsy
-  - bash installation/installation_script.sh
+  - pip install . -e
   
 before_script:
   #download examples
-  - bash installation/installation_script.sh --download_examples
+  - tierpsy_tests --download_examples
 
 script:
-  - which python3 
-  - python tests/run_tests.py 2 4 5
+  - tierpsy_tests -h
+  - ierpsy_process -h
