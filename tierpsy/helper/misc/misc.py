@@ -82,4 +82,3 @@ class ReadEnqueue():
         return line
 
 
-IS_OPENCV3 = cv2.getVersionMajor() == 3
