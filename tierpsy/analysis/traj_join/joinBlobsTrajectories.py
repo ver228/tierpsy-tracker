@@ -320,8 +320,8 @@ def joinGapsTrajectoriesDF(plate_worms,
         valid_indexes = tracks_data.index
     
         # select the corresponding first and last rows of each trajectory
-        first_rows = df.iloc[tracks_data['frame_number']['argmin'].values]
-        last_rows = df.iloc[tracks_data['frame_number']['argmax'].values]
+        first_rows = df.ix[tracks_data['frame_number']['argmin'].values]
+        last_rows = df.ix[tracks_data['frame_number']['argmax'].values]
         # let's use the particle id as index instead of the row number
         last_rows.index = tracks_data['frame_number'].index
         first_rows.index = tracks_data['frame_number'].index

@@ -3,13 +3,7 @@ from functools import partial
 import numpy as np
 import tables
 import os
-
-try:
-    from keras.models import load_model
-except ImportError:
-    import warnings
-    warnings.warn("`keras` is not found, this will break filter trajectories and contour finding on *_AEX analysis")
-
+from keras.models import load_model
 
 from tierpsy.analysis.ske_create.helperIterROI import generateMoviesROI, getROIFixSize
 from tierpsy.helper.params import read_fps

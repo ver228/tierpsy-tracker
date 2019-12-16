@@ -78,25 +78,20 @@ def _r_fill_trajectories_data(skeletons_file):
     valid_fields = ['timestamp_raw', 'timestamp_time', 'worm_index_joined', 
                     'coord_x', 'coord_y', 
                     'threshold', 'roi_size',  'area', 
-                    'frame_number'
+                    'frame_number', 'is_good_skel'
                     ]
     #%%
     with pd.HDFStore(skeletons_file, 'r') as fid:
-        trajectories_data_ori = fid['/trajectories_data']
-        if 'worm_index_manual' in trajectories_data_ori:
+        trajectories_data = fid['/trajectories_data']
+        if 'worm_index_manual' in trajectories_data:
             valid_fields += ['worm_index_manual', 'worm_label']
-    
-
-    trajectories_data = trajectories_data_ori[valid_fields].copy()
-    if 'is_good_skel' in trajectories_data_ori:
-        trajectories_data['was_skeletonized'] = trajectories_data_ori['is_good_skel']
-    else:
-        with tables.File(skeletons_file, 'r') as fid:
-            skels = fid.get_node('/skeleton')
-             #an skeleton was skeletonized if it is not nan
-            was_skeletonized = ~np.isnan(skels[:, 0, 0])
-            trajectories_data['was_skeletonized'] = was_skeletonized.astype(np.uint8)
         
+    #%%
+    trajectories_data = trajectories_data[valid_fields]
+    trajectories_data.rename(columns = {'worm_index_joined' : 'worm_index_joined', 
+                                        'is_good_skel' : 'was_skeletonized'},
+                                        inplace=True)
+    
     trajectories_data['skeleton_id'] = np.int32(-1)
     trajectories_data['old_trajectory_data_index'] = trajectories_data.index.values.astype(np.int32)
     #%%

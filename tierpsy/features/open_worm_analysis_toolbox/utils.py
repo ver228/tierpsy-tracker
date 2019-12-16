@@ -20,7 +20,10 @@ import scipy as sp
 import matplotlib.pyplot as plt
 
 
-__ALL__ = [
+__ALL__ = ['scatter',
+           'plotxy',
+           'plotx',
+           'imagesc',
            'separated_peaks',
            'gausswin',
            'colon',
@@ -34,26 +37,26 @@ __ALL__ = [
            'ElementTimer']
 
 
-# def scatter(x, y):
-#     plt.scatter(x, y)
-#     plt.show()
+def scatter(x, y):
+    plt.scatter(x, y)
+    plt.show()
 
 
-# def plotxy(x, y):
-#     plt.plot(x, y)
-#     plt.show()
+def plotxy(x, y):
+    plt.plot(x, y)
+    plt.show()
 
 
-# def plotx(data):
-#     plt.plot(data)
-#     plt.show()
+def plotx(data):
+    plt.plot(data)
+    plt.show()
 
 
-# def imagesc(data):
-#     # http://matplotlib.org/api/pyplot_api.html?  ...
-#     # highlight=imshow#matplotlib.pyplot.imshow
-#     plt.imshow(data, aspect='auto')
-#     plt.show()
+def imagesc(data):
+    # http://matplotlib.org/api/pyplot_api.html?  ...
+    # highlight=imshow#matplotlib.pyplot.imshow
+    plt.imshow(data, aspect='auto')
+    plt.show()
 
 
 def find(data, num_indices_to_return=None):

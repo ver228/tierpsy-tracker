@@ -221,8 +221,8 @@ def getHeadPoint(rotated_img, angle):
 def getTailStartPoint(head_mask, head_point, config):
 
 
-	# Calculate the angle from the head point to the contour center
-	# Then, 'walk' down the line from the head point to the contour center point a set length
+    # Calculate the angle from the head point to the contour center
+    # Then, 'walk' down the line from the head point to the contour center point a set length
 
     contours, hierarchy = cv2.findContours(head_mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2:]
     contour = contours[-1]

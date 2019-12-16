@@ -12,7 +12,7 @@ from tierpsy.analysis.ske_create.segWormPython.cleanWorm import extremaPeaksCirc
 
 def getFishContour(mask):
 
-	contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2:]
+	im, contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
 	return contours[0]
 

@@ -21,6 +21,7 @@ from statsmodels.nonparametric.smoothers_lowess import lowess
 from tierpsy.helper.misc import get_base_name
 
 
+
 def skeletonize(img):
     """ OpenCV function to return a skeletonized version of img, a Mat object"""
 
