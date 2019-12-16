@@ -18,7 +18,8 @@ from skimage.filters import threshold_otsu
 from scipy.interpolate import interp1d
 from statsmodels.nonparametric.smoothers_lowess import lowess
 
-from tierpsy.helper.misc import get_base_name, IS_OPENCV3
+from tierpsy.helper.misc import get_base_name
+
 
 
 def skeletonize(img):
@@ -80,16 +81,10 @@ def get_patch_mask(img, min_area = None, max_area = None, block_size = None):
     #IM_LIMY = img.shape[1] - 2
     # find the contour of the connected objects (much faster than labeled
     # images)
-    if IS_OPENCV3:
-        _, contours, hierarchy = cv2.findContours(
-                mask.copy(), 
-                cv2.RETR_EXTERNAL, 
-                cv2.CHAIN_APPROX_SIMPLE)
-    else:        
-        contours, hierarchy = cv2.findContours(
-                mask.copy(), 
-                cv2.RETR_EXTERNAL, 
-                cv2.CHAIN_APPROX_SIMPLE)
+
+    contours, hierarchy = cv2.findContours(
+        mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[:-2]
+
     
     # typically there are more bad contours therefore it is cheaper to draw
     # only the valid contours

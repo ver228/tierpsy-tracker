@@ -246,6 +246,12 @@ if __name__ == '__main__':
         
     features_file = base_file + '_featuresN.hdf5'
 
+if __name__ == '__main__':
+    
+    base_file = '/Users/lferiani/Desktop/Data_FOVsplitter/Results/drugexperiment_1hrexposure_set1_20190712_131508.22436248/metadata'
+        
+    features_file = base_file + '_featuresN.hdf5'
+
     # restore features after previous step before testing    
     import shutil
     shutil.copy(features_file.replace('.hdf5','.bk'), features_file)
@@ -255,3 +261,26 @@ if __name__ == '__main__':
                          derivate_delta_time = 1/3, 
                          fovsplitter_param=fovsplitter_param)
         
+
+
+#    #%%
+#    from tierpsy.features.tierpsy_features.velocities import _h_get_velocity
+#    from tierpsy.features.tierpsy_features.helper import get_delta_in_frames
+#    
+#    fname = '/Users/avelinojaver/Desktop/small_worms/Results/20191121_featuresN.hdf5'
+#    
+#    delta_time = 0.3
+#    
+#    
+#    with pd.HDFStore(fname, 'r') as fid:
+#        fps = fid.get_storer('/trajectories_data').attrs['fps']
+#        blob_features = fid['/blob_features']
+#        trajectories_data = fid['/trajectories_data']
+#        trajectories_data_g = trajectories_data.groupby('worm_index_joined').groups
+#        derivate_delta_frames = get_delta_in_frames(derivate_delta_time, fps)
+#        for ind_n, (worm_index, indexes) in enumerate(trajectories_data_g.items()):
+#            coords = blob_features.loc[indexes, ['coord_x', 'coord_y']].values
+#            velocity = _h_get_velocity(coords, derivate_delta_frames, fps)
+#    
+#            print(velocity.shape)
+

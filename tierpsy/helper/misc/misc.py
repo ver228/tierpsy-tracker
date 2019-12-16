@@ -3,7 +3,6 @@ import sys
 import os
 import tables
 import warnings
-import cv2
 
 from threading import Thread
 from queue import Queue, Empty
@@ -82,4 +81,3 @@ class ReadEnqueue():
         return line
 
 
-IS_OPENCV3 = cv2.getVersionMajor() == 3
