@@ -14,6 +14,7 @@ from tierpsy.helper.misc import TimeCounter, print_flush
 from tierpsy.summary.process_ow import ow_plate_summary, ow_trajectories_summary, ow_plate_summary_augmented
 from tierpsy.summary.process_tierpsy import tierpsy_plate_summary, tierpsy_trajectories_summary, tierpsy_plate_summary_augmented
 from tierpsy import AUX_FILES_DIR
+from tierpsy.summary.helper import get_featsum_headers,get_fnamesum_headers
 
 feature_files_ext = {'openworm' : ('_features.hdf5', '_feat_manual.hdf5'), 
                      'tierpsy' : ('_featuresN.hdf5', '_featuresN.hdf5')
@@ -128,7 +129,7 @@ def feat_set_parser(select_feat):
         selected_feat = None
     return selected_feat
 
-def make_df_filenames(fnames,time_windows_ints,time_units):
+def make_df_filenames(fnames,time_windows_ints):
     """
     EM : Create dataframe with filename summaries and time window info for every time window
     """
@@ -136,10 +137,6 @@ def make_df_filenames(fnames,time_windows_ints,time_units):
     df_files = [pd.DataFrame({'file_id' : dd[0], 'file_name' : dd[1]}) for x in range(len(time_windows_ints))]
     for iwin in range(len(time_windows_ints)): 
         df_files[iwin]['is_good'] = False
-        df_files[iwin]['window_id'] = iwin
-        df_files[iwin]['start_time'] = time_windows_ints[iwin][0]
-        df_files[iwin]['end_time'] = time_windows_ints[iwin][1]
-        df_files[iwin]['time_units'] = time_units  
     return df_files
 
 def select_features(win_summaries,keywords_in,keywords_ex,selected_feat):
@@ -196,7 +193,7 @@ def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, t
         return None,None
     
     # EM :Make df_files list with one features_summaries dataframe per time window
-    df_files = make_df_filenames(fnames,time_windows_ints,time_units)
+    df_files = make_df_filenames(fnames,time_windows_ints)
     
     progress_timer = TimeCounter('')
     def _displayProgress(n):
@@ -240,9 +237,18 @@ def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, t
 
         f1 = os.path.join(root_dir, 'filenames_{}.csv'.format(win_save_base_name))
         f2 = os.path.join(root_dir,'features_{}.csv'.format(win_save_base_name))
-            
-        df_files[iwin].to_csv(f1, index=False)        
-        all_summaries[iwin].to_csv(f2, index=False)
+        
+        fnamesum_headers = get_fnamesum_headers(
+            f2,feature_type,summary_type,iwin,time_windows_ints[iwin],
+            time_units,len(time_windows_ints),select_feat)
+        featsum_headers = get_featsum_headers(f1)
+        
+        with open(f1,'w') as fid:
+            fid.write(fnamesum_headers)
+            df_files[iwin].to_csv(fid, index=False)  
+        with open(f2,'w') as fid:
+            fid.write(featsum_headers)
+            all_summaries[iwin].to_csv(fid, index=False)
     
     out = '****************************'
     out += '\nFINISHED. Created Files:\n-> {}\n-> {}'.format(f1,f2)
@@ -251,7 +257,7 @@ def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, t
     
     
     return df_files, all_summaries
-
+    
 if __name__ == '__main__':
     
     root_dir = '/Users/em812/Documents/OneDrive - Imperial College London/Eleni/Tierpsy_GUI/test_results_2'
