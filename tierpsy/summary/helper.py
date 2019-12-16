@@ -105,7 +105,7 @@ def read_package_version(fname,
     return version
 
 def get_featsum_headers(fnamesum_fname):
-    header = ','.join(['# FILENAMES SUMMARY FILE', fnamesum_fname])
+    header = ','.join(['# FILENAMES SUMMARY FILE', fnamesum_fname]) + '\n'
     return header
 
 def get_fnamesum_headers(f2,feature_type,summary_type,iwin,
