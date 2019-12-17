@@ -49,9 +49,6 @@ def save_timeseries_feats_table(features_file, derivate_delta_time, fovsplitter_
     with pd.HDFStore(features_file, 'r') as fid:
         trajectories_data = fid['/trajectories_data']
     
-    #only use data that was skeletonized
-    #trajectories_data = trajectories_data[trajectories_data['skeleton_id']>=0]
-    
     trajectories_data_g = trajectories_data.groupby('worm_index_joined')
     progress_timer = TimeCounter('')
     base_name = get_base_name(features_file)
@@ -240,11 +237,6 @@ def get_tierpsy_features(features_file, derivate_delta_time = 1/3, fovsplitter_p
     save_feats_stats(features_file, derivate_delta_time)
     
 
-if __name__ == '__main__':
-    
-    base_file = '/Users/lferiani/Desktop/Data_FOVsplitter/Results/drugexperiment_1hrexposure_set1_20190712_131508.22436248/metadata'
-        
-    features_file = base_file + '_featuresN.hdf5'
 
 if __name__ == '__main__':
     
