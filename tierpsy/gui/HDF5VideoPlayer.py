@@ -73,22 +73,56 @@ class ViewsWithZoom():
             numDegrees = event.angleDelta() / 8
 
             delta = numPixels if not numPixels.isNull() else numDegrees
-            self.zoom(delta.y())
-
-    def zoom(self, zoom_direction):
+            
+            if event.source() == 0:
+                event_type = "mouse" # scroll wheels
+            elif event.source() == 1:
+                event_type = "trackpad" # anything OS-interpreted
+            else:
+                raise Exception("Unexpected event source in zoom.")
+                
+            self.zoom(delta.y(), event_type)
+        
+    def zoom(self, zoom_direction, event_type):
+        
+        assert event_type in ["mouse", "trackpad", "keypress"]
+        
+        factor_zoomin = 1
+        factor_zoomout = 1
+        
+        # Mouse scroll
+        if event_type == "mouse":
+            factor_zoomin *= 1.15
+            factor_zoomout /= 1.15
+        
+        # Trackpad scroll
+        elif event_type == "trackpad":
+            factor_zoomin *= 1.05
+            factor_zoomout /= 1.05
+        
+        # Keypress +/- scroll
+        elif event_type == "keypress":
+            factor_zoomin *= 1.15
+            factor_zoomout /= 1.15
+        
         if zoom_direction > 0:
-            factor = 1.25
-            self._zoom += 1
+            factor = factor_zoomin
+            self._zoom += 1        
         else:
-            factor = 0.8
+            factor = factor_zoomout
             self._zoom -= 1
+            
+        # Zoom in/out scaling
         if self._zoom > 0:
             self._view.scale(factor, factor)
+        # Fitting to view
         elif self._zoom == 0:
             self.zoomFitInView()
+        # Resetting zoom
         else:
             self._zoom = 0
-
+            self.zoomFitInView()
+                    
     def zoomFitInView(self):
         rect = QtCore.QRectF(self._canvas.pixmap().rect())
         if not rect.isNull():
@@ -263,12 +297,13 @@ class HDF5VideoPlayerGUI(SimplePlayer):
         if self.fid is None:
             # break no file open, nothing to do here
             return
-
+        
         key = event.key()
+
         if key == Qt.Key_Minus:
-            self.mainImage.zoom(-1)
+            self.mainImage.zoom(-1, "keypress")
         elif key == Qt.Key_Plus:
-            self.mainImage.zoom(1)
+            self.mainImage.zoom(1, "keypress")
 
         super().keyPressEvent(event)
 
