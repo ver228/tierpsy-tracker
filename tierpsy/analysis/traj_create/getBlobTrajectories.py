@@ -19,7 +19,7 @@ import tables
 from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractorMasked, BackgroundSubtractorPrecalculated
 from tierpsy.analysis.compress.extractMetaData import read_and_save_timestamp
 from tierpsy.helper.params import traj_create_defaults, read_unit_conversions, read_fps
-from tierpsy.helper.misc import TimeCounter, print_flush, TABLE_FILTERS, IS_OPENCV3
+from tierpsy.helper.misc import TimeCounter, print_flush, TABLE_FILTERS
 
 
 

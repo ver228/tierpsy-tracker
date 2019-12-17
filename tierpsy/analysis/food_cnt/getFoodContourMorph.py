@@ -18,7 +18,7 @@ from skimage.filters import threshold_otsu
 from scipy.interpolate import interp1d
 from statsmodels.nonparametric.smoothers_lowess import lowess
 
-from tierpsy.helper.misc import get_base_name, IS_OPENCV3
+from tierpsy.helper.misc import get_base_name
 
 
 

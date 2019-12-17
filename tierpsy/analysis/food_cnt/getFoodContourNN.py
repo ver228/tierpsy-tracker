@@ -18,7 +18,6 @@ from keras.models import load_model
 from skimage.morphology import disk
 
 from tierpsy import AUX_FILES_DIR
-from tierpsy.helper.misc import IS_OPENCV3
 
 DFLT_RESIZING_SIZE = 512 #the network was trained with images of this size 512
 
