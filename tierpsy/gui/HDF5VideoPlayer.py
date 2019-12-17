@@ -8,7 +8,7 @@ from functools import partial
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QAction, QApplication
+from PyQt5.QtWidgets import QApplication
 
 
 def setChildrenFocusPolicy(obj, policy):
