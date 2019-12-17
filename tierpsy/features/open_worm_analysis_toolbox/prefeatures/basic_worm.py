@@ -18,7 +18,7 @@ import numpy as np
 import warnings
 import copy
 import tables
-import matplotlib.pyplot as plt
+
 
 import json
 from collections import namedtuple, Iterable, OrderedDict
@@ -419,25 +419,26 @@ class BasicWorm(JSON_Serializer):
 
             return self._h_skeleton
 
-    def plot_frame(self, frame_index):
-        """
-        Plot the contour and skeleton the worm for one of the frames.
+    # def plot_frame(self, frame_index):
+    #     """
+    #     Plot the contour and skeleton the worm for one of the frames.
 
-        Parameters
-        ----------------
-        frame_index: int
-            The desired frame # to plot.
+    #     Parameters
+    #     ----------------
+    #     frame_index: int
+    #         The desired frame # to plot.
 
-        """
-        vc = self.h_ventral_contour[frame_index]
-        dc = self.h_dorsal_contour[frame_index]
-        s = self.h_skeleton[frame_index]
+    #     """
+    #     vc = self.h_ventral_contour[frame_index]
+    #     dc = self.h_dorsal_contour[frame_index]
+    #     s = self.h_skeleton[frame_index]
 
-        plt.scatter(vc[0, :], vc[1, :])
-        plt.scatter(dc[0, :], dc[1, :])
-        plt.scatter(s[0, :], s[1, :])
-        plt.gca().set_aspect('equal', adjustable='box')
-        plt.show()
+    #     import matplotlib.pyplot as plt
+    #     plt.scatter(vc[0, :], vc[1, :])
+    #     plt.scatter(dc[0, :], dc[1, :])
+    #     plt.scatter(s[0, :], s[1, :])
+    #     plt.gca().set_aspect('equal', adjustable='box')
+    #     plt.show()
 
     def validate(self):
         """

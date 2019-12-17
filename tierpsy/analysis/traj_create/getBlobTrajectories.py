@@ -4,7 +4,7 @@ Created on Thu Apr  2 16:33:34 2015
 
 @author: ajaver
 """
-
+from pathlib import Path
 import json
 import multiprocessing as mp
 import os
@@ -20,7 +20,6 @@ from tierpsy.analysis.compress.BackgroundSubtractor import BackgroundSubtractorM
 from tierpsy.analysis.compress.extractMetaData import read_and_save_timestamp
 from tierpsy.helper.params import traj_create_defaults, read_unit_conversions, read_fps
 from tierpsy.helper.misc import TimeCounter, print_flush, TABLE_FILTERS
-
 
 
 def _thresh_bw(pix_valid):
@@ -207,7 +206,7 @@ def generateImages(masked_image_file,
                    progress_refresh_rate_s=20):
     
     #loop, save data and display progress
-    base_name = masked_image_file.rpartition('.')[0].rpartition(os.sep)[-1]
+    base_name = Path(masked_image_file).stem
     progress_str = base_name + progress_str
     fps = read_fps(masked_image_file, dflt=25)
     
