@@ -42,65 +42,65 @@ def getHeadProbMov(
                 '/skeleton')[skeletons_id, :, :]
         else:
             return np.nan, skel_group
-    
+
     #savgol_filter does not accept even windows
     if window_std % 2 == 0:
         window_std += 1
-    
+
     #get the indexes of valid skeletons
     skel_ind_valid = ~np.isnan(skeletons[:, 0, 0])
-    
+
     #smooth on time to reduce the variance but only on the points that are going to be used to calculate the angles
     for nn in [0, segment4angle, -segment4angle -1 , -1]:
         for ii in range(2):
             dat = pd.Series(skeletons[:, nn, ii]).fillna(method='ffill').fillna(method='bfill')
             dat = savgol_filter(dat, window_std, 3)
             skeletons[:, nn, ii] = dat
-    
-    
+
+
     #total range in coordinates of the head movement
     top = np.max(skeletons[:, 0], axis=0)
     bot = np.min(skeletons[:, 0], axis=0)
     head_path_range = np.sqrt(np.sum((top-bot)**2))
-    
+
     #average head tail distance
     ht_dist = np.sqrt(((skeletons[:, 0] - skeletons[:, -1])**2).sum(axis=1))
     ht_dist_avg = np.nanmean(ht_dist)/2
-    
+
     #%%
     if head_path_range < ht_dist_avg:
         #here I find that it works better to use a very large window since the movement is less
         window_std = window_std*50
-        
+
         #make sure the the window is at most half of the total size of the valid skeletons window
         dd, = np.where(skel_ind_valid)
         bot, top = dd[0], dd[-1]
-        
+
         N = max(1, (top-bot + 1)//2)
         window_std = min(window_std, N)
-    
-    
-    is_switch_skel, roll_std = isWormHTSwitched(skeletons, 
-                                                segment4angle=segment4angle, 
-                                                max_gap_allowed=max_gap_allowed, 
-                                                window_std = window_std, 
+
+
+    is_switch_skel, roll_std = isWormHTSwitched(skeletons,
+                                                segment4angle=segment4angle,
+                                                max_gap_allowed=max_gap_allowed,
+                                                window_std = window_std,
                                                 min_block_size=min_block_size)
     #%%
     #calculate the head tail probability at each point and get the average
     p_mov = roll_std['head_angle']/(roll_std['head_angle'] +roll_std['tail_angle'])
-    
-    
+
+
     #remove values that are too small, if the std is zero i cannot really calculate this values
     dd = roll_std['head_angle'] + roll_std['tail_angle']
     ind_valid = skel_ind_valid & (dd > 1e-3)
     p_mov = p_mov.values[ind_valid]
-    
+
     if p_mov.size == 0:
         w_ind = trajectories_worm['worm_index_joined'].iloc[0]
         warnings.warn('There is something weird with trajectory {} in file {}. No valid head tail movements found.'.format(w_ind, skeletons_file))
     #average using only the indexes of valid skeletons
     p_mov_avg = np.nanmean(p_mov)
-    
+
     return p_mov_avg, skel_group
 
 
@@ -204,8 +204,8 @@ def checkFinalOrientation(
     peak_search_limits = [0.054, 0.192, 0.269, 0.346]
 
     p_mov, skel_group = getHeadProbMov(
-        skeletons_file, 
-        trajectories_worm, 
+        skeletons_file,
+        trajectories_worm,
         **head_tail_param)
 
     p_int_top, p_int_bot, int_group = getHeadProvInt(
@@ -244,7 +244,7 @@ if __name__ == '__main__':
     for ff in glob.glob(os.path.join(check_dir, '*')):
         ff = ff.replace('MaskedVideos', 'Results')
         base_name = os.path.split(ff)[1].rpartition('.')[0]
-        
+
         trajectories_file = ff[:-5] + '_trajectories.hdf5'
         skeletons_file = ff[:-5] + '_skeletons.hdf5'
         intensities_file = ff[:-5] + '_intensities.hdf5'
@@ -270,7 +270,7 @@ if __name__ == '__main__':
 
             p_tot, skel_group, int_group = checkFinalOrientation(
                 skeletons_file, intensities_file, trajectories_worm, head_tail_param)
-            
+
             if p_tot < 0.5:
                 switchBlocks(
                     skel_group,

@@ -9,12 +9,12 @@
 
 conda create -n tierpsy 
 
-conda activate tierpsy [#Windows]
-source activate tierpsy [#OSX or Linux]
+conda activate tierpsy #[Windows]
+source activate tierpsy #[OSX or Linux]
 ```
 - Finally, donwload the package from conda-forge
 ```bash
-conda install tierpsy -c ver228
+conda install tierpsy -c conda-forge
 ```
 - After you can start tierpsy tracker by typing:
 ```bash
@@ -25,9 +25,18 @@ Do not forget to activate the enviroment every time you start a new terminal ses
 On OSX the first time `tierpsy_gui` is intialized it will create a file in the Desktop called tierpsy_gui.command. By double-cliking on this file tierpsy can be started without having to open a terminal.
 
 #### Troubleshooting
-- It seems that there might be some problems with the `opencv` version available through `conda`. If you have problems reading video files or encounter error related with `import cv2`, then you can try to install opencv using pip as:
+- When installing from `conda`, you may get an error while the package `conda-forge::cloudpickle...` is installed, stating that `python3.6` couldn't be found. In this case, make sure to first install python 3.6, and then tierpsy, by executing:
+```bash
+conda install -c conda-forge python=3.6
+conda install -c conda-forge tierpsy
+``` 
+- It seems that there might be some problems with some `opencv` versions available through `conda`. If you have problems reading video files or encounter error related with `import cv2`, then you can try to install opencv using pip as:
 ```bash
 pip install opencv-python-headless
+```
+or specify the `opencv` version via:
+```bash
+conda install opencv=3.4.2 #[tested on MacOS]
 ```
 - In Windows, the default anaconda channel does not have a valid `ffmpeg` version. Activate the tierpsy enviroment and use the conda-forge channel instead as:
 ```bash
@@ -44,7 +53,8 @@ conda install -c conda-forge ffmpeg
 ```bash
 git clone https://github.com/ver228/tierpsy-tracker
 cd tierpsy-tracker
-source create -n tierpsy #[optional]
+conda create -n tierpsy #[optional]
+source activate tierpsy #[optional]
 conda install --file requirements.txt
 pip install -e .
 ```

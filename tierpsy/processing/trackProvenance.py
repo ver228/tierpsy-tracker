@@ -1,13 +1,13 @@
 import os
 import json
 import tables
-import importlib
+from importlib import import_module
 
 def getPackagesVersion():
     pkgs_versions = {}
     for pkg in ['tierpsy', 'open_worm_analysis_toolbox', 'tierpsy_features']:
         try:
-            mod = importlib(pkg)
+            mod = import_module(pkg)
             ver = mod.__version__
         except:
             ver = ''
