@@ -57,6 +57,14 @@ dflt_args_list = [
         False,
         'Shorten the feature names so that they are compatible with MATLAB'
         ),
+    ('dorsal_side_known',
+        False,
+        '''
+        Dorsal side of worm has been annotated on videos. If dorsal side is not
+        known then only absolute values for d/v signed features are returned.
+        (nb. d/v features are not included in the 2k, 512, 256, 16 and 8 sets anyway)
+        ''',
+        ),
     ('keywords_include',
         '',
         '''
