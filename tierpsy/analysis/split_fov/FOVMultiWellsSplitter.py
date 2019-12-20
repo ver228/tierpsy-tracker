@@ -184,7 +184,7 @@ class FOVMultiWellsSplitter(object):
             self.n_wells       = fid.get_node('/fov_wells')._v_attrs['n_wells']
             self.whichsideup   = fid.get_node('/fov_wells')._v_attrs['whichsideup']
             self.well_shape    = fid.get_node('/fov_wells')._v_attrs['well_shape']
-            
+
         # is this a masked file or a features file? doesn't matter
         self.img = None
         masked_image_file = filename.replace('Results','MaskedVideos')
@@ -194,7 +194,7 @@ class FOVMultiWellsSplitter(object):
             if '/bgnd' in fid:
                 self.img = fid.get_node('/bgnd')[0]
             else:
-                # maybe bgnd was not in the masked video? 
+                # maybe bgnd was not in the masked video?
                 # for speed, let's just get the first full frame
                 self.img = fid.get_node('/full_data')[0]
 
@@ -207,9 +207,11 @@ class FOVMultiWellsSplitter(object):
         self.wells['x'] = 0.5 * (self.wells['x_min'] + self.wells['x_max'])
         self.wells['y'] = 0.5 * (self.wells['y_min'] + self.wells['y_max'])
         self.wells['r'] = self.wells['x_max'] - self.wells['x']
-        
+
         self.calculate_wells_dimensions()
         self.find_row_col_wells()
+        # assume all undefined wells are good
+        self.wells['is_good_well'].fillna(1)
 
 
     def write_fov_wells_to_file(self, filename):
@@ -825,7 +827,7 @@ class FOVMultiWellsSplitter(object):
 
         # add names of wells
         # plot, don't close
-        
+
         print(_img.shape)
         figsize = (8*_img.shape[0]/_img.shape[1], 8)
         hf = plt.figure(figsize=figsize);
@@ -869,10 +871,17 @@ class FOVMultiWellsSplitter(object):
         # I think a quick way is by using implicit expansion
         # treat the x array as column, and the *_min and *_max as rows
         # these are all matrices len(x)-by-len(self.wells)
-        within_x = np.logical_and((x[:,None] - self.wells['x_min'][None,:]) >= 0,  # none creates new axis
-                                  (x[:,None] - self.wells['x_max'][None,:]) <= 0)
-        within_y = np.logical_and((y[:,None] - self.wells['y_min'][None,:]) >= 0,  # none creates new axis
-                                  (y[:,None] - self.wells['y_max'][None,:]) <= 0)
+        # none creates new axis
+        if np.isscalar(x):
+            x = np.array([x])
+            y = np.array([y])
+
+        within_x = np.logical_and(
+                (x[:,None] - self.wells['x_min'][None,:]) >= 0,
+                (x[:,None] - self.wells['x_max'][None,:]) <= 0)
+        within_y = np.logical_and(
+                (y[:,None] - self.wells['y_min'][None,:]) >= 0,
+                (y[:,None] - self.wells['y_max'][None,:]) <= 0)
         within_well = np.logical_and(within_x, within_y)
         # in each row of within_well, the column index of the "true" value is the well index
 
@@ -905,7 +914,7 @@ class FOVMultiWellsSplitter(object):
         wells_out['well_name'] = self.wells['well_name'].astype('S3')
 #        import pdb;pdb.set_trace()
         is_good_well = self.wells['is_good_well'].copy()
-        wells_out['is_good_well'] = is_good_well.fillna(-1).astype(int)        
+        wells_out['is_good_well'] = is_good_well.fillna(-1).astype(int)
 
         return wells_out
 
@@ -1086,7 +1095,7 @@ if __name__ == '__main__':
 
     masked_image_file = wd / 'MaskedVideos/20191205/'
     masked_image_file = (
-            masked_image_file / 
+            masked_image_file /
             'syngenta_screen_run1_bluelight_20191205_151104.22956805' /
             'metadata.hdf5'
             )
@@ -1099,13 +1108,12 @@ if __name__ == '__main__':
 
     fovsplitter = FOVMultiWellsSplitter(features_file)
     fovsplitter.plot_wells()
-    fovsplitter.wells.loc[::3,'is_good_well']=False    
+    fovsplitter.wells.loc[::3,'is_good_well']=False
     fovsplitter.wells.loc[1::3,'is_good_well']=True
     fovsplitter.wells.loc[2::3,'is_good_well']=-1
     print(fovsplitter.get_wells_data())
     fovsplitter.write_fov_wells_to_file(features_file)
-    
+
     fovsplitter = FOVMultiWellsSplitter(features_file)
     fovsplitter.plot_wells()
-    
-    
+
