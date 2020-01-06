@@ -89,6 +89,7 @@ class FOVMultiWellsSplitter(object):
                                                 **kwargs)
 
         # this is common to the two constructors paths
+        self.well_masked_edge = 0.1
         self.wells_mask = self.create_mask_wells()
 
 
@@ -184,7 +185,7 @@ class FOVMultiWellsSplitter(object):
             self.n_wells       = fid.get_node('/fov_wells')._v_attrs['n_wells']
             self.whichsideup   = fid.get_node('/fov_wells')._v_attrs['whichsideup']
             self.well_shape    = fid.get_node('/fov_wells')._v_attrs['well_shape']
-            
+
         # is this a masked file or a features file? doesn't matter
         self.img = None
         masked_image_file = filename.replace('_featuresN.hdf5','.hdf5')
@@ -192,7 +193,7 @@ class FOVMultiWellsSplitter(object):
             if '/bgnd' in fid:
                 self.img = fid.get_node('/bgnd')[0]
             else:
-                # maybe bgnd was not in the masked video? 
+                # maybe bgnd was not in the masked video?
                 # for speed, let's just get the first full frame
                 self.img = fid.get_node('/full_data')[0]
 
@@ -207,7 +208,7 @@ class FOVMultiWellsSplitter(object):
         self.wells['x'] = 0.5 * (self.wells['x_min'] + self.wells['x_max'])
         self.wells['y'] = 0.5 * (self.wells['y_min'] + self.wells['y_max'])
         self.wells['r'] = self.wells['x_max'] - self.wells['x']
-        
+
         self.calculate_wells_dimensions()
         self.find_row_col_wells()
 
@@ -832,7 +833,7 @@ class FOVMultiWellsSplitter(object):
                               # rgba_color[:-1], 20)
         # add names of wells
         # plot, don't close
-        
+
         print(_img.shape)
         figsize = (8*_img.shape[0]/_img.shape[1], 8)
         hf = plt.figure(figsize=figsize);
@@ -915,13 +916,16 @@ class FOVMultiWellsSplitter(object):
         """
         Create a black mask covering a 10% thick edge of the square region covering each well
         """
+        assert well_masked_edge < 0.5, \
+            "well_masked_edge has to be less than 50% or no data left"
+
         mask = np.ones(self.img_shape).astype(np.uint8)
         # average size of wells
         mean_wells_width = np.round(np.mean(self.wells['x_max']-self.wells['x_min']))
         mean_wells_height = np.round(np.mean(self.wells['y_max']-self.wells['y_min']))
         # size of black edge
-        horz_edge = np.round(mean_wells_width * 0.10).astype(int)
-        vert_edge = np.round(mean_wells_height * 0.10).astype(int)
+        horz_edge = np.round(mean_wells_width * self.well_masked_edge).astype(int)
+        vert_edge = np.round(mean_wells_height * self.well_masked_edge).astype(int)
         for x in np.unique(self.wells[['x_min','x_max']]):
             m = max(x-horz_edge,0)
             M = min(x+horz_edge, self.img_shape[1])
