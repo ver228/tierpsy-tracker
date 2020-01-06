@@ -31,8 +31,7 @@ class WellsDrawer(TrackerViewerAuxGUI):
         self.fovsplitter_feat = None
         self.fovsplitter = None
         self.is_fov_tosplit = None
-        for k, v in self.__dict__.items():
-            print(k,v)
+
 
     def updateVideoFile(self, vfilename):
         super().updateVideoFile(vfilename)
