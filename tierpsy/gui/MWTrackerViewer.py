@@ -902,7 +902,7 @@ class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
 
         # select worm ROI when doubleclick a worm
         self.mainImage._canvas.mouseDoubleClickEvent = self.selectWorm
-        self.mainImage._canvas.mousePressEvent = self.toggleWellStatus
+        self.mainImage._canvas.mouseRightClickEvent = self.toggleWellStatus
 
         self.ui.comboBox_ROI1.activated.connect(self.update_plot)
         self.ui.comboBox_ROI2.activated.connect(self.update_plot)
@@ -1048,17 +1048,13 @@ class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
         self.updateImage()
 
     def toggleWellStatus(self, event):
-        #MORE SHORTCUTS
-        # go the the start of end of a trajectory
-        print('in the wells bit')
-        if event.button() != Qt.RightButton:
+        # abort if not multifov
+        if self.is_fov_tosplit != True:
             return
-#        print('right click')
-#        print(dir(event))
-#        print(event.pos().x())
+        # event is for sure a right click or this does not get called
         x = event.pos().x()
         y = event.pos().y()
-        # this will always return something. n/a/ if clicking outside a well
+        # this will always return something. n/a if clicking outside a well
         well_name = self.fovsplitter.find_well_of_xy(x, y)[0].decode('utf-8')
         idx = self.fovsplitter.wells['well_name'] == str(well_name)
         self.fovsplitter.wells.loc[idx, 'is_good_well'] = \
