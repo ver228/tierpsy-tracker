@@ -30,7 +30,7 @@ valid_time_windows_connector = ':'
 valid_time_windows_separator = ','
 time_windows_format_explain = 'Each time window must be defined by the start time and the end time connected by \'-\' (start_time-end_time). Different windows must be separated by {}. A sequence of equally sized windows can be defined with the format start_time:end_time:step.'.format(valid_time_windows_separator)
 
-feat_df_id_cols = ['file_id','well_name']
+feat_df_id_cols = ['file_id', 'well_name', 'is_good_well']
 
 def check_in_list(x, list_of_x, x_name):
     if not x in list_of_x:
@@ -151,6 +151,11 @@ def select_features(win_summaries,keywords_in,keywords_ex,selected_feat):
         if keywords_ex is not None:
             filter_col = [x for x in win_summaries.columns if any(key in x for key in keywords_ex)]
             win_summaries = win_summaries[win_summaries.columns.drop(filter_col)]
+        if not any([selected_feat, keywords_in, keywords_ex]):
+            # only change order of columns
+            not_id_cols = win_summaries.columns.difference(id_cols)
+            win_summaries = win_summaries[id_cols + not_id_cols]
+
     return win_summaries
 
 
@@ -275,7 +280,7 @@ def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, t
         if abbreviate_features:
             all_summaries[iwin] = shorten_feature_names(all_summaries[iwin])
     #IB : add in removal of signed features
-            
+
         if not dorsal_side_known:
             all_summaries[iwin] = abs_features_only(all_summaries[iwin])
 
@@ -323,15 +328,24 @@ if __name__ == '__main__':
     abbreviate_features = True
     dorsal_sign_known = False
 
-# Luigi
-##    root_dir = '/Users/em812/Documents/OneDrive - Imperial College London/Eleni/Tierpsy_GUI/test_results_2'
-#    root_dir = '/Users/lferiani/Desktop/Data_FOVsplitter/evgeny/Results/20190808_subset'
+#    root_dir = '/Users/em812/Documents/OneDrive - Imperial College London/Eleni/Tierpsy_GUI/test_results_2'
 #    is_manual_index = False
-#    feature_type = 'tierpsy'
-#    #feature_type = 'openworm'
-#    #summary_type = 'plate_augmented'
+##    feature_type = 'tierpsy'
+#    feature_type = 'openworm'
+#    summary_type = 'plate_augmented'
 ##    summary_type = 'plate'
-#    summary_type = 'trajectory'
+#    #summary_type = 'trajectory'
+
+# Luigi
+    #root_dir = '/Users/lferiani/Hackathon/multiwell_tierpsy/12_FEAT_TIERPSY/'
+    #is_manual_index = False
+    #feature_type = 'tierpsy'
+    #feature_type = 'openworm'
+    #summary_type = 'plate_augmented'
+#    summary_type = 'plate'
+    #summary_type = 'trajectory'
+    #abbreviate_features = True
+    #dorsal_sign_known = False
 
     fold_args = dict(
                  n_folds = 2,

@@ -13,6 +13,10 @@ from numpy.fft import fft2, ifft2, fftshift
 
 #%% constants
 
+WELLS_ATTRIBUTES = ['x','y','r','row','col',
+                    'x_min','x_max','y_min','y_max',
+                    'well_name', 'is_good_well']
+
 # dictionary to go from camera name to channel
 # to be updated as we get more copies of the LoopBio rig
 CAM2CH_DICT_legacy = {"22594549":'Ch1',
@@ -338,6 +342,24 @@ def simulate_wells_lattice(img_shape, x_off, y_off, sp, nwells=None, template_sh
     cutout_canvas = naive_normalise(cutout_canvas)
     
     return cutout_canvas
+
+
+def get_well_color(is_good_well, forCV=False):
+    colors = {'undefined': (255, 127, 0),
+              'good_well': (77, 220, 74),
+              'bad_well': (255, 0, 0)}
+    if np.isnan(is_good_well) or is_good_well==-1:
+        color = colors['undefined']
+    elif is_good_well == True or is_good_well==1:
+        color = colors['good_well']
+    elif is_good_well == False or is_good_well==0:
+        color = colors['bad_well']
+    else:
+        print('is_good_well not NaN, True, False, -1, 1, 0. Debugging:')
+        import pdb; pdb.set_trace()
+    if not forCV:
+        color = tuple(c/255.0 for c in color)
+    return color
 
 
 if __name__ == '__main__':
