@@ -10,12 +10,15 @@ from PyQt5.QtGui import QPixmap, QPainter, QFont, QPen, QPolygonF, QColor, QKeyS
 from PyQt5.QtWidgets import QApplication, QMessageBox
 
 from tierpsy.analysis.ske_create.helperIterROI import getWormROI
+from tierpsy.analysis.split_fov.FOVMultiWellsSplitter import FOVMultiWellsSplitter
 
 from tierpsy.gui.MWTrackerViewer_ui import Ui_MWTrackerViewer
 from tierpsy.gui.TrackerViewerAux import TrackerViewerAuxGUI
 from tierpsy.gui.PlotFeatures import PlotFeatures
 
 from tierpsy.helper.misc import WLAB, save_modified_table
+from tierpsy.analysis.split_fov.helper import get_well_color
+
 
 class WellsDrawer(TrackerViewerAuxGUI):
     '''
@@ -24,11 +27,12 @@ class WellsDrawer(TrackerViewerAuxGUI):
     def __init__(self, ui):
         super().__init__(ui)
         # colour
-        self.wells = None
+        self.fovsplitter_mask = None
+        self.fovsplitter_feat = None
+        self.fovsplitter = None
         self.is_fov_tosplit = None
-        for k, v in self.__dict__.items():
-            print(k,v)
-        
+
+
     def updateVideoFile(self, vfilename):
         super().updateVideoFile(vfilename)
         # check if /fov_wells exists in masked video
@@ -39,40 +43,89 @@ class WellsDrawer(TrackerViewerAuxGUI):
                 self.is_fov_tosplit = True
             # if it exists, read it
             if self.is_fov_tosplit:
-                self.wells = pd.DataFrame(self.fid.get_node('/fov_wells').read())
-            
+#                self.wells_in_mask = pd.DataFrame(
+#                        self.fid.get_node('/fov_wells').read())
+                self.fovsplitter_mask = FOVMultiWellsSplitter(self.vfilename)
+
+    def updateSkelFile(self, skeletons_file):
+        super().updateSkelFile(skeletons_file)
+        # if no skeletons, skip
+        if not self.skeletons_file:
+            return
+        # check if /fov_wells exists in features video
+        with tables.File(self.skeletons_file, 'r') as fid:
+            if '/fov_wells' not in fid:
+                self.is_fov_tosplit = False
+#                print("didn't find fov wells though")
+            else:
+                self.is_fov_tosplit = True
+#                print("found fov wells in featuresN")
+            # if it exists, read it
+            if self.is_fov_tosplit:
+#                print('reading fov_wells from featuresN')
+#                print('pre-reading:')
+#                print(self.wells)
+#                self.wells_in_feat = pd.DataFrame(
+#                        fid.get_node('/fov_wells').read())
+                self.fovsplitter_feat = FOVMultiWellsSplitter(self.skeletons_file)
+
+
     def draw_wells(self, image):
         '''
         Draw wells.
         '''
         if self.is_fov_tosplit:
-            
-            # prepare constants for drawing          
+            if self.fovsplitter_feat is not None:
+                self.fovsplitter = self.fovsplitter_feat
+            else: # fall back to mask ones
+                print('falling back')
+                self.fovsplitter = self.fovsplitter_mask
+
+            # prepare constants for drawing
             self.fontsize = max(1, max(image.height(), image.width()) // 60)
             penwidth = max(1, max(image.height(), image.width()) // 400)
             self.penwidth = penwidth if penwidth % 2 == 1 else penwidth + 1
-            self.wellsC = QColor(250, 140, 0)
-            # Qt drawing code 
+#            self.wellsC = QColor(250, 140, 0)
+            if 'is_good_well' in self.fovsplitter.wells.columns:
+                is_color_by_well = True
+            else:
+                is_color_by_well = False
+            # Qt drawing code
             painter = QPainter()
             painter.begin(image)
             pen = QPen()
-            pen.setColor(self.wellsC)
             pen.setWidth(self.penwidth)
-            painter.setPen(pen)
             painter.setFont(QFont('Decorative', self.fontsize))
             # loop on wells
-            for _, well in self.wells.iterrows():
+            for _, well in self.fovsplitter.wells.iterrows():
+                # update color every time
+                if is_color_by_well:
+                    wellC = get_well_color(well['is_good_well'], forCV=True)
+                    wellC = QColor(*wellC)
+                else:
+                    wellC = QColor(250, 140, 0)
+                pen.setColor(wellC)
+                painter.setPen(pen)
                 # draw well name
-                painter.drawText(well['x_min'] + self.fontsize*0.4, 
-                                 well['y_min'] + self.fontsize*1.2, 
-                                 well['well_name'].decode('utf-8'))
+                painter.drawText(well['x_min'] + self.fontsize*0.4,
+                                 well['y_min'] + self.fontsize*1.2,
+                                 well['well_name'])
                 # draw rectangle
-                painter.drawRect(well['x_min'], 
-                                 well['y_min'], 
-                                 well['x_max'] - well['x_min'], 
+                painter.drawRect(well['x_min'],
+                                 well['y_min'],
+                                 well['x_max'] - well['x_min'],
                                  well['y_max'] - well['y_min'])
+                if well['is_good_well'] == False:
+                    painter.drawLine(well['x_min'],
+                                     well['y_min'],
+                                     well['x_max'],
+                                     well['y_max'])
             painter.end()
 
+
+
+
+#        super().keyPressEvent(event)
 
 
 class ContourDrawer(TrackerViewerAuxGUI):
@@ -89,11 +142,11 @@ class ContourDrawer(TrackerViewerAuxGUI):
             WLAB['WORMS']: Qt.blue,
             WLAB['BAD']: Qt.darkRed,
             WLAB['GOOD_SKE']: Qt.darkCyan
-            } 
+            }
         self.ui.checkBox_showFood.stateChanged.connect(self.updateImage)
         self.ui.checkBox_showFood.setEnabled(False)
         self.ui.checkBox_showFood.setChecked(True)
-        
+
     def updateSkelFile(self, skeletons_file):
 
         super().updateSkelFile(skeletons_file)
@@ -109,7 +162,7 @@ class ContourDrawer(TrackerViewerAuxGUI):
                 #change from microns to pixels
                 self.food_coordinates = fid.get_node('/food_cnt_coord')[:]
                 self.food_coordinates /= self.microns_per_pixel
-                
+
                 self.ui.checkBox_showFood.setEnabled(True)
 
     def draw_food_contour(self, image):
@@ -124,7 +177,7 @@ class ContourDrawer(TrackerViewerAuxGUI):
         p = QPolygonF()
         for x,y in self.food_coordinates:
             p.append(QPointF(x,y))
-            
+
         pen = QPen()
         pen.setWidth(penwidth)
         pen.setColor(col)
@@ -144,14 +197,14 @@ class IntensityLabeler(TrackerViewerAuxGUI):
         super().updateVideoFile(vfilename)
         if self.fid is not None:
             #get mean intensity information.
-            #Useful for the optogenetic experiments. 
+            #Useful for the optogenetic experiments.
             try:
                 mean_int = self.fid.get_node('/mean_intensity')[:]
-                
-                #calculate the intensity range and normalize the data. 
+
+                #calculate the intensity range and normalize the data.
                 #I am ignoring any value less than 1. The viewer only works with uint8 data.
-                
-                dd = mean_int[mean_int>=1] 
+
+                dd = mean_int[mean_int>=1]
                 if dd.size == 0:
                     raise ValueError
 
@@ -193,14 +246,14 @@ class BlobLabeler(TrackerViewerAuxGUI):
         self.ui.pushButton_U.setShortcut(QKeySequence(Qt.Key_U))
         self.ui.pushButton_WS.setShortcut(QKeySequence(Qt.Key_C))
         self.ui.pushButton_B.setShortcut(QKeySequence(Qt.Key_B))
-        
+
 
     def enable_label_buttons(self, value):
         self.ui.pushButton_U.setEnabled(value)
         self.ui.pushButton_W.setEnabled(value)
         self.ui.pushButton_WS.setEnabled(value)
         self.ui.pushButton_B.setEnabled(value)
-            
+
 
     def _h_tag_worm(self, label_ind):
         if not self.worm_index_type == 'worm_index_manual':
@@ -242,11 +295,11 @@ class ROIWorm():
     @property
     def isDrawSkel(self):
         return self.checkBox_ROI.isChecked()
-    
+
 
 class ROIManager(TrackerViewerAuxGUI):
     def __init__(self, ui):
-        
+
         super().__init__(ui)
         self.rois = [
             ROIWorm(
@@ -261,7 +314,7 @@ class ROIManager(TrackerViewerAuxGUI):
                 )
         ]
 
-        
+
         self.ui.radioButton_ROI1.setShortcut(QKeySequence(Qt.Key_Up))
         self.ui.radioButton_ROI2.setShortcut(QKeySequence(Qt.Key_Down))
 
@@ -271,14 +324,14 @@ class ROIManager(TrackerViewerAuxGUI):
 
         self.ui.comboBox_ROI1.activated.connect(partial(self._updateROI, self.rois[0]))
         self.ui.comboBox_ROI2.activated.connect(partial(self._updateROI, self.rois[1]))
-        
+
         # flags for RW and FF
         self.RW, self.FF = 1, 2
         self.ui.pushButton_ROI1_RW.clicked.connect(partial(self.roiRWFF, self.RW, self.rois[0]))
         self.ui.pushButton_ROI1_FF.clicked.connect(partial(self.roiRWFF, self.FF, self.rois[0]))
         self.ui.pushButton_ROI2_RW.clicked.connect(partial(self.roiRWFF, self.RW, self.rois[1]))
         self.ui.pushButton_ROI2_FF.clicked.connect(partial(self.roiRWFF, self.FF, self.rois[1]))
-    
+
     @property
     def current_roi(self):
         if self.ui.radioButton_ROI1.isChecked():
@@ -291,7 +344,7 @@ class ROIManager(TrackerViewerAuxGUI):
     @property
     def current_worm_index(self):
         return self.current_roi.worm_index
-    
+
     def updateSkelFile(self, skeletons_file):
         for roi in self.rois:
             roi.worm_index = None
@@ -301,15 +354,15 @@ class ROIManager(TrackerViewerAuxGUI):
         #MORE SHORTCUTS
         # go the the start of end of a trajectory
         if event.key() == Qt.Key_BracketLeft:
-           
+
             self.roiRWFF(self.RW, self.current_roi)
 
         elif event.key() == Qt.Key_BracketRight:
-            
+
             self.roiRWFF(self.FF, self.current_roi)
 
         super().keyPressEvent(event)
-    
+
 
     def updateROIcomboBox(self, roi):
         # update valid index for the comboBox
@@ -318,7 +371,7 @@ class ROIManager(TrackerViewerAuxGUI):
         if roi.worm_index is not None:
             roi.comboBox_ROI.addItem(str(int(roi.worm_index)))
 
-        
+
         for ind in self.frame_data[self.worm_index_type]:
             roi.comboBox_ROI.addItem(str(int(ind)))
 
@@ -347,12 +400,12 @@ class ROIManager(TrackerViewerAuxGUI):
             roi.wormCanvas.clear()
             return
 
-        worm_img, roi_corner = getWormROI(self.frame_img, 
-                                        row_data['coord_x'], 
-                                        row_data['coord_y'], 
+        worm_img, roi_corner = getWormROI(self.frame_img,
+                                        row_data['coord_x'],
+                                        row_data['coord_y'],
                                         row_data['roi_size']
                                         )
-        
+
         roi_ori_size = worm_img.shape
         worm_img = np.ascontiguousarray(worm_img)
         worm_qimg = self._convert2Qimg(worm_img)
@@ -362,7 +415,7 @@ class ROIManager(TrackerViewerAuxGUI):
             canvas_size, canvas_size, Qt.KeepAspectRatio)
 
         worm_qimg = self.drawSkelResult(worm_img, worm_qimg, row_data, roi.isDrawSkel, roi_corner, read_center=False)
-        
+
         pixmap = QPixmap.fromImage(worm_qimg)
         roi.wormCanvas.setPixmap(pixmap)
 
@@ -379,7 +432,7 @@ class ROIManager(TrackerViewerAuxGUI):
 
         if self.frame_data is None:
             return
-        
+
         # use 1 for rewind RW or 2 of fast forward
         good = self.trajectories_data[self.worm_index_type] == roi.worm_index
         frames = self.trajectories_data.loc[good, 'frame_number']
@@ -398,7 +451,7 @@ class ROIManager(TrackerViewerAuxGUI):
 
 class TrajectoryEditor(ROIManager):
     def __init__(self, ui):
-        super().__init__(ui) 
+        super().__init__(ui)
         self.ui.pushButton_join.clicked.connect(self.joinTraj)
         self.ui.pushButton_split.clicked.connect(self.splitTraj)
 
@@ -519,9 +572,9 @@ class FeatureReaderBase(TrackerViewerAuxGUI):
     def __init__(self, ui):
         self.timeseries_data = None
         self.feat_column = ''
-        
+
         super().__init__(ui)
-        
+
     def updateSkelFile(self, skeletons_file):
         super().updateSkelFile(skeletons_file)
         try:
@@ -533,7 +586,7 @@ class FeatureReaderBase(TrackerViewerAuxGUI):
 
                         if field == '/timeseries_data':
                             blob_features = ske_file_id['/blob_features']
-                            blob_features.columns = ['blob_' + x for x in blob_features.columns]                            
+                            blob_features.columns = ['blob_' + x for x in blob_features.columns]
                             self.timeseries_data = pd.concat((self.timeseries_data, blob_features), axis=1)
                         break
                 else:
@@ -544,7 +597,7 @@ class FeatureReaderBase(TrackerViewerAuxGUI):
 
 
             self.valid_features = [x for x in self.timeseries_data.columns if x not in self.index_cols]
-            
+
 
         except (TypeError, AttributeError, IOError, KeyError, tables.exceptions.HDF5ExtError):
             self.valid_features = None
@@ -553,7 +606,7 @@ class FeatureReaderBase(TrackerViewerAuxGUI):
 class MarkersDrawer(FeatureReaderBase):
     def __init__(self, ui):
         super().__init__(ui)
-        
+
         self.traj_colors = {}
         self.n_points_traj = 250
         self.n_colors = 256
@@ -564,22 +617,22 @@ class MarkersDrawer(FeatureReaderBase):
         self.palette = [QColor(*x) for x in palette]
 
 
-        self.drawT = {x: self.ui.comboBox_drawType.findText(x , flags=Qt.MatchContains) 
+        self.drawT = {x: self.ui.comboBox_drawType.findText(x , flags=Qt.MatchContains)
                                 for x in ['boxes', 'traj']}
-        
-        self.showT = {x: self.ui.comboBox_showLabels.findText(x , flags=Qt.MatchContains) 
+
+        self.showT = {x: self.ui.comboBox_showLabels.findText(x , flags=Qt.MatchContains)
                                 for x in ['hide', 'all', 'filter']}
-        
+
         self.ui.comboBox_showLabels.setCurrentIndex(self.showT['all'])
 
         self.ui.comboBox_showLabels.currentIndexChanged.connect(self.updateImage)
         self.ui.comboBox_drawType.currentIndexChanged.connect(self.updateImage)
-        
+
         self.ui.feature_column.currentIndexChanged.connect(self.change_feature)
 
 
-        self.ui.feat_max_value.valueChanged.connect(self.updateImage)        
-        self.ui.feat_min_value.valueChanged.connect(self.updateImage)   
+        self.ui.feat_max_value.valueChanged.connect(self.updateImage)
+        self.ui.feat_min_value.valueChanged.connect(self.updateImage)
         self.ui.is_color_features.stateChanged.connect(self.updateImage)
 
         self.enable_color_feats(False)
@@ -608,12 +661,12 @@ class MarkersDrawer(FeatureReaderBase):
     def _h_find_feat_limits(self):
         self.feat_column = str(self.ui.feature_column.currentText())
         print(self.feat_column)
-        
+
         if self.feat_column and self.timeseries_data is not None:
             f_max = self.timeseries_data[self.feat_column].max()
             f_min = self.timeseries_data[self.feat_column].min()
             q1, q2 = self.timeseries_data[self.feat_column].quantile([0.02, 0.98])
-            
+
         else:
             f_min, f_max, q1, q2  = 0,0,0,0
 
@@ -622,7 +675,7 @@ class MarkersDrawer(FeatureReaderBase):
         self.ui.feat_min_value.setValue(q1)
         self.ui.feat_max_value.setValue(q2)
 
-        
+
     def enable_color_feats(self, value):
         self.ui.feature_column.setEnabled(value)
         self.ui.feat_min_value.setEnabled(value)
@@ -636,19 +689,19 @@ class MarkersDrawer(FeatureReaderBase):
 
         if (feat_val != feat_val):
             return Qt.black
-        
+
         #this function can and should be optimized
         f_min = self.ui.feat_min_value.value()
         f_max = self.ui.feat_max_value.value()
-        
+
         if f_min == f_max: #dummy range in case all the values are the same
             f_min, f_max = -1, 1
         elif f_min > f_max:
             return Qt.black
 
-        nn = np.clip((feat_val - f_min)/(f_max - f_min), 0, 1) 
+        nn = np.clip((feat_val - f_min)/(f_max - f_min), 0, 1)
         ind = int(np.round(nn*(self.n_colors-1)))
-        
+
         col = self.palette[ind]
         return col
 
@@ -665,12 +718,12 @@ class MarkersDrawer(FeatureReaderBase):
             current_index = self.current_worm_index
         else:
             current_index = -1
-        
+
         painter = QPainter()
         painter.begin(image)
 
         self.fontsize = max(1, max(image.height(), image.width()) // 120)
-        
+
         penwidth = max(1, max(image.height(), image.width()) // 800)
         self.penwidth = penwidth if penwidth % 2 == 1 else penwidth + 1
 
@@ -694,9 +747,9 @@ class MarkersDrawer(FeatureReaderBase):
             elif cb_ind == self.drawT['traj']:
                 self.draw_trajectories(painter, row_data, is_current_index)
 
-            
+
         painter.end()
-    
+
     def _h_get_trajectory(self, worm_index, current_frame):
         worm_data = self.traj_worm_index_grouped.get_group(worm_index)
         valid_index = worm_data.index[worm_data['frame_number']<= current_frame]
@@ -705,7 +758,7 @@ class MarkersDrawer(FeatureReaderBase):
         traj_ind = valid_index.values[ini::self.frame_step]
         traj_data = worm_data.loc[traj_ind]
         return traj_data
-    
+
 
     def draw_trajectories(self, painter, row_data, is_current_index):
         if self.traj_worm_index_grouped is None:
@@ -722,7 +775,7 @@ class MarkersDrawer(FeatureReaderBase):
         if self.ui.is_color_features.isChecked():
 
             vec_color = [self._h_assign_feat_color(x) for x in traj_data.index]
-            
+
             pen = QPen()
             pen.setWidth(self.penwidth)
             for p1, p2, c in zip(points[1:], points[:-1], vec_color):
@@ -737,7 +790,7 @@ class MarkersDrawer(FeatureReaderBase):
             if not worm_index in self.traj_colors:
                 self.traj_colors[worm_index] = QColor(*np.random.randint(50, 230, 3))
             col = self.traj_colors[worm_index]
-            
+
             pen = QPen()
             pen.setWidth(self.penwidth)
             pen.setColor(col)
@@ -751,13 +804,13 @@ class MarkersDrawer(FeatureReaderBase):
         worm_index = int(row_data[self.worm_index_type])
         x = int(round(row_data['coord_x']))
         y = int(round(row_data['coord_y']))
-        
+
         label_color = self.wlabC[int(row_data[self.label_type])]
         if not self.ui.is_color_features.isChecked():
             label_color = self.wlabC[int(row_data[self.label_type])]
         else:
             label_color = self._h_assign_feat_color(row_id)
-            
+
 
         pen = QPen()
         pen.setColor(label_color)
@@ -771,7 +824,7 @@ class MarkersDrawer(FeatureReaderBase):
         painter.drawRect(x - bb / 2, y - bb / 2, bb, bb)
 
         if is_current_index:
-             
+
             b_size = bb//5
             offset = bb/2 - b_size
             painter.fillRect(x + offset, y + offset, b_size, b_size, QBrush(label_color))
@@ -807,7 +860,7 @@ class PlotCommunicator(FeatureReaderBase, ROIManager):
                                    self.xy_units,
                                    self.fps,
                                    parent = self)
-        
+
         self.plotter.setWindowFlags(self.plotter.windowFlags() | Qt.WindowStaysOnTopHint)
 
         self.plotter.show()
@@ -825,24 +878,25 @@ class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
             super().__init__(Ui_MWTrackerViewer())
         else:
             super().__init__(ui)
-        
+
         self.setWindowTitle("Multi-Worm Viewer")
 
-        self.vfilename = '' if len(argv) <= 1 else argv[1]        
+        self.vfilename = '' if len(argv) <= 1 else argv[1]
         self.videos_dir = r"/Volumes/behavgenom$/GeckoVideo/MaskedVideos/"
         self.results_dir = ''
         self.skeletons_file = ''
         self.worm_index_type = 'worm_index_manual'
         self.frame_data = None
-        
-        
+
+
         self.ui.comboBox_labelType.currentIndexChanged.connect(self.selectWormIndexType)
 
         self.ui.pushButton_save.clicked.connect(self.saveData)
-                        
+
         # select worm ROI when doubleclick a worm
         self.mainImage._canvas.mouseDoubleClickEvent = self.selectWorm
-        
+        self.mainImage._canvas.mouseRightClickEvent = self.toggleWellStatus
+
         self.ui.comboBox_ROI1.activated.connect(self.update_plot)
         self.ui.comboBox_ROI2.activated.connect(self.update_plot)
 
@@ -859,6 +913,8 @@ class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
                         '/', os.sep))
 
         save_modified_table(self.skeletons_file, self.trajectories_data, 'trajectories_data')
+        if self.is_fov_tosplit:
+            self.fovsplitter.write_fov_wells_to_file(self.skeletons_file)
         self.updateSkelFile(self.skeletons_file)
 
     def updateVideoFile(self, vfilename):
@@ -867,11 +923,11 @@ class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
 
     def updateSkelFile(self, skeletons_file):
         super().updateSkelFile(skeletons_file)
-        
+
         if self.trajectories_data is None:
             #empty file nothing to do here
             self.updateImage()
-            return 
+            return
 
         #correct the `worm_index_N` to the actual name `worm_index_manual`
         if 'worm_index_N' in self.trajectories_data:
@@ -882,22 +938,22 @@ class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
         if not 'worm_index_manual' in self.trajectories_data and not self.is_estimated_trajectories_data:
             self.trajectories_data['worm_label'] = self.wlab['U']
             self.trajectories_data['worm_index_manual'] = self.trajectories_data['worm_index_joined']
-        
+
         #deactiate the save option if we are dealing with estimated data...
         self.ui.pushButton_save.setEnabled(not self.is_estimated_trajectories_data)
-        
+
 
         #add this column if it does not exist
         if not 'has_skeleton' in self.trajectories_data:
             self.trajectories_data['has_skeleton'] = self.trajectories_data['skeleton_id'] >= 0
-        
+
         self.updateWormIndexTypeMenu()
         self.updateImage()
 
     def updateWormIndexTypeMenu(self):
         possible_indexes = [x.replace('worm_index_', '') for x in self.trajectories_data.columns if x.startswith('worm_index_')]
         assert len(set(possible_indexes)) == len(possible_indexes) #all indexes ending must be different
-        
+
         menu_names = sorted([x + ' index' for x in possible_indexes])
         self.ui.comboBox_labelType.clear()
         self.ui.comboBox_labelType.addItems(menu_names)
@@ -909,7 +965,7 @@ class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
 
     def selectWormIndexType(self):
         index_option = self.ui.comboBox_labelType.currentText()
-        
+
         if not index_option:
             return
         assert index_option.endswith(' index')
@@ -940,7 +996,7 @@ class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
 
         # read the data of the particles that exists in the frame
         self.frame_data = self.getFrameData(self.frame_number)
-            
+
         #draw extra info only if the worm_index_type is valid
         if self.frame_data is not None and \
         self.worm_index_type in self.frame_data:
@@ -956,7 +1012,7 @@ class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
             self.clearROIs()
         # plot wells
         self.draw_wells(self.frame_qimg)
-        
+
         # create the pixmap for the label
         self.mainImage.setPixmap(self.frame_qimg)
 
@@ -966,6 +1022,7 @@ class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
 
         x = event.pos().x()
         y = event.pos().y()
+        print(x,y)
 
         if self.frame_data is None or self.frame_data.size == 0:
             return
@@ -982,7 +1039,21 @@ class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
 
         self.updateImage()
 
-    
+    def toggleWellStatus(self, event):
+        # abort if not multifov
+        if self.is_fov_tosplit != True:
+            return
+        # event is for sure a right click or this does not get called
+        x = event.pos().x()
+        y = event.pos().y()
+        # this will always return something. n/a if clicking outside a well
+        well_name = self.fovsplitter.find_well_of_xy(x, y)[0].decode('utf-8')
+        idx = self.fovsplitter.wells['well_name'] == str(well_name)
+        self.fovsplitter.wells.loc[idx, 'is_good_well'] = \
+            np.mod(self.fovsplitter.wells.loc[idx, 'is_good_well']+1, 2)
+#        print(self.fovsplitter.wells)
+        self.updateImage()
+
     def joinTraj(self):
         super().joinTraj()
         self.update_plot()
@@ -1000,11 +1071,12 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
     main = MWTrackerViewer_GUI(argv=sys.argv)
-    
+
     #mask_file = '/Users/avelinojaver/OneDrive - Imperial College London/tierpsy_examples/mutliworm_example/BRC20067_worms10_food1-10_Set2_Pos5_Ch2_02062017_121709.hdf5'
     #mask_file = '/Volumes/rescomp1/data/WormData/screenings/Pratheeban/First_Set/MaskedVideos/Old_Adult/16_07_22/W3_ELA_1.0_Ch1_22072016_131149.hdf5'
     #mask_file = '/Users/avelinojaver/Documents/GitHub/tierpsy-tracker/tests/data/AVI_VIDEOS/MaskedVideos/AVI_VIDEOS_1.hdf5'
-    mask_file = '/Users/avelinojaver/Documents/GitHub/tierpsy-tracker/tests/data/WT2/MaskedVideos/WT2.hdf5'
+#    mask_file = '/Users/avelinojaver/Documents/GitHub/tierpsy-tracker/tests/data/WT2/MaskedVideos/WT2.hdf5'
+    mask_file = '/Users/lferiani/Hackathon/multiwell_tierpsy/12_FEAT_TIERPSY/MaskedVideos/20191205/syngenta_screen_run1_bluelight_20191205_151104.22956805/metadata.hdf5'
     main.updateVideoFile(mask_file)
 
     main.show()
