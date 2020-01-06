@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1087</width>
-    <height>891</height>
+    <width>1140</width>
+    <height>810</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -314,7 +314,25 @@
     </item>
     <item row="1" column="0">
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="2" colspan="8">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_frame">
+        <property name="font">
+         <font>
+          <pointsize>13</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Frame</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="spinBox_frame"/>
+      </item>
+      <item row="0" column="2" colspan="7">
        <widget class="QSlider" name="imageSlider">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -348,7 +366,23 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0" rowspan="2">
+      <item row="0" column="9">
+       <widget class="QPushButton" name="playButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Play</string>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
        <widget class="QLabel" name="label_step">
         <property name="font">
          <font>
@@ -363,7 +397,7 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1" rowspan="2">
+      <item row="1" column="1">
        <widget class="QSpinBox" name="spinBox_step">
         <property name="maximum">
          <number>100000</number>
@@ -373,42 +407,24 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="2" rowspan="2">
+      <item row="1" column="2">
        <widget class="QCheckBox" name="is_color_features">
         <property name="text">
          <string>Color Features</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="3" rowspan="2">
+      <item row="1" column="3">
        <widget class="QComboBox" name="feature_column"/>
       </item>
-      <item row="1" column="4" rowspan="2">
+      <item row="1" column="4">
        <widget class="QPushButton" name="pushButton_plot">
         <property name="text">
          <string>PLOT</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QSpinBox" name="spinBox_frame"/>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_frame">
-        <property name="font">
-         <font>
-          <pointsize>13</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Frame</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="5" rowspan="2">
+      <item row="1" column="5">
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -422,26 +438,6 @@
        </spacer>
       </item>
       <item row="1" column="6">
-       <widget class="QPushButton" name="pushButton">
-        <property name="text">
-         <string>Undefined Well</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="9" rowspan="2">
-       <widget class="QPushButton" name="pushButton_WS">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Worm Cluster</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="7" rowspan="2">
        <spacer name="horizontalSpacer_3">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -454,7 +450,7 @@
         </property>
        </spacer>
       </item>
-      <item row="1" column="8" rowspan="2">
+      <item row="1" column="7">
        <widget class="QPushButton" name="pushButton_U">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -467,7 +463,20 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="10" rowspan="2">
+      <item row="1" column="8">
+       <widget class="QPushButton" name="pushButton_WS">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Worm Cluster</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="9">
        <widget class="QPushButton" name="pushButton_save">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
@@ -480,14 +489,7 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="6">
-       <widget class="QPushButton" name="pushButton_2">
-        <property name="text">
-         <string>Good Well</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
+      <item row="2" column="0">
        <widget class="QLabel" name="label_fps">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -508,7 +510,7 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
+      <item row="2" column="1">
        <widget class="QDoubleSpinBox" name="doubleSpinBox_fps">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -524,34 +526,27 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="2">
+      <item row="2" column="2">
        <widget class="QDoubleSpinBox" name="feat_min_value"/>
       </item>
-      <item row="3" column="3">
+      <item row="2" column="3">
        <widget class="QDoubleSpinBox" name="feat_max_value"/>
       </item>
-      <item row="3" column="6">
-       <widget class="QPushButton" name="pushButton_3">
-        <property name="text">
-         <string>Bad Well</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="8">
+      <item row="2" column="7">
        <widget class="QPushButton" name="pushButton_B">
         <property name="text">
          <string>Bad</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="9">
+      <item row="2" column="8">
        <widget class="QPushButton" name="pushButton_W">
         <property name="text">
          <string>Single Worms</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="0" colspan="2">
+      <item row="3" column="0" colspan="2">
        <widget class="QPushButton" name="pushButton_video">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -569,14 +564,14 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="2" colspan="9">
+      <item row="3" column="2" colspan="7">
        <widget class="QLineEdit" name="lineEdit_video">
         <property name="text">
          <string/>
         </property>
        </widget>
       </item>
-      <item row="5" column="0" colspan="2">
+      <item row="4" column="0" colspan="2">
        <widget class="QPushButton" name="pushButton_skel">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -594,17 +589,17 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="2" colspan="9">
+      <item row="4" column="2" colspan="7">
        <widget class="QLineEdit" name="lineEdit_skel"/>
       </item>
-      <item row="6" column="0" colspan="2">
+      <item row="5" column="0" colspan="2">
        <widget class="QPushButton" name="pushButton_h5groups">
         <property name="text">
          <string>Update Groups</string>
         </property>
        </widget>
       </item>
-      <item row="6" column="2" colspan="9">
+      <item row="5" column="2" colspan="7">
        <widget class="QComboBox" name="comboBox_h5path">
         <property name="editable">
          <bool>true</bool>
@@ -621,22 +616,6 @@
         </item>
        </widget>
       </item>
-      <item row="0" column="10">
-       <widget class="QPushButton" name="playButton">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Play</string>
-        </property>
-        <property name="checkable">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
      </layout>
     </item>
    </layout>
@@ -646,7 +625,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1087</width>
+     <width>1140</width>
      <height>22</height>
     </rect>
    </property>
