@@ -91,6 +91,8 @@ class FOVMultiWellsSplitter(object):
                                                 **kwargs)
 
         # this is common to the two constructors paths
+        # assume all undefined wells are good
+        self.wells['is_good_well'].fillna(1, inplace=True)
         self.wells_mask = self.create_mask_wells()
 
 
@@ -210,8 +212,7 @@ class FOVMultiWellsSplitter(object):
 
         self.calculate_wells_dimensions()
         self.find_row_col_wells()
-        # assume all undefined wells are good
-        self.wells['is_good_well'].fillna(1)
+
 
 
     def write_fov_wells_to_file(self, filename):

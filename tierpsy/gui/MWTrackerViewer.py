@@ -49,14 +49,12 @@ class WellsDrawer(TrackerViewerAuxGUI):
                 self.fovsplitter_mask = FOVMultiWellsSplitter(self.vfilename)
 
     def updateSkelFile(self, skeletons_file):
-        print('updating skeleton file')
         super().updateSkelFile(skeletons_file)
         # if no skeletons, skip
         if not self.skeletons_file:
             return
         # check if /fov_wells exists in features video
         with tables.File(self.skeletons_file, 'r') as fid:
-            print('features exists')
             if '/fov_wells' not in fid:
                 self.is_fov_tosplit = False
 #                print("didn't find fov wells though")
@@ -72,8 +70,6 @@ class WellsDrawer(TrackerViewerAuxGUI):
 #                        fid.get_node('/fov_wells').read())
                 self.fovsplitter_feat = FOVMultiWellsSplitter(self.skeletons_file)
 
-#                print('post')
-#                print(self.wells)
 
     def draw_wells(self, image):
         '''
@@ -85,8 +81,6 @@ class WellsDrawer(TrackerViewerAuxGUI):
             else: # fall back to mask ones
                 print('falling back')
                 self.fovsplitter = self.fovsplitter_mask
-            print('wells seen by draw_wells')
-            print(self.fovsplitter.wells)
 
             # prepare constants for drawing
             self.fontsize = max(1, max(image.height(), image.width()) // 60)
@@ -1018,7 +1012,6 @@ class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
         else:
             self.clearROIs()
         # plot wells
-        print('updating image')
         self.draw_wells(self.frame_qimg)
 
         # create the pixmap for the label
@@ -1059,7 +1052,7 @@ class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
         idx = self.fovsplitter.wells['well_name'] == str(well_name)
         self.fovsplitter.wells.loc[idx, 'is_good_well'] = \
             np.mod(self.fovsplitter.wells.loc[idx, 'is_good_well']+1, 2)
-        print(self.fovsplitter.wells)
+#        print(self.fovsplitter.wells)
         self.updateImage()
 
     def joinTraj(self):
