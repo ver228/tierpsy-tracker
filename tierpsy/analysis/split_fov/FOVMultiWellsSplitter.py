@@ -26,7 +26,9 @@ from scipy.fftpack import next_fast_len
 from skimage.feature import peak_local_max
 from sklearn.neighbors import NearestNeighbors
 
+from tierpsy.analysis.split_fov.helper import get_well_color
 from tierpsy.analysis.split_fov.helper import naive_normalise
+from tierpsy.analysis.split_fov.helper import WELLS_ATTRIBUTES
 from tierpsy.analysis.split_fov.helper import make_square_template
 from tierpsy.analysis.split_fov.helper import simulate_wells_lattice
 from tierpsy.analysis.split_fov.helper import calculate_bgnd_from_masked_fulldata
@@ -90,8 +92,9 @@ class FOVMultiWellsSplitter(object):
 
         # this is common to the two constructors paths
         self.well_masked_edge = 0.1
+        # assume all undefined wells are good
+        self.wells['is_good_well'].fillna(1, inplace=True)
         self.wells_mask = self.create_mask_wells()
-
 
 
     def constructor_from_image(self,
@@ -155,9 +158,7 @@ class FOVMultiWellsSplitter(object):
         #                   or the circle inscribed into the wells template if squares
         #   row, col     = indices of a well in the grid of detected wells
         #   *_max, *_min = coordinates for cropping the FOV so 1 roi = 1 well
-        self.wells = pd.DataFrame(columns = ['x','y','r','row','col',
-                                          'x_min','x_max','y_min','y_max',
-                                          'well_name'])
+        self.wells = pd.DataFrame(columns = WELLS_ATTRIBUTES)
 
         # METHODS
         # call method to fill in the wells variable
@@ -188,7 +189,9 @@ class FOVMultiWellsSplitter(object):
 
         # is this a masked file or a features file? doesn't matter
         self.img = None
-        masked_image_file = filename.replace('_featuresN.hdf5','.hdf5')
+        masked_image_file = filename.replace('Results','MaskedVideos')
+        masked_image_file = masked_image_file.replace('_featuresN.hdf5',
+                                                      '.hdf5')
         with tables.File(masked_image_file, 'r') as fid:
             if '/bgnd' in fid:
                 self.img = fid.get_node('/bgnd')[0]
@@ -198,12 +201,10 @@ class FOVMultiWellsSplitter(object):
                 self.img = fid.get_node('/full_data')[0]
 
         # initialise the dataframe
-        self.wells = pd.DataFrame(columns = ['x','y','r','row','col',
-                                          'x_min','x_max','y_min','y_max',
-                                          'well_name'])
+        self.wells = pd.DataFrame(columns = WELLS_ATTRIBUTES)
         with pd.HDFStore(filename,'r') as fid:
             wells_table = fid['/fov_wells']
-        for colname in ['x_min','x_max','y_min','y_max','well_name']:
+        for colname in wells_table.columns:
             self.wells[colname] = wells_table[colname]
         self.wells['x'] = 0.5 * (self.wells['x_min'] + self.wells['x_max'])
         self.wells['y'] = 0.5 * (self.wells['y_min'] + self.wells['y_max'])
@@ -211,6 +212,7 @@ class FOVMultiWellsSplitter(object):
 
         self.calculate_wells_dimensions()
         self.find_row_col_wells()
+
 
 
     def write_fov_wells_to_file(self, filename):
@@ -812,25 +814,18 @@ class FOVMultiWellsSplitter(object):
                 cv2.circle(_img,(_circle.x,_circle.y),5,(0,255,255),5)
         # burn the boxes edges into the RGB image
         if _is_rois:
-            colors = [(255, 127, 0), (77, 220, 74)]
             #normalize item number values to colormap
             # normcol = colors.Normalize(vmin=0, vmax=self.wells.shape[0])
 #            print(self.wells.shape[0])
             for i, _well in self.wells.iterrows():
-                color_ind =  (i%2 + (i//(self.wells['row'].max()+1))%2)%2
-#                print(color_ind)
-                # rgba_color = cm.Set1(normcol(i),bytes=True)
-                # rgba_color = tuple(map(lambda x : int(x), rgba_color))
-                # print(rgba_color)
-#                pdb.set_trace()
-                # same as:
-#                rgba_color = tuple(np.array(rgba_color).astype(np.int))
+                color = get_well_color(_well.is_good_well,
+                                       forCV=True)
                 cv2.rectangle(_img,
                               (_well.x_min, _well.y_min),
                               (_well.x_max, _well.y_max),
 #                              colors[0], 20)
-                               colors[color_ind], 20)
-                              # rgba_color[:-1], 20)
+                               color, 20)
+
         # add names of wells
         # plot, don't close
 
@@ -853,7 +848,9 @@ class FOVMultiWellsSplitter(object):
                          _well['y_min']+_well['height']*0.12,
                          txt,
                          fontsize=10,
-                         color=np.array([1, 0.5, 0]))
+                         color=np.array(get_well_color(_well['is_good_well'],
+                                                       forCV=False))
+                         )
                          # color='r')
         elif _is_rois:
             for i, _well in self.wells.iterrows():
@@ -875,10 +872,17 @@ class FOVMultiWellsSplitter(object):
         # I think a quick way is by using implicit expansion
         # treat the x array as column, and the *_min and *_max as rows
         # these are all matrices len(x)-by-len(self.wells)
-        within_x = np.logical_and((x[:,None] - self.wells['x_min'][None,:]) >= 0,  # none creates new axis
-                                  (x[:,None] - self.wells['x_max'][None,:]) <= 0)
-        within_y = np.logical_and((y[:,None] - self.wells['y_min'][None,:]) >= 0,  # none creates new axis
-                                  (y[:,None] - self.wells['y_max'][None,:]) <= 0)
+        # none creates new axis
+        if np.isscalar(x):
+            x = np.array([x])
+            y = np.array([y])
+
+        within_x = np.logical_and(
+                (x[:,None] - self.wells['x_min'][None,:]) >= 0,
+                (x[:,None] - self.wells['x_max'][None,:]) <= 0)
+        within_y = np.logical_and(
+                (y[:,None] - self.wells['y_min'][None,:]) >= 0,
+                (y[:,None] - self.wells['y_max'][None,:]) <= 0)
         within_well = np.logical_and(within_x, within_y)
         # in each row of within_well, the column index of the "true" value is the well index
 
@@ -909,6 +913,10 @@ class FOVMultiWellsSplitter(object):
         """
         wells_out = self.wells[['x_min','x_max','y_min','y_max']].copy()
         wells_out['well_name'] = self.wells['well_name'].astype('S3')
+#        import pdb;pdb.set_trace()
+        is_good_well = self.wells['is_good_well'].copy()
+        wells_out['is_good_well'] = is_good_well.fillna(-1).astype(int)
+
         return wells_out
 
 
@@ -1042,44 +1050,70 @@ if __name__ == '__main__':
 #        well_names = fovsplitter.find_well_from_trajectories_data(traj_data)
 
      #%%
+#
+#    wd = Path('/Volumes/behavgenom$/Luigi/Data/Blue_LEDs_tests/RawVideos/20191104/')
+##    wd = wd / 'blueled_tests_run01_20191104_172258_firstframes'
+#    fnames_to_delete = list(wd.rglob('*_wells.png'))
+#    for fname in fnames_to_delete:
+#        os.remove(str(fname))
+#    fnames = list(wd.rglob('*.png'))
+#    fnames = [str(f) for f in fnames]
+#    print('{} images to process'.format(len(fnames)))
+##    tic = time.time()
+##    process_image_from_name(fnames[2])
+##    print('totatl time:',time.time()-tic)
+#
+#
+#    import multiprocessing
+#    import tqdm
+#
+#    if multiprocessing.get_start_method() != 'spawn':
+#        multiprocessing.set_start_method('spawn', force=True)
+#
+#    batch_size = 6
+#
+#    with multiprocessing.Pool(batch_size) as p:
+#        for ind in tqdm.tqdm(range(0, len(fnames), batch_size)):
+#            batched_fnames = fnames[ind:ind+batch_size]
+#            # process them in parallel
+#            outs = p.imap_unordered(process_image_from_name, batched_fnames)
+#            # do nothing with the outputs
+#            for _ in outs:
+#                pass
+#
+#    import subprocess as sp
+#    wd = Path('/Volumes/behavgenom$/Luigi/Data/Blue_LEDs_tests/RawVideos/20191104/')
+#    fnames_to_move = list(wd.rglob('*_wells.png'))
+#    dst = wd / 'wells'
+#    for fname in fnames_to_move:
+#        cmdlist = ['mv', str(fname), str(dst)+'/']
+##        print(cmd)
+#        sp.run(cmdlist)
 
-    wd = Path('/Volumes/behavgenom$/Luigi/Data/Blue_LEDs_tests/RawVideos/20191104/')
-#    wd = wd / 'blueled_tests_run01_20191104_172258_firstframes'
-    fnames_to_delete = list(wd.rglob('*_wells.png'))
-    for fname in fnames_to_delete:
-        os.remove(str(fname))
-    fnames = list(wd.rglob('*.png'))
-    fnames = [str(f) for f in fnames]
-    print('{} images to process'.format(len(fnames)))
-#    tic = time.time()
-#    process_image_from_name(fnames[2])
-#    print('totatl time:',time.time()-tic)
+# %%
 
+    wd = Path('~/Hackathon/multiwell_tierpsy/12_FEAT_TIERPSY/').expanduser()
 
-    import multiprocessing
-    import tqdm
+    masked_image_file = wd / 'MaskedVideos/20191205/'
+    masked_image_file = (
+            masked_image_file /
+            'syngenta_screen_run1_bluelight_20191205_151104.22956805' /
+            'metadata.hdf5'
+            )
+    features_file = str(masked_image_file).replace('MaskedVideos','Results')
+    features_file = features_file.replace('.hdf5','_featuresN.hdf5')
+    features_file = Path(features_file)
+    import shutil
+    shutil.copy(features_file.with_suffix('.bak'),
+                features_file)
 
-    if multiprocessing.get_start_method() != 'spawn':
-        multiprocessing.set_start_method('spawn', force=True)
+    fovsplitter = FOVMultiWellsSplitter(features_file)
+    fovsplitter.plot_wells()
+    fovsplitter.wells.loc[::3,'is_good_well']=False
+    fovsplitter.wells.loc[1::3,'is_good_well']=True
+    fovsplitter.wells.loc[2::3,'is_good_well']=-1
+    print(fovsplitter.get_wells_data())
+    fovsplitter.write_fov_wells_to_file(features_file)
 
-    batch_size = 6
-
-    with multiprocessing.Pool(batch_size) as p:
-        for ind in tqdm.tqdm(range(0, len(fnames), batch_size)):
-            batched_fnames = fnames[ind:ind+batch_size]
-            # process them in parallel
-            outs = p.imap_unordered(process_image_from_name, batched_fnames)
-            # do nothing with the outputs
-            for _ in outs:
-                pass
-
-    import subprocess as sp
-    wd = Path('/Volumes/behavgenom$/Luigi/Data/Blue_LEDs_tests/RawVideos/20191104/')
-    fnames_to_move = list(wd.rglob('*_wells.png'))
-    dst = wd / 'wells'
-    for fname in fnames_to_move:
-        cmdlist = ['mv', str(fname), str(dst)+'/']
-#        print(cmd)
-        sp.run(cmdlist)
-
-
+    fovsplitter = FOVMultiWellsSplitter(features_file)
+    fovsplitter.plot_wells()
