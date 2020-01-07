@@ -53,6 +53,10 @@ class FOVMultiWellsSplitter(object):
         img = a brightfield frame that will be used for well-finding
         n_wells = how many wells *in the entire multiwell plate*
         """
+
+        # remove kwargs variables that don't need to propagate further
+        well_masked_edge = kwargs.pop('well_masked_edge', 0.1)
+
         # is it a string?
         if not isinstance(masked_or_features_or_image, (str, Path)):
             # assume it is an image
@@ -91,9 +95,9 @@ class FOVMultiWellsSplitter(object):
                                                 **kwargs)
 
         # this is common to the two constructors paths
-        self.well_masked_edge = 0.1
         # assume all undefined wells are good
         self.wells['is_good_well'].fillna(1, inplace=True)
+        self.well_masked_edge = well_masked_edge
         self.wells_mask = self.create_mask_wells()
 
 
@@ -103,7 +107,9 @@ class FOVMultiWellsSplitter(object):
                                px2um=None,
                                total_n_wells=96,
                                whichsideup='upright',
-                               well_shape='square'):
+                               well_shape='square',
+                               **kwargs):
+        # kwargs is there so i
         print('constructor from image')
 #        print(camera_serial, px2um)
         # very needed inputs
@@ -924,7 +930,7 @@ class FOVMultiWellsSplitter(object):
         """
         Create a black mask covering a 10% thick edge of the square region covering each well
         """
-        assert well_masked_edge < 0.5, \
+        assert self.well_masked_edge < 0.5, \
             "well_masked_edge has to be less than 50% or no data left"
 
         mask = np.ones(self.img_shape).astype(np.uint8)
