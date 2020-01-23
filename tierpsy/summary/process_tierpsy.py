@@ -132,7 +132,7 @@ def tierpsy_plate_summary(fname, time_windows, time_units, is_manual_index = Fal
     if is_fov_tosplit:
         fovsplitter = FOVMultiWellsSplitter(fname)
         good_wells_df = fovsplitter.wells[['well_name','is_good_well']].copy()
-        print(good_wells_df)
+        # print(good_wells_df)
 
     # initialize list of plate summaries for all time windows
     plate_feats_list = []
@@ -192,7 +192,7 @@ def tierpsy_trajectories_summary(fname, time_windows, time_units, is_manual_inde
     if is_fov_tosplit:
         fovsplitter = FOVMultiWellsSplitter(fname)
         good_wells_df = fovsplitter.wells[['well_name','is_good_well']].copy()
-        print(good_wells_df)
+        # print(good_wells_df)
 
     # initialize list of summaries for all time windows
     all_summaries_list = []

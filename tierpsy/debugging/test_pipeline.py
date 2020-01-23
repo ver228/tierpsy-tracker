@@ -46,8 +46,11 @@ rootdir = '/Users/lferiani/Desktop/Data_FOVsplitter/short/'
 imgstore_name='drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22594546/'
 json_file = '/Users/lferiani/Desktop/Data_FOVsplitter/loopbio_rig_96WP_upright_Hydra05.json'
 
+rootdir = '/Users/lferiani/Desktop/20200107_test/'
+#imgstore_name='20191211/syngenta_screen_run2_prestim_20191211_153921.22956837/'
+imgstore_name='20191211/syngenta_screen_run1_bluelight_20191211_145659.22956823/'
+json_file = '/Users/lferiani/Desktop/20200107_test/loopbio_rig_96WP_splitFOV_20200109.json'
 #%%
-
 rawvideosdir = rootdir + 'RawVideos/' + imgstore_name
 maskedvideosdir = rootdir + 'MaskedVideos/' + imgstore_name
 resultsdir = rootdir + 'Results/' + imgstore_name
@@ -57,9 +60,6 @@ masked_image_file = maskedvideosdir + 'metadata.hdf5'
 features_file = resultsdir + 'metadata_featuresN.hdf5'
 skeletons_file = resultsdir + 'metadata_skeletons.hdf5'
 
-masked_image_file = maskedvideosdir + 'metadata_old.hdf5'
-features_file = resultsdir + 'metadata_old_featuresN.hdf5'
-skeletons_file = resultsdir + 'metadata_old_skeletons.hdf5'
 
 # restore features after previous step before testing
 #import shutil
@@ -68,27 +68,27 @@ skeletons_file = resultsdir + 'metadata_old_skeletons.hdf5'
 
 # don't pass the path to python if calling it as a function
 # compress
-#sys_argv_list = ['/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py',
-#                 raw_video,
-#                 '--masks_dir', maskedvideosdir,
-#                 '--results_dir', resultsdir,
-#                 '--json_file', json_file,
-#                 '--analysis_checkpoints', 'COMPRESS']
-
 sys_argv_list = ['/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py',
-                 masked_image_file,
+                 raw_video,
                  '--masks_dir', maskedvideosdir,
                  '--results_dir', resultsdir,
                  '--json_file', json_file,
-                 '--analysis_checkpoints', 'TRAJ_CREATE',
-                                            'TRAJ_JOIN',
-                                            'SKE_INIT',
-                                            'BLOB_FEATS',
-                                            'SKE_CREATE',
-                                            'SKE_FILT',
-                                            'SKE_ORIENT',
-                                            'INT_PROFILE',
-                                            'INT_SKE_ORIENT']
+                 '--analysis_checkpoints', 'COMPRESS']
+
+#sys_argv_list = ['/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py',
+#                 masked_image_file,
+#                 '--masks_dir', maskedvideosdir,
+#                 '--results_dir', resultsdir,
+#                 '--json_file', json_file,
+#                 '--analysis_checkpoints', 'TRAJ_CREATE',
+#                                            'TRAJ_JOIN',
+#                                            'SKE_INIT',
+#                                            'BLOB_FEATS',
+#                                            'SKE_CREATE',
+#                                            'SKE_FILT',
+#                                            'SKE_ORIENT',
+#                                            'INT_PROFILE',
+#                                            'INT_SKE_ORIENT']
 
 #sys_argv_list = ['/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py',
 #                 masked_image_file,

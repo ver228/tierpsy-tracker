@@ -153,7 +153,7 @@ def select_features(win_summaries,keywords_in,keywords_ex,selected_feat):
             win_summaries = win_summaries[win_summaries.columns.drop(filter_col)]
         if not any([selected_feat, keywords_in, keywords_ex]):
             # only change order of columns
-            not_id_cols = win_summaries.columns.difference(id_cols)
+            not_id_cols = win_summaries.columns.difference(id_cols).tolist()
             win_summaries = win_summaries[id_cols + not_id_cols]
 
     return win_summaries
@@ -318,15 +318,15 @@ def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, t
 
 if __name__ == '__main__':
 
-    root_dir = '/Users/ibarlow/Desktop/test_summarizer'
-    is_manual_index = False
-    feature_type = 'tierpsy'
-    # feature_type = 'openworm'
-    summary_type = 'plate_augmented'
-#    summary_type = 'plate'
-    #summary_type = 'trajectory'
-    abbreviate_features = True
-    dorsal_sign_known = False
+#    root_dir = '/Users/ibarlow/Desktop/test_summarizer'
+#    is_manual_index = False
+#    feature_type = 'tierpsy'
+#    # feature_type = 'openworm'
+#    summary_type = 'plate_augmented'
+##    summary_type = 'plate'
+#    #summary_type = 'trajectory'
+#    abbreviate_features = True
+#    dorsal_sign_known = False
 
 #    root_dir = '/Users/em812/Documents/OneDrive - Imperial College London/Eleni/Tierpsy_GUI/test_results_2'
 #    is_manual_index = False
@@ -337,25 +337,25 @@ if __name__ == '__main__':
 #    #summary_type = 'trajectory'
 
 # Luigi
-    #root_dir = '/Users/lferiani/Hackathon/multiwell_tierpsy/12_FEAT_TIERPSY/'
-    #is_manual_index = False
-    #feature_type = 'tierpsy'
+    root_dir = '/Users/lferiani/Desktop/SyngentaTestVideos'
+    is_manual_index = False
+    feature_type = 'tierpsy'
     #feature_type = 'openworm'
     #summary_type = 'plate_augmented'
-#    summary_type = 'plate'
+    summary_type = 'plate'
     #summary_type = 'trajectory'
-    #abbreviate_features = True
-    #dorsal_sign_known = False
+    abbreviate_features = False
+    dorsal_sign_known = False
 
     fold_args = dict(
-                 n_folds = 2,
+                 n_folds = 5,
                  frac_worms_to_keep = 0.8,
                  time_sample_seconds = 10*60
                  )
 
-    time_windows = '0:50'#'-end,100000-101000' '0:end:1000' #'0:end' # time_windows = '0:60,480:540'
+    time_windows = '0:end'#'-end,100000-101000' '0:end:1000' #'0:end' # time_windows = '0:60,480:540'
     time_units = 'frame numbers'
-    select_feat = 'tierpsy_2k' #'all' # #'tierpsy_256'# #'tierpsy_2k'
+    select_feat = 'all' #'all' # #'tierpsy_256'# #'tierpsy_2k'
     keywords_include = ''
     keywords_exclude = '' #'curvature,velocity,norm,abs'
 
