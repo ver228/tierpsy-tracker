@@ -8,36 +8,39 @@ def args_(fn, param):
     requirements = [('can_read_video', partial(isGoodVideo, fn['original_video']))]
     if param.is_WT2:
         from ..compress_add_data import storeAdditionalDataSW, hasAdditionalFiles
-        #if a shaffer single worm video does not have the additional files (info.xml log.csv) do not even execute the compression 
+        #if a shaffer single worm video does not have the additional files (info.xml log.csv) do not even execute the compression
         requirements += [('has_additional_files', partial(hasAdditionalFiles, fn['original_video']))]
 
     #build input arguments for processVideo
     p = param.p_dict
     # getROIMask
-    mask_param_f = ['mask_min_area', 'mask_max_area', 'thresh_block_size', 
+    mask_param_f = ['mask_min_area', 'mask_max_area', 'thresh_block_size',
         'thresh_C', 'dilation_size', 'keep_border_data', 'is_light_background']
     mask_param = {x.replace('mask_', ''):p[x] for x in mask_param_f}
 
     # bgnd subtraction
     bgnd_param_mask_f = ['mask_bgnd_buff_size', 'mask_bgnd_frame_gap', 'is_light_background']
     bgnd_param_mask = {x.replace('mask_bgnd_', ''):p[x] for x in bgnd_param_mask_f}
-    
+
     if bgnd_param_mask['buff_size']<=0 or bgnd_param_mask['frame_gap']<=0:
         bgnd_param_mask = {}
-    
+
     # FOV splitting
-    fovsplitter_param_f = ['MWP_total_n_wells', 'MWP_whichsideup', 'MWP_well_shape']
+    fovsplitter_param_f = ['MWP_total_n_wells',
+                           'MWP_whichsideup',
+                           'MWP_well_shape',
+                           'MWP_well_masked_edge']
     if not all(k in p for k in fovsplitter_param_f):
         fovsplitter_param = {}
     else:
-        fovsplitter_param = {x.replace('MWP_',''):p[x] for x in fovsplitter_param_f}   
-    
+        fovsplitter_param = {x.replace('MWP_',''):p[x] for x in fovsplitter_param_f}
+
     if isinstance(fovsplitter_param['total_n_wells'], str):
         fovsplitter_param['total_n_wells'] = int(fovsplitter_param['total_n_wells'])
-        
+
     if fovsplitter_param['total_n_wells']<0:
         fovsplitter_param = {}
-    
+
     compress_vid_param = {
             'buffer_size': p['compression_buff'],
             'save_full_interval': p['save_full_interval'],
@@ -50,7 +53,7 @@ def args_(fn, param):
         }
 
     argkws_d = {
-            'video_file': fn['original_video'], 
+            'video_file': fn['original_video'],
             'masked_image_file' : fn['masked_image'],
             'compress_vid_param' : compress_vid_param
         }
