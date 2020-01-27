@@ -44,10 +44,10 @@ class StartProcess():
                 if cmd[0] == sys.executable:
                     cmd = cmd[1:]
                 self.obj_cmd = local_obj(cmd)
-                
+
                 self.cmd = self.obj_cmd.start()
 
-                
+
 
             self.output += output
 
@@ -57,12 +57,12 @@ class StartProcess():
             self.output = ['Started\n']
 
         self.output += [cmdlist2str(self.cmd) + '\n']
-        
+
         self.proc = sp.Popen(self.cmd, stdout=sp.PIPE, stderr=sp.PIPE,
                              bufsize=1, close_fds=ON_POSIX,
                              env=dict(os.environ.copy(),OMP_NUM_THREADS='1'))
         self.buf_reader = ReadEnqueue(self.proc.stdout)
-        
+
     def read_buff(self):
         while True:
             # read line without blocking
@@ -100,17 +100,17 @@ class StartProcess():
         self.proc.stderr.close()
 
 
-def RunMultiCMD(cmd_list, 
-                local_obj='', 
-                max_num_process=3, 
+def RunMultiCMD(cmd_list,
+                local_obj='',
+                max_num_process=3,
                 refresh_time=10,
                 is_debug = True):
     '''Start different process using the command is cmd_list'''
-    
+
 
     start_obj = partial(StartProcess, local_obj=local_obj, is_debug=is_debug)
 
-    total_timer = TimeCounter() #timer to meassure the total time 
+    total_timer = TimeCounter() #timer to meassure the total time
 
     cmd_list = cmd_list[::-1]  # since I am using pop to get the next element i need to invert the list to get athe same order
     tot_tasks = len(cmd_list)
@@ -119,7 +119,7 @@ def RunMultiCMD(cmd_list,
 
     # initialize the first max_number_process in the list
     finished_tasks = []
-    
+
     current_tasks = []
     for ii in range(max_num_process):
         cmd = cmd_list.pop()
@@ -139,12 +139,12 @@ def RunMultiCMD(cmd_list,
         # loop along the process list to update output and see if there is any
         # task finished
         next_tasks = []
-        
-        #I want to close the tasks after starting the next the tasks. It has de disadvantage of 
+
+        #I want to close the tasks after starting the next the tasks. It has de disadvantage of
         #requiring more disk space, (required files for the new task + the finished files)
         #but at least it should start a new tasks while it is copying the old results.
-        tasks_to_close = [] 
-        
+        tasks_to_close = []
+
         for task in current_tasks:
             task.read_buff()
             if task.proc.poll() is None:
@@ -171,7 +171,7 @@ def RunMultiCMD(cmd_list,
             task.close()
             sys.stdout.write(task.output[-1])
             finished_tasks.append(task.output[-1])
-                
+
         #start the new loop
         current_tasks = next_tasks
 
@@ -181,7 +181,7 @@ def RunMultiCMD(cmd_list,
         n_remaining = len(current_tasks) + len(cmd_list)
         progress_str = 'Tasks: {} finished, {} remaining. Total_time {}.'.format(
             n_finished, n_remaining, total_timer.get_time_str())
-        
+
         print('*************************************************')
         print(progress_str)
         print('*************************************************')

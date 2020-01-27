@@ -50,6 +50,10 @@ rootdir = '/Users/lferiani/Desktop/20200107_test/'
 #imgstore_name='20191211/syngenta_screen_run2_prestim_20191211_153921.22956837/'
 imgstore_name='20191211/syngenta_screen_run1_bluelight_20191211_145659.22956823/'
 json_file = '/Users/lferiani/Desktop/20200107_test/loopbio_rig_96WP_splitFOV_20200109.json'
+
+rootdir = '/Volumes/behavgenom$/Saul/MicrobiomeAssay96WP/'
+imgstore_name='20200123/microbiome_run1_lb_plate0_20200123_134049.22956805/'
+json_file = '/Users/lferiani/Desktop/loopbio_rig_96WP_upright_splitFOV_Microbiome_20200110.json'
 #%%
 rawvideosdir = rootdir + 'RawVideos/' + imgstore_name
 maskedvideosdir = rootdir + 'MaskedVideos/' + imgstore_name
