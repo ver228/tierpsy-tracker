@@ -16,10 +16,10 @@ from .docs_analysis_points import dflt_analysis_points, dlft_analysis_type, depr
 
 #deprecated variables that will be ignored
 deprecated_fields = [
-                    'has_timestamp', 
-                    'min_displacement', 
-                    'fps_filter', 
-                    'traj_bgnd_buff_size', 
+                    'has_timestamp',
+                    'min_displacement',
+                    'fps_filter',
+                    'traj_bgnd_buff_size',
                     'traj_bgnd_frame_gap'
                     ]
 
@@ -56,7 +56,7 @@ def fix_deprecated(param_in_file):
         elif key in deprecated_alias:
             #rename deprecated alias
             corrected_params[deprecated_alias[key]] = param_in_file[key]
-        
+
         elif key == 'min_area':
             #special case of deprecated alias
             corrected_params['mask_min_area'] = param_in_file['min_area']
@@ -65,13 +65,28 @@ def fix_deprecated(param_in_file):
             #correct the name of a deprecated analysis types
             vv = param_in_file['analysis_type']
             corrected_params['analysis_type'] = deprecated_analysis_alias[vv] if vv in deprecated_analysis_alias else vv
-            
+
         elif key == 'filter_model_name':
             corrected_params['use_nn_filter'] = len(param_in_file['filter_model_name']) > 0 #set to true if it is not empty
         else:
             corrected_params[key] = param_in_file[key]
 
     return corrected_params
+
+
+def fix_types(param_in_file):
+    '''
+    Using the GUI to set parameters leads to MWP_total_n_wells to be a str
+    rather than an int. This function fixes this problem and can be used for
+    any other that we may encounter
+    '''
+    if 'MWP_total_n_wells' in param_in_file.keys():
+        if isinstance(param_in_file['MWP_total_n_wells'], str):
+            param_in_file['MWP_total_n_wells'] = int(
+                    param_in_file['MWP_total_n_wells'])
+
+    return param_in_file
+
 
 def read_params(json_file=''):
     '''
@@ -82,13 +97,14 @@ def read_params(json_file=''):
         with open(json_file) as fid:
             param_in_file = json.load(fid)
         param_in_file = fix_deprecated(param_in_file)
+        param_in_file = fix_types(param_in_file)
 
         for key in param_in_file:
             if key in input_param:
                 input_param[key] = param_in_file[key]
             else:
                 raise ValueError('Parameter "{}" is not a valid parameter. Change its value in file "{}"'.format(key, json_file))
-            
+
             if key in valid_options:
                 if input_param[key] not in valid_options[key] \
                 and (int(input_param[key]) not in valid_options[key]):
@@ -97,11 +113,11 @@ def read_params(json_file=''):
         if not input_param['analysis_checkpoints']:
             input_param['analysis_checkpoints'] = get_dflt_sequence(input_param['analysis_type'])
 
-    return input_param    
+    return input_param
 
 
 
-#AFTER THE LAST MODIFICATION I DON'T THINK THIS SHOULD BE A OBJECT, 
+#AFTER THE LAST MODIFICATION I DON'T THINK THIS SHOULD BE A OBJECT,
 #BUT I WOULD LEAVE IT LIKE THIS FOR THE MOMENT FOR BACK COMPATIBILITY
 class TrackerParams:
 
@@ -130,11 +146,11 @@ class TrackerParams:
             _use_nn_filter = True
 
         return _use_nn_filter
-    
+
 
 
 if __name__=='__main__':
     json_file = ''
     params = TrackerParams(json_file)
-    
+
 
