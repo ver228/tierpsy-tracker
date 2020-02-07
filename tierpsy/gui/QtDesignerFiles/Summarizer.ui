@@ -242,6 +242,13 @@ edited trajectories?</string>
      </widget>
     </item>
     <item>
+     <widget class="QCheckBox" name="p_dorsal_side_known">
+      <property name="text">
+       <string>Dorsal side annotated</string>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QPushButton" name="pushButton_start">
       <property name="text">
        <string>START</string>

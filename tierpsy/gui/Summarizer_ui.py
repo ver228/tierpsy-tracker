@@ -146,6 +146,9 @@ class Ui_Summarizer(object):
         self.p_abbreviate_features = QtWidgets.QCheckBox(self.centralwidget)
         self.p_abbreviate_features.setObjectName("p_abbreviate_features")
         self.verticalLayout_3.addWidget(self.p_abbreviate_features)
+        self.p_dorsal_side_known = QtWidgets.QCheckBox(self.centralwidget)
+        self.p_dorsal_side_known.setObjectName("p_dorsal_side_known")
+        self.verticalLayout_3.addWidget(self.p_dorsal_side_known)
         self.pushButton_start = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_start.setObjectName("pushButton_start")
         self.verticalLayout_3.addWidget(self.pushButton_start)
@@ -183,5 +186,6 @@ class Ui_Summarizer(object):
         self.label_8.setText(_translate("Summarizer", "Include keywords"))
         self.label_10.setText(_translate("Summarizer", "Select features by keywords :"))
         self.p_abbreviate_features.setText(_translate("Summarizer", "Abbreviate feature names"))
+        self.p_dorsal_side_known.setText(_translate("Summarizer", "Dorsal side annotated"))
         self.pushButton_start.setText(_translate("Summarizer", "START"))
 

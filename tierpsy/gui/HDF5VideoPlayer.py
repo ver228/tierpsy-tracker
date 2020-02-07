@@ -29,7 +29,7 @@ class LineEditDragDrop():
             self.line_edit_obj = self.main_obj
         else:
             self.line_edit_obj = self.main_obj.lineEdit()
-            
+
 
         self.main_obj.setAcceptDrops(True)
         self.main_obj.dragEnterEvent = self.dragEnterEvent
@@ -54,13 +54,28 @@ class LineEditDragDrop():
         if self.test_file_fun(vfilename):
             self.update_fun(vfilename)
 
+class MyCanvas(QtWidgets.QGraphicsPixmapItem):
+    """Dumb class just to overload right mouse click"""
+    def __init__(self):
+        super().__init__()
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.RightButton:
+            self.mouseRightClickEvent(event)
+        else:
+            super().mousePressEvent(event)
+
+    def mouseRightClickEvent(self, event):
+        pass
+
 class ViewsWithZoom():
 
     def __init__(self, view):
         self._view = view
         self._scene = QtWidgets.QGraphicsScene(self._view)
         self._view.setScene(self._scene)
-        self._canvas = QtWidgets.QGraphicsPixmapItem()
+#        self._canvas = QtWidgets.QGraphicsPixmapItem()
+        self._canvas = MyCanvas()
         self._scene.addItem(self._canvas)
 
         self._zoom = 0
@@ -149,7 +164,7 @@ class ViewsWithZoom():
 class SimplePlayer(QtWidgets.QMainWindow):
     def __init__(self, ui):
         super().__init__()
-        
+
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.getNextImage)
         self.ui = ui
@@ -165,7 +180,7 @@ class SimplePlayer(QtWidgets.QMainWindow):
         if key == Qt.Key_Greater or key == Qt.Key_Period:
             self.frame_step *= 2
             self.ui.spinBox_step.setValue(self.frame_step)
-            
+
 
         # Half the frame step size (speed) when pressed: < or ,
         elif key == Qt.Key_Less or key == Qt.Key_Comma:
@@ -173,7 +188,7 @@ class SimplePlayer(QtWidgets.QMainWindow):
             if self.frame_step < 1:
                 self.frame_step = 1
             self.ui.spinBox_step.setValue(self.frame_step)
-            
+
 
         # Move backwards when  are pressed
         elif key == Qt.Key_Left:
@@ -181,7 +196,7 @@ class SimplePlayer(QtWidgets.QMainWindow):
             if self.frame_number < 0:
                 self.frame_number = 0
             self.ui.spinBox_frame.setValue(self.frame_number)
-            
+
 
         # Move forward when  are pressed
         elif key == Qt.Key_Right:
@@ -189,7 +204,7 @@ class SimplePlayer(QtWidgets.QMainWindow):
             if self.frame_number >= self.tot_frames:
                 self.frame_number = self.tot_frames - 1
             self.ui.spinBox_frame.setValue(self.frame_number)
-            
+
         #super().keyPressEvent(event)
 
     def playVideo(self):
@@ -240,7 +255,7 @@ class HDF5VideoPlayerGUI(SimplePlayer):
     def __init__(self, ui=None):
         if ui is None:
             ui = Ui_HDF5VideoPlayer()
-        
+
         super().__init__(ui)
 
         # Set up the user interface from Designer.
@@ -265,7 +280,7 @@ class HDF5VideoPlayerGUI(SimplePlayer):
         # set scroller
         sld_pressed = partial(self.ui.imageSlider.setCursor, QtCore.Qt.ClosedHandCursor)
         sld_released = partial(self.ui.imageSlider.setCursor, QtCore.Qt.OpenHandCursor)
-        
+
         self.ui.imageSlider.sliderPressed.connect(sld_pressed)
         self.ui.imageSlider.sliderReleased.connect(sld_released)
         self.ui.imageSlider.valueChanged.connect(self.ui.spinBox_frame.setValue)
@@ -277,7 +292,7 @@ class HDF5VideoPlayerGUI(SimplePlayer):
         self.ui.comboBox_h5path.activated.connect(self.getImGroup)
         self.ui.pushButton_h5groups.clicked.connect(self.updateGroupNames)
 
-        
+
         # setup image view as a zoom
         self.mainImage = ViewsWithZoom(self.ui.mainGraphicsView)
 
@@ -290,7 +305,7 @@ class HDF5VideoPlayerGUI(SimplePlayer):
         # make sure the childrenfocus policy is none in order to be able to use
         # the arrow keys
         setChildrenFocusPolicy(self, QtCore.Qt.ClickFocus)
-    
+
     def keyPressEvent(self, event):
         #HOT KEYS
 
@@ -325,11 +340,11 @@ class HDF5VideoPlayerGUI(SimplePlayer):
             return
         self.frame_img = self.image_group[self.frame_number, :, :]
         self._normalizeImage()
-        
+
 
     def _normalizeImage(self):
         if self.frame_img is None:
-            return 
+            return
 
         dd = self.ui.mainGraphicsView.size()
         self.label_height = dd.height()
@@ -447,7 +462,7 @@ class HDF5VideoPlayerGUI(SimplePlayer):
                 "Invalid groupset. The groupset must have three dimensions",
                 QtWidgets.QMessageBox.Ok)
             self.image_group == None
-            return 
+            return
 
         self.tot_frames = self.image_group.shape[0]
         self.image_height = self.image_group.shape[1]
@@ -470,7 +485,7 @@ class HDF5VideoPlayerGUI(SimplePlayer):
             self.updateImage()
             self.mainImage.zoomFitInView()
 
-    
+
 
     def closeEvent(self, event):
         if self.fid is not None:

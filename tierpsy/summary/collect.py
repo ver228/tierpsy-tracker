@@ -52,21 +52,21 @@ def get_summary_func(
             func = partial(
                 tierpsy_plate_summary,
                 time_windows=time_windows_ints, time_units=time_units,
-                only_abs_ventral=~dorsal_side_known,
+                only_abs_ventral = not dorsal_side_known,
                 is_manual_index=is_manual_index
                 )
         elif summary_type == 'trajectory':
             func = partial(
                 tierpsy_trajectories_summary,
                 time_windows=time_windows_ints, time_units=time_units,
-                only_abs_ventral=~dorsal_side_known,
+                only_abs_ventral = not dorsal_side_known,
                 is_manual_index=is_manual_index
                 )
         elif summary_type == 'plate_augmented':
             func = partial(
                 tierpsy_plate_summary_augmented,
                 time_windows=time_windows_ints, time_units=time_units,
-                only_abs_ventral=~dorsal_side_known,
+                only_abs_ventral = not dorsal_side_known,
                 is_manual_index=is_manual_index, **fold_args
                 )
 
@@ -314,7 +314,7 @@ def calculate_summaries(
                     filenames['is_good'] = True
                 # Store the filename summary line
                 with open(f1,'a') as fid:
-                    fid.write("\n"+','.join([str(x) for x in filenames.values]))
+                    fid.write(','.join([str(x) for x in filenames.values])+"\n")
 
                 if not df.empty:
                     # Select features
