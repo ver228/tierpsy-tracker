@@ -41,6 +41,7 @@ def get_summary_func(
         feature_type, summary_type,
         time_windows_ints, time_units,
         keywords_in, keywords_ex, selected_feat,
+        dorsal_side_known,
         is_manual_index, **fold_args
         ):
     """
@@ -51,18 +52,21 @@ def get_summary_func(
             func = partial(
                 tierpsy_plate_summary,
                 time_windows=time_windows_ints, time_units=time_units,
+                only_abs_ventral=~dorsal_side_known,
                 is_manual_index=is_manual_index
                 )
         elif summary_type == 'trajectory':
             func = partial(
                 tierpsy_trajectories_summary,
                 time_windows=time_windows_ints, time_units=time_units,
+                only_abs_ventral=~dorsal_side_known,
                 is_manual_index=is_manual_index
                 )
         elif summary_type == 'plate_augmented':
             func = partial(
                 tierpsy_plate_summary_augmented,
                 time_windows=time_windows_ints, time_units=time_units,
+                only_abs_ventral=~dorsal_side_known,
                 is_manual_index=is_manual_index, **fold_args
                 )
 
@@ -197,7 +201,7 @@ def calculate_summaries(
         root_dir, feature_type, summary_type, is_manual_index,
         time_windows, time_units,
         select_feat, keywords_include, keywords_exclude,
-        abbreviate_features,
+        abbreviate_features, dorsal_side_known,
         _is_debug = False, **fold_args
         ):
     """
@@ -230,6 +234,7 @@ def calculate_summaries(
         feature_type, summary_type,
         time_windows_ints, time_units,
         keywords_in, keywords_ex, selected_feat,
+        dorsal_side_known,
         is_manual_index, **fold_args)
 
     #get extension of results file
