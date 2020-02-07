@@ -107,7 +107,7 @@ def read_data(fname, time_windows, time_units, fps, is_manual_index):
 
     return timeseries_data_list, blob_features_list
 #%%
-def tierpsy_plate_summary(fname, time_windows, time_units, is_manual_index = False, delta_time = 1/3):
+def tierpsy_plate_summary(fname, time_windows, time_units, is_manual_index=False, delta_time=1/3):
     """
     Calculate the plate summaries for a given file fname, within a given time window
     (units of start time and end time are in frame numbers).
@@ -164,7 +164,7 @@ def tierpsy_plate_summary(fname, time_windows, time_units, is_manual_index = Fal
 
     return plate_feats_list
 
-def tierpsy_trajectories_summary(fname, time_windows, time_units, is_manual_index = False, delta_time = 1/3):
+def tierpsy_trajectories_summary(fname, time_windows, time_units, is_manual_index=False, delta_time=1/3):
     """
     Calculate the trajectory summaries for a given file fname, within a given time window
     (units of start time and end time are in frame numbers).

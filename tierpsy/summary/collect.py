@@ -37,17 +37,34 @@ def check_in_list(x, list_of_x, x_name):
         raise ValueError('{} invalid {}. Valid options {}.'.format(x, x_name, list_of_x))
 
 
-def get_summary_func(feature_type, summary_type, time_windows_ints, time_units, is_manual_index, **fold_args):
+def get_summary_func(
+        feature_type, summary_type,
+        time_windows_ints, time_units,
+        keywords_in, keywords_ex, selected_feat,
+        is_manual_index, **fold_args
+        ):
     """
     Chooses the function used for the extraction of feature summaries based on the input from the GUI
     """
     if feature_type == 'tierpsy':
         if summary_type == 'plate':
-            func = partial(tierpsy_plate_summary, time_windows=time_windows_ints, time_units=time_units, is_manual_index=is_manual_index)
+            func = partial(
+                tierpsy_plate_summary,
+                time_windows=time_windows_ints, time_units=time_units,
+                is_manual_index=is_manual_index
+                )
         elif summary_type == 'trajectory':
-            func = partial(tierpsy_trajectories_summary, time_windows=time_windows_ints, time_units=time_units, is_manual_index=is_manual_index)
+            func = partial(
+                tierpsy_trajectories_summary,
+                time_windows=time_windows_ints, time_units=time_units,
+                is_manual_index=is_manual_index
+                )
         elif summary_type == 'plate_augmented':
-            func = partial(tierpsy_plate_summary_augmented, time_windows=time_windows_ints, time_units=time_units, is_manual_index=is_manual_index, **fold_args)
+            func = partial(
+                tierpsy_plate_summary_augmented,
+                time_windows=time_windows_ints, time_units=time_units,
+                is_manual_index=is_manual_index, **fold_args
+                )
 
     elif feature_type == 'openworm':
         if summary_type == 'plate':
@@ -134,9 +151,8 @@ def make_df_filenames(fnames,time_windows_ints):
     EM : Create dataframe with filename summaries and time window info for every time window
     """
     dd = tuple(zip(*enumerate(sorted(fnames))))
-    df_files = [pd.DataFrame({'file_id' : dd[0], 'file_name' : dd[1]}) for x in range(len(time_windows_ints))]
-    for iwin in range(len(time_windows_ints)):
-        df_files[iwin]['is_good'] = False
+    df_files = pd.DataFrame({'file_id' : dd[0], 'file_name' : dd[1]})
+    df_files['is_good'] = False
     return df_files
 
 def select_features(win_summaries,keywords_in,keywords_ex,selected_feat):
@@ -177,11 +193,16 @@ def shorten_feature_names(feat_summary):
     return feat_summary
 
 
-def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, time_windows, time_units,
-                        select_feat, keywords_include, keywords_exclude, abbreviate_features, _is_debug = False, **fold_args):
+def calculate_summaries(
+        root_dir, feature_type, summary_type, is_manual_index,
+        time_windows, time_units,
+        select_feat, keywords_include, keywords_exclude,
+        abbreviate_features,
+        _is_debug = False, **fold_args
+        ):
     """
-    Gets input from the GUI, calls the function that chooses the type of summary
-    and runs the summary calculation for each file in the root_dir.
+    Gets input from the GUI, calls the function that chooses the type of
+    summary and runs the summary calculation for each file in the root_dir.
     """
     save_base_name = 'summary_{}_{}'.format(feature_type, summary_type)
     if is_manual_index:
@@ -205,7 +226,11 @@ def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, t
 
     #get summary function
     # INPUT time windows time units here
-    summary_func = get_summary_func(feature_type, summary_type, time_windows_ints, time_units, is_manual_index, **fold_args)
+    summary_func = get_summary_func(
+        feature_type, summary_type,
+        time_windows_ints, time_units,
+        keywords_in, keywords_ex, selected_feat,
+        is_manual_index, **fold_args)
 
     #get extension of results file
     possible_ext = feature_files_ext[feature_type]
@@ -216,55 +241,25 @@ def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, t
         print_flush('No valid files found. Nothing to do here.')
         return None,None
 
-    # EM :Make df_files list with one features_summaries dataframe per time window
-    df_files = make_df_filenames(fnames,time_windows_ints)
-
-    progress_timer = TimeCounter('')
-    def _displayProgress(n):
-        args = (n + 1, len(df_files[0]), progress_timer.get_time_str())
-        dd = "Extracting features summary. File {} of {} done. Total time: {}".format(*args)
-        print_flush(dd)
-
-    _displayProgress(-1)
-
-    # EM :Make all_summaries list with one element per time window. Each element contains
-    # the extracted feature summaries from all the files for the given time window.
-    all_summaries = [[] for x in range(len(time_windows_ints))]
-    for ifile, row in df_files[0].iterrows():
-        fname = row['file_name']
-
-        df_list = summary_func(fname)
-        for iwin,df in enumerate(df_list):
-            try:
-                df.insert(0, 'file_id', ifile)
-                all_summaries[iwin].append(df)
-            except (AttributeError, IOError, KeyError, tables.exceptions.HDF5ExtError, tables.exceptions.NoSuchNodeError):
-                continue
-            else:
-                if not df.empty:
-                    df_files[iwin].loc[ifile, 'is_good'] = True
-        _displayProgress(ifile)
-
-    # EM : Concatenate summaries for each window into one dataframe and select features
+    # EM : Create features_summaries and filenames_summaries files and write headers
+    fnames_files = []
+    featsum_files = []
+    written_feat_names = []
     for iwin in range(len(time_windows_ints)):
-        all_summaries[iwin] = pd.concat(all_summaries[iwin], ignore_index=True, sort=False)
-        all_summaries[iwin] = select_features(all_summaries[iwin],keywords_in,keywords_ex,selected_feat)
-
-    #IB : add in the option to abbreviate features
-        if abbreviate_features:
-            all_summaries[iwin] = shorten_feature_names(all_summaries[iwin])
-
-    # EM : Save results
+        # EM : Create features_summaries and filenames_summaries files
         if select_feat != 'all':
-            win_save_base_name = save_base_name.replace('tierpsy',select_feat+'_tierpsy')
+            win_save_base_name = save_base_name.replace(
+                'tierpsy',select_feat+'_tierpsy')
         else:
             win_save_base_name = save_base_name
 
         if not (len(time_windows_ints)==1 and time_windows_ints[0]==[0,-1]):
             win_save_base_name = win_save_base_name+'_window_{}'.format(iwin)
 
-        f1 = os.path.join(root_dir, 'filenames_{}.csv'.format(win_save_base_name))
-        f2 = os.path.join(root_dir,'features_{}.csv'.format(win_save_base_name))
+        f1 = os.path.join(
+            root_dir, 'filenames_{}.csv'.format(win_save_base_name))
+        f2 = os.path.join(
+            root_dir,'features_{}.csv'.format(win_save_base_name))
 
         fnamesum_headers = get_fnamesum_headers(
             f2,feature_type,summary_type,iwin,time_windows_ints[iwin],
@@ -273,27 +268,86 @@ def calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, t
 
         with open(f1,'w') as fid:
             fid.write(fnamesum_headers)
-            df_files[iwin].to_csv(fid, index=False)
+
         with open(f2,'w') as fid:
             fid.write(featsum_headers)
-            all_summaries[iwin].to_csv(fid, index=False)
+
+        fnames_files.append(f1)
+        featsum_files.append(f2)
+        written_feat_names.append(False)
+
+    # EM :Make df_files dataframe with filenames and file ids
+    df_files = make_df_filenames(fnames,time_windows_ints)
+
+    progress_timer = TimeCounter('')
+    def _displayProgress(n):
+        args = (n + 1, len(df_files), progress_timer.get_time_str())
+        dd = "Extracting features summary. File {} of {} done. Total time: {}".format(*args)
+        print_flush(dd)
+
+    _displayProgress(-1)
+
+    # EM : Extract feature summaries from all the files for all time windows.
+    for ifile,row in df_files.iterrows():
+        fname = row['file_name']
+        file_id = row['file_id']
+
+        summaries_per_win = summary_func(fname)
+
+        for iwin,df in enumerate(summaries_per_win):
+            f1 = fnames_files[iwin]
+            f2 = featsum_files[iwin]
+
+            try:
+                df.insert(0, 'file_id', file_id)
+            except (AttributeError, IOError, KeyError, tables.exceptions.HDF5ExtError, tables.exceptions.NoSuchNodeError):
+                continue
+            else:
+                # Get the filename summary line
+                filenames = row.copy()
+                if not df.empty:
+                    filenames['is_good'] = True
+                # Store the filename summary line
+                with open(f1,'a') as fid:
+                    fid.write("\n"+','.join([str(x) for x in filenames.values]))
+
+                if not df.empty:
+                    # Select features
+                    df = select_features(df,keywords_in,keywords_ex,selected_feat)
+
+                    # Abbreviate names
+                    if abbreviate_features:
+                        df = shorten_feature_names(df)
+
+                    # Store line(s) of features summaries for the given file and given window
+                    with open(f2,'a') as fid:
+                        if not written_feat_names[iwin]:
+                            df.to_csv(fid, header=True, index=False)
+                            written_feat_names[iwin] = True
+                        else:
+                            df.to_csv(fid, header=False, index=False)
+
+
+        _displayProgress(ifile)
 
     out = '****************************'
-    out += '\nFINISHED. Created Files:\n-> {}\n-> {}'.format(f1,f2)
+    out += '\nFINISHED. Created Files:'
+    for f1,f2 in zip(fnames_files,featsum_files):
+        out += '\n-> {}\n-> {}'.format(f1,f2)
 
     print_flush(out)
 
 
-    return df_files, all_summaries
+    return df_files
 
 if __name__ == '__main__':
 
-    root_dir = '/Users/em812/Documents/OneDrive - Imperial College London/Eleni/Tierpsy_GUI/test_results_2'
+    root_dir = '/Users/em812/Data/Tierpsy_GUI/test_results_2'
     is_manual_index = False
-#    feature_type = 'tierpsy'
-    feature_type = 'openworm'
-    summary_type = 'plate_augmented'
-#    summary_type = 'plate'
+    feature_type = 'tierpsy'
+    # feature_type = 'openworm'
+    # summary_type = 'plate_augmented'
+    summary_type = 'plate'
     #summary_type = 'trajectory'
 
 # Luigi
@@ -312,13 +366,19 @@ if __name__ == '__main__':
                  time_sample_seconds = 10*60
                  )
 
-    time_windows = '0-end,100000-101000' '0:end:1000' #'0:end' # time_windows = '0:60,480:540'
+    time_windows = '0:end' #'0:end:1000' #'0:end' # time_windows = '0:60,480:540'
     time_units = 'frame numbers'
     select_feat = 'all' #'tierpsy_2k'
     keywords_include = ''
     keywords_exclude = '' #'curvature,velocity,norm,abs'
+    abbreviate_features = False
 
-    df_files, all_summaries = calculate_summaries(root_dir, feature_type, summary_type, is_manual_index, time_windows, time_units, select_feat, keywords_include, keywords_exclude, **fold_args)
+    df_files = calculate_summaries(
+        root_dir, feature_type, summary_type, is_manual_index,
+        time_windows, time_units,
+        select_feat, keywords_include, keywords_exclude,
+        abbreviate_features,
+        **fold_args)
 
     # Luigi
 #    df_files, all_summaries = calculate_summaries(root_dir, feature_type,
