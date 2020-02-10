@@ -287,7 +287,7 @@ def calculate_summaries(
         written_feat_names.append(False)
 
     # EM :Make df_files dataframe with filenames and file ids
-    df_files = make_df_filenames(fnames,time_windows_ints)
+    df_files = make_df_filenames(fnames)
 
     progress_timer = TimeCounter('')
     def _displayProgress(n):
