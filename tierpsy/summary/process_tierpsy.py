@@ -10,6 +10,7 @@ from tierpsy.summary.helper import augment_data, add_trajectory_info
 from tierpsy.helper.params import read_fps
 from tierpsy.helper.misc import WLAB,print_flush
 from tierpsy.analysis.split_fov.helper import was_fov_split
+from tierpsy.analysis.split_fov.FOVMultiWellsSplitter import FOVMultiWellsSplitter
 
 import pandas as pd
 import pdb
@@ -128,7 +129,11 @@ def tierpsy_plate_summary(
     # and to extract the list of well names
     is_fov_tosplit = was_fov_split(timeseries_data[0])
 #    is_fov_tosplit = False
-
+    if is_fov_tosplit:
+        fovsplitter = FOVMultiWellsSplitter(fname)
+        good_wells_df = fovsplitter.wells[['well_name','is_good_well']].copy()
+        # print(good_wells_df)
+        
     # initialize list of plate summaries for all time windows
     plate_feats_list = []
     for iwin,window in enumerate(time_windows):
@@ -162,9 +167,14 @@ def tierpsy_plate_summary(
                 # now concatenate all the single-row df in well_feats_list in a single df
                 # and append it to the growing list (1 entry = 1 window)
                 plate_feats = pd.concat(well_feats_list, ignore_index=True, sort=False)
+#                import pdb; pdb.set_trace()
+                plate_feats = plate_feats.merge(good_wells_df,
+                                                on='well_name',
+                                                how='left')
                 plate_feats_list.append(plate_feats)
 
     return plate_feats_list
+
 
 def tierpsy_trajectories_summary(
         fname, time_windows, time_units, only_abs_ventral, is_manual_index=False, delta_time=1/3):
@@ -178,6 +188,13 @@ def tierpsy_trajectories_summary(
         return [pd.DataFrame() for iwin in range(len(time_windows))]
     timeseries_data, blob_features = data_in
 
+    is_fov_tosplit = was_fov_split(timeseries_data[0])
+    #    is_fov_tosplit = False
+    if is_fov_tosplit:
+        fovsplitter = FOVMultiWellsSplitter(fname)
+        good_wells_df = fovsplitter.wells[['well_name','is_good_well']].copy()
+        # print(good_wells_df)
+    
     # initialize list of summaries for all time windows
     all_summaries_list = []
     # loop over time windows
@@ -202,6 +219,10 @@ def tierpsy_trajectories_summary(
                 all_summary.append(worm_feats)
             # concatenate all trajectories in given time window into one dataframe
             all_summary = pd.concat(all_summary, ignore_index=True, sort=False)
+            # attach whether the wells was good or bad
+            all_summary = all_summary.merge(good_wells_df,
+                                            on='well_name',
+                                            how='left')
 
         # add dataframe to the list of summaries for all time windows
         all_summaries_list.append(all_summary)
@@ -257,7 +278,8 @@ if __name__ == '__main__':
 
 #    fname='/Users/em812/Documents/OneDrive - Imperial College London/Eleni/Tierpsy_GUI/test_results_2/Set4_Ch3_18012019_130019_featuresN.hdf5'
 #    fname='/Users/lferiani/Desktop/Data_FOVsplitter/short/Results/drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22436248/metadata_featuresN.hdf5'
-    fname='/Users/lferiani/Desktop/Data_FOVsplitter/evgeny/Results/20190808_subset/evgeny_plate01_r1_20190808_114758.22956805/metadata_featuresN.hdf5'
+#    fname='/Users/lferiani/Desktop/Data_FOVsplitter/evgeny/Results/20190808_subset/evgeny_plate01_r1_20190808_114758.22956805/metadata_featuresN.hdf5'
+    fname = '/Users/lferiani/Hackathon/multiwell_tierpsy/12_FEAT_TIERPSY/Results/20191205/syngenta_screen_run1_bluelight_20191205_151104.22956805/metadata_featuresN.hdf5'
     is_manual_index = False
 
 
