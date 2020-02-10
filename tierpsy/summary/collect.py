@@ -30,7 +30,7 @@ valid_time_windows_connector = ':'
 valid_time_windows_separator = ','
 time_windows_format_explain = 'Each time window must be defined by the start time and the end time connected by \'-\' (start_time-end_time). Different windows must be separated by {}. A sequence of equally sized windows can be defined with the format start_time:end_time:step.'.format(valid_time_windows_separator)
 
-feat_df_id_cols = ['file_id','well_name']
+feat_df_id_cols = ['file_id', 'well_name', 'is_good_well']
 
 def check_in_list(x, list_of_x, x_name):
     if not x in list_of_x:
@@ -150,7 +150,7 @@ def feat_set_parser(select_feat):
         selected_feat = None
     return selected_feat
 
-def make_df_filenames(fnames,time_windows_ints):
+def make_df_filenames(fnames):
     """
     EM : Create dataframe with filename summaries and time window info for every time window
     """
@@ -171,6 +171,11 @@ def select_features(win_summaries,keywords_in,keywords_ex,selected_feat):
         if keywords_ex is not None:
             filter_col = [x for x in win_summaries.columns if any(key in x for key in keywords_ex)]
             win_summaries = win_summaries[win_summaries.columns.drop(filter_col)]
+        if not any([selected_feat, keywords_in, keywords_ex]):
+            # only change order of columns
+            not_id_cols = win_summaries.columns.difference(id_cols).tolist()
+            win_summaries = win_summaries[id_cols + not_id_cols]
+
     return win_summaries
 
 
