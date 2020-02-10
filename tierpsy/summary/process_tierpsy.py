@@ -133,7 +133,7 @@ def tierpsy_plate_summary(
         fovsplitter = FOVMultiWellsSplitter(fname)
         good_wells_df = fovsplitter.wells[['well_name','is_good_well']].copy()
         # print(good_wells_df)
-        
+
     # initialize list of plate summaries for all time windows
     plate_feats_list = []
     for iwin,window in enumerate(time_windows):
@@ -154,7 +154,8 @@ def tierpsy_plate_summary(
                 well_feats = get_summary_stats(timeseries_data[iwin][idx_well].reset_index(),
                                                fps,
                                                blob_features[iwin][idx_well].reset_index(),
-                                               delta_time)
+                                               delta_time,
+                                               only_abs_ventral=only_abs_ventral)
                 # first prepend the well_name_s to the well_feats series,
                 # then transpose it so it is a single-row dataframe,
                 # and append it to the well_feats_list
@@ -194,7 +195,7 @@ def tierpsy_trajectories_summary(
         fovsplitter = FOVMultiWellsSplitter(fname)
         good_wells_df = fovsplitter.wells[['well_name','is_good_well']].copy()
         # print(good_wells_df)
-    
+
     # initialize list of summaries for all time windows
     all_summaries_list = []
     # loop over time windows
