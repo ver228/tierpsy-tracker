@@ -108,8 +108,7 @@ def read_data(fname, time_windows, time_units, fps, is_manual_index):
 
     return timeseries_data_list, blob_features_list
 #%%
-def tierpsy_plate_summary(
-        fname, time_windows, time_units, only_abs_ventral, is_manual_index=False, delta_time=1/3):
+def tierpsy_plate_summary(fname, time_windows, time_units, is_manual_index = False, delta_time = 1/3):
     """
     Calculate the plate summaries for a given file fname, within a given time window
     (units of start time and end time are in frame numbers).
@@ -129,17 +128,17 @@ def tierpsy_plate_summary(
     # and to extract the list of well names
     is_fov_tosplit = was_fov_split(timeseries_data[0])
 #    is_fov_tosplit = False
+
     if is_fov_tosplit:
         fovsplitter = FOVMultiWellsSplitter(fname)
         good_wells_df = fovsplitter.wells[['well_name','is_good_well']].copy()
         # print(good_wells_df)
-        
+
     # initialize list of plate summaries for all time windows
     plate_feats_list = []
     for iwin,window in enumerate(time_windows):
         if is_fov_tosplit == False:
-            plate_feats = get_summary_stats(
-                timeseries_data[iwin], fps,  blob_features[iwin], delta_time, only_abs_ventral=only_abs_ventral)
+            plate_feats = get_summary_stats(timeseries_data[iwin], fps,  blob_features[iwin], delta_time)
             plate_feats_list.append(pd.DataFrame(plate_feats).T)
         else:
             # get list of well names in this time window
@@ -148,6 +147,7 @@ def tierpsy_plate_summary(
             well_names_list = list(set(timeseries_data[iwin]['well_name']) - set(['n/a']))
             # create a list of well-specific, one-line long dataframes
             well_feats_list = []
+            # TODO: test if grouping is faster
             for well_name in well_names_list:
                 # find entries in timeseries_data[iwin] belonging to the right well
                 idx_well = timeseries_data[iwin]['well_name'] == well_name
@@ -172,12 +172,10 @@ def tierpsy_plate_summary(
                                                 on='well_name',
                                                 how='left')
                 plate_feats_list.append(plate_feats)
-
     return plate_feats_list
 
 
-def tierpsy_trajectories_summary(
-        fname, time_windows, time_units, only_abs_ventral, is_manual_index=False, delta_time=1/3):
+def tierpsy_trajectories_summary(fname, time_windows, time_units, is_manual_index = False, delta_time = 1/3):
     """
     Calculate the trajectory summaries for a given file fname, within a given time window
     (units of start time and end time are in frame numbers).
@@ -188,13 +186,14 @@ def tierpsy_trajectories_summary(
         return [pd.DataFrame() for iwin in range(len(time_windows))]
     timeseries_data, blob_features = data_in
 
+
     is_fov_tosplit = was_fov_split(timeseries_data[0])
     #    is_fov_tosplit = False
     if is_fov_tosplit:
         fovsplitter = FOVMultiWellsSplitter(fname)
         good_wells_df = fovsplitter.wells[['well_name','is_good_well']].copy()
         # print(good_wells_df)
-    
+
     # initialize list of summaries for all time windows
     all_summaries_list = []
     # loop over time windows
@@ -211,8 +210,7 @@ def tierpsy_trajectories_summary(
                 w_ts_data = w_ts_data.reset_index(drop=True)
                 w_blobs = w_blobs.reset_index(drop=True)
 
-                worm_feats = get_summary_stats(
-                    w_ts_data, fps,  w_blobs, delta_time, only_abs_ventral=only_abs_ventral) # returns empty dataframe when w_ts_data is empty
+                worm_feats = get_summary_stats(w_ts_data, fps,  w_blobs, delta_time) # returns empty dataframe when w_ts_data is empty
                 worm_feats = pd.DataFrame(worm_feats).T
                 worm_feats = add_trajectory_info(worm_feats, w_ind, w_ts_data, fps)
 
@@ -223,7 +221,6 @@ def tierpsy_trajectories_summary(
             all_summary = all_summary.merge(good_wells_df,
                                             on='well_name',
                                             how='left')
-
         # add dataframe to the list of summaries for all time windows
         all_summaries_list.append(all_summary)
 
@@ -231,8 +228,7 @@ def tierpsy_trajectories_summary(
 
 #%%
 
-def tierpsy_plate_summary_augmented(
-        fname, time_windows, time_units, only_abs_ventral, is_manual_index = False, delta_time = 1/3, **fold_args):
+def tierpsy_plate_summary_augmented(fname, time_windows, time_units, is_manual_index = False, delta_time = 1/3, **fold_args):
     fps = read_fps(fname)
     data_in = read_data(fname, time_windows, time_units, fps, is_manual_index)
     if data_in is None:
@@ -258,8 +254,7 @@ def tierpsy_plate_summary_augmented(
                 blob_features_r = blob_features[iwin][ind_fold].reset_index(drop=True)
 
 
-                plate_feats = get_summary_stats(
-                    timeseries_data_r, fps,  blob_features_r, delta_time, only_abs_ventral=only_abs_ventral)
+                plate_feats = get_summary_stats(timeseries_data_r, fps,  blob_features_r, delta_time)
                 plate_feats = pd.DataFrame(plate_feats).T
                 plate_feats.insert(0, 'i_fold', i_fold)
 
@@ -293,8 +288,8 @@ if __name__ == '__main__':
 #    time_units = 'frameNb'
 
 #    time_windows = [[0,60],[120,-1],[10000000,-1]]
-    time_windows = [[0,60],[10000000,-1]]
+    time_windows = [[0,60],[200,-1]]
     time_units = 'seconds'
-#    summary = tierpsy_plate_summary(fname,time_windows,time_units)
-    summary = tierpsy_trajectories_summary(fname,time_windows,time_units)
+    summary = tierpsy_plate_summary(fname,time_windows,time_units)
+#    summary = tierpsy_trajectories_summary(fname,time_windows,time_units)
 #    summary = tierpsy_plate_summary_augmented(fname,time_windows,time_units,is_manual_index=False,delta_time=1/3,**fold_args)
