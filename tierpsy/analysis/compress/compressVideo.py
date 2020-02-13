@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Apr  2 13:19:58 2015
-
 @author: ajaver
 """
 import os
@@ -40,7 +39,6 @@ def getROIMask(
         > keep_border_data -- (bool) if false it will reject any blob that touches the image border
         > is_light_background -- (bool) true if bright field, false if fluorescence
         > wells_mask -- (bool 2D) mask that covers (with False) the edges of wells in a MW plate
-
     '''
     # Objects that touch the limit of the image are removed. I use -2 because
     # openCV findCountours remove the border pixels
