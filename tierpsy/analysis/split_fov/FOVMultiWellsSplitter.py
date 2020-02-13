@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Mar  5 14:55:41 2019
-
 @author: lferiani
 """
 
@@ -198,13 +197,14 @@ class FOVMultiWellsSplitter(object):
         masked_image_file = filename.replace('Results','MaskedVideos')
         masked_image_file = masked_image_file.replace('_featuresN.hdf5',
                                                       '.hdf5')
-        with tables.File(masked_image_file, 'r') as fid:
-            if '/bgnd' in fid:
-                self.img = fid.get_node('/bgnd')[0]
-            else:
-                # maybe bgnd was not in the masked video?
-                # for speed, let's just get the first full frame
-                self.img = fid.get_node('/full_data')[0]
+        if Path(masked_image_file).exists():
+            with tables.File(masked_image_file, 'r') as fid:
+                if '/bgnd' in fid:
+                    self.img = fid.get_node('/bgnd')[0]
+                else:
+                    # maybe bgnd was not in the masked video?
+                    # for speed, let's just get the first full frame
+                    self.img = fid.get_node('/full_data')[0]
 
         # initialise the dataframe
         self.wells = pd.DataFrame(columns = WELLS_ATTRIBUTES)
