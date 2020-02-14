@@ -9,7 +9,7 @@ from scipy.interpolate import interp1d
 from scipy.signal import savgol_filter
 
 
-def _h_resample_curve(curve, resampling_N=49, widths=None):
+def _h_resample_curve(curve, resampling_N=49, widths=None, interp_kind = 'linear'):
     '''Resample curve to have resampling_N equidistant segments
     I give width as an optional parameter since I want to use the 
     same interpolation as with the skeletons
@@ -30,8 +30,8 @@ def _h_resample_curve(curve, resampling_N=49, widths=None):
     if len(lengths) < 2 or len(curve) < 2:
         return None, None, None
 
-    fx = interp1d(lengths, curve[:, 0])
-    fy = interp1d(lengths, curve[:, 1])
+    fx = interp1d(lengths, curve[:, 0], kind = interp_kind)
+    fy = interp1d(lengths, curve[:, 1], kind = interp_kind)
 
     subLengths = np.linspace(0 + np.finfo(float).eps, tot_length, resampling_N)
 

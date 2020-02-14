@@ -26,26 +26,23 @@ class WellsDrawer(TrackerViewerAuxGUI):
         # colour
         self.wells = None
         self.is_fov_tosplit = None
-        for k, v in self.__dict__.items():
-            print(k,v)
+        #for k, v in self.__dict__.items():
+        #    print(k,v)
         
     def updateVideoFile(self, vfilename):
         super().updateVideoFile(vfilename)
         # check if /fov_wells exists in masked video
-        if self.fid is not None:
-            if '/fov_wells' not in self.fid:
-                self.is_fov_tosplit = False
-            else:
-                self.is_fov_tosplit = True
-            # if it exists, read it
-            if self.is_fov_tosplit:
-                self.wells = pd.DataFrame(self.fid.get_node('/fov_wells').read())
+        
+        try:
+            self.wells = pd.DataFrame(self.video_reader.fid.get_node('/fov_wells').read())
+        except:
+            self.wells = None
             
     def draw_wells(self, image):
         '''
         Draw wells.
         '''
-        if self.is_fov_tosplit:
+        if self.wells is not None:
             
             # prepare constants for drawing          
             self.fontsize = max(1, max(image.height(), image.width()) // 60)
@@ -75,7 +72,7 @@ class WellsDrawer(TrackerViewerAuxGUI):
 
 
 
-class ContourDrawer(TrackerViewerAuxGUI):
+class FoodContourDrawer(TrackerViewerAuxGUI):
     '''
     Dummy class with the contour functions
     '''
@@ -142,11 +139,11 @@ class IntensityLabeler(TrackerViewerAuxGUI):
 
     def updateVideoFile(self, vfilename):
         super().updateVideoFile(vfilename)
-        if self.fid is not None:
+        if self.video_reader is not None:
             #get mean intensity information.
             #Useful for the optogenetic experiments. 
             try:
-                mean_int = self.fid.get_node('/mean_intensity')[:]
+                mean_int = self.video_reader.fid.get_node('/mean_intensity')[:]
                 
                 #calculate the intensity range and normalize the data. 
                 #I am ignoring any value less than 1. The viewer only works with uint8 data.
@@ -165,7 +162,7 @@ class IntensityLabeler(TrackerViewerAuxGUI):
 
                 self.mean_intensity = (mean_int-bot)/(rr)
 
-            except (tables.exceptions.NoSuchNodeError, ValueError):
+            except:
                 self.mean_intensity = None
                 self.ui.intensity_label.setStyleSheet('')
 
@@ -526,18 +523,18 @@ class FeatureReaderBase(TrackerViewerAuxGUI):
         super().updateSkelFile(skeletons_file)
         try:
             self.traj_colors = {}
-            with pd.HDFStore(self.skeletons_file, 'r') as ske_file_id:
-                for field in self.valid_fields:
-                    if field in ske_file_id:
-                        self.timeseries_data = ske_file_id[field]
+            #with pd.HDFStore(self.skeletons_file, 'r') as skel_file_id:
+            for field in self.valid_fields:
+                if field in self.skel_file_id:
+                    self.timeseries_data = self.skel_file_id[field]
 
-                        if field == '/timeseries_data':
-                            blob_features = ske_file_id['/blob_features']
-                            blob_features.columns = ['blob_' + x for x in blob_features.columns]                            
-                            self.timeseries_data = pd.concat((self.timeseries_data, blob_features), axis=1)
-                        break
-                else:
-                    raise KeyError
+                    if field == '/timeseries_data':
+                        blob_features = self.skel_file_id['/blob_features']
+                        blob_features.columns = ['blob_' + x for x in blob_features.columns]                            
+                        self.timeseries_data = pd.concat((self.timeseries_data, blob_features), axis=1)
+                    break
+            else:
+                raise KeyError
 
             if not len(self.timeseries_data) != len(self.trajectories_data):
                 ValueError('timeseries_data and trajectories_data does not match. You might be using an old version of featuresN.hdf5')
@@ -565,7 +562,7 @@ class MarkersDrawer(FeatureReaderBase):
 
 
         self.drawT = {x: self.ui.comboBox_drawType.findText(x , flags=Qt.MatchContains) 
-                                for x in ['boxes', 'traj']}
+                                for x in ['boxes', 'traj', 'skel']}
         
         self.showT = {x: self.ui.comboBox_showLabels.findText(x , flags=Qt.MatchContains) 
                                 for x in ['hide', 'all', 'filter']}
@@ -607,7 +604,6 @@ class MarkersDrawer(FeatureReaderBase):
 
     def _h_find_feat_limits(self):
         self.feat_column = str(self.ui.feature_column.currentText())
-        print(self.feat_column)
         
         if self.feat_column and self.timeseries_data is not None:
             f_max = self.timeseries_data[self.feat_column].max()
@@ -693,6 +689,8 @@ class MarkersDrawer(FeatureReaderBase):
                 self.draw_boxes(painter, row_id, row_data, is_current_index)
             elif cb_ind == self.drawT['traj']:
                 self.draw_trajectories(painter, row_data, is_current_index)
+            elif cb_ind == self.drawT['skel']:
+                self.draw_skeletons(painter, row_id, row_data, is_current_index)
 
             
         painter.end()
@@ -776,6 +774,67 @@ class MarkersDrawer(FeatureReaderBase):
             offset = bb/2 - b_size
             painter.fillRect(x + offset, y + offset, b_size, b_size, QBrush(label_color))
 
+    def draw_skeletons(self, painter, roi_id, row_data, is_current_index):
+        if self.traj_worm_index_grouped is None:
+            return
+        if self.coordinates_fields is None:
+            return
+
+        worm_index = int(row_data[self.worm_index_type])
+        skel_id = int(row_data['skeleton_id']) 
+        if self.coordinates_fields is None or skel_id < 0:
+            return
+        
+        #with tables.File(self.skeletons_file, 'r') as skel_file_id:
+        field = self.coordinates_group + self.coordinates_fields['skeleton']
+        if field in self.skel_file_id:
+            dat = self.skel_file_id.get_node(field)[skel_id]
+            dat /= self.microns_per_pixel
+            
+            if self.stage_position_pix is not None and self.stage_position_pix.size > 0:
+                #subtract stage motion if necessary
+                dat -= self.stage_position_pix[self.frame_number]
+            
+            #dat[:, 0] = (dat[:, 0] - roi_corner[0] + 0.5) * c_ratio_x
+            #dat[:, 1] = (dat[:, 1] - roi_corner[1] + 0.5) * c_ratio_y
+
+        else:
+            dat = np.full((1,2), np.nan)
+
+        
+
+
+        if not worm_index in self.traj_colors:
+            self.traj_colors[worm_index] = QColor(*np.random.randint(50, 230, 3))
+        col = self.traj_colors[worm_index]
+
+        pol_v = QPolygonF()
+        for p in dat:
+            #do not add point if it is nan
+            if p[0] == p[0]: 
+                pol_v.append(QPointF(*p))
+
+
+        if not len(pol_v):
+            #all nan skeleton nothing to do here...
+            return
+
+
+        pen = QPen()
+        pen.setWidth(1)
+
+        
+        pen.setColor(QColor(col))
+        painter.setPen(pen)
+        painter.drawPolyline(pol_v)
+
+        painter.setBrush(col)
+        painter.setPen(pen)
+
+        radius = 3
+        painter.drawEllipse(pol_v[0], radius, radius)
+        painter.drawEllipse(QPointF(0,0), radius, radius)
+
 
 class PlotCommunicator(FeatureReaderBase, ROIManager):
     def __init__(self, ui=''):
@@ -818,7 +877,7 @@ class PlotCommunicator(FeatureReaderBase, ROIManager):
             self.plotter.plot(self.current_worm_index, self.feat_column)
 
 class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
-    ContourDrawer, BlobLabeler, IntensityLabeler, TrajectoryEditor, WellsDrawer):
+    FoodContourDrawer, BlobLabeler, IntensityLabeler, TrajectoryEditor, WellsDrawer):
 
     def __init__(self, ui='', argv=''):
         if not ui:
@@ -858,6 +917,9 @@ class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
                         self, field_name).replace(
                         '/', os.sep))
 
+        self.skel_file_id.close() #I need to reopen the file in write mode
+        self.skel_file_id = None
+        
         save_modified_table(self.skeletons_file, self.trajectories_data, 'trajectories_data')
         self.updateSkelFile(self.skeletons_file)
 
@@ -933,7 +995,7 @@ class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
 
     # update image
     def updateImage(self):
-        if self.image_group is None:
+        if not self.is_video_opened:
             return
 
         super(TrackerViewerAuxGUI, self).readCurrentFrame()
@@ -1004,7 +1066,8 @@ if __name__ == '__main__':
     #mask_file = '/Users/avelinojaver/OneDrive - Imperial College London/tierpsy_examples/mutliworm_example/BRC20067_worms10_food1-10_Set2_Pos5_Ch2_02062017_121709.hdf5'
     #mask_file = '/Volumes/rescomp1/data/WormData/screenings/Pratheeban/First_Set/MaskedVideos/Old_Adult/16_07_22/W3_ELA_1.0_Ch1_22072016_131149.hdf5'
     #mask_file = '/Users/avelinojaver/Documents/GitHub/tierpsy-tracker/tests/data/AVI_VIDEOS/MaskedVideos/AVI_VIDEOS_1.hdf5'
-    mask_file = '/Users/avelinojaver/Documents/GitHub/tierpsy-tracker/tests/data/WT2/MaskedVideos/WT2.hdf5'
+    #mask_file = '/Users/avelinojaver/Documents/GitHub/tierpsy-tracker/tests/data/WT2/MaskedVideos/WT2.hdf5'
+    mask_file = '/Users/avelinojaver/OneDrive - Nexus365/worms/worm-poses/unlinked/wildMating3.1_MY23_self_MY23_self_PC1_Ch1_17082018_121653.hdf5'
     main.updateVideoFile(mask_file)
 
     main.show()

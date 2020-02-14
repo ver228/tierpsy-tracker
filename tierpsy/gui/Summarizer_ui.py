@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file 'Summarizer.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.12.3
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_Summarizer(object):
     def setupUi(self, Summarizer):
@@ -180,4 +182,3 @@ class Ui_Summarizer(object):
         self.label_9.setText(_translate("Summarizer", "Exclude keywords"))
         self.label_8.setText(_translate("Summarizer", "Include keywords"))
         self.pushButton_start.setText(_translate("Summarizer", "START"))
-

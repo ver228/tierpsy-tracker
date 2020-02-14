@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file 'AnalysisProgress.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.12.3
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_AnalysisProgress(object):
     def setupUi(self, AnalysisProgress):
@@ -33,4 +35,3 @@ class Ui_AnalysisProgress(object):
     def retranslateUi(self, AnalysisProgress):
         _translate = QtCore.QCoreApplication.translate
         AnalysisProgress.setWindowTitle(_translate("AnalysisProgress", "Analysis Progress"))
-

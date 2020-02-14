@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file 'BatchProcessing.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.12.3
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_BatchProcessing(object):
     def setupUi(self, BatchProcessing):
@@ -199,4 +201,3 @@ class Ui_BatchProcessing(object):
         self.p_unmet_requirements.setText(_translate("BatchProcessing", "Print Unmet Requirements"))
         self.p_only_summary.setText(_translate("BatchProcessing", "Only Display Progress Summary"))
         self.pushButton_start.setText(_translate("BatchProcessing", "START"))
-

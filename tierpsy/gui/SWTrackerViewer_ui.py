@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file 'SWTrackerViewer.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.12.3
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_SWTrackerViewer(object):
     def setupUi(self, SWTrackerViewer):
@@ -180,4 +182,3 @@ class Ui_SWTrackerViewer(object):
         self.pushButton_video.setText(_translate("SWTrackerViewer", "Select Video File"))
         self.pushButton_skel.setText(_translate("SWTrackerViewer", "Select Skeletons File"))
         self.toolBar.setWindowTitle(_translate("SWTrackerViewer", "toolBar"))
-

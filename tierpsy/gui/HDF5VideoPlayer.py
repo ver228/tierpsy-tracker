@@ -3,12 +3,18 @@ from tierpsy.gui.HDF5VideoPlayer_ui import Ui_HDF5VideoPlayer
 import sys
 import tables
 import os
+from pathlib import Path
 import numpy as np
 from functools import partial
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
+
+try:
+    import imgstore
+except ModuleNotFoundError:
+    pass
 
 
 def setChildrenFocusPolicy(obj, policy):
@@ -159,7 +165,7 @@ class SimplePlayer(QtWidgets.QMainWindow):
         #super().keyPressEvent(event)
 
     def playVideo(self):
-        if self.image_group is None:
+        if self.is_video_opened is None:
             return
         if not self.isPlay:
             self.startPlay()
@@ -201,6 +207,102 @@ class SimplePlayer(QtWidgets.QMainWindow):
     def frame_step(self, value):
         return self.ui.spinBox_step.setValue(value)
 
+
+class _LoopBioReader():
+    def __init__(self, src_file):
+        self.frame_save_interval = 1
+        self.is_light_background = 1
+        self.video_data = None
+        self.groupnames = ['None']
+
+        self.src_file = src_file
+
+        self.video_data = imgstore.new_for_filename(str(src_file))
+        self._ini_frame = self.video_data.frame_min
+
+        img, (frame_number, frame_timestamp) = self.video_data.get_next_image()
+        self.height, self.width = img.shape
+
+    def close(self):
+        pass
+
+    def update_data(self, new_path):
+        pass
+
+    def update_groupnames(self):
+        pass
+
+    def __getitem__(self, frame_number):
+        img = self.video_data.get_image(frame_number + self._ini_frame)[0]
+        return img
+
+    def __len__(self):
+        return self.video_data.frame_count
+
+
+class _HDF5Reader():
+    def __init__(self, src_file):
+        self.frame_save_interval = 1
+        self.is_light_background = 1
+        self.video_data = None
+        self.groupnames = ["/mask", "/full_data"]
+
+        self.src_file = src_file
+        try:
+            self.fid = tables.File(str(self.src_file), 'r')
+        except (IOError, tables.exceptions.HDF5ExtError):
+            raise IOError
+
+        self.update_data(self.groupnames[0])
+
+    def __getitem__(self, frame_number):
+        if self.video_data is None:
+            return
+        img = self.video_data[frame_number, :, :]
+        return img
+
+    def __len__(self):
+        if self.video_data is None:
+            return 0
+
+        return self.video_data.shape[0]
+
+    @property
+    def width(self):
+        if self.video_data is not None:
+            return self.video_data.shape[2]
+
+    @property
+    def height(self):
+        if self.video_data is not None:
+            return self.video_data.shape[1]
+
+    def update_data(self, new_path):
+        if not new_path in self.fid:
+            self.video_data = None
+            return
+
+        self.video_data = self.fid.get_node(new_path)
+        if len(self.video_data.shape) != 3:
+            raise ValueError(f'Invalid data dimensions {new_path}')
+
+        try:
+            self.is_light_background = self.video_reader.video_data._v_attrs['is_light_background']
+        except:
+            self.is_light_background = 1
+
+
+    def update_groupnames(self):
+        self.groupnames = []
+        for group in self.fid.walk_groups("/"):
+            for array in self.fid.list_nodes(group, classname='Array'):
+                if array.ndim == 3:
+                    self.groupnames.append(array._v_pathname)
+
+    def close(self):
+        self.fid.close()
+
+
 class HDF5VideoPlayerGUI(SimplePlayer):
 
     def __init__(self, ui=None):
@@ -212,18 +314,11 @@ class HDF5VideoPlayerGUI(SimplePlayer):
         # Set up the user interface from Designer.
         self.ui.setupUi(self)
 
-        self.vfilename = None
-        self.fid = None
-        self.image_group = None
+        self.video_reader = None
         self.isPlay = False
         self.videos_dir = ''
-        self.h5path = None
         self.frame_img = None
         self.frame_qimg = None
-
-        #default expected groups in the hdf5
-        self.ui.comboBox_h5path.setItemText(0, "/mask")
-        self.ui.comboBox_h5path.setItemText(1, "/full_data")
 
         self.ui.pushButton_video.clicked.connect(self.getVideoFile)
         self.ui.playButton.clicked.connect(self.playVideo)
@@ -260,7 +355,7 @@ class HDF5VideoPlayerGUI(SimplePlayer):
     def keyPressEvent(self, event):
         #HOT KEYS
 
-        if self.fid is None:
+        if self.video_reader is None:
             # break no file open, nothing to do here
             return
 
@@ -285,11 +380,9 @@ class HDF5VideoPlayerGUI(SimplePlayer):
         self.mainImage.setPixmap(self.frame_qimg)
 
     def readCurrentFrame(self):
-        if self.image_group is None:
-            self.frame_qimg = None
-            return
-        self.frame_img = self.image_group[self.frame_number, :, :]
-        self._normalizeImage()
+        if self.is_video_opened:
+            self.frame_img = self.video_reader[self.frame_number]
+            self._normalizeImage()
         
 
     def _normalizeImage(self):
@@ -326,27 +419,30 @@ class HDF5VideoPlayerGUI(SimplePlayer):
     # file dialog to the the hdf5 file
     def getVideoFile(self):
         vfilename, _ = QtWidgets.QFileDialog.getOpenFileName(
-            self, "Find HDF5 video file", self.videos_dir, "HDF5 files (*.hdf5);; All files (*)")
+            self, "Find HDF5 video file", self.videos_dir, "HDF5 files (*.hdf5);; LoopBio files (metadata.yaml);; All files (*)")
 
         self.updateVideoFile(vfilename)
 
     def updateVideoFile(self, vfilename):
         # close the if there was another file opened before.
-        if self.fid is not None:
-            self.fid.close()
+        if self.video_reader is not None:
+            self.video_reader.close()
             self.mainImage.cleanCanvas()
-            self.fid = None
-            self.image_group = None
+            self.video_reader = None
 
-        self.vfilename = vfilename
-        self.ui.lineEdit_video.setText(self.vfilename)
-        self.videos_dir = self.vfilename.rpartition(os.sep)[0] + os.sep
+        self.vfilename = Path(vfilename)
+        self.ui.lineEdit_video.setText(str(self.vfilename))
+        self.videos_dir = self.vfilename.parent
 
         try:
-            self.fid = tables.File(vfilename, 'r')
+            if self.vfilename.name == 'metadata.yaml':
+                self.video_reader = _LoopBioReader(self.vfilename)
+            else:
+                self.video_reader = _HDF5Reader(self.vfilename)
+
+
         except (IOError, tables.exceptions.HDF5ExtError):
-            self.fid = None
-            self.image_group = None
+            self.reader = None
             QtWidgets.QMessageBox.critical(
                 self,
                 '',
@@ -354,69 +450,58 @@ class HDF5VideoPlayerGUI(SimplePlayer):
                 QtWidgets.QMessageBox.Ok)
             return
 
+        self.ui.comboBox_h5path.clear()
+        for kk in self.video_reader.groupnames:
+            self.ui.comboBox_h5path.addItem(kk)
+
         self.getImGroup(0)
 
     def updateGroupNames(self):
-        valid_groups = []
-        for group in self.fid.walk_groups("/"):
-            for array in self.fid.list_nodes(group, classname='Array'):
-                if array.ndim == 3:
-                    valid_groups.append(array._v_pathname)
+        if self.video_reader is None:
+            return
 
-        if not valid_groups:
+        self.video_reader.update_groupnames()
+        if not self.video_reader.groupnames:
             QtWidgets.QMessageBox.critical(
                 self,
                 '',
                 "No valid video groups were found. Dataset with three dimensions and uint8 data type. Closing file.",
                 QtWidgets.QMessageBox.Ok)
-            self.fid.close()
-            self.image_group = None
+            self.video_reader.close()
             self.mainImage.cleanCanvas()
 
             return
 
         self.ui.comboBox_h5path.clear()
-        for kk in valid_groups:
+        for kk in self.video_reader.groupnames:
             self.ui.comboBox_h5path.addItem(kk)
         self.getImGroup(0)
         self.updateImage()
 
     def getImGroup(self, index):
-        self.updateImGroup(self.ui.comboBox_h5path.itemText(index))
+        h5path = self.ui.comboBox_h5path.itemText(index)
+        self.ui.comboBox_h5path.setCurrentIndex(index)
+        self.updateImGroup(h5path)
 
     # read a valid groupset from the hdf5
     def updateImGroup(self, h5path):
-        if self.fid is None:
-            self.image_group = None
-            self.h5path = None
+        if self.video_reader is None:
             return
-
-        #self.h5path = self.ui.comboBox_h5path.text()
-        if h5path not in self.fid:
-            self.mainImage.cleanCanvas()
-            QtWidgets.QMessageBox.critical(
-                self,
-                'The groupset path does not exist',
-                "The groupset path does not exists. You must specify a valid groupset path",
-                QtWidgets.QMessageBox.Ok)
-            self.image_group == None
-            return
-
+        
         self.h5path = h5path
-        self.image_group = self.fid.get_node(h5path)
-        if len(self.image_group.shape) != 3:
+        try:
+            self.video_reader.update_data(self.h5path)
+        except ValueError:
             self.mainImage.cleanCanvas()
             QtWidgets.QMessageBox.critical(
                 self,
                 'Invalid groupset',
-                "Invalid groupset. The groupset must have three dimensions",
+                "Invalid groupset.",
                 QtWidgets.QMessageBox.Ok)
-            self.image_group == None
-            return 
-
-        self.tot_frames = self.image_group.shape[0]
-        self.image_height = self.image_group.shape[1]
-        self.image_width = self.image_group.shape[2]
+        
+        self.tot_frames = len(self.video_reader)
+        self.image_height = self.video_reader.height
+        self.image_width = self.video_reader.width
 
         self.ui.spinBox_frame.setMaximum(self.tot_frames - 1)
         self.ui.imageSlider.setMaximum(self.tot_frames - 1)
@@ -431,16 +516,23 @@ class HDF5VideoPlayerGUI(SimplePlayer):
         self.ui.lineEdit.setText(filename)
 
     def resizeEvent(self, event):
-        if self.fid is not None:
+        if self.video_reader is not None:
             self.updateImage()
             self.mainImage.zoomFitInView()
 
-    
-
     def closeEvent(self, event):
-        if self.fid is not None:
-            self.fid.close()
+        if self.video_reader is not None:
+            self.video_reader.close()
         super(HDF5VideoPlayerGUI, self).closeEvent(event)
+
+    @property
+    def is_video_opened(self):
+        if self.video_reader is not None:
+            if self.video_reader.video_data is not None:
+                return True
+
+        return False
+    
 
 def tierpsy_gui_simple():
     app = QApplication(sys.argv)

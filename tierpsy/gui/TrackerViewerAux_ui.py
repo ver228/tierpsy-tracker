@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file 'TrackerViewerAux.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.12.3
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_TrackerViewerAux(object):
     def setupUi(self, TrackerViewerAux):
@@ -154,4 +156,3 @@ class Ui_TrackerViewerAux(object):
         self.pushButton_video.setText(_translate("TrackerViewerAux", "Select Video File"))
         self.pushButton_skel.setText(_translate("TrackerViewerAux", "Select Skeletons File"))
         self.toolBar.setWindowTitle(_translate("TrackerViewerAux", "toolBar"))
-

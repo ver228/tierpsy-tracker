@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file 'MWTrackerViewer.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.12.3
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_MWTrackerViewer(object):
     def setupUi(self, MWTrackerViewer):
@@ -278,6 +280,7 @@ class Ui_MWTrackerViewer(object):
         self.comboBox_drawType.setObjectName("comboBox_drawType")
         self.comboBox_drawType.addItem("")
         self.comboBox_drawType.addItem("")
+        self.comboBox_drawType.addItem("")
         self.gridLayout_3.addWidget(self.comboBox_drawType, 4, 2, 1, 1)
         spacerItem = QtWidgets.QSpacerItem(600, 20, QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout_3.addItem(spacerItem, 4, 5, 1, 1)
@@ -367,10 +370,10 @@ class Ui_MWTrackerViewer(object):
         self.pushButton_ROI1_FF.setText(_translate("MWTrackerViewer", ">>"))
         self.comboBox_drawType.setItemText(0, _translate("MWTrackerViewer", "draw boxes"))
         self.comboBox_drawType.setItemText(1, _translate("MWTrackerViewer", "draw trajectories"))
+        self.comboBox_drawType.setItemText(2, _translate("MWTrackerViewer", "draw skeletons"))
         self.pushButton_join.setText(_translate("MWTrackerViewer", "Join Trajectory"))
         self.checkBox_ROI1.setText(_translate("MWTrackerViewer", "Skeleton"))
         self.checkBox_ROI2.setText(_translate("MWTrackerViewer", "Skeleton"))
         self.pushButton_split.setText(_translate("MWTrackerViewer", "Split Trajectory"))
         self.checkBox_showFood.setText(_translate("MWTrackerViewer", "Show Food Contour"))
         self.toolBar.setWindowTitle(_translate("MWTrackerViewer", "toolBar"))
-

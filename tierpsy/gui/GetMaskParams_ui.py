@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file 'GetMaskParams.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.12.3
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_GetMaskParams(object):
     def setupUi(self, GetMaskParams):
@@ -452,4 +454,3 @@ class Ui_GetMaskParams(object):
         self.pushButton_paramFile.setText(_translate("GetMaskParams", "Parameters File"))
         self.pushButton_next.setText(_translate("GetMaskParams", "Next Chunk"))
         self.pushButton_play.setText(_translate("GetMaskParams", "Play"))
-

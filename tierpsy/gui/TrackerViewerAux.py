@@ -1,5 +1,6 @@
 import json
 import os
+from pathlib import Path
 import sys
 
 import numpy as np
@@ -88,6 +89,8 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
 
         self.results_dir = ''
         self.skeletons_file = ''
+        self.skel_file_id = None
+
         self.trajectories_data = None
         self.traj_time_grouped = None
         self.traj_worm_index_grouped = None
@@ -116,7 +119,7 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
         selected_file, _ = QFileDialog.getOpenFileName(
             self, 'Select file with the worm skeletons', self.results_dir, "Skeletons files (*_skeletons.hdf5);; All files (*)")
 
-        if not os.path.exists(selected_file):
+        if not Path(selected_file).exists():
             return
 
         self.updateSkelFile(selected_file)
@@ -128,7 +131,12 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
         self.skel_dat = {}
         
         self.skeletons_file = selected_file
-        self.ui.lineEdit_skel.setText(self.skeletons_file)
+        self.ui.lineEdit_skel.setText(str(self.skeletons_file))
+
+        if self.skel_file_id is not None:
+            self.skel_file_id.close()
+            self.skel_file_id = None
+
         try:
             #find were to read the skeletons and pixel2microns transforming factor
             self.stage_position_pix =  None
@@ -138,70 +146,77 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
             self.fps, _, self.time_units = fps_out
             self.microns_per_pixel, self.xy_units = microns_per_pixel_out
             
-
-            with tables.File(self.skeletons_file, 'r') as skel_file_id:
-
-                if '/coordinates' in skel_file_id:
-                    
-                    self.coordinates_group = '/coordinates/'
-                    self.coordinates_fields = {
-                        'dorsal_contours':'contour_side2', 
-                        'skeletons':'skeleton', 
-                        'ventral_contours':'contour_side1'
-                    }
-                    if '/stage_position_pix' in self.fid:
-                        self.stage_position_pix = self.fid.get_node('/stage_position_pix')[:]
+            self.skel_file_id = tables.File(self.skeletons_file, 'r')
+            #with tables.File(self.skeletons_file, 'r') as skel_file_id:
+            if '/coordinates' in self.skel_file_id:
                 
-                else:
-                    self.microns_per_pixel = 1.
-                    self.coordinates_group = '/'
+                self.coordinates_group = '/coordinates/'
+                self.coordinates_fields = {
+                    'contour_side2' : 'dorsal_contours', 
+                    'skeleton' : 'skeletons', 
+                    'contour_side1' : 'ventral_contours'
+                }
 
-                    self.coordinates_fields = {
-                        'contour_side1':'contour_side1', 
-                        'skeleton':'skeleton', 
-                        'contour_side2':'contour_side2'
-                    }
-
-                self.coordinates_fields = {k:v for k,v in self.coordinates_fields.items() if (self.coordinates_group + k) in skel_file_id}
+                try:
+                    self.video_reader.fid.get_node('/stage_position_pix')[:]
+                except:
+                    pass
                 
+            else:
+                self.microns_per_pixel = 1.
+                self.coordinates_group = '/'
+
+                self.coordinates_fields = {
+                    'contour_side1':'contour_side1', 
+                    'skeleton':'skeleton', 
+                    'contour_side2':'contour_side2'
+                }
+
+            self.coordinates_fields = {k:v for k,v in self.coordinates_fields.items() if (self.coordinates_group + v) in self.skel_file_id }
+            
             #read trajectories data, and other useful factors
-            with pd.HDFStore(self.skeletons_file, 'r') as ske_file_id:
-                if 'trajectories_data' in ske_file_id:
-                    self.trajectories_data = ske_file_id['/trajectories_data']
-                    self.is_estimated_trajectories_data = False
-                else:
-                    timestamp = [np.nan]
-                    if '/timestamp/raw' in self.fid:
-                        timestamp = self.fid.get_node('/timestamp/raw')[:]
-
-
-                    if np.any(np.isnan(timestamp)):
-                        tot = self.fid.get_node('/mask').shape[0]
-                        timestamp = np.arange(tot)
-
-
-                    self.trajectories_data = _estimate_trajectories_data(self.skeletons_file, timestamp, self.microns_per_pixel, self.stage_position_pix)
-                    self.is_estimated_trajectories_data = True 
+            #with pd.HDFStore(self.skeletons_file, 'r') as skel_file_id:
+            if '/trajectories_data' in self.skel_file_id:
+                #self.trajectories_data = self.skel_file_id['/trajectories_data']
+                rec = self.skel_file_id.get_node('/trajectories_data')[:]
+                self.trajectories_data = pd.DataFrame(rec)
+                self.is_estimated_trajectories_data = False
+            else:
+                timestamp = [np.nan]
                 
-                #group data
-                self.traj_time_grouped = self.trajectories_data.groupby('frame_number')
-                self.traj_worm_index_grouped = self.trajectories_data.groupby('worm_index_joined')
+                try:
+                    timestamp = self.video_reader.fid.get_node('/timestamp/raw')[:]
+                except:
+                    pass
+                
 
-                # read the size of the structural element used in to calculate
-                # the mask
-                if '/provenance_tracking/int_ske_orient' in ske_file_id:
-                    prov_str = ske_file_id.get_node(
-                        '/provenance_tracking/ske_create').read()
-                    func_arg_str = json.loads(
-                        prov_str.decode("utf-8"))['func_arguments']
-                    strel_size = json.loads(func_arg_str)['strel_size']
-                    if isinstance(strel_size, (list, tuple)):
-                        strel_size = strel_size[0]
+                if np.any(np.isnan(timestamp)):
+                    tot = len(self.video_reader)
+                    timestamp = np.arange(tot)
 
-                    self.strel_size = strel_size
-                else:
-                    # use default
-                    self.strel_size = dflt_skel_size
+
+                self.trajectories_data = _estimate_trajectories_data(self.skeletons_file, timestamp, self.microns_per_pixel, self.stage_position_pix)
+                self.is_estimated_trajectories_data = True 
+            
+            #group data
+            self.traj_time_grouped = self.trajectories_data.groupby('frame_number')
+            self.traj_worm_index_grouped = self.trajectories_data.groupby('worm_index_joined')
+
+            # read the size of the structural element used in to calculate
+            # the mask
+            if '/provenance_tracking/int_ske_orient' in self.skel_file_id:
+                prov_str = self.skel_file_id.get_node(
+                    '/provenance_tracking/ske_create').read()
+                func_arg_str = json.loads(
+                    prov_str.decode("utf-8"))['func_arguments']
+                strel_size = json.loads(func_arg_str)['strel_size']
+                if isinstance(strel_size, (list, tuple)):
+                    strel_size = strel_size[0]
+
+                self.strel_size = strel_size
+            else:
+                # use default
+                self.strel_size = dflt_skel_size
             
             
 
@@ -213,43 +228,36 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
         #here i am updating the image
         self.ui.spinBox_frame.setValue(0)
 
-    def updateImGroup(self, h5path):
-        super().updateImGroup(h5path)
-        try:
-            self.frame_save_interval = int(self.image_group._v_attrs['save_interval'])
-        except:
-            self.frame_save_interval = 1
-
-    def updateVideoFile(self, vfilename, possible_ext = ['_featuresN.hdf5', '_features.hdf5', '_skeletons.hdf5']):
+    def updateVideoFile(self, vfilename, possible_ext = ['_featuresN.hdf5', '_features.hdf5', '_skeletons.hdf5', '_skeletonsNN.hdf5']):
         super().updateVideoFile(vfilename)
-        if self.image_group is None:
+        if not self.is_video_opened:
             return
 
-        #find if it is a fluorescence image
-        self.is_light_background = 1 if not 'is_light_background' in self.image_group._v_attrs \
-            else self.image_group._v_attrs['is_light_background']
+        try:
+            self.is_light_background = self.video_reader.is_light_background
+        except:
+            self.is_light_background = 1
         
-        if '/trajectories_data' in self.fid:
-            self.skeletons_file = vfilename
-        else:
-            videos_dir, basename = os.path.split(vfilename)
-            basename = os.path.splitext(basename)[0]
+        vfilename = Path(vfilename)
+        videos_dir = vfilename.parent
+        basename = vfilename.stem
 
-            self.skeletons_file = ''
-            self.results_dir = ''
+        self.skeletons_file = ''
+        self.results_dir = ''
 
-            possible_dirs = [
-                videos_dir, videos_dir.replace(
-                    'MaskedVideos', 'Results'), os.path.join(
-                    videos_dir, 'Results')]
+        possible_dirs = [
+                videos_dir, 
+                Path(str(videos_dir).replace('MaskedVideos', 'Results')),
+                videos_dir /'Results'
+                ]
 
-            for new_dir in possible_dirs:
-                for ext_p in possible_ext:
-                    new_skel_file = os.path.join(new_dir, basename + ext_p)
-                    if os.path.exists(new_skel_file):
-                        self.skeletons_file = new_skel_file
-                        self.results_dir = new_dir
-                        break
+        for new_dir in possible_dirs:
+            for ext_p in possible_ext:
+                new_skel_file = new_dir / (basename + ext_p)
+                if new_skel_file.exists():
+                    self.skeletons_file = new_skel_file
+                    self.results_dir = new_dir
+                    break
 
 
 
@@ -260,8 +268,11 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
             if not isinstance(self.traj_time_grouped, pd.core.groupby.DataFrameGroupBy):
                 raise KeyError
             
-            frame_data = self.traj_time_grouped.get_group(self.frame_save_interval*frame_number)
-            return frame_data
+            if self.is_video_opened:
+                frame_data = self.traj_time_grouped.get_group(self.video_reader.frame_save_interval*frame_number)
+                return frame_data
+            else:
+                raise ValueError
 
         except KeyError:
             return None
@@ -302,24 +313,23 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
         skel_dat = {}
 
 
-        with tables.File(self.skeletons_file, 'r') as ske_file_id:
-            for ff, tt in self.coordinates_fields.items():
-                field = self.coordinates_group + ff
-                if field in ske_file_id:
-                    dat = ske_file_id.get_node(field)[skel_id]
-                    dat /= self.microns_per_pixel
-                    
-                    if self.stage_position_pix is not None and self.stage_position_pix.size > 0:
-                        #subtract stage motion if necessary
-                        dat -= self.stage_position_pix[self.frame_number]
-                    
-                    dat[:, 0] = (dat[:, 0] - roi_corner[0] + 0.5) * c_ratio_x
-                    dat[:, 1] = (dat[:, 1] - roi_corner[1] + 0.5) * c_ratio_y
+        for tt, ff in self.coordinates_fields.items():
+            field = self.coordinates_group + ff
+            if field in self.skel_file_id:
+                dat = self.skel_file_id.get_node(field)[skel_id]
+                dat /= self.microns_per_pixel
+                
+                if self.stage_position_pix is not None and self.stage_position_pix.size > 0:
+                    #subtract stage motion if necessary
+                    dat -= self.stage_position_pix[self.frame_number]
+                
+                dat[:, 0] = (dat[:, 0] - roi_corner[0] + 0.5) * c_ratio_x
+                dat[:, 1] = (dat[:, 1] - roi_corner[1] + 0.5) * c_ratio_y
 
-                else:
-                    dat = np.full((1,2), np.nan)
+            else:
+                dat = np.full((1,2), np.nan)
 
-                skel_dat[tt] = dat
+            skel_dat[tt] = dat
 
         if 'is_good_skel' in row_data and row_data['is_good_skel'] == 0:
             skel_colors = BAD_SKEL_COLOURS

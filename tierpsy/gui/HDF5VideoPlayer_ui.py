@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file 'HDF5VideoPlayer.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.12.3
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_HDF5VideoPlayer(object):
     def setupUi(self, HDF5VideoPlayer):
@@ -148,4 +150,3 @@ class Ui_HDF5VideoPlayer(object):
         self.playButton.setText(_translate("HDF5VideoPlayer", "Play"))
         self.pushButton_video.setText(_translate("HDF5VideoPlayer", "Select File"))
         self.toolBar.setWindowTitle(_translate("HDF5VideoPlayer", "toolBar"))
-

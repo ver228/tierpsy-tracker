@@ -140,13 +140,13 @@ class SWTrackerViewer_GUI(TrackerViewerAuxGUI):
         else:
             try:
                 if self.stage_position_pix is None:
-                    if '/stage_position_pix' in self.fid:
-                        self.stage_position_pix = self.fid.get_node('/stage_position_pix')[:]
-                    else:
-                        n_frames = self.fid.get_node('/mask').shape[0]
+                    try:
+                        self.stage_position_pix = self.video_reader.fid.get_node('/stage_position_pix')[:]
+                    except:
+                        n_frames = len(self.video_reader)
                         self.stage_position_pix = np.full((n_frames,2), np.nan)
                 
-                timestamp = self.fid.get_node('/timestamp/raw')[:]
+                timestamp = self.video_reader.fid.get_node('/timestamp/raw')[:]
                 with pd.HDFStore(self.skeletons_file, 'r') as ske_file_id:
                     #this could be better so I do not have to load everything into memory, but this is faster
                     self.trajectories_data = ske_file_id['/features_timeseries']
