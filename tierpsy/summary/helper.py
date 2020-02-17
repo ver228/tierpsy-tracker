@@ -116,13 +116,15 @@ def get_fnamesum_headers(f2,feature_type,summary_type,iwin,
 
     if (n_windows==1 and time_window==[0,-1]):
         header = '\n'.join([
-            ','.join(['# FEATURE SUMMARIES FILE',f2]),
-            ','.join(['# TIERPSY_VERSION',version]),
-            ','.join(['# SUMMARY_TYPE','{}_{}'.format(feature_type, summary_type)]),
-            ','.join(['# SELECTED FEATURES',select_feat])
+            ','.join(['# NUMBER OF HEADER LINES', str(5)]),
+            ','.join(['# FEATURE SUMMARIES FILE', f2]),
+            ','.join(['# TIERPSY_VERSION', version]),
+            ','.join(['# SUMMARY_TYPE', '{}_{}'.format(feature_type, summary_type)]),
+            ','.join(['# SELECTED FEATURES', select_feat])
             ]) + '\n'
     else:
         header = '\n'.join([
+            ','.join(['# NUMBER OF HEADER LINES', str(8)]),
             ','.join(['# FEATURE SUMMARIES FILE',f2]),
             ','.join(['# TIERPSY_VERSION',version]),
             ','.join(['# SUMMARY_TYPE','{}_{}'.format(feature_type, summary_type)]),

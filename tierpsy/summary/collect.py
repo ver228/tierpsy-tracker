@@ -286,7 +286,7 @@ def make_df_filenames(fnames):
     every time window
     """
     dd = tuple(zip(*enumerate(sorted(fnames))))
-    df_files = pd.DataFrame({'file_id' : dd[0], 'file_name' : dd[1]})
+    df_files = pd.DataFrame({'file_id' : dd[0], 'filename' : dd[1]})
     df_files['is_good'] = False
     return df_files
 
@@ -412,7 +412,7 @@ def calculate_summaries(
     is_featnames_written = [False for i in range(len(time_windows_ints))]
 
     for ifile,row in df_files.iterrows():
-        fname = row['file_name']
+        fname = row['filename']
         file_id = row['file_id']
 
         summaries_per_win = summary_func(fname)
@@ -469,7 +469,9 @@ def calculate_summaries(
 if __name__ == '__main__':
 
     root_dir = \
-        '/Users/em812/Data/Tierpsy_GUI/test_results_multiwell/20190808_subset'
+        '/Users/em812/Data/Tierpsy_GUI/test_results_multiwell/Syngenta'
+        #'/Users/em812/Data/Tierpsy_GUI/test_results_multiwell/20190808_subset'
+
     is_manual_index = False
     feature_type = 'tierpsy'
     # feature_type = 'openworm'
