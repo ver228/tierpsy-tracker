@@ -472,7 +472,7 @@ if __name__ == '__main__':
         '/Users/em812/Data/Tierpsy_GUI/test_results_multiwell/Syngenta'
         #'/Users/em812/Data/Tierpsy_GUI/test_results_multiwell/20190808_subset'
 
-    is_manual_index = False
+    is_manual_index = True
     feature_type = 'tierpsy'
     # feature_type = 'openworm'
     # summary_type = 'plate_augmented'
@@ -489,13 +489,13 @@ if __name__ == '__main__':
 ##    summary_type = 'plate'
 #    summary_type = 'trajectory'
 
-    fold_args = dict(
-                 n_folds = 2,
-                 frac_worms_to_keep = 0.8,
-                 time_sample_seconds = 10*60
-                 )
+    # fold_args = dict(
+    #              n_folds = 2,
+    #              frac_worms_to_keep = 0.8,
+    #              time_sample_seconds = 10*60
+    #              )
 
-    time_windows = '0:150' #'0:end:1000' #'0:end' #
+    time_windows = '0:end' #'0:end:1000' #'0:end' #
     time_units = 'frame numbers'
     select_feat = 'all' #'tierpsy_2k'
     keywords_include = ''
