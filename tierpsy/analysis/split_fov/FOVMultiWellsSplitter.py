@@ -221,21 +221,22 @@ class FOVMultiWellsSplitter(object):
 
 
 
-    def write_fov_wells_to_file(self, filename):
+    def write_fov_wells_to_file(self, filename, table_name='fov_wells'):
+        table_path = '/'+table_name
         with tables.File(filename, 'r+') as fid:
-            if '/fov_wells' in fid:
-                fid.remove_node('/fov_wells')
+            if table_path in fid:
+                fid.remove_node(table_path)
             fid.create_table('/',
-                             'fov_wells',
+                             table_name,
                              obj = self.get_wells_data().to_records(index=False),
                              filters = TABLE_FILTERS)
-            fid.get_node('/fov_wells')._v_attrs['img_shape']     = self.img_shape
-            fid.get_node('/fov_wells')._v_attrs['camera_serial'] = self.camera_serial
-            fid.get_node('/fov_wells')._v_attrs['px2um']         = self.px2um
-            fid.get_node('/fov_wells')._v_attrs['channel']       = self.channel
-            fid.get_node('/fov_wells')._v_attrs['n_wells']       = self.n_wells
-            fid.get_node('/fov_wells')._v_attrs['whichsideup']   = self.whichsideup
-            fid.get_node('/fov_wells')._v_attrs['well_shape']    = self.well_shape
+            fid.get_node(table_path)._v_attrs['img_shape']     = self.img_shape
+            fid.get_node(table_path)._v_attrs['camera_serial'] = self.camera_serial
+            fid.get_node(table_path)._v_attrs['px2um']         = self.px2um
+            fid.get_node(table_path)._v_attrs['channel']       = self.channel
+            fid.get_node(table_path)._v_attrs['n_wells']       = self.n_wells
+            fid.get_node(table_path)._v_attrs['whichsideup']   = self.whichsideup
+            fid.get_node(table_path)._v_attrs['well_shape']    = self.well_shape
 
 
 
