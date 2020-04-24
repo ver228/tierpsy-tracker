@@ -1,6 +1,6 @@
 # Installation Instructions
 
-## Installation from precompiled packages [recommended]
+## Installation from precompiled packages [latest version not available]
 - Download python 3.6>= using [anaconda](https://www.anaconda.com/download/) or [miniconda](https://conda.io/miniconda.html) if you prefer a lighter installation.
 - Open a Terminal in OSX or Linux. In Windows you need to open the Anaconda Prompt.
 - [Optional] I would recommend to create and activate an [enviroment](https://conda.io/docs/user-guide/tasks/manage-environments.html) as:
