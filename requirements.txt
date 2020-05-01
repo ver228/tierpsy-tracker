@@ -1,7 +1,7 @@
 cython
 keras=2.1.5 
-opencv=3.4.3
-tensorflow=1.0.0
+opencv=3.4.2
+tensorflow
 numpy >=1.14
 matplotlib 
 pytables 

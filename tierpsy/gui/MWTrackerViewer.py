@@ -1006,7 +1006,7 @@ class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
 
     # update image
     def updateImage(self):
-        if self.image_group is None:
+        if (self.image_group is None) and (self.isimgstore is False):
             return
 
         super(TrackerViewerAuxGUI, self).readCurrentFrame()
