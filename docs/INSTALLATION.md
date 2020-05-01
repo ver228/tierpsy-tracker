@@ -1,25 +1,26 @@
 # Installation Instructions
 
-## Installation from precompiled packages [recommended]
+## Installation from precompiled packages [latest version not available]
 - Download python 3.6>= using [anaconda](https://www.anaconda.com/download/) or [miniconda](https://conda.io/miniconda.html) if you prefer a lighter installation.
 - Open a Terminal in OSX or Linux. In Windows you need to open the Anaconda Prompt.
 - [Optional] I would recommend to create and activate an [enviroment](https://conda.io/docs/user-guide/tasks/manage-environments.html) as:
 
 ```bash
 
-conda create -n tierpsy 
+conda create -n tierpsy
 
 conda activate tierpsy #[Windows]
 source activate tierpsy #[OSX or Linux]
 ```
 - Finally, donwload the package from conda-forge
 ```bash
-conda install tierpsy -c conda-forge
+conda install -c conda-forge tierpsy numpy=1.16.3 pytables=3.5.1 opencv=3.4.8 pandas=0.24.2 #[Windows]
+conda install tierpsy -c conda-forge tierpsy python=3.6 opencv=3.4.2 'pandas<1.0' #[OSX]
 ```
 - After you can start tierpsy tracker by typing:
 ```bash
 tierpsy_gui
-``` 
+```
 Do not forget to activate the enviroment every time you start a new terminal session.
 
 On OSX the first time `tierpsy_gui` is intialized it will create a file in the Desktop called tierpsy_gui.command. By double-cliking on this file tierpsy can be started without having to open a terminal.
@@ -29,7 +30,7 @@ On OSX the first time `tierpsy_gui` is intialized it will create a file in the D
 ```bash
 conda install -c conda-forge python=3.6
 conda install -c conda-forge tierpsy
-``` 
+```
 - It seems that there might be some problems with some `opencv` versions available through `conda`. If you have problems reading video files or encounter error related with `import cv2`, then you can try to install opencv using pip as:
 ```bash
 pip install opencv-python-headless
@@ -47,7 +48,7 @@ conda install -c conda-forge ffmpeg
 ## Installation from source [for development]
 - Download Python >= 3.6 using [anaconda](https://www.anaconda.com/download/) or [miniconda](https://conda.io/miniconda.html).
 - Install [git](https://git-scm.com/). [Here](https://gist.github.com/derhuerst/1b15ff4652a867391f03) are some instructions to install it.
-- Install a [C compiler compatible with cython](http://cython.readthedocs.io/en/latest/src/quickstart/install.html). In Windows, you can use [Visual C++ 2015 Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/). In OSX, if you install [homebrew](https://brew.sh/) it will setup the C compiler without the need to download XCode from the appstore. 
+- Install a [C compiler compatible with cython](http://cython.readthedocs.io/en/latest/src/quickstart/install.html). In Windows, you can use [Visual C++ 2015 Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/). In OSX, we recommend to download XCode from the appstore.
 
 - Open a Terminal or Anaconda prompt and type:
 ```bash
