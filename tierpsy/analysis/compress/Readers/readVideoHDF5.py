@@ -56,6 +56,8 @@ class readVideoHDF5:
 
         return self.read()
 
+    def __len__(self):
+        return self.tot_frames
 
     def release(self):
         # close the buffer
