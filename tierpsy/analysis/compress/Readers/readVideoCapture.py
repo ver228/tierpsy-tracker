@@ -44,9 +44,9 @@ class readVideoCapture():
         if self._is_eof:
             return self._n_frames_read
         else:
-            warnings.warn(('Number of frames being estimated. '
-                           + 'Could be inaccurate, try again after reading '
-                           + 'the whole video'))
+            # warnings.warn(('Number of frames being estimated. '
+            #                + 'Could be inaccurate, try again after reading '
+            #                + 'the whole video'))
             return int(self.vid.get(cv2.CAP_PROP_FRAME_COUNT))
 
     def release(self):
