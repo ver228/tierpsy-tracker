@@ -440,7 +440,11 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
         # now that the whole video is read, we definitely have a better estimate
         # for its number of frames. so set the save_interval again
         if is_bgnd_subtraction:
-            bg_dataset._v_attrs['save_interval'] = len(vid)
+            # bg_dataset._v_attrs['save_interval'] = len(vid)
+            # so that didn't work. Either I have an off by one,
+            # or if the video is corrupted it's just safer to do:
+            bg_dataset._v_attrs['save_interval'] = mask_dataset.shape[0]
+
         # close the video
         vid.release()
 
