@@ -26,7 +26,7 @@ class readVideoHDF5:
         self.width = self.dataset.shape[2]
         self.height = self.dataset.shape[1]
         self.dtype = self.dataset.dtype
-        
+
         self.tot_pix = self.height * self.width
 
         # initialize pointer for frames
@@ -48,6 +48,16 @@ class readVideoHDF5:
             return (1, image)
         else:
             return (0, [])
+
+    def read_frame(self, frame_number):
+
+        # set current frame with -1 offset because it's += 1 in self.read()
+        self.curr_frame = frame_number - 1
+
+        return self.read()
+
+    def __len__(self):
+        return self.tot_frames
 
     def release(self):
         # close the buffer

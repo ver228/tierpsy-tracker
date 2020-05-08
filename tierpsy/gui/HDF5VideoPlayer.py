@@ -6,6 +6,9 @@ import os
 import numpy as np
 from functools import partial
 
+from tierpsy.analysis.compress.Readers.readLoopBio import readLoopBio
+
+
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
@@ -88,45 +91,45 @@ class ViewsWithZoom():
             numDegrees = event.angleDelta() / 8
 
             delta = numPixels if not numPixels.isNull() else numDegrees
-            
+
             if event.source() == 0:
                 event_type = "mouse" # scroll wheels
             elif event.source() == 1:
                 event_type = "trackpad" # anything OS-interpreted
             else:
                 raise Exception("Unexpected event source in zoom.")
-                
+
             self.zoom(delta.y(), event_type)
-        
+
     def zoom(self, zoom_direction, event_type):
-        
+
         assert event_type in ["mouse", "trackpad", "keypress"]
-        
+
         factor_zoomin = 1
         factor_zoomout = 1
-        
+
         # Mouse scroll
         if event_type == "mouse":
             factor_zoomin *= 1.15
             factor_zoomout /= 1.15
-        
+
         # Trackpad scroll
         elif event_type == "trackpad":
             factor_zoomin *= 1.05
             factor_zoomout /= 1.05
-        
+
         # Keypress +/- scroll
         elif event_type == "keypress":
             factor_zoomin *= 1.15
             factor_zoomout /= 1.15
-        
+
         if zoom_direction > 0:
             factor = factor_zoomin
-            self._zoom += 1        
+            self._zoom += 1
         else:
             factor = factor_zoomout
             self._zoom -= 1
-            
+
         # Zoom in/out scaling
         if self._zoom > 0:
             self._view.scale(factor, factor)
@@ -137,7 +140,7 @@ class ViewsWithZoom():
         else:
             self._zoom = 0
             self.zoomFitInView()
-                    
+
     def zoomFitInView(self):
         rect = QtCore.QRectF(self._canvas.pixmap().rect())
         if not rect.isNull():
@@ -219,12 +222,14 @@ class SimplePlayer(QtWidgets.QMainWindow):
         self.timer.start(round(1000 / self.fps))
         self.isPlay = True
         self.ui.playButton.setText('Stop')
+        self.ui.playButton.repaint()
         self.ui.doubleSpinBox_fps.setEnabled(False)
 
     def stopPlay(self):
         self.timer.stop()
         self.isPlay = False
         self.ui.playButton.setText('Play')
+        self.ui.playButton.repaint()
         self.ui.doubleSpinBox_fps.setEnabled(True)
 
     # Function to get the new valid frame during video play
@@ -269,6 +274,7 @@ class HDF5VideoPlayerGUI(SimplePlayer):
         self.h5path = None
         self.frame_img = None
         self.frame_qimg = None
+        self.isimgstore = False
 
         #default expected groups in the hdf5
         self.ui.comboBox_h5path.setItemText(0, "/mask")
@@ -312,7 +318,7 @@ class HDF5VideoPlayerGUI(SimplePlayer):
         if self.fid is None:
             # break no file open, nothing to do here
             return
-        
+
         key = event.key()
 
         if key == Qt.Key_Minus:
@@ -321,6 +327,15 @@ class HDF5VideoPlayerGUI(SimplePlayer):
             self.mainImage.zoom(1, "keypress")
 
         super().keyPressEvent(event)
+
+
+    def playVideo(self):
+        if (self.isimgstore is False) and (self.image_group is None):
+            return
+        if not self.isPlay:
+            self.startPlay()
+        else:
+            self.stopPlay()
 
     # frame spin box
     def updateFrameNumber(self):
@@ -335,14 +350,19 @@ class HDF5VideoPlayerGUI(SimplePlayer):
         self.mainImage.setPixmap(self.frame_qimg)
 
     def readCurrentFrame(self):
-        if self.image_group is None:
-            self.frame_qimg = None
-            return
-        self.frame_img = self.image_group[self.frame_number, :, :]
+        if self.isimgstore:
+            _, self.frame_img = self.imgstore.read_frame(self.frame_number)
+            assert _ == 1, 'imgstore frame read failed'
+        else:
+            if self.image_group is None:
+                self.frame_qimg = None
+                return
+            self.frame_img = self.image_group[self.frame_number, :, :]
         self._normalizeImage()
 
 
     def _normalizeImage(self):
+
         if self.frame_img is None:
             return
 
@@ -387,24 +407,44 @@ class HDF5VideoPlayerGUI(SimplePlayer):
             self.mainImage.cleanCanvas()
             self.fid = None
             self.image_group = None
+            self.isimgstore = False
 
         self.vfilename = vfilename
         self.ui.lineEdit_video.setText(self.vfilename)
         self.videos_dir = self.vfilename.rpartition(os.sep)[0] + os.sep
 
-        try:
-            self.fid = tables.File(vfilename, 'r')
-        except (IOError, tables.exceptions.HDF5ExtError):
-            self.fid = None
-            self.image_group = None
-            QtWidgets.QMessageBox.critical(
-                self,
-                '',
-                "The selected file is not a valid .hdf5. Please select a valid file",
-                QtWidgets.QMessageBox.Ok)
-            return
+        if vfilename.endswith('.hdf5'):
+            try:
+                self.fid = tables.File(vfilename, 'r')
+            except (IOError, tables.exceptions.HDF5ExtError):
+                self.fid = None
+                self.image_group = None
+                QtWidgets.QMessageBox.critical(
+                    self,
+                    '',
+                    "The selected file is not a valid .hdf5. Please select a valid file",
+                    QtWidgets.QMessageBox.Ok)
+                return
 
+        else:
+            try:
+                self.imgstore = readLoopBio(self.vfilename)
+                self.isimgstore = True
+                self.fid = None
+                self.image_group = None
+            except ValueError as EE:
+                self.fid = None
+                self.image_group = None
+                print(EE)
+                QtWidgets.QMessageBox.critical(
+                    self,
+                    '',
+                    "The selected file is not a supported file. Please select a valid file",
+                    QtWidgets.QMessageBox.Ok)
+                return
         self.getImGroup(0)
+
+
 
     def updateGroupNames(self):
         valid_groups = []
@@ -436,37 +476,44 @@ class HDF5VideoPlayerGUI(SimplePlayer):
 
     # read a valid groupset from the hdf5
     def updateImGroup(self, h5path):
-        if self.fid is None:
-            self.image_group = None
-            self.h5path = None
-            return
+        if self.isimgstore is False:
 
-        #self.h5path = self.ui.comboBox_h5path.text()
-        if h5path not in self.fid:
-            self.mainImage.cleanCanvas()
-            QtWidgets.QMessageBox.critical(
-                self,
-                'The groupset path does not exist',
-                "The groupset path does not exists. You must specify a valid groupset path",
-                QtWidgets.QMessageBox.Ok)
-            self.image_group == None
-            return
+            if self.fid is None:
+                self.image_group = None
+                self.h5path = None
+                return
 
-        self.h5path = h5path
-        self.image_group = self.fid.get_node(h5path)
-        if len(self.image_group.shape) != 3:
-            self.mainImage.cleanCanvas()
-            QtWidgets.QMessageBox.critical(
-                self,
-                'Invalid groupset',
-                "Invalid groupset. The groupset must have three dimensions",
-                QtWidgets.QMessageBox.Ok)
-            self.image_group == None
-            return
+            #self.h5path = self.ui.comboBox_h5path.text()
+            if h5path not in self.fid:
+                self.mainImage.cleanCanvas()
+                QtWidgets.QMessageBox.critical(
+                    self,
+                    'The groupset path does not exist',
+                    "The groupset path does not exists. You must specify a valid groupset path",
+                    QtWidgets.QMessageBox.Ok)
+                self.image_group == None
+                return
 
-        self.tot_frames = self.image_group.shape[0]
-        self.image_height = self.image_group.shape[1]
-        self.image_width = self.image_group.shape[2]
+            self.h5path = h5path
+            self.image_group = self.fid.get_node(h5path)
+            if len(self.image_group.shape) != 3:
+                self.mainImage.cleanCanvas()
+                QtWidgets.QMessageBox.critical(
+                    self,
+                    'Invalid groupset',
+                    "Invalid groupset. The groupset must have three dimensions",
+                    QtWidgets.QMessageBox.Ok)
+                self.image_group == None
+                return
+
+            self.tot_frames = self.image_group.shape[0]
+            self.image_height = self.image_group.shape[1]
+            self.image_width = self.image_group.shape[2]
+
+        else:  # imgstore
+            self.tot_frames = self.imgstore.tot_frames
+            self.image_height = self.imgstore.height
+            self.image_width = self.imgstore.width
 
         self.ui.spinBox_frame.setMaximum(self.tot_frames - 1)
         self.ui.imageSlider.setMaximum(self.tot_frames - 1)

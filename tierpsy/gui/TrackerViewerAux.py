@@ -39,42 +39,42 @@ def _estimate_trajectories_data(ow_feat_file, timestamp, microns_per_pixel, stag
 
 
     with pd.HDFStore(ow_feat_file, 'r') as fid:
-       features_timeseries = fid['features_timeseries']     
-    
+       features_timeseries = fid['features_timeseries']
+
     features_timeseries['frame_number'] = features_timeseries['timestamp'].map(stamp2frame)
     features_timeseries = features_timeseries.dropna(subset=['frame_number'])
-    
-    
-    
+
+
+
     df = []
     with tables.File(ow_feat_file, 'r') as fid:
         skels = fid.get_node('/coordinates/skeletons')
         mid_ind = skels.shape[1]//2
         for w_ind, w_data in features_timeseries.groupby('worm_index'):
             midbody_coords = skels[w_data.index, mid_ind, :]
-            
+
             new_data = pd.DataFrame(midbody_coords, columns=['coord_x', 'coord_y'], index=w_data.index)/microns_per_pixel
             new_data['worm_index_joined'] = w_ind
-            new_data['frame_number'] = features_timeseries['frame_number'] 
+            new_data['frame_number'] = features_timeseries['frame_number']
             new_data['roi_size'] = w_data['length'].max()/microns_per_pixel
             new_data['threshold'] = 255
             new_data['area'] = w_data['area']/microns_per_pixel**2
             new_data['was_skeletonized'] = True
             new_data['skeleton_id'] = w_data.index
-            
+
             new_data = new_data.drop_duplicates('frame_number')
-            
+
             if stage_position_pix is not None:
                 #subtract stage motion if necessary
                 ss = stage_position_pix[new_data['frame_number'].astype(np.int)]
                 new_data['coord_x'] -= ss[:, 0]
                 new_data['coord_y'] -= ss[:, 1]
 
-            
+
 
             df.append(new_data)
     trajectories_data = pd.concat(df)
-    
+
     return trajectories_data
 #%%
 
@@ -91,11 +91,11 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
         self.trajectories_data = None
         self.traj_time_grouped = None
         self.traj_worm_index_grouped = None
-        
+
         self.skel_dat = {}
 
         self.is_estimated_trajectories_data = False
-        self.frame_save_interval = 1 
+        self.frame_save_interval = 1
 
         self.microns_per_pixel = 1.
         self.fps = 1.
@@ -126,7 +126,7 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
         self.traj_time_grouped = None
         self.traj_worm_index_grouped = None
         self.skel_dat = {}
-        
+
         self.skeletons_file = selected_file
         self.ui.lineEdit_skel.setText(self.skeletons_file)
         try:
@@ -137,33 +137,33 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
             fps_out, microns_per_pixel_out, _ = read_unit_conversions(self.skeletons_file)
             self.fps, _, self.time_units = fps_out
             self.microns_per_pixel, self.xy_units = microns_per_pixel_out
-            
+
 
             with tables.File(self.skeletons_file, 'r') as skel_file_id:
 
                 if '/coordinates' in skel_file_id:
-                    
+
                     self.coordinates_group = '/coordinates/'
                     self.coordinates_fields = {
-                        'dorsal_contours':'contour_side2', 
-                        'skeletons':'skeleton', 
+                        'dorsal_contours':'contour_side2',
+                        'skeletons':'skeleton',
                         'ventral_contours':'contour_side1'
                     }
-                    if '/stage_position_pix' in self.fid:
+                    if (not self.isimgstore) and ('/stage_position_pix' in self.fid):
                         self.stage_position_pix = self.fid.get_node('/stage_position_pix')[:]
-                
+
                 else:
                     self.microns_per_pixel = 1.
                     self.coordinates_group = '/'
 
                     self.coordinates_fields = {
-                        'contour_side1':'contour_side1', 
-                        'skeleton':'skeleton', 
+                        'contour_side1':'contour_side1',
+                        'skeleton':'skeleton',
                         'contour_side2':'contour_side2'
                     }
 
                 self.coordinates_fields = {k:v for k,v in self.coordinates_fields.items() if (self.coordinates_group + k) in skel_file_id}
-                
+
             #read trajectories data, and other useful factors
             with pd.HDFStore(self.skeletons_file, 'r') as ske_file_id:
                 if 'trajectories_data' in ske_file_id:
@@ -181,8 +181,8 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
 
 
                     self.trajectories_data = _estimate_trajectories_data(self.skeletons_file, timestamp, self.microns_per_pixel, self.stage_position_pix)
-                    self.is_estimated_trajectories_data = True 
-                
+                    self.is_estimated_trajectories_data = True
+
                 #group data
                 self.traj_time_grouped = self.trajectories_data.groupby('frame_number')
                 self.traj_worm_index_grouped = self.trajectories_data.groupby('worm_index_joined')
@@ -202,8 +202,8 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
                 else:
                     # use default
                     self.strel_size = dflt_skel_size
-            
-            
+
+
 
         except (IOError, KeyError, tables.exceptions.HDF5ExtError, tables.exceptions.NoSuchNodeError):
             self.trajectories_data = None
@@ -222,14 +222,16 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
 
     def updateVideoFile(self, vfilename, possible_ext = ['_featuresN.hdf5', '_features.hdf5', '_skeletons.hdf5']):
         super().updateVideoFile(vfilename)
-        if self.image_group is None:
+        if (self.image_group is None) and (self.isimgstore is False):
             return
 
         #find if it is a fluorescence image
-        self.is_light_background = 1 if not 'is_light_background' in self.image_group._v_attrs \
-            else self.image_group._v_attrs['is_light_background']
-        
-        if '/trajectories_data' in self.fid:
+        if (self.isimgstore is True) or ('is_light_background' not in self.image_group._v_attrs):
+            self.is_light_background = 1
+        else:
+            self.is_light_background = self.image_group._v_attrs['is_light_background']
+
+        if (self.fid is not None) and ('/trajectories_data' in self.fid):
             self.skeletons_file = vfilename
         else:
             videos_dir, basename = os.path.split(vfilename)
@@ -240,8 +242,9 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
 
             possible_dirs = [
                 videos_dir, videos_dir.replace(
-                    'MaskedVideos', 'Results'), os.path.join(
-                    videos_dir, 'Results')]
+                    'MaskedVideos', 'Results').replace(
+                        'RawVideos', 'Results'), os.path.join(
+                            videos_dir, 'Results')]
 
             for new_dir in possible_dirs:
                 for ext_p in possible_ext:
@@ -251,22 +254,20 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
                         self.results_dir = new_dir
                         break
 
-
-
         self.updateSkelFile(self.skeletons_file)
 
     def getFrameData(self, frame_number):
         try:
             if not isinstance(self.traj_time_grouped, pd.core.groupby.DataFrameGroupBy):
                 raise KeyError
-            
+
             frame_data = self.traj_time_grouped.get_group(self.frame_save_interval*frame_number)
             return frame_data
 
         except KeyError:
             return None
 
-    def drawSkelResult(self, img, qimg, row_data, isDrawSkel, 
+    def drawSkelResult(self, img, qimg, row_data, isDrawSkel,
         roi_corner=(0,0), read_center=True):
 
 
@@ -284,7 +285,7 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
                     row_data,
                     roi_corner = roi_corner
                     )
-            
+
         return qimg
 
     def drawSkel(self, worm_img, worm_qimg, row_data, roi_corner=(0, 0)):
@@ -308,11 +309,11 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
                 if field in ske_file_id:
                     dat = ske_file_id.get_node(field)[skel_id]
                     dat /= self.microns_per_pixel
-                    
+
                     if self.stage_position_pix is not None and self.stage_position_pix.size > 0:
                         #subtract stage motion if necessary
                         dat -= self.stage_position_pix[self.frame_number]
-                    
+
                     dat[:, 0] = (dat[:, 0] - roi_corner[0] + 0.5) * c_ratio_x
                     dat[:, 1] = (dat[:, 1] - roi_corner[1] + 0.5) * c_ratio_y
 
@@ -336,7 +337,7 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
             qPlg[tt] = QPolygonF()
             for p in dat:
                 #do not add point if it is nan
-                if p[0] == p[0]: 
+                if p[0] == p[0]:
                     qPlg[tt].append(QPointF(*p))
 
 
@@ -366,13 +367,13 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
         painter.end()
 
     def drawThreshMask(self, worm_img, worm_qimg, row_data, read_center=True):
-        #in very old versions of the tracker I didn't save the area in trajectories table, 
+        #in very old versions of the tracker I didn't save the area in trajectories table,
         #let's assign a default value to deal with this cases
         if 'area' in row_data:
             min_blob_area = row_data['area'] / 2
         else:
             min_blob_area = 10
-        
+
         c1, c2 = (row_data['coord_x'], row_data[
                   'coord_y']) if read_center else (-1, -1)
 
@@ -380,7 +381,7 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
                                       roi_center_x=c1, roi_center_y=c2, min_blob_area=min_blob_area,
                                       is_light_background = self.is_light_background)
 
-        
+
         worm_mask = QImage(
             worm_mask.data,
             worm_mask.shape[1],
@@ -395,7 +396,7 @@ class TrackerViewerAuxGUI(HDF5VideoPlayerGUI):
         p = QPainter(worm_qimg)
         p.setPen(QColor(0, 204, 102))
         p.drawPixmap(worm_qimg.rect(), worm_mask, worm_mask.rect())
-        
+
         if False:
             #test skeletonization
             skeleton, ske_len, cnt_side1, cnt_side2, cnt_widths, cnt_area = \

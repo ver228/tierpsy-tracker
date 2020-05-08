@@ -7,6 +7,7 @@ Created on Thu Apr  2 13:15:59 2015
 
 import os
 import re
+import warnings
 import subprocess as sp
 
 import numpy as np
@@ -33,7 +34,14 @@ class ReadVideoFFMPEG:
 
         # try to open the file and determine the frame size. Raise an exception
         # otherwise.
-        command = [FFMPEG_CMD, '-i', fileName, '-']
+        # command = [FFMPEG_CMD, '-i', fileName, '-']  # this works for sure
+        command = [FFMPEG_CMD, '-i', fileName, '-map', '0:v:0', '-c', 'copy',
+                   '-f', 'null']
+        # different null for windows/posix
+        if os.name == 'nt':
+            command.append('NULL')
+        else:
+            command.append('/dev/null')
         proc = sp.Popen(command, stdout=sp.PIPE, stderr=sp.PIPE)
         buff = proc.stderr.read()
         proc.terminate()
@@ -50,6 +58,14 @@ class ReadVideoFFMPEG:
             raise OSError(('Error while getting the width and height using ffmpeg. Buffer output:', buff))
 
         self.tot_pix = self.height * self.width
+
+        try:
+            nn = re.findall(r'(?<=frame=)\ *\d*', str(buff))[0].strip()
+            self._tot_frames_estimate = int(nn)
+        except (IndexError, ValueError):
+            raise OSError(('Error while getting the number of frames using '
+                           + 'ffmpeg. Buffer output:'
+                           + buff))
 
         command = [FFMPEG_CMD,
                    '-i', fileName,
@@ -68,12 +84,12 @@ class ReadVideoFFMPEG:
                              bufsize=self.tot_pix, stderr=sp.PIPE)
 
         self.buf_reader = ReadEnqueue(self.proc.stderr)
+        # for number of frames
+        self._n_frames_read = 0
+        self._is_eof = False
 
         # use a buffer size as small as possible (frame size), makes things
         # faster
-
-
-        
 
     def get_timestamp(self):
         while True:
@@ -90,11 +106,11 @@ class ReadVideoFFMPEG:
                 self.vid_frame_pos.append(int(frame_N))
                 self.vid_time_pos.append(float(timestamp))
 
-
     def read(self):
         # retrieve an image as numpy array
         raw_image = self.proc.stdout.read(self.tot_pix)
         if len(raw_image) < self.tot_pix:
+            self._is_eof = True
             return (0, [])
 
         image = np.fromstring(raw_image, dtype='uint8')
@@ -104,7 +120,19 @@ class ReadVideoFFMPEG:
         # full.
         self.get_timestamp()
 
+        # increase read frames counter
+        self._n_frames_read += 1
+
         return (1, image)
+
+    def __len__(self):
+        if not self._is_eof:
+            # warnings.warn('Number of frames being estimated. '
+            #                + 'Could be inaccurate, try again after reading '
+            #                + 'the whole video')
+            return self._tot_frames_estimate
+        else:
+            return self._n_frames_read
 
     def release(self):
         # close the buffer
