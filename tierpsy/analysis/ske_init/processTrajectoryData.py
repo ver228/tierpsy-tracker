@@ -244,43 +244,50 @@ def saveTrajData(trajectories_data, masked_image_file, skeletons_file):
         ske_file_id.flush()
 
 
-def processTrajectoryData(skeletons_file,
-    masked_image_file,
-    trajectories_file,
-    smoothed_traj_param,
-    min_track_size = 1, #probably useless
-    displacement_smooth_win = -1,
-    threshold_smooth_win = -1,
-    roi_size = -1,
-    filter_model_name = ''):
+def processTrajectoryData(
+        skeletons_file,
+        masked_image_file,
+        trajectories_file,
+        smoothed_traj_param,
+        min_track_size=1,  # probably useless
+        displacement_smooth_win=-1,
+        threshold_smooth_win=-1,
+        roi_size=-1,
+        filter_model_name=''):
     '''
-    Initialize the skeletons by creating the table `/trajectories_data`. This table is used by the GUI and by all the subsequent functions.
-    filter_model_path -  name of the pretrainned keras model to used to filter worms from spurius blobs.
-                         The file must be stored in the `tierpsy/aux` directory. If the variable is empty this step will be ignored.
+    Initialize the skeletons by creating the table `/trajectories_data`.
+    This table is used by the GUI and by all the subsequent functions.
+    filter_model_path - name of the pretrainned keras model to used to
+                        filter worms from spurius blobs.
+                        The file must be stored in the `tierpsy/aux` directory.
+                        If the variable is empty this step will be ignored.
     '''
 
-    smoothed_traj_param = ske_init_defaults(masked_image_file, **smoothed_traj_param)
+    smoothed_traj_param = ske_init_defaults(masked_image_file,
+                                            **smoothed_traj_param)
 
-    trajectories_data = getSmoothedTraj(trajectories_file, **smoothed_traj_param)
+    trajectories_data = getSmoothedTraj(trajectories_file,
+                                        **smoothed_traj_param)
     if filter_model_name:
-        trajectories_data = filterModelWorms(masked_image_file, trajectories_data, filter_model_name)
+        trajectories_data = filterModelWorms(masked_image_file,
+                                             trajectories_data,
+                                             filter_model_name)
 
     saveTrajData(trajectories_data, masked_image_file, skeletons_file)
 
+
 if __name__ == '__main__':
     import os
-    # root_dir = '/Users/ajaver/OneDrive - Imperial College London/Local_Videos/test_messy/'
-    root_dir = '/Users/lferiani/Hackathon/multiwell_tierpsy/3_TRAJ_JOIN/MaskedVideos/20191205'
+    from tierpsy.helper.params.models_path import get_model_filter_worms
+    # root_dir = '/Users/ajaver/OneDrive - Imperial College London/'
+    # root_dir += 'Local_Videos/test_messy/'
+    root_dir = '/Users/lferiani/Hackathon/multiwell_tierpsy/'
+    root_dir += '3_TRAJ_JOIN/MaskedVideos/20191205'
 
-    #ff = 'N2_N10_F1-3_Set1_Pos7_Ch1_12112016_024337.hdf5'
-    #ff = 'unc-9_N10_F1-3_Set1_Pos1_Ch5_17112016_193814.hdf5'
-    #ff = 'trp-4_N1_Set3_Pos6_Ch1_19102016_172113.hdf5'
-    #ff = 'trp-4_N10_F1-1_Set1_Pos2_Ch4_02112016_201534.hdf5'
-    # ff = 'N2_N1_Set1_Pos6_Ch1_19102016_131015.hdf5'
-    ff = 'syngenta_screen_run1_bluelight_20191205_151104.22956805/metadata.hdf5'
-    model_path = ('/Users/lferiani/OneDrive - Imperial College London/'
-                  + 'Analysis/Ziweis_NN/Model/'
-                  + 'notaworm_vs_worm_difficult_aggregate_model_state.pth')
+    ff = 'syngenta_screen_run1_bluelight_20191205_151104.22956805/'
+    ff += 'metadata.hdf5'
+
+    model_path = get_model_filter_worms('pytorch_default')
 
     masked_image_file = os.path.join(root_dir, ff)
     skeletons_file = masked_image_file.replace('.hdf5', '_skeletons.hdf5')
@@ -295,4 +302,3 @@ if __name__ == '__main__':
     processTrajectoryData(skeletons_file, masked_image_file, trajectories_file,
                           smoothed_traj_param={},
                           filter_model_name=model_path)
-

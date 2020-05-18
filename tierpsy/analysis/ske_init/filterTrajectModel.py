@@ -20,7 +20,9 @@ except ImportError:
 
 from tierpsy.analysis.ske_create.helperIterROI import generateMoviesROI, getROIFixSize
 from tierpsy.helper.params import read_fps
-from pytorchModelHelper import prep_for_pytorch, load_pytorch_model
+from .pytorchModelHelper import (
+    prep_for_pytorch, load_pytorch_model, MODEL_ROIS_TRAINED_SIZE)
+
 
 def shift_and_normalize(data):
     '''
@@ -88,7 +90,6 @@ def indentifyValidWorms(masked_file,
     if model_path.endswith('.pth'):
         is_pytorch = True
         model = load_pytorch_model(model_path)
-        from pytorchModelHelper import MODEL_ROIS_TRAINED_SIZE
         roi_size = MODEL_ROIS_TRAINED_SIZE
     else:
         is_pytorch = False

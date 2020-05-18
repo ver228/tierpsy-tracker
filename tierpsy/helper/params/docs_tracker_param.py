@@ -313,10 +313,31 @@ dflt_param_list = [
         Currently it is only suported by TRAJ_CREATE and it is only recommended at high particle densities.
         '''),
 
-    ('use_nn_filter',
-        False,
-        'Set to True if you want to use a pretrained neural network model to filter worms. This model is optimized for AEX setup and might not work with other setups. If analysis_type is setup to _AEX the filter will be used by default.'
+    ('nn_filter_to_use',
+        'pytorch_default',
+        """
+        Set to "pytorch_default" or "tensorflow_default" if you want to
+        use a pretrained neural network model to filter worms.
+        Set to "none" if you'd rather not use a NN filter.
+        EXPERIMENTAL: set to "custom" to provide your own pytorch model.
+        Do contact the developers to collaborate on this.
+        The default models are optimized for AEX setup and might not work with
+        other setups.
+        "pytorch_default" uses a NN that was trained using Hydra data, while
+        "tensorflow_default" uses the legacy NN,trained on Phenix data only.
+        If analysis_type is setup to _AEX the "tensorflow_default" filter
+        will be used by default (AEX lab legacy behaviour).
+        """
         ),
+    ('path_to_custom_pytorch_model',
+        '',
+        """
+        EXPERIMENTAL. Path to a saved model_state for a pytorch CNN.
+        At the moment, only the architecture and preprocessing pipeline defined in
+        tierpsy-tracker/tierpsy/analysis/ske_init/pytorchModelHelper.py
+        is supported.
+        """
+     ),
     ('use_nn_food_cnt',
         True,
         'If true a pretrained neural network model is going to use in  FOOD_CNT, else it will attempt to use morphological operations to calculate the food contour.'
@@ -368,11 +389,14 @@ dflt_param_list = [
 
 valid_options = {
     'analysis_type': valid_analysis_types,
-    'ventral_side':['','clockwise','anticlockwise', 'unknown'],
-    'head_tail_int_method':['MEDIAN_INT', 'HEAD_BRIGHTER'],
-    'MWP_total_n_wells':[-1, 24, 48, 96], # caveat: whether the analysis will work or not depends on the code in tierpsy.analysis.compress.FOVMultiWellSplitter
-    'MWP_whichsideup':['upright','upside-down'],
-    'MWP_well_shape':['circle','square'],
+    'ventral_side': ['', 'clockwise', 'anticlockwise', 'unknown'],
+    'head_tail_int_method': ['MEDIAN_INT', 'HEAD_BRIGHTER'],
+    'nn_filter_to_use': ['tensorflow_default', 'pytorch_default',
+                         'custom', 'none'],
+    'use_nn_filter': [True, False],
+    'MWP_total_n_wells': [-1, 24, 48, 96], # caveat: whether the analysis will work or not depends on the code in tierpsy.analysis.compress.FOVMultiWellSplitter
+    'MWP_whichsideup': ['upright', 'upside-down'],
+    'MWP_well_shape': ['circle', 'square'],
 }
 
 #repack data into dictionaries
