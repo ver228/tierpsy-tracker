@@ -67,10 +67,23 @@ def fix_deprecated(param_in_file):
             corrected_params['analysis_type'] = deprecated_analysis_alias[vv] if vv in deprecated_analysis_alias else vv
 
         elif key == 'filter_model_name':
-            corrected_params['use_nn_filter'] = len(param_in_file['filter_model_name']) > 0 #set to true if it is not empty
+            # corrected_params['use_nn_filter'] = len(param_in_file['filter_model_name']) > 0 #set to true if it is not empty
+            # maintain legacy deprectaion handling (above line)
+            corrected_params['nn_filter_to_use'] = 'tensorflow_default'
+        elif key == 'use_nn_filter':
+            # legacy behaviour before pytorch NN
+            if param_in_file[key] is True:
+                corrected_params['nn_filter_to_use'] = 'tensorflow_default'
+            elif param_in_file[key] is False:
+                corrected_params['nn_filter_to_use'] = 'none'
+            else:
+                # what if somebody has not used the right name in the json?
+                warnings.warn('bool parameter "use_nn_filter" is deprecated.'
+                              + ' Use str parameter "nn_filter_to_use".')
+                corrected_params['nn_filter_to_use'] = param_in_file[key]
         else:
             corrected_params[key] = param_in_file[key]
-
+    # import pdb; pdb.set_trace()
     return corrected_params
 
 
@@ -106,8 +119,14 @@ def read_params(json_file=''):
                 raise ValueError('Parameter "{}" is not a valid parameter. Change its value in file "{}"'.format(key, json_file))
 
             if key in valid_options:
-                if input_param[key] not in valid_options[key] \
-                and (int(input_param[key]) not in valid_options[key]):
+
+                is_in_list = input_param[key] in valid_options[key]
+                try:
+                    is_in_list = is_in_list or (
+                        int(input_param[key]) in valid_options[key])
+                except:
+                    pass
+                if not is_in_list:
                     raise ValueError('Parameter "{}" is not in the list of valid options {}'.format(param_in_file[key],valid_options[key]))
 
         if not input_param['analysis_checkpoints']:
@@ -139,13 +158,14 @@ class TrackerParams:
         return analysis_type.endswith('WT2') or analysis_type.endswith('SINGLE')
 
     @property
-    def use_nn_filter(self):
-        _use_nn_filter = self.p_dict['use_nn_filter']
-        if not _use_nn_filter and 'AEX' in self.p_dict['analysis_type']:
-            warnings.warn('the use_filter_flag would be set to True since the analysis type contains AEX.')
-            _use_nn_filter = True
+    def nn_filter_to_use(self):
+        _nn_filter_to_use = self.p_dict['nn_filter_to_use']
+        if not _nn_filter_to_use and 'AEX' in self.p_dict['analysis_type']:
+            warnings.warn('setting nn_filter_to_use to "tensorflow_default"'
+                          + ' since the analysis type contains AEX.')
+            _nn_filter_to_use = "tensorflow_default"
 
-        return _use_nn_filter
+        return _nn_filter_to_use
 
 
 

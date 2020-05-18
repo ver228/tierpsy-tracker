@@ -35,7 +35,7 @@ import subprocess
 #imgstore_name = 'drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22594548/'
 #imgstore_name = 'drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22594549/'
 #imgstore_name = 'drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22594559/'
-json_file = '/Users/lferiani/Desktop/Data_FOVsplitter/loopbio_rig_96WP_upright_Hydra05.json'
+# json_file = '/Users/lferiani/Desktop/Data_FOVsplitter/loopbio_rig_96WP_upright_Hydra05.json'
 
 #%% Evgeny's example data
 rootdir = '/Volumes/hermes$/Recordings/20190822/'
@@ -54,6 +54,12 @@ json_file = '/Users/lferiani/Desktop/20200107_test/loopbio_rig_96WP_splitFOV_202
 rootdir = '/Volumes/behavgenom$/Saul/MicrobiomeAssay96WP/'
 imgstore_name='20200123/microbiome_run1_lb_plate0_20200123_134049.22956805/'
 json_file = '/Users/lferiani/Desktop/loopbio_rig_96WP_upright_splitFOV_Microbiome_20200110.json'
+
+rootdir = '/Users/lferiani/Hackathon/multiwell_tierpsy/3_TRAJ_JOIN/'
+imgstore_name = '20191205/syngenta_screen_run1_bluelight_20191205_151104.22956805/'
+json_file = '/Users/lferiani/Hackathon/multiwell_tierpsy/ParametersFiles/loopbio_rig_96WP_upright_splitFOV_pytorch.json'
+# json_file = '/Users/lferiani/Hackathon/multiwell_tierpsy/ParametersFiles/loopbio_rig_96WP_upright_splitFOV_tensorflow.json'
+
 #%%
 rawvideosdir = rootdir + 'RawVideos/' + imgstore_name
 maskedvideosdir = rootdir + 'MaskedVideos/' + imgstore_name
@@ -66,8 +72,9 @@ skeletons_file = resultsdir + 'metadata_skeletons.hdf5'
 
 
 # restore features after previous step before testing
-#import shutil
-#shutil.copy(features_file.replace('.hdf5','.bk'), features_file)
+import shutil
+# shutil.copy(features_file.replace('.hdf5','.bk'), features_file)
+shutil.copy(skeletons_file.replace('.hdf5', '.bak'), skeletons_file)
 
 
 # don't pass the path to python if calling it as a function
@@ -77,7 +84,10 @@ sys_argv_list = ['/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/Pro
                  '--masks_dir', maskedvideosdir,
                  '--results_dir', resultsdir,
                  '--json_file', json_file,
-                 '--analysis_checkpoints', 'COMPRESS']
+                 '--analysis_checkpoints', 'COMPRESS',
+                                           'TRAJ_CREATE',
+                                           'TRAJ_JOIN',
+                                           'SKE_INIT']
 
 #sys_argv_list = ['/Users/lferiani/Tierpsy/tierpsy-tracker/tierpsy/processing/ProcessLocal.py',
 #                 masked_image_file,

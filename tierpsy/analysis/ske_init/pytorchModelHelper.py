@@ -75,7 +75,7 @@ def prep_for_pytorch(img):
     return img
 
 
-def predict_image(image):
+def predict_image(image, model):
     """This is not used by tierpsy, but good for testing and debugging"""
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     image_tensor = torch.tensor(image).to(device)
@@ -106,7 +106,8 @@ if __name__ == '__main__':
     # %%% imports
 
     import pandas as pd
-    from filterTrajectModel import shift_and_normalize
+    from tierpsy.analysis.ske_init.filterTrajectModel import(
+        shift_and_normalize)
 
     # %%% paths
 
@@ -146,7 +147,7 @@ if __name__ == '__main__':
     # %%% load model and predict
 
     model = load_pytorch_model(model_path)
-    probs, _ = predict_image(img)
+    probs, _ = predict_image(img, model)
     preds = probs > 0.5
 
     # %%% measure performance (i.e. check I implemented it right)
