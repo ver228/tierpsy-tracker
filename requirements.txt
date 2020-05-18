@@ -5,7 +5,7 @@ tensorflow
 numpy >=1.14
 matplotlib 
 pytables 
-pandas 
+pandas<1.0 
 pyqt
 scipy 
 scikit-learn 
