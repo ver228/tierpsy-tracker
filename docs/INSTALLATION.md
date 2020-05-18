@@ -52,7 +52,7 @@ conda install -c conda-forge ffmpeg
 
 - Open a Terminal or Anaconda prompt and type:
 ```bash
-git clone https://github.com/ver228/tierpsy-tracker
+git clone https://github.com/Tierpsy/tierpsy-tracker
 cd tierpsy-tracker
 conda create -n tierpsy #[optional]
 source activate tierpsy #[optional]
