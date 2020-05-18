@@ -1,17 +1,18 @@
-import os
 import sys
 import json
 
-from PyQt5.QtWidgets import QDialog, QApplication, QGridLayout, QLabel, \
-    QSpinBox,  QDoubleSpinBox, QCheckBox, QPushButton, QLineEdit, QSizePolicy, \
-    QMessageBox, QSpacerItem, QComboBox, QHBoxLayout, QVBoxLayout
+from PyQt5.QtWidgets import (
+    QDialog, QApplication, QGridLayout, QLabel,
+    QSpinBox,  QDoubleSpinBox, QCheckBox, QPushButton, QLineEdit, QSizePolicy,
+    QMessageBox, QSpacerItem, QComboBox, QHBoxLayout, QVBoxLayout)
 from PyQt5.QtCore import Qt, pyqtSignal
 
-from tierpsy.gui.HDF5VideoPlayer import LineEditDragDrop
-from tierpsy.helper.params.tracker_param import info_param, default_param, valid_options
+from tierpsy.helper.params.tracker_param import (
+    info_param, default_param, valid_options)
 
 # i cannot really add this since i do not have a good way to get the data
 _feats2ignore = ['analysis_checkpoints']
+
 
 def save_params_json(json_file, param4file):
     # save data into the json file
@@ -51,7 +52,7 @@ class ParamWidget():
             self.widget = self._create(name, value)
 
         if isinstance(self.widget, (QDoubleSpinBox, QSpinBox)):
-            # In windows 7 it seems this value is int16 so keep it smaller than that
+            # In windows 7 it seems this value is int16 so keep it < than that
             self.widget.setMinimum(int(-1e9))
             self.widget.setMaximum(int(1e9))
 
@@ -67,7 +68,6 @@ class ParamWidget():
 
         if value is not None:
             self.write(value)
-
 
     def _create(self, name, value):
         value_type = type(value)
@@ -92,7 +92,6 @@ class ParamWidget():
             #                          else x.ignore())
             LineEditSimpleDragDrop(widget)
 
-
         elif value_type is list or value_type is tuple:
             widget = QGridLayout()
 
@@ -115,7 +114,8 @@ class ParamWidget():
         elif isinstance(self.widget, QLineEdit):
             return self.widget.text()
         elif isinstance(self.widget, QGridLayout):
-            return [self.widget.itemAt(ii).widget().value() for ii in range(self.widget.count())]
+            return [self.widget.itemAt(ii).widget().value()
+                    for ii in range(self.widget.count())]
         elif isinstance(self.widget, QComboBox):
             return self.widget.currentText()
 
@@ -145,14 +145,15 @@ class ParamWidgetMapper():
     The corresponding widget must an element in the form p_(agument_name)
 
     '''
+
     def __init__(self,
-                central_widget,
-                default_param=default_param,
-                info_param=info_param,
-                valid_options=valid_options
-                ):
+                 central_widget,
+                 default_param=default_param,
+                 info_param=info_param,
+                 valid_options=valid_options
+                 ):
         self.params_widgets = {}
-        self.default_param=default_param
+        self.default_param = default_param
 
         for attr_name in dir(central_widget):
             if attr_name.startswith('p_'):
@@ -186,28 +187,28 @@ class ParamWidgetMapper():
         return self
 
     def __next__(self):
-        if len(self.remaining_names)==0:
+        if len(self.remaining_names) == 0:
             raise StopIteration
 
         return self.remaining_names.pop(0)
 
+
 class GetAllParameters(QDialog):
     file_saved = pyqtSignal(str)
 
-    def __init__(self, parent_params = {}, param_per_row=5):
+    def __init__(self, parent_params={}, param_per_row=5):
         super(GetAllParameters, self).__init__()
         self.param_per_row = param_per_row
 
-        # could accept the gui mapper and try to change values in real time put it is a bit complicated
+        # could accept the gui mapper and try to change values in real time
+        # but it is a bit complicated
         self.parent_params = parent_params
-
 
         self.initUI()
         self.updateAllParams()
 
         self.pushbutton_OK.pressed.connect(self.saveAndClose)
         self.pushbutton_cancel.pressed.connect(self.close)
-
 
     def initUI(self):
 
@@ -218,13 +219,13 @@ class GetAllParameters(QDialog):
             row = ii // self.param_per_row * 2
             col = (ii % self.param_per_row)
 
-
             w = ParamWidget(name, value=value)
             self.widgetlabels[name] = w
 
             if isinstance(w.widget, QCheckBox):
                 grid.addWidget(w.widget, row, col, 2, 1)
-                w.widget.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+                w.widget.setSizePolicy(QSizePolicy.Maximum,
+                                       QSizePolicy.Maximum)
             else:
                 label = QLabel(name)
                 grid.addWidget(label, row, col, 1, 1)
@@ -233,8 +234,8 @@ class GetAllParameters(QDialog):
                     grid.addLayout(w.widget, row+1, col, 1, 1)
                 else:
                     grid.addWidget(w.widget, row+1, col, 1, 1)
-                    w.widget.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-
+                    w.widget.setSizePolicy(QSizePolicy.Maximum,
+                                           QSizePolicy.Maximum)
 
         spacer = QSpacerItem(
             40,
@@ -242,8 +243,7 @@ class GetAllParameters(QDialog):
             QSizePolicy.Preferred,
             QSizePolicy.Preferred)
 
-
-        #add buttons at the end
+        # add buttons at the end
         self.pushbutton_cancel = QPushButton('Cancel')
         self.pushbutton_OK = QPushButton('OK')
 
@@ -259,7 +259,7 @@ class GetAllParameters(QDialog):
 
         self.setLayout(vbox)
 
-        #set modal so the other window is blocked
+        # set modal so the other window is blocked
         self.setModal(True)
         self.show()
         self.setAttribute(Qt.WA_DeleteOnClose)
@@ -268,8 +268,10 @@ class GetAllParameters(QDialog):
         for param_name in self.parent_params:
             if param_name not in self.widgetlabels:
                 QMessageBox.critical(
-                    self, '', "'%s' is not a valid variable. Please correct the parameters file" %
-                    param_name, QMessageBox.Ok)
+                    self, '',
+                    f"{param_name} is not a valid variable. "
+                    + "Please correct the parameters file",
+                    QMessageBox.Ok)
                 return
 
         # Set the parameters in the correct widget. Any paramter not contained
@@ -293,6 +295,7 @@ class GetAllParameters(QDialog):
             self.parent_params[name] = self.widgetlabels[name].read()
 
         self.close()
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
