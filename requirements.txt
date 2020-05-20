@@ -1,16 +1,16 @@
 cython
-keras=2.1.5 
-opencv=3.4.2
+keras=2.1.5
+opencv
 tensorflow
 numpy >=1.14
-matplotlib 
-pytables 
-pandas<1.0 
+matplotlib
+pytables
+pandas<1.0
 pyqt
-scipy 
-scikit-learn 
+scipy
+scikit-learn
 scikit-image
-statsmodels 
+statsmodels
 numba
 tqdm
 requests
