@@ -1,4 +1,4 @@
-name: tierpsy_yml
+name: tierpsy
 channels:
   - conda-forge
   - defaults

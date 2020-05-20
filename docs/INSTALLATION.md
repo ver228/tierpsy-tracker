@@ -26,7 +26,7 @@ Do not forget to activate the enviroment every time you start a new terminal ses
 On OSX the first time `tierpsy_gui` is intialized it will create a file in the Desktop called tierpsy_gui.command. By double-cliking on this file tierpsy can be started without having to open a terminal.
 
 #### Troubleshooting
-- When installing from `conda`, you may get an error while the package `conda-forge::cloudpickle...` is installed, stating that `python3.6` couldn't be found. In this case, make sure to first install python 3.6, and then tierpsy, by executing:
+- When installing from `conda`, you may get an error while the package `conda-forge::cloudpickle...` is installed, stating that `python3.6` couldn't be found. In this case, updating `conda` has been known to solve the issue. Alternatively, make sure to first install python 3.6, and then tierpsy, by executing:
 ```bash
 conda install -c conda-forge python=3.6
 conda install -c conda-forge tierpsy
@@ -47,21 +47,54 @@ conda install -c conda-forge ffmpeg
 
 ## Installation from source [for development]
 - Download Python >= 3.6 using [anaconda](https://www.anaconda.com/download/) or [miniconda](https://conda.io/miniconda.html).
-- Install [git](https://git-scm.com/). [Here](https://gist.github.com/derhuerst/1b15ff4652a867391f03) are some instructions to install it.
-- Install a [C compiler compatible with cython](http://cython.readthedocs.io/en/latest/src/quickstart/install.html). In Windows, you can use [Visual C++ 2015 Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/). In OSX, we recommend to download XCode from the appstore.
+- Install [git](https://git-scm.com/). [Here](https://gist.github.com/derhuerst/1b15ff4652a867391f03) are some instructions to install it. [GitHub Desktop](https://desktop.github.com/) is also an option if you prefer a graphical interface.
+- Install a [C compiler compatible with cython](http://cython.readthedocs.io/en/latest/src/quickstart/install.html). In Windows, you can use [Visual C++ 2015 Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/). In OSX, we recommend to download XCode from the AppStore.
+- Follow the OS-specific instructions below.
 
-- Open a Terminal or Anaconda prompt and type:
+### MacOS
+- Open a Terminal prompt and type:
+```bash
+git clone https://github.com/Tierpsy/tierpsy-tracker
+cd tierpsy-tracker
+conda env create -f tierpsy_mac.yml #[MacOS]
+conda activate tierpsy
+pip install -e .
+tierpsy_gui
+```
+Tested on Mojave
+
+### Windows 10
+- Clone the repository in a folder named `tierpsy-tracker`. You can do this either:
+    - via a git prompt
+    - with your browser: `Clone or Download` -> `Download ZIP`, then unzip and rename the folder
+    - with your browser: `Clone or Download` -> `Open in Desktop`, then continue with [GitHub Desktop](https://desktop.github.com/)
+- Open the Anaconda prompt, move to the `tierpsy-tracker` folder using the `cd` command appropriately, and type:
+```bash
+conda env create -f tierpsy_windows.yml #[Windows 10]
+conda activate tierpsy
+pip install -e .
+tierpsy_gui
+```
+
+#### Troubleshooting
+- Make sure you have an up-to-date version of conda. To update conda, `conda update -n base -c defaults conda`. We tested on `conda 4.8.2`.
+- Try the alternative command `conda env create -f tierpsy_windows_conda4_5_11.yml`
+- `pip install -e .` has been known to fail with an error stating that `command 'cl.exe' failed: No such file or directory`. We are actively working on a solution for this, and we're also working towards upgrading our code so that we can discard the dependencies that are causing this problem. Do let us know if you're having this problem despite trying the other two troubleshooting tips.
+
+### Linux
+- Open a shell and type:
 ```bash
 git clone https://github.com/Tierpsy/tierpsy-tracker
 cd tierpsy-tracker
 conda create -n tierpsy #[optional]
-source activate tierpsy #[optional]
+conda activate tierpsy #[optional]
 conda install --file requirements.txt
 pip install -e .
+tierpsy_gui
 ```
 
 # Batch processing from the command line.
-The script `TierpsyTrackerConsole.py` was deprecated in favor of using the command `tierpsy_process`. Type `tierpsy_process -h` for help.
+The script `TierpsyTrackerConsole.py` was deprecated in favour of using the command `tierpsy_process`. Type `tierpsy_process -h` for help.
 
 # Tests
-After installing you can run the testing scripts using the command `tierpsy_tests` on the terminal. Type `tierpsy_tests -h` for help. Although the script supports running multiple tests consecutively, I would recommed to run one test at the time since there is not currently a way to summarize the results of several tests.
+After installing you can run the testing scripts using the command `tierpsy_tests` on the terminal. Type `tierpsy_tests -h` for help. Although the script supports running multiple tests consecutively, I would recommend to run one test at the time since there is not currently a way to summarise the results of several tests.
