@@ -21,9 +21,9 @@ def download_files(data_dir):
     r = requests.get(EXAMPLES_LINK, stream=True)
 
     # Total size in bytes.
-    total_size = int(r.headers.get('content-length', 0)); 
+    total_size = int(r.headers.get('content-length', 0));
     block_size = 1024
-    wrote = 0 
+    wrote = 0
 
     if not os.path.exists(data_dir):
         os.makedirs(data_dir)
@@ -34,9 +34,9 @@ def download_files(data_dir):
             wrote = wrote  + len(data)
             f.write(data)
     if total_size != 0 and wrote != total_size:
-        print("ERROR, something went wrong") 
+        print("ERROR, something went wrong")
 
-    
+
     with zipfile.ZipFile(tmp_file, "r") as zip_ref:
         zip_ref.extractall(data_dir)
     os.remove(tmp_file)
@@ -105,7 +105,7 @@ class TestObj():
 class GECKO_VIDEOS(TestObj):
     name = 'GECKO_VIDEOS'
     description = 'Complete analysis from video from Gecko .mjpg files.'
-        
+
     def __init__(self, *args):
         super().__init__(*args)
         args = [
@@ -125,7 +125,7 @@ class GECKO_VIDEOS(TestObj):
 class AVI_VIDEOS(TestObj):
     name = 'AVI_VIDEOS'
     description = 'Complete analysis from .avi files.'
-    
+
     def __init__(self, *args):
         super().__init__(*args)
 
@@ -145,7 +145,7 @@ class AVI_VIDEOS(TestObj):
 class MANUAL_FEATS(TestObj):
     name = 'MANUAL_FEATS'
     description = 'Calculate features from manually joined trajectories.'
-    
+
     def __init__(self, *args):
         super().__init__(*args)
 
@@ -165,7 +165,7 @@ class MANUAL_FEATS(TestObj):
 
 class RIG_HDF5_VIDEOS(TestObj):
     name = 'RIG_HDF5_VIDEOS'
-    description = 'Reformat hdf5 file produced by the gecko plugin in the worm rig.'    
+    description = 'Reformat hdf5 file produced by the gecko plugin in the worm rig.'
     def __init__(self, *args):
         super().__init__(*args)
 
@@ -196,8 +196,8 @@ class WT2(TestObj):
         '--results_dir_root',
         self.results_dir,
         '--json_file',
-        'WT2_clockwise.json',
-        '--pattern_include', 
+        'WT2_clockwise_TIERPSY.json',
+        '--pattern_include',
         '*.avi',
         ]
         self.add_command(args)
@@ -218,7 +218,7 @@ class WORM_MOTEL(TestObj):
         self.results_dir,
         '--json_file',
         '_AEX_RIG_worm_motel.json',
-        '--pattern_include', 
+        '--pattern_include',
         '*.mjpg'
         ]
         self.add_command(args)
@@ -226,35 +226,35 @@ class WORM_MOTEL(TestObj):
 
 def tierpsy_tests():
     base_script = ['tierpsy_process']
-    
+
     _all_tests_obj = [
-                GECKO_VIDEOS, 
-                AVI_VIDEOS, 
-                MANUAL_FEATS, 
-                RIG_HDF5_VIDEOS, 
-                WT2, 
+                GECKO_VIDEOS,
+                AVI_VIDEOS,
+                MANUAL_FEATS,
+                RIG_HDF5_VIDEOS,
+                WT2,
                 WORM_MOTEL
                 ]
     _available_tests = [x.name for x in _all_tests_obj]
     _available_tests_str = ' '.join(_available_tests)
     test_dict = dict(zip(_available_tests, _all_tests_obj))
 
-    help_test = 'Name of the tests to be executed. If not values are given all tests will be executed. The available tests are: {}'.format(_available_tests_str)
+    help_test = 'Name of the tests to be executed. The available tests are: {}'.format(_available_tests_str)
 
     parser = argparse.ArgumentParser(description='Tierpsy Tracker tests.')
-    parser.add_argument('tests', 
+    parser.add_argument('tests',
                         nargs='*',
                         help=help_test)
-    
+
     parser.add_argument('--download_files',
                         action = 'store_true',
                         help = 'Flag to indicate if the test files are going to be downloaded.')
-    
-    parser.add_argument('--data_dir',  
+
+    parser.add_argument('--data_dir',
                         default = DLFT_DATA_DIR,
                         help='Directory where the test files are located or where they will be downloaded.'
                         )
-    
+
 
     args = parser.parse_args()
     data_dir = args.data_dir
@@ -268,14 +268,15 @@ def tierpsy_tests():
         return
 
     tests_given = args.tests
-    
+
     test2run = []
+
     for tt in tests_given:
         if tt in _available_tests:
             test2run.append(tt)
         else:
             warnings.warn('Test "{}" is not a valid name, and it will be skiped. The valid tests are: {}'.format(tt, _available_tests_str))
-    
+
     if not tests_given:
         print("No tests given. Please specify some valid tests {}.".format(_available_tests_str))
         return
