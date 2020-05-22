@@ -79,7 +79,7 @@ tierpsy_gui
 #### Troubleshooting
 - Make sure you have an up-to-date version of conda. To update conda, `conda update -n base -c defaults conda`. We tested on `conda 4.8.2`.
 - Try the alternative command `conda env create -f tierpsy_windows_conda4_5_11.yml`
-- `pip install -e .` has been known to fail with an error stating that `command 'cl.exe' failed: No such file or directory`. We are actively working on a solution for this, and we're also working towards upgrading our code so that we can discard the dependencies that are causing this problem. Do let us know if you're having this problem despite trying the other two troubleshooting tips.
+- `pip install -e .` has been known to fail with an error stating that `command 'cl.exe' failed: No such file or directory`. See the [Known Issues](ISSUES.md) for a solution.
 
 ### Linux
 - Open a shell and type:
