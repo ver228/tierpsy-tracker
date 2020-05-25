@@ -232,9 +232,10 @@ def tierpsy_trajectories_summary(
             # concatenate all trajectories in given time window into one dataframe
             all_summary = pd.concat(all_summary, ignore_index=True, sort=False)
             # attach whether the wells was good or bad
-            all_summary = all_summary.merge(good_wells_df,
-                                            on='well_name',
-                                            how='left')
+            if is_fov_tosplit:  #  but only do this if we have wells
+                all_summary = all_summary.merge(good_wells_df,
+                                                on='well_name',
+                                                how='left')
 
         # add dataframe to the list of summaries for all time windows
         all_summaries_list.append(all_summary)
