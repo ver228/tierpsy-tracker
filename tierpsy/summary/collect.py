@@ -469,10 +469,11 @@ def calculate_summaries(
 if __name__ == '__main__':
 
     root_dir = \
-        '/Users/em812/Data/Tierpsy_GUI/test_results_multiwell/Syngenta'
+        '/Users/em812/Data/Tierpsy_GUI/test_results_2'
+        #'/Users/em812/Data/Tierpsy_GUI/test_results_multiwell/Syngenta'
         #'/Users/em812/Data/Tierpsy_GUI/test_results_multiwell/20190808_subset'
 
-    is_manual_index = True
+    is_manual_index = False
     feature_type = 'tierpsy'
     # feature_type = 'openworm'
     # summary_type = 'plate_augmented'
@@ -495,11 +496,11 @@ if __name__ == '__main__':
     #              time_sample_seconds = 10*60
     #              )
 
-    time_windows = '0:end' #'0:end:1000' #'0:end' #
+    time_windows = '0:100, 100:200' #'0:end:1000' #'0:end' #
     time_units = 'frame numbers'
     select_feat = 'all' #'tierpsy_2k'
     keywords_include = ''
-    keywords_exclude = '' #'curvature,velocity,norm,abs'
+    keywords_exclude = 'blob' #'curvature,velocity,norm,abs'
     abbreviate_features = False
     dorsal_side_known = False
 
