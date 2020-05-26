@@ -132,6 +132,7 @@ def tierpsy_plate_summary(
     # and to extract the list of well names
     is_fov_tosplit = was_fov_split(timeseries_data[0])
 #    is_fov_tosplit = False
+
     if is_fov_tosplit:
         fovsplitter = FOVMultiWellsSplitter(fname)
         good_wells_df = fovsplitter.wells[['well_name','is_good_well']].copy()
