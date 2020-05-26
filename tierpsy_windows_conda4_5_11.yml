@@ -18,7 +18,7 @@ dependencies:
   - cryptography=2.9.2
   - cudatoolkit=10.2.89
   - cycler=0.10.0
-  - cython=0.29.18
+  - cython=0.29.19
   - cytoolz=0.10.1
   - dask-core=2.16.0
   - decorator=4.4.2
