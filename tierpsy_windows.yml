@@ -16,7 +16,7 @@ dependencies:
   - cloudpickle=1.4.1
   - cryptography=2.9.2
   - cycler=0.10.0
-  - cython=0.29.18
+  - cython=0.29.19
   - cytoolz=0.10.1
   - dask-core=2.16.0
   - decorator=4.4.2
