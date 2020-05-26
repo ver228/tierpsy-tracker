@@ -347,10 +347,10 @@ def get_summary_stats(timeseries_data,
     ## timeseries features
     ##### simple
     timeseries_stats_s = get_df_quantiles(timeseries_data,
-                                              feats2check = ts_cols_all,
-                                              feats2abs = v_sign_cols,
-                                              feats2norm = feats2norm,
-                                              is_normalize = False)
+                                          feats2check = ts_cols_all,
+                                          feats2abs = v_sign_cols,
+                                          feats2norm = feats2norm,
+                                          is_normalize = False)
 
     # EM: check if path extent features need to be calculated:
     is_extent_features = check_if_path_extent_features(selected_feat)
