@@ -56,7 +56,7 @@ conda install -c conda-forge ffmpeg
 ```bash
 git clone https://github.com/Tierpsy/tierpsy-tracker
 cd tierpsy-tracker
-conda env create -f tierpsy_mac.yml #[MacOS]
+conda env create --file tierpsy_macosx.yml #[MacOS]
 conda activate tierpsy
 pip install -e .
 tierpsy_gui
