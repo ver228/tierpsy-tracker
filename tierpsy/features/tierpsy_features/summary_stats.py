@@ -15,7 +15,6 @@ from tierpsy.features.tierpsy_features.features import timeseries_feats_columns,
 
 import pandas as pd
 import numpy as np
-import pdb
 
 index_colums = ['worm_index', 'timestamp']
 
@@ -322,7 +321,7 @@ def get_summary_stats(timeseries_data,
                       only_abs_ventral = False,
                       selected_feat = None
                       ):
-    pdb.set_trace()
+
     if timeseries_data.size == 0:
         return pd.DataFrame([])
 
