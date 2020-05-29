@@ -71,9 +71,6 @@ def read_data(fname, time_windows, time_units, fps, is_manual_index):
     with pd.HDFStore(fname, 'r') as fid:
         timeseries_data = fid['/timeseries_data']
         blob_features = fid['/blob_features']
-        if timeseries_data.empty:
-            #no data, nothing to do here
-            return
 
         if is_manual_index:
             #keep only data labeled as worm or worm clusters
@@ -93,8 +90,14 @@ def read_data(fname, time_windows, time_units, fps, is_manual_index):
 
             blob_features = blob_features.loc[skel_id].reset_index(drop=True)
 
+        if timeseries_data.empty:
+            #no data, nothing to do here
+            return
+
         # convert time windows to frame numbers for the given file
-        time_windows_frames = time_to_frame_nb(time_windows,time_units,fps,timeseries_data['timestamp'],fname)
+        time_windows_frames = time_to_frame_nb(
+            time_windows, time_units, fps, timeseries_data['timestamp'], fname
+            )
 
         #extract the timeseries_data and blob_features corresponding to each
         #time window and store them in a list (length of lists = number of windows)
@@ -129,6 +132,7 @@ def tierpsy_plate_summary(
     # and to extract the list of well names
     is_fov_tosplit = was_fov_split(timeseries_data[0])
 #    is_fov_tosplit = False
+
     if is_fov_tosplit:
         fovsplitter = FOVMultiWellsSplitter(fname)
         good_wells_df = fovsplitter.wells[['well_name','is_good_well']].copy()
@@ -229,9 +233,10 @@ def tierpsy_trajectories_summary(
             # concatenate all trajectories in given time window into one dataframe
             all_summary = pd.concat(all_summary, ignore_index=True, sort=False)
             # attach whether the wells was good or bad
-            all_summary = all_summary.merge(good_wells_df,
-                                            on='well_name',
-                                            how='left')
+            if is_fov_tosplit:  #  but only do this if we have wells
+                all_summary = all_summary.merge(good_wells_df,
+                                                on='well_name',
+                                                how='left')
 
         # add dataframe to the list of summaries for all time windows
         all_summaries_list.append(all_summary)

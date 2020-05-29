@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import tables
 import matplotlib
+import warnings
 
 from PyQt5.QtCore import Qt, QPointF
 from PyQt5.QtGui import QPixmap, QPainter, QFont, QPen, QPolygonF, QColor, QKeySequence, QBrush
@@ -911,11 +912,27 @@ class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
                     self, field_name, getattr(
                         self, field_name).replace(
                         '/', os.sep))
+        has_skeletons_file = ((self.skeletons_file is not None)
+                              and (self.skeletons_file != ''))
+        if has_skeletons_file:
+            save_modified_table(self.skeletons_file,
+                                self.trajectories_data,
+                                'trajectories_data')
 
-        save_modified_table(self.skeletons_file, self.trajectories_data, 'trajectories_data')
         if self.is_fov_tosplit:
-            self.fovsplitter.write_fov_wells_to_file(self.skeletons_file)
-        self.updateSkelFile(self.skeletons_file)
+            if has_skeletons_file:
+                self.fovsplitter.write_fov_wells_to_file(self.skeletons_file)
+            else:
+                warnings.warn('No skeletons file. Saving wells info in masked video')
+                self.fid.close()
+                self.fovsplitter.write_fov_wells_to_file(self.vfilename)
+                # self.fid = tables.File(self.vfilename, 'r')
+                self.updateVideoFile(self.vfilename)
+
+        if has_skeletons_file:
+            self.updateSkelFile(self.skeletons_file)
+
+
 
     def updateVideoFile(self, vfilename):
         super().updateVideoFile(vfilename)
@@ -989,7 +1006,7 @@ class MWTrackerViewer_GUI( MarkersDrawer, PlotCommunicator,
 
     # update image
     def updateImage(self):
-        if self.image_group is None:
+        if (self.image_group is None) and (self.isimgstore is False):
             return
 
         super(TrackerViewerAuxGUI, self).readCurrentFrame()
@@ -1076,7 +1093,7 @@ if __name__ == '__main__':
     #mask_file = '/Volumes/rescomp1/data/WormData/screenings/Pratheeban/First_Set/MaskedVideos/Old_Adult/16_07_22/W3_ELA_1.0_Ch1_22072016_131149.hdf5'
     #mask_file = '/Users/avelinojaver/Documents/GitHub/tierpsy-tracker/tests/data/AVI_VIDEOS/MaskedVideos/AVI_VIDEOS_1.hdf5'
 #    mask_file = '/Users/avelinojaver/Documents/GitHub/tierpsy-tracker/tests/data/WT2/MaskedVideos/WT2.hdf5'
-    mask_file = '/Users/lferiani/Hackathon/multiwell_tierpsy/12_FEAT_TIERPSY/MaskedVideos/20191205/syngenta_screen_run1_bluelight_20191205_151104.22956805/metadata.hdf5'
+    mask_file = '/Users/lferiani/Hackathon/multiwell_tierpsy/12_FEAT_TIERPSY_forGUI/MaskedVideos/20191205/syngenta_screen_run1_bluelight_20191205_151104.22956805/metadata.hdf5'
     main.updateVideoFile(mask_file)
 
     main.show()

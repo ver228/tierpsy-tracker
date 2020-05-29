@@ -15,6 +15,7 @@ from tierpsy.features.tierpsy_features.features import timeseries_feats_columns,
 
 import pandas as pd
 import numpy as np
+import pdb
 
 index_colums = ['worm_index', 'timestamp']
 
@@ -103,6 +104,9 @@ def get_df_quantiles(df,
     In the features in `feats2abs` we are going to use only the absolute. This is to
     deal with worms with unknown dorsal/ventral orientation.
     '''
+    if not feats2check:
+        return None
+
     q_vals = (0.1, 0.5, 0.9) #percentiles to calculate
     iqr_limits = (0.25, 0.75) # range of percentiles used for the interquantile distance
     valid_q = q_vals + iqr_limits
@@ -270,6 +274,17 @@ def check_if_event_features(selected_feat):
 
     return False
 
+def check_if_path_extent_features(selected_feat):
+    path_extent_cols = ['path_coverage', 'path_density', 'path_transit']
+    if selected_feat is None:
+        return True
+
+    for ft in selected_feat:
+        if np.any([x in ft for x in path_extent_cols]):
+            return True
+
+    return False
+
 def check_if_blob_features(selected_feat):
     if selected_feat is None:
         return True
@@ -286,9 +301,11 @@ def select_timeseries(
         selected_feat):
 
     if selected_feat is None:
-        ts_cols_all, v_sign_cols, feats2norm = timeseries_feats_columns, ventral_signed_columns, feats2normalize
+        ts_cols_all, v_sign_cols, feats2norm = \
+            timeseries_feats_columns, ventral_signed_columns, feats2normalize
     else:
-        ts_cols_all = [ts for ts in timeseries_feats_columns if np.any([ts in x for x in selected_feat])]
+        ts_cols_all = [ts for ts in timeseries_feats_columns
+                       if np.any([ts in x for x in selected_feat])]
         v_sign_cols = list(set(ventral_signed_columns) & set(ts_cols_all))
         feats2norm = dict()
         for key in feats2normalize.keys():
@@ -305,7 +322,7 @@ def get_summary_stats(timeseries_data,
                       only_abs_ventral = False,
                       selected_feat = None
                       ):
-
+    pdb.set_trace()
     if timeseries_data.size == 0:
         return pd.DataFrame([])
 
@@ -335,7 +352,12 @@ def get_summary_stats(timeseries_data,
                                           feats2norm = feats2norm,
                                           is_normalize = False)
 
-    path_grid_stats_s = get_path_extent_stats(timeseries_data, fps, is_normalized = False)
+    # EM: check if path extent features need to be calculated:
+    is_extent_features = check_if_path_extent_features(selected_feat)
+    if is_extent_features:
+        path_grid_stats_s = get_path_extent_stats(timeseries_data, fps, is_normalized = False)
+    else:
+        path_grid_stats_s = pd.Series()
 
     feat_stats = pd.concat((timeseries_stats_s, path_grid_stats_s, event_stats_s))
 
@@ -347,7 +369,10 @@ def get_summary_stats(timeseries_data,
                                           feats2norm = feats2norm,
                                           is_normalize = True)
 
-    path_grid_stats_n = get_path_extent_stats(timeseries_data, fps, is_normalized = True)
+    if is_extent_features:
+        path_grid_stats_n = get_path_extent_stats(timeseries_data, fps, is_normalized = True)
+    else:
+        path_grid_stats_n = pd.Series()
     feat_stats_n = pd.concat((timeseries_stats_n, path_grid_stats_n))
     exp_feats.append(feat_stats_n)
 
@@ -396,19 +421,20 @@ def get_summary_stats(timeseries_data,
         # EM: check if blob features need to be calculated:
         is_blob_features = check_if_blob_features(selected_feat)
 
-        #I need to add the worm index and timesstamp before calculating the derivative
-        blob_features = pd.concat((timeseries_data[index_colums], blob_features), axis=1)
+        if is_blob_features:
+            #I need to add the worm index and timesstamp before calculating the derivative
+            blob_features = pd.concat((timeseries_data[index_colums], blob_features), axis=1)
 
-        blob_features, blob_cols = process_blob_data(blob_features, derivate_delta_time, fps)
-        #get blobstats
-        blob_stats = get_df_quantiles(blob_features, feats2check = blob_cols)
+            blob_features, blob_cols = process_blob_data(blob_features, derivate_delta_time, fps)
+            #get blobstats
+            blob_stats = get_df_quantiles(blob_features, feats2check = blob_cols)
 
-        blob_features['motion_mode'] = timeseries_data['motion_mode']
-        blob_stats_m_subdiv = get_df_quantiles(blob_features,
-                                          feats2check = blob_cols,
-                                          subdivision_dict = {'motion_mode':blob_cols},
-                                          is_abs_ventral = False)
-        exp_feats += [blob_stats, blob_stats_m_subdiv]
+            blob_features['motion_mode'] = timeseries_data['motion_mode']
+            blob_stats_m_subdiv = get_df_quantiles(blob_features,
+                                              feats2check = blob_cols,
+                                              subdivision_dict = {'motion_mode':blob_cols},
+                                              is_abs_ventral = False)
+            exp_feats += [blob_stats, blob_stats_m_subdiv]
 
     exp_feats_df = pd.concat(exp_feats)
 
@@ -441,4 +467,4 @@ if __name__ == '__main__':
                                    feat_selection = (key_in, key_ex, feat_set)
                                    )
 
-    print(feat_stats)    
+    print(feat_stats)
