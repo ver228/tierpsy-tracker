@@ -307,8 +307,8 @@ if __name__ == '__main__':
         'filter_travel_min': '1400',
         'filter_time_units': 'frame_numbers',
         'filter_distance_units': 'pixels',
-        'filter_length_min': '500',
-        'filter_length_max': '2000',
+        'filter_length_min': '50',
+        'filter_length_max': '200',
         'filter_width_min': '2',
         'filter_width_max': '15'
         }

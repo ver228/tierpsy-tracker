@@ -75,12 +75,14 @@ def _match_units(filter_params, fps, fname):
     summaries will not be calculated for this file.
 
     """
+    from copy import deepcopy
+
     if filter_params is None:
         return filter_params, True
 
     all_units = filter_params['units']+[filter_params['time_units']]
 
-    cfilter_params = filter_params.copy()
+    cfilter_params = deepcopy(filter_params)
 
     if fps==-1:
         # In this case, all time-related timeseries will be in frames.
