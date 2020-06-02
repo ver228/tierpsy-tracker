@@ -304,13 +304,13 @@ if __name__ == '__main__':
     #              )
     kwargs = {
         'filter_time_min': '100',
-        'filter_travel_min': '14000',
+        'filter_travel_min': '1400',
         'filter_time_units': 'frame_numbers',
-        'filter_distance_units': 'microns',
+        'filter_distance_units': 'pixels',
         'filter_length_min': '500',
         'filter_length_max': '2000',
-        'filter_width_min': '20',
-        'filter_width_max': '150'
+        'filter_width_min': '2',
+        'filter_width_max': '15'
         }
 
     time_windows = '0:end' #'0:end:1000' #'0:end' #

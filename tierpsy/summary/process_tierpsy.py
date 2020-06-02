@@ -106,10 +106,10 @@ def _match_units(filter_params, fps, fname):
             ids = [i for i,x in enumerate(filter_params['units']) if x=='frame_numbers']
             for i in ids:
                 if filter_params['min_thresholds'][i] is not None:
-                    cfilter_params['min_thresholds'][i]== \
+                    cfilter_params['min_thresholds'][i]= \
                         filter_params['min_thresholds'][i]/fps
                 if filter_params['max_thresholds'][i] is not None:
-                    cfilter_params['max_thresholds'][i]== \
+                    cfilter_params['max_thresholds'][i]= \
                         filter_params['max_thresholds'][i]/fps
 
     mpp = read_microns_per_pixel(fname)
@@ -134,10 +134,10 @@ def _match_units(filter_params, fps, fname):
             ids = [i for i,x in enumerate(filter_params['units']) if x=='pixels']
             for i in ids:
                 if filter_params['min_thresholds'][i] is not None:
-                    cfilter_params['min_thresholds'][i]== \
+                    cfilter_params['min_thresholds'][i]= \
                         filter_params['min_thresholds'][i]*mpp
                 if filter_params['max_thresholds'][i] is not None:
-                    cfilter_params['max_thresholds'][i]== \
+                    cfilter_params['max_thresholds'][i]= \
                         filter_params['max_thresholds'][i]*mpp
 
     return cfilter_params, True
@@ -194,6 +194,10 @@ def read_data(fname, filter_params, time_windows, time_units, fps, is_manual_ind
         if cfilter_params is not None:
             timeseries_data, blob_features = \
                 filter_trajectories(timeseries_data, blob_features, **cfilter_params)
+
+        if timeseries_data.empty:
+            #no data, nothing to do here
+            return
 
         # EM: extract the timeseries_data and blob_features corresponding to each
         # time window and store them in a list (length of lists = number of windows)
