@@ -92,6 +92,30 @@ def augment_data(df,
 
     return fold_masks
 
+#%%
+def shorten_feature_names(feat_summary):
+    """IB: shortens the feature names so that they are MATLAB compatible.
+    Does not change the feature names in the featuresN.hdf5.
+    Input
+    feat_summary = dataframe of features that are to be exported as a features
+    and values to be exported to summary file
+    Output
+    feat_summary = dataframe with feature names abbreviated
+    """
+
+    replace_vel = [(ft, ft.replace('velocity', 'vel')) for ft
+                   in feat_summary.columns]
+    replace_ang = [(ft[0], ft[1].replace('angular', 'ang')) for ft
+                   in replace_vel]
+    replace_rel = [(ft[0], ft[1].replace('relative', 'rel')) for ft
+                   in replace_ang]
+
+    renamed_feats = {k: v for (k, v) in replace_rel}
+    feat_summary.rename(columns=renamed_feats, inplace=True)
+
+    return feat_summary
+
+#%%
 def read_package_version(fname,
                          provenance_step,
                          pkg_name):
@@ -109,30 +133,61 @@ def get_featsum_headers(fnamesum_fname):
 
     return header
 
-def get_fnamesum_headers(f2,feature_type,summary_type,iwin,
-                         time_window,time_units,n_windows,
-                         select_feat, df_files_columns):
+def get_fnamesum_headers(f2,feature_type, summary_type, iwin,
+                         time_window, time_units, n_windows,
+                         select_feat, filter_params, fold_args,
+                         df_files_columns
+                         ):
     from tierpsy import __version__ as version
 
-    if (n_windows==1 and time_window==[0,-1]):
-        header = '\n'.join([
-            ','.join(['# NUMBER OF HEADER LINES', str(5)]),
-            ','.join(['# FEATURE SUMMARIES FILE', f2]),
-            ','.join(['# TIERPSY_VERSION', version]),
-            ','.join(['# SUMMARY_TYPE', '{}_{}'.format(feature_type, summary_type)]),
-            ','.join(['# SELECTED FEATURES', select_feat])
+    header = '\n'.join([
+        ','.join(['# FEATURE SUMMARIES FILE', f2]),
+        ','.join(['# TIERPSY_VERSION', version]),
+        ','.join(['# SUMMARY_TYPE', '{}_{}'.format(feature_type, summary_type)]),
+        ]) + '\n'
+
+    if summary_type == 'plate_augmented':
+        header += '\n'.join([
+            ','.join(['# NUMBER OF FOLDS', str(fold_args['n_folds'])]),
+            ','.join(['# FRACTION OF TRAJECTORIES', str(fold_args['frac_worms_to_keep'])]),
+            ','.join(['# TIME TO SAMPLE', str(fold_args['time_sample_seconds']) ])
             ]) + '\n'
-    else:
-        header = '\n'.join([
-            ','.join(['# NUMBER OF HEADER LINES', str(8)]),
-            ','.join(['# FEATURE SUMMARIES FILE',f2]),
-            ','.join(['# TIERPSY_VERSION',version]),
-            ','.join(['# SUMMARY_TYPE','{}_{}'.format(feature_type, summary_type)]),
-            ','.join(['# SELECTED FEATURES',select_feat]),
+
+    header += ','.join(['# SELECTED FEATURES', select_feat]) + '\n'
+
+    if not (n_windows==1 and time_window==[0,-1]):
+        header += '\n'.join([
             ','.join(['# TIME WINDOW ID',str(iwin)]),
             ','.join(['# TIME WINDOW START END',str(time_window[0]),str(time_window[1])]),
             ','.join(['# TIME UNITS',time_units])
             ]) + '\n'
+
+    if filter_params is not None:
+        if filter_params['min_traj_length'] is not None:
+            header += ','.join(
+                ['# MIN TRAJECTORY LENGTH',
+                 str(filter_params['min_traj_length']),
+                 str(filter_params['time_units'])]) + '\n'
+        if filter_params['min_distance_traveled'] is not None:
+            header += ','.join(
+                ['# MIN DISTANCE TRAVELED',
+                 str(filter_params['min_distance_traveled']),
+                 str(filter_params['distance_units'])]) + '\n'
+        if filter_params['min_thresholds'][0] is not None or \
+            filter_params['max_thresholds'][0] is not None:
+                header += ','.join(
+                    ['# MIN/MAX WORM LENGTH',
+                     str(filter_params['min_thresholds'][0]),
+                     str(filter_params['max_thresholds'][0]),
+                     str(filter_params['distance_units'])]) + '\n'
+        if filter_params['min_thresholds'][1] is not None or \
+            filter_params['max_thresholds'][1] is not None:
+                header += ','.join(
+                    ['# MIN/MAX WORM WIDTH',
+                     str(filter_params['min_thresholds'][1]),
+                     str(filter_params['max_thresholds'][1]),
+                     str(filter_params['distance_units'])]) + '\n'
+
 
     header += ','.join(df_files_columns) + '\n'
     return header

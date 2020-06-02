@@ -18,23 +18,22 @@ class Summarizer_GUI(QtWidgets.QMainWindow):
         super().__init__()
         self.ui = Ui_Summarizer()
         self.ui.setupUi(self)
-        self.mapper = ParamWidgetMapper(self.ui, 
+        self.mapper = ParamWidgetMapper(self.ui,
                 default_param=summarizer_args_dflt,
-                info_param=summarizer_args_info, 
+                info_param=summarizer_args_info,
                 valid_options=summarizer_valid_options
                 )
 
         self.ui.pushButton_start.clicked.connect(self.startAnalysis)
         self.ui.pushButton_rootdir.clicked.connect(self.getRootDir)
         self.ui.p_summary_type.currentIndexChanged.connect(self.viewFoldArgs)
-        self.ui.p_feature_type.currentIndexChanged.connect(self.viewTimeWindows)
-        self.ui.p_select_feat.currentIndexChanged.connect(self.viewSelectByKeywords)
+        self.ui.p_feature_type.currentIndexChanged.connect(self.viewTierpsyOptions)
+        self.ui.p_filter_distance_units.currentIndexChanged.connect(self.changeDistanceUnits)
 
         LineEditDragDrop(self.ui.p_root_dir, self.updateRootDir, os.path.isdir)
 
         self.viewFoldArgs()
-        self.viewTimeWindows()
-        self.viewSelectByKeywords()
+        self.viewTierpsyOptions()
 
     def getRootDir(self):
         root_dir = QtWidgets.QFileDialog.getExistingDirectory(
@@ -53,17 +52,21 @@ class Summarizer_GUI(QtWidgets.QMainWindow):
         else:
             self.ui.FoldArgs.hide()
 
-    def viewTimeWindows(self):
+    def viewTierpsyOptions(self):
         if self.mapper['feature_type'] == 'tierpsy':
             self.ui.TimeWindows.show()
+            self.ui.FeatureSelection.show()
+            self.ui.FilterTrajectories.show()
         else:
             self.ui.TimeWindows.hide()
+            self.ui.FeatureSelection.hide()
+            self.ui.FilterTrajectories.hide()
 
-    def viewSelectByKeywords(self):
-        if self.mapper['select_feat'] == 'select_by_keywords':
-            self.ui.SelectByKeywords.show()
-        else:
-            self.ui.SelectByKeywords.hide()
+    def changeDistanceUnits(self):
+        index = self.ui.filter_length_units.findText(self.mapper['filter_distance_units'])
+        self.ui.filter_length_units.setCurrentIndex(index)
+        index = self.ui.filter_width_units.findText(self.mapper['filter_distance_units'])
+        self.ui.filter_width_units.setCurrentIndex(index)
 
 
     def startAnalysis(self):

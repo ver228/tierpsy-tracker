@@ -8,7 +8,9 @@ summarizer_valid_options = {
     'feature_type':['openworm','tierpsy'],
     'summary_type' : ['plate', 'trajectory', 'plate_augmented'],
     'time_units' : ['frame_numbers', 'seconds'],
-    'select_feat' : ['all', 'tierpsy_8', 'tierpsy_16', 'tierpsy_256', 'tierpsy_2k','select_by_keywords']
+    'select_feat' : ['all', 'tierpsy_8', 'tierpsy_16', 'tierpsy_256', 'tierpsy_2k','select_by_keywords'],
+    'filter_time_units' : ['frame_numbers', 'seconds'],
+    'filter_distance_units' : ['pixels', 'microns'],
 }
 
 dflt_args_list = [
@@ -75,6 +77,55 @@ dflt_args_list = [
         '',
         '''
         Exclude features that contain any of the given keywords. Provide keywords separated by comma \',\'.
+        '''
+        ),
+    ('filter_time_min',
+        '',
+        '''
+        Minimum length that a trajetory must have to be included in the calculation of feature summaries.
+        '''
+        ),
+    ('filter_time_units',
+        'frame_numbers',
+        'Units of min trajectory length threshold.'
+        ),
+    ('filter_travel_min',
+        '',
+        '''
+        If the total distance traveled during a trajetory is above this threshold,
+        the trajectory will be included in the calculation of feature summaries.
+        '''
+        ),
+    ('filter_distance_units',
+        'pixels',
+        'Units of distance used in the filtering thresholds.'
+        ),
+    ('filter_length_min',
+        '',
+        '''
+        If the average worm length within a trajectory is above this threshold,
+        the trajectory will be included in the calculation of feature summaries.
+        '''
+        ),
+    ('filter_length_max',
+        '',
+        '''
+        If the average worm length within a trajectory is below this threshold,
+        the trajectory will be included in the calculation of feature summaries.
+        '''
+        ),
+    ('filter_width_min',
+        '',
+        '''
+        If the average width of the worm's midbody within a trajectory is above this threshold,
+        the trajectory will be included in the calculation of feature summaries.
+        '''
+        ),
+    ('filter_width_max',
+        '',
+        '''
+        If the average width of the worm's midbody within a trajectory is below this threshold,
+        the trajectory will be included in the calculation of feature summaries.
         '''
         ),
     ('n_folds',
