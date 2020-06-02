@@ -133,17 +133,27 @@ def get_featsum_headers(fnamesum_fname):
 
     return header
 
-def get_fnamesum_headers(f2,feature_type,summary_type,iwin,
-                         time_window,time_units,n_windows,
-                         select_feat, filter_params, df_files_columns):
+def get_fnamesum_headers(f2,feature_type, summary_type, iwin,
+                         time_window, time_units, n_windows,
+                         select_feat, filter_params, fold_args,
+                         df_files_columns
+                         ):
     from tierpsy import __version__ as version
 
     header = '\n'.join([
         ','.join(['# FEATURE SUMMARIES FILE', f2]),
         ','.join(['# TIERPSY_VERSION', version]),
         ','.join(['# SUMMARY_TYPE', '{}_{}'.format(feature_type, summary_type)]),
-        ','.join(['# SELECTED FEATURES', select_feat])
         ]) + '\n'
+
+    if summary_type == 'plate_augmented':
+        header += '\n'.join([
+            ','.join(['# NUMBER OF FOLDS', str(fold_args['n_folds'])]),
+            ','.join(['# FRACTION OF TRAJECTORIES', str(fold_args['frac_worms_to_keep'])]),
+            ','.join(['# TIME TO SAMPLE', str(fold_args['time_sample_seconds']) ])
+            ]) + '\n'
+
+    header += ','.join(['# SELECTED FEATURES', select_feat]) + '\n'
 
     if not (n_windows==1 and time_window==[0,-1]):
         header += '\n'.join([

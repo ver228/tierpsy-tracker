@@ -28,7 +28,8 @@ feature_files_ext = {'openworm' : ('_features.hdf5', '_feat_manual.hdf5'),
 valid_feature_types = list(feature_files_ext.keys())
 valid_summary_types = ['plate', 'trajectory', 'plate_augmented']
 
-feat_df_id_cols = ['file_id', 'well_name', 'is_good_well']
+feat_df_id_cols = \
+    ['file_id', 'i_fold', 'worm_index', 'n_skeletons', 'well_name', 'is_good_well']
 
 def check_in_list(x, list_of_x, x_name):
     if not x in list_of_x:
@@ -121,7 +122,7 @@ def calculate_summaries(
         abbreviate_features, dorsal_side_known,
         time_windows='0:end', time_units=None,
         select_feat='all', keywords_include='', keywords_exclude='',
-        _is_debug = False, **kwargs
+        _is_debug = False, append_to_file=None, **kwargs
         ):
     """
     Gets input from the GUI, calls the function that chooses the type of
@@ -129,11 +130,6 @@ def calculate_summaries(
     """
     filter_args = {k:kwargs[k] for k in kwargs.keys() if 'filter' in k}
     fold_args = {k:kwargs[k] for k in kwargs.keys() if 'filter' not in k}
-
-    save_base_name = 'summary_{}_{}'.format(feature_type, summary_type)
-    if is_manual_index:
-        save_base_name += '_manual'
-    save_base_name += '_' + datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
 
     #check the options are valid
     check_in_list(feature_type, valid_feature_types, 'feature_type')
@@ -156,6 +152,12 @@ def calculate_summaries(
         selected_feat,
         dorsal_side_known, filter_params,
         is_manual_index, **fold_args)
+
+    # get basenames of summary files
+    save_base_name = 'summary_{}_{}'.format(feature_type, summary_type)
+    if is_manual_index:
+        save_base_name += '_manual'
+    save_base_name += '_' + datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
 
     #get extension of results file
     possible_ext = feature_files_ext[feature_type]
@@ -192,7 +194,7 @@ def calculate_summaries(
         fnamesum_headers = get_fnamesum_headers(
             f2, feature_type, summary_type, iwin, time_windows_ints[iwin],
             time_units, len(time_windows_ints), select_feat, filter_params,
-            df_files.columns.to_list())
+            fold_args, df_files.columns.to_list())
         featsum_headers = get_featsum_headers(f1)
 
         with open(f1,'w') as fid:

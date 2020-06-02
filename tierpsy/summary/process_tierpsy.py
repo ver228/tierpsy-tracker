@@ -113,7 +113,6 @@ def _match_units(filter_params, fps, fname):
                         filter_params['max_thresholds'][i]/fps
 
     mpp = read_microns_per_pixel(fname)
-    print_flush('mpp={}'.format(mpp))
 
     if mpp==-1:
         # In this case, all distance-related timeseries will be in pixels.
@@ -151,7 +150,6 @@ def read_data(fname, filter_params, time_windows, time_units, fps, is_manual_ind
         timeseries_data_list: list of timeseries_data for each time window (length of lists = number of windows)
         blob_features_list: list of blob_features for each time window (length of lists = number of windows)
     """
-    print_flush('fps={}'.format(fps))
     # EM: If time_units=seconds and fps is not defined, then return None with warning of no fps.
     #     Make this check here, to avoid wasting time reading the file
     if _no_fps(time_units, fps, fname):
@@ -207,6 +205,11 @@ def read_data(fname, filter_params, time_windows, time_units, fps, is_manual_ind
             blob_features_list.append(blob_features.iloc[in_window.values].reset_index(drop=True))
 
     return timeseries_data_list, blob_features_list
+
+def count_skeletons(timeseries):
+    cols = [col for col in timeseries.columns if col.startswith('eigen')]
+    return (~timeseries[cols].isna().any(axis=1)).sum()
+
 #%%
 def tierpsy_plate_summary(
         fname, filter_params, time_windows, time_units,
@@ -247,6 +250,7 @@ def tierpsy_plate_summary(
                 only_abs_ventral=only_abs_ventral,
                 selected_feat=selected_feat
                 )
+            plate_feats['n_skeletons'] = count_skeletons(timeseries_data[iwin])
             plate_feats_list.append(pd.DataFrame(plate_feats).T)
         else:
             # get list of well names in this time window
@@ -264,6 +268,7 @@ def tierpsy_plate_summary(
                     only_abs_ventral=only_abs_ventral,
                     selected_feat=selected_feat
                     )
+                well_feats['n_skeletons'] = count_skeletons(timeseries_data[iwin][idx_well])
                 # first prepend the well_name_s to the well_feats series,
                 # then transpose it so it is a single-row dataframe,
                 # and append it to the well_feats_list
@@ -328,6 +333,7 @@ def tierpsy_trajectories_summary(
                     only_abs_ventral=only_abs_ventral,
                     selected_feat=selected_feat
                     ) # returns empty dataframe when w_ts_data is empty
+                worm_feats['n_skeletons'] = count_skeletons(w_ts_data)
                 worm_feats = pd.DataFrame(worm_feats).T
                 worm_feats = add_trajectory_info(worm_feats, w_ind, w_ts_data, fps)
 
@@ -384,6 +390,7 @@ def tierpsy_plate_summary_augmented(
                     selected_feat=selected_feat
                     )
 
+                plate_feats['n_skeletons'] = count_skeletons(timeseries_data_r)
                 plate_feats = pd.DataFrame(plate_feats).T
                 plate_feats.insert(0, 'i_fold', i_fold)
 
