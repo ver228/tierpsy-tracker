@@ -276,8 +276,8 @@ def calculate_summaries(
 if __name__ == '__main__':
 
     root_dir = \
-        '/Users/em812/Data/Tierpsy_GUI/test_results_2'
-        #'/Users/em812/Data/Tierpsy_GUI/test_results_multiwell/Syngenta'
+        '/Users/em812/Data/Tierpsy_GUI/test_results_multiwell/Syngenta/Results'
+        # '/Users/em812/Data/Tierpsy_GUI/test_results_2'
         #'/Users/em812/Data/Tierpsy_GUI/test_results_multiwell/20190808_subset'
 
     is_manual_index = False
@@ -313,8 +313,8 @@ if __name__ == '__main__':
         'filter_width_max': '15'
         }
 
-    time_windows = '0:end' #'0:end:1000' #'0:end' #
-    time_units = 'frame numbers'
+    time_windows = '0:100+200:300+350:400, 150:200' #'0:end:1000' #'0:end' #
+    time_units = 'seconds'
     select_feat = 'tierpsy_16' #'tierpsy_2k'
     keywords_include = ''
     keywords_exclude = 'blob' #'curvature,velocity,norm,abs'
