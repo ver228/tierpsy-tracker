@@ -1,6 +1,6 @@
 ## Example Data
 
-Example files can be found [here](https://imperiallondon-my.sharepoint.com/:u:/g/personal/ajaver_ic_ac_uk/EdoZILCgkw5HnTkMtbD_OEsBBSbXD_WnBnWkwdf2bojusg?e=3yKbXR). The zip file contains a multiworm video recorded using a high resolution fixed camera and a single worm video recorded using the [WT2.0](https://www.mrc-lmb.cam.ac.uk/wormtracker/).
+Example files can be found [here](https://zenodo.org/record/3837679/files/test_data.zip). The zip file contains a multiworm video recorded using a high resolution fixed camera and a single worm video recorded using the [WT2.0](https://www.mrc-lmb.cam.ac.uk/wormtracker/).
 
 You can analyze the videos using the [Batch Processing Multiple Files](#batch-processing-multiple-files) App. The videos require different analysis parameters since they belong to different setups, therefore they cannot be processed together.
 
@@ -37,26 +37,26 @@ If the objects to track are lighter than the background (e.g. if you are trackin
 
 ![SetParameters](https://cloud.githubusercontent.com/assets/8364368/26410507/6df7ef54-409b-11e7-8139-9ce99daf69cb.gif)  
 
-In some cases, even after adjusting the threshold there still remain large regions of background. If the tracked objects significatively change position during the movie you can enable the background subtraction as shown below. This method will consider anything that does not change within the specified frame range as background.  However, if any of your animals are immobile during the entire frame range will be lost. 
+In some cases, even after adjusting the threshold there still remain large regions of background. If the tracked objects significatively change position during the movie you can enable the background subtraction as shown below. This method will consider anything that does not change within the specified frame range as background.  However, if any of your animals are immobile during the entire frame range will be lost.
 
 ![SetBgndSubt](https://cloud.githubusercontent.com/assets/8364368/26410958/95a8c09a-409c-11e7-9fc9-14dafeabb467.gif)  
 
 Other important parameters to set are:
 
 * `Frame per Second` (fps) is the frame rate of your video. An important value since it is used to calculate several other parameters. If `Extract Timestamp` is set to `true`, the software will try to extract the frame rate from the video timestamp. However, keep in mind that it is not always possible to recover the correct timestamp, and therefore it is recommended that you provide the value here.
-* `Frames to Average` is used to calculate the background mask. This value can significantly speed up the compression step. However, it will not work if the particles are highly motile. Use the buttons `Play` and `Next Chunk` to see how a selected value affects the mask. Note that the average is used only for the background mask, the foreground regions are kept intact for each individual frame. 
+* `Frames to Average` is used to calculate the background mask. This value can significantly speed up the compression step. However, it will not work if the particles are highly motile. Use the buttons `Play` and `Next Chunk` to see how a selected value affects the mask. Note that the average is used only for the background mask, the foreground regions are kept intact for each individual frame.
 * `Microns per Pixel`. This value is only used to in the steps to calculate the final features](EXPLANATION.md). If this value is set to be less than zero the features results will be in pixels instead of micrometers.
 * `Analysis Type`. The selected analysis type will determine the series of [steps](EXPLANATION.md) executed by the program according to the table below:
 
- | Extension | Description | 
+ | Extension | Description |
  ---------|-------------------------------------------------------
- | BASE\* | No features, only steps up to the skeleton orientation | 
- | TIERPSY\* | Add the steps for the [tierpsy features](EXPLANATION.md/#extract-features-tierpsy-features-route) calculation. | 
+ | BASE\* | No features, only steps up to the skeleton orientation |
+ | TIERPSY\* | Add the steps for the [tierpsy features](EXPLANATION.md/#extract-features-tierpsy-features-route) calculation. |
  | OPENWORM\* | Add the steps for the [openworm features](EXPLANATION.md/#extract-features-openworm-route) calculation. |
- | \*WT2 | Add the necessary steps to analyze videos recorded using the [WormTracker 2.0](https://www.mrc-lmb.cam.ac.uk/wormtracker/).| 
- | \*SINGLE | Same steps as BASE but the trajectories will be joined with the assumption that there is only a single worm in the video.  | 
- | \*AEX | Add the steps to filter worms and obtain the food contour using deep learning models. This models might only work from data from the [Behavioural Genomics Laboratory](https://lms.mrc.ac.uk/research-group/behavioural-genomics/). | 
- 
+ | \*WT2 | Add the necessary steps to analyze videos recorded using the [WormTracker 2.0](https://www.mrc-lmb.cam.ac.uk/wormtracker/).|
+ | \*SINGLE | Same steps as BASE but the trajectories will be joined with the assumption that there is only a single worm in the video.  |
+ | \*AEX | Add the steps to filter worms and obtain the food contour using deep learning models. This models might only work from data from the [Behavioural Genomics Laboratory](https://lms.mrc.ac.uk/research-group/behavioural-genomics/). |
+
 
 You can access further parameters by clicking `Edit More Parameters`. The explanation of each parameter can be found by using the [contextual help](https://en.wikipedia.org/wiki/Tooltip). It is not always trivial to effectively adjust these other parameters, but if you believe you need too, I recommend using a small video (~100 frames) for testing.
 
@@ -69,17 +69,17 @@ This widget is used to execute [all steps](EXPLANATION.md) of tracking and featu
 
 
 ### Chosing the Files to be Analyzed
-Tierpsy Tracker will analyse of the video files that are present in `Original Video Dir` including sub-directories.  Particular files are included if their names match the `File Pattern to Include`, but do not match the `File Pattern to Exclude`. 
+Tierpsy Tracker will analyse of the video files that are present in `Original Video Dir` including sub-directories.  Particular files are included if their names match the `File Pattern to Include`, but do not match the `File Pattern to Exclude`.
 
-* The patterns can use [Unix shell-style wildcards](https://docs.python.org/3.1/library/fnmatch.html). 
-* In order to distinguish the [output files](OUTPUTS.md) that are saved during processing, any file that ends with any of the [reserved suffixes](https://github.com/ver228/tierpsy-tracker/blob/master/tierpsy/helper/misc/file_processing.py#L5) will be ignored. 
+* The patterns can use [Unix shell-style wildcards](https://docs.python.org/3.1/library/fnmatch.html).
+* In order to distinguish the [output files](OUTPUTS.md) that are saved during processing, any file that ends with any of the [reserved suffixes](https://github.com/ver228/tierpsy-tracker/blob/master/tierpsy/helper/misc/file_processing.py#L5) will be ignored.
 * To analyze a single file set `File Pattern to Include` to the entire file name.
 * If the `Analysis Start Point` is set to a step after [`COMPRESS`](EXPLANATION.md/#compress) the `Original Videos Dir` is ignored and the `Masked Videos Dir` is used instead.
 
-Alternatively, one can create a text file with the list of files to be analysed (one file per line). The path to this file can then be set in `Individual File List`. 
+Alternatively, one can create a text file with the list of files to be analysed (one file per line). The path to this file can then be set in `Individual File List`.
 
 ### Parameters Files
-Parameters files created using the [Set Parameters](#set-parameters) widget can be select in the `Parameter Files` box. You can also select some previously created files using the drop-down list. If no file is selected the [default values](https://github.com/ver228/tierpsy-tracker/blob/dev/tierpsy/helper/params/docs_tracker_param.py) will be used. 
+Parameters files created using the [Set Parameters](#set-parameters) widget can be select in the `Parameter Files` box. You can also select some previously created files using the drop-down list. If no file is selected the [default values](https://github.com/ver228/tierpsy-tracker/blob/dev/tierpsy/helper/params/docs_tracker_param.py) will be used.
 
 #### Worm Tracker 2.0 Option
 
@@ -89,18 +89,18 @@ You can analyse videos created by the [Worm Tracker 2.0](http://www.mrc-lmb.cam.
 Note that each of the video files `.avi` must have an additional pair of files with the extensions `.info.xml` and `.log.csv`. Additionally, keep in mind that if the stage aligment step fails, an error will be risen and the analysis of that video will be stopped. If you do not want to see the error messages untick the option `Print debug information`.
 
 
-### Analysis Progress 
+### Analysis Progress
 
-Tierpsy Tracker will determine which analysis steps have already been completed for the selected files and will only execute the analysis from the last completed step. Files that were completed or do not satisfy the next step requirements will be ignored. 
+Tierpsy Tracker will determine which analysis steps have already been completed for the selected files and will only execute the analysis from the last completed step. Files that were completed or do not satisfy the next step requirements will be ignored.
 
 * To see only a summary of the files to be analysed without starting the analysis tick `Only Display Progress Summary`.
 
-* You can start or end the analysis at specific points by using the `Analysis Start Point` and `Analysis End Point` drop-down menus. 
+* You can start or end the analysis at specific points by using the `Analysis Start Point` and `Analysis End Point` drop-down menus.
 
 * If you want to re-analyse a file from an earlier step, delete or rename the output files that were created during the previous run. If you only want to overwrite a particular step, you have to delete the corresponding step in the `/provenance_tracking` node in the corresponding file.
 
 ### Directory to Save the Output Files
-The masked videos created in the [compression step](EXPLANATION.md/#video-compression) are stored in `Masked Videos Dir`. The rest of the tracker results are stored in `Tracking Results Dir`. In both cases the subdirectory tree structure in `Original Videos Dir` is recreated. 
+The masked videos created in the [compression step](EXPLANATION.md/#video-compression) are stored in `Masked Videos Dir`. The rest of the tracker results are stored in `Tracking Results Dir`. In both cases the subdirectory tree structure in `Original Videos Dir` is recreated.
 
 The reason for creating the parallel directory structure is to make it easy to delete the analysis outputs to re-run with different parameter values.  It also makes it easy to delete the original videos to save space once you've arrived at good parameter values. If you prefer to have the output files in the same directory as the original videos you can set `Masked Videos Dir` and `Tracking Results Dir` to the same value.
 
@@ -133,7 +133,7 @@ This widget is used to visualize the tracking results. You can move to a specifi
 
 You can manually correct the trajectories as shown below. Label the trajectories you would like to include in the summary as *WORM* (green box). You can use the the `w` key as [shortcut](HOWTO.md#viewer-shortcuts). Trajectories with any other label will be ignored.
 
-![TrackJoined](https://cloud.githubusercontent.com/assets/8364368/26412212/e0e112f8-409f-11e7-867b-512cf044d717.gif) 
+![TrackJoined](https://cloud.githubusercontent.com/assets/8364368/26412212/e0e112f8-409f-11e7-867b-512cf044d717.gif)
 
 If you want to use [Tierpsy Features](EXPLANATION.md/#extract-features-tierpsy-features-route) you can use [Features Summary](HOWTO.md#features-summary) app by ticking the Is Manually Edited? box, selecting `tierpsy` as Features Type and re-runing the analysis. Make sure the file you edited in the viewer (Select Skeletons File, near the bottom of the app) has the extension `_featuresN.hdf5`. This is the default but an incomplete analysis might load the wrong extension.
 
@@ -151,15 +151,15 @@ If you want to use [OpenWorm features](EXPLANATION.md/#extract-features-openworm
 `U` : label selected box as `Undefined`.
 
 `J` : Join both trajectories in the zoomed windows.
-	
+
 `S` : Split the selected trajectory at the current time frame.
 
-`Up key` : select the top zoomed window. 
-	
-`Down key` : select the bottom zoomed window. 
+`Up key` : select the top zoomed window.
+
+`Down key` : select the bottom zoomed window.
 
 `[` : Move the the begining of the selected trajectory.
-	
+
 `]` : Move the the end of the selected trajectory.
 
 `+` : Zoom out the main window.
@@ -173,7 +173,7 @@ If you want to use [OpenWorm features](EXPLANATION.md/#extract-features-openworm
 `Left key` : Increse the frame by step size.
 
 `Right key` : Decrease the frame by step size.
-    
+
 ### Visualizing Analysis Results
 The extracted features are store in the files that end with [featuresN.hdf5](https://github.com/ver228/tierpsy-tracker/blob/development/docs/OUTPUTS.md#basename_featuresNhdf5) if the tierpsy feature route was selected or in [features.hdf5](https://github.com/ver228/tierpsy-tracker/blob/development/docs/OUTPUTS.md#basename_featureshdf5) if the openworm route was selected. You can visualize the features in different ways as shown below:
 
@@ -183,19 +183,18 @@ From the plotting window can either save the plots or export the data of individ
 
 ## Features Summary
 ![FeatSummary](https://user-images.githubusercontent.com/8364368/41034550-d3665230-6981-11e8-97d9-63c74ff24661.png)
-* `Root Directory`: Directory containing the previously calculated features files. 
+* `Root Directory`: Directory containing the previously calculated features files.
 * `Feature Type` : Select between the features calculated using the [OpenWorm Analysis Toolbox](https://github.com/openworm/open-worm-analysis-toolbox) or [Tierpsy Features](https://github.com/ver228/tierpsy-features).
-* `Use manually edited features?` Tick if you want to collect data from manually edited trajectories. **Only trajectories labelled as either worm or worm cluster would be used.** 
+* `Use manually edited features?` Tick if you want to collect data from manually edited trajectories. **Only trajectories labelled as either worm or worm cluster would be used.**
 * `Summary Type` : Select what data is going to be collected from a video. Either a summary for each trajectory available (`trajectory`), a summary pooling all the data per video (`plate`), or multiple random subsamplings per video (`plate_augmented`).
 
 The files will be located by doing a recursive search for matching the extension according to the table below.
 
 | Feature Type | Is Manually Edited? | File Extension |
-| -------- | -------- | ------ | 
+| -------- | -------- | ------ |
 | tierpsy | Ticked | featuresN.hdf5 |
 | tierpsy | Unticked | featuresN.hdf5 |
 | openworm | Ticked | feat_manual.hdf5 |
 | openworm | Unticked | features.hdf5 |
 
 The results are saved into two separated .csv file located in the root directory. The first file, `filenames_FEATURETYPE_SUMMARY_DATE.csv`, contains the names of all the files found in the root directory. The `is_good` column is set to `True` if the file is valid and used in the summary. The second file, `features_FEATURETYPE_SUMMARY_DATE.csv`, contains the corresponding features summarized as described in the [output files](OUTPUTS.md#features_summar) section. The two result files can be joined using the `file_id` column.
-
