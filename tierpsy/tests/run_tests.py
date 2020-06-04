@@ -14,7 +14,8 @@ import zipfile
 import warnings
 
 DLFT_DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
-EXAMPLES_LINK="https://imperiallondon-my.sharepoint.com/personal/ajaver_ic_ac_uk/_layouts/15/guestaccess.aspx?guestaccesstoken=ldZ18fLY%2bzlu7XuO9mbKVdyiKoH4naiesqiLXWU4vGQ%3d&docid=0cec4e52f4ccf4d5b8bb3a737020fc12f&rev=1"
+# EXAMPLES_LINK="https://imperiallondon-my.sharepoint.com/personal/ajaver_ic_ac_uk/_layouts/15/guestaccess.aspx?guestaccesstoken=ldZ18fLY%2bzlu7XuO9mbKVdyiKoH4naiesqiLXWU4vGQ%3d&docid=0cec4e52f4ccf4d5b8bb3a737020fc12f&rev=1"
+EXAMPLES_LINK="https://zenodo.org/record/3837679/files/test_data.zip"
 
 def download_files(data_dir):
     # Streaming, so we can iterate over the response.
