@@ -27,6 +27,7 @@ feature_sets_filenames = {
     }
 
 valid_time_windows_connector = ':'
+valid_time_windows_extend = '+'
 valid_time_windows_separator = ','
 time_windows_format_explain = \
     'Each time window must be defined by the start time and the end time ' + \
@@ -34,7 +35,10 @@ time_windows_format_explain = \
     '(start_time:end_time). Different windows must be ' + \
     'separated by \'{}\'. '.format(valid_time_windows_separator) + \
     'A sequence of equally sized windows can be defined with the format ' + \
-    'start_time:end_time:step.'
+    'start_time{0}end_time{0}step.'.format(valid_time_windows_connector) + \
+    'A combination of time intervals can define a SINGLE window with the format ' + \
+    'start_time1{0}end_time1 {1} start_time2{0}end_time2.'.format(
+        valid_time_windows_connector, valid_time_windows_extend)
 
 def time_windows_parser(time_windows):
     """
@@ -52,23 +56,31 @@ def time_windows_parser(time_windows):
 
     # Remove spaces and replace end with -1
     windows = time_windows.replace(' ','').replace('end','-1')
-    # Split at ',' to separate time windows, then split each non-empty time
+    # Split at ',' to separate time windows
+    windows = windows.split(valid_time_windows_separator)
+
+    # Split each non-empty time window at '+'
+    windows = [x.split(valid_time_windows_extend) for x in windows if x]
+
+    # then split each non-empty time
     # window at ':'
-    windows = [x.split(valid_time_windows_connector)
-               for x in windows.split(valid_time_windows_separator) if x]
+    windows = [[x.split(valid_time_windows_connector) for x in win if x] for win in windows]
 
     # Convert to integers
     try:
-        windows = [[int(x) for x in wdw] for wdw in windows]
+        windows = [[[int(x) for x in wdw] for wdw in win] for win in windows]
     except ValueError:
         print_flush(
-            'Time windows input could not be converted to list of integers.'+
+            'Time windows input could not be converted to list of numbers.'+
             time_windows_format_explain
             )
         raise
-    else:
-        fin_windows = []
-        for iwin,window in enumerate(windows):
+
+    fin_windows = []
+    for iwin,win in enumerate(windows):
+        # If there was no + in the window definition (one interval):
+        if len(win)==1:
+            window=win[0]
             if len(window)==3:
                 if window[1]==-1:
                     raise ValueError(
@@ -92,20 +104,41 @@ def time_windows_parser(time_windows):
                     list(range(start+step,end,step))+[end])
                     ]
                 for add in step_wins:
-                    fin_windows.append(add)
+                    fin_windows.append([add])
             elif len(window)==2:
                 if window[1]!=-1:
                     assert window[0]<=window[1], \
                         "Invalid format of time windows: The end time of " +\
                         "time window {}/{} ".format(iwin+1,len(windows)) + \
                         "cannot be smaller than the start time."
-                fin_windows.append(window)
+                fin_windows.append([window])
             else:
                 ValueError(
                     'Invalid format of time windows: ' +
                     time_windows_format_explain
                     )
-        return fin_windows
+        # If there are + in the window definition (more than one intervals):
+        else:
+            extended_win = []
+            for window in win:
+                if len(window)==3:
+                    raise ValueError(
+                        'Invalid format of time windows: The step-based format ' +
+                        'start_time:end_time:step cannot be combined with ' +
+                        'the format start_time1:end_time1 + start_time2:end_time2.')
+                if len(window)!=2:
+                    raise ValueError(
+                        'Invalid format of time windows: ' +
+                        time_windows_format_explain
+                        )
+                if window[1]!=-1:
+                    assert window[0]<=window[1], \
+                        "Invalid format of time windows: The end time of " +\
+                        "time window {}/{} ".format(iwin+1,len(windows)) + \
+                        "cannot be smaller than the start time."
+                extended_win.append(window)
+            fin_windows.append(extended_win)
+    return fin_windows
 
 def drop_ventrally_signed(feat_names):
     """

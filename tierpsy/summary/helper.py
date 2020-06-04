@@ -155,11 +155,12 @@ def get_fnamesum_headers(f2,feature_type, summary_type, iwin,
 
     header += ','.join(['# SELECTED FEATURES', select_feat]) + '\n'
 
-    if not (n_windows==1 and time_window==[0,-1]):
+    if not (n_windows==1 and time_window[0]==[0,-1]):
         header += '\n'.join([
-            ','.join(['# TIME WINDOW ID',str(iwin)]),
-            ','.join(['# TIME WINDOW START END',str(time_window[0]),str(time_window[1])]),
-            ','.join(['# TIME UNITS',time_units])
+            ','.join(['# TIME WINDOW ID', str(iwin)]),
+            ','.join(['# TIME WINDOW INTERVAL(S) [START END]'] +
+                     [str(x) for x in time_window]),
+            ','.join(['# TIME UNITS', time_units])
             ]) + '\n'
 
     if filter_params is not None:

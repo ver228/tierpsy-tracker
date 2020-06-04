@@ -38,11 +38,14 @@ dflt_args_list = [
     ('time_windows',
         '0:end',
         '''
-        Define time windows to extract features from the parts of the video included in each window.
-        Each window must be defined by the start_time and the end_time connected by \':\' (start_time:end_time).
-        Different windows must be separated by \',\' (start_time_1:end_time_1, start_time_2:end_time_2).
-        A sequence of equally sized windows can be defined using the format \'start_time:end_time:step'\.
-        Attention: the start_time is included in the window, but the end_time is not included.
+        Define time windows to get feature summaries from the parts of the video included in each window.
+        Each window must be defined by the start_time and the end_time connected by ':', 
+        for example 'start_time:end_time'. 
+        Different windows must be separated by ',', for example 'start_time_1:end_time_1, start_time_2:end_time_2'. 
+        A sequence of equally sized windows can be defined using the format 'start_time:end_time:step'. 
+        A single window can be comprised of several time intervals using the format
+        'start_time1:end_time1 + start_time2:end_time2'. 
+        ATTENTION: the start_time is included in the window, but the end_time is not included.
         '''
         ),
     ('time_units',

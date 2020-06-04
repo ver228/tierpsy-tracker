@@ -21,27 +21,38 @@ def time_to_frame_nb(time_windows,time_units,fps,timestamp,fname):
     Converts the time windows to units of frame numbers (if they were defined in seconds).
     It also defines the end frame of a window, if the index is set to -1 (end).
     """
+    from copy import deepcopy
+
     if timestamp.empty:
         return
 
-    from copy import deepcopy
     time_windows_frames = deepcopy(time_windows)
+
     if time_units == 'seconds':
-        assert fps!=-1
-        for iwin in range(len(time_windows_frames)):
-            for ilim in range(2):
-                if time_windows_frames[iwin][ilim]!=-1:
-                    time_windows_frames[iwin][ilim] = round(time_windows_frames[iwin][ilim]*fps)
+        assert fps!=-1, 'Cannot convert time windows to frame numbers. Frames per second ratio not known.'
+        for iwin, win in enumerate(time_windows_frames):
+            for iinterval in range(len(win)):
+                for ilim in range(2):
+                    if time_windows_frames[iwin][iinterval][ilim]!=-1:
+                        time_windows_frames[iwin][iinterval][ilim] = \
+                            round(time_windows_frames[iwin][iinterval][ilim]*fps)
 
     last_frame = timestamp.sort_values().iloc[-1]
-    for iwin in range(len(time_windows_frames)):
-        # If a window ends with -1, replace with the frame number of the last frame (or the start frame of the window+1 if window out of bounds)
-        if time_windows_frames[iwin][1]==-1:
-            time_windows_frames[iwin][1] = max(last_frame+1,time_windows_frames[iwin][0])
+    for iwin, win in enumerate(time_windows_frames):
+        for iinterval in range(len(win)):
+            # If a window ends with -1, replace with the frame number of the
+            # last frame (or the start frame of the window+1 if window out of bounds)
+            if time_windows_frames[iwin][iinterval][1]==-1:
+                time_windows_frames[iwin][iinterval][1] = \
+                    max(last_frame+1, time_windows_frames[iwin][iinterval][0])
 
-        # If a window is out of bounds, print warning
-        if time_windows_frames[iwin][0]>last_frame:
-            print_flush('Warning: The start time of window {}/{} is out of bounds of file \'{}\'.'.format(iwin+1,len(time_windows_frames),fname))
+            # If a window is out of bounds, print warning
+            if time_windows_frames[iwin][iinterval][0]>last_frame:
+                print_flush(
+                    'Warning: The start time of interval '+
+                    '{}/{} '.format(iinterval+1, len(win)) +
+                    'of window {} '.format(iwin) +
+                    'is out of bounds of file \'{}\'.'.format(fname))
 
     return time_windows_frames
 
@@ -152,6 +163,7 @@ def read_data(fname, filter_params, time_windows, time_units, fps, is_manual_ind
         timeseries_data_list: list of timeseries_data for each time window (length of lists = number of windows)
         blob_features_list: list of blob_features for each time window (length of lists = number of windows)
     """
+    import numpy as np
     # EM: If time_units=seconds and fps is not defined, then return None with warning of no fps.
     #     Make this check here, to avoid wasting time reading the file
     if _no_fps(time_units, fps, fname):
@@ -186,7 +198,6 @@ def read_data(fname, filter_params, time_windows, time_units, fps, is_manual_ind
         if timeseries_data.empty:
             #no data, nothing to do here
             return
-
         # convert time windows to frame numbers for the given file
         time_windows_frames = time_to_frame_nb(
             time_windows, time_units, fps, timeseries_data['timestamp'], fname
@@ -206,9 +217,14 @@ def read_data(fname, filter_params, time_windows, time_units, fps, is_manual_ind
         timeseries_data_list = []
         blob_features_list = []
         for window in time_windows_frames:
-            in_window = (timeseries_data['timestamp']>=window[0]) & (timeseries_data['timestamp']<window[1])
-            timeseries_data_list.append(timeseries_data.iloc[in_window.values,:].reset_index(drop=True))
-            blob_features_list.append(blob_features.iloc[in_window.values].reset_index(drop=True))
+            in_window = []
+            for interval in window:
+                in_interval = (timeseries_data['timestamp']>=interval[0]) & \
+                              (timeseries_data['timestamp']<interval[1])
+                in_window.append(in_interval.values)
+            in_window = np.any(in_window, axis=0)
+            timeseries_data_list.append(timeseries_data.loc[in_window, :].reset_index(drop=True))
+            blob_features_list.append(blob_features.loc[in_window].reset_index(drop=True))
 
     return timeseries_data_list, blob_features_list
 
@@ -413,10 +429,10 @@ def tierpsy_plate_summary_augmented(
 
 if __name__ == '__main__':
 
-#    fname='/Users/em812/Documents/OneDrive - Imperial College London/Eleni/Tierpsy_GUI/test_results_2/Set4_Ch3_18012019_130019_featuresN.hdf5'
-#    fname='/Users/lferiani/Desktop/Data_FOVsplitter/short/Results/drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22436248/metadata_featuresN.hdf5'
-#    fname='/Users/lferiani/Desktop/Data_FOVsplitter/evgeny/Results/20190808_subset/evgeny_plate01_r1_20190808_114758.22956805/metadata_featuresN.hdf5'
-    fname = '/Users/lferiani/Hackathon/multiwell_tierpsy/12_FEAT_TIERPSY/Results/20191205/syngenta_screen_run1_bluelight_20191205_151104.22956805/metadata_featuresN.hdf5'
+    fname='/Users/em812/Data/Tierpsy_GUI/test_results_2/N2_worms10_CSAA016712_1_Set3_Pos4_Ch2_14072017_184843_featuresN.hdf5'
+    # fname='/Users/lferiani/Desktop/Data_FOVsplitter/short/Results/drugexperiment_1hr30minexposure_set1_bluelight_20190722_173404.22436248/metadata_featuresN.hdf5'
+    # fname='/Users/lferiani/Desktop/Data_FOVsplitter/evgeny/Results/20190808_subset/evgeny_plate01_r1_20190808_114758.22956805/metadata_featuresN.hdf5'
+    # fname = '/Users/lferiani/Hackathon/multiwell_tierpsy/12_FEAT_TIERPSY/Results/20191205/syngenta_screen_run1_bluelight_20191205_151104.22956805/metadata_featuresN.hdf5'
     is_manual_index = False
 
 
@@ -426,12 +442,21 @@ if __name__ == '__main__':
                  time_sample_seconds = 10*60
                  )
 
-#    time_windows = [[0,10000],[10000,15000],[10000000,-1]]
-#    time_units = 'frameNb'
+    filter_params = None
 
-#    time_windows = [[0,60],[120,-1],[10000000,-1]]
-    time_windows = [[0,60],[10000000,-1]]
-    time_units = 'seconds'
-#    summary = tierpsy_plate_summary(fname,time_windows,time_units)
-    summary = tierpsy_trajectories_summary(fname,time_windows,time_units)
-#    summary = tierpsy_plate_summary_augmented(fname,time_windows,time_units,is_manual_index=False,delta_time=1/3,**fold_args)
+    # time_windows = [[0,10000],[10000,15000],[10000000,-1]]
+    # time_units = 'frameNb'
+
+    # time_windows = [[0,60],[120,-1],[10000000,-1]]
+    # time_windows = [[[0,60]], [[0,120]], [[150,200], [250,300]], [[10000000,-1]]]
+    # time_units = 'seconds'
+    time_windows = [[[0,60]], [[0,120]], [[150,200], [250,300]], [[10000000,-1]]]
+    time_units = 'frame_numbers'
+
+    fps = 25
+
+    timeseries_list, blob_list = read_data(fname, filter_params, time_windows, time_units, fps, is_manual_index)
+    # summary = tierpsy_plate_summary(fname,time_windows,time_units)
+    # summary = tierpsy_trajectories_summary(fname,time_windows,time_units)
+    # summary = tierpsy_plate_summary_augmented(fname,time_windows,time_units,is_manual_index=False,delta_time=1/3,**fold_args)
+
