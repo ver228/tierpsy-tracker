@@ -20,12 +20,11 @@ Here is a quick summary of how the algorithm works. This example shows the `moti
 <img src="https://user-images.githubusercontent.com/33106690/84387661-474b4180-abeb-11ea-99fb-eaf61f6fc17e.png" width=800>
 
 5. Entries in an `active` region but not certainly `upper` or `lower` (grey dots in orange region below) are labelled as `upper` or `lower` according to these rules:
-<img src="https://user-images.githubusercontent.com/33106690/84387670-49150500-abeb-11ea-96f3-a11e8c660242.png" width=800>
     * if in an `active` region there are only *either* certainly `upper` (or certainly `lower`) entries, the "uncertain" entries are labelled as `upper` (or `lower`)
     * if an `active` region contains both uncertain entries *and both* certainly `upper` *and* certainly `lower` entries, "uncertain" entries are given the label of the previous certain entries (e.g. an uncertain entry following a certain `upper` will be classified as `upper` as well). Any entry which is still "uncertain" is given the label of the following certain entry. Examples can be seen in the figure above: "uncertain" points labelled in this step will show as a grey dot surrounded by a green or pink circle
+    <img src="https://user-images.githubusercontent.com/33106690/84387670-49150500-abeb-11ea-96f3-a11e8c660242.png" width=800>
 
-
-5. Since the event flag is based on the values of `vec`, entries where `vec` is `NaN` are ill-defined. An approach would be to just set the event flag to be `NaN` at all entries where `vec` was `NaN` (see example in figure below). However this would bring to an artificial increase of the subdivision in regions, that can reflect in features like the median length of a `paused` bout being underestimated. To prevent excessive fragmentation of `motion_mode` and `food_region` states, we only set the entries of an event flag vector to `NaN` if the corresponding entry of `vec` was a both a `NaN` and more than `smooth_window` frames away by a valid `vec` entry.
+6. Since the event flag is based on the values of `vec`, entries where `vec` is `NaN` are ill-defined. An approach would be to just set the event flag to be `NaN` at all entries where `vec` was `NaN` (see example in figure below). However this would bring to an artificial increase of the subdivision in regions, that can reflect in features like the median length of a `paused` bout being underestimated. To prevent excessive fragmentation of `motion_mode` and `food_region` states, we only set the entries of an event flag vector to `NaN` if the corresponding entry of `vec` was a both a `NaN` and more than `smooth_window` frames away by a valid `vec` entry.
 <img src="https://user-images.githubusercontent.com/33106690/84387684-4ca88c00-abeb-11ea-97bf-97a681453cf4.png" width=800>
 
 The final result can be seen below: since the worm's `speed` was only undefined for short times, the `motion_mode` flag assumes a valid value throughout the worm's trajectory.
