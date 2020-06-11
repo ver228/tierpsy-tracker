@@ -183,7 +183,7 @@ def calculate_summaries(
         else:
             win_save_base_name = save_base_name
 
-        if not (len(time_windows_ints)==1 and time_windows_ints[0]==[0,-1]):
+        if not (len(time_windows_ints)==1 and time_windows_ints[0][0]==[0,-1]):
             win_save_base_name = win_save_base_name+'_window_{}'.format(iwin)
 
         f1 = os.path.join(
