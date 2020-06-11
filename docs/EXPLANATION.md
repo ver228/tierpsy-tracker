@@ -6,7 +6,7 @@ This page explains all the steps executed in the analysis of a video file. See t
 
 ### COMPRESS
 
-This step has the double function of identifing candidate regions for tracking and zeroing the background in order to efficiently store data using lossless compression. 
+This step has the double function of identifing candidate regions for tracking and zeroing the background in order to efficiently store data using lossless compression.
 
 The algorithm identifies dark particles on a lighter background or light particles on a darker background using [adaptative thresholding](http://docs.opencv.org/3.0-beta/modules/imgproc/doc/miscellaneous_transformations.html) and filtering particles by size. The filter parameters should be adjusted manually for each different setup, however it should be possible to use the same parameters under similar experimental contions. More information on how to set these parameters can be found in the instructions for the widget [Set Parameters](HOWTO.md/#set-parameters).
 
@@ -14,7 +14,7 @@ The algorithm identifies dark particles on a lighter background or light particl
 
 The masked images are stored into a HDF5 container using a gzip filter. Some advantages of this format are:
 
-* It can significally reduce the size of a high resolution video since only the pixels corresponding to tracked particle are kept. This gain depends on codec used by the original video and the fraction of pixels in the image that correspond to the background. In some cases, *e.g* where the animal occupies a large region of the image or the original video was highly compressed, the gain in compression using the gzip hdf5 format can be low or even negative. 
+* It can significally reduce the size of a high resolution video since only the pixels corresponding to tracked particle are kept. This gain depends on codec used by the original video and the fraction of pixels in the image that correspond to the background. In some cases, *e.g* where the animal occupies a large region of the image or the original video was highly compressed, the gain in compression using the gzip hdf5 format can be low or even negative.
 
 * Rapid access to specific video frames. Typically it is slow to access to a specific video frame, particularly in long videos. Most  video readers do an approximative search to a specific time point for fast seeking and can miss the desired frame. To accurately retrieve a specific frame one has to read sequencially the whole video file, a slower process particuarly if the frame is at the end of the video. The HDF5 format indexes the data so it takes a similar amount of time to access any frame in the video.
 
@@ -35,7 +35,7 @@ The second step is to join the identified particles into trajectories. The algor
 
 In the **single-worm**, the algorithm the particles are first filter by area. The filter threshold is calculated with the assumption that in most of the frames the worm is the largest object. Only one trajectory is linked using the closest neighbors in consecutive frames.
 
-In the **multi-worm** case, we link the particles' trajectories by using their nearest neighbor in consecutive frames. The nearest neighbor must be less than `max_allowed_dist` away and the fractional change in area must be less than `area_ratio_lim`. One particle can only be joined to a single particle in consecutive frames, no split or merged trajectories are allowed. If these conditions are not satisfied it means that there was a problem in the trajectory *e.g.* two worms collided and therefore in the next frame the closest object is twice the area, or a worm disapeared from the field of view. If there is any conflict, the trajectory will be broken and a new label will be assigned to any unassigned particle. 
+In the **multi-worm** case, we link the particles' trajectories by using their nearest neighbor in consecutive frames. The nearest neighbor must be less than `max_allowed_dist` away and the fractional change in area must be less than `area_ratio_lim`. One particle can only be joined to a single particle in consecutive frames, no split or merged trajectories are allowed. If these conditions are not satisfied it means that there was a problem in the trajectory *e.g.* two worms collided and therefore in the next frame the closest object is twice the area, or a worm disapeared from the field of view. If there is any conflict, the trajectory will be broken and a new label will be assigned to any unassigned particle.
 
 In a subsequent step, Tierpsy Tracker tries to join trajectories that have a small time gap between them *i.e.* the worm was lost for a few frames. Additionally we will remove any spurious trajectories shorter than `min_track_size` .
 
@@ -55,14 +55,14 @@ We extract a set of features for each particle in each frame (corresponding to t
 
 ### SKE_CREATE
 
-In this step the multiworm data is transformed to a single worm mask by extracting individual regions of interest using the information in [/trajectories_data](OUTPUTS.md/#trajectories_data). Then the skeletons can be extracted using the [segWorm](https://github.com/openworm/SegWorm) algorithm. The basis of this algorithm is to identify the contour points with the highest curvature. These points correspond to the head and the tail. Using these points the contour is then divided in two parts corresponding to the ventral and dorsal side. The skeleton is calculated as the set of middle points between oposite sides of the contour. To increase speed, the algorithm was re-implemented in python and optimized using cython and C. The output is stored as [`basename_skeletons.hdf5`](OUTPUTS.md/#basename_skeletonshdf5). An example of the result is shown below. 
+In this step the multiworm data is transformed to a single worm mask by extracting individual regions of interest using the information in [/trajectories_data](OUTPUTS.md/#trajectories_data). Then the skeletons can be extracted using the [segWorm](https://github.com/openworm/SegWorm) algorithm. The basis of this algorithm is to identify the contour points with the highest curvature. These points correspond to the head and the tail. Using these points the contour is then divided in two parts corresponding to the ventral and dorsal side. The skeleton is calculated as the set of middle points between oposite sides of the contour. To increase speed, the algorithm was re-implemented in python and optimized using cython and C. The output is stored as [`basename_skeletons.hdf5`](OUTPUTS.md/#basename_skeletonshdf5). An example of the result is shown below.
 
 ![skeletons](https://cloud.githubusercontent.com/assets/8364368/26309647/a6b4402e-3ef5-11e7-96cd-4a037ee42868.gif)
 
 ### SKE_FILT
 This step identifies skeletons that are likely to have been produced by an inaccurate mask. There are two different filtering steps:
 
-1. The first step is based on [segWorm](https://github.com/openworm/SegWorm) and looks for large changes in width (set by `filt_bad_seg_thresh`) or area (set by `filt_max_area_ratio`) between the midbody and the head or the tail. These changes are likely to correspond to coiled worms or cases were the worm is in contact with some debris. 
+1. The first step is based on [segWorm](https://github.com/openworm/SegWorm) and looks for large changes in width (set by `filt_bad_seg_thresh`) or area (set by `filt_max_area_ratio`) between the midbody and the head or the tail. These changes are likely to correspond to coiled worms or cases were the worm is in contact with some debris.
 
 2. The second step looks for width or length outliers among all the skeletons in the video. The idea is that it is relatively common to find worms that are barely touching or parallel to each other. In these cases, the corresponding binary mask will look like a valid worm except for having a disproportionately large length or width. This step can fail unless most of the tracked particles are properly segmented single worms.
 
@@ -104,10 +104,8 @@ Currently only used in `WT2`. Export skeletons data in [`basename_features.hdf5`
 CURRENTLY AVAILABLE ONLY FOR [AEX](https://www.imperial.ac.uk/people/andre.brown) DATA. Calculate the food contour either using a pretrained neural network. The results are stored in [`/food_cnt_coord`](OUTPUTS.md/#food_cnt_coord). The process will be considered as failed if the contour solidity is larger than 0.98 and the results will not be saved. You can visualize the results using the [Tierpsy Tracker Viewer](HOWTO.md#tierpsy-tracker-viewer).
 
 ### FEAT_INIT
-The smooth module in [tierpsy features](https://github.com/ver228/tierpsy-features) is used to smooth the skeletons over both time and space and to interpolate between small gaps of unskeletonized frames. As well to create the corresponding versions of the tables [`/blob_features`](OUTPUTS.md/#blob_features), [`/trajectories_data`](OUTPUTS.md/#trajectories_data) and [`/food_cnt_coord`](OUTPUTS.md/#food_cnt_coord)(if available) from the 
+The smooth module in [tierpsy features](https://github.com/ver228/tierpsy-features) is used to smooth the skeletons over both time and space and to interpolate between small gaps of unskeletonized frames. As well to create the corresponding versions of the tables [`/blob_features`](OUTPUTS.md/#blob_features), [`/trajectories_data`](OUTPUTS.md/#trajectories_data) and [`/food_cnt_coord`](OUTPUTS.md/#food_cnt_coord)(if available) from the
 [`basename_skeletons.hdf5`](OUTPUTS.md/#basename_skeletons.hdf5).
 
-### FEAT_TIERSY
+### FEAT_TIERPSY
 This step uses the [tierpsy features](https://github.com/ver228/tierpsy-features) to calculate the features explained in [`basename_featuresN.hdf5`](OUTPUTS.md#basename_featuresnhdf5-tierpsy-features).
-
-
