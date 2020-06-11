@@ -21,7 +21,7 @@ def args_(fn, param):
         'smoothed_traj_param': smoothed_traj_param,
         'filter_model_name': get_model_filter_worms(p)
         }
-    print(f"Using model: {argkws_d['filter_model_name']}")
+    # print(f"Using model: {argkws_d['filter_model_name']}")
     # arguments used by AnalysisPoints.py
     return {
         'func': processTrajectoryData,
