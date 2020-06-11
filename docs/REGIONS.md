@@ -21,7 +21,6 @@ Here is a quick summary of how the algorithm works. This example shows the `moti
 
 5. Entries in an `active` region but not certainly `upper` or `lower` (grey dots in orange region below) are labelled as `upper` or `lower` according to these rules:
 <img src="https://user-images.githubusercontent.com/33106690/84387670-49150500-abeb-11ea-96f3-a11e8c660242.png" width=800>
-
     * if in an `active` region there are only *either* certainly `upper` (or certainly `lower`) entries, the "uncertain" entries are labelled as `upper` (or `lower`)
     * if an `active` region contains both uncertain entries *and both* certainly `upper` *and* certainly `lower` entries, "uncertain" entries are given the label of the previous certain entries (e.g. an uncertain entry following a certain `upper` will be classified as `upper` as well). Any entry which is still "uncertain" is given the label of the following certain entry. Examples can be seen in the figure above: "uncertain" points labelled in this step will show as a grey dot surrounded by a green or pink circle
 
