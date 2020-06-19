@@ -30,15 +30,16 @@ from tierpsy.analysis.split_fov.helper import naive_normalise
 from tierpsy.analysis.split_fov.helper import WELLS_ATTRIBUTES
 from tierpsy.analysis.split_fov.helper import make_square_template
 from tierpsy.analysis.split_fov.helper import simulate_wells_lattice
-from tierpsy.analysis.split_fov.helper import calculate_bgnd_from_masked_fulldata
+from tierpsy.analysis.split_fov.helper import get_bgnd_from_masked
 from tierpsy.analysis.split_fov.helper import get_mwp_map, serial2channel
 from tierpsy.helper.misc import TABLE_FILTERS
 
 
 #%% Class definition
 class FOVMultiWellsSplitter(object):
-    """Class tasked with finding how to split a full-FOV image into single-wells images,
-    and then splitting new images that are passed to it."""
+    """Class tasked with finding how to split a full-FOV image into
+    single-wells images, and then splitting new images that are passed to it.
+    """
 
     def __init__(self, masked_or_features_or_image, **kwargs):
         """
@@ -47,7 +48,7 @@ class FOVMultiWellsSplitter(object):
         Creates wells, and parses the image to fill up the wells property
         Either give the masked_image_file name or features file,
         or pass an image AND camera serial number.
-        If the masked_image_file name is given, any img, camera_serial, or px2um
+        If the masked_image_file name is given, any img, camera_serial, px2um
         will be ignored and read from the masked_image_file
         img = a brightfield frame that will be used for well-finding
         n_wells = how many wells *in the entire multiwell plate*
@@ -67,13 +68,14 @@ class FOVMultiWellsSplitter(object):
             masked_or_features_or_image = str(masked_or_features_or_image)
             is_skeletons = '_skeletons.hdf5' in masked_or_features_or_image
             is_featuresN = '_featuresN.hdf5' in masked_or_features_or_image
-            is_masked = (is_skeletons == False) and (is_featuresN == False) and \
+            is_masked = (is_skeletons == False) and \
+                (is_featuresN == False) and \
                 ('_features.hdf5' not in masked_or_features_or_image) and \
                 ('.hdf5' in masked_or_features_or_image)
 
             if is_skeletons:
                 # this is a skeletons file
-                raise ValueError("only works with masked videos or featuresN files")
+                raise ValueError("only works with MaskedVideos or featuresN")
             if is_featuresN or is_masked:
                 # this either features or masked.
                 # have the wells been detected already?
@@ -82,11 +84,14 @@ class FOVMultiWellsSplitter(object):
 
                 if has_fov_wells:
                     # construct from wells info
-                    self.constructor_from_fov_wells(masked_or_features_or_image)
+                    self.constructor_from_fov_wells(
+                        masked_or_features_or_image)
                 else:
                     # fall back on constructing from masked
-                    masked_image_file = masked_or_features_or_image.replace('_featuresN.hdf5','.hdf5')
-                    img, camera_serial, px2um = calculate_bgnd_from_masked_fulldata(masked_image_file)
+                    masked_image_file = masked_or_features_or_image.replace(
+                        '_featuresN.hdf5','.hdf5')
+                    img, camera_serial, px2um = (
+                        get_bgnd_from_masked(masked_image_file))
 #                    print(img, camera_serial, px2um)
                     self.constructor_from_image(img,
                                                 camera_serial=camera_serial,
@@ -113,8 +118,8 @@ class FOVMultiWellsSplitter(object):
 #        print(camera_serial, px2um)
         # very needed inputs
         if (camera_serial is None) or (px2um is None):
-            raise ValueError('Either provide the masked video filename or an' +\
-                             ' image, camera_serial, and px2um.')
+            raise ValueError('Either provide the masked video filename or' +\
+                             ' an image, camera_serial, and px2um.')
 
         # save the input image just to make some things easier
 #        print('image shape: {}'.format(img.shape))
@@ -140,7 +145,8 @@ class FOVMultiWellsSplitter(object):
         # where was the camera on the rig?
         self.channel = serial2channel(self.camera_serial)
         # number of wells in the multiwell plate: 6 12 24 48 96?
-        # TODO: input check. Dunno if it will be kept like this or parsed from a filename
+        # TODO: input check. Dunno if it will be kept like this or parsed
+        # from a filename
         self.n_wells = total_n_wells
         # whichsideup: was the cell upright or upside-down
         self.whichsideup = whichsideup
@@ -296,10 +302,17 @@ class FOVMultiWellsSplitter(object):
         # bounds are relative to the size of the image (along the y axis)
         # 1/(nwells+0.5) spacing allows for 1/4 an extra well on both side
         # 1/(nwells-0.5) spacing allows for cut wells at the edges I guess
-        bounds = [(1/(2*nwells), 1/nwells),  # x_offset
-                  (1/(2*nwells), 1/nwells),  # y_offset
-                  (1/(nwells+0.5), 1/(nwells-0.5))]  # spacing
-        result = scipy.optimize.differential_evolution(fun_to_minimise, bounds, polish=True)
+        # bounds = [(1/(2*nwells), 1/nwells),  # x_offset
+        #           (1/(2*nwells), 1/nwells),  # y_offset
+        #           (1/(nwells+0.5), 1/(nwells-0.5))]  # spacing
+        guess_offset = 1/(2*nwells)
+        guess_spacing = 1/nwells
+        bounds = [(0.75 * guess_offset, 1.25 * guess_offset),
+                  (0.75 * guess_offset, 1.25 * guess_offset),
+                  (0.95 * guess_spacing, 1.05 * guess_spacing),]
+        result = scipy.optimize.differential_evolution(fun_to_minimise,
+                                                       bounds,
+                                                       polish=True)
         # extract output parameters for spacing grid
         x_offset, y_offset, spacing = result.x.copy()
         # convert to pixels
@@ -314,8 +327,12 @@ class FOVMultiWellsSplitter(object):
         # leave it to the specialised function
         xyr = np.array([
                 (x, y, spacing_px/2)
-                for x in np.arange(x_offset_px,self.img.shape[1],spacing_px)[:nwells]
-                for y in np.arange(y_offset_px,self.img.shape[0],spacing_px)[:nwells]
+                for x in np.arange(x_offset_px,
+                                   self.img.shape[1],
+                                   spacing_px)[:nwells]
+                for y in np.arange(y_offset_px,
+                                   self.img.shape[0],
+                                   spacing_px)[:nwells]
                 ])
         # write into dataframe
         self.wells['x'] = xyr[:,0].astype(int)  # centre
@@ -799,7 +816,7 @@ class FOVMultiWellsSplitter(object):
         return out_list
 
 
-    def plot_wells(self):
+    def plot_wells(self, ax=None):
         """
         Plot the fitted wells, the wells separation, and the name of the well.
         (only if these things are present!)"""
@@ -835,14 +852,17 @@ class FOVMultiWellsSplitter(object):
 
         # add names of wells
         # plot, don't close
+        if not ax:
+            figsize = (8, 8*_img.shape[0]/_img.shape[1])
+            fig = plt.figure(figsize=figsize)
+            ax = plt.Axes(fig, [0., 0., 1., 1.])
+            ax.set_axis_off()
+            fig.add_axes(ax)
+        else:
+            fig = ax.figure
+            ax.set_axis_off()
 
-        print(_img.shape)
-        figsize = (8*_img.shape[0]/_img.shape[1], 8)
-        hf = plt.figure(figsize=figsize);
-        ha = plt.Axes(hf, [0., 0., 1., 1.])
-        ha.set_axis_off()
-        hf.add_axes(ha)
-        ha.imshow(_img)
+        ax.imshow(_img)
         if _is_wellnames:
             for i, _well in self.wells.iterrows():
                 try:
@@ -851,24 +871,24 @@ class FOVMultiWellsSplitter(object):
                            int(_well['col']))
                 except:  # could not have row, col if from /fov_wells
                     txt = "{}".format(_well['well_name'])
-                plt.text(_well['x_min']+_well['width']*0.05,
-                         _well['y_min']+_well['height']*0.12,
-                         txt,
-                         fontsize=10,
-                         color=np.array(get_well_color(_well['is_good_well'],
+                ax.text(_well['x_min']+_well['width']*0.05,
+                        _well['y_min']+_well['height']*0.12,
+                        txt,
+                        fontsize=10,
+                        color=np.array(get_well_color(_well['is_good_well'],
                                                        forCV=False))
-                         )
+                        )
                          # color='r')
         elif _is_rois:
             for i, _well in self.wells.iterrows():
-                plt.text(_well['x'], _well['y'],
-                         "({:d},{:d})".format(int(_well['row']),int(_well['col'])),
-                         fontsize=12,
-                         weight='bold',
-                         color='r')
+                ax.text(_well['x'], _well['y'],
+                        "({:d},{:d})".format(int(_well['row']),int(_well['col'])),
+                        fontsize=12,
+                        weight='bold',
+                        color='r')
 #        plt.axis('off')
-#        plt.tight_layout()
-        return hf
+        # plt.tight_layout()
+        return fig
 
 
     def find_well_of_xy(self, x, y):
@@ -1023,7 +1043,7 @@ if __name__ == '__main__':
     #%% this file didn't work, why?
 #    masked_image_file = '/Volumes/behavgenom$/Ida/Data/Hydra/PilotDrugExps/20191003/MaskedVideos/pilotdrugs_run1_20191003_161308.22956807/metadata.hdf5'
 #    features_file = masked_image_file.replace('MaskedVideos','Results').replace('.hdf5','_featuresN.hdf5')
-#    img, camera_serial, px2um = calculate_bgnd_from_masked_fulldata(masked_image_file)
+#    img, camera_serial, px2um = get_bgnd_from_masked(masked_image_file)
 #    fovsplitter = FOVMultiWellsSplitter(img,
 #                                        camera_serial=camera_serial,
 #                                        total_n_wells=96,
