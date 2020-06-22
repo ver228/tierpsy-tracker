@@ -782,7 +782,7 @@ class FOVMultiWellsSplitter(object):
     def tile_FOV_2D(self, img):
         """
         Function that chops an image according to the x/y_min/max coordinates in
-        wells, and returns a dictionary of (well_name, ROI).
+        wells, and returns a list of (well_name, ROI).
         When integrating in Tierpsy, check if you can use Avelino's function
         for ROI making, could be a lot quicker"""
         # initialise output
@@ -791,7 +791,11 @@ class FOVMultiWellsSplitter(object):
         for rc, well in self.wells.iterrows():
             # extract roi name and roi data
             roi_name = well['well_name']
-            roi_img = img[well['y_min']:well['y_max'],well['x_min']:well['x_max']]
+            xmin = max(well['y_min'], 0)
+            ymin = max(well['x_min'], 0)
+            xmax = min(well['x_max'], self.width)
+            ymax = min(well['y_max'], self.height)
+            roi_img = img[ymin:ymax, xmin:xmax]
             # grow output dictionary
             out_list.append((roi_name, roi_img))
         return out_list
@@ -801,7 +805,7 @@ class FOVMultiWellsSplitter(object):
         """
         Function that chops an image stack (1st dimension is n_frames)
         according to the x/y_min/max coordinates in
-        wells, and returns a dictionary of (well_name, ROI).
+        wells, and returns a list of (well_name, ROI).
         When integrating in Tierpsy, check if you can use Avelino's function
         for ROI making, could be a lot quicker"""
         # initialise output
@@ -810,7 +814,11 @@ class FOVMultiWellsSplitter(object):
         for rc, well in self.wells.iterrows():
             # extract roi name and roi data
             roi_name = well['well_name']
-            roi_img = img[:,well['y_min']:well['y_max'],well['x_min']:well['x_max']]
+            xmin = max(well['y_min'], 0)
+            ymin = max(well['x_min'], 0)
+            xmax = min(well['x_max'], self.width)
+            ymax = min(well['y_max'], self.height)
+            roi_img = img[:, ymin:ymax, xmin:xmax]
             # grow output dictionary
             out_list.append((roi_name, roi_img))
         return out_list
