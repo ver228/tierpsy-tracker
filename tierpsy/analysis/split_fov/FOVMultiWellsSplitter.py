@@ -197,6 +197,10 @@ class FOVMultiWellsSplitter(object):
             self.n_wells       = fid.get_node('/fov_wells')._v_attrs['n_wells']
             self.whichsideup   = fid.get_node('/fov_wells')._v_attrs['whichsideup']
             self.well_shape    = fid.get_node('/fov_wells')._v_attrs['well_shape']
+            if 'is_dubious' in fid.get_node('/fov_wells')._v_attrs:
+                self.is_dubious = fid.get_node('/fov_wells')._v_attrs['is_dubious']
+                if self.is_dubious:
+                    print(f'Check {filename} for plate alignment')
 
         # is this a masked file or a features file? doesn't matter
         self.img = None
@@ -243,6 +247,8 @@ class FOVMultiWellsSplitter(object):
             fid.get_node(table_path)._v_attrs['n_wells']       = self.n_wells
             fid.get_node(table_path)._v_attrs['whichsideup']   = self.whichsideup
             fid.get_node(table_path)._v_attrs['well_shape']    = self.well_shape
+            if hasattr(self, 'is_dubious'):
+                fid.get_node(table_path)._v_attrs['is_dubious'] = self.is_dubious
 
 
 
@@ -282,6 +288,8 @@ class FOVMultiWellsSplitter(object):
                                      for pad in rowcol_padding)
         img = np.pad(self.blur_im, rowcol_split_padding, 'edge') # now padded
         img = 1 - naive_normalise(img) # normalised and inverted. This is a float
+        meanimg = np.mean(img)
+        npixels = img.size
 
         # define function to minimise
         # TODO: enable nwells along x and y
@@ -342,6 +350,11 @@ class FOVMultiWellsSplitter(object):
         for d in ['x','y']:
             self.wells[d+'_min'] = self.wells[d] - self.wells['r']
             self.wells[d+'_max'] = self.wells[d] + self.wells['r']
+        # and for debugging
+        self._gridminres = (result, meanimg, npixels)  # save output of diff evo
+        # looked at ~10k FOV splits, 0.6 is a good threshold to at least flag
+        # FOV splits that result in too high residual
+        self.is_dubious = (result.fun / meanimg / npixels > 0.6)
 
 
 
