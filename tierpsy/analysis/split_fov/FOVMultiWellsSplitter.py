@@ -804,10 +804,10 @@ class FOVMultiWellsSplitter(object):
         for rc, well in self.wells.iterrows():
             # extract roi name and roi data
             roi_name = well['well_name']
-            xmin = max(well['y_min'], 0)
-            ymin = max(well['x_min'], 0)
-            xmax = min(well['x_max'], self.width)
-            ymax = min(well['y_max'], self.height)
+            xmin = max(well['x_min'], 0)
+            ymin = max(well['y_min'], 0)
+            xmax = min(well['x_max'], self.img_shape[1])
+            ymax = min(well['y_max'], self.img_shape[0])
             roi_img = img[ymin:ymax, xmin:xmax]
             # grow output dictionary
             out_list.append((roi_name, roi_img))
@@ -827,10 +827,10 @@ class FOVMultiWellsSplitter(object):
         for rc, well in self.wells.iterrows():
             # extract roi name and roi data
             roi_name = well['well_name']
-            xmin = max(well['y_min'], 0)
-            ymin = max(well['x_min'], 0)
-            xmax = min(well['x_max'], self.width)
-            ymax = min(well['y_max'], self.height)
+            xmin = max(well['x_min'], 0)
+            ymin = max(well['y_min'], 0)
+            xmax = min(well['x_max'], self.img_shape[1])
+            ymax = min(well['y_max'], self.img_shape[0])
             roi_img = img[:, ymin:ymax, xmin:xmax]
             # grow output dictionary
             out_list.append((roi_name, roi_img))
