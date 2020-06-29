@@ -837,22 +837,39 @@ class FOVMultiWellsSplitter(object):
         return out_list
 
 
-    def plot_wells(self, ax=None):
+    def plot_wells(self, is_rotate180=False, ax=None):
         """
         Plot the fitted wells, the wells separation, and the name of the well.
         (only if these things are present!)"""
 
         # make sure I'm not working on the original image
-        _img = cv2.cvtColor(self.img.copy(),cv2.COLOR_GRAY2BGR)
+        if is_rotate180:
+            # a rotation is 2 reflections
+            _img = cv2.cvtColor(self.img.copy()[::-1, ::-1],
+                                cv2.COLOR_GRAY2BGR)
+            _wells = self.wells.copy()
+            for c in ['x_min', 'x_max', 'x']:
+                _wells[c] = _img.shape[1] - _wells[c]
+            for c in ['y_min', 'y_max', 'y']:
+                _wells[c] = _img.shape[0] - _wells[c]
+            _wells.rename(columns={'x_min':'x_max',
+                                   'x_max':'x_min',
+                                   'y_min':'y_max',
+                                   'y_max':'y_min'},
+                          inplace=True)
+        else:
+            _img = cv2.cvtColor(self.img.copy(), cv2.COLOR_GRAY2BGR)
+            _wells = self.wells.copy()
+
 #        pdb.set_trace()
         # flags: according to dataframe state, do or do not do
-        _is_wells = self.wells.shape[0] > 0;
-        _is_rois = np.logical_not(self.wells['x_min'].isnull()).all() and _is_wells;
-        _is_wellnames = np.logical_not(self.wells['well_name'].isnull()).all() and _is_rois;
+        _is_wells = _wells.shape[0] > 0;
+        _is_rois = np.logical_not(_wells['x_min'].isnull()).all() and _is_wells;
+        _is_wellnames = np.logical_not(_wells['well_name'].isnull()).all() and _is_rois;
         # TODO: deal with grayscale image
         # burn the circles into the rgb image
         if _is_wells and self.well_shape == 'circle':
-            for i, _circle in self.wells.iterrows():
+            for i, _circle in _wells.iterrows():
                 # draw the outer circle
                 cv2.circle(_img,(_circle.x,_circle.y),_circle.r,(255,0,0),5)
                 # draw the center of the circle
@@ -862,7 +879,7 @@ class FOVMultiWellsSplitter(object):
             #normalize item number values to colormap
             # normcol = colors.Normalize(vmin=0, vmax=self.wells.shape[0])
 #            print(self.wells.shape[0])
-            for i, _well in self.wells.iterrows():
+            for i, _well in _wells.iterrows():
                 color = get_well_color(_well.is_good_well,
                                        forCV=True)
                 cv2.rectangle(_img,
@@ -885,7 +902,7 @@ class FOVMultiWellsSplitter(object):
 
         ax.imshow(_img)
         if _is_wellnames:
-            for i, _well in self.wells.iterrows():
+            for i, _well in _wells.iterrows():
                 try:
                     txt = "{} ({:d},{:d})".format(_well['well_name'],
                            int(_well['row']),
@@ -901,9 +918,10 @@ class FOVMultiWellsSplitter(object):
                         )
                          # color='r')
         elif _is_rois:
-            for i, _well in self.wells.iterrows():
+            for i, _well in _wells.iterrows():
                 ax.text(_well['x'], _well['y'],
-                        "({:d},{:d})".format(int(_well['row']),int(_well['col'])),
+                        "({:d},{:d})".format(int(_well['row']),
+                                             int(_well['col'])),
                         fontsize=12,
                         weight='bold',
                         color='r')
