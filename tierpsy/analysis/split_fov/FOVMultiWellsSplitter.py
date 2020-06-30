@@ -837,7 +837,7 @@ class FOVMultiWellsSplitter(object):
         return out_list
 
 
-    def plot_wells(self, is_rotate180=False, ax=None):
+    def plot_wells(self, is_rotate180=False, ax=None, line_thickness=20):
         """
         Plot the fitted wells, the wells separation, and the name of the well.
         (only if these things are present!)"""
@@ -886,7 +886,7 @@ class FOVMultiWellsSplitter(object):
                               (_well.x_min, _well.y_min),
                               (_well.x_max, _well.y_max),
 #                              colors[0], 20)
-                               color, 20)
+                               color, line_thickness)
 
         # add names of wells
         # plot, don't close
