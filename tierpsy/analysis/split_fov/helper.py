@@ -58,7 +58,7 @@ CAM2CH_DICT = {"22956818":'Ch1', # Hydra01
                "22594548":'Ch6'}
 
 
-# this can't be a nice and simple dictionary because people may want to use 
+# this can't be a nice and simple dictionary because people may want to use
 # this info in the other direction
 
 CAM2CH_list = [('22956818', 'Ch1', 'Hydra01'), # Hydra01
@@ -92,7 +92,7 @@ CAM2CH_list = [('22956818', 'Ch1', 'Hydra01'), # Hydra01
                ('22594549', 'Ch5', 'Hydra05'),
                ('22594548', 'Ch6', 'Hydra05')]
 
-CAM2CH_df = pd.DataFrame(CAM2CH_list, 
+CAM2CH_df = pd.DataFrame(CAM2CH_list,
                          columns=['camera_serial', 'channel', 'rig'])
 
 
@@ -148,7 +148,7 @@ UPRIGHT_96WP = pd.DataFrame.from_dict({('Ch1',0):[ 'A1', 'B1', 'C1', 'D1'],
 def get_mwp_map(total_n_wells, whichsideup):
     """
     Given a total number of wells, and whether the multiwell plate
-    is upright or upside-down, returns a dataframe with the correct 
+    is upright or upside-down, returns a dataframe with the correct
     channel/row/column -> well_name mapping
     (this works on the Hydra imaging systems - by LoopBio Gmbh - used in Andre
     Brown's lab)
@@ -190,10 +190,12 @@ def parse_camera_serial(filename):
     return camera_serial
 
 
-def calculate_bgnd_from_masked_fulldata(masked_image_file):
+def get_bgnd_from_masked(masked_image_file, is_use_existing=False):
     """
-    - Opens the masked_image_file hdf5 file, reads the /full_data node and 
+    - Opens the masked_image_file hdf5 file, reads the /full_data node and
       creates a "background" by taking the maximum value of each pixel over time.
+    - if is_use_existing, read instead the /bgnd field
+      (and if /bgnd not there, fall back to method above)
     - Parses the file name to find a camera serial number
     - reads the pixel/um ratio from the masked_image_file
     """
@@ -206,10 +208,14 @@ def calculate_bgnd_from_masked_fulldata(masked_image_file):
     with pd.HDFStore(masked_image_file, 'r') as fid:
         assert is_light_background, \
         'MultiWell recognition is only available for brightfield at the moment'
-        img = np.max(fid.get_node('/full_data'), axis=0)
-    
+        if is_use_existing and '/bgnd' in fid:
+            print('bgnd found :) ')
+            img = fid.get_node('/bgnd').read()
+        else:
+            img = np.max(fid.get_node('/full_data'), axis=0)
+
     camera_serial = parse_camera_serial(masked_image_file)
-    
+
     return img, camera_serial, microns_per_pixel
 
 
@@ -225,14 +231,14 @@ def make_square_template(n_pxls=150, rel_width=0.8, blurring=0.1, dtype_out='flo
     zz = (1 - np.tanh( (abs(xx)-rel_width/2)/blurring ))
     zz = zz * (1-np.tanh( (abs(yy)-rel_width/2)/blurring ))
     zz = zz/4
-    
+
     # add bright border
     edge = int(0.05 * n_pxls)
     zz[:edge,:] = 1
     zz[-edge:,:] = 1
     zz[:,:edge] = 1
     zz[:,-edge:] = 1
-    
+
     if dtype_out == 'uint8':
         zz *= 255
         zz = zz.astype(np.uint8)
@@ -240,8 +246,8 @@ def make_square_template(n_pxls=150, rel_width=0.8, blurring=0.1, dtype_out='flo
         pass
     else:
         raise ValueError("Only 'float' and 'uint8' are valid dtypes for this")
-        
-    
+
+
     return zz
 
 
@@ -250,7 +256,7 @@ def was_fov_split(timeseries_data):
     Check if the FOV was split, looking at timeseries_data
     """
     if 'well_name' not in timeseries_data.columns:
-        # for some weird reason, save_feats_stats is being called on an old 
+        # for some weird reason, save_feats_stats is being called on an old
         # featuresN file without calling save_timeseries_feats_table first
         is_fov_split = False
     else:
@@ -280,22 +286,22 @@ def fft_convolve2d(x,y):
     return cc
 
 
-def simulate_wells_lattice(img_shape, x_off, y_off, sp, nwells=None, template_shape='square'): 
+def simulate_wells_lattice(img_shape, x_off, y_off, sp, nwells=None, template_shape='square'):
     """
     Create mock fov by placing well templates onto a square lattice
-    Very simply uses the input parameters and range to define where the wells 
-    will go, and then places the template in a padded canvas. 
+    Very simply uses the input parameters and range to define where the wells
+    will go, and then places the template in a padded canvas.
     The canvas is then cut to be of img_shape again.
-    This simple approach works because the template is created to be exactly 
+    This simple approach works because the template is created to be exactly
     spacing large, so templates do not overlap
     """
-    
+
     # convert fractions into integers
     x_offset = int(x_off*img_shape[0])
     y_offset = int(y_off*img_shape[0])
     spacing = int(sp*img_shape[0])
 
-    # create a padded empty canvas 
+    # create a padded empty canvas
     padding = img_shape[0]//2
     padding_times_2 = padding*2
     padded_shape = tuple(s+padding_times_2 for s in img_shape)
@@ -305,22 +311,22 @@ def simulate_wells_lattice(img_shape, x_off, y_off, sp, nwells=None, template_sh
     if nwells is not None:
         r_wells = range(y_offset+padding,
                         y_offset+padding+nwells*spacing,
-                        spacing) 
+                        spacing)
         c_wells = range(x_offset+padding,
                         x_offset+padding+nwells*spacing,
                         spacing)
     else:
         r_wells = range(y_offset+padding,
                         padding+img_shape[0],
-                        spacing) 
+                        spacing)
         c_wells = range(x_offset+padding,
                         padding+img_shape[1],
                         spacing)
     tmpl_pos_in_padded_canvas = [(r,c) for r in r_wells for c in c_wells]
 
     # make the template for the wells
-    tmpl = make_square_template(n_pxls=spacing, 
-                                rel_width=0.7, 
+    tmpl = make_square_template(n_pxls=spacing,
+                                rel_width=0.7,
                                 blurring=0.1,
                                 dtype_out='float')
     # invert
@@ -330,7 +336,7 @@ def simulate_wells_lattice(img_shape, x_off, y_off, sp, nwells=None, template_sh
     ts = tmpl.shape[0]
     for r,c in tmpl_pos_in_padded_canvas:
         try:
-            padded_canvas[r-ts//2:r-(-ts//2), 
+            padded_canvas[r-ts//2:r-(-ts//2),
                           c-ts//2:c-(-ts//2)] += tmpl
         except Exception as e:
             print(str(e))
@@ -340,7 +346,7 @@ def simulate_wells_lattice(img_shape, x_off, y_off, sp, nwells=None, template_sh
     cutout_canvas = padded_canvas[padding:padding+img_shape[0],
                                   padding:padding+img_shape[1]]
     cutout_canvas = naive_normalise(cutout_canvas)
-    
+
     return cutout_canvas
 
 
@@ -363,14 +369,14 @@ def get_well_color(is_good_well, forCV=False):
 
 
 if __name__ == '__main__':
-    
+
     # test that camera serials return the correct channel
     serials_list = [line[0] for line in CAM2CH_list]
 #    serials_list.append('22594540') # this raise an exception as it does not exist
     for serial in serials_list:
         print('{} -> {}'.format(serial, serial2channel(serial)))
-    # that works as intended! 
-    
+    # that works as intended!
+
     # let's now check that the camera name is parsed correctly I guess
     from pathlib import Path
     src_dir = Path('/Users/lferiani/Desktop/Data_FOVsplitter/evgeny/MaskedVideos/20190808')
@@ -383,7 +389,7 @@ if __name__ == '__main__':
         print(' ')
     # this too works perfectly... but I saw wrong data was written in the masked videos
     # so have to check what went wrong there
-    
+
 
 
 
