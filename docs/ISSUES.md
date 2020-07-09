@@ -26,3 +26,14 @@
     - close this x86_x64 Cross Tools Prompt
   - In the Anaconda prompt:
     - `tierpsy_gui`
+
+
+- On Windows machines **without a CUDA capable GPU**, Tierpsy throws the following error during the analysis:
+  ```
+  OSError: [WinError 126] The specified module could not be found
+  ```
+  The steps below have fixed the issue for us:
+  - In the Anaconda Prompt
+    - Activate the conda environment with `conda activate tierpsy`
+    - Install the CPU-only version of pytorch: `conda install pytorch torchvision cpuonly -c pytorch`
+    - `tierpsy_gui`
