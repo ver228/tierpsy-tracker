@@ -68,7 +68,7 @@ def _normalize_by_w_length(timeseries_data, feats2norm):
         elif units_t == '1/L':
             conversion_vec = median_length_vec
         elif units_t == 'L^2':
-            conversion_vec = median_length_vec**2
+            conversion_vec = 1/median_length_vec**2
         return conversion_vec
 
     timeseries_data = timeseries_data.copy()
