@@ -949,6 +949,15 @@ class FOVMultiWellsSplitter(object):
             m = max(y-vert_edge,0)
             M = min(y+vert_edge, self.img_shape[0])
             mask[m:M,:] = 0
+        # mask everything outside the wells
+        M = self.wells['x_max'].max()
+        mask[:, M:] = 0
+        m = self.wells['x_min'].min()
+        mask[:, :m] = 0
+        M = self.wells['y_max'].max()
+        mask[M:, :] = 0
+        m = self.wells['y_min'].min()
+        mask[:m, :] = 0
 
         return mask
 
