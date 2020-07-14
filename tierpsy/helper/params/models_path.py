@@ -17,7 +17,7 @@ def get_model_filter_worms(p_dict):
                                           'model_isworm_20170407_184845.h5')
     elif which_model == 'pytorch_default':
         model_filter_worms = os.path.join(AUX_FILES_DIR,
-                                          'model_state_isworm_20200501.pth')
+                                          'model_state_isworm_20200615.pth')
     elif which_model == 'custom':
         model_filter_worms = p_dict['path_to_custom_pytorch_model']
         if model_filter_worms == '':
