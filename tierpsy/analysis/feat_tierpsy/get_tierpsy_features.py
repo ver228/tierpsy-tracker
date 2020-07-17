@@ -16,6 +16,7 @@ from tierpsy.helper.misc import TimeCounter, print_flush, get_base_name, TABLE_F
 from tierpsy.helper.params import read_fps, read_ventral_side
 
 from tierpsy.analysis.split_fov.FOVMultiWellsSplitter import FOVMultiWellsSplitter
+from tierpsy.analysis.split_fov.helper import was_fov_split
 
 def save_timeseries_feats_table(features_file, derivate_delta_time, fovsplitter_param={}):
     timeseries_features = []
@@ -161,7 +162,7 @@ def save_feats_stats(features_file, derivate_delta_time):
         fps = fid.get_storer('/trajectories_data').attrs['fps']
         timeseries_data = fid['/timeseries_data']
         blob_features = fid['/blob_features'] if '/blob_features' in fid else None
-        is_fov_tosplit = ('/fov_wells' in fid) # do we need split-FOV sumaries?
+        is_fov_tosplit = was_fov_split(features_file) # do we need split-FOV sumaries?
 
     # check
     if is_fov_tosplit:
