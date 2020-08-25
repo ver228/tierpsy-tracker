@@ -30,15 +30,16 @@ from tierpsy.analysis.split_fov.helper import naive_normalise
 from tierpsy.analysis.split_fov.helper import WELLS_ATTRIBUTES
 from tierpsy.analysis.split_fov.helper import make_square_template
 from tierpsy.analysis.split_fov.helper import simulate_wells_lattice
-from tierpsy.analysis.split_fov.helper import calculate_bgnd_from_masked_fulldata
+from tierpsy.analysis.split_fov.helper import get_bgnd_from_masked
 from tierpsy.analysis.split_fov.helper import get_mwp_map, serial2channel
 from tierpsy.helper.misc import TABLE_FILTERS
 
 
 #%% Class definition
 class FOVMultiWellsSplitter(object):
-    """Class tasked with finding how to split a full-FOV image into single-wells images,
-    and then splitting new images that are passed to it."""
+    """Class tasked with finding how to split a full-FOV image into
+    single-wells images, and then splitting new images that are passed to it.
+    """
 
     def __init__(self, masked_or_features_or_image, **kwargs):
         """
@@ -47,7 +48,7 @@ class FOVMultiWellsSplitter(object):
         Creates wells, and parses the image to fill up the wells property
         Either give the masked_image_file name or features file,
         or pass an image AND camera serial number.
-        If the masked_image_file name is given, any img, camera_serial, or px2um
+        If the masked_image_file name is given, any img, camera_serial, px2um
         will be ignored and read from the masked_image_file
         img = a brightfield frame that will be used for well-finding
         n_wells = how many wells *in the entire multiwell plate*
@@ -67,13 +68,14 @@ class FOVMultiWellsSplitter(object):
             masked_or_features_or_image = str(masked_or_features_or_image)
             is_skeletons = '_skeletons.hdf5' in masked_or_features_or_image
             is_featuresN = '_featuresN.hdf5' in masked_or_features_or_image
-            is_masked = (is_skeletons == False) and (is_featuresN == False) and \
+            is_masked = (is_skeletons == False) and \
+                (is_featuresN == False) and \
                 ('_features.hdf5' not in masked_or_features_or_image) and \
                 ('.hdf5' in masked_or_features_or_image)
 
             if is_skeletons:
                 # this is a skeletons file
-                raise ValueError("only works with masked videos or featuresN files")
+                raise ValueError("only works with MaskedVideos or featuresN")
             if is_featuresN or is_masked:
                 # this either features or masked.
                 # have the wells been detected already?
@@ -82,11 +84,14 @@ class FOVMultiWellsSplitter(object):
 
                 if has_fov_wells:
                     # construct from wells info
-                    self.constructor_from_fov_wells(masked_or_features_or_image)
+                    self.constructor_from_fov_wells(
+                        masked_or_features_or_image)
                 else:
                     # fall back on constructing from masked
-                    masked_image_file = masked_or_features_or_image.replace('_featuresN.hdf5','.hdf5')
-                    img, camera_serial, px2um = calculate_bgnd_from_masked_fulldata(masked_image_file)
+                    masked_image_file = masked_or_features_or_image.replace(
+                        '_featuresN.hdf5','.hdf5')
+                    img, camera_serial, px2um = (
+                        get_bgnd_from_masked(masked_image_file))
 #                    print(img, camera_serial, px2um)
                     self.constructor_from_image(img,
                                                 camera_serial=camera_serial,
@@ -113,8 +118,8 @@ class FOVMultiWellsSplitter(object):
 #        print(camera_serial, px2um)
         # very needed inputs
         if (camera_serial is None) or (px2um is None):
-            raise ValueError('Either provide the masked video filename or an' +\
-                             ' image, camera_serial, and px2um.')
+            raise ValueError('Either provide the masked video filename or' +\
+                             ' an image, camera_serial, and px2um.')
 
         # save the input image just to make some things easier
 #        print('image shape: {}'.format(img.shape))
@@ -140,7 +145,8 @@ class FOVMultiWellsSplitter(object):
         # where was the camera on the rig?
         self.channel = serial2channel(self.camera_serial)
         # number of wells in the multiwell plate: 6 12 24 48 96?
-        # TODO: input check. Dunno if it will be kept like this or parsed from a filename
+        # TODO: input check. Dunno if it will be kept like this or parsed
+        # from a filename
         self.n_wells = total_n_wells
         # whichsideup: was the cell upright or upside-down
         self.whichsideup = whichsideup
@@ -191,6 +197,10 @@ class FOVMultiWellsSplitter(object):
             self.n_wells       = fid.get_node('/fov_wells')._v_attrs['n_wells']
             self.whichsideup   = fid.get_node('/fov_wells')._v_attrs['whichsideup']
             self.well_shape    = fid.get_node('/fov_wells')._v_attrs['well_shape']
+            if 'is_dubious' in fid.get_node('/fov_wells')._v_attrs:
+                self.is_dubious = fid.get_node('/fov_wells')._v_attrs['is_dubious']
+                if self.is_dubious:
+                    print(f'Check {filename} for plate alignment')
 
         # is this a masked file or a features file? doesn't matter
         self.img = None
@@ -237,6 +247,8 @@ class FOVMultiWellsSplitter(object):
             fid.get_node(table_path)._v_attrs['n_wells']       = self.n_wells
             fid.get_node(table_path)._v_attrs['whichsideup']   = self.whichsideup
             fid.get_node(table_path)._v_attrs['well_shape']    = self.well_shape
+            if hasattr(self, 'is_dubious'):
+                fid.get_node(table_path)._v_attrs['is_dubious'] = self.is_dubious
 
 
 
@@ -276,6 +288,8 @@ class FOVMultiWellsSplitter(object):
                                      for pad in rowcol_padding)
         img = np.pad(self.blur_im, rowcol_split_padding, 'edge') # now padded
         img = 1 - naive_normalise(img) # normalised and inverted. This is a float
+        meanimg = np.mean(img)
+        npixels = img.size
 
         # define function to minimise
         # TODO: enable nwells along x and y
@@ -296,10 +310,17 @@ class FOVMultiWellsSplitter(object):
         # bounds are relative to the size of the image (along the y axis)
         # 1/(nwells+0.5) spacing allows for 1/4 an extra well on both side
         # 1/(nwells-0.5) spacing allows for cut wells at the edges I guess
-        bounds = [(1/(2*nwells), 1/nwells),  # x_offset
-                  (1/(2*nwells), 1/nwells),  # y_offset
-                  (1/(nwells+0.5), 1/(nwells-0.5))]  # spacing
-        result = scipy.optimize.differential_evolution(fun_to_minimise, bounds, polish=True)
+        # bounds = [(1/(2*nwells), 1/nwells),  # x_offset
+        #           (1/(2*nwells), 1/nwells),  # y_offset
+        #           (1/(nwells+0.5), 1/(nwells-0.5))]  # spacing
+        guess_offset = 1/(2*nwells)
+        guess_spacing = 1/nwells
+        bounds = [(0.75 * guess_offset, 1.25 * guess_offset),
+                  (0.75 * guess_offset, 1.25 * guess_offset),
+                  (0.95 * guess_spacing, 1.05 * guess_spacing),]
+        result = scipy.optimize.differential_evolution(fun_to_minimise,
+                                                       bounds,
+                                                       polish=True)
         # extract output parameters for spacing grid
         x_offset, y_offset, spacing = result.x.copy()
         # convert to pixels
@@ -314,8 +335,12 @@ class FOVMultiWellsSplitter(object):
         # leave it to the specialised function
         xyr = np.array([
                 (x, y, spacing_px/2)
-                for x in np.arange(x_offset_px,self.img.shape[1],spacing_px)[:nwells]
-                for y in np.arange(y_offset_px,self.img.shape[0],spacing_px)[:nwells]
+                for x in np.arange(x_offset_px,
+                                   self.img.shape[1],
+                                   spacing_px)[:nwells]
+                for y in np.arange(y_offset_px,
+                                   self.img.shape[0],
+                                   spacing_px)[:nwells]
                 ])
         # write into dataframe
         self.wells['x'] = xyr[:,0].astype(int)  # centre
@@ -325,6 +350,11 @@ class FOVMultiWellsSplitter(object):
         for d in ['x','y']:
             self.wells[d+'_min'] = self.wells[d] - self.wells['r']
             self.wells[d+'_max'] = self.wells[d] + self.wells['r']
+        # and for debugging
+        self._gridminres = (result, meanimg, npixels)  # save output of diff evo
+        # looked at ~10k FOV splits, 0.6 is a good threshold to at least flag
+        # FOV splits that result in too high residual
+        self.is_dubious = (result.fun / meanimg / npixels > 0.6)
 
 
 
@@ -765,7 +795,7 @@ class FOVMultiWellsSplitter(object):
     def tile_FOV_2D(self, img):
         """
         Function that chops an image according to the x/y_min/max coordinates in
-        wells, and returns a dictionary of (well_name, ROI).
+        wells, and returns a list of (well_name, ROI).
         When integrating in Tierpsy, check if you can use Avelino's function
         for ROI making, could be a lot quicker"""
         # initialise output
@@ -774,7 +804,11 @@ class FOVMultiWellsSplitter(object):
         for rc, well in self.wells.iterrows():
             # extract roi name and roi data
             roi_name = well['well_name']
-            roi_img = img[well['y_min']:well['y_max'],well['x_min']:well['x_max']]
+            xmin = max(well['x_min'], 0)
+            ymin = max(well['y_min'], 0)
+            xmax = min(well['x_max'], self.img_shape[1])
+            ymax = min(well['y_max'], self.img_shape[0])
+            roi_img = img[ymin:ymax, xmin:xmax]
             # grow output dictionary
             out_list.append((roi_name, roi_img))
         return out_list
@@ -784,7 +818,7 @@ class FOVMultiWellsSplitter(object):
         """
         Function that chops an image stack (1st dimension is n_frames)
         according to the x/y_min/max coordinates in
-        wells, and returns a dictionary of (well_name, ROI).
+        wells, and returns a list of (well_name, ROI).
         When integrating in Tierpsy, check if you can use Avelino's function
         for ROI making, could be a lot quicker"""
         # initialise output
@@ -793,28 +827,49 @@ class FOVMultiWellsSplitter(object):
         for rc, well in self.wells.iterrows():
             # extract roi name and roi data
             roi_name = well['well_name']
-            roi_img = img[:,well['y_min']:well['y_max'],well['x_min']:well['x_max']]
+            xmin = max(well['x_min'], 0)
+            ymin = max(well['y_min'], 0)
+            xmax = min(well['x_max'], self.img_shape[1])
+            ymax = min(well['y_max'], self.img_shape[0])
+            roi_img = img[:, ymin:ymax, xmin:xmax]
             # grow output dictionary
             out_list.append((roi_name, roi_img))
         return out_list
 
 
-    def plot_wells(self):
+    def plot_wells(self, is_rotate180=False, ax=None, line_thickness=20):
         """
         Plot the fitted wells, the wells separation, and the name of the well.
         (only if these things are present!)"""
 
         # make sure I'm not working on the original image
-        _img = cv2.cvtColor(self.img.copy(),cv2.COLOR_GRAY2BGR)
+        if is_rotate180:
+            # a rotation is 2 reflections
+            _img = cv2.cvtColor(self.img.copy()[::-1, ::-1],
+                                cv2.COLOR_GRAY2BGR)
+            _wells = self.wells.copy()
+            for c in ['x_min', 'x_max', 'x']:
+                _wells[c] = _img.shape[1] - _wells[c]
+            for c in ['y_min', 'y_max', 'y']:
+                _wells[c] = _img.shape[0] - _wells[c]
+            _wells.rename(columns={'x_min':'x_max',
+                                   'x_max':'x_min',
+                                   'y_min':'y_max',
+                                   'y_max':'y_min'},
+                          inplace=True)
+        else:
+            _img = cv2.cvtColor(self.img.copy(), cv2.COLOR_GRAY2BGR)
+            _wells = self.wells.copy()
+
 #        pdb.set_trace()
         # flags: according to dataframe state, do or do not do
-        _is_wells = self.wells.shape[0] > 0;
-        _is_rois = np.logical_not(self.wells['x_min'].isnull()).all() and _is_wells;
-        _is_wellnames = np.logical_not(self.wells['well_name'].isnull()).all() and _is_rois;
+        _is_wells = _wells.shape[0] > 0;
+        _is_rois = np.logical_not(_wells['x_min'].isnull()).all() and _is_wells;
+        _is_wellnames = np.logical_not(_wells['well_name'].isnull()).all() and _is_rois;
         # TODO: deal with grayscale image
         # burn the circles into the rgb image
         if _is_wells and self.well_shape == 'circle':
-            for i, _circle in self.wells.iterrows():
+            for i, _circle in _wells.iterrows():
                 # draw the outer circle
                 cv2.circle(_img,(_circle.x,_circle.y),_circle.r,(255,0,0),5)
                 # draw the center of the circle
@@ -824,51 +879,55 @@ class FOVMultiWellsSplitter(object):
             #normalize item number values to colormap
             # normcol = colors.Normalize(vmin=0, vmax=self.wells.shape[0])
 #            print(self.wells.shape[0])
-            for i, _well in self.wells.iterrows():
+            for i, _well in _wells.iterrows():
                 color = get_well_color(_well.is_good_well,
                                        forCV=True)
                 cv2.rectangle(_img,
                               (_well.x_min, _well.y_min),
                               (_well.x_max, _well.y_max),
 #                              colors[0], 20)
-                               color, 20)
+                               color, line_thickness)
 
         # add names of wells
         # plot, don't close
+        if not ax:
+            figsize = (8, 8*_img.shape[0]/_img.shape[1])
+            fig = plt.figure(figsize=figsize)
+            ax = plt.Axes(fig, [0., 0., 1., 1.])
+            ax.set_axis_off()
+            fig.add_axes(ax)
+        else:
+            fig = ax.figure
+            ax.set_axis_off()
 
-        print(_img.shape)
-        figsize = (8*_img.shape[0]/_img.shape[1], 8)
-        hf = plt.figure(figsize=figsize);
-        ha = plt.Axes(hf, [0., 0., 1., 1.])
-        ha.set_axis_off()
-        hf.add_axes(ha)
-        ha.imshow(_img)
+        ax.imshow(_img)
         if _is_wellnames:
-            for i, _well in self.wells.iterrows():
+            for i, _well in _wells.iterrows():
                 try:
                     txt = "{} ({:d},{:d})".format(_well['well_name'],
                            int(_well['row']),
                            int(_well['col']))
                 except:  # could not have row, col if from /fov_wells
                     txt = "{}".format(_well['well_name'])
-                plt.text(_well['x_min']+_well['width']*0.05,
-                         _well['y_min']+_well['height']*0.12,
-                         txt,
-                         fontsize=10,
-                         color=np.array(get_well_color(_well['is_good_well'],
+                ax.text(_well['x_min']+_well['width']*0.05,
+                        _well['y_min']+_well['height']*0.12,
+                        txt,
+                        fontsize=10,
+                        color=np.array(get_well_color(_well['is_good_well'],
                                                        forCV=False))
-                         )
+                        )
                          # color='r')
         elif _is_rois:
-            for i, _well in self.wells.iterrows():
-                plt.text(_well['x'], _well['y'],
-                         "({:d},{:d})".format(int(_well['row']),int(_well['col'])),
-                         fontsize=12,
-                         weight='bold',
-                         color='r')
+            for i, _well in _wells.iterrows():
+                ax.text(_well['x'], _well['y'],
+                        "({:d},{:d})".format(int(_well['row']),
+                                             int(_well['col'])),
+                        fontsize=12,
+                        weight='bold',
+                        color='r')
 #        plt.axis('off')
-#        plt.tight_layout()
-        return hf
+        # plt.tight_layout()
+        return fig
 
 
     def find_well_of_xy(self, x, y):
@@ -1032,7 +1091,7 @@ if __name__ == '__main__':
     #%% this file didn't work, why?
 #    masked_image_file = '/Volumes/behavgenom$/Ida/Data/Hydra/PilotDrugExps/20191003/MaskedVideos/pilotdrugs_run1_20191003_161308.22956807/metadata.hdf5'
 #    features_file = masked_image_file.replace('MaskedVideos','Results').replace('.hdf5','_featuresN.hdf5')
-#    img, camera_serial, px2um = calculate_bgnd_from_masked_fulldata(masked_image_file)
+#    img, camera_serial, px2um = get_bgnd_from_masked(masked_image_file)
 #    fovsplitter = FOVMultiWellsSplitter(img,
 #                                        camera_serial=camera_serial,
 #                                        total_n_wells=96,

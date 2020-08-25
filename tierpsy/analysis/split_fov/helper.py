@@ -190,10 +190,12 @@ def parse_camera_serial(filename):
     return camera_serial
 
 
-def calculate_bgnd_from_masked_fulldata(masked_image_file):
+def get_bgnd_from_masked(masked_image_file, is_use_existing=False):
     """
     - Opens the masked_image_file hdf5 file, reads the /full_data node and
       creates a "background" by taking the maximum value of each pixel over time.
+    - if is_use_existing, read instead the /bgnd field
+      (and if /bgnd not there, fall back to method above)
     - Parses the file name to find a camera serial number
     - reads the pixel/um ratio from the masked_image_file
     """
@@ -206,7 +208,11 @@ def calculate_bgnd_from_masked_fulldata(masked_image_file):
     with pd.HDFStore(masked_image_file, 'r') as fid:
         assert is_light_background, \
         'MultiWell recognition is only available for brightfield at the moment'
-        img = np.max(fid.get_node('/full_data'), axis=0)
+        if is_use_existing and '/bgnd' in fid:
+            print('bgnd found :) ')
+            img = fid.get_node('/bgnd').read()
+        else:
+            img = np.max(fid.get_node('/full_data'), axis=0)
 
     camera_serial = parse_camera_serial(masked_image_file)
 
@@ -388,7 +394,3 @@ if __name__ == '__main__':
         print(' ')
     # this too works perfectly... but I saw wrong data was written in the masked videos
     # so have to check what went wrong there
-
-
-
-

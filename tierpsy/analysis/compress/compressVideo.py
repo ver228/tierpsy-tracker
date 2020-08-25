@@ -451,6 +451,8 @@ def compressVideo(video_file, masked_image_file, mask_param,  expected_fps=25,
     # save fovsplitting data
     if is_fov_tosplit:
         fovsplitter.write_fov_wells_to_file(masked_image_file)
+        if fovsplitter.is_dubious:
+            print(f'Check {masked_image_file} for plate alignment')
 
     read_and_save_timestamp(masked_image_file)
     print_flush(base_name + ' Compressed video done.')
