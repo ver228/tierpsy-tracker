@@ -255,7 +255,7 @@ def tierpsy_plate_summary(
 
     # was the fov split in wells? only use the first window to detect that,
     # and to extract the list of well names
-    is_fov_tosplit = was_fov_split(timeseries_data[0])
+    is_fov_tosplit = was_fov_split(fname)
 #    is_fov_tosplit = False
 
     if is_fov_tosplit:
@@ -327,7 +327,7 @@ def tierpsy_trajectories_summary(
         return [pd.DataFrame() for iwin in range(len(time_windows))]
     timeseries_data, blob_features = data_in
 
-    is_fov_tosplit = was_fov_split(timeseries_data[0])
+    is_fov_tosplit = was_fov_split(fname)
     #    is_fov_tosplit = False
     if is_fov_tosplit:
         fovsplitter = FOVMultiWellsSplitter(fname)
@@ -357,7 +357,9 @@ def tierpsy_trajectories_summary(
                     ) # returns empty dataframe when w_ts_data is empty
                 worm_feats['n_skeletons'] = count_skeletons(w_ts_data)
                 worm_feats = pd.DataFrame(worm_feats).T
-                worm_feats = add_trajectory_info(worm_feats, w_ind, w_ts_data, fps)
+                worm_feats = add_trajectory_info(
+                    worm_feats, w_ind, w_ts_data, fps,
+                    is_fov_tosplit=is_fov_tosplit)
 
                 all_summary.append(worm_feats)
             # concatenate all trajectories in given time window into one dataframe

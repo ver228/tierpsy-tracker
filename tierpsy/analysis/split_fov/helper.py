@@ -251,24 +251,29 @@ def make_square_template(n_pxls=150, rel_width=0.8, blurring=0.1, dtype_out='flo
     return zz
 
 
-def was_fov_split(timeseries_data):
-    """
-    Check if the FOV was split, looking at timeseries_data
-    """
-    if 'well_name' not in timeseries_data.columns:
-        # for some weird reason, save_feats_stats is being called on an old
-        # featuresN file without calling save_timeseries_feats_table first
-        is_fov_split = False
-    else:
-        # timeseries_data has been updated and now has a well_name column
-        if len(set(timeseries_data['well_name']) - set(['n/a'])) > 0:
-            is_fov_split = True
-#            print('have to split fov by well')
-        else:
-            assert all(timeseries_data['well_name']=='n/a'), \
-                'Something is wrong with well naming - go check save_feats_stats'
-            is_fov_split = False
-    return is_fov_split
+# def was_fov_split(timeseries_data):
+#     """
+#     Check if the FOV was split, looking at timeseries_data
+#     """
+#     if 'well_name' not in timeseries_data.columns:
+#         # for some weird reason, save_feats_stats is being called on an old
+#         # featuresN file without calling save_timeseries_feats_table first
+#         is_fov_split = False
+#     else:
+#         # timeseries_data has been updated and now has a well_name column
+#         if len(set(timeseries_data['well_name']) - set(['n/a'])) > 0:
+#             is_fov_split = True
+# #            print('have to split fov by well')
+#         else:
+#             assert all(timeseries_data['well_name']=='n/a'), \
+#                 'Something is wrong with well naming - go check save_feats_stats'
+#             is_fov_split = False
+#     return is_fov_split
+
+def was_fov_split(fname):
+    with pd.HDFStore(fname, 'r') as fid:
+        is_fov_tosplit = ('/fov_wells' in fid)
+    return is_fov_tosplit
 
 
 def naive_normalise(img):
@@ -389,7 +394,3 @@ if __name__ == '__main__':
         print(' ')
     # this too works perfectly... but I saw wrong data was written in the masked videos
     # so have to check what went wrong there
-
-
-
-

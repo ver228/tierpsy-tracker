@@ -16,6 +16,7 @@ from tierpsy.helper.misc import TimeCounter, print_flush, get_base_name, TABLE_F
 from tierpsy.helper.params import read_fps, read_ventral_side
 
 from tierpsy.analysis.split_fov.FOVMultiWellsSplitter import FOVMultiWellsSplitter
+from tierpsy.analysis.split_fov.helper import was_fov_split
 
 def save_timeseries_feats_table(features_file, derivate_delta_time, fovsplitter_param={}):
     timeseries_features = []
@@ -161,21 +162,12 @@ def save_feats_stats(features_file, derivate_delta_time):
         fps = fid.get_storer('/trajectories_data').attrs['fps']
         timeseries_data = fid['/timeseries_data']
         blob_features = fid['/blob_features'] if '/blob_features' in fid else None
+        is_fov_tosplit = was_fov_split(features_file) # do we need split-FOV sumaries?
 
-    # do we need split-FOV sumaries?
-    if 'well_name' not in timeseries_data.columns:
-        # for some weird reason, save_feats_stats is being called on an old
-        # featuresN file without calling save_timeseries_feats_table first
-        is_fov_tosplit = False
-    else:
-        # timeseries_data has been updated and now has a well_name column
-        if len(set(timeseries_data['well_name']) - set(['n/a'])) > 0:
-            is_fov_tosplit = True
-            print('have to split by fov')
-        else:
-            assert all(timeseries_data['well_name']=='n/a'), \
-                'Something is wrong with well naming - go check save_feats_stats'
-            is_fov_tosplit = False
+    # check
+    if is_fov_tosplit:
+        assert 'well_name' in timeseries_data.columns, (
+            'fov_wells in features file but no well_name in timeseries_data')
 
     #Now I want to calculate the stats of the video
     if is_fov_tosplit:
