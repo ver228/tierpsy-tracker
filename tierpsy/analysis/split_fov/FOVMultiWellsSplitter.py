@@ -350,6 +350,14 @@ class FOVMultiWellsSplitter(object):
         for d in ['x','y']:
             self.wells[d+'_min'] = self.wells[d] - self.wells['r']
             self.wells[d+'_max'] = self.wells[d] + self.wells['r']
+        # bound wells to be in frame (to avoid pains later)
+        # np.maximum does entrywise max(a,b)
+        self.wells['x_min'] = np.maximum(self.wells['x_min'], 0)
+        self.wells['y_min'] = np.maximum(self.wells['y_min'], 0)
+        self.wells['x_max'] = np.minimum(
+            self.wells['x_max'], self.img_shape[1])
+        self.wells['y_max'] = np.minimum(
+            self.wells['y_max'], self.img_shape[0])
         # and for debugging
         self._gridminres = (result, meanimg, npixels)  # save output of diff evo
         # looked at ~10k FOV splits, 0.6 is a good threshold to at least flag
